@@ -2,6 +2,17 @@ import { test, expect } from './fixtures';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+async function seedHeroVariant(page: any, variant: 'control' | 'outcome'): Promise<void> {
+  await page.addInitScript((value: string) => {
+    try {
+      window.localStorage.setItem('fa:exp:assignment:hero_headline_cta_v1', value);
+      window.localStorage.setItem('fa:exp:anon_id', 'e2e-seo-fixed-anon');
+    } catch {
+      // ignore storage failures in constrained browsers
+    }
+  }, variant);
+}
+
 test('showcase: demo CTA routes to the correct question pages', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
@@ -47,3 +58,30 @@ test('content: react-counter solution avoids React.useState', async () => {
   expect(raw).not.toContain('React.useState');
 });
 
+test('showcase: hero experiment changes CTA copy only', async ({ browser }) => {
+  const controlContext = await browser.newContext();
+  const controlPage = await controlContext.newPage();
+  await seedHeroVariant(controlPage, 'control');
+  await controlPage.goto('/');
+
+  const controlH1 = (await controlPage.getByTestId('showcase-hero-title').textContent())?.trim() || '';
+  const controlLede = (await controlPage.locator('.showcase-hero .lede').first().textContent())?.trim() || '';
+  const controlCta = (await controlPage.locator('.hero-actions .sk-btn-primary').first().textContent())?.trim() || '';
+
+  const outcomeContext = await browser.newContext();
+  const outcomePage = await outcomeContext.newPage();
+  await seedHeroVariant(outcomePage, 'outcome');
+  await outcomePage.goto('/');
+
+  const outcomeH1 = (await outcomePage.getByTestId('showcase-hero-title').textContent())?.trim() || '';
+  const outcomeLede = (await outcomePage.locator('.showcase-hero .lede').first().textContent())?.trim() || '';
+  const outcomeCta = (await outcomePage.locator('.hero-actions .sk-btn-primary').first().textContent())?.trim() || '';
+
+  expect(outcomeH1).toBe(controlH1);
+  expect(outcomeLede).toBe(controlLede);
+  expect(controlCta).toBe('Start free challenge');
+  expect(outcomeCta).toBe('Try 2-minute challenge');
+
+  await controlContext.close();
+  await outcomeContext.close();
+});

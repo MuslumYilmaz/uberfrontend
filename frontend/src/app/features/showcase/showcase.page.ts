@@ -160,8 +160,8 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'High-signal feedback', tone: 'muted' },
   ];
 
-  heroHeadline = 'Follow a clear roadmap for frontend interviews.';
-  heroLede = 'Practice frontend interview questions in a real workflow: code, preview, tests, and guided interview-ready review signals.';
+  heroHeadline = 'Frontend interview preparation roadmap with real practice.';
+  heroLede = 'This frontend interview preparation roadmap uses real practice loops for frontend interviews: practice questions, run tests, preview UI, and review interview-ready signals.';
   heroPrimaryCtaLabel = 'Start free challenge';
   private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
@@ -752,14 +752,10 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   private applyHeroExperimentCopy() {
     if (this.heroExperimentVariant === 'outcome') {
-      this.heroHeadline = 'Get interview-ready reps in under 2 minutes.';
-      this.heroLede = 'Open a free challenge instantly, run tests, and see the exact workflow used throughout FrontendAtlas.';
       this.heroPrimaryCtaLabel = 'Try 2-minute challenge';
       return;
     }
 
-    this.heroHeadline = 'Follow a clear roadmap for frontend interviews.';
-    this.heroLede = 'Practice frontend interview questions in a real workflow: code, preview, tests, and guided interview-ready review signals.';
     this.heroPrimaryCtaLabel = 'Start free challenge';
   }
 

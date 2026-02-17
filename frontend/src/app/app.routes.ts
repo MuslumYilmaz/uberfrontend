@@ -38,7 +38,7 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend interview preparation roadmap',
         description:
-          'FrontendAtlas is a frontend interview preparation platform with a clear interview roadmap, curated frontend interview questions, and guided coding, trivia, and system design practice.',
+          'FrontendAtlas helps you prepare for frontend interviews with structured coding, trivia, system design practice, and practical guides.',
         keywords: [
           'front end interview questions',
           'javascript interview',
@@ -201,7 +201,7 @@ export const routes: Routes = [
       ),
     data: {
       seo: {
-        title: 'Company Frontend Interview Questions',
+        title: 'Company interview prep hub',
         description:
           'Use company-specific frontend interview questions as part of your interview roadmap, compare hiring patterns, and focus prep where each team interviews.',
         robots: 'index,follow',
@@ -598,8 +598,8 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend interview preparation roadmap',
-            description: 'Use this step-by-step interview roadmap to prepare for frontend interview questions with checklists, tracks, and focused practice.',
+            title: 'Frontend interview blueprint and prep checklist',
+            description: 'Use this step-by-step interview blueprint and prep checklist for frontend interview questions across coding, UI, system design, and behavioral rounds.',
           },
         },
       },
@@ -648,7 +648,7 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend System Design Blueprint',
+            title: 'Frontend system design blueprint guide',
             description: 'Detailed walkthroughs for individual front-end system design topics.',
           },
         },

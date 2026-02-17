@@ -17,7 +17,6 @@
         <a
           class="sk-btn sk-btn-primary"
           [routerLink]="['/react', 'coding', 'react-counter']"
-          [queryParams]="{ src: 'lp_hero' }"
           (click)="onHeroPrimaryClick()"
           aria-label="Start with a free React challenge">
           {{ heroPrimaryCtaLabel }}
@@ -240,7 +239,7 @@
     <a class="demo-banner" [routerLink]="systemPreviewLink" role="button"
       aria-label="Open the full system design scenario">
       <span class="dot" aria-hidden="true"></span>
-      <span class="text">Open the full scenario →</span>
+      <span class="text">Open the full system design scenario →</span>
       <i class="pi pi-arrow-right" aria-hidden="true"></i>
     </a>
   </div>
@@ -281,7 +280,7 @@
 
       <a class="demo-banner library-cta" routerLink="/coding" role="button" aria-label="Open the full library">
         <span class="dot" aria-hidden="true"></span>
-        <span class="text">Open the full scenario →</span>
+        <span class="text">Open the full coding library →</span>
         <i class="pi pi-arrow-right" aria-hidden="true"></i>
       </a>
     </div>
@@ -318,7 +317,9 @@
           <ng-container *ngIf="companyCounts$ && (companyCounts$ | async) as cc">
             <span class="company-count" *ngIf="cc[c.slug]">{{ cc[c.slug].all }} questions</span>
           </ng-container>
-          <a class="company-link" [routerLink]="c.link">View preview <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+          <a class="company-link" [routerLink]="c.link">
+            View {{ c.name }} preview <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
         </div>
       </article>
     </div>
@@ -488,9 +489,9 @@
                 <span>Guides</span>
               </a>
 
-              <a class="contact-pill" routerLink="/pricing" aria-label="View pricing">
+              <a class="contact-pill" routerLink="/pricing" aria-label="View pricing plans">
                 <i class="pi pi-tag" aria-hidden="true"></i>
-                <span>Pricing</span>
+                <span>Pricing plans</span>
               </a>
             </div>
           </form>

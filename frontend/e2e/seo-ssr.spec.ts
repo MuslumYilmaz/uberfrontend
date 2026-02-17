@@ -42,7 +42,7 @@ const CASES = [
   },
 ];
 
-const HOME_TITLE = 'High-signal frontend interview prep | FrontendAtlas';
+const HOME_TITLE = 'Frontend interview preparation roadmap | FrontendAtlas';
 
 function expectedCanonical(path: string): string {
   if (path === '/') return `${CANONICAL_BASE}/`;
@@ -58,6 +58,13 @@ function fullUrl(path: string): string {
 function isSkeletonH1(text: string): boolean {
   if (!text) return true;
   return /loading|skeleton|preparing|please wait/i.test(text);
+}
+
+function normalizeText(value: string): string {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
 }
 
 async function assertSsrBasics(
@@ -179,6 +186,36 @@ test.describe('seo-ssr', () => {
         .toContain(entry.h1);
       await assertHydratedBasics(page, entry);
     }
+  });
+
+  test('home intent stays stable between SSR and hydration, and differs from blueprint index intent', async ({ browser, page }) => {
+    const ssrContext = await browser.newContext({ javaScriptEnabled: false });
+    const ssrPage = await ssrContext.newPage();
+
+    await ssrPage.goto(fullUrl('/'), { waitUntil: 'domcontentloaded' });
+    const ssrHomeTitle = await ssrPage.title();
+    const ssrHomeH1 = (await ssrPage.locator('h1').first().textContent())?.trim() || '';
+
+    expect(normalizeText(ssrHomeTitle)).toContain('frontend interview preparation roadmap');
+    expect(normalizeText(ssrHomeH1)).toContain('frontend interview preparation');
+
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const hydratedHomeTitle = await page.title();
+    const hydratedHomeH1 = (await page.locator('h1').first().textContent())?.trim() || '';
+
+    expect(normalizeText(hydratedHomeTitle)).toContain('frontend interview preparation roadmap');
+    expect(normalizeText(hydratedHomeH1)).toContain('frontend interview preparation');
+    expect(normalizeText(hydratedHomeH1)).toBe(normalizeText(ssrHomeH1));
+
+    await page.goto('/guides/interview-blueprint', { waitUntil: 'domcontentloaded' });
+    const guidesTitle = await page.title();
+    const guidesH1 = (await page.locator('h1').first().textContent())?.trim() || '';
+
+    expect(normalizeText(guidesTitle)).not.toContain('frontend interview preparation roadmap');
+    expect(normalizeText(guidesTitle)).not.toBe(normalizeText(hydratedHomeTitle));
+    expect(normalizeText(guidesH1)).not.toBe(normalizeText(hydratedHomeH1));
+
+    await ssrContext.close();
   });
 
   test('SSR sitemap sampling does not collapse to home meta', async ({ browser, request }) => {

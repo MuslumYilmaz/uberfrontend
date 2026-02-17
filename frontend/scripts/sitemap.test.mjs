@@ -1,11 +1,13 @@
 import fs from 'fs';
 import path from 'path';
+import ts from 'typescript';
 
 const SRC_DIR = path.resolve('src');
 const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
 const FALLBACK_PATH = path.join(SRC_DIR, 'sitemap.xml');
 const MAX_URLS = 50000;
 const GUIDE_REGISTRY_PATH = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
+const APP_ROUTES_PATH = path.join(SRC_DIR, 'app', 'app.routes.ts');
 
 function readXml(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -124,10 +126,184 @@ function assertCoreIndexableCoverage(paths) {
   }
 }
 
+function normalizeTitle(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
+
+function propertyNameToString(name) {
+  if (!name) return '';
+  if (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name)) {
+    return String(name.text || '');
+  }
+  return '';
+}
+
+function getObjectProperty(objectLiteral, propName) {
+  return objectLiteral.properties.find((prop) => {
+    if (!ts.isPropertyAssignment(prop)) return false;
+    return propertyNameToString(prop.name) === propName;
+  }) || null;
+}
+
+function readStringProperty(objectLiteral, propName) {
+  const prop = getObjectProperty(objectLiteral, propName);
+  if (!prop) return '';
+  const init = prop.initializer;
+  if (ts.isStringLiteral(init) || ts.isNoSubstitutionTemplateLiteral(init)) {
+    return init.text;
+  }
+  return '';
+}
+
+function readObjectProperty(objectLiteral, propName) {
+  const prop = getObjectProperty(objectLiteral, propName);
+  if (!prop || !ts.isObjectLiteralExpression(prop.initializer)) return null;
+  return prop.initializer;
+}
+
+function readArrayProperty(objectLiteral, propName) {
+  const prop = getObjectProperty(objectLiteral, propName);
+  if (!prop || !ts.isArrayLiteralExpression(prop.initializer)) return null;
+  return prop.initializer;
+}
+
+function isStaticPathSegment(segment) {
+  const value = String(segment || '');
+  if (value === '') return true;
+  return !value.includes(':') && !value.includes('*');
+}
+
+function joinRoutePath(parentPath, segment) {
+  const parent = normalizePath(parentPath || '/');
+  const child = String(segment || '');
+  if (!child) return parent;
+  if (parent === '/') return normalizePath(`/${child}`);
+  return normalizePath(`${parent}/${child}`);
+}
+
+function collectRouteSeoEntries(routeArray, parentPath, out) {
+  routeArray.elements.forEach((element) => {
+    if (!ts.isObjectLiteralExpression(element)) return;
+
+    const pathSegment = readStringProperty(element, 'path');
+    const currentPath = joinRoutePath(parentPath, pathSegment);
+    const hasRedirect = Boolean(getObjectProperty(element, 'redirectTo'));
+    const dataObject = readObjectProperty(element, 'data');
+    const seoObject = dataObject ? readObjectProperty(dataObject, 'seo') : null;
+
+    if (seoObject && !hasRedirect && isStaticPathSegment(pathSegment)) {
+      const title = readStringProperty(seoObject, 'title');
+      if (title) {
+        out.push({
+          path: currentPath,
+          title,
+          robots: readStringProperty(seoObject, 'robots'),
+        });
+      }
+    }
+
+    const children = readArrayProperty(element, 'children');
+    if (children) {
+      collectRouteSeoEntries(children, currentPath, out);
+    }
+  });
+}
+
+function readRoutesArrayExpression(sourceFile) {
+  let routesArray = null;
+  sourceFile.forEachChild((node) => {
+    if (!ts.isVariableStatement(node)) return;
+    node.declarationList.declarations.forEach((decl) => {
+      if (!ts.isIdentifier(decl.name)) return;
+      if (decl.name.text !== 'routes') return;
+      if (decl.initializer && ts.isArrayLiteralExpression(decl.initializer)) {
+        routesArray = decl.initializer;
+      }
+    });
+  });
+  return routesArray;
+}
+
+function assertIndexableRouteTitlesUnique() {
+  if (!fs.existsSync(APP_ROUTES_PATH)) return;
+
+  const source = fs.readFileSync(APP_ROUTES_PATH, 'utf8');
+  const sourceFile = ts.createSourceFile(
+    APP_ROUTES_PATH,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+
+  const routesArray = readRoutesArrayExpression(sourceFile);
+  if (!routesArray) {
+    throw new Error('Could not parse routes array in src/app/app.routes.ts');
+  }
+
+  const rawEntries = [];
+  collectRouteSeoEntries(routesArray, '/', rawEntries);
+
+  // Keep one SEO record per static route path (child routes override parent for same path).
+  const byPath = new Map();
+  rawEntries.forEach((entry) => {
+    byPath.set(normalizePath(entry.path), entry);
+  });
+
+  const indexableEntries = Array.from(byPath.values()).filter(
+    (entry) => !String(entry.robots || '').toLowerCase().includes('noindex'),
+  );
+
+  const titleMap = new Map();
+  indexableEntries.forEach((entry) => {
+    const key = normalizeTitle(entry.title);
+    if (!key) return;
+    const list = titleMap.get(key) || [];
+    list.push(entry);
+    titleMap.set(key, list);
+  });
+
+  const duplicates = Array.from(titleMap.values()).filter((entries) => entries.length > 1);
+  if (duplicates.length) {
+    const details = duplicates
+      .map((entries) => {
+        const title = entries[0].title;
+        const paths = entries.map((entry) => entry.path).join(', ');
+        return `"${title}" -> ${paths}`;
+      })
+      .join(' | ');
+    throw new Error(`Duplicate indexable SEO titles detected: ${details}`);
+  }
+
+  const homeEntry = indexableEntries.find((entry) => normalizePath(entry.path) === '/');
+  if (!homeEntry) {
+    throw new Error('Missing indexable SEO title for homepage (/).');
+  }
+
+  const homeTitlePhrase = normalizeTitle(homeEntry.title);
+  const homePhraseCollisions = indexableEntries.filter((entry) => {
+    if (normalizePath(entry.path) === '/') return false;
+    return normalizeTitle(entry.title).includes(homeTitlePhrase);
+  });
+
+  if (homePhraseCollisions.length) {
+    const details = homePhraseCollisions
+      .map((entry) => `${entry.path} ("${entry.title}")`)
+      .join(', ');
+    throw new Error(
+      `Homepage primary title phrase appears in other indexable route titles (${details}).`,
+    );
+  }
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
 const paths = getAllSitemapPaths(sitemapFiles);
 assertGuideDetailCoverage(paths);
 assertCoreIndexableCoverage(paths);
+assertIndexableRouteTitlesUnique();
 
 console.log('Sitemap size check passed.');
