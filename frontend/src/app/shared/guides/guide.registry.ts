@@ -222,40 +222,58 @@ export const SYSTEM: GuideEntry[] = [
                 .then(m => m.SystemDesignFrameworkArticle)
     },
     {
+        slug: 'radio-framework',
+        title: 'RADIO Framework for Frontend System Design Interviews',
+        minutes: 20,
+        summary: 'Use the RADIO framework to ace frontend system design interviews with reusable artifacts, timelines, and scripts for focused preparation.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-radio-framework')
+                .then(m => m.SystemDesignRadioFrameworkArticle)
+    },
+    {
+        slug: 'radio-requirements',
+        title: 'R - Requirements Deep Dive for Frontend System Design Interviews',
+        minutes: 16,
+        summary: 'Master requirements in frontend system design interviews with a repeatable script, scope box, metrics, and edge-case checklist before architecture.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-radio-requirements')
+                .then(m => m.SystemDesignRadioRequirementsArticle)
+    },
+    {
         slug: 'architecture',
-        title: 'Rendering & App Architecture',
-        minutes: 14,
-        summary: 'CSR, SSR, islands, microfrontends—how to reason about architecture choices and trade-offs.',
+        title: 'A - Architecture Deep Dive for Frontend System Design Interviews',
+        minutes: 18,
+        summary: 'Master architecture in a frontend system design interview with rendering matrices, boundary decisions, caching strategy, and trade-off scripts.',
         load: () =>
             import('../../features/guides/system-design/system-design-architecture')
                 .then(m => m.SystemDesignArchitectureArticle)
     },
     {
         slug: 'state-data',
-        title: 'State, Data Flow, and Caching',
-        minutes: 15,
-        summary: 'Patterns for managing state, syncing with backends, and improving performance with caching.',
+        title: 'D - Data Model Deep Dive for Frontend System Design Interviews',
+        minutes: 18,
+        summary: 'Master data modeling in a frontend system design interview with entity contracts, UI-state matrix, cache invalidation rules, and mutation rollback patterns.',
         load: () =>
             import('../../features/guides/system-design/system-design-state')
                 .then(m => m.SystemDesignStateArticle)
     },
     {
-        slug: 'performance',
-        title: 'Performance & Web Vitals at Scale',
-        minutes: 12,
-        summary: 'How to reason about load times, rendering speed, and runtime optimizations during interviews.',
-        load: () =>
-            import('../../features/guides/system-design/system-design-performance')
-                .then(m => m.SystemDesignPerformanceArticle)
-    },
-    {
         slug: 'ux',
-        title: 'Accessibility, i18n & Offline First',
-        minutes: 10,
-        summary: 'Covering cross-cutting concerns that separate good answers from great ones.',
+        title: 'I - Interface Deep Dive for Frontend System Design Interviews',
+        minutes: 18,
+        summary: 'Master interface design in a frontend system design interview with component boundaries, UI-state mapping, accessibility contracts, and interaction scripts.',
         load: () =>
             import('../../features/guides/system-design/system-design-ux')
                 .then(m => m.SystemDesignCrossCuttingArticle)
+    },
+    {
+        slug: 'performance',
+        title: 'O - Optimizations Deep Dive for Frontend System Design Interviews',
+        minutes: 18,
+        summary: 'Master optimization strategy in a frontend system design interview with performance budgets, bottleneck prioritization, trade-offs, and rollout validation.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-performance')
+                .then(m => m.SystemDesignPerformanceArticle)
     },
     {
         slug: 'evaluation',
@@ -288,8 +306,8 @@ export const SYSTEM: GuideEntry[] = [
 
 export const SYSTEM_GROUPS = [
     { title: 'Introduction', items: [{ slug: 'intro' }] },
-    { title: 'Core concepts', items: [{ slug: 'foundations' }, { slug: 'framework' }, { slug: 'architecture' }, { slug: 'state-data' }] },
-    { title: 'Advanced topics', items: [{ slug: 'performance' }, { slug: 'ux' }] },
+    { title: 'Core concepts', items: [{ slug: 'foundations' }, { slug: 'framework' }] },
+    { title: 'RADIO guide', items: [{ slug: 'radio-framework' }, { slug: 'radio-requirements' }, { slug: 'architecture' }, { slug: 'state-data' }, { slug: 'ux' }, { slug: 'performance' }] },
     { title: 'Interview focus', items: [{ slug: 'evaluation' }, { slug: 'pitfalls' }, { slug: 'checklist' }] },
 ];
 

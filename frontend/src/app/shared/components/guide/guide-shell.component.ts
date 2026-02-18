@@ -58,7 +58,7 @@ type LeftNav = {
   .mobile-panels{ display:grid; }
 }
 
-.main{ max-width: 920px; }
+.wrap > .main{ max-width: 920px; }
 
 /* mobile/tablet: collapsible menu + toc */
 .mobile-panels{

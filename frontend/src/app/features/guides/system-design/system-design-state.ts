@@ -8,509 +8,543 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
     <fa-guide-shell
-      title="State, Data Flow, and Caching"
-      [minutes]="15"
-      [tags]="['system design','state','data','caching']"
+      title="D - Data Model Deep Dive for Frontend System Design Interviews"
+      [minutes]="18"
+      [tags]="['system design','data model','caching','radio framework']"
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav">
 
+      <h2>If You Remember One Thing</h2>
       <p>
-        Most front-end scale problems are really <strong>state and data-flow</strong> problems:
-        what do we store, where does it live, how does it stay fresh, and how do we
-        keep it fast for users? This guide gives you patterns and phrases that work in interviews —
-        and in production.
+        In a <strong>system design interview</strong>, your data model is the contract for everything else:
+        rendering strategy, UI states, caching, and reliability. If your entities, ownership boundaries,
+        and invalidation rules are explicit, your <strong>frontend system design</strong> answer sounds senior
+        and survives follow-up questions.
+      </p>
+      <p>
+        In the <strong>RADIO framework</strong>, Data model is where scope and architecture become concrete contracts.
       </p>
 
-      <h2>The 3 kinds of state (know where it lives)</h2>
+      <h2>What Data Model Must Produce</h2>
       <table>
         <thead>
           <tr>
-            <th style="text-align:left;">Kind</th>
-            <th style="text-align:left;">Examples</th>
-            <th style="text-align:left;">Where it lives</th>
-            <th style="text-align:left;">Notes</th>
+            <th>Artifact</th>
+            <th>Minimum interview output</th>
+            <th>Why it matters</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>UI / Local</strong></td>
-            <td>modal open, input value, tab index</td>
-            <td>component state</td>
-            <td>Ephemeral; don’t globalize.</td>
+            <td>Entity map</td>
+            <td>Core entities, IDs, and relations</td>
+            <td>Prevents hand-wavy domain modeling</td>
           </tr>
           <tr>
-            <td><strong>App / Global</strong></td>
-            <td>auth user, feature flags, cart</td>
-            <td>global store (signals/NgRx/Zustand/etc.)</td>
-            <td>Share across routes; keep minimal.</td>
+            <td>State ownership table</td>
+            <td>Server truth vs client UI state vs URL state</td>
+            <td>Avoids sync bugs and duplicate sources of truth</td>
           </tr>
           <tr>
-            <td><strong>Server / Remote</strong></td>
-            <td>products, feed, profile</td>
-            <td>server cache (RTK Query/React Query/SWR, custom Rx cache)</td>
-            <td>Treat as cached data, not “truth.”</td>
+            <td>UI states matrix</td>
+            <td>idle/loading/success/empty/error/stale/partial</td>
+            <td>Shows production-ready frontend thinking</td>
+          </tr>
+          <tr>
+            <td>Cache policy</td>
+            <td>Query keys, TTLs, and invalidation triggers</td>
+            <td>Makes stale behavior predictable</td>
+          </tr>
+          <tr>
+            <td>Mutation flow</td>
+            <td>Optimistic update, rollback, and conflict handling</td>
+            <td>Tests write-path maturity</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>Data-flow patterns (pick one and be consistent)</h2>
+      <h2>Inputs You Must Carry from Requirements and Architecture</h2>
+      <p>
+        Data model quality is a dependency chain. Good <strong>system design interview preparation</strong>
+        means carrying constraints forward, not resetting at each step.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>Data-model decision</th>
+            <th>What to say out loud</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Primary user flow</td>
+            <td>Model entities around top task first</td>
+            <td>"I am modeling the highest-value user path before edge entities."</td>
+          </tr>
+          <tr>
+            <td>Route rendering split</td>
+            <td>Separate SSR-safe payloads from CSR-interactive state</td>
+            <td>"I am designing data contracts to support both SSR payload and CSR updates."</td>
+          </tr>
+          <tr>
+            <td>Scale and latency targets</td>
+            <td>Define pagination shape, cache key granularity, and TTL</td>
+            <td>"I will tune key and TTL design to hit p95 latency targets."</td>
+          </tr>
+          <tr>
+            <td>Reliability requirements</td>
+            <td>Add stale and partial states in contracts</td>
+            <td>"I will include stale and partial response semantics in the model."</td>
+          </tr>
+          <tr>
+            <td>Security constraints</td>
+            <td>Model field visibility by role/scope</td>
+            <td>"I am separating public and privileged fields at contract level."</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Entity Model and API Contracts</h2>
+      <h3>Entity sketch template</h3>
+      <div class="code-wrap">
+        <pre><code>Suggestion &#123;
+  id: string
+  label: string
+  type: 'user' | 'repo' | 'doc'
+  score?: number
+  updatedAt: string
+&#125;
+
+SearchResponse &#123;
+  query: string
+  items: Suggestion[]
+  nextCursor?: string
+  stale: boolean
+  partial: boolean
+&#125;</code></pre>
+      </div>
+
+      <h3>Modeling rules you should state</h3>
       <ul>
-        <li><strong>Unidirectional:</strong> View → Action → Store → View. Predictable, easy to test.</li>
-        <li><strong>Event-driven / PubSub:</strong> Components publish events; subscribers react. Decouple, but traceability cost.</li>
-        <li><strong>Reactive streams:</strong> Observables/Signals for push-based updates; great for real-time UIs.</li>
+        <li>Every entity has stable ID and update timestamp/version.</li>
+        <li>Keep payloads route-focused; avoid over-fetching fields not rendered.</li>
+        <li>Represent optional capability as explicit fields, not implicit null behavior.</li>
+        <li>Include metadata needed for UI state decisions (for example, <code>stale</code>, <code>partial</code>).</li>
       </ul>
-      <p><em>Interview script:</em> “I’ll keep UI state local, shared state in a small global store, and remote data via a server-cache with unidirectional updates.”</p>
 
-      <h2>Fetching strategies</h2>
-      <p>
-        How and when you fetch data directly affects performance and UX. 
-        Interviewers like to see if you can balance <em>speed, freshness, and efficiency</em>. 
-        Here are the main approaches:
-      </p>
-
+      <h2>State Ownership Model</h2>
       <table>
         <thead>
           <tr>
-            <th style="text-align:left;">Strategy</th>
-            <th style="text-align:left;">What it means</th>
-            <th style="text-align:left;">Example</th>
-            <th style="text-align:left;">Trade-off</th>
+            <th>State class</th>
+            <th>Owner</th>
+            <th>Examples</th>
+            <th>Common pitfall</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>On demand</strong></td>
-            <td>Fetch only when the view loads or user takes an action</td>
-            <td>Load orders when user opens the “Orders” tab</td>
-            <td>Saves bandwidth, but may delay first paint</td>
+            <td>Server truth</td>
+            <td>API + server-state cache</td>
+            <td>Entities, permissions, availability</td>
+            <td>Copying into multiple client stores</td>
           </tr>
           <tr>
-            <td><strong>Prefetch / warm</strong></td>
-            <td>Fetch ahead of time based on navigation hints</td>
-            <td>Hovering a link triggers prefetch of the next page</td>
-            <td>Faster nav, but risk of wasted requests</td>
+            <td>Client view state</td>
+            <td>Component/local store</td>
+            <td>Popover open, selected row, input draft</td>
+            <td>Persisting ephemeral state globally</td>
           </tr>
           <tr>
-            <td><strong>Pagination / infinite scroll</strong></td>
-            <td>Load results in chunks (by page or cursor)</td>
-            <td>Twitter feed loading 20 tweets at a time</td>
-            <td>Keeps memory low, but requires cursor logic</td>
-          </tr>
-          <tr>
-            <td><strong>Background refresh</strong></td>
-            <td>Refetch in the background on focus, reconnect, or interval</td>
-            <td>Refetch notifications when user returns to the tab</td>
-            <td>Data fresher, but can add extra server load</td>
+            <td>URL state</td>
+            <td>Router/query params</td>
+            <td>Query, filters, sort, page cursor</td>
+            <td>State not shareable/bookmarkable</td>
           </tr>
         </tbody>
       </table>
 
-      <p>
-        <em>Interview script:</em> 
-        “For v1, I’d fetch data on demand to stay simple. 
-        Later, we could prefetch critical pages and use background refresh on focus 
-        to balance freshness with cost.”
-      </p>
-
-      <h2>Caching layers (you can stack these)</h2>
-      <p>
-        Caching isn’t one-size-fits-all — layers build on each other. 
-        A senior answer shows you know <em>where each layer lives, what it solves, 
-        and what the trade-offs are</em>.
-      </p>
-
+      <h2>UI States Matrix (Critical for Frontend)</h2>
       <table>
         <thead>
           <tr>
-            <th style="text-align:left;">Layer</th>
-            <th style="text-align:left;">What it solves</th>
-            <th style="text-align:left;">Example</th>
-            <th style="text-align:left;">Trade-off</th>
+            <th>State</th>
+            <th>Trigger</th>
+            <th>What user sees</th>
+            <th>Telemetry signal</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>HTTP caching</strong></td>
-            <td>Re-use responses between client & server</td>
-            <td><code>ETag</code>, <code>Last-Modified</code>, <code>Cache-Control</code></td>
-            <td>Simple and cheap, but only for GET requests</td>
+            <td>idle</td>
+            <td>No request yet</td>
+            <td>Prompt or default content</td>
+            <td>Initial load event</td>
           </tr>
           <tr>
-            <td><strong>CDN edge</strong></td>
-            <td>Reduce latency by serving from the edge</td>
-            <td>Static/SSG pages, images, cached API GETs</td>
-            <td>Global reach, but invalidation can be tricky</td>
+            <td>loading</td>
+            <td>Request in-flight</td>
+            <td>Skeleton/spinner with accessible announcement</td>
+            <td>Request start latency timer</td>
           </tr>
           <tr>
-            <td><strong>App memory</strong></td>
-            <td>Instant reads inside the running app</td>
-            <td>In-memory normalized cache keyed by IDs</td>
-            <td>Fastest, but volatile (cleared on reload)</td>
+            <td>success</td>
+            <td>Data received</td>
+            <td>Primary content rendered</td>
+            <td>Success rate and completion</td>
           </tr>
           <tr>
-            <td><strong>Service Worker</strong></td>
-            <td>Offline resilience + background sync</td>
-            <td>Cache shell + data for offline-first apps</td>
-            <td>More complex logic; sync conflicts possible</td>
+            <td>empty</td>
+            <td>Valid response, zero items</td>
+            <td>Empty-state guidance + next action</td>
+            <td>Zero-result rate</td>
+          </tr>
+          <tr>
+            <td>error</td>
+            <td>Failure/timeout/unauthorized</td>
+            <td>Error message + retry path</td>
+            <td>Error rate by endpoint/route</td>
+          </tr>
+          <tr>
+            <td>stale</td>
+            <td>Cached data older than freshness policy</td>
+            <td>Stale badge while background refresh runs</td>
+            <td>Stale duration distribution</td>
+          </tr>
+          <tr>
+            <td>partial</td>
+            <td>One dependency failed in aggregate response</td>
+            <td>Partial data + degraded notice</td>
+            <td>Partial-response ratio</td>
           </tr>
         </tbody>
       </table>
 
-      <p>
-        <em>Interview script:</em> 
-        “I’d stack caching: browser HTTP cache first, CDN for static assets, 
-        an in-memory normalized cache for app state, and a Service Worker 
-        if offline is required.”
-      </p>
-
-      <h3>Invalidation strategies (the hard part)</h3>
-      <p>
-        Caching is easy — keeping it <em>correct</em> is the hard part. 
-        Interviewers want to see if you know more than just “we’ll cache it” 
-        and can explain <strong>how you keep data fresh without over-fetching</strong>.
-      </p>
-
+      <h2>Query Keys, Caching TTLs, and Invalidation</h2>
+      <h3>Cache policy example</h3>
       <table>
         <thead>
           <tr>
-            <th style="text-align:left;">Strategy</th>
-            <th style="text-align:left;">How it works</th>
-            <th style="text-align:left;">When to use</th>
-            <th style="text-align:left;">Trade-off</th>
+            <th>Query key pattern</th>
+            <th>TTL</th>
+            <th>Invalidate when</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Time-based</strong></td>
-            <td>Expire after TTL, re-fetch after N seconds</td>
-            <td>Feeds, dashboards with tolerable staleness</td>
-            <td>Simple, but may refresh too often or too late</td>
+            <td><code>['search', query, filters, sort]</code></td>
+            <td>15-30s</td>
+            <td>Query/filter/sort changes, relevant mutation</td>
+            <td>Short TTL for high interaction flows</td>
           </tr>
           <tr>
-            <td><strong>Event-based</strong></td>
-            <td>On write/mutation, invalidate affected cache</td>
-            <td>When user actions directly change data (e.g., add post)</td>
-            <td>More precise, but requires wiring invalidation logic</td>
+            <td><code>['entity', id]</code></td>
+            <td>60-120s</td>
+            <td>Entity update/delete, permission change</td>
+            <td>Stable detail reads with targeted invalidation</td>
           </tr>
           <tr>
-            <td><strong>Tag-based</strong></td>
-            <td>Group cache keys by “tags” (e.g. <code>['post', id]</code>)</td>
-            <td>APIs with many related queries (list + detail)</td>
-            <td>Flexible, but adds cache management complexity</td>
-          </tr>
-          <tr>
-            <td><strong>Stale-While-Revalidate (SWR)</strong></td>
-            <td>Show cached data instantly, refresh in background</td>
-            <td>UX-critical paths (dashboards, feeds)</td>
-            <td>Best UX, but requires background fetch & merge logic</td>
+            <td><code>['list', segment, cursor]</code></td>
+            <td>30-90s</td>
+            <td>New create event affecting ordering</td>
+            <td>Cursor-aware invalidation avoids full reset</td>
           </tr>
         </tbody>
       </table>
 
-      <p>
-        <em>Interview script:</em> 
-        “I’d go with SWR semantics: show stale cache immediately, 
-        trigger a background fetch, then reconcile. 
-        For writes, I’d invalidate related tags so the next read pulls fresh data.”
-      </p>
+      <h3>What interviewers want to hear</h3>
+      <ul>
+        <li>You define key shape before saying "we will cache."</li>
+        <li>You combine time-based and event-based invalidation.</li>
+        <li>You explicitly describe stale behavior and background refresh.</li>
+      </ul>
 
-      <h2>Consistency & freshness</h2>
-      <p>
-        A common system design pitfall is treating all data as if it must always be 
-        up to the millisecond. In reality, <strong>different features need different levels 
-        of consistency</strong>. Showing you can reason about this is a high-signal move.
-      </p>
-
+      <h2>Pagination, Sorting, Filtering, and URL Sync</h2>
       <table>
         <thead>
           <tr>
-            <th style="text-align:left;">Level</th>
-            <th style="text-align:left;">What it means</th>
-            <th style="text-align:left;">When it’s used</th>
-            <th style="text-align:left;">Trade-off</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Strong</strong></td>
-            <td>Every read reflects the most recent write</td>
-            <td>Banking apps, payments, inventory counts</td>
-            <td>Expensive; adds latency and infra cost</td>
-          </tr>
-          <tr>
-            <td><strong>Eventual</strong></td>
-            <td>Reads may briefly show stale data</td>
-            <td>Feeds, comments, like counters</td>
-            <td>Simpler + faster, but UI may “lag” briefly</td>
-          </tr>
-          <tr>
-            <td><strong>Read-your-writes UX</strong></td>
-            <td>Optimistic update so <em>my</em> action looks instant</td>
-            <td>Social actions (like, post, follow)</td>
-            <td>Great UX; needs rollback/merge on failure</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        <em>Interview script:</em> 
-        “For user actions like likes, I’d use optimistic updates (read-your-writes) 
-        to keep UX snappy. For global counters, eventual consistency is fine. 
-        If it’s money or inventory, we’d need strong consistency.”
-      </p>
-
-      <h2>Real-time sync options</h2>
-      <p>
-        Many front-end systems need “fresh” data, but not all require the same level of 
-        real-time sync. Interviewers want to see if you can <strong>choose the simplest tool 
-        that works, and only add complexity when necessary</strong>.
-      </p>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="text-align:left;">Option</th>
-            <th style="text-align:left;">How it works</th>
-            <th style="text-align:left;">Best for</th>
-            <th style="text-align:left;">Trade-off</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Polling</strong></td>
-            <td>Client fetches data on interval</td>
-            <td>Dashboards, low-frequency updates</td>
-            <td>Simple; can waste requests if too frequent</td>
-          </tr>
-          <tr>
-            <td><strong>SSE (Server-Sent Events)</strong></td>
-            <td>One-way push from server → client</td>
-            <td>Live feeds, tickers, notifications</td>
-            <td>Lightweight; limited browser support vs WebSocket</td>
-          </tr>
-          <tr>
-            <td><strong>WebSocket</strong></td>
-            <td>Bi-directional persistent connection</td>
-            <td>Chat, collaborative editing, presence</td>
-            <td>Powerful; higher infra + scaling complexity</td>
-          </tr>
-          <tr>
-            <td><strong>Push + refresh</strong></td>
-            <td>Server sends a hint/ID → client fetches data</td>
-            <td>Updates where payloads are large (e.g., new doc version)</td>
-            <td>Efficient, but requires coordination between push + fetch</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        <em>Guideline:</em> 
-        Start with <strong>polling</strong> for simplicity. 
-        Move to <strong>SSE or WebSocket</strong> only if interactivity demands it. 
-        That trade-off reasoning is what interviewers want to hear.
-      </p>
-
-      <h2>Offline & conflict handling</h2>
-      <p>
-        Real users don’t always have stable connections. 
-        Showing you can design for <strong>offline resilience</strong> 
-        (and resolve conflicts when users reconnect) 
-        is a big signal of senior-level thinking.
-      </p>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="text-align:left;">Technique</th>
-            <th style="text-align:left;">What it solves</th>
-            <th style="text-align:left;">Trade-off</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Caching policy</strong></td>
-            <td>Serve assets or data when network is unavailable</td>
-            <td>Cache-first is great for static assets; but stale for dynamic data</td>
-          </tr>
-          <tr>
-            <td><strong>Queue writes</strong></td>
-            <td>Capture user actions offline; replay when back online</td>
-            <td>Improves UX, but needs background sync & retry logic</td>
-          </tr>
-          <tr>
-            <td><strong>Conflict resolution</strong></td>
-            <td>Handle when two clients update the same data</td>
-            <td>
-              Last-write-wins is simple but lossy.  
-              Version checks prevent silent overwrites.  
-              Merge functions give best UX but add complexity.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <blockquote>
-        <em>Interview script:</em>  
-        “For an offline notes app, I’d cache the shell + recent notes in a Service Worker.  
-        Edits are queued with version fields. On sync, if versions clash, 
-        I’d show a diff so the user can merge — rather than silently overwriting.”
-      </blockquote>
-
-      <h2>Performance levers for data UX</h2>
-      <p>
-        In front-end design, performance is often more about <strong>perceived speed</strong> 
-        than raw milliseconds. Interviewers want to see if you know the 
-        <em>practical levers</em> that keep UIs feeling snappy, even when data is large or slow.
-      </p>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="text-align:left;">Lever</th>
-            <th style="text-align:left;">What it solves</th>
-            <th style="text-align:left;">Example</th>
-            <th style="text-align:left;">Trade-off</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Skeletons & optimistic UI</strong></td>
-            <td>Reduce perceived wait time</td>
-            <td>Show a skeleton post, or add a “like” instantly</td>
-            <td>Needs rollback logic if optimistic update fails</td>
-          </tr>
-          <tr>
-            <td><strong>Partial hydration / code-splitting</strong></td>
-            <td>Avoid blocking on heavy widgets</td>
-            <td>Defer loading of chart libraries until tab is opened</td>
-            <td>Extra build complexity; risk of “pop-in” if delayed</td>
-          </tr>
-          <tr>
-            <td><strong>List virtualization</strong></td>
-            <td>Handle very large lists efficiently</td>
-            <td>Render only items in viewport (e.g., 10 of 10k rows)</td>
-            <td>Harder to implement; can break scroll-to-index features</td>
-          </tr>
-          <tr>
-            <td><strong>Batching & debouncing</strong></td>
-            <td>Smooth out rapid updates / reduce re-renders</td>
-            <td>Debounce search input, batch socket updates</td>
-            <td>May delay feedback slightly if tuned poorly</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        <em>Interview script:</em>  
-        “I’d keep the UI responsive by using skeletons and optimistic updates for perceived speed, 
-        code-splitting heavy charts, virtualizing long lists, and debouncing rapid inputs. 
-        That way the app feels fast even under load.”
-      </p>
-
-      <h2>Putting it together (example: social feed)</h2>
-      <ol>
-        <li><strong>State split:</strong> local (composer open), global (auth/profile), server cache (posts by cursor).</li>
-        <li><strong>Data flow:</strong> unidirectional; actions dispatch → cache updates → UI.</li>
-        <li><strong>Fetching:</strong> initial page on mount, prefetch next page on scroll ~70%.</li>
-        <li><strong>Caching:</strong> normalize posts by <code>id</code>; keep cursors per filter.</li>
-        <li><strong>Invalidation:</strong> on create/delete/like → invalidate/patch affected post & feed tag.</li>
-        <li><strong>Freshness:</strong> SWR on focus/reconnect; “New posts” toast when background fetch finds more.</li>
-        <li><strong>Real-time:</strong> SSE for “new post” hints; fetch item by ID to avoid over-the-wire bloat.</li>
-      </ol>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="text-align:left;">Concern</th>
-            <th style="text-align:left;">Choice</th>
-            <th style="text-align:left;">Trade-off</th>
+            <th>Concern</th>
+            <th>Decision</th>
+            <th>Pitfall to avoid</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Pagination</td>
-            <td>Cursor-based prefetch at 70%</td>
-            <td>Smoother UX, but requires server support</td>
+            <td>Prefer cursor pagination for mutable lists</td>
+            <td>Offset drift on frequently updated feeds</td>
           </tr>
           <tr>
-            <td>Caching</td>
-            <td>Normalized by <code>id</code></td>
-            <td>Efficient updates, but adds complexity</td>
+            <td>Sorting</td>
+            <td>Include sort token in query key and URL</td>
+            <td>Cache collisions across sort modes</td>
           </tr>
           <tr>
-            <td>Invalidation</td>
-            <td>Event-based (on mutation)</td>
-            <td>Correctness, but need discipline in wiring</td>
+            <td>Filtering</td>
+            <td>Normalize filter order in keys and URLs</td>
+            <td>Duplicate queries due to parameter order</td>
           </tr>
           <tr>
-            <td>Freshness</td>
-            <td>SWR on focus/reconnect</td>
-            <td>Great for occasional refresh, but still stale mid-session</td>
-          </tr>
-          <tr>
-            <td>Real-time</td>
-            <td>SSE hints + fetch by ID</td>
-            <td>Lightweight, but not full sync like WebSocket</td>
+            <td>URL sync</td>
+            <td>Keep shareable state in query params</td>
+            <td>State lost on refresh/back/forward</td>
           </tr>
         </tbody>
       </table>
 
+      <h2>Mutation Flows and Optimistic Updates</h2>
+      <ol>
+        <li>Capture previous cache snapshot for affected keys.</li>
+        <li>Apply optimistic patch locally for immediate UI feedback.</li>
+        <li>Send mutation request with idempotency token where possible.</li>
+        <li>On success, reconcile server response and clear temp markers.</li>
+        <li>On failure, rollback snapshot and show actionable error state.</li>
+      </ol>
       <p>
-        <em>Interview phrasing:</em>  
-        “For a social feed, I’d normalize posts in cache, use cursor pagination with prefetch, 
-        event-based invalidation on likes/deletes, and SWR on focus. For real-time, I’d use SSE hints 
-        to avoid heavy payloads. That way, users see a responsive feed without overcomplicating v1.”
+        Script cue: "I will optimize read-your-writes UX with optimistic updates, but keep rollback explicit to avoid silent divergence."
       </p>
 
-      <h2>Common pitfalls (and what to say instead)</h2>
-      <ul>
-        <li><strong>Everything in global state:</strong> bloats re-renders. <em>Keep UI state local.</em></li>
-        <li><strong>Manual caches everywhere:</strong> bugs & drift. <em>Centralize in one server-cache layer with tags.</em></li>
-        <li><strong>No invalidation story:</strong> stale UI. <em>Pick time-based + event/tag invalidation.</em></li>
-        <li><strong>Real-time by default:</strong> unnecessary complexity. <em>Start with polling; upgrade when needed.</em></li>
-      </ul>
-
-      <h2>Cheat sheet (use in your answer)</h2>
+      <h2>Consistency and Sync Strategy</h2>
       <table>
         <thead>
           <tr>
-            <th style="text-align:left;">Topic</th>
-            <th style="text-align:left;">High-signal line</th>
+            <th>Consistency level</th>
+            <th>Where to use</th>
+            <th>Frontend implication</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>State split</td>
-            <td>“UI local, minimal global, server data in a normalized cache.”</td>
+            <td>Strong</td>
+            <td>Payments, inventory, permission-critical operations</td>
+            <td>Block speculative UI; wait for confirmed server state</td>
           </tr>
           <tr>
-            <td>Fetching</td>
-            <td>“On-demand + prefetch; cursor pagination; background refresh on focus.”</td>
+            <td>Eventual</td>
+            <td>Feeds, analytics counters, recommendations</td>
+            <td>Allow stale view with explicit refresh semantics</td>
           </tr>
           <tr>
-            <td>Invalidation</td>
-            <td>“SWR + tag-based invalidation after writes.”</td>
-          </tr>
-          <tr>
-            <td>Real-time</td>
-            <td>“Start polling; move to SSE/WebSocket if interaction requires it.”</td>
-          </tr>
-          <tr>
-            <td>Offline</td>
-            <td>“Cache shell; queue writes; versioned conflict handling.”</td>
+            <td>Read-your-writes UX</td>
+            <td>User-triggered actions where instant feedback matters</td>
+            <td>Use optimistic patch + rollback guardrail</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>Takeaway</h2>
-      <p>
-        Senior-level answers don’t list libraries — they show <strong>where state lives</strong>,
-        <strong>how data flows</strong>, and <strong>how caches stay honest</strong>.
-        If you consistently tie choices to scope and constraints, you’ll sound like someone who can
-        keep complex UIs fast, correct, and maintainable at scale.
-      </p>
+      <h2>Failure Modes and Recovery</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Failure mode</th>
+            <th>User-visible behavior</th>
+            <th>Data-model guardrail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Timeout under load</td>
+            <td>Show stale cache + retry affordance</td>
+            <td>Model stale flag + lastUpdated timestamp</td>
+          </tr>
+          <tr>
+            <td>Partial backend response</td>
+            <td>Render available sections with degraded notice</td>
+            <td>Model partial response metadata per segment</td>
+          </tr>
+          <tr>
+            <td>Mutation conflict</td>
+            <td>Conflict prompt with server-authoritative view</td>
+            <td>Version token and conflict status in contract</td>
+          </tr>
+          <tr>
+            <td>Permission drift</td>
+            <td>Disable restricted actions and refresh view</td>
+            <td>Role/scope fields as part of entity payload</td>
+          </tr>
+        </tbody>
+      </table>
 
+      <h2>Security and Privacy Boundaries</h2>
+      <ul>
+        <li>Classify fields: public, authenticated, privileged.</li>
+        <li>Never leak privileged fields into broad list endpoints if detail view needs auth checks.</li>
+        <li>Avoid caching sensitive payloads in long-lived shared layers.</li>
+        <li>Design contracts so client cannot infer restricted data from error shape.</li>
+      </ul>
+
+      <h2>Observability and Data Quality Signals</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Metric</th>
+            <th>Alert direction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Freshness</td>
+            <td>Stale-state dwell time by route</td>
+            <td>Alert when stale duration exceeds SLO window</td>
+          </tr>
+          <tr>
+            <td>Correctness</td>
+            <td>Client/server mismatch rate after mutation</td>
+            <td>Alert on rollback spikes</td>
+          </tr>
+          <tr>
+            <td>Resilience</td>
+            <td>Partial-response ratio and timeout rate</td>
+            <td>Alert on sudden trend breaks</td>
+          </tr>
+          <tr>
+            <td>User impact</td>
+            <td>Primary task completion rate</td>
+            <td>Alert on significant drop after release</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What to Say Out Loud (Data Model Script Cues)</h2>
+      <ol>
+        <li>"I will define entities and ownership boundaries before discussing libraries."</li>
+        <li>"I am separating server truth, UI state, and URL state to avoid sync confusion."</li>
+        <li>"I will model all critical UI states: idle, loading, success, empty, error, stale, and partial."</li>
+        <li>"I am defining query keys first so caching and invalidation stay predictable."</li>
+        <li>"Trade-off here: shorter TTL improves freshness but increases backend load."</li>
+        <li>"I will use optimistic updates only where rollback is safe and explicit."</li>
+        <li>"For this flow, eventual consistency is acceptable; strong consistency is reserved for critical writes."</li>
+        <li>"I am keeping shareable filters and pagination in URL state for deep links."</li>
+        <li>"I will instrument stale time, mutation rollback rate, and partial responses to validate this model."</li>
+        <li>"With data contracts locked, I can now move to interface behavior confidently."</li>
+      </ol>
+
+      <h2>Data Model Timebox for Interviews</h2>
+      <h3>45-minute interview</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Time range</th>
+            <th>What to do</th>
+            <th>Output artifact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0:00-2:00</td>
+            <td>Sketch top entities and relations</td>
+            <td>Entity map</td>
+          </tr>
+          <tr>
+            <td>2:00-4:00</td>
+            <td>Define state ownership boundaries</td>
+            <td>Ownership table</td>
+          </tr>
+          <tr>
+            <td>4:00-6:00</td>
+            <td>Set query keys, TTL, invalidation</td>
+            <td>Cache policy card</td>
+          </tr>
+          <tr>
+            <td>6:00-8:00</td>
+            <td>Cover UI states + mutation failure handling</td>
+            <td>UI states matrix + rollback notes</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>60-minute interview</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Time range</th>
+            <th>What to do</th>
+            <th>Output artifact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0:00-3:00</td>
+            <td>Entity model with field-level contracts</td>
+            <td>Entity and contract sheet</td>
+          </tr>
+          <tr>
+            <td>3:00-6:00</td>
+            <td>State ownership and URL sync rules</td>
+            <td>Ownership and URL table</td>
+          </tr>
+          <tr>
+            <td>6:00-9:00</td>
+            <td>Caching and invalidation by use case</td>
+            <td>TTL and invalidation matrix</td>
+          </tr>
+          <tr>
+            <td>9:00-12:00</td>
+            <td>Mutation conflict, consistency, observability recap</td>
+            <td>Hardening checklist</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Quick Drill: Typeahead Data Model in 7 Minutes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Minute</th>
+            <th>What to produce</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0-1</td>
+            <td>Entity sketch: Suggestion, SearchResponse, ErrorPayload</td>
+          </tr>
+          <tr>
+            <td>1-2</td>
+            <td>State ownership split: server results, UI highlight index, URL query</td>
+          </tr>
+          <tr>
+            <td>2-3</td>
+            <td>UI states matrix including empty/error/stale/partial</td>
+          </tr>
+          <tr>
+            <td>3-4</td>
+            <td>Query key pattern and TTL decisions</td>
+          </tr>
+          <tr>
+            <td>4-5</td>
+            <td>Invalidation triggers for query change and mutation</td>
+          </tr>
+          <tr>
+            <td>5-6</td>
+            <td>Optimistic update and rollback notes for save/recent actions</td>
+          </tr>
+          <tr>
+            <td>6-7</td>
+            <td>Telemetry: latency, error, stale ratio, zero-result rate</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Before You Move to Interface</h2>
+      <ul>
+        <li>Entities and relationships are explicit and bounded.</li>
+        <li>Server truth, UI state, and URL state are clearly separated.</li>
+        <li>All critical UI states are modeled, not implied.</li>
+        <li>Cache keys, TTLs, and invalidation triggers are concrete.</li>
+        <li>Mutation rollback and conflict handling are defined.</li>
+        <li>Security, privacy, and observability considerations are included.</li>
+      </ul>
+
+      <h2>Next</h2>
+      <ul>
+        <li><a [routerLink]="['/', 'guides', 'system-design', 'radio', 'interface']">I - Interface deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design', 'radio', 'optimizations']">O - Optimizations deep dive</a></li>
+      </ul>
     </fa-guide-shell>
   `,
 })

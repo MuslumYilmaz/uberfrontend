@@ -618,6 +618,41 @@ export const routes: Routes = [
       },
 
       {
+        path: 'system-design/radio',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint/radio-framework',
+      },
+      {
+        path: 'system-design/radio/framework',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint/radio-framework',
+      },
+      {
+        path: 'system-design/radio/requirements',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint/radio-requirements',
+      },
+      {
+        path: 'system-design/radio/architecture',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint/architecture',
+      },
+      {
+        path: 'system-design/radio/data-model',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint/state-data',
+      },
+      {
+        path: 'system-design/radio/interface',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint/ux',
+      },
+      {
+        path: 'system-design/radio/optimizations',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint/performance',
+      },
+      {
         path: 'system-design',
         pathMatch: 'full',
         redirectTo: 'system-design-blueprint',

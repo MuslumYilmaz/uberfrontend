@@ -164,6 +164,8 @@
 /guides/system-design-blueprint/intro
 /guides/system-design-blueprint/performance
 /guides/system-design-blueprint/pitfalls
+/guides/system-design-blueprint/radio-framework
+/guides/system-design-blueprint/radio-requirements
 /guides/system-design-blueprint/state-data
 /guides/system-design-blueprint/ux
 /html/coding/html-basic-structure
