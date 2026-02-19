@@ -91,7 +91,7 @@ type FrameworkPathCard = {
   `],
   template: `
     <div class="wrap fa-body">
-      <h1 class="hero-title fa-page-title">Framework Interview Preparation Paths</h1>
+      <h1 class="hero-title fa-page-title">Framework Prep Paths for Interviews</h1>
       <p class="hero-sub fa-meta-text">
         Choose a framework path, follow the interview roadmap in sequence, and practice with targeted
         frontend interview questions before jumping into mixed rounds.

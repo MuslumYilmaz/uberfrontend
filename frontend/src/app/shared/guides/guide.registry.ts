@@ -100,36 +100,36 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'javascript-prep-path',
-        title: 'JavaScript Interview Prep Playbook: Async, Closures, and State Transitions',
+        title: 'JavaScript Prep Path: Async, Closures, State',
         minutes: 9,
-        summary: 'JavaScript interview prep path for async flow, event loop, closures, stale state, race conditions, cleanup, and state transitions with practical drills.',
+        summary: 'Follow a JavaScript prep path covering async flow, closures, stale state, race conditions, and cleanup drills so your interview answers stay reliable.',
         load: () =>
             import('../../features/guides/playbook/framework-prep-path-article.component')
                 .then(m => m.FrameworkPrepPathArticle),
     },
     {
         slug: 'react-prep-path',
-        title: 'React Interview Preparation Path: Components, State, and Performance',
+        title: 'React Prep Path: State, Effects, Performance',
         minutes: 9,
-        summary: 'A React interview prep path covering high-signal question types, what to practice first, and mistakes that reduce interview scores.',
+        summary: 'Use this React prep path to practice hooks, rerender reasoning, stale-state fixes, and performance trade-offs through targeted coding and trivia drills.',
         load: () =>
             import('../../features/guides/playbook/framework-prep-path-article.component')
                 .then(m => m.FrameworkPrepPathArticle),
     },
     {
         slug: 'angular-prep-path',
-        title: 'Angular Interview Preparation Path: RxJS, Architecture, and Testing',
+        title: 'Angular Prep Path: RxJS, Architecture, Tests',
         minutes: 9,
-        summary: 'A structured Angular interview roadmap with practical outcomes, common anti-patterns, and focused prep steps for frontend interviews.',
+        summary: 'Practice Angular interview decisions on RxJS flows, change detection, DI boundaries, and testing strategy with a step-by-step prep sequence.',
         load: () =>
             import('../../features/guides/playbook/framework-prep-path-article.component')
                 .then(m => m.FrameworkPrepPathArticle),
     },
     {
         slug: 'vue-prep-path',
-        title: 'Vue Interview Preparation Path: Reactivity, Rendering, and Patterns',
+        title: 'Vue Prep Path: Reactivity, Rendering, State',
         minutes: 9,
-        summary: 'A Vue-focused interview preparation sequence with key outcomes, common mistakes, and targeted practice order.',
+        summary: 'Build Vue interview confidence with a focused path on reactivity traps, nextTick timing, component communication, and practical coding/trivia drills.',
         load: () =>
             import('../../features/guides/playbook/framework-prep-path-article.component')
                 .then(m => m.FrameworkPrepPathArticle),

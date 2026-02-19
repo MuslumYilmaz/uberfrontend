@@ -556,8 +556,9 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Framework prep paths',
-            description: 'Frontend interview prep paths by framework.',
+            title: 'Framework Prep Paths for Interviews',
+            description:
+              'Compare JavaScript, React, Angular, and Vue prep paths with recommended sequence, expected outcomes, and common mistakes to fix before interviews.',
           },
         },
       },

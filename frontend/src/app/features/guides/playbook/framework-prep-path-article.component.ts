@@ -284,7 +284,7 @@ const BLUEPRINT_BASE: SequenceStep[] = [
 const PREP_CONFIG: Record<string, FrameworkPrepConfig> = {
   'javascript-prep-path': {
     pathLabel: 'JavaScript prep path',
-    title: 'JavaScript Interview Prep Playbook: Async, Closures, and State Transitions',
+    title: 'JavaScript Prep Path: Async, Closures, State',
     subtitle:
       'This is interview prep, not generic docs review. Build async control, stale-state awareness, state transition discipline, and cleanup habits that show up repeatedly in frontend interviews.',
     minutes: 9,
@@ -590,7 +590,7 @@ function onInput(value) {
   },
   'react-prep-path': {
     pathLabel: 'React prep path',
-    title: 'React Interview Preparation Path: Components, State, and Performance',
+    title: 'React Prep Path: State, Effects, Performance',
     subtitle:
       'Prepare for React interview rounds with a clear sequence covering component design, rendering behavior, and state management decisions.',
     minutes: 9,
@@ -2031,7 +2031,7 @@ function onInput(value) {
   },
   'angular-prep-path': {
     pathLabel: 'Angular prep path',
-    title: 'Angular Interview Preparation Path: RxJS, Architecture, and Testing',
+    title: 'Angular Prep Path: RxJS, Architecture, Tests',
     subtitle:
       'A practical Angular prep path for RxJS decisions, architecture boundaries, and testable component design.',
     minutes: 9,
@@ -3866,7 +3866,7 @@ function onInput(value) {
   },
   'vue-prep-path': {
     pathLabel: 'Vue prep path',
-    title: 'Vue Interview Preparation Path: Reactivity, Rendering, and Patterns',
+    title: 'Vue Prep Path: Reactivity, Rendering, State',
     subtitle:
       'Prep for Vue interviews with a practical sequence that covers reactivity pitfalls, rendering timing, and component communication decisions you will be asked to justify.',
     minutes: 9,
