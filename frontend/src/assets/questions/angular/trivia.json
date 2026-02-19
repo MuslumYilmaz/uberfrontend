@@ -824,6 +824,10 @@
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Angular turns your component template into generated render/update instructions (AOT or JIT). At runtime, change detection re-runs the update phase so bindings (text, properties, attributes, events) stay in sync with the component instance (state). Covers: angular, templates, compilation, data binding, basics.",
+    "seo": {
+      "title": "Angular Template Compilation and Binding",
+      "description": "Learn how Angular compiles templates into render and update instructions, then keeps bindings synced with component state through change detection."
+    },
     "answer": {
       "blocks": [
         {
@@ -5355,6 +5359,10 @@
     "difficulty": "advanced",
     "importance": 1,
     "description": "Angular’s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get multiple instances and break shared state, caching, or coordination logic.",
+    "seo": {
+      "title": "Angular Hierarchical DI Bug Patterns",
+      "description": "Understand Angular’s injector hierarchy, why duplicate providers create multiple service instances, and how to diagnose shared-state bugs quickly."
+    },
     "answer": {
       "blocks": [
         {

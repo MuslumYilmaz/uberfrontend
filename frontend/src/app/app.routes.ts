@@ -36,9 +36,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'Frontend interview preparation roadmap',
+        title: 'Frontend Interview Prep Roadmap and Practice',
         description:
-          'FrontendAtlas helps you prepare for frontend interviews with structured coding, trivia, system design practice, and practical guides.',
+          'Prepare for frontend interviews with structured coding, trivia, system design, and guide-based practice paths that improve speed, clarity, and confidence.',
         keywords: [
           'front end interview questions',
           'javascript interview',
@@ -96,6 +96,11 @@ export const routes: Routes = [
     path: 'showcase',
     pathMatch: 'full',
     redirectTo: '',
+  },
+  {
+    path: 'safeJsonParse',
+    pathMatch: 'full',
+    redirectTo: 'javascript/coding/js-safe-json-parse',
   },
 
   // Auth
@@ -528,9 +533,9 @@ export const routes: Routes = [
       import('./features/tools/cv-linter/cv-linter.component').then((m) => m.CvLinterComponent),
     data: {
       seo: {
-        title: 'CV Linter (ATS Score)',
+        title: 'CV Linter: ATS Resume Score & Fixes',
         description:
-          'Upload your CV for a deterministic ATS-style lint report with actionable fixes. No AI and no file storage.',
+          'Scan your resume with deterministic ATS-style checks, get actionable fixes by section, and improve clarity without AI-generated or stored files.',
         keywords: ['cv linter', 'ats score', 'resume checker', 'frontend cv review'],
       },
     },
@@ -599,8 +604,8 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend interview blueprint and prep checklist',
-            description: 'Use this step-by-step interview blueprint and prep checklist for frontend interview questions across coding, UI, system design, and behavioral rounds.',
+            title: 'Frontend Interview Blueprint and Checklist',
+            description: 'Use this step-by-step frontend interview blueprint to prepare coding, UI, system design, and behavioral rounds with a practical checklist.',
           },
         },
       },
@@ -868,8 +873,8 @@ export const routes: Routes = [
       source: 'global-coding',
       kind: 'coding',
       seo: {
-        title: 'Frontend interview questions (coding)',
-        description: 'Practice frontend coding interview questions and follow an interview roadmap by framework, difficulty, and focus area.',
+        title: 'Frontend Coding Interview Questions',
+        description: 'Practice frontend coding interview questions by framework, difficulty, and focus area, then follow a clear prep roadmap from drills to review.',
       },
     },
   },

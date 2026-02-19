@@ -132,6 +132,10 @@
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Explain why React expects rendering to be a pure computation (UI = f(props, state, context)) and why side effects must be moved to effects/event handlers. Connect it to render vs commit, Concurrent Rendering, StrictMode double-invocation, memoization, and predictable reconciliation. Pure rendering improves predictability and testing, but side effects must live in effects/hooks. Test with StrictMode and rerenders.",
+    "seo": {
+      "title": "React Pure Functions of Props and State",
+      "description": "Learn why React rendering must stay pure, where side effects belong, and how this model improves concurrency safety, memoization, and debugging clarity."
+    },
     "answer": {
       "blocks": [
         {
@@ -1088,6 +1092,10 @@
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Explain why React treats props as read-only inputs (UI = f(props, state, context)). Connect this to predictable rendering, parent ownership, referential equality optimizations (PureComponent/React.memo), and why mutating props can cause missed updates, shared-state bugs, and inconsistent UI—especially under concurrent rendering and StrictMode.",
+    "seo": {
+      "title": "React Props Immutability: What Breaks?",
+      "description": "Understand why React treats props as read-only, how mutation breaks memoization and update flow, and how to explain the trade-offs clearly in interviews."
+    },
     "answer": {
       "blocks": [
         {
@@ -1627,6 +1635,10 @@
     "difficulty": "intermediate",
     "importance": 1,
     "description": "Incorrectly mixing default exports and named exports can cause React to import the wrong thing (often undefined). The app may compile, but crash at runtime when React tries to render a component that isn’t actually a component. This often shows up as a runtime crash, so testing and lint rules are critical.",
+    "seo": {
+      "title": "React Default vs Named Exports: Runtime Bugs",
+      "description": "Avoid import/export mismatches that crash React at runtime. Learn how default vs named exports resolve, common failure patterns, and fast debugging checks."
+    },
     "answer": {
       "blocks": [
         {
@@ -4188,6 +4200,10 @@
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Explain why storing data in state that can be computed from props/state creates duplication and sync bugs, the concept of single source of truth, and when derived state is acceptable (initialization, controlled/uncontrolled transitions, memoized expensive computations, and snapshotting external values).",
+    "seo": {
+      "title": "React Derived State Anti-Pattern Explained",
+      "description": "See why derived state creates sync bugs in React, when it is acceptable, and how to preserve a single source of truth in real interview scenarios."
+    },
     "answer": {
       "blocks": [
         {

@@ -64,9 +64,9 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'javascript-interviews',
-        title: 'Frontend JavaScript Interviews: Problems, Patterns, and Answer Strategy',
+        title: 'JavaScript Interview Patterns and Answers',
         minutes: 15,
-        summary: 'Learn the JavaScript problem types interviewers ask most, the patterns to apply fast, and how to explain decisions clearly under pressure.',
+        summary: 'Practice high-frequency JavaScript interview problems, apply fast solution patterns, and explain trade-offs clearly with examples that mirror real rounds.',
         load: () =>
             import('../../features/guides/playbook/js-problems-article.component')
                 .then(m => m.JsProblemsArticle),
@@ -241,9 +241,9 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'architecture',
-        title: 'A - Architecture Deep Dive for Frontend System Design Interviews',
+        title: 'Frontend System Design Architecture Guide',
         minutes: 18,
-        summary: 'Master architecture in a frontend system design interview with rendering matrices, boundary decisions, caching strategy, and trade-off scripts.',
+        summary: 'Use this interview guide to structure frontend system design architecture decisions, from rendering boundaries and caching to clear trade-off framing.',
         load: () =>
             import('../../features/guides/system-design/system-design-architecture')
                 .then(m => m.SystemDesignArchitectureArticle)
@@ -334,9 +334,9 @@ export const BEHAVIORAL: GuideEntry[] = [
     },
     {
         slug: 'evaluation-areas',
-        title: 'Behavioral Interview Scoring Rubric: What Interviewers Evaluate',
+        title: 'Behavioral Interview Evaluation Areas',
         minutes: 10,
-        summary: 'A clear rubric for communication, collaboration, ownership, growth, and leadership so you can map each story to what interviewers actually score.',
+        summary: 'Use this behavioral interview scorecard for communication, collaboration, ownership, growth, and leadership so each story maps to clear hiring signals.',
         load: () =>
             import('../../features/guides/behavioral/behavioral-evaluation-areas')
                 .then(m => m.BehavioralEvaluationAreasArticle),

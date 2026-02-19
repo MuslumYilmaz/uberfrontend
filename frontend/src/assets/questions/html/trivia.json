@@ -865,6 +865,10 @@
     "difficulty": "easy",
     "importance": 1,
     "description": "The &lt;br&gt; tag inserts a line break inside text content. It’s an empty element and should be used for line breaks in prose, not for layout (use CSS for spacing). Use it only for semantic line breaks (addresses, poems), not layout. Overuse can hurt accessibility and maintainability; test with screen readers.",
+    "seo": {
+      "title": "HTML br Tag: Line Break Usage Rules",
+      "description": "Learn what the HTML br tag does, when manual line breaks are semantically correct, and why CSS should handle spacing for cleaner, accessible layouts."
+    },
     "answer": {
       "blocks": [
         {
