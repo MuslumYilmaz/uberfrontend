@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { BugReportService } from '../../../core/services/bug-report.service';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { DailyService } from '../../../core/services/daily.service';
 import { QuestionService } from '../../../core/services/question.service';
@@ -15,10 +16,12 @@ import { CodingDetailComponent } from './coding-detail.component';
 describe('CodingDetailComponent', () => {
   let questionService: jasmine.SpyObj<QuestionService>;
   let dailyService: jasmine.SpyObj<DailyService>;
+  let bugReport: jasmine.SpyObj<BugReportService>;
 
   beforeEach(async () => {
     questionService = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadQuestions']);
     dailyService = jasmine.createSpyObj<DailyService>('DailyService', ['ensureTodaySet']);
+    bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
 
     await TestBed.configureTestingModule({
       imports: [CodingDetailComponent, RouterTestingModule, HttpClientTestingModule],
@@ -36,6 +39,7 @@ describe('CodingDetailComponent', () => {
           provide: AuthService,
           useValue: { user: () => null, isLoggedIn: () => false, ensureMe: () => of(null), headers: () => ({}) },
         },
+        { provide: BugReportService, useValue: bugReport },
       ],
     }).compileComponents();
   });
@@ -76,6 +80,40 @@ describe('CodingDetailComponent', () => {
 
     expect(runSpy).not.toHaveBeenCalled();
     expect(component.subTab()).toBe('tests');
+  });
+
+  it('opens bug report flow from coding detail action', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'javascript';
+    component.question.set({ id: 'q1', title: 'Two Sum' } as any);
+
+    component.reportIssue();
+
+    expect(bugReport.open).toHaveBeenCalledWith(jasmine.objectContaining({
+      source: 'coding_detail',
+      tech: 'javascript',
+      questionId: 'q1',
+      questionTitle: 'Two Sum',
+    }));
+  });
+
+  it('opens bug report flow from coding locked action', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'javascript';
+    component.question.set({ id: 'q1', title: 'Two Sum' } as any);
+
+    component.reportAccessIssue();
+
+    expect(bugReport.open).toHaveBeenCalledWith(jasmine.objectContaining({
+      source: 'coding_locked',
+      tech: 'javascript',
+      questionId: 'q1',
+      questionTitle: 'Two Sum',
+    }));
   });
 
   it('navigates back using returnToUrl when available', () => {

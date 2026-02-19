@@ -104,6 +104,13 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 
 **Bug report email (optional)**
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`
+- Spam guard knobs (optional):
+  - `BUG_REPORT_BURST_WINDOW_MS` (default `60000`)
+  - `BUG_REPORT_BURST_MAX` (default `2`)
+  - `BUG_REPORT_WINDOW_MS` (default `3600000`)
+  - `BUG_REPORT_MAX` (default `5`)
+  - `BUG_REPORT_DUP_WINDOW_MS` (default `600000`)
+  - `BUG_REPORT_MIN_NOTE_CHARS` (default `8`)
 
 ### Quick verification checklist
 

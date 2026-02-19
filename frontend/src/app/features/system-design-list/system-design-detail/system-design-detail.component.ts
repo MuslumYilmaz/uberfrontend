@@ -5,6 +5,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { BugReportService } from '../../../core/services/bug-report.service';
 import { ChipModule } from 'primeng/chip';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -140,6 +141,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private seo = inject(SeoService);
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   readonly auth = inject(AuthService);
+  private bugReport = inject(BugReportService);
   private onboarding = inject(OnboardingService);
   private analytics = inject(AnalyticsService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -417,6 +419,30 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   goToLoginFromLocked(): void {
     this.router.navigate(['/auth/login'], {
       queryParams: { redirectTo: this.router.url || '/' },
+    });
+  }
+
+  reportIssue(): void {
+    const q = this.q();
+    this.bugReport.open({
+      source: 'system_design_detail',
+      url: typeof window !== 'undefined' ? window.location.href : this.router.url,
+      route: this.router.url,
+      tech: 'system-design',
+      questionId: q?.id,
+      questionTitle: q?.title,
+    });
+  }
+
+  reportAccessIssue(): void {
+    const q = this.q();
+    this.bugReport.open({
+      source: 'system_design_locked',
+      url: typeof window !== 'undefined' ? window.location.href : this.router.url,
+      route: this.router.url,
+      tech: 'system-design',
+      questionId: q?.id,
+      questionTitle: q?.title,
     });
   }
 

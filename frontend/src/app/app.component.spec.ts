@@ -22,4 +22,11 @@ describe('AppComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('FrontendAtlas');
   });
+
+  it('mounts the global bug report dialog host', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-bug-report-dialog')).toBeTruthy();
+  });
 });

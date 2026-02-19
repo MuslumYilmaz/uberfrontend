@@ -37,6 +37,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-log
 import type { Tech } from '../../../core/models/user.model';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { BugReportService } from '../../../core/services/bug-report.service';
 import { DailyService } from '../../../core/services/daily.service';
 import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
 import { AnalyticsService } from '../../../core/services/analytics.service';
@@ -462,6 +463,30 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
   }
 
+  reportIssue() {
+    const q = this.question();
+    this.bugReport.open({
+      source: 'coding_detail',
+      url: typeof window !== 'undefined' ? window.location.href : this.router.url,
+      route: this.router.url,
+      tech: this.tech,
+      questionId: q?.id,
+      questionTitle: q?.title,
+    });
+  }
+
+  reportAccessIssue() {
+    const q = this.question();
+    this.bugReport.open({
+      source: 'coding_locked',
+      url: typeof window !== 'undefined' ? window.location.href : this.router.url,
+      route: this.router.url,
+      tech: this.tech,
+      questionId: q?.id,
+      questionTitle: q?.title,
+    });
+  }
+
   // --- file explorer state for framework techs ---
   filesMap = signal<Record<string, string>>({});
   openPath = signal<string>('');
@@ -566,6 +591,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     private http: HttpClient,
     private progress: UserProgressService,
     public auth: AuthService,
+    private bugReport: BugReportService,
     private experiments: ExperimentService,
     private onboarding: OnboardingService,
     private lifecyclePrompts: LifecyclePromptService,

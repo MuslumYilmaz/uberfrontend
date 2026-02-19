@@ -51,6 +51,41 @@
   font-size: 12px;
 }
 
+.report-issue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px;
+  margin-left: auto;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, transparent);
+  color: var(--uf-text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, color .16s ease, transform .08s ease;
+}
+
+.report-issue-btn:hover {
+  border-color: color-mix(in srgb, var(--uf-accent) 45%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+}
+
+.report-issue-btn:active {
+  transform: translateY(1px);
+}
+
+.report-issue-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 55%, transparent);
+}
+
+.report-issue-btn .pi {
+  font-size: 12px;
+}
+
 .detail-prep-bridge {
   margin-top: 14px;
   padding: 12px;
@@ -633,7 +668,20 @@
 }
 .locked-actions{
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
   margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+  .report-issue-btn {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .report-issue-btn__label {
+    display: none;
+  }
 }

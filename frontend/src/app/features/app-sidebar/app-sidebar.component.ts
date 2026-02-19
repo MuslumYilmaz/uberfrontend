@@ -1,15 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component, HostListener, Input, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import { TooltipModule } from 'primeng/tooltip';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { apiUrl } from '../../core/utils/api-base';
+import { BugReportService } from '../../core/services/bug-report.service';
 
 interface LinkItem {
   type: 'link';
@@ -34,9 +30,6 @@ type NavItem = LinkItem | GroupItem;
     CommonModule,
     RouterModule,
     ButtonModule,
-    DialogModule,
-    FormsModule,
-    InputTextareaModule,
     TooltipModule
   ],
   templateUrl: './app-sidebar.component.html',
@@ -46,15 +39,9 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   @Input() collapsed = false;
   drawerOpen = signal(false);
 
-  bugVisible = false;
-  bugText = '';
-  submitting = false;
-  submitOk = false;
-  currentUrl = '';
-
   private navSub?: Subscription;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private router: Router, private bugReport: BugReportService) {}
 
   isLink = (i: NavItem): i is LinkItem => i.type === 'link';
   isGroup = (i: NavItem): i is GroupItem => i.type === 'group';
@@ -154,37 +141,11 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
 
   // --- Bug modal actions ---
   openBugModal() {
-    this.submitOk = false;
-    this.bugText = '';
-    this.currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-    this.bugVisible = true;
-  }
-  closeBugModal() {
-    if (this.submitting) return;
-    this.bugVisible = false;
-  }
-  async submitBug() {
-    const note = this.bugText.trim();
-    if (!note || this.submitting) return;
-    this.submitting = true;
-
-    try {
-      await firstValueFrom(this.http.post(apiUrl('/bug-report'), {
-        note,
-        url: this.currentUrl || (typeof window !== 'undefined' ? window.location.href : ''),
-      }, { responseType: 'text' }));
-
-      this.submitOk = true;
-      setTimeout(() => {
-        this.bugVisible = false;
-        this.bugText = '';
-        this.submitOk = false;
-      }, 900);
-    } catch (err) {
-      alert('Failed to send bug report. Please try again.');
-    } finally {
-      this.submitting = false;
-    }
+    this.bugReport.open({
+      source: 'sidebar',
+      url: typeof window !== 'undefined' ? window.location.href : this.router.url,
+      route: this.router.url,
+    });
   }
 
   private applyDefaultOpen(url: string) {

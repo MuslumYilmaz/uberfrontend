@@ -149,6 +149,35 @@ html, body { height: 100%; background: var(--uf-bg); }
   font-weight: 700;
   font-size: 12px;
 }
+.report-issue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, transparent);
+  color: var(--uf-text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, color .16s ease, transform .08s ease;
+}
+.report-issue-btn:hover {
+  border-color: color-mix(in srgb, var(--uf-accent) 45%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+}
+.report-issue-btn:active {
+  transform: translateY(1px);
+}
+.report-issue-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 55%, transparent);
+}
+.report-issue-btn i {
+  font-size: 12px;
+}
 .complete-btn {
   display: inline-flex;
   align-items: center;
@@ -655,6 +684,14 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 
 @media (max-width: 768px) {
   .card-body { padding: 16px 14px; }
+  .report-issue-btn {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+  .report-issue-btn__label {
+    display: none;
+  }
   .b-code,
   .b-list { margin-inline: -2px; }
   /* On compact screens, remove line-number gutter to keep examples readable. */

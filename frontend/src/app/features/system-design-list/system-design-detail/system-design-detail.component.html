@@ -5,7 +5,18 @@
         <aside class="sdl-left">
             <div class="left-inner">
                 <div class="left-head">
-                    <h1 class="title" [title]="title()">{{ title() }}</h1>
+                    <div class="title-row">
+                        <h1 class="title" [title]="title()">{{ title() }}</h1>
+                        <button
+                            class="report-issue-btn"
+                            type="button"
+                            data-testid="system-design-report-issue-btn"
+                            (click)="reportIssue()"
+                            aria-label="Report issue on this question">
+                            <i class="fa-solid fa-bug" aria-hidden="true"></i>
+                            <span class="report-issue-btn__label">Report issue</span>
+                        </button>
+                    </div>
                     <div class="title-meta">
                         By {{ authorLabel(q()) }}
                         <ng-container *ngIf="updatedLabel(q()) as updated"> · Updated {{ updated }}</ng-container>
@@ -90,7 +101,18 @@
                 </div>
 
                 <div class="sdl-mobile-overview-body">
-                    <h1 class="title" [title]="title()">{{ title() }}</h1>
+                    <div class="title-row">
+                        <h1 class="title" [title]="title()">{{ title() }}</h1>
+                        <button
+                            class="report-issue-btn"
+                            type="button"
+                            data-testid="system-design-report-issue-btn-mobile"
+                            (click)="reportIssue()"
+                            aria-label="Report issue on this question">
+                            <i class="fa-solid fa-bug" aria-hidden="true"></i>
+                            <span class="report-issue-btn__label">Report issue</span>
+                        </button>
+                    </div>
                     <div class="title-meta">
                         By {{ authorLabel(q()) }}
                         <ng-container *ngIf="updatedLabel(q()) as updated"> · Updated {{ updated }}</ng-container>
@@ -389,6 +411,7 @@
             </p>
             <div class="locked-actions">
                 <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricingFromLocked()">View pricing</button>
+                <button class="fa-btn fa-btn--ghost" type="button" data-testid="system-design-report-access-issue-btn" (click)="reportAccessIssue()">Report access issue</button>
                 <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLoginFromLocked()">Sign in</button>
             </div>
         </div>

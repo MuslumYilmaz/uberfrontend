@@ -3,12 +3,13 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const { requireAuth } = require('./middleware/Auth');
 const { getJwtSecret } = require('./config/jwt');
 const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
-const { rateLimit } = require('./middleware/rateLimit');
+const { rateLimit, getClientIp } = require('./middleware/rateLimit');
 const { connectToMongo } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 
@@ -25,8 +26,12 @@ if (isTest && !process.env.MONGO_URL_TEST) {
 }
 const SERVER_BASE = resolveServerBase();
 const ALLOWED_FRONTEND_ORIGINS = resolveAllowedFrontendOrigins();
+const BUG_REPORT_BURST_WINDOW_MS = Number(process.env.BUG_REPORT_BURST_WINDOW_MS || 60 * 1000); // 1m
+const BUG_REPORT_BURST_MAX = Number(process.env.BUG_REPORT_BURST_MAX || 2);
 const BUG_REPORT_WINDOW_MS = Number(process.env.BUG_REPORT_WINDOW_MS || 60 * 60 * 1000); // 1h
 const BUG_REPORT_MAX = Number(process.env.BUG_REPORT_MAX || 5);
+const BUG_REPORT_DUP_WINDOW_MS = Number(process.env.BUG_REPORT_DUP_WINDOW_MS || 10 * 60 * 1000); // 10m
+const BUG_REPORT_MIN_NOTE_CHARS = Number(process.env.BUG_REPORT_MIN_NOTE_CHARS || 8);
 const BUG_REPORT_MAX_NOTE_CHARS = Number(process.env.BUG_REPORT_MAX_NOTE_CHARS || 4000);
 const BUG_REPORT_MAX_URL_CHARS = Number(process.env.BUG_REPORT_MAX_URL_CHARS || 2000);
 
@@ -98,6 +103,42 @@ app.get('/api/health', async (_req, res) => {
 // ======================
 //  Bug Report -> Email
 // ======================
+const recentBugReportFingerprints = new Map(); // key -> expiresAt
+
+function normalizeBugText(value) {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ' ');
+}
+
+function bugReportFingerprint(note, url) {
+    const base = `${normalizeBugText(note)}|${normalizeBugText(url)}`;
+    return crypto.createHash('sha256').update(base).digest('hex');
+}
+
+function hasRecentBugFingerprint(key, now = Date.now()) {
+    const expiresAt = recentBugReportFingerprints.get(key);
+    if (!expiresAt) return false;
+    if (now >= expiresAt) {
+        recentBugReportFingerprints.delete(key);
+        return false;
+    }
+    return true;
+}
+
+function rememberBugFingerprint(key, now = Date.now()) {
+    const ttl = Math.max(1000, BUG_REPORT_DUP_WINDOW_MS);
+    recentBugReportFingerprints.set(key, now + ttl);
+
+    // Opportunistic cleanup to avoid unbounded growth.
+    if (recentBugReportFingerprints.size > 10_000 && Math.random() < 0.02) {
+        for (const [fp, expiresAt] of recentBugReportFingerprints) {
+            if (now >= expiresAt) recentBugReportFingerprints.delete(fp);
+        }
+    }
+}
+
 /**
  * POST /api/bug-report
  * body: { note: string, url?: string }
@@ -106,38 +147,54 @@ app.get('/api/health', async (_req, res) => {
 app.post(
     '/api/bug-report',
     rateLimit({
+        windowMs: BUG_REPORT_BURST_WINDOW_MS,
+        max: BUG_REPORT_BURST_MAX,
+        message: 'Please wait a moment before sending another bug report.',
+    }),
+    rateLimit({
         windowMs: BUG_REPORT_WINDOW_MS,
         max: BUG_REPORT_MAX,
         message: 'Too many bug reports, please try again later.',
     }),
     async (req, res) => {
-    try {
-        const { note, url } = req.body || {};
-        if (!note || typeof note !== 'string' || !note.trim()) {
-            return res.status(400).json({ error: 'Missing "note"' });
-        }
-        if (note.length > BUG_REPORT_MAX_NOTE_CHARS) {
-            return res.status(413).json({ error: 'Bug report note too long' });
-        }
-        if (url && typeof url === 'string' && url.length > BUG_REPORT_MAX_URL_CHARS) {
-            return res.status(413).json({ error: 'Bug report url too long' });
-        }
+        try {
+            const { note, url } = req.body || {};
+            const safeText = typeof note === 'string' ? note.trim() : '';
+            const safeUrl = typeof url === 'string' ? url.trim() : '';
 
-        // Create transporter (Gmail SMTP with App Password, or any SMTP creds)
-        const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || 'smtp.gmail.com',
-            port: Number(process.env.SMTP_PORT || 465),
-            secure: String(process.env.SMTP_SECURE || 'true') === 'true', // true for 465
-            auth: {
-                user: process.env.SMTP_USER, // e.g. yourgmail@gmail.com
-                pass: process.env.SMTP_PASS, // Gmail App Password
-            },
-        });
+            if (!safeText) {
+                return res.status(400).json({ error: 'Missing "note"' });
+            }
+            if (safeText.length < BUG_REPORT_MIN_NOTE_CHARS) {
+                return res.status(400).json({ error: `Bug report note must be at least ${BUG_REPORT_MIN_NOTE_CHARS} characters` });
+            }
+            if (safeText.length > BUG_REPORT_MAX_NOTE_CHARS) {
+                return res.status(413).json({ error: 'Bug report note too long' });
+            }
+            if (safeUrl.length > BUG_REPORT_MAX_URL_CHARS) {
+                return res.status(413).json({ error: 'Bug report url too long' });
+            }
 
-        const safeText = String(note);
-        const safeUrl = url ? String(url) : '';
+            const sourceIp = getClientIp(req) || req.ip || 'unknown';
+            const fingerprint = bugReportFingerprint(safeText, safeUrl);
+            const dedupeKey = `${sourceIp}:${fingerprint}`;
 
-        const html = `
+            if (hasRecentBugFingerprint(dedupeKey)) {
+                return res.status(429).json({ error: 'Duplicate bug report detected. Please wait before sending again.' });
+            }
+
+            // Create transporter (Gmail SMTP with App Password, or any SMTP creds)
+            const transporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST || 'smtp.gmail.com',
+                port: Number(process.env.SMTP_PORT || 465),
+                secure: String(process.env.SMTP_SECURE || 'true') === 'true', // true for 465
+                auth: {
+                    user: process.env.SMTP_USER, // e.g. yourgmail@gmail.com
+                    pass: process.env.SMTP_PASS, // Gmail App Password
+                },
+            });
+
+            const html = `
       <h2 style="margin:0 0 8px">New Bug Report</h2>
       <p style="white-space:pre-wrap;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto">
         ${escapeHtml(safeText)}
@@ -147,20 +204,22 @@ app.post(
       <p style="color:#64748b;font-size:12px;margin:0">Sent ${new Date().toISOString()}</p>
     `;
 
-        await transporter.sendMail({
-            from: `"Bug Reporter" <${process.env.SMTP_USER}>`,
-            to: 'mslmyilmaz34@gmail.com',
-            subject: 'Bug report from FrontendAtlas',
-            text: `Bug report:\n\n${safeText}\n\nPage: ${safeUrl || '(none)'}\nSent ${new Date().toISOString()}`,
-            html,
-        });
+            await transporter.sendMail({
+                from: `"Bug Reporter" <${process.env.SMTP_USER}>`,
+                to: 'mslmyilmaz34@gmail.com',
+                subject: 'Bug report from FrontendAtlas',
+                text: `Bug report:\n\n${safeText}\n\nPage: ${safeUrl || '(none)'}\nSent ${new Date().toISOString()}`,
+                html,
+            });
 
-        return res.status(204).end();
-    } catch (err) {
-        console.error('Email send failed:', err);
-        return res.status(500).json({ error: 'Email send failed' });
+            rememberBugFingerprint(dedupeKey);
+            return res.status(204).end();
+        } catch (err) {
+            console.error('Email send failed:', err);
+            return res.status(500).json({ error: 'Email send failed' });
+        }
     }
-});
+);
 
 // small HTML-escape helpers
 function escapeHtml(s = '') {

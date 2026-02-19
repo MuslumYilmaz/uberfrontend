@@ -146,7 +146,7 @@
             <!-- Bug -->
             <button class="tool-icon-btn" type="button" pTooltip="Report a bug" tooltipPosition="right"
                 (click)="openBugModal()" aria-label="Report a bug">
-                <i class="pi pi-exclamation-triangle"></i>
+                <i class="fa-solid fa-bug" aria-hidden="true"></i>
             </button>
 
             <!-- Legal -->
@@ -163,45 +163,6 @@
             </button>
         </div>
     </div>
-
-
-
-    <!-- Bug report dialog -->
-    <p-dialog [(visible)]="bugVisible" [modal]="true" [appendTo]="'body'" styleClass="bug-dialog" [showHeader]="false"
-        [baseZIndex]="10000">
-        <!-- header -->
-        <div class="bug-dialog__header">
-            <span>Report a bug</span>
-            <button type="button" (click)="bugVisible=false" aria-label="Close"
-                class="p-dialog-header-icon p-dialog-header-close p-link bug-dialog__close">
-                <span class="p-dialog-header-close-icon pi pi-times"></span>
-            </button>
-        </div>
-
-        <!-- body -->
-        <div class="bug-body">
-            <label for="bug-note" class="bug-label">What went wrong?</label>
-
-            <textarea id="bug-note" pInputTextarea [(ngModel)]="bugText" [autoResize]="true" rows="6"
-                class="bug-textarea"
-                placeholder="Describe the issue, steps to reproduce, and what you expected to happen."></textarea>
-
-            <div class="bug-actions">
-                <button pButton type="button" label="Cancel" (click)="closeBugModal()" [disabled]="submitting"
-                    class="bug-btn bug-btn--cancel">
-                </button>
-
-                <button pButton type="button" label="Send" (click)="submitBug()"
-                    [disabled]="!bugText.trim() || submitting" [loading]="submitting"
-                    class="bug-btn bug-btn--primary">
-                </button>
-            </div>
-
-            <div *ngIf="submitOk" class="bug-success">
-                Thanks. Your note was sent.
-            </div>
-        </div>
-    </p-dialog>
 </aside>
 
 <div class="backdrop" *ngIf="drawerOpen()" (click)="toggleDrawer()" aria-hidden="true"></div>

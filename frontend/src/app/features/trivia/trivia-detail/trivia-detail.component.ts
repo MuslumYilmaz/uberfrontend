@@ -19,6 +19,7 @@ import { UserProgressService } from '../../../core/services/user-progress.servic
 import { AuthService } from '../../../core/services/auth.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { BugReportService } from '../../../core/services/bug-report.service';
 import { ExperimentService } from '../../../core/services/experiment.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { LifecycleMilestoneId, LifecyclePromptService } from '../../../core/services/lifecycle-prompt.service';
@@ -315,6 +316,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     public auth: AuthService,
     private activity: ActivityService,
     private analytics: AnalyticsService,
+    private bugReport: BugReportService,
     private experiments: ExperimentService,
     private onboarding: OnboardingService,
     private lifecyclePrompts: LifecyclePromptService,
@@ -683,6 +685,30 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** ============== UI: interactions ============== */
+  reportIssue() {
+    const q = this.question();
+    this.bugReport.open({
+      source: 'trivia_detail',
+      url: typeof window !== 'undefined' ? window.location.href : this.router.url,
+      route: this.router.url,
+      tech: this.tech,
+      questionId: q?.id,
+      questionTitle: q?.title,
+    });
+  }
+
+  reportAccessIssue() {
+    const q = this.question();
+    this.bugReport.open({
+      source: 'trivia_locked',
+      url: typeof window !== 'undefined' ? window.location.href : this.router.url,
+      route: this.router.url,
+      tech: this.tech,
+      questionId: q?.id,
+      questionTitle: q?.title,
+    });
+  }
+
   async markComplete() {
     const q = this.question();
     if (!q) return;

@@ -1,0 +1,73 @@
+<p-dialog
+  [visible]="bugReport.visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [appendTo]="'body'"
+  styleClass="bug-dialog"
+  maskStyleClass="bug-dialog-mask"
+  [showHeader]="false"
+  [closable]="false"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="!bugReport.submitting()"
+  [closeOnEscape]="!bugReport.submitting()"
+  [baseZIndex]="10000"
+  [breakpoints]="{ '640px': '95vw' }"
+  (onHide)="bugReport.close()">
+  <div class="bug-dialog__panel" role="dialog" aria-labelledby="bug-dialog-title" aria-describedby="bug-dialog-desc">
+    <button type="button" (click)="bugReport.close()" aria-label="Close" [disabled]="bugReport.submitting()"
+      class="bug-dialog__close">
+      <i class="pi pi-times"></i>
+    </button>
+
+    <div class="bug-dialog__pill">Support</div>
+    <h3 class="bug-dialog__title" id="bug-dialog-title">Report a bug</h3>
+    <p class="bug-dialog__text" id="bug-dialog-desc">
+      Tell us what happened, what you expected, and the steps to reproduce.
+    </p>
+
+    <div class="bug-body">
+      <label for="bug-note" class="bug-label">What went wrong?</label>
+
+      <textarea
+        id="bug-note"
+        pInputTextarea
+        [ngModel]="bugReport.note()"
+        (ngModelChange)="onNoteChange($event)"
+        [autoResize]="true"
+        [attr.maxlength]="bugReport.maxNoteChars"
+        rows="6"
+        class="bug-textarea"
+        placeholder="Example: On the track page, clicking Start Challenge keeps me on a loading spinner."></textarea>
+
+      <div class="bug-meta">
+        <span class="bug-meta__hint">Minimum {{ bugReport.minNoteChars }} characters</span>
+        <span class="bug-meta__count">{{ bugReport.note().length }} / {{ bugReport.maxNoteChars }}</span>
+      </div>
+
+      <div *ngIf="bugReport.cooldownSeconds() > 0" class="bug-cooldown" role="status" aria-live="polite">
+        Please wait {{ bugReport.cooldownSeconds() }}s before sending another report.
+      </div>
+
+      <div class="bug-actions">
+        <button pButton type="button" label="Cancel" (click)="bugReport.close()" [disabled]="bugReport.submitting()"
+          class="bug-btn bug-btn--cancel">
+        </button>
+
+        <button pButton type="button" label="Send report" (click)="submit()"
+          [disabled]="!bugReport.canSubmit()" [loading]="bugReport.submitting()"
+          class="bug-btn bug-btn--primary">
+        </button>
+      </div>
+
+      <div *ngIf="bugReport.submitOk()" class="bug-success">
+        <i class="pi pi-check-circle" aria-hidden="true"></i>
+        <span>Thanks. Your note was sent.</span>
+      </div>
+
+      <div *ngIf="bugReport.error()" class="bug-error" role="alert">
+        {{ bugReport.error() }}
+      </div>
+    </div>
+  </div>
+</p-dialog>

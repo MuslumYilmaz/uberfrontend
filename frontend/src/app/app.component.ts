@@ -7,6 +7,7 @@ import { filter } from 'rxjs';
 import { DailyService } from './core/services/daily.service';
 import { PremiumGateService } from './core/services/premium-gate.service';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
+import { BugReportDialogComponent } from './shared/components/bug-report-dialog/bug-report-dialog.component';
 import { PremiumRequiredDialogComponent } from './shared/components/premium-required-dialog/premium-required-dialog.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { OfflineBannerComponent } from './shared/components/offline-banner/offline-banner';
@@ -22,6 +23,7 @@ import { OfflineBannerComponent } from './shared/components/offline-banner/offli
     HeaderComponent,
     AppSidebarComponent,
     OfflineBannerComponent,
+    BugReportDialogComponent,
     PremiumRequiredDialogComponent,
   ],
   templateUrl: './app.component.html',

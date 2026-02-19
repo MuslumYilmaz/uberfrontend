@@ -35,7 +35,15 @@
   border-radius:10px;
 }
 .left-head{ padding:14px 16px; background:#141416; border-bottom:1px solid rgba(255,255,255,.06); overflow:hidden; }
+.title-row{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
 .title{
+  flex: 1 1 auto;
+  min-width: 0;
   margin:0;
   display:block;
   width:100%;
@@ -46,6 +54,36 @@
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+}
+.report-issue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: #101620;
+  color: #e6eaee;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, transform .08s ease;
+  flex: 0 0 auto;
+}
+.report-issue-btn:hover {
+  border-color: rgba(147,197,253,.65);
+  background: #151b24;
+}
+.report-issue-btn:active {
+  transform: translateY(1px);
+}
+.report-issue-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(147,197,253,.45);
+}
+.report-issue-btn .pi {
+  font-size: 12px;
 }
 .title-meta{
   margin-top: 6px;
@@ -692,6 +730,9 @@
   text-overflow: clip;
   overflow: visible;
 }
+.sdl-mobile-overview-body .title-row{
+  align-items: flex-start;
+}
 .sdl-mobile-overview-body .desc{
   font-size: 13px;
 }
@@ -900,9 +941,22 @@
 }
 .locked-actions{
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
   margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+  .report-issue-btn {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .report-issue-btn__label {
+    display: none;
+  }
 }
 
 .locked-related{
