@@ -1354,6 +1354,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular interpolation vs property binding",
+      "description": "Understand what {{ }} interpolation updates versus [prop] binding, how Angular writes text nodes vs DOM properties, and which choice avoids template bugs."
     }
   },
   {
@@ -1955,6 +1959,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular *ngIf and DOM lifecycle behavior",
+      "description": "Understand how *ngIf creates and destroys views, what happens to component instances and subscriptions, and how it differs from merely hiding elements."
     }
   },
   {
@@ -4684,6 +4692,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular memory leaks: unsubscribe patterns",
+      "description": "Prevent memory leaks in Angular with practical unsubscribe patterns for Observables, including takeUntil, AsyncPipe, ngOnDestroy cleanup, and key pitfalls."
     }
   },
   {

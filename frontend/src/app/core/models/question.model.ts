@@ -32,6 +32,11 @@ export type StructuredSolution = {
   codeTs?: string;
 };
 
+export type QuestionSeo = {
+  title?: string;
+  description?: string;
+};
+
 export interface Question {
   id: string;
   title: string;
@@ -42,6 +47,7 @@ export interface Question {
   solution?: string;
   solutionTs?: string;
   solutionBlock?: StructuredSolution;
+  seo?: QuestionSeo;
   type: QuestionType;
   technology: Technology;
   access: AccessLevel;

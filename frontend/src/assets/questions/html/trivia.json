@@ -1577,6 +1577,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "HTML form default method: GET vs POST",
+      "description": "Know the default form method in HTML, why browsers use GET when method is omitted, how data appears in the URL, and when switching to POST is safer."
     }
   },
   {

@@ -269,6 +269,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Vue rendering pipeline: state to DOM",
+      "description": "Follow Vue's rendering pipeline from reactive dependency tracking to scheduled effects and patching, so you can explain how state changes reach the DOM."
     }
   },
   {
@@ -751,6 +755,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "v-if creation and destruction in Vue",
+      "description": "Understand how v-if mounts and unmounts Vue components, which lifecycle hooks run, why local state resets, and when v-show is the better choice."
     }
   },
   {
@@ -873,6 +881,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Vue v-for keys: what breaks without them",
+      "description": "Understand why stable keys are required in v-for, how Vue reuses nodes during diffing, and which UI bugs appear when indexes or unstable keys are used."
     }
   },
   {
@@ -1139,6 +1151,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "v-show vs v-if in Vue: DOM and lifecycle",
+      "description": "Compare v-show and v-if by real behavior: DOM insertion vs CSS toggling, lifecycle impact, state persistence, and the right performance trade-off."
     }
   },
   {
@@ -2211,6 +2227,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Vue child mutating props: what breaks",
+      "description": "See why mutating a prop in a child causes one-way data flow issues, overwritten values, and warnings, then use emits or local copies for safe updates."
     }
   },
   {
@@ -3166,6 +3186,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Vue virtual DOM diffing: optimize updates",
+      "description": "See how Vue builds virtual nodes, diffs old and new trees, and patches only changed parts so updates stay fast without unnecessary DOM work."
     }
   },
   {

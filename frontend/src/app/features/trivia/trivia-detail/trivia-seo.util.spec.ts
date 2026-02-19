@@ -1,14 +1,14 @@
 import { seoDescriptionForQuestion, seoTitleForQuestion, sanitizeSerpText } from './trivia-seo.util';
 
 describe('trivia-seo.util', () => {
-  it('generates framework-first deterministic title', () => {
+  it('generates deterministic title without template prefix spam', () => {
     const title = seoTitleForQuestion({
       technology: 'react',
       title: 'Why does React sometimes show stale state in closures?',
     } as any);
 
     expect(title).toContain('React');
-    expect(title).toContain('Interview');
+    expect(title.toLowerCase()).not.toContain('interview question:');
   });
 
   it('sanitizes html and clamps long strings without ellipsis padding', () => {
@@ -28,11 +28,12 @@ describe('trivia-seo.util', () => {
       '',
       'vue'
     );
-    expect(fallback).toContain('Vue interview question answer');
-    expect(fallback.length).toBeLessThanOrEqual(156);
+    expect(fallback).toContain('Vue interview answer');
+    expect(fallback.toLowerCase()).not.toContain('question focus:');
+    expect(fallback.length).toBeLessThanOrEqual(155);
   });
 
-  it('derives unique fallback titles from question slug when needed', () => {
+  it('derives unique titles from question slug when needed', () => {
     const first = seoTitleForQuestion({
       id: 'vue-v-if-component-creation-destruction',
       title: '',
@@ -47,5 +48,37 @@ describe('trivia-seo.util', () => {
     expect(first).not.toEqual(second);
     expect(first).toContain('Vue');
     expect(second).toContain('Vue');
+  });
+
+  it('prefers question-level seo metadata when provided', () => {
+    const title = seoTitleForQuestion({
+      id: 'react-stale-state-closures',
+      title: 'Why does React sometimes show stale state in closures? How do you fix it?',
+      technology: 'react',
+      seo: {
+        title: 'React stale closures: why state gets stale',
+        description:
+          'Learn why closures capture stale React state in effects, timers, and handlers, then fix it with functional updates, refs, and dependency-safe patterns.',
+      },
+    } as any);
+
+    const description = seoDescriptionForQuestion(
+      {
+        id: 'react-stale-state-closures',
+        title: 'Why does React sometimes show stale state in closures? How do you fix it?',
+        technology: 'react',
+        seo: {
+          title: 'React stale closures: why state gets stale',
+          description:
+            'Learn why closures capture stale React state in effects, timers, and handlers, then fix it with functional updates, refs, and dependency-safe patterns.',
+        },
+      } as any,
+      'fallback description',
+      'react'
+    );
+
+    expect(title).toBe('React stale closures: why state gets stale');
+    expect(description).toContain('dependency-safe patterns');
+    expect(description.toLowerCase()).not.toContain('question focus:');
   });
 });

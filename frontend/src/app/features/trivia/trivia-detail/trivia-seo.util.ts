@@ -1,7 +1,7 @@
 import { Question } from '../../../core/models/question.model';
 
 const TITLE_MAX_LEN = 65;
-const DESCRIPTION_MAX_LEN = 156;
+const DESCRIPTION_MAX_LEN = 155;
 
 const TECH_LABELS: Record<string, string> = {
   javascript: 'JavaScript',
@@ -48,6 +48,16 @@ export function sanitizeSerpText(input: string, maxLen: number): string {
 
 function frameworkLabel(tech?: string): string {
   return TECH_LABELS[String(tech || '').trim().toLowerCase()] || 'Frontend';
+}
+
+function questionSeoTitle(q: Pick<Question, 'seo'>): string {
+  const raw = typeof q?.seo?.title === 'string' ? q.seo.title : '';
+  return sanitizeSerpText(raw, TITLE_MAX_LEN);
+}
+
+function questionSeoDescription(q: Pick<Question, 'seo'>): string {
+  const raw = typeof q?.seo?.description === 'string' ? q.seo.description : '';
+  return sanitizeSerpText(raw, DESCRIPTION_MAX_LEN);
 }
 
 function slugToConcept(id?: string, tech?: string): string {
@@ -101,37 +111,50 @@ function normalizedQuestionTitle(q: Pick<Question, 'title'>): string {
   return cleaned.length >= 8 ? sanitizeSerpText(cleaned, 88) : title;
 }
 
-export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology'>): string {
+export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology' | 'seo'>): string {
+  const explicit = questionSeoTitle(q);
+  if (explicit) {
+    return explicit;
+  }
+
   const framework = frameworkLabel(q.technology);
   const questionTitle = normalizedQuestionTitle(q);
   const concept = titleConcept(q) || 'Interview Concept';
-  const candidate = questionTitle
-    ? `${framework} Interview Question: ${questionTitle}`
-    : `${framework} Interview Question: ${concept}`;
+  const prefixedQuestionTitle = questionTitle
+    && new RegExp(`^${framework}\\b`, 'i').test(questionTitle)
+    ? questionTitle
+    : `${framework} ${questionTitle || concept}`;
+  const candidate = sanitizeSerpText(prefixedQuestionTitle, TITLE_MAX_LEN);
   const normalized = sanitizeSerpText(candidate, TITLE_MAX_LEN);
   if (normalized) return normalized;
 
-  return sanitizeSerpText(`${framework} Interview Question Answer`, TITLE_MAX_LEN);
+  return sanitizeSerpText(`${framework} interview answer`, TITLE_MAX_LEN);
 }
 
 export function seoDescriptionForQuestion(
-  q: Pick<Question, 'id' | 'title' | 'technology'>,
+  q: Pick<Question, 'id' | 'title' | 'technology' | 'seo'>,
   plainDescription: string,
   tech: string
 ): string {
+  const explicit = questionSeoDescription(q);
+  if (explicit) {
+    return explicit;
+  }
+
   const framework = frameworkLabel(q.technology || tech);
   const concept = titleConcept(q)
     || slugToConcept((q as any).id, (q as any).technology || tech)
     || 'front-end concept';
   const questionTitle = normalizedQuestionTitle(q);
   const descFromContent = sanitizeSerpText(plainDescription || '', 120);
-  const lead = `${framework} interview question answer for ${concept}.`;
-  const questionLine = questionTitle ? `Question focus: ${questionTitle}.` : '';
+  const lead = questionTitle
+    ? `${framework} interview answer for ${questionTitle}.`
+    : `${framework} interview answer for ${concept}.`;
   const body = descFromContent
     || `${framework} explanation with tradeoffs, common mistakes, and real-world examples.`;
 
   return sanitizeSerpText(
-    `${lead} ${questionLine} ${body}`,
+    `${lead} ${body}`,
     DESCRIPTION_MAX_LEN
   );
 }

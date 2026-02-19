@@ -535,6 +535,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React JSX transform: why import changed",
+      "description": "Understand how JSX compiles to JavaScript, classic vs automatic runtimes, and why newer React setups no longer require import React in every file."
     }
   },
   {
@@ -950,6 +954,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React render nothing: null, false, fragments",
+      "description": "Clarify what happens when a React component returns null, false, or an empty fragment, and how each option affects output, layout, and rendering behavior."
     }
   },
   {
@@ -1434,6 +1442,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React event delegation: why it scales",
+      "description": "See why React uses event delegation, how SyntheticEvent fits, and how this design reduces listeners in dynamic trees while keeping events consistent."
     }
   },
   {
@@ -3855,6 +3867,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React stale closures: why state gets stale",
+      "description": "Learn why closures capture stale React state in effects, timers, and handlers, then fix it with functional updates, refs, and dependency-safe patterns."
     }
   },
   {
@@ -4159,6 +4175,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React state batching: when it does not batch",
+      "description": "Learn when React batches state updates automatically, where batching can split, and how that behavior changes render counts, timing, and UI consistency."
     }
   },
   {
@@ -4718,6 +4738,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React StrictMode: why effects run twice",
+      "description": "Learn why React StrictMode intentionally re-runs effects in development, which bugs it surfaces, and how to write idempotent effects that remain safe."
     }
   },
   {
