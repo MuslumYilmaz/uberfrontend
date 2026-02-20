@@ -1163,6 +1163,10 @@
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Explain how React’s event system works (SyntheticEvent + root-level listeners) and why delegation is used: fewer listeners, easier updates for dynamic trees, consistent cross-browser behavior, and better integration with React’s scheduling/batching. Mention the React 17+ change (listeners attached to the root container instead of document) and common trade-offs (native vs synthetic, non-bubbling events).",
+    "seo": {
+      "title": "React 17 event delegation: root container vs document",
+      "description": "React uses delegated root listeners (SyntheticEvent) instead of per-node handlers. React 17+ attaches listeners to the root container, not document, to avoid cross-root interference."
+    },
     "answer": {
       "blocks": [
         {
@@ -2565,6 +2569,10 @@
     "difficulty": "hard",
     "importance": 5,
     "description": "Both useMemo() and useCallback() are React hooks used for performance optimization. useMemo() memoizes computed values, while useCallback() memoizes functions — preventing unnecessary re-creations during re-renders.",
+    "seo": {
+      "title": "useMemo vs useCallback in React: the difference (with examples)",
+      "description": "useMemo caches a computed value; useCallback caches a function reference. Learn when each prevents re-renders, when it doesn’t help, and common misuse patterns."
+    },
     "answer": {
       "blocks": [
         {
@@ -4064,6 +4072,10 @@
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Explain why React StrictMode intentionally double-invokes certain lifecycles and effects in development, how this simulates mount–unmount–remount, and what kinds of side-effect and cleanup bugs it is designed to reveal.",
+    "seo": {
+      "title": "React StrictMode: why useEffect runs twice",
+      "description": "In React StrictMode, effects run setup→cleanup→setup (dev only) to catch missing cleanup, duplicate subscriptions, and non-idempotent side effects."
+    },
     "answer": {
       "blocks": [
         {

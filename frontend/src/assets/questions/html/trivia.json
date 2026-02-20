@@ -1049,6 +1049,10 @@
     "difficulty": "easy",
     "importance": 1,
     "description": "The `href` (Hypertext Reference) attribute in HTML defines the target destination of a link or resource. It is most commonly used within the `&lt;a&gt;` (anchor) tag to specify the URL a user will navigate to when clicking the link.",
+    "seo": {
+      "title": "HTML href attribute: definition & examples",
+      "description": "href (Hypertext Reference) sets a link’s URL. See absolute vs relative paths, fragments (#), mailto/tel links, and common pitfalls—quick examples."
+    },
     "answer": {
       "blocks": [
         {

@@ -3931,6 +3931,10 @@
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Explain why keys are required in v-for, how Vue uses them during virtual DOM diffing, and what subtle but serious bugs happen when you use array index as a key (state reuse, wrong DOM nodes, broken animations, and input mix-ups).",
+    "seo": {
+      "title": "Vue v-for keys: why index breaks state & inputs",
+      "description": "Using array index as a key makes Vue reuse the wrong DOM nodes. Learn what breaks (inputs swap, stale state, glitchy animations) and the safe pattern."
+    },
     "answer": {
       "blocks": [
         {

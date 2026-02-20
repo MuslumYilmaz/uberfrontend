@@ -1452,8 +1452,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React event delegation: why it scales",
-      "description": "See why React uses event delegation, how SyntheticEvent fits, and how this design reduces listeners in dynamic trees while keeping events consistent."
+      "title": "React 17 event delegation: root container vs document",
+      "description": "React uses delegated root listeners (SyntheticEvent) instead of per-node handlers. React 17+ attaches listeners to the root container, not document, to avoid cross-root interference."
     }
   },
   {
@@ -2949,6 +2949,10 @@
     "difficulty": "hard",
     "importance": 1,
     "description": "useMemo memoizes a computed value; useCallback memoizes a function reference. Use them to avoid expensive recalculations or re-renders, but only when it actually helps.",
+    "seo": {
+      "title": "useMemo vs useCallback in React: the difference (with examples)",
+      "description": "useMemo caches a computed value; useCallback caches a function reference. Learn when each prevents re-renders, when it doesn’t help, and common misuse patterns."
+    },
     "answer": {
       "blocks": [
         {
@@ -4756,8 +4760,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React StrictMode: why effects run twice",
-      "description": "Learn why React StrictMode intentionally re-runs effects in development, which bugs it surfaces, and how to write idempotent effects that remain safe."
+      "title": "React StrictMode: why useEffect runs twice",
+      "description": "In React StrictMode, effects run setup→cleanup→setup (dev only) to catch missing cleanup, duplicate subscriptions, and non-idempotent side effects."
     }
   },
   {
