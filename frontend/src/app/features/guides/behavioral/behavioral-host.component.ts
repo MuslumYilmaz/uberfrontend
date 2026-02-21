@@ -7,6 +7,7 @@ import { BEHAVIORAL, BEHAVIORAL_GROUPS, GuideEntry } from '../../../shared/guide
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { SeoService } from '../../../core/services/seo.service';
 import { buildGuideDetailSeo } from '../guide-seo.util';
+import { GuideDetailResolved } from '../../../core/resolvers/guide-detail.resolver';
 
 type GuideArticleInputs = {
     prev?: any[] | null;
@@ -51,14 +52,14 @@ export class BehavioralHostComponent implements OnDestroy {
     protected readonly shellHeading = signal('');
 
     ngOnInit() {
-        this.sub = this.route.paramMap
+        this.sub = this.route.data
             .pipe(
-                startWith(this.route.snapshot.paramMap),
-                map(p => p.get('slug') || ''),
-                distinctUntilChanged(),
+                startWith(this.route.snapshot.data),
+                map((data) => (data['guideDetail'] as GuideDetailResolved | null) ?? null),
+                distinctUntilChanged((a, b) => a?.slug === b?.slug),
             )
-            .subscribe(slug => {
-                void this.load(slug);
+            .subscribe((resolved) => {
+                this.load(resolved);
             });
     }
     ngOnDestroy() { this.sub?.unsubscribe(); }
@@ -67,7 +68,9 @@ export class BehavioralHostComponent implements OnDestroy {
         return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
     }
 
-    private async load(slug: string) {
+    private load(resolved: GuideDetailResolved | null) {
+        const snapshotSlug = this.route.snapshot.paramMap.get('slug') || '';
+        const slug = resolved?.slug || snapshotSlug;
         this.showShellHeading.set(true);
         this.shellHeading.set(this.toTitle(slug));
 
@@ -93,7 +96,7 @@ export class BehavioralHostComponent implements OnDestroy {
             }))
         };
 
-        if (!current) { this.go404(); return; }
+        if (!resolved || !current) { this.go404(); return; }
         this.shellHeading.set(current.title || this.toTitle(slug));
 
         const prev = idx > 0 ? ['/', 'guides', 'behavioral', BEHAVIORAL[idx - 1].slug] : null;
@@ -105,7 +108,7 @@ export class BehavioralHostComponent implements OnDestroy {
 
         this.vc.clear();
         try {
-            const Cmp = (await current.load()) as Type<GuideArticleInputs>;
+            const Cmp = resolved.component as Type<GuideArticleInputs>;
             const ref = this.vc.createComponent<GuideArticleInputs>(Cmp);
             ref.instance.prev = prev;
             ref.instance.next = next;

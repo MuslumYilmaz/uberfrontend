@@ -17,11 +17,14 @@ describe('CodingDetailComponent', () => {
   let questionService: jasmine.SpyObj<QuestionService>;
   let dailyService: jasmine.SpyObj<DailyService>;
   let bugReport: jasmine.SpyObj<BugReportService>;
+  let seo: jasmine.SpyObj<SeoService>;
 
   beforeEach(async () => {
     questionService = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadQuestions']);
     dailyService = jasmine.createSpyObj<DailyService>('DailyService', ['ensureTodaySet']);
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
+    seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
+    seo.buildCanonicalUrl.and.callFake((value: string) => `https://frontendatlas.com${value}`);
 
     await TestBed.configureTestingModule({
       imports: [CodingDetailComponent, RouterTestingModule, HttpClientTestingModule],
@@ -29,7 +32,7 @@ describe('CodingDetailComponent', () => {
         { provide: QuestionService, useValue: questionService },
         { provide: DailyService, useValue: dailyService },
         { provide: ActivityService, useValue: {} },
-        { provide: SeoService, useValue: { updateTags: () => {}, buildCanonicalUrl: (v: string) => v } },
+        { provide: SeoService, useValue: seo },
         {
           provide: CodeStorageService,
           useValue: { migrateAllJsToIndexedDbOnce: () => Promise.resolve() },
@@ -177,5 +180,56 @@ describe('CodingDetailComponent', () => {
 
     component.ngOnDestroy();
     expect(document.body.style.overflow).toBe('');
+  });
+
+  it('prefers question seo title/description and sanitizes/clamps values', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'angular';
+
+    (component as any).updateSeoForQuestion({
+      id: 'angular-seo-case',
+      title: 'Fallback Title Should Not Win',
+      access: 'free',
+      description: 'Fallback description should not be used when explicit SEO exists.',
+      seo: {
+        title: '  <b>Angular &amp; SEO title with extra words to exceed the safe serp length comfortably</b>  ',
+        description: '  <p>Angular &amp; explicit SEO description should be used first, with HTML removed and final text clamped cleanly for search snippets without weird endings.</p>  ',
+      },
+    } as any);
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+
+    expect(payload.title).toContain('Angular & SEO title');
+    expect(payload.title).not.toContain('<');
+    expect(payload.title.length).toBeLessThanOrEqual(65);
+
+    expect(payload.description).toContain('Angular & explicit SEO description should be used first');
+    expect(payload.description).not.toContain('<');
+    expect(payload.description).not.toContain('Angular-focused:');
+    expect(payload.description.length).toBeLessThanOrEqual(155);
+  });
+
+  it('falls back to generated description and clamps when question seo is missing', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'angular';
+
+    (component as any).updateSeoForQuestion({
+      id: 'angular-fallback-case',
+      title: 'Build an Angular Widget with Change Detection and Template Bindings',
+      access: 'free',
+      description: '',
+      seo: {},
+    } as any);
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+
+    expect(payload.title).toContain('Build an Angular Widget');
+    expect(payload.title.length).toBeLessThanOrEqual(65);
+    expect(payload.description).toContain('Angular-focused:');
+    expect(payload.description.length).toBeLessThanOrEqual(155);
   });
 });

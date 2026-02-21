@@ -99,8 +99,9 @@ function assertGuideDetailCoverage(paths) {
   const registrySource = readXml(GUIDE_REGISTRY_PATH);
   const playbook = extractGuideSlugs(registrySource, 'PLAYBOOK');
   const frameworkPrep = playbook.filter((slug) => slug.endsWith('-prep-path'));
+  const interviewBlueprintOnly = playbook.filter((slug) => !slug.endsWith('-prep-path'));
   const expected = [
-    ...playbook.map((slug) => `/guides/interview-blueprint/${slug}`),
+    ...interviewBlueprintOnly.map((slug) => `/guides/interview-blueprint/${slug}`),
     ...frameworkPrep.map((slug) => `/guides/framework-prep/${slug}`),
     ...extractGuideSlugs(registrySource, 'SYSTEM').map((slug) => `/guides/system-design-blueprint/${slug}`),
     ...extractGuideSlugs(registrySource, 'BEHAVIORAL').map((slug) => `/guides/behavioral/${slug}`),

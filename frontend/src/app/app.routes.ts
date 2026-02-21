@@ -16,6 +16,11 @@ import {
   triviaDetailResolver,
 } from './core/resolvers/question-detail.resolver';
 import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
+import {
+  behavioralGuideDetailResolver,
+  playbookGuideDetailResolver,
+  systemGuideDetailResolver,
+} from './core/resolvers/guide-detail.resolver';
 
 /** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -573,6 +578,9 @@ export const routes: Routes = [
           import('./features/guides/playbook/playbook-host.component').then(
             (m) => m.PlaybookHostComponent,
           ),
+        resolve: {
+          guideDetail: playbookGuideDetailResolver,
+        },
         data: {
           guideBase: 'framework-prep',
           guideTitle: 'FrontendAtlas Framework Prep Paths',
@@ -610,11 +618,34 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'interview-blueprint/javascript-prep-path',
+        pathMatch: 'full',
+        redirectTo: 'framework-prep/javascript-prep-path',
+      },
+      {
+        path: 'interview-blueprint/react-prep-path',
+        pathMatch: 'full',
+        redirectTo: 'framework-prep/react-prep-path',
+      },
+      {
+        path: 'interview-blueprint/angular-prep-path',
+        pathMatch: 'full',
+        redirectTo: 'framework-prep/angular-prep-path',
+      },
+      {
+        path: 'interview-blueprint/vue-prep-path',
+        pathMatch: 'full',
+        redirectTo: 'framework-prep/vue-prep-path',
+      },
+      {
         path: 'interview-blueprint/:slug',
         loadComponent: () =>
           import('./features/guides/playbook/playbook-host.component').then(
             (m) => m.PlaybookHostComponent,
           ),
+        resolve: {
+          guideDetail: playbookGuideDetailResolver,
+        },
         data: {
           seo: {
             title: 'FrontendAtlas Interview Blueprint',
@@ -687,6 +718,9 @@ export const routes: Routes = [
           import('./features/guides/system-design/system-design-host.component').then(
             (m) => m.SystemDesignHostComponent,
           ),
+        resolve: {
+          guideDetail: systemGuideDetailResolver,
+        },
         data: {
           seo: {
             title: 'Frontend system design blueprint guide',
@@ -714,6 +748,9 @@ export const routes: Routes = [
           import('./features/guides/behavioral/behavioral-host.component').then(
             (m) => m.BehavioralHostComponent,
           ),
+        resolve: {
+          guideDetail: behavioralGuideDetailResolver,
+        },
         data: {
           seo: {
             title: 'Behavioral interview topic',

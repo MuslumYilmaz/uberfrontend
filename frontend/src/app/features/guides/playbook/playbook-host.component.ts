@@ -7,6 +7,7 @@ import { OfflineBannerComponent } from "../../../shared/components/offline-banne
 import { navFor, PLAYBOOK, PLAYBOOK_GROUPS } from '../../../shared/guides/guide.registry';
 import { SeoService } from '../../../core/services/seo.service';
 import { buildGuideDetailSeo } from '../guide-seo.util';
+import { GuideDetailResolved } from '../../../core/resolvers/guide-detail.resolver';
 
 // Inputs that every article supports
 type GuideArticleInputs = {
@@ -53,15 +54,14 @@ export class PlaybookHostComponent implements OnDestroy {
     protected readonly shellHeading = signal('');
 
     ngOnInit() {
-        // React to slug changes on the same component instance
-        this.sub = this.route.paramMap
+        this.sub = this.route.data
             .pipe(
-                startWith(this.route.snapshot.paramMap),
-                map(pm => pm.get('slug') || ''),
-                distinctUntilChanged(),
+                startWith(this.route.snapshot.data),
+                map((data) => (data['guideDetail'] as GuideDetailResolved | null) ?? null),
+                distinctUntilChanged((a, b) => a?.slug === b?.slug),
             )
-            .subscribe(slug => {
-                void this.load(slug);
+            .subscribe((resolved) => {
+                this.load(resolved);
             });
     }
 
@@ -73,7 +73,9 @@ export class PlaybookHostComponent implements OnDestroy {
         return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
     }
 
-    private async load(slug: string) {
+    private load(resolved: GuideDetailResolved | null) {
+        const snapshotSlug = this.route.snapshot.paramMap.get('slug') || '';
+        const slug = resolved?.slug || snapshotSlug;
         this.showShellHeading.set(true);
         this.shellHeading.set(this.toTitle(slug));
 
@@ -89,7 +91,7 @@ export class PlaybookHostComponent implements OnDestroy {
         const { current, prev, next } = navFor(registry, slug, hostConfig.guideBase);
 
         // If the slug isn't in the registry -> go to 404 and show the missing path
-        if (!current) {
+        if (!resolved || !current) {
             this.go404();
             return;
         }
@@ -122,7 +124,7 @@ export class PlaybookHostComponent implements OnDestroy {
         // Recreate the article component for the new slug
         this.vc.clear();
         try {
-            const Cmp = (await current.load()) as Type<GuideArticleInputs>;
+            const Cmp = resolved.component as Type<GuideArticleInputs>;
             const ref = this.vc.createComponent<GuideArticleInputs>(Cmp);
             ref.instance.prev = prev;
             ref.instance.next = next;

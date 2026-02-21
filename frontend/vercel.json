@@ -1,6 +1,26 @@
 {
   "version": 2,
   "redirects": [
+    {
+      "source": "/guides/interview-blueprint/javascript-prep-path",
+      "destination": "/guides/framework-prep/javascript-prep-path",
+      "permanent": true
+    },
+    {
+      "source": "/guides/interview-blueprint/react-prep-path",
+      "destination": "/guides/framework-prep/react-prep-path",
+      "permanent": true
+    },
+    {
+      "source": "/guides/interview-blueprint/angular-prep-path",
+      "destination": "/guides/framework-prep/angular-prep-path",
+      "permanent": true
+    },
+    {
+      "source": "/guides/interview-blueprint/vue-prep-path",
+      "destination": "/guides/framework-prep/vue-prep-path",
+      "permanent": true
+    },
     { "source": "/:path+/", "destination": "/:path+", "permanent": true }
   ],
   "routes": [

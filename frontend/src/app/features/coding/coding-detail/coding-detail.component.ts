@@ -110,6 +110,9 @@ type LockedPath = {
   queryParams?: Record<string, string>;
 };
 
+const SEO_TITLE_MAX_LEN = 65;
+const SEO_DESCRIPTION_MAX_LEN = 155;
+
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
@@ -941,6 +944,53 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return `${words.slice(0, maxWords).join(' ')}…`;
   }
 
+  private trimWordBoundary(value: string, maxLen: number): string {
+    if (value.length <= maxLen) return value;
+    const sliced = value.slice(0, Math.max(0, maxLen)).trimEnd();
+    const minSoftBreak = Math.floor(maxLen * 0.65);
+    const breakAt = sliced.lastIndexOf(' ');
+    const clipped = breakAt >= minSoftBreak ? sliced.slice(0, breakAt) : sliced;
+    return clipped.replace(/[\s,;:/-]+$/g, '').trim();
+  }
+
+  private sanitizeSeoText(input: string, maxLen: number): string {
+    const normalized = this.trimWordBoundary(
+      this.decodeHtmlEntities(String(input || ''))
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim(),
+      maxLen
+    );
+    return normalized;
+  }
+
+  private seoTitle(q: Question): string {
+    const explicit = this.sanitizeSeoText(String(q?.seo?.title || ''), SEO_TITLE_MAX_LEN);
+    if (explicit) return explicit;
+
+    const fallback = this.sanitizeSeoText(String(q?.title || ''), SEO_TITLE_MAX_LEN);
+    return fallback || 'Front-end coding interview question';
+  }
+
+  private seoDescription(q: Question): string {
+    const explicit = this.sanitizeSeoText(String(q?.seo?.description || ''), SEO_DESCRIPTION_MAX_LEN);
+    if (explicit) return explicit;
+
+    let description = this.questionDescription(q);
+    const modifier = this.frameworkSeoModifier();
+    if (modifier && !description.toLowerCase().includes(modifier.toLowerCase())) {
+      description = `${description} ${modifier}`;
+    }
+
+    return (
+      this.sanitizeSeoText(description, SEO_DESCRIPTION_MAX_LEN)
+      || this.sanitizeSeoText(
+        `Front-end ${this.kind} interview challenge with solution strategy and edge cases.`,
+        SEO_DESCRIPTION_MAX_LEN
+      )
+    );
+  }
+
   private questionKeywords(q: Question): string[] {
     const tags = Array.isArray(q.tags) ? q.tags : [];
     const companies: string[] = (q as any).companies ?? (q as any).companyTags ?? [];
@@ -1013,11 +1063,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private updateSeoForQuestion(q: Question): void {
     if (this.demoMode || this.suppressSeo) return;
     const canonical = this.seo.buildCanonicalUrl(`/${this.tech}/${this.kind}/${q.id}`);
-    let description = this.questionDescription(q);
-    const modifier = this.frameworkSeoModifier();
-    if (modifier && !description.toLowerCase().includes(modifier.toLowerCase())) {
-      description = `${description} ${modifier}`;
-    }
+    const seoTitle = this.seoTitle(q);
+    const description = this.seoDescription(q);
     const keywords = this.questionKeywords(q);
     const authorName = this.resolveAuthor(q);
     const dateModified = this.resolveUpdatedIso(q);
@@ -1063,7 +1110,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const jsonLd = howTo ? [breadcrumb, article, howTo] : [breadcrumb, article];
 
     this.seo.updateTags({
-      title: q.title,
+      title: seoTitle,
       description,
       keywords,
       canonical,
@@ -1081,7 +1128,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       '@type': 'HowTo',
       '@id': `${canonical}#howto`,
       name: q.title,
-      description: this.questionDescription(q),
+      description: this.seoDescription(q),
       inLanguage: 'en',
       step: steps.map((text, idx) => ({
         '@type': 'HowToStep',

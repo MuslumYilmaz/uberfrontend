@@ -208,8 +208,9 @@ function buildRoutes() {
     const system = extractGuideSlugs(registrySource, 'SYSTEM');
     const behavioral = extractGuideSlugs(registrySource, 'BEHAVIORAL');
     const frameworkPrep = playbook.filter((slug) => slug.endsWith('-prep-path'));
+    const interviewBlueprintOnly = playbook.filter((slug) => !slug.endsWith('-prep-path'));
 
-    playbook.forEach((slug) => addRoute(routes, `/guides/interview-blueprint/${slug}`));
+    interviewBlueprintOnly.forEach((slug) => addRoute(routes, `/guides/interview-blueprint/${slug}`));
     frameworkPrep.forEach((slug) => addRoute(routes, `/guides/framework-prep/${slug}`));
     system.forEach((slug) => addRoute(routes, `/guides/system-design-blueprint/${slug}`));
     behavioral.forEach((slug) => addRoute(routes, `/guides/behavioral/${slug}`));
