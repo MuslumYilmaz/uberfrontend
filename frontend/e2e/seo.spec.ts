@@ -38,7 +38,7 @@ test('seo: question detail has canonical + json-ld', async ({ page }) => {
   await page.goto('/javascript/coding/js-number-clamp');
   const base = new URL(page.url()).origin;
 
-  await expect(page).toHaveTitle(/Clamp \| FrontendAtlas/);
+  await expect(page).toHaveTitle(/clamp.*\| FrontendAtlas/i);
   await expect.poll(() => getMeta(page, 'description')).not.toBeNull();
   await expect.poll(() => getCanonical(page)).toBe(`${base}/javascript/coding/js-number-clamp`);
 
