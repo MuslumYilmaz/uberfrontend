@@ -123,6 +123,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "What Problem Does React Solve? Scope, Non-Goals, and Trade-offs",
+      "description": "Understand React’s core job—state-driven UI rendering—and what it intentionally leaves to the ecosystem, like routing, data fetching, and global state."
     }
   },
   {
@@ -413,6 +417,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Functional vs Class Components in React: Key Differences",
+      "description": "Compare function and class components by state, lifecycle, hooks, and reuse patterns, and know when legacy class knowledge still matters in real codebases."
     }
   },
   {
@@ -675,6 +683,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Component Function Rules: JSX Naming, Returns, Hooks",
+      "description": "Learn what makes a function a React component, why uppercase names matter, what it can return, and why hook-based components must not be called directly."
     }
   },
   {
@@ -817,6 +829,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "How React Decides to Re-render: Render vs DOM Update",
+      "description": "Understand re-render triggers from state, props, and context, what rendering actually does, and why a render pass does not always produce DOM changes."
     }
   },
   {
@@ -1083,6 +1099,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Why React Uses One-Way Data Flow (and Why It Scales)",
+      "description": "See how unidirectional data flow improves predictability, debugging, and state ownership by keeping data down and updates up through explicit callbacks."
     }
   },
   {
@@ -1338,6 +1358,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React useState Explained: Guarantees, Updates, and Pitfalls",
+      "description": "Learn what useState guarantees, how setters schedule renders, and how lazy init, functional updates, batching, and immutability affect correctness."
     }
   },
   {
@@ -1547,6 +1571,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Keys in Lists: Why They Matter for Reconciliation",
+      "description": "Understand why stable keys preserve item identity, improve list diffing performance, and prevent bugs like lost state or wrong row updates."
     }
   },
   {
@@ -1626,6 +1654,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Controlled vs Uncontrolled Components in React Forms",
+      "description": "Compare controlled and uncontrolled form inputs, when each approach is practical, and how choices affect validation, testability, and state sync."
     }
   },
   {
@@ -1932,6 +1964,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Conditional Rendering: Patterns, Trade-offs, and Pitfalls",
+      "description": "Learn when to use &&, ternary, and early return patterns, and avoid common issues around falsey rendering, focus loss, and layout jumps in dynamic UI."
     }
   },
   {
@@ -2099,6 +2135,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React useEffect Explained: Dependencies, Timing, and Cleanup",
+      "description": "Understand what useEffect is for, when it runs after commit, how dependency arrays control reruns, and how cleanup prevents leaks and stale subscriptions."
     }
   },
   {
@@ -2242,6 +2282,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Fragments: DOM Output, Keys, and Reconciliation",
+      "description": "See how fragments avoid extra DOM wrappers while still affecting React tree identity, keyed list behavior, and remount/state preservation during updates."
     }
   },
   {
@@ -2378,6 +2422,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Virtual DOM and Reconciliation: What Actually Happens",
+      "description": "Understand how React builds new element trees, diffs them with reconciliation heuristics and keys, and commits minimal DOM updates."
     }
   },
   {
@@ -2552,6 +2600,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Re-render vs DOM Update: When React Actually Commits",
+      "description": "Understand what triggers re-renders from state, props, context, and parent updates, and why reconciliation often produces zero DOM mutations after render."
     }
   },
   {
@@ -2680,6 +2732,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "State vs Props Ownership in React: Bugs from Mixed Responsibility",
+      "description": "Learn why mixing prop-owned and local state creates two sources of truth, causing stale UI, loops, and reset bugs, and how single ownership avoids them."
     }
   },
   {
@@ -2760,6 +2816,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Lifting State Up: Shared State Pattern Explained",
+      "description": "See how lifting state to the nearest common parent keeps siblings in sync, when prop drilling becomes painful, and when context/store patterns fit better."
     }
   },
   {
@@ -2940,6 +3000,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Higher-Order Components (HOCs): Use Cases and Trade-offs",
+      "description": "Understand what HOCs are, where they still fit in legacy React code, and how to avoid prop collisions, wrapper hell, and debugging complexity."
     }
   },
   {
@@ -3129,6 +3193,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "How to Prevent Unnecessary Re-renders in React",
+      "description": "Learn practical render-optimization tactics with React.memo, useMemo, useCallback, stable props, and state partitioning to reduce wasted render work."
     }
   },
   {
@@ -3218,6 +3286,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React.StrictMode Purpose: Dev Checks and Double Invocations",
+      "description": "Understand what StrictMode verifies in development, why components/effects run extra times, and how to write idempotent side effects that stay safe."
     }
   },
   {
@@ -3310,6 +3382,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Reconciliation Explained: Tree Matching, Keys, and Updates",
+      "description": "Learn how React reconciles old and new trees, when components are preserved or remounted, and how keys control identity and state across updates."
     }
   },
   {
@@ -3402,6 +3478,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Diffing Algorithm: How DOM Updates Are Chosen",
+      "description": "Understand the heuristics React uses to diff trees in near O(n), how element type and keys affect matching, and why list identity matters for performance."
     }
   },
   {
@@ -3493,6 +3573,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Render Props vs HOCs in React: Reuse Patterns Compared",
+      "description": "Compare render props and HOCs for logic reuse, understand trade-offs in composition and readability, and know when hooks are the simpler modern option."
     }
   },
   {
@@ -3582,6 +3666,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Portals: Use Cases, Event Bubbling, and Accessibility",
+      "description": "See when to use portals for modals and overlays, how events still bubble through the React tree, and what focus patterns are required for accessible UX."
     }
   },
   {
@@ -3674,6 +3762,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Concurrent Rendering in React 18: Why It Feels Faster",
+      "description": "Understand how concurrent rendering enables interruptible work, prioritizes urgent updates, and improves responsiveness during expensive UI transitions."
     }
   },
   {
@@ -3771,6 +3863,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Why React Hooks Have Rules: Call Order and State Slots",
+      "description": "Learn how Hooks map by call order, why conditional Hook calls break state/effect mapping, and how lint rules prevent subtle production bugs."
     }
   },
   {
@@ -4050,6 +4146,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "useRef vs useState in React: Differences and When to Use Each",
+      "description": "Understand when useState should drive UI and when useRef should hold mutable values like DOM refs, timers, or previous values without re-rendering."
     }
   },
   {
@@ -4500,6 +4600,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Context Performance Issues: Causes and Fixes",
+      "description": "Learn why Context value identity can trigger broad consumer re-renders, and how memoized values, split contexts, and selectors reduce render fan-out."
     }
   },
   {
@@ -4628,6 +4732,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "React Error Boundaries: What They Catch and What They Do Not",
+      "description": "See how Error Boundaries isolate render-time crashes with fallback UI, and where they do not apply: event handlers, async code, SSR, and self-errors."
     }
   },
   {
@@ -4909,6 +5017,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "useEffect vs useLayoutEffect in React: Timing and Use Cases",
+      "description": "Understand timing differences, when layout effects are needed to measure or prevent flicker, and why standard effects are safer for most side effects."
     }
   },
   {
@@ -5015,6 +5127,10 @@
       "detailPenalty": 0,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Which React Hooks to Use and When: Practical Selection Guide",
+      "description": "Map common Hooks to use cases-state, effects, refs, memoization, reducers, and context-so you can explain trade-offs and choose intentionally."
     }
   },
   {
@@ -5101,6 +5217,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "What's New in React 18? Concurrency, Batching, Transitions",
+      "description": "Learn the React 18 changes that matter most: createRoot, automatic batching, transitions, concurrent rendering behavior, and stricter development checks."
     }
   }
 ]
