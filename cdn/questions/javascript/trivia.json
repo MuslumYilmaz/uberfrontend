@@ -128,7 +128,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-closures",
@@ -204,7 +211,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-this-keyword",
@@ -320,7 +334,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-hoisting-tdz",
@@ -421,7 +442,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-var-let-const-hoisting",
@@ -437,7 +465,7 @@
       "const",
       "scope"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [
       "google",
       "apple"
@@ -515,7 +543,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-promises-async-await",
@@ -660,7 +695,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-event-delegation",
@@ -675,7 +717,7 @@
       "events",
       "bubbling"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [
       "bytedance",
       "meta"
@@ -755,7 +797,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-null-undefined-undeclared",
@@ -771,7 +820,7 @@
       "types",
       "variables"
     ],
-    "importance": 3,
+    "importance": 1,
     "companies": [
       "google"
     ],
@@ -858,7 +907,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-equality-vs-strict-equality",
@@ -873,7 +929,7 @@
       "types",
       "javascript"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "google",
       "apple"
@@ -953,7 +1009,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-hoisting",
@@ -968,7 +1031,7 @@
       "variables",
       "functions"
     ],
-    "importance": 2,
+    "importance": 5,
     "companies": [
       "google",
       "meta"
@@ -1075,7 +1138,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-higher-order-function",
@@ -1090,7 +1160,7 @@
       "functional-programming",
       "functions"
     ],
-    "importance": 4,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1152,7 +1222,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-event-bubbling-capturing",
@@ -1168,7 +1245,7 @@
       "capturing",
       "event-propagation"
     ],
-    "importance": 3,
+    "importance": 5,
     "companies": [
       "google"
     ],
@@ -1259,7 +1336,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-call-apply-bind",
@@ -1375,7 +1459,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-foreach-vs-map",
@@ -1390,7 +1481,7 @@
       "functional-programming",
       "array-methods"
     ],
-    "importance": 3,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1476,7 +1567,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-cookie-sessionstorage-localstorage",
@@ -1492,7 +1590,7 @@
       "storage",
       "web-apis"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1579,7 +1677,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-prototypal-inheritance",
@@ -1594,7 +1699,7 @@
       "oop",
       "objects"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "google",
       "netflix",
@@ -1696,7 +1801,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-data-types",
@@ -1712,7 +1824,7 @@
       "primitives",
       "objects"
     ],
-    "importance": 2,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1817,7 +1929,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-nan-property",
@@ -1833,7 +1952,7 @@
       "numbers",
       "type-coercion"
     ],
-    "importance": 2,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1896,7 +2015,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-currying",
@@ -1971,7 +2097,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-callbacks",
@@ -1987,7 +2120,7 @@
       "functions",
       "higher-order-functions"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2050,7 +2183,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-arrow-functions",
@@ -2140,7 +2280,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-object-destructuring",
@@ -2156,7 +2303,7 @@
       "variables",
       "objects"
     ],
-    "importance": 3,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2243,7 +2390,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-design-patterns",
@@ -2259,7 +2413,7 @@
       "functional-programming",
       "best-practices"
     ],
-    "importance": 2,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2347,7 +2501,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-deferred-scripts",
@@ -2363,7 +2524,7 @@
       "defer",
       "async"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2439,7 +2600,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-classes",
@@ -2455,7 +2623,7 @@
       "es6",
       "syntax"
     ],
-    "importance": 3,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2536,7 +2704,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-object-creation-methods",
@@ -2552,7 +2727,7 @@
       "prototypes",
       "es6"
     ],
-    "importance": 2,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2716,7 +2891,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-memoization",
@@ -2732,7 +2914,7 @@
       "functions",
       "cache"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2813,7 +2995,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-microtasks-vs-macrotasks",
@@ -2905,7 +3094,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-promise-combinators-all-allsettled-race-any",
@@ -3007,7 +3203,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-object-create-vs-new",
@@ -3024,7 +3227,7 @@
       "oop",
       "classes"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3110,7 +3313,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-prototype-vs-__proto__",
@@ -3126,7 +3336,7 @@
       "oop",
       "object-creation"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [
       "apple"
     ],
@@ -3202,7 +3412,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-shallow-vs-deep-copy",
@@ -3219,7 +3436,7 @@
       "arrays",
       "state"
     ],
-    "importance": 5,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3297,7 +3514,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-map-filter-reduce",
@@ -3315,7 +3539,7 @@
       "immutability",
       "accumulators"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3413,7 +3637,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-array-sort-pitfalls",
@@ -3430,7 +3661,7 @@
       "immutability",
       "array-methods"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3503,7 +3734,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-mutability-vs-immutability",
@@ -3625,7 +3863,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-secure-cors-handling",
@@ -3647,7 +3892,7 @@
       "bff",
       "fetch"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [
       "netflix",
       "meta"
@@ -3742,26 +3987,34 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "content-delivery-caching-strategies-streaming",
-    "title": "How would you design caching and content delivery for a streaming platform like Netflix?",
-    "description": "High-scale content platforms like Netflix rely on multiple layers of caching and content delivery strategies: browser cache, service workers, CDN edge caches, regional caches, and origin servers. The goal is to minimize latency, bandwidth, and server load while delivering large video files and metadata reliably at global scale.",
+    "title": "Streaming Platform Caching Architecture: CDN, HTTP Cache, and Frontend Delivery",
+    "description": "Interview-focused guide to streaming platform caching architecture: browser and service worker caches, CDN edge strategy, origin shielding, cache invalidation, and metrics to optimize startup time, rebuffering, and infrastructure cost.",
     "type": "trivia",
-    "technology": "web",
+    "technology": "javascript",
     "difficulty": "hard",
     "tags": [
-      "performance",
+      "javascript",
+      "frontend-interview",
+      "architecture",
       "caching",
       "cdn",
       "http-cache",
       "service-worker",
       "streaming",
-      "system-design",
       "web-performance"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "netflix"
     ],
@@ -3769,80 +4022,128 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The big idea</strong>\n\nA streaming platform is basically a <strong>content delivery machine</strong>. The entire game is:\n\n<strong>\"How do we serve huge files to millions of users with the lowest latency and lowest cost?\"</strong>\n\nThe answer is: <strong>multi-layer caching + smart distribution</strong>.\n\nYou never want every user hitting your main servers."
+          "text": "<i class='fa-solid fa-tower-broadcast'></i> <strong>Definition (above the fold)</strong>\n\nDesigning caching for a streaming platform means deciding <strong>where each byte should be served from</strong>: browser cache, service worker, CDN edge, regional shield, or origin. The goal is not only speed. It is the right balance of startup latency, rebuffering rate, origin load, and delivery cost. A strong interview answer explains each layer and the invalidation policy that keeps content correct under high scale."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-layer-group'></i> <strong>The caching layers (from closest to farthest)</strong>"
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nTreat content delivery as a pyramid: serve from the closest valid cache first, and only fall back to expensive upstream layers on miss. For video, use immutable segmented media; for metadata, use short-lived cache + revalidation."
         },
         {
           "type": "list",
           "columns": [
             "Layer",
-            "What it caches",
-            "Why it matters"
+            "What should live there",
+            "Why"
           ],
           "rows": [
             [
               "Browser cache",
-              "Images, JS, metadata, even video segments",
-              "Instant reuse, zero network cost"
+              "Player assets, thumbnails, static JS/CSS",
+              "Zero network on repeat views"
             ],
             [
-              "Service Worker cache",
-              "App shell, API responses, some media chunks",
-              "Offline support, instant loads, custom cache logic"
+              "Service worker",
+              "App shell + selected API payloads",
+              "Offline/fast reload and controlled staleness"
             ],
             [
-              "CDN edge cache",
-              "Video segments, images, static assets",
-              "Serves content from nearest geographic location"
+              "CDN edge",
+              "Video segments and static assets",
+              "Low latency and large origin offload"
             ],
             [
-              "Regional cache",
-              "Popular content in a region",
-              "Avoids hitting origin for hot content"
+              "Regional shield cache",
+              "Hot objects near origin",
+              "Reduces thundering-herd origin traffic"
             ],
             [
-              "Origin servers",
-              "The source of truth",
-              "Only hit when cache misses happen"
+              "Origin",
+              "Source-of-truth media + metadata APIs",
+              "Correctness and backfill on misses"
             ]
           ],
-          "caption": "Performance improves as you serve content closer to the user."
+          "caption": "Nearest valid cache wins; origin is the last resort."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-film'></i> <strong>How video streaming actually works</strong>\n\nNetflix-style platforms do <strong>not</strong> stream one huge video file.\n\nThey:\n- Split videos into <strong>small chunks (segments)</strong>\n- Encode them in <strong>multiple qualities</strong> (240p, 480p, 1080p, 4K...)\n- The player downloads chunks dynamically based on network speed\n\nEach chunk is:\n- A static file\n- Perfect for CDN caching\n- Reusable across millions of users"
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: cache policy by asset class</strong>"
+        },
+        {
+          "type": "code",
+          "language": "http",
+          "code": "# immutable versioned assets\nCache-Control: public, max-age=31536000, immutable\n\n# metadata API (safe revalidation)\nCache-Control: public, max-age=30, stale-while-revalidate=60\nETag: \"movie-842-v17\"\n\n# personalized API\nCache-Control: private, no-store"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-cloud'></i> <strong>CDN strategy (the real MVP)</strong>\n\n- Put video segments on <strong>global CDN edge servers</strong>\n- Users download from the <strong>nearest location</strong>\n- Popular content stays hot in cache\n- Cache headers like:\n  - <code>Cache-Control: public, max-age=31536000, immutable</code>\n\nResult:\n✅ Ultra-low latency\n✅ Massive origin offload\n✅ Huge cost savings"
+          "text": "This split prevents stale personalized responses while keeping static media aggressively cacheable."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-desktop'></i> <strong>Client-side caching strategies</strong>\n\nOn the frontend:\n\n- Use <strong>HTTP caching</strong> for static assets & metadata\n- Use <strong>Service Workers</strong> for:\n  - App shell caching\n  - Prefetching\n  - Offline / instant reloads\n- Cache:\n  - Thumbnails\n  - Metadata responses\n  - UI bundles\n\nVideo chunks are usually left to the browser + CDN, not manually managed."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: service worker stale-while-revalidate for metadata</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "self.addEventListener('fetch', (event) => {\n  const url = new URL(event.request.url);\n  if (!url.pathname.startsWith('/api/catalog')) return;\n\n  event.respondWith((async () => {\n    const cache = await caches.open('catalog-v1');\n    const cached = await cache.match(event.request);\n\n    const network = fetch(event.request).then((res) => {\n      if (res.ok) cache.put(event.request, res.clone());\n      return res;\n    }).catch(() => cached);\n\n    return cached || network;\n  })());\n});"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Invalidation case",
+            "Pattern",
+            "Reason"
+          ],
+          "rows": [
+            [
+              "New media encode",
+              "Versioned URL (content hash)",
+              "Avoids unsafe overwrite of cached blobs"
+            ],
+            [
+              "Catalog metadata update",
+              "Short TTL + ETag revalidation",
+              "Keeps updates fresh with lower bandwidth"
+            ],
+            [
+              "Emergency takedown",
+              "CDN purge by surrogate key",
+              "Removes stale/legal-sensitive content quickly"
+            ],
+            [
+              "Deploy rollback",
+              "Asset manifest pinning",
+              "Prevents mixed old/new client bundles"
+            ]
+          ],
+          "caption": "Invalidation strategy is where most systems fail in production."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-rotate'></i> <strong>Cache invalidation (the hard part)</strong>\n\nStrategies:\n\n- Versioned URLs: <code>/movie/abc/segment-123.v3.ts</code>\n- New deploy = new URLs = old cache becomes irrelevant\n- Metadata APIs use:\n  - <code>ETag</code>\n  - <code>stale-while-revalidate</code>\n\nRule of thumb:\n<strong>Never \"update\" cached content. Change the URL.</strong>"
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Caching personalized responses at CDN level without proper Vary/auth partitioning.</li><li>Using one cache policy for all resources (video segments and account APIs need different policies).</li><li>No cache-key versioning, causing stale assets after deploy.</li><li>Ignoring observability: no edge hit ratio, no startup/rebuffering measurement.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>What you optimize for</strong>\n\n- <strong>Startup time</strong> (time to first frame)\n- <strong>Rebuffering rate</strong>\n- <strong>CDN hit ratio</strong>\n- <strong>Origin load</strong>\n- <strong>Cost per GB served</strong>"
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse aggressive immutable caching for versioned static assets and video segments with clear URL versioning. Use conservative caching for personalized or payment-sensitive APIs. Do not ship service-worker caching for critical data unless invalidation and rollback behavior are explicitly tested."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common mistakes</strong>\n\n- Serving video from origin directly\n- Not using immutable caching\n- Caching personalized content at CDN level\n- Trying to \"micro-manage\" video cache in JS\n- No versioning strategy"
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: Which metric tells you caching is working? A: CDN edge hit ratio plus improved time-to-first-frame and lower rebuffering.\nQ2: How do you protect origin during traffic spikes? A: Origin shielding + collapsed forwarding + request coalescing.\nQ3: How do you deploy safely? A: Versioned asset URLs, manifest pinning, and targeted purge keys for rollback."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"I would use multi-layer caching: browser + service worker for app data, CDN edge caches for video segments with immutable URLs, regional caches for hot content, and keep origin servers as a last resort — while streaming chunked, multi-bitrate video optimized for cache reuse.\""
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nDefine cache policy per resource class, use immutable versioned media, instrument hit/miss and playback metrics, and treat invalidation as a first-class design problem. Strong answers show both architecture and operational safeguards."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "debounce-vs-throttle-search-input",
@@ -3862,7 +4163,7 @@
       "optimization",
       "frontend-interview"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "netflix"
     ],
@@ -3933,7 +4234,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-map-vs-object",
@@ -3943,7 +4251,7 @@
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "description": "Map is a dedicated key-value collection with any key type, stable iteration order, and a size property. Plain Objects are great for structured records, but keys are limited to strings/symbols and require care with prototypes and ordering.",
     "type": "trivia",
     "tags": [
@@ -4013,24 +4321,34 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "http-caching-basics",
-    "title": "Explain HTTP caching (Cache-Control, ETag vs Last-Modified, 304 responses)",
-    "description": "Interviewers want to hear how browser caching actually works: cache-control directives, validators (ETag vs Last-Modified), conditional requests, and what a 304 means for the response body.",
+    "title": "HTTP Caching in Frontend: Cache-Control, ETag, Last-Modified, and 304",
+    "description": "Practical HTTP caching interview answer for frontend engineers: cache directives, validators, conditional requests, and deployment-safe caching strategy for HTML, APIs, and immutable static assets.",
     "type": "trivia",
-    "technology": "web",
+    "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
+      "javascript",
+      "frontend-interview",
       "http",
       "headers",
       "cache",
       "caching",
       "http-cache",
-      "web-performance"
+      "web-performance",
+      "performance"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "bytedance"
     ],
@@ -4038,60 +4356,123 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nHTTP caching is about letting the browser reuse responses to avoid network trips. You control it with response headers, and you validate freshness with conditional requests."
+          "text": "<i class='fa-solid fa-database'></i> <strong>Definition (above the fold)</strong>\n\nHTTP caching is the policy layer that decides whether the browser can reuse a response, must revalidate it, or must fetch a new one. A complete answer covers <strong>freshness</strong> (<code>Cache-Control</code>), <strong>validation</strong> (ETag/Last-Modified), and <strong>revalidation result</strong> (304 with no body)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nUse this sequence: (1) Is cached response fresh? If yes, serve locally. (2) If stale, send conditional request with validators. (3) Server returns 304 (reuse cached body) or 200 (replace cache entry)."
         },
         {
           "type": "list",
           "columns": [
             "Directive",
-            "Meaning",
+            "What it means",
             "Typical use"
           ],
           "rows": [
             [
-              "<code>max-age</code>",
-              "Fresh for N seconds",
-              "Static assets"
+              "<code>max-age=N</code>",
+              "Response is fresh for N seconds",
+              "Static assets and read-heavy APIs"
             ],
             [
               "<code>no-cache</code>",
-              "Store but revalidate before use",
-              "HTML pages that change often"
+              "Store allowed but must revalidate before use",
+              "HTML documents with frequent updates"
             ],
             [
               "<code>no-store</code>",
-              "Do not store at all",
-              "Sensitive data"
-            ],
-            [
-              "<code>public</code> / <code>private</code>",
-              "Cacheable by shared caches or only the browser",
-              "User-specific vs shared content"
+              "Do not persist at all",
+              "Sensitive or user-private payloads"
             ],
             [
               "<code>immutable</code>",
-              "Never revalidate during freshness window",
-              "Versioned assets"
+              "No revalidation during freshness window",
+              "Versioned static files"
+            ],
+            [
+              "<code>public/private</code>",
+              "Shared cache allowed or browser-only",
+              "Shared CDN vs user-specific responses"
             ]
           ],
-          "caption": "Common Cache-Control directives"
+          "caption": "Freshness policy should match resource type and risk profile."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>ETag vs Last-Modified</strong>\n\n- <strong>ETag</strong> is a content validator (hash or version). It is more precise and preferred when you can generate it.\n- <strong>Last-Modified</strong> is a timestamp. It is simpler but less precise (time granularity).\n\nBrowsers revalidate with <code>If-None-Match</code> (ETag) or <code>If-Modified-Since</code> (Last-Modified)."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: cache headers by response class</strong>"
+        },
+        {
+          "type": "code",
+          "language": "http",
+          "code": "# versioned JS/CSS bundle\nCache-Control: public, max-age=31536000, immutable\n\n# API response with revalidation\nCache-Control: public, max-age=30, stale-while-revalidate=60\nETag: \"products-v241\"\n\n# user profile\nCache-Control: private, no-store"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-question'></i> <strong>What is the response body of a 304?</strong>\n\nA <code>304 Not Modified</code> response has <strong>no response body</strong>. The browser reuses the cached body and only reads the headers."
+          "text": "This pattern avoids stale sensitive data while keeping static assets extremely fast on repeat visits."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nUse <code>Cache-Control</code> to define freshness, and validators (ETag/Last-Modified) for revalidation. 304 responses are header-only and tell the browser to reuse cached content."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: conditional request lifecycle</strong>"
+        },
+        {
+          "type": "code",
+          "language": "http",
+          "code": "GET /api/products HTTP/1.1\nIf-None-Match: \"products-v241\"\n\nHTTP/1.1 304 Not Modified\nCache-Control: public, max-age=30\nETag: \"products-v241\""
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Validator",
+            "Strength",
+            "When to prefer"
+          ],
+          "rows": [
+            [
+              "ETag",
+              "High precision content validator",
+              "When you can generate stable content versions"
+            ],
+            [
+              "Last-Modified",
+              "Timestamp-based validator",
+              "Simple systems with coarse change cadence"
+            ],
+            [
+              "Both together",
+              "Fallback compatibility",
+              "Broad client/proxy environments"
+            ]
+          ],
+          "caption": "ETag is usually more precise; Last-Modified is lightweight and common."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Using long cache TTL for HTML without versioning/revalidation strategy.</li><li>Forgetting <code>Vary</code> semantics (for example gzip/language/auth differences) and serving wrong cached variants.</li><li>Treating 304 as success without understanding it has no response body.</li><li>Applying one policy to all endpoints instead of resource-specific rules.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse aggressive immutable caching for fingerprinted assets and conservative revalidation for mutable APIs/HTML. Use <code>no-store</code> for truly sensitive responses. Avoid disabling caching globally; it often harms performance and increases infrastructure cost with no security gain."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: What does a 304 body contain? A: No body; browser reuses cached entity body.\nQ2: Why is ETag often preferred? A: Better precision than timestamps for detecting content changes.\nQ3: First caching win in production? A: Immutable versioned static assets plus short revalidation for HTML/API."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nClassify resources, set explicit cache directives, attach validators for mutable content, and verify behavior with network traces. Strong answers show both protocol mechanics and deployment-safe strategy."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "web-performance-optimize-load-time",
@@ -4111,7 +4492,7 @@
       "rendering",
       "script-loading"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "bytedance",
       "apple"
@@ -4202,89 +4583,177 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-06"
+    "updatedAt": "2026-02-06",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-current-trends",
-    "title": "What are the current trends in JavaScript?",
+    "title": "How do you evaluate modern JavaScript trends for production frontend apps?",
     "technology": "javascript",
     "companies": [
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 3,
-    "description": "This is a breadth check. The best answers mention a few durable themes and explain how you stay current rather than naming one library.",
+    "importance": 1,
+    "description": "Interview-ready JavaScript trends answer focused on durable themes: TypeScript adoption, ESM-first packaging, performance budgets, runtime/tooling changes, and practical ways to stay current without hype.",
     "type": "trivia",
     "tags": [
       "javascript",
-      "best-practices",
       "frontend-interview",
-      "performance"
+      "typescript",
+      "modules",
+      "performance",
+      "tooling",
+      "best-practices",
+      "architecture"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nTrends shift quickly. A strong answer highlights a few broad directions and ties them to real work, then explains how you keep up with changes."
+          "text": "<i class='fa-solid fa-compass'></i> <strong>Definition (above the fold)</strong>\n\nA strong JavaScript trends answer is not a list of shiny tools. It is a product-focused evaluation of durable shifts that change reliability, performance, and delivery speed in production frontend apps. Interviewers want to hear <strong>why the trend matters</strong>, <strong>what problem it solves</strong>, and <strong>how you would validate impact</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nUse this lens for each trend: <code>trend -> problem solved -> metric improved -> trade-off introduced</code>. If you cannot connect all four parts, it is probably hype, not an actionable trend."
         },
         {
           "type": "list",
           "columns": [
-            "Theme",
-            "What it means",
-            "How to mention it"
+            "Durable trend",
+            "What changed in real projects",
+            "How to explain it in interviews"
           ],
           "rows": [
             [
-              "Type safety",
-              "Teams want fewer runtime bugs",
-              "Adoption of TypeScript and better tooling"
+              "Type-safe frontend by default",
+              "TypeScript + schema validation reduce production regressions",
+              "Mention fewer runtime bugs and safer refactors"
             ],
             [
-              "ES modules everywhere",
-              "Native ESM is the default",
-              "Module-first builds and tree-shaking"
+              "ESM-first ecosystem",
+              "Packages now optimize for ESM, exports maps, and tree-shaking",
+              "Explain bundle size and dead-code elimination benefits"
             ],
             [
-              "Faster tooling",
-              "Short feedback loops",
-              "Modern bundlers and dev servers"
+              "Performance as a release gate",
+              "Teams track LCP/INP/CLS with budgets and alerts",
+              "Show metric-driven optimization instead of vague speed claims"
             ],
             [
-              "Performance focus",
-              "UX depends on responsiveness",
-              "Core Web Vitals, code splitting"
+              "Server/edge rendering patterns",
+              "SSR, streaming, and edge execution reduce TTFB and improve UX",
+              "Describe how rendering strategy follows route behavior"
             ],
             [
-              "Framework evolution",
-              "SSR/streaming/edge patterns",
-              "Pick frameworks that match product needs"
+              "Faster feedback tooling",
+              "Modern dev servers, linting, and test pipelines shorten iteration loops",
+              "Tie faster feedback to fewer escaped defects"
+            ],
+            [
+              "AI-assisted coding with guardrails",
+              "Teams use assistants but keep tests/reviews as quality gates",
+              "Stress verification, not blind generation"
             ]
           ],
-          "caption": "Durable themes you can anchor on"
+          "caption": "Pick 3-4 themes and go deep on impact, not buzzwords."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>How to stay current</strong>\n\nMention how you follow release notes, read RFCs, scan TC39 proposals, or track changelogs for the tools you use."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: ESM-first package shape</strong>"
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "code": "{\n  \"name\": \"frontend-utils\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"import\": \"./dist/index.js\",\n      \"types\": \"./dist/index.d.ts\"\n    }\n  },\n  \"sideEffects\": false\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nShow breadth without name-dropping every tool. Pick a few themes, connect them to impact, and explain how you keep learning."
+          "text": "Why this matters: a clear ESM export map improves interoperability, and <code>sideEffects: false</code> helps bundlers tree-shake unused modules safely."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: measure long tasks as part of performance trend tracking</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const longTasks = [];\n\nconst observer = new PerformanceObserver((list) => {\n  for (const entry of list.getEntries()) {\n    longTasks.push({ name: entry.name, duration: entry.duration });\n  }\n});\n\nobserver.observe({ type: 'longtask', buffered: true });\n\nwindow.addEventListener('beforeunload', () => {\n  if (longTasks.length > 0) {\n    navigator.sendBeacon('/rum/long-tasks', JSON.stringify(longTasks));\n  }\n});"
+        },
+        {
+          "type": "text",
+          "text": "This turns the \"performance trend\" into measurable production telemetry instead of a generic claim."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Weekly habit",
+            "Signal to watch",
+            "Action"
+          ],
+          "rows": [
+            [
+              "Read release notes",
+              "Breaking changes and migration flags",
+              "Create a migration ticket with owner and deadline"
+            ],
+            [
+              "Track TC39 stage updates",
+              "Language features nearing adoption",
+              "Pilot in non-critical modules first"
+            ],
+            [
+              "Audit bundle and vitals dashboards",
+              "Regressions in p75 metrics",
+              "Block release when budgets are exceeded"
+            ],
+            [
+              "Review postmortems",
+              "Repeated incident patterns",
+              "Adopt lint rules or tests that prevent recurrence"
+            ]
+          ],
+          "caption": "How to stay current with a repeatable process."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Listing tool names without explaining problem/impact/trade-offs.</li><li>Calling something a trend without evidence from production metrics.</li><li>Ignoring migration and maintenance cost when adopting new runtimes or frameworks.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: Which trend would you prioritize first in a legacy app? A: Type safety and observability, because they reduce regression risk before deeper rewrites.\nQ2: How do you reject hype? A: Ask for a baseline metric, a target metric, and rollback criteria before adoption.\nQ3: How do you keep up without burnout? A: Time-box weekly review, automate alerts, and only deep-dive trends tied to current product goals."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nPick a few durable JavaScript trends, map each to measurable outcomes, and show explicit trade-offs. Strong interview answers sound like an engineering decision record, not a social media trend recap."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "ai-streaming-data-handling",
     "title": "How should a front-end handle streaming data from an AI model?",
-    "technology": "web",
+    "technology": "javascript",
     "companies": [
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "description": "This checks whether you know how to implement streaming responses (SSE/WebSocket/ReadableStream), update the UI incrementally, and handle cancellation or errors cleanly.",
     "type": "trivia",
     "tags": [
@@ -4344,7 +4813,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "chat-conversation-state-management",
@@ -4354,7 +4830,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "description": "This probes your ability to model a conversation, manage streaming messages, and handle memory limits or truncation without breaking UX.",
     "type": "trivia",
     "tags": [
@@ -4451,137 +4927,326 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-06"
+    "updatedAt": "2026-02-06",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "sse-vs-websocket-real-time",
-    "title": "When would you use SSE over WebSockets for real-time updates?",
-    "technology": "web",
+    "title": "SSE vs WebSocket in JavaScript: which real-time transport should you choose?",
+    "technology": "javascript",
     "companies": [
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
-    "description": "Interviewers want to hear trade-offs: SSE is server-to-client, simple, and great for streaming responses, while WebSockets are bidirectional and better for interactive or collaborative apps.",
+    "importance": 1,
+    "description": "Practical SSE vs WebSocket comparison for frontend interviews: protocol behavior, reconnect strategy, infrastructure trade-offs, and architecture decisions for AI streaming, notifications, chat, and collaboration.",
     "type": "trivia",
     "tags": [
+      "javascript",
       "real-time",
-      "streams",
       "streaming",
-      "http"
+      "streams",
+      "architecture",
+      "http",
+      "api-calls",
+      "frontend-interview"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nSSE is a simple, one-way server-to-client stream over HTTP. WebSockets are full duplex and better when the client must send frequent updates."
+          "text": "<i class='fa-solid fa-wave-square'></i> <strong>Definition (above the fold)</strong>\n\nUse <strong>SSE (Server-Sent Events)</strong> when updates are mostly server -> client and you want a simple HTTP-based stream with automatic reconnect. Use <strong>WebSocket</strong> when you need true bidirectional, low-latency messaging (client and server both sending frequently). The choice should follow interaction shape, not preference."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Decision heuristic</strong>\n\nAsk two questions first: (1) Does the client need to push frequent live events upstream? (2) Do you need strict duplex semantics like collaborative cursors or multiplayer state sync? If both answers are no, SSE is often cheaper and simpler to operate."
         },
         {
           "type": "list",
           "columns": [
-            "Feature",
+            "Dimension",
             "SSE",
             "WebSocket"
           ],
           "rows": [
             [
-              "Direction",
+              "Directionality",
               "Server -> client only",
-              "Bidirectional"
+              "Full duplex (client <-> server)"
             ],
             [
-              "Setup",
-              "Simple HTTP connection",
-              "WebSocket handshake"
+              "Transport",
+              "Standard HTTP response stream",
+              "Upgrade handshake to WebSocket protocol"
             ],
             [
-              "Best for",
-              "Streaming logs, AI tokens",
-              "Chat, multiplayer, collaboration"
+              "Reconnect behavior",
+              "Built-in auto-reconnect in EventSource",
+              "Custom reconnect/backoff logic required"
             ],
             [
-              "Reconnect",
-              "Built-in (EventSource)",
-              "Manual logic"
+              "Infra compatibility",
+              "Works well with HTTP tooling/proxies/CDNs",
+              "May need extra gateway/proxy config"
+            ],
+            [
+              "Best-fit workloads",
+              "AI token streams, notifications, logs",
+              "Chat input streams, collaboration, games"
+            ],
+            [
+              "Operational complexity",
+              "Lower for one-way streaming",
+              "Higher but more flexible"
             ]
           ],
-          "caption": "SSE vs WebSocket quick comparison"
+          "caption": "Transport choice matrix for frontend system design interviews."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"Use SSE when you only need server-to-client streaming (like token-by-token AI responses). Use WebSockets when the client must send frequent real-time updates back.\""
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: SSE client with typed events</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const stream = new EventSource('/api/events?channel=orders');\n\nstream.addEventListener('message', (event) => {\n  const payload = JSON.parse(event.data);\n  renderUpdate(payload);\n});\n\nstream.addEventListener('error', () => {\n  showBanner('Reconnecting to live updates...');\n});\n\nfunction stopStreaming() {\n  stream.close();\n}"
+        },
+        {
+          "type": "text",
+          "text": "SSE keeps the client code compact for one-way streams and handles reconnect internally, which is ideal for feed-like updates."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: WebSocket with heartbeat + reconnect</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let socket;\nlet retries = 0;\n\nfunction connect() {\n  socket = new WebSocket('wss://example.com/realtime');\n\n  socket.onopen = () => {\n    retries = 0;\n    socket.send(JSON.stringify({ type: 'subscribe', roomId: 'chat-42' }));\n  };\n\n  socket.onmessage = (event) => {\n    const msg = JSON.parse(event.data);\n    applyRealtimePatch(msg);\n  };\n\n  socket.onclose = () => {\n    const delay = Math.min(1000 * 2 ** retries++, 15000);\n    setTimeout(connect, delay);\n  };\n}\n\nconnect();"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "Recommended transport",
+            "Reason"
+          ],
+          "rows": [
+            [
+              "AI text streaming to user",
+              "SSE",
+              "One-way token delivery with simple reconnect"
+            ],
+            [
+              "Live metrics dashboard",
+              "SSE",
+              "Server pushes events, client rarely sends state"
+            ],
+            [
+              "Collaborative whiteboard",
+              "WebSocket",
+              "Many low-latency client edits upstream"
+            ],
+            [
+              "Multiplayer game state",
+              "WebSocket",
+              "Bidirectional high-frequency updates"
+            ],
+            [
+              "Order status notifications",
+              "SSE",
+              "Simple fan-out over existing HTTP infrastructure"
+            ]
+          ],
+          "caption": "Choose transport by product behavior, not by trend."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Choosing WebSocket by default when one-way streaming would be simpler with SSE.</li><li>Ignoring reconnection/backoff and duplicate message handling in WebSocket clients.</li><li>Skipping auth token refresh strategy for long-lived connections.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: How do you handle message ordering on reconnect? A: Use monotonic event IDs and replay from last acknowledged ID.\nQ2: What about backpressure? A: Batch/coalesce updates on client and cap queue growth with drop or snapshot policies.\nQ3: Can you migrate from SSE to WebSocket later? A: Yes, keep a transport adapter boundary so UI logic remains protocol-agnostic."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / one-sentence answer</strong>\n\nUse SSE for simple server-to-client streaming over HTTP; use WebSocket for true bidirectional, high-frequency interaction. Validate the choice with connection lifecycle, infra cost, and failure-recovery requirements."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "ai-ux-integration-challenges",
-    "title": "What UI/UX challenges arise when integrating an AI model into an app?",
-    "technology": "web",
+    "title": "AI UX in Frontend Apps: handling latency, streaming, trust, and failures",
+    "technology": "javascript",
     "companies": [
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
-    "description": "This checks if you understand AI-specific UX constraints like latency, streaming, error handling, and unpredictable outputs.",
+    "importance": 1,
+    "description": "Deep dive on AI UX design for frontend interviews: uncertainty handling, streaming states, trust and safety cues, retries, cancellation, and robust interaction patterns for LLM-powered features.",
     "type": "trivia",
     "tags": [
-      "ux",
+      "javascript",
+      "state-management",
       "error-handling",
-      "performance",
-      "real-time"
+      "streaming",
+      "real-time",
+      "security",
+      "ux",
+      "frontend-interview"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAI responses are probabilistic, can be slow, and sometimes fail. The UI has to make that uncertainty feel safe and predictable."
+          "text": "<i class='fa-solid fa-robot'></i> <strong>Definition (above the fold)</strong>\n\nAI UX is hard because model output is probabilistic, latency varies, and failures are common. A high-quality frontend makes this uncertainty visible and controllable: users must understand <strong>what is happening now</strong>, <strong>what could go wrong</strong>, and <strong>what they can do next</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core product model</strong>\n\nTreat AI responses as a state machine, not a single API call: <code>idle -> submitting -> streaming -> done | error | canceled</code>. Separate canonical message state from transient UI state (typing indicator, partial tokens, retry banner) to avoid race conditions and duplicate output."
         },
         {
           "type": "list",
           "columns": [
-            "Challenge",
-            "UX response",
-            "Why it matters"
+            "AI UX challenge",
+            "Design pattern",
+            "Success metric"
           ],
           "rows": [
             [
-              "Latency",
-              "Show streaming or \"thinking\" state",
-              "Reduces perceived wait"
+              "Variable latency",
+              "Immediate optimistic shell + progress state",
+              "Lower abandonment before first token"
             ],
             [
-              "Partial responses",
-              "Render incrementally",
-              "Feels faster and more transparent"
+              "Partial streaming output",
+              "Render incremental draft with clear streaming label",
+              "Higher perceived responsiveness"
             ],
             [
-              "Failures/timeouts",
-              "Clear retry and error messaging",
-              "Prevents user confusion"
+              "Model uncertainty",
+              "Confidence/citation cues and editable output",
+              "Fewer blind copy-paste errors"
             ],
             [
-              "Uncertainty",
-              "Provide edits, undo, or feedback",
-              "Builds trust"
+              "Failure and timeout",
+              "Actionable error messages + retry/resume controls",
+              "Higher recovery completion rate"
+            ],
+            [
+              "Prompt mistakes",
+              "Input validation and suggested fixes before submit",
+              "Reduced invalid requests"
+            ],
+            [
+              "Unsafe output risk",
+              "Output filtering + user reporting actions",
+              "Lower trust/safety incident rate"
             ]
           ],
-          "caption": "AI-specific UX concerns"
+          "caption": "AI UX should be measurable with behavior and reliability metrics."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Extra points</strong>\n\nMention user controls like stop generation, regenerate, and showing a partial answer safely when the stream fails."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: reducer for AI response lifecycle</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function aiReducer(state, action) {\n  switch (action.type) {\n    case 'submit':\n      return { ...state, status: 'submitting', text: '', error: null };\n    case 'stream/start':\n      return { ...state, status: 'streaming' };\n    case 'stream/chunk':\n      return state.status === 'streaming'\n        ? { ...state, text: state.text + action.chunk }\n        : state;\n    case 'stream/done':\n      return { ...state, status: 'done' };\n    case 'stream/error':\n      return { ...state, status: 'error', error: action.message };\n    case 'stream/cancel':\n      return { ...state, status: 'canceled' };\n    default:\n      return state;\n  }\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nMake uncertainty visible, keep the UI responsive during streaming, and recover gracefully from errors."
+          "text": "This explicit lifecycle prevents stale updates and gives the UI deterministic rendering rules for each state."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: cancellable streaming request with safe finalize</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const controller = new AbortController();\n\nasync function runPrompt(prompt) {\n  dispatch({ type: 'submit' });\n  try {\n    const res = await fetch('/api/ai/stream', {\n      method: 'POST',\n      body: JSON.stringify({ prompt }),\n      signal: controller.signal\n    });\n\n    dispatch({ type: 'stream/start' });\n\n    const reader = res.body.getReader();\n    const decoder = new TextDecoder();\n\n    while (true) {\n      const { done, value } = await reader.read();\n      if (done) break;\n      dispatch({ type: 'stream/chunk', chunk: decoder.decode(value, { stream: true }) });\n    }\n\n    dispatch({ type: 'stream/done' });\n  } catch (err) {\n    if (controller.signal.aborted) dispatch({ type: 'stream/cancel' });\n    else dispatch({ type: 'stream/error', message: 'Generation failed. Please retry.' });\n  }\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Must-have control",
+            "User value",
+            "Implementation note"
+          ],
+          "rows": [
+            [
+              "Stop generation",
+              "Prevents wasted time and token cost",
+              "AbortController + explicit canceled state"
+            ],
+            [
+              "Regenerate",
+              "Fast retry for weak answer quality",
+              "Reuse last prompt + new request ID"
+            ],
+            [
+              "Edit and resubmit",
+              "Lets user correct ambiguous prompts",
+              "Keep editable prompt history"
+            ],
+            [
+              "Copy with formatting",
+              "Safe output reuse",
+              "Strip unsafe markup before clipboard write"
+            ],
+            [
+              "Report issue",
+              "Feedback loop for bad answers",
+              "Attach prompt, response, and error metadata"
+            ]
+          ],
+          "caption": "Controls convert uncertainty into user agency."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Showing a spinner with no progress signal during long generation.</li><li>Merging stream chunks without request IDs, causing mixed outputs from parallel prompts.</li><li>Using vague error messages (for example, \"Something went wrong\") without recovery actions.</li><li>Presenting generated text as guaranteed fact without confidence or source cues.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse streaming + rich controls when response time is variable and output quality may require iteration. For deterministic workflows (for example, fixed schema extraction), simplify the UX and prioritize clear validation over conversational UI patterns."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: How do you build trust when model answers can be wrong? A: Add confidence/source cues, easy correction flow, and transparent error handling.\nQ2: How do you prevent stale streaming from previous prompts? A: Track request IDs and ignore chunks that do not match the active request.\nQ3: Which metric would you track first? A: Time-to-first-token, stream completion rate, and retry success rate."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nModel explicit AI states, stream progressively, expose user controls, and design for failure as a first-class path. Strong AI UX answers combine reliability, clarity, and trust rather than only visual polish."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "prompt-engineering-frontend",
@@ -4687,7 +5352,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-06"
+    "updatedAt": "2026-02-06",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-queue-vs-stack",
@@ -4697,7 +5369,7 @@
       "meta"
     ],
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "Explain the difference between stack (LIFO) and queue (FIFO) in JavaScript, list core operations, compare time complexity, and show clean O(1) implementations (array head index or two-stacks). Include practical use cases (call stack, BFS, task queue) and common pitfalls.",
     "type": "trivia",
     "tags": [
@@ -4762,7 +5434,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-big-o-notation",
@@ -4772,7 +5451,7 @@
       "meta"
     ],
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "Define Big-O time and space complexity, explain why it matters for scalability, show how to derive it with rules of thumb, and list common classes. Include best/average/worst-case and amortized complexity examples.",
     "type": "trivia",
     "tags": [
@@ -4865,7 +5544,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-async-race-conditions",
@@ -4881,7 +5567,7 @@
       "abort-controller",
       "ui"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -4962,7 +5648,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-web-workers-basics",
@@ -4979,7 +5672,7 @@
       "events",
       "browser"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5046,7 +5739,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-escape-vs-sanitize",
@@ -5062,7 +5762,7 @@
       "dom",
       "best-practices"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5157,113 +5857,155 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-xss-dom-sinks",
-    "title": "DOM XSS: Dangerous Sinks and Safer Alternatives",
-    "description": "Explain DOM-based XSS, list common untrusted sources and dangerous sinks, and show safer alternatives. Mention defense-in-depth like CSP and Trusted Types.",
+    "title": "DOM XSS Prevention in JavaScript: Dangerous Sinks, Safe APIs, and CSP",
+    "description": "Security-focused frontend interview guide to DOM XSS: attacker-controlled sources, dangerous DOM sinks, safe rendering patterns, URL/protocol validation, and defense in depth with CSP and Trusted Types.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
+      "javascript",
+      "frontend-interview",
       "security",
       "dom",
       "browser",
       "best-practices",
-      "validation"
+      "validation",
+      "user-input"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>What is DOM XSS?</strong>\n\nDOM-based XSS happens when untrusted data flows directly into a dangerous DOM sink and gets interpreted as code or markup. The attack stays entirely on the client: the server never sees it."
+          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Definition (above the fold)</strong>\n\nDOM XSS occurs when untrusted input reaches a DOM sink that interprets it as code or HTML. This can happen entirely on the client side without a server-side template bug. The fix is data-flow control: identify untrusted sources, block dangerous sinks, and enforce safe APIs by default."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nModel this as <code>source -> transform -> sink</code>. If source is attacker-controlled and sink interprets executable content, you have risk. Break the chain by sanitizing/validating at boundaries and preferring non-executable sink APIs."
         },
         {
           "type": "list",
           "columns": [
             "Untrusted source",
-            "Example"
+            "Example",
+            "Risk"
           ],
           "rows": [
             [
               "URL data",
-              "location.search, location.hash, document.referrer"
+              "<code>location.hash</code>, <code>searchParams</code>",
+              "Attacker can share crafted links"
             ],
             [
-              "Cross-window data",
-              "postMessage payloads"
+              "Cross-window messaging",
+              "<code>postMessage</code> payloads",
+              "Unvalidated origin/data injection"
             ],
             [
-              "Storage",
-              "localStorage/sessionStorage values"
+              "Storage/state",
+              "localStorage/sessionStorage values",
+              "Persisted attacker payload reuse"
             ],
             [
-              "Network data",
-              "API responses that are treated as HTML"
+              "Third-party API fields",
+              "Profile bio, comments, markdown",
+              "Reflected or stored unsafe content"
             ]
           ],
-          "caption": "Treat these sources as attacker-controlled unless validated."
+          "caption": "Treat all external/user-derived strings as untrusted by default."
         },
         {
-          "type": "list",
-          "columns": [
-            "Risky sink",
-            "Safer alternative",
-            "Why"
-          ],
-          "rows": [
-            [
-              "innerHTML / outerHTML / insertAdjacentHTML",
-              "textContent or createElement + append",
-              "Avoids parsing attacker-controlled HTML"
-            ],
-            [
-              "document.write",
-              "DOM APIs + templates",
-              "Prevents HTML injection during parse"
-            ],
-            [
-              "eval / new Function / setTimeout(string)",
-              "Function references or direct logic",
-              "Blocks arbitrary code execution"
-            ],
-            [
-              "setAttribute('href', userInput)",
-              "Validate URL + allowlist protocols",
-              "Blocks javascript: and data: schemes"
-            ],
-            [
-              "srcdoc / iframe content",
-              "Trusted, sanitized HTML only",
-              "Iframes can execute injected markup"
-            ]
-          ],
-          "caption": "Prefer safe DOM APIs and validate dangerous sinks."
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: dangerous sink vs safe text rendering</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "const input = location.hash.slice(1); // attacker-controlled\n\n// Bad: interprets HTML\noutput.innerHTML = input;\n\n// Good: renders as text\noutput.textContent = input;\n\n// If you must set a URL, allowlist protocols\nconst url = new URL(input, location.origin);\nif (['http:', 'https:'].includes(url.protocol)) {\n  link.setAttribute('href', url.href);\n}"
+          "code": "const payload = new URL(location.href).searchParams.get('q') || '';\n\n// Dangerous: HTML interpretation\n// result.innerHTML = payload;\n\n// Safe default: text-only rendering\nresult.textContent = payload;"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Red flags in reviews</strong>\n\n- Any direct innerHTML assignment with user data.\n- String-based timers or eval-like APIs.\n- URL assignments without protocol validation.\n- Reusing sanitized HTML in a different context (attribute/JS/CSS)."
+          "text": "Using <code>textContent</code> prevents markup execution and should be the default for user-controlled text."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-shield'></i> <strong>Defense in depth</strong>\n\nUse CSP to limit script execution, adopt Trusted Types to block unsafe sinks, and sanitize only when you must allow rich HTML. Modern frameworks often auto-escape by default, but you can still create XSS with unsafe APIs."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: URL sink validation allowlist</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function setSafeLink(anchor, raw) {\n  const u = new URL(raw, window.location.origin);\n  const okProtocols = new Set(['http:', 'https:', 'mailto:']);\n  if (!okProtocols.has(u.protocol)) {\n    throw new Error('Blocked unsafe protocol');\n  }\n  anchor.href = u.toString();\n}\n\nsetSafeLink(document.querySelector('#profile'), userInputUrl);"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Dangerous sink",
+            "Safer alternative",
+            "Notes"
+          ],
+          "rows": [
+            [
+              "<code>innerHTML</code>",
+              "<code>textContent</code> or vetted sanitizer",
+              "Only sanitize when rich HTML is required"
+            ],
+            [
+              "String-based <code>setTimeout</code>",
+              "Function callback form",
+              "Avoid implicit eval behavior"
+            ],
+            [
+              "<code>element.setAttribute(\"href\", raw)</code>",
+              "Parsed URL + protocol allowlist",
+              "Block <code>javascript:</code> and data abuse"
+            ],
+            [
+              "Direct script URL injection",
+              "Static script tags + CSP controls",
+              "Avoid dynamic script construction from input"
+            ]
+          ],
+          "caption": "Prefer APIs that do not evaluate or parse attacker-controlled code paths."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nDOM XSS is about data flow: untrusted source → dangerous sink. Break the chain with safe DOM APIs, strict validation, and layered defenses."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Assuming framework escaping protects every manual DOM operation.</li><li>Sanitizing once but later mutating string into another unsafe sink.</li><li>Missing origin checks on <code>postMessage</code> handlers.</li><li>Relying on blacklist regex rules instead of structured parsing/allowlists.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Defense in depth</strong>\n\nUse CSP to restrict script execution and reduce exploit impact if a sink slips through. Adopt Trusted Types in large apps to force controlled creation of HTML/script URLs. Pair client controls with server-side output encoding and validation for full coverage."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: Is escaping enough for all sinks? A: No, sink context matters; URL, HTML, and script contexts differ.\nQ2: Why is DOM XSS tricky? A: It can be introduced entirely in client code after data leaves the server.\nQ3: First practical hardening step? A: Replace dangerous sinks with safe defaults and add CSP policy reporting."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nMap sources and sinks, block dangerous DOM APIs by default, validate structured inputs (especially URLs), and enforce CSP/Trusted Types where possible. Strong interview answers focus on secure data flow, not just one sanitizer call."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-testing-edge-cases-strategy",
@@ -5280,7 +6022,7 @@
       "validation",
       "error-handling"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5380,7 +6122,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-performance-profiling-workflow",
@@ -5397,7 +6146,7 @@
       "browser",
       "best-practices"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5509,16 +6258,25 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-memory-leaks-common-sources",
-    "title": "Memory Leaks in JavaScript: Common Sources and Fixes",
-    "description": "Explain how memory leaks happen in the browser, list common sources (listeners, timers, closures, caches, detached DOM), and show practical cleanup patterns and debugging steps.",
+    "title": "JavaScript Memory Leak Debugging: Common Sources, DevTools Workflow, and Fixes",
+    "description": "Interview-ready guide to debugging JavaScript memory leaks in browser apps: event listeners, timers, detached DOM nodes, unbounded caches, and a repeatable Chrome DevTools workflow using heap snapshots and retaining paths.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
+      "javascript",
+      "frontend-interview",
       "memory",
       "garbage-collection",
       "performance",
@@ -5528,184 +6286,281 @@
       "events",
       "best-practices"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>What is a memory leak?</strong>\n\nA memory leak happens when objects stay referenced and cannot be garbage collected, even though the app no longer needs them. In long-lived SPAs this causes slowdowns, jank, and crashes over time."
+          "text": "<i class='fa-solid fa-memory'></i> <strong>Definition (above the fold)</strong>\n\nA JavaScript memory leak happens when objects remain reachable after they should be discarded. The garbage collector only frees unreachable objects, so leaks are usually retention bugs, not GC bugs. In long-lived frontend apps, leaks show up as rising memory, slower interactions, and eventual tab crashes."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nThink in terms of graph reachability: <code>roots -> references -> objects</code>. If any root path still points to an object (global store, listener, timer, closure, cache), that object survives collection. Fixes remove those retention paths."
         },
         {
           "type": "list",
           "columns": [
             "Leak source",
-            "Why it leaks",
+            "Why it survives GC",
             "Fix pattern"
           ],
           "rows": [
             [
               "Event listeners",
-              "Handlers keep closures alive",
-              "Remove listeners on cleanup"
+              "Handler closures keep state reachable",
+              "Remove listeners on unmount/dispose"
             ],
             [
               "Intervals/timeouts",
-              "Timers keep callbacks reachable",
-              "Clear timers on unmount"
+              "Scheduled callbacks hold captured variables",
+              "Clear timers and null related refs"
             ],
             [
-              "Detached DOM",
-              "Nodes retained by JS references",
-              "Null references; avoid caching DOM nodes"
+              "Detached DOM nodes",
+              "JS references keep removed nodes alive",
+              "Drop references when nodes are removed"
             ],
             [
-              "Global caches",
-              "Maps grow without limits",
-              "Bounded caches + eviction"
+              "Unbounded caches",
+              "Map/array grows without eviction",
+              "Use size limits, TTL, or LRU policies"
             ],
             [
-              "Observers",
-              "Mutation/Intersection observers never disconnected",
-              "Call disconnect() on cleanup"
-            ],
-            [
-              "Closures",
-              "Captured large objects stay alive",
-              "Avoid capturing big data unnecessarily"
+              "Subscriptions/observers",
+              "Stream callbacks remain registered",
+              "Unsubscribe/disconnect during cleanup"
             ]
           ],
-          "caption": "Leaks usually come from forgotten references."
+          "caption": "Most leaks are lifecycle cleanup failures."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: listener + timer lifecycle cleanup</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example: leak from uncleaned listener\nfunction mount(btn) {\n  const handler = () => console.log('click');\n  btn.addEventListener('click', handler);\n  return () => btn.removeEventListener('click', handler);\n}\n\n// Example: cleanup timers\nconst id = setInterval(poll, 2000);\n// later...\nclearInterval(id);"
+          "code": "function mountWidget(root) {\n  const onClick = () => console.log('clicked');\n  const intervalId = setInterval(() => refreshMetrics(), 5000);\n\n  root.addEventListener('click', onClick);\n\n  return function dispose() {\n    root.removeEventListener('click', onClick);\n    clearInterval(intervalId);\n  };\n}"
+        },
+        {
+          "type": "text",
+          "text": "A deterministic <code>dispose()</code> path is one of the most reliable anti-leak patterns for UI components and utilities."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: bounded cache to prevent unbounded growth</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "class LruCache {\n  constructor(limit = 100) {\n    this.limit = limit;\n    this.map = new Map();\n  }\n\n  get(key) {\n    if (!this.map.has(key)) return undefined;\n    const value = this.map.get(key);\n    this.map.delete(key);\n    this.map.set(key, value);\n    return value;\n  }\n\n  set(key, value) {\n    if (this.map.has(key)) this.map.delete(key);\n    this.map.set(key, value);\n    if (this.map.size > this.limit) {\n      const oldestKey = this.map.keys().next().value;\n      this.map.delete(oldestKey);\n    }\n  }\n}"
         },
         {
           "type": "list",
           "columns": [
-            "Step",
-            "What to do",
-            "Why"
+            "DevTools step",
+            "What to inspect",
+            "What indicates a leak"
           ],
           "rows": [
             [
-              "1. Snapshot",
-              "Take a heap snapshot (baseline)",
-              "Know what normal looks like"
+              "Baseline snapshot",
+              "Heap size and dominant object types",
+              "Unexpectedly large baseline after idle"
             ],
             [
-              "2. Reproduce",
-              "Perform the action multiple times",
-              "Amplify the leak"
+              "Reproduce interaction repeatedly",
+              "Object count and heap trend",
+              "Steady upward trend per iteration"
             ],
             [
-              "3. Compare",
-              "Take another snapshot and compare",
-              "Find growing objects"
+              "Compare snapshots",
+              "New retained objects",
+              "Objects persist when feature should be disposed"
             ],
             [
-              "4. Retainers",
-              "Inspect retaining paths",
-              "See what keeps objects alive"
+              "Retainers view",
+              "Reference chain to roots",
+              "Path points to listener, timer, or global cache"
             ]
           ],
-          "caption": "Use the Memory panel to prove the leak."
+          "caption": "Use memory profiling as evidence, not guesswork."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common mistakes</strong>\n\n- Relying on GC to clean up listeners (it will not if references remain).\n- Using global arrays/maps as logs without bounds.\n- Forgetting to unsubscribe from Observables or event buses.\n- Holding DOM nodes in closures after unmount."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Relying on framework unmount without verifying custom listeners/timers are cleaned.</li><li>Keeping debug data in global arrays/maps in production builds.</li><li>Capturing large objects in long-lived closures unnecessarily.</li><li>Treating one snapshot as proof instead of comparing before/after interaction loops.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nAvoid leaks by removing references: detach listeners, clear timers, disconnect observers, and bound caches. Verify with heap snapshots after repeated actions."
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse deep memory profiling when users report progressive slowdown, battery drain, or tab crashes after repeated flows. For one-time short pages, quick cleanup audits may be enough. Avoid premature micro-optimization if memory behavior is stable and bounded under realistic sessions."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: How do you prove a leak, not just temporary growth? A: Repeat the action many times and compare snapshots after idle GC windows.\nQ2: What leaks most in SPAs? A: Forgotten listener/subscription cleanup and unbounded caches.\nQ3: First production safeguard? A: Add disposal contracts and bounded cache policies by default."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nMake cleanup explicit, bound all caches, profile with baseline/compare/retainers, and verify fixes with repeated interaction scenarios. Strong interview answers combine memory model clarity with a practical debugging workflow."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-esm-vs-cjs",
-    "title": "ESM vs CommonJS: Differences, Interop, and Tooling",
-    "description": "Compare ES Modules (ESM) and CommonJS (CJS): syntax, loading model, live bindings, interop pitfalls, and how bundlers/tree-shaking behave. Include Node.js package.json settings and file extensions.",
+    "title": "ESM vs CommonJS in JavaScript: Interop, Packaging, and Build Behavior",
+    "description": "Complete interview answer for ESM vs CommonJS covering static vs dynamic loading, live bindings, Node package exports, interop pitfalls, and why module format affects bundling, optimization, and runtime behavior.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
+      "javascript",
+      "frontend-interview",
       "modules",
       "imports",
       "exports",
       "build",
       "tooling",
-      "optimization"
+      "optimization",
+      "runtime"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Big picture</strong>\n\n<strong>ES Modules (ESM)</strong> are the modern JavaScript module system with static imports/exports. <strong>CommonJS (CJS)</strong> is Node.js’s legacy system using require/module.exports. The key difference is that ESM is statically analyzable, which enables tree-shaking and better tooling."
+          "text": "<i class='fa-solid fa-cubes'></i> <strong>Definition (above the fold)</strong>\n\n<strong>ES Modules (ESM)</strong> are the standard JavaScript module system with static import/export syntax that tools can analyze ahead of time. <strong>CommonJS (CJS)</strong> is the older Node.js module system using <code>require</code> and <code>module.exports</code>. Interviewers care less about syntax and more about <strong>interop and packaging decisions</strong> in real projects."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Mental model</strong>\n\nThink of ESM as statically analyzable graph edges and CJS as runtime-evaluated module loading. Static analysis enables better tree-shaking and optimization. Runtime flexibility in CJS can help legacy systems but complicates analysis."
         },
         {
           "type": "list",
           "columns": [
-            "Topic",
+            "Dimension",
             "ESM",
             "CommonJS"
           ],
           "rows": [
             [
-              "Syntax",
-              "import/export",
-              "require/module.exports"
+              "Import style",
+              "<code>import/export</code>",
+              "<code>require/module.exports</code>"
             ],
             [
-              "Loading",
-              "Static, hoisted",
-              "Dynamic at runtime"
+              "Analysis",
+              "Static graph known at build time",
+              "More dynamic, harder to optimize"
             ],
             [
               "Bindings",
               "Live bindings",
-              "Snapshot values"
+              "Exported object values"
             ],
             [
-              "Tree-shaking",
-              "Works well",
-              "Limited (hard to analyze)"
+              "Async loading",
+              "Native support with <code>import()</code>",
+              "Primarily synchronous <code>require</code>"
             ],
             [
-              "Interop",
-              "Default export vs named exports",
-              "module.exports is a single object"
+              "Tooling fit",
+              "Best for modern bundlers and browsers",
+              "Strong legacy Node ecosystem support"
             ]
           ],
-          "caption": "ESM’s static structure is the big win for tooling."
+          "caption": "Choose format based on ecosystem, runtime, and optimization goals."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: equivalent module exports</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ESM\nexport const add = (a, b) => a + b;\nexport default function sum(arr) {\n  return arr.reduce(add, 0);\n}\n\n// CJS\nconst add = (a, b) => a + b;\nmodule.exports = { add };"
+          "code": "// math.mjs (ESM)\nexport const add = (a, b) => a + b;\nexport default function sum(arr) {\n  return arr.reduce((acc, n) => acc + n, 0);\n}\n\n// math.cjs (CommonJS)\nconst addCjs = (a, b) => a + b;\nfunction sumCjs(arr) {\n  return arr.reduce((acc, n) => acc + n, 0);\n}\nmodule.exports = { add: addCjs, sum: sumCjs };"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-gears'></i> <strong>Node.js module type</strong>\n\nIn Node.js, <code>package.json</code> controls defaults: <code>\"type\": \"module\"</code> makes <code>.js</code> files ESM; <code>\"type\": \"commonjs\"</code> keeps CJS. You can always use <code>.mjs</code> for ESM and <code>.cjs</code> for CJS regardless of the package type."
+          "text": "Same behavior is possible in both systems, but the package boundary and import style define interoperability and optimization quality."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Interop pitfalls</strong>\n\n- CJS <code>module.exports = value</code> becomes ESM <code>default</code> when imported.\n- Named exports from CJS are not always real named exports.\n- Mixing systems can break tree-shaking unless you publish ESM builds."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: package exports map for safer consumption</strong>"
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "code": "{\n  \"name\": \"ui-kit\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"import\": \"./dist/index.js\",\n      \"require\": \"./dist/index.cjs\",\n      \"types\": \"./dist/index.d.ts\"\n    }\n  },\n  \"main\": \"./dist/index.cjs\",\n  \"module\": \"./dist/index.js\"\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Interop pitfall",
+            "Symptom",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Default vs named import mismatch",
+              "<code>undefined is not a function</code> at runtime",
+              "Align export style and import syntax explicitly"
+            ],
+            [
+              "Mixed module entrypoints",
+              "Consumers resolve wrong file in bundlers",
+              "Use consistent <code>exports</code> map"
+            ],
+            [
+              "Transpiler masking module type issues",
+              "Works in dev but breaks in production runtime",
+              "Validate with runtime-native tests"
+            ],
+            [
+              "Dynamic require in shared package",
+              "Poor tree-shaking and larger bundles",
+              "Prefer static imports where possible"
+            ]
+          ],
+          "caption": "Most interview follow-ups focus on these production failures."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nPrefer ESM for new code and libraries. It enables static analysis, tree-shaking, and better tooling. Use CJS only for legacy compatibility or when required by environment constraints."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Publishing ambiguous package entrypoints without an <code>exports</code> map.</li><li>Assuming all tools resolve CJS/ESM the same way.</li><li>Using CJS patterns in ESM codebases and losing optimization opportunities.</li><li>Not testing package consumption in both import and require scenarios.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse ESM by default for modern frontend and new libraries. Keep CJS compatibility only when you must support legacy runtimes or tooling. Do not keep dual formats indefinitely without ownership, because dual-package maintenance can create drift and subtle bugs."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: Why does ESM help optimization? A: Static imports allow bundlers to prune unused code more safely.\nQ2: How do you ship both formats? A: Build dual outputs and define deterministic <code>exports</code> conditions.\nQ3: What breaks most often? A: Default/named interop mismatches and inconsistent runtime/tool resolver behavior."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nPrefer ESM-first packaging, define explicit exports conditions, test import/require consumers, and avoid ambiguous entrypoints. Strong interview answers connect module format to runtime correctness and bundle quality."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-tree-shaking",
@@ -5722,7 +6577,7 @@
       "tree",
       "performance"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5803,102 +6658,155 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-intl-datetime-timezone",
-    "title": "Intl.DateTimeFormat and Time Zones in JavaScript",
-    "description": "Explain how to format dates with Intl.DateTimeFormat, how IANA time zones work, and why manual offset math fails. Include formatToParts, DST pitfalls, and best practices.",
+    "title": "JavaScript Intl.DateTimeFormat: Time Zones, DST, and Reliable Date Formatting",
+    "description": "Practical frontend guide to Intl.DateTimeFormat and time zones: IANA zone IDs, daylight-saving transitions, formatToParts, and robust patterns for presenting user-local dates without fragile manual offset math.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
+      "javascript",
+      "frontend-interview",
       "date-time",
       "intl",
       "time-zones",
-      "timers",
       "best-practices",
       "edge-cases",
-      "strings",
       "browser"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-calendar'></i> <strong>Big idea</strong>\n\nJavaScript dates are stored in UTC milliseconds, but users expect local time zones. <strong>Intl.DateTimeFormat</strong> lets you format a Date for a specific locale and <strong>IANA time zone</strong> (e.g., <code>America/Los_Angeles</code>) without manual offset math."
+          "text": "<i class='fa-solid fa-clock'></i> <strong>Definition (above the fold)</strong>\n\nUse <code>Intl.DateTimeFormat</code> to render dates in the user or business time zone without manual offset arithmetic. The hard part is not formatting tokens. It is handling DST transitions, locale rules, and cross-region consistency. Interviewers want to hear why fixed offset math is unsafe in production apps."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nStore timestamps in UTC, transport as ISO strings, and convert at the presentation edge with an IANA time zone (for example <code>America/New_York</code>). Do not store local wall-clock strings as source-of-truth."
         },
         {
           "type": "list",
           "columns": [
-            "Concept",
-            "What it means",
-            "Why it matters"
+            "Requirement",
+            "Recommended approach",
+            "Why"
           ],
           "rows": [
             [
-              "IANA time zone",
-              "Standard names like America/New_York",
-              "Handles DST rules correctly"
+              "Show user-local time",
+              "Intl.DateTimeFormat with user locale + zone",
+              "Correct locale grammar and DST handling"
             ],
             [
-              "Locale",
-              "Formatting rules (order, separators)",
-              "Controls display style"
+              "Show business-region time",
+              "Pass explicit IANA zone in formatter options",
+              "Consistent cross-user display"
             ],
             [
-              "UTC storage",
-              "Date internally stored as ms since epoch",
-              "Always convert on output"
+              "Build custom UI pieces",
+              "Use <code>formatToParts()</code>",
+              "Stable token extraction without brittle regex"
+            ],
+            [
+              "Sort/filter by time",
+              "Compare UTC timestamps, not formatted strings",
+              "Avoid locale-dependent ordering bugs"
             ]
           ],
-          "caption": "Time zone and locale are independent: time zone changes the clock, locale changes the display."
+          "caption": "Keep UTC for logic, Intl formatting for display."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: stable zone-aware formatting</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "const date = new Date('2020-01-01T00:30:00Z');\n\nconst fmt = new Intl.DateTimeFormat('en-US', {\n  timeZone: 'America/Los_Angeles',\n  year: 'numeric',\n  month: '2-digit',\n  day: '2-digit'\n});\n\nfmt.format(date); // e.g. 12/31/2019\n\n// Stable output using formatToParts:\nconst parts = fmt.formatToParts(date);\nconst map = Object.fromEntries(parts.filter(p => p.type !== 'literal').map(p => [p.type, p.value]));\nconst ymd = `${map.year}-${map.month}-${map.day}`;"
+          "code": "const ts = new Date('2026-03-08T09:30:00Z');\n\nconst fmt = new Intl.DateTimeFormat('en-US', {\n  timeZone: 'America/Los_Angeles',\n  year: 'numeric',\n  month: '2-digit',\n  day: '2-digit',\n  hour: '2-digit',\n  minute: '2-digit',\n  hour12: false\n});\n\nconsole.log(fmt.format(ts));"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Why manual offsets fail</strong>\n\nDaylight Saving Time changes offsets during the year. Subtracting a fixed number of hours can produce incorrect dates. Always use <code>Intl</code> or a time zone–aware library when you need exact local dates."
+          "text": "This safely formats around DST boundaries without hardcoding offsets like UTC-8 or UTC-7."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: formatToParts for composable UI</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function formatParts(date, locale, timeZone) {\n  const parts = new Intl.DateTimeFormat(locale, {\n    timeZone,\n    weekday: 'short',\n    year: 'numeric',\n    month: 'short',\n    day: '2-digit',\n    hour: '2-digit',\n    minute: '2-digit'\n  }).formatToParts(date);\n\n  return Object.fromEntries(parts.map((p) => [p.type, p.value]));\n}\n\nconsole.log(formatParts(new Date(), 'en-GB', 'Europe/London'));"
         },
         {
           "type": "list",
           "columns": [
             "Pitfall",
-            "Example",
-            "Better approach"
+            "What goes wrong",
+            "Better pattern"
           ],
           "rows": [
             [
-              "Using toISOString()",
-              "Always returns UTC",
-              "Use Intl.DateTimeFormat + timeZone"
+              "Fixed offset math",
+              "Breaks during DST transitions",
+              "Use IANA zone + Intl formatter"
             ],
             [
-              "Hard-coded offsets",
-              "-08:00 is wrong in summer",
-              "Let Intl handle DST"
+              "Parsing localized strings",
+              "Inconsistent browser behavior",
+              "Parse ISO input, format only for output"
             ],
             [
-              "Locale assumptions",
-              "MM/DD vs DD/MM confusion",
-              "Use formatToParts or fixed locale"
+              "Using display value for data logic",
+              "Sorting/filtering bugs",
+              "Keep logic on numeric timestamps"
+            ],
+            [
+              "Assuming server timezone",
+              "Cross-region inconsistencies",
+              "Persist UTC and explicit zone metadata"
             ]
           ],
-          "caption": "Most date bugs are caused by wrong assumptions about offsets or locale."
+          "caption": "Most production date bugs are data-modeling mistakes, not syntax mistakes."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Best practices</strong>\n\n- Store timestamps in UTC.\n- Convert to a user’s time zone at the edges (UI).\n- Use IANA time zone IDs.\n- Prefer formatToParts for stable, testable output."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Storing date-only values as midnight local time and getting off-by-one day bugs across regions.</li><li>Rendering with browser default zone when product requirements need business-zone consistency.</li><li>Testing only one locale/time zone and missing DST boundary regressions.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse Intl for display formatting in browser and server-rendered UI. Use timestamp math for calculations and persistence. Do not rely on manually concatenated date strings for mission-critical workflows like billing cutoffs or booking windows."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: Why avoid fixed offsets? A: Offsets change with DST and differ across historical periods.\nQ2: How do you test this reliably? A: Add test cases around DST start/end for multiple IANA zones.\nQ3: What do you store in database? A: UTC instant plus optional business-zone metadata when needed."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nPersist UTC, format with Intl + explicit IANA zones, validate DST edge cases in tests, and keep display concerns separate from business logic. Strong answers show both correctness and maintainability."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-16",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-mock-vs-stub-vs-spy",
@@ -5916,7 +6824,7 @@
       "architecture",
       "async-await"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5978,7 +6886,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-05"
+    "updatedAt": "2026-02-05",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-garbage-collection-and-gc-pauses",
@@ -5996,7 +6911,7 @@
       "browser",
       "best-practices"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -6089,6 +7004,13 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-05"
+    "updatedAt": "2026-02-05",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   }
 ]

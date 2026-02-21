@@ -45,11 +45,11 @@
     },
     "starterCodeHint": "Implement the counter logic inside `<script setup>`. Use `ref(0)` for the value and a `computed` property for the disabled state of the decrement button.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API with `ref(0)` for the count and a `computed` property that returns `true` when the count is 0. The '+' button increments the ref, the '−' button decrements but is guarded so the value never becomes negative, and 'Reset' sets it back to 0.\n\n**Key ideas**\n- Store count in a single `ref`.\n- Derive disabled state from a `computed` value.\n- Guard the decrement so it never sets a negative value.",
+      "overview": "Use Vue 3's Composition API with `ref(0)` for the count and a `computed` property that returns `true` when the count is 0. The '+' button increments the ref, the '−' button decrements but is guarded so the value never becomes negative, and 'Reset' sets it back to 0.\n\n**Key ideas**\n- Store count in a single `ref`.\n- Derive disabled state from a `computed` value.\n- Guard the decrement so it never sets a negative value. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single component with guarded decrement",
-          "prose": "Keep all logic inside `<script setup>` in `App.vue`. Use `const count = ref(0)` to create reactive state. Define a computed property `isZero` that checks `count.value === 0` and bind it to `:disabled` on the decrement button. Implement `inc`, `dec`, and `reset` as simple functions that mutate `count.value`, with `dec` checking that the value is greater than 0 before decrementing."
+          "prose": "Keep all logic inside `<script setup>` in `App.vue`. Use `const count = ref(0)` to create reactive state. Define a computed property `isZero` that checks `count.value === 0` and bind it to `:disabled` on the decrement button. Implement `inc`, `dec`, and `reset` as simple functions that mutate `count.value`, with `dec` checking that the value is greater than 0 before decrementing. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -72,7 +72,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-counter-solution.v1.json",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-contact-form-starter",
@@ -80,7 +87,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "forms",
@@ -89,7 +96,7 @@
       "user-input"
     ],
     "description": {
-      "summary": "Build a contact form in a Vue 3 single file component using the Composition API. You will only work inside <script setup> in App.vue. The template and styles are already provided for you. Validate the user's input and send the form data with a POST request to https://jsonplaceholder.typicode.com/posts, showing loading, success, and error states. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "summary": "Build a contact form in a Vue 3 single file component using the Composition API. You will only work inside &lt;script setup&gt; in App.vue. The template and styles are already provided for you. Validate the user's input and send the form data with a POST request to https://jsonplaceholder.typicode.com/posts, showing loading, success, and error states. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Use Vue 3's Composition API in a single-file component (App.vue).",
@@ -155,7 +162,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-contact-form-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-todo-list",
@@ -163,7 +177,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "vue",
       "lists",
@@ -172,7 +186,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Build a small Todo List in Vue 3 using the Composition API and <script setup>. Users should be able to add tasks, mark them as completed, remove individual tasks, and clear all completed tasks. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "summary": "Build a small Todo List in Vue 3 using the Composition API and &lt;script setup&gt;. Users should be able to add tasks, mark them as completed, remove individual tasks, and clear all completed tasks. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a Todo List as the main UI in App.vue.",
@@ -235,7 +249,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-image-slider",
@@ -247,7 +268,7 @@
       "google"
     ],
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "vue",
       "components",
@@ -256,7 +277,7 @@
       "event-handlers"
     ],
     "description": {
-      "summary": "Build a simple Vue 3 image slider that shows one image at a time and lets the user move between slides with Previous/Next buttons and small dot indicators. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "summary": "Create a basic image slider with next/prev controls and an active index. Guard the index at bounds, update the displayed image and label, and keep disabled states in sync with index. Concepts: vue, components, reactivity. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the image slider UI as the main component.",
@@ -291,7 +312,7 @@
     },
     "starterCodeHint": "Define a `slides` array in `<script setup>` and track the current slide index in a `ref(0)`. Use `computed` values for the current slide, total slide count, and whether previous/next are allowed. Implement `goTo`, `prev`, and `next` to update the index safely.",
     "solutionBlock": {
-      "overview": "Model the image slider as an array of slide objects and a single reactive index stored in a `ref`. Use `computed` properties to derive the current slide, total slide count, and whether the user can go to the previous or next slide. Expose three handlers: `goTo(index)` for jumping to a specific slide (guarded by bounds), `prev()` for moving one step left when possible, and `next()` for moving one step right when possible.\n\n**Key ideas**\n- Store only the current index as reactive state; everything else is derived.\n- Use `computed` for `currentSlide`, `canGoPrev`, and `canGoNext` so the template stays simple.\n- Guard navigation so the index never goes out of range.",
+      "overview": "Model the image slider as an array of slide objects and a single reactive index stored in a `ref`. Use `computed` properties to derive the current slide, total slide count, and whether the user can go to the previous or next slide. Expose three handlers: `goTo(index)` for jumping to a specific slide (guarded by bounds), `prev()` for moving one step left when possible, and `next()` for moving one step right when possible.\n\n**Key ideas**\n- Store only the current index as reactive state; everything else is derived.\n- Use `computed` for `currentSlide`, `canGoPrev`, and `canGoNext` so the template stays simple.\n- Guard navigation so the index never goes out of range. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component slider with derived navigation state",
@@ -318,7 +339,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-image-slider-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-tabs-switcher",
@@ -367,7 +395,7 @@
     },
     "starterCodeHint": "Implement the tab state and handlers inside `<script setup>`. Use `ref('overview')` for the active tab and a small helper like `isActive(tab)` to decide which tab is highlighted and which panel is shown.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API with a single `ref` holding the active tab id. The tab buttons update that ref when clicked, and a helper like `isActive(tab)` is used in the template for both styling and conditional rendering.\n\n**Key ideas**\n- Store the active tab id in a single `ref`.\n- Drive the active pill style and visible panel from the same source of truth.\n- Keep all logic colocated with the component template using `<script setup>`.",
+      "overview": "Use Vue 3's Composition API with a single `ref` holding the active tab id. The tab buttons update that ref when clicked, and a helper like `isActive(tab)` is used in the template for both styling and conditional rendering.\n\n**Key ideas**\n- Store the active tab id in a single `ref`.\n- Drive the active pill style and visible panel from the same source of truth.\n- Keep all logic colocated with the component template using `<script setup>`. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with `activeTab` ref and helper function",
@@ -394,7 +422,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-tabs-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-filterable-user-list",
@@ -402,7 +437,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "tags": [
       "vue",
       "components",
@@ -446,7 +481,7 @@
     },
     "starterCodeHint": "Define a constant USERS array with name, role, and active. Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`, and derive `filteredUsers` in a `computed` that applies all three filters.",
     "solutionBlock": {
-      "overview": "The core of this exercise is combining three filters (search text, role selection, and an \"only active\" toggle) into a single derived list without mutating the original user data.\n\n**Key ideas**\n- Keep the base `USERS` list as a plain constant.\n- Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`.\n- Use a `computed` `filteredUsers` that applies all filters in sequence.\n- Render `filteredUsers` with `v-for`, and show an empty state when it is empty.\n\n**Test cases**\n- Default render shows all users.\n- Typing a partial name filters to matching users.\n- Changing the role filter to `Admin` shows only admins, `All` restores all roles.\n- Ticking \"Only active users\" hides inactive users.\n- When filters exclude all users, a \"no users\" message is rendered.",
+      "overview": "The core of this exercise is combining three filters (search text, role selection, and an \"only active\" toggle) into a single derived list without mutating the original user data.\n\n**Key ideas**\n- Keep the base `USERS` list as a plain constant.\n- Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`.\n- Use a `computed` `filteredUsers` that applies all filters in sequence.\n- Render `filteredUsers` with `v-for`, and show an empty state when it is empty.\n\n**Test cases**\n- Default render shows all users.\n- Typing a partial name filters to matching users.\n- Changing the role filter to `Admin` shows only admins, `All` restores all roles.\n- Ticking \"Only active users\" hides inactive users.\n- When filters exclude all users, a \"no users\" message is rendered. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single `<App.vue>` with `ref` state and computed `filteredUsers`",
@@ -476,7 +511,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-filterable-user-list-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-accordion-faq",
@@ -484,7 +526,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "vue",
       "components",
@@ -555,7 +597,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-pagination-table",
@@ -563,7 +612,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "tags": [
       "vue",
       "components",
@@ -634,7 +683,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-pagination-table-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-theme-toggle",
@@ -642,7 +698,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "composition-api",
@@ -717,7 +773,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-theme-toggle-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-multi-step-form",
@@ -725,7 +788,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "forms",
@@ -806,7 +869,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-multi-step-form-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-shopping-cart",
@@ -814,7 +884,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -891,7 +961,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-shopping-cart-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-debounced-search",
@@ -899,7 +976,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 2,
     "tags": [
       "vue",
       "composition-api",
@@ -947,7 +1024,7 @@
     },
     "starterCodeHint": "Use `ref('')` for `query`, `ref([])` for `results`, and a `watch(query, ...)` that starts a 500ms `setTimeout` and clears it in `onInvalidate`. Inside the timeout, call `fakeApiSearch(trimmedQuery)` and update loading, error, and results accordingly.",
     "solutionBlock": {
-      "overview": "Keep all logic inside `<script setup>` in `App.vue`. Use `ref` for `query`, `results`, `isLoading`, and `error`. Implement a `watch(query, ...)` that debounces the search by 500ms using `setTimeout`. In the watcher:\n\n1. If the trimmed query is empty, immediately clear results and reset flags.\n2. Otherwise, set `isLoading` to `true`, clear `error`, and schedule a 500ms timeout.\n3. In the timeout callback, call `fakeApiSearch(trimmed)` and update `results` and `isLoading` on success or set `error` on failure.\n\nUse `onInvalidate` in the watcher to clear the timeout so older changes cannot trigger stale API calls.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown.",
+      "overview": "Keep all logic inside `<script setup>` in `App.vue`. Use `ref` for `query`, `results`, `isLoading`, and `error`. Implement a `watch(query, ...)` that debounces the search by 500ms using `setTimeout`. In the watcher:\n\n1. If the trimmed query is empty, immediately clear results and reset flags.\n2. Otherwise, set `isLoading` to `true`, clear `error`, and schedule a 500ms timeout.\n3. In the timeout callback, call `fakeApiSearch(trimmed)` and update `results` and `isLoading` on success or set `error` on failure.\n\nUse `onInvalidate` in the watcher to clear the timeout so older changes cannot trigger stale API calls.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown. Key concepts: vue, composition-api, watch.",
       "approaches": [
         {
           "title": "Single component with `watch` and debounced API call",
@@ -977,7 +1054,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-star-rating",
@@ -1026,7 +1110,7 @@
     },
     "starterCodeHint": "Inside `<script setup>`, use a `ref(0)` for the current rating and a `computed` list of stars. Implement a `handleRate` function that updates the rating when a star is clicked.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API with a `ref(0)` for `rating` and a `ref(5)` for `max`. Derive a list of star indices (1..max) via `computed`, render them with `v-for`, and apply a `filled` class when `star <= rating`. A `handleRate` function sets `rating.value` to the clicked star index.\n\n**Key ideas**\n- Keep all logic inside `<script setup>` in `App.vue`.\n- Represent the rating as a single `ref`.\n- Generate stars from data instead of hardcoding them.\n- Use class binding to toggle filled vs empty stars.",
+      "overview": "Use Vue 3's Composition API with a `ref(0)` for `rating` and a `ref(5)` for `max`. Derive a list of star indices (1..max) via `computed`, render them with `v-for`, and apply a `filled` class when `star <= rating`. A `handleRate` function sets `rating.value` to the clicked star index.\n\n**Key ideas**\n- Keep all logic inside `<script setup>` in `App.vue`.\n- Represent the rating as a single `ref`.\n- Generate stars from data instead of hardcoding them.\n- Use class binding to toggle filled vs empty stars. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with reactive rating and computed stars",
@@ -1056,7 +1140,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-star-rating-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-dynamic-table",
@@ -1105,7 +1196,7 @@
     },
     "starterCodeHint": "Implement the logic inside `<script setup>`. Use `ref(3)` and `ref(4)` for the initial row/column inputs, keep `rows` and `cols` in refs that you rebuild in an `updateTable()` function, and drive the table with nested `v-for` loops over those arrays.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API to keep four main reactive values: `rowInput`, `colInput`, `rows`, and `cols`. The numeric inputs use `v-model.number` to update `rowInput` and `colInput`. When the user clicks the \"Generate table\" button, `updateTable()` normalizes those values (e.g. clamp to 0–20) and rebuilds `rows` and `cols` with `Array.from`. The template uses nested `v-for` loops to render `<tr>` and `<td>` elements, and each cell displays its 1-based row and column index.\n\n**Key ideas**\n- Separate raw input state from the arrays you actually render.\n- Normalize user input before building the grid.\n- Use nested `v-for` loops for grid-like layouts.",
+      "overview": "Use Vue 3's Composition API to keep four main reactive values: `rowInput`, `colInput`, `rows`, and `cols`. The numeric inputs use `v-model.number` to update `rowInput` and `colInput`. When the user clicks the \"Generate table\" button, `updateTable()` normalizes those values (e.g. clamp to 0–20) and rebuilds `rows` and `cols` with `Array.from`. The template uses nested `v-for` loops to render `<tr>` and `<td>` elements, and each cell displays its 1-based row and column index.\n\n**Key ideas**\n- Separate raw input state from the arrays you actually render.\n- Normalize user input before building the grid.\n- Use nested `v-for` loops for grid-like layouts. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with reactive inputs and `v-for`-driven grid",
@@ -1133,7 +1224,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-table-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-nested-checkboxes",
@@ -1141,7 +1239,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "components",
@@ -1211,7 +1309,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-autocomplete-search",
@@ -1219,7 +1324,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "vue",
       "composition-api",
@@ -1306,7 +1411,14 @@
       "apple"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-transfer-list",
@@ -1314,7 +1426,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "vue",
       "components",
@@ -1325,7 +1437,7 @@
       "inputs"
     ],
     "description": {
-      "summary": "Build a Vue 3 “Transfer List” component that lets users select items (via checkboxes) from two lists (Top and Bottom) and move the selected items between them using arrow buttons. Vue focus: manage selection with reactive arrays and computed helpers. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "summary": "This UI should keep item order stable, clear selection after transfer, and avoid no-op actions when nothing is selected. Concepts: vue, components, reactivity, derived state, event handlers, lists, inputs. Vue focus: manage selection with reactive arrays and computed helpers. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1357,11 +1469,11 @@
     },
     "starterCodeHint": "Store items in `ref<Item[]>` and selections in `ref<Set<string>>`. Use computed values to enable/disable arrows. When toggling selection, always replace with a new Set.",
     "solutionBlock": {
-      "overview": "Use two reactive arrays for Top and Bottom items and two reactive `Set`s for selected ids. Button enablement is derived from `selected.size`. Moving is done by splitting source items into `moved` and `remaining`, updating both lists, and clearing the source selection.\n\n**Key ideas**\n- Keep selection state per-list (two Sets).\n- Replace Sets with new instances to trigger updates.\n- Move appends to the destination list and clears source selection.",
+      "overview": "Transfer lists are common in admin tools. The key is to move only the selected items, preserve ordering, and reset selection so the UI doesn’t show stale checked states. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single component with per-list selection sets",
-          "prose": "Keep everything in `App.vue` using `<script setup>`. Represent the two lists as `ref<Item[]>`. Represent selections as `ref<Set<string>>`. `toggleTop/toggleBottom` clone the previous Set and add/remove ids. `moveDown/moveUp` build `moved` and `remaining` arrays from the source list, update destination via append, update source to remaining, and clear source selection."
+          "prose": "Track selections as Sets for quick lookup. When transferring, split the source list into moved and remaining, append moved to the destination, and then clear the selection set. Disable the transfer button when the selection set is empty to prevent no-op clicks. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1384,7 +1496,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-transfer-list-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-tictactoe",
@@ -1392,7 +1511,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "vue",
       "composition-api",
@@ -1403,7 +1522,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build a simple 3×3 Tic-Tac-Toe game in Vue 3. Two players take turns placing X and O. Detect wins/draws and allow resetting the game. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "summary": "Build a Tic-Tac-Toe game in Vue with alternating turns, win/draw detection, and a reset button. Prevent overwriting moves and show clear status messages for current player and outcome so the game is easy to follow. Concepts: vue, composition api, reactivity, event handlers, derived state, arrays, control flow. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the Tic-Tac-Toe UI as the main component.",
@@ -1440,11 +1559,11 @@
     },
     "starterCodeHint": "Implement `calculateWinner`, derive `isDraw`, `isGameOver`, and `status` via `computed`, then implement `play(i)` and `reset()` inside `<script setup>`.",
     "solutionBlock": {
-      "overview": "Keep a 9-cell board in a `ref`. Derive winner/draw/game-over and status via `computed`. On click, ignore if game is over or the cell is filled; otherwise place the current player's mark and toggle the player if the game is still ongoing. Provide reset to restore initial state.\n\n**Test cases**\n- Start → `Next: X`.\n- Moves alternate X/O.\n- Filled cell click → no-op.\n- Winning line → `Winner: X|O`, no more moves.\n- Full board with no winner → `Draw`.\n- Reset → clears board and sets `Next: X`.",
+      "overview": "Tic-Tac-Toe tests basic state management and derived UI. Track a 9-cell board and the current player, prevent overwriting moves, check for a winner after each move, and declare a draw when the board is full. Provide a reset for a clean restart. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single SFC with refs + computed derived state",
-          "prose": "Use a single `App.vue` with `ref` for `board` and `currentPlayer`. Use `computed` for `winner`, `isDraw`, `isGameOver`, and `status`. Render the grid with `v-for` and disable cells when filled or game over."
+          "prose": "Use ref for the board array and current player. On cell click, guard against filled cells or game over, update the board, compute winner via the 8 combos, and toggle player if no winner. Render status text and a reset button so users always know the game state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1471,7 +1590,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-like-button",
@@ -1521,11 +1647,11 @@
     },
     "starterCodeHint": "Implement `toggleLike()` and update both `liked` and `count`. Ensure the count never drops below 0.",
     "solutionBlock": {
-      "overview": "Use `ref(false)` for liked and `ref(120)` for count. On click, flip liked and update count: +1 when liking, -1 when unliking, clamped to never go below 0.",
+      "overview": "Use two reactive refs: `liked` (boolean) and `count` (number). The click handler flips `liked` and adjusts `count` by +1 or -1. Clamp the count to zero on unlike so the UI never goes negative. This is a simple but realistic state-sync exercise. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with guarded toggle",
-          "prose": "Keep everything in `App.vue` using `<script setup>`. Use `liked` + `count` refs. Implement `toggleLike()` that checks current liked state, updates count accordingly, then flips liked."
+          "prose": "In `<script setup>`, define `const liked = ref(false)` and `const count = ref(0)`. Implement `toggleLike()` that checks the current `liked.value` and updates `count.value` accordingly, using `Math.max(0, count.value - 1)` when unliking. Then flip `liked.value`. Bind the button text to `liked` and render the count next to it."
         }
       ],
       "notes": {
@@ -1551,7 +1677,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-progress-bar-thresholds",
@@ -1559,7 +1692,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "vue",
       "reactivity",
@@ -1601,11 +1734,11 @@
     },
     "starterCodeHint": "Use `const progress = ref(0)`. Implement `inc/dec` with clamping. Compute `barClass` from progress (<34 red, 34–66 orange, >66 green). Bind `:style=\"{ width: progress + '%' }\"` on the fill.",
     "solutionBlock": {
-      "overview": "Store progress in a `ref`. Implement +10/−10 handlers that clamp progress to [0, 100]. Use a computed property for the fill color class based on thresholds and bind width via inline style.",
+      "overview": "A progress bar is a simple state-driven component: one numeric value controls width, label, and color. Clamp the value between 0 and 100, show the percentage, and compute a color class based on thresholds to communicate status clearly and consistently across updates. This keeps the UI declarative and predictable.",
       "approaches": [
         {
           "title": "Single component with clamped progress + computed threshold class",
-          "prose": "Keep everything in `App.vue` with `<script setup>`. `progress` is a `ref(0)`. `inc()` does `progress.value = Math.min(100, progress.value + 10)`. `dec()` does `progress.value = Math.max(0, progress.value - 10)`. `barClass` is a computed string: `bar red` / `bar orange` / `bar green` based on thresholds."
+          "prose": "Define progress = ref(0) and inc/dec handlers that clamp with Math.min/Math.max. Create a computed barClass for threshold colors and bind the fill width with a style binding. Render the numeric percentage so the UI remains transparent to the user, and keep all styling derived from state rather than manual DOM tweaks."
         }
       ],
       "notes": {
@@ -1628,7 +1761,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-progress-bar-thresholds-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-nested-comments",
@@ -1636,7 +1776,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "composition-api",
@@ -1679,11 +1819,11 @@
     },
     "starterCodeHint": "Keep `comments` as a `ref<CommentNode[]>`. Track `topDraft`, `activeReplyId`, and `replyDraft` with `ref`. Implement `findById` (DFS) and recursive rendering with a local component. Make sure text colors are explicitly set for dark UI readability.",
     "solutionBlock": {
-      "overview": "Maintain a comment tree in state. Add top-level comments by unshifting a new node into the root array. For replies, track `activeReplyId` and `replyDraft` so only one reply input is visible. When submitting a reply, find the parent node by id (DFS) and push a new child into `children`. Render the tree recursively and indent each node by `depth * 16`.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background.",
+      "overview": "Maintain a comment tree in state. Add top-level comments by unshifting a new node into the root array. For replies, track `activeReplyId` and `replyDraft` so only one reply input is visible. When submitting a reply, find the parent node by id (DFS) and push a new child into `children`. Render the tree recursively and indent each node by `depth * 16`.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single <App.vue> with Composition API + local recursive component",
-          "prose": "1) Store comments in a `ref<CommentNode[]>`.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `openReply`, `cancelReply`, `submitReply`.\n4) Implement `findById` DFS to locate a node.\n5) Create a local recursive component `Tree` (defineComponent) to render nodes and call itself for children.\n6) Apply consistent dark UI styles with explicit text colors."
+          "prose": "1) Store comments in a `ref<CommentNode[]>`.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `openReply`, `cancelReply`, `submitReply`.\n4) Implement `findById` DFS to locate a node.\n5) Create a local recursive component `Tree` (defineComponent) to render nodes and call itself for children.\n6) Apply consistent dark UI styles with explicit text colors. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1706,7 +1846,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-nested-comments-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-dynamic-counter-buttons",
@@ -1714,7 +1861,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "components",
@@ -1754,11 +1901,11 @@
     },
     "starterCodeHint": "Use `const counts = ref<number[]>([0])`. Implement `onClick(i)` to increment `counts.value[i]` and then `counts.value.push(0)`.",
     "solutionBlock": {
-      "overview": "Keep an array of counts in a single `ref`. Render one button per entry. On click, increment only the clicked index and append a new `0` at the end.\n\n**Test cases**\n- Start: [0]\n- Click index 0 → [1,0]\n- Click index 1 → [1,1,0]\n- Click index 0 again → [2,1,0,0]",
+      "overview": "This combines list state and counter state. Keep step values in a reactive array, render them with v-for, and update the count with a single click handler. The UI should reflect edits immediately. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single component with counts[] array",
-          "prose": "1) Initialize `counts` as `[0]` in a `ref`.\n2) Render: `v-for=\"(c,i) in counts\"`.\n3) `onClick(i)`: increment `counts.value[i]` and `push(0)`.\n\nThis matches the spec exactly and stays small."
+          "prose": "Use a controlled input to add steps, update the array immutably, and render buttons from the list. On click, update count.value += step. Validate inputs (e.g., numeric only) to avoid NaN state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1781,7 +1928,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-chips-input-autocomplete",
@@ -1871,7 +2025,14 @@
       "airbnb"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-chessboard-click-highlight",
@@ -1879,7 +2040,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "vue",
       "composition-api",
@@ -1953,7 +2114,14 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-snake-game",
@@ -2040,6 +2208,13 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   }
 ]

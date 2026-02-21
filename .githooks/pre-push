@@ -34,7 +34,8 @@ ZERO_SHA="0000000000000000000000000000000000000000"
 CHANGED_FILES="$(mktemp)"
 BEFORE_STATE="$(mktemp)"
 AFTER_STATE="$(mktemp)"
-trap 'rm -f "$CHANGED_FILES" "$BEFORE_STATE" "$AFTER_STATE"' EXIT
+SYNC_DIFF="$(mktemp)"
+trap 'rm -f "$CHANGED_FILES" "$BEFORE_STATE" "$AFTER_STATE" "$SYNC_DIFF"' EXIT
 
 # Collect file paths included in the refs that are being pushed.
 while read -r local_ref local_sha remote_ref remote_sha; do
@@ -60,6 +61,16 @@ while read -r local_ref local_sha remote_ref remote_sha; do
 done
 
 sort -u -o "$CHANGED_FILES" "$CHANGED_FILES"
+
+echo "[pre-push] Verifying frontend assets/questions and cdn/questions are in sync..."
+if ! diff -qr frontend/src/assets/questions cdn/questions > "$SYNC_DIFF"; then
+  echo "[pre-push] ERROR: cdn/questions is out of sync with frontend/src/assets/questions." >&2
+  echo "[pre-push] Sync command: rsync -a --delete frontend/src/assets/questions/ cdn/questions/" >&2
+  echo "[pre-push] Differences (first 50):" >&2
+  sed -n '1,50p' "$SYNC_DIFF" >&2 || true
+  exit 1
+fi
+echo "[pre-push] OK: cdn/questions is in sync."
 
 if grep -Eq '^frontend/src/assets/questions/(javascript|react|angular|vue|html|css)/(coding|trivia)\.json$' "$CHANGED_FILES"; then
   echo "[pre-push] Detected question-bank JSON changes. Running importance rubric apply..."

@@ -112,6 +112,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular constructor vs ngOnInit vs ngAfterViewInit",
+      "description": "Learn what each hook is for, when inputs and view are ready, and why DOM/ViewChild access usually belongs in ngAfterViewInit except static ViewChild cases."
     }
   },
   {
@@ -261,6 +265,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular vs AngularJS: Key Differences and Migration Reality",
+      "description": "Compare AngularJS (1.x) and Angular (2+) across architecture, TypeScript, tooling, and change detection, and why migration means real rewrites."
     }
   },
   {
@@ -393,6 +401,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Component vs Service Responsibilities",
+      "description": "Understand what belongs in components versus services, how to keep UI layers thin, and where to place business logic, HTTP calls, caching, and state."
     }
   },
   {
@@ -525,6 +537,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular @Component Metadata: What It Defines and Why",
+      "description": "Learn what selector, template, styles, imports, and providers metadata do, and why Angular needs this configuration to compile and instantiate components."
     }
   },
   {
@@ -640,6 +656,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular NgModules vs Standalone: What Still Needs Modules?",
+      "description": "Understand what standalone components replace, which legacy and library scenarios still rely on NgModules, and how to choose boundaries during migration."
     }
   },
   {
@@ -815,6 +835,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Standalone Era: What Replaces AppModule?",
+      "description": "See what moved from AppModule to bootstrapApplication, route providers, and component imports, plus DI-scope pitfalls to test when migrating existing apps."
     }
   },
   {
@@ -1219,6 +1243,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Data Binding Explained: One-Way, Events, and Two-Way",
+      "description": "Learn interpolation, property/attribute/class/style bindings, event bindings, and two-way patterns so component state and templates stay predictable."
     }
   },
   {
@@ -1491,6 +1519,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Event Binding: DOM Events vs @Output Events",
+      "description": "Understand how (event) bindings pass $event, how child @Output emits differ from native events, and why rapid events can trigger costly change detection."
     }
   },
   {
@@ -1664,6 +1696,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Directives Explained: Structural, Attribute, and * Syntax",
+      "description": "Learn the three directive types, how * syntax desugars to ng-template, and when to use HostBinding/HostListener or TemplateRef/ViewContainerRef APIs."
     }
   },
   {
@@ -1794,6 +1830,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Structural vs Attribute Directives in Angular",
+      "description": "See how structural directives create/destroy views while attribute directives modify elements, and what * syntax means for lifecycle and DOM updates."
     }
   },
   {
@@ -2120,6 +2160,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular *ngFor trackBy: Why It Matters for Performance",
+      "description": "Understand how trackBy preserves DOM nodes and component state during list updates, and what breaks when keys are unstable, missing, or index-based."
     }
   },
   {
@@ -2293,6 +2337,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Services and DI: providedIn, providers, and Scope",
+      "description": "Learn what an Angular service should own, how DI scope changes instance lifetime, and when to provide in root, route, module, or component."
     }
   },
   {
@@ -2490,6 +2538,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Dependency Injection Explained: Providers, Tokens, Scope",
+      "description": "Learn how Angular DI resolves providers in the injector hierarchy, when to provide in root or component scope, and how to prevent duplicate instances."
     }
   },
   {
@@ -2621,6 +2673,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Constructor vs ngOnInit in Angular: Timing and Responsibilities",
+      "description": "Understand when constructor runs versus ngOnInit, what can safely use @Input values, and where to place DI setup, side effects, and initialization logic."
     }
   },
   {
@@ -2822,6 +2878,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Pipes Explained: Built-In, Async, Pure vs Impure",
+      "description": "Learn how Angular pipes transform template values, how async pipe manages subscriptions, and when impure pipes hurt performance in change detection."
     }
   },
   {
@@ -2929,6 +2989,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Custom Two-Way Binding in Angular: Input/Output Pattern",
+      "description": "Implement [(value)] with @Input value and @Output valueChange, follow naming rules, and prevent broken bindings from missing emits or mismatched names."
     }
   },
   {
@@ -3118,6 +3182,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Lifecycle Hooks: Order, Use Cases, and Pitfalls",
+      "description": "See when each hook runs, what belongs in ngOnChanges, ngOnInit, ngAfterViewInit, and ngOnDestroy, and how to prevent DOM timing and cleanup bugs."
     }
   },
   {
@@ -3252,6 +3320,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "@Input and @Output in Angular: Data Flow and Pitfalls",
+      "description": "Understand parent-to-child inputs and child-to-parent outputs, update timing, and common mistakes with EventEmitter, OnPush, and mutable object references."
     }
   },
   {
@@ -3504,6 +3576,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Observables and RxJS: Async Pipe, Operators, Cancellation",
+      "description": "Learn how Observables work, when streams are cold or hot, how async pipe manages subscriptions, and how operators prevent nested subscribes and leaks."
     }
   },
   {
@@ -3594,6 +3670,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Routing Explained: Route Config, RouterLink, Navigation",
+      "description": "Understand how Angular Router maps paths to components, configures child routes and guards, and enables SPA navigation without full page reloads."
     }
   },
   {
@@ -3700,6 +3780,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Lazy Loading: Route-Based Code Splitting Basics",
+      "description": "Learn how lazy-loaded routes reduce initial bundle size, improve first-load performance, and what to watch for with preloading and shared dependencies."
     }
   },
   {
@@ -3793,6 +3877,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Change Detection: Default vs OnPush Strategy",
+      "description": "Compare Default and OnPush change detection, understand when Angular checks views, and avoid stale UI bugs with immutable updates and proper trigger paths."
     }
   },
   {
@@ -3863,6 +3951,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "How Zone.js Triggers Angular Change Detection",
+      "description": "Understand how Zone.js patches async APIs like events, timers, and promises so Angular knows when to run change detection and update the view."
     }
   },
   {
@@ -3965,6 +4057,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "ngOnChanges vs ngDoCheck in Angular: Key Differences",
+      "description": "Learn when ngOnChanges runs for @Input updates, when ngDoCheck is needed for custom checks, and how to avoid expensive manual detection logic."
     }
   },
   {
@@ -4077,6 +4173,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular forRoot vs forChild: Routing, Providers, and Singletons",
+      "description": "Learn when to use forRoot and forChild, how they prevent duplicate providers, and how root vs feature module configuration impacts DI scope and routing."
     }
   },
   {
@@ -4233,6 +4333,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular Performance Optimization for Large Applications",
+      "description": "Understand practical Angular performance levers: OnPush, lazy loading, trackBy, AOT, bundle trimming, and profiling to reduce detection and render cost."
     }
   },
   {
@@ -4383,6 +4487,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular OnPush Change Detection: Real Bug Debugging Guide",
+      "description": "See what triggers OnPush checks, why object mutation causes stale UI, and how markForCheck, immutable updates, and async pipe fix production bugs."
     }
   },
   {
@@ -4543,6 +4651,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "switchMap vs mergeMap vs concatMap vs exhaustMap in Angular",
+      "description": "Choose the right RxJS flattening operator for search, save, and submit flows by understanding cancellation, concurrency, queuing, and ignored triggers."
     }
   },
   {
@@ -4834,6 +4946,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "ControlValueAccessor in Angular vs Custom Two-Way Binding",
+      "description": "Learn why CVA integrates with Angular Forms validation, touched/dirty state, and disabled handling, while custom two-way binding only syncs value changes."
     }
   },
   {
@@ -4987,6 +5103,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Template-Driven vs Reactive Forms in Angular: Which Scales?",
+      "description": "Compare template-driven and reactive forms by scalability, testability, dynamic validation, and maintainability to choose the right approach for each form."
     }
   },
   {
@@ -5176,6 +5296,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "RxJS shareReplay in Angular: Caching Benefits and Hidden Bugs",
+      "description": "Learn how shareReplay shares and replays streams, when it helps HTTP caching, and how wrong refCount or buffer settings cause stale data and memory leaks."
     }
   },
   {
@@ -5350,6 +5474,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Angular HTTP Cancellation: What Really Aborts Requests?",
+      "description": "Understand which patterns actually cancel HttpClient calls (unsubscribe, switchMap, takeUntil, async pipe) and which patterns only ignore late responses."
     }
   },
   {

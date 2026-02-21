@@ -5,7 +5,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -67,7 +67,14 @@
     "solutionAsset": "assets/sb/react/solution/react-counter-solution.v1.json",
     "companies": [],
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-contact-form-starter",
@@ -75,7 +82,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "react",
       "forms",
@@ -153,7 +160,14 @@
       "netflix"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-todo-list",
@@ -161,7 +175,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -233,7 +247,14 @@
     "solutionAsset": "assets/sb/react/solution/react-todo-list-solution.v1.json",
     "companies": [],
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-image-slider",
@@ -241,7 +262,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -315,7 +336,14 @@
       "google"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-tabs-switcher",
@@ -389,7 +417,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-filterable-user-list",
@@ -397,7 +432,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "react",
       "state",
@@ -470,7 +505,14 @@
     "solutionAsset": "assets/sb/react/solution/react-filterable-user-list-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-accordion-faq",
@@ -478,7 +520,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -548,7 +590,14 @@
     "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-pagination-table",
@@ -556,7 +605,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "react",
       "state",
@@ -628,7 +677,14 @@
     "solutionAsset": "assets/sb/react/solution/react-pagination-table-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-theme-toggle",
@@ -636,7 +692,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "react",
       "context",
@@ -710,7 +766,14 @@
     "solutionAsset": "assets/sb/react/solution/react-theme-toggle-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-multi-step-signup",
@@ -718,7 +781,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "react",
       "forms",
@@ -796,7 +859,14 @@
     "solutionAsset": "assets/sb/react/solution/react-multi-step-form-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-shopping-cart",
@@ -804,7 +874,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -883,7 +953,14 @@
     "solutionAsset": "assets/sb/react/solution/react-shopping-cart-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-debounced-search",
@@ -891,7 +968,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -970,7 +1047,14 @@
     "solutionAsset": "assets/sb/react/solution/react-debounced-search-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-star-rating",
@@ -978,7 +1062,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1049,7 +1133,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-dynamic-table",
@@ -1057,7 +1148,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1125,7 +1216,14 @@
     "solutionAsset": "assets/sb/react/solution/react-dynamic-table-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-nested-checkboxes",
@@ -1133,7 +1231,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1203,7 +1301,14 @@
     "solutionAsset": "assets/sb/react/solution/react-nested-checkboxes-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-autocomplete-search-starter",
@@ -1211,7 +1316,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "react",
       "hooks",
@@ -1288,7 +1393,14 @@
       "apple"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-transfer-list",
@@ -1296,7 +1408,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1367,7 +1479,14 @@
       "meta"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-tictactoe",
@@ -1375,7 +1494,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1453,7 +1572,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-use-effect-once",
@@ -1461,7 +1587,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "react",
       "hooks",
@@ -1527,7 +1653,14 @@
       "netflix"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-like-button",
@@ -1535,7 +1668,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1604,7 +1737,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-progress-bar-thresholds",
@@ -1612,7 +1752,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1682,7 +1822,14 @@
     "solutionAsset": "assets/sb/react/solution/react-progress-bar-thresholds-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-nested-comments",
@@ -1690,7 +1837,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1762,7 +1909,14 @@
       "google"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-dynamic-counter-buttons",
@@ -1770,7 +1924,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1839,7 +1993,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-debug-double-render",
@@ -1847,7 +2008,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "debugging",
@@ -1916,7 +2077,14 @@
       "openai"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-chat-streaming-ui",
@@ -1924,7 +2092,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -1993,7 +2161,14 @@
       "openai"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-chips-input-autocomplete",
@@ -2001,7 +2176,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -2081,7 +2256,14 @@
       "airbnb"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-chessboard-click-highlight",
@@ -2089,7 +2271,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -2164,7 +2346,14 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "react-snake-game",
@@ -2172,7 +2361,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "hard",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "react",
       "state",
@@ -2250,6 +2439,13 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   }
 ]

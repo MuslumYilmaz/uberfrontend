@@ -1,11 +1,11 @@
 [
   {
     "id": "infinite-scroll-list",
-    "title": "Infinite Scroll List",
+    "title": "Infinite Scroll List System Design",
     "companies": [
       "google"
     ],
-    "description": "Design an infinite scroll list that progressively loads more items from a paginated API as the user scrolls down. Focus on achieving smooth scrolling, clear loading/error states, and keeping DOM size reasonable as the list grows.\n\nKey considerations include: when to load more data, how to detect scroll boundaries efficiently, how to show skeleton placeholders without causing layout jumps, and when it becomes necessary to introduce list virtualization.",
+    "description": "Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.",
     "tags": [
       "infinite-scroll",
       "virtualization",
@@ -305,8 +305,8 @@
   },
   {
     "id": "ai-ux-considerations",
-    "title": "AI UX Resilience and Controls",
-    "description": "Design the UX state machine for AI responses: streaming indicators, cancel/stop, retries, and rate-limit handling. Focus on keeping the user in control when responses are slow or fail.",
+    "title": "AI UX Resilience and Control Patterns",
+    "description": "Design AI response UX with streaming states, cancel/retry controls, and rate-limit handling so users stay in control during slow or failed outputs.",
     "tags": [
       "ux",
       "error-handling",

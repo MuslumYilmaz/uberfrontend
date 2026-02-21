@@ -5,7 +5,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 3,
     "tags": [
       "html",
       "basics",
@@ -13,7 +13,7 @@
       "beginner"
     ],
     "description": {
-      "summary": "Create a minimal HTML document that includes a title, a main heading, and a paragraph.",
+      "summary": "Build a valid HTML document skeleton with `&lt;!doctype html&gt;`, `&lt;html&gt;`, `&lt;head&gt;`, and `&lt;body&gt;`. Include a `&lt;meta charset&gt;` and `&lt;title&gt;` in the head, and visible content (like an `&lt;h1&gt;`) in the body to prove the structure is correct and semantic.",
       "arguments": [
         {
           "name": "<!DOCTYPE>",
@@ -54,11 +54,11 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}"
     },
     "solutionBlock": {
-      "overview": "This warm-up introduces the structure of an HTML document: doctype, head, and body. You\u2019ll create a simple page with a title, one heading, and one paragraph.",
+      "overview": "This warm-up checks that you can lay out the minimal, standards-compliant HTML document. A strong answer includes the doctype, a language attribute on `<html>`, a `<head>` with charset and title, and a `<body>` containing visible content. It’s about correctness, not styling.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Basic HTML Skeleton",
-          "prose": "Start with `<!DOCTYPE html>` to declare HTML5. Wrap everything in `<html>`. Inside `<head>`, add a `<title>`. Place visible content inside `<body>`, including `<h1>` and `<p>`.",
+          "title": "Approach 1 – Basic HTML Skeleton",
+          "prose": "Start with `<!DOCTYPE html>` to declare HTML5. Add `<html lang=\"en\">` as the root element. Inside `<head>`, include `<meta charset=\"UTF-8\">` and a descriptive `<title>`. Then place content in `<body>`, such as an `<h1>` and a short paragraph, to show the structure is valid and complete.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }"
         }
@@ -75,15 +75,15 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 HTML basics",
+          "title": "MDN – HTML basics",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics"
         },
         {
-          "title": "MDN \u2013 The <head> element",
+          "title": "MDN – The <head> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"
         },
         {
-          "title": "MDN \u2013 The <title> element",
+          "title": "MDN – The <title> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"
         }
       ]
@@ -91,7 +91,14 @@
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-inline-vs-block",
@@ -99,7 +106,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "html",
       "display",
@@ -109,7 +116,7 @@
       "beginner"
     ],
     "description": {
-      "summary": "Build a tiny demo page that proves (in markup) the difference between block and inline elements. Create two paragraphs. In the second paragraph, include a <strong> word and an inline <img> that sits in the same line of text. Then add a short explanation section that names <p>, <strong>, and <img> and states which are block vs inline. Do NOT change the CSS or tests.",
+      "summary": "Demonstrate the difference between block and inline elements using pure HTML. Show that block elements start new lines while inline elements flow within text without breaking layout, and explain the difference in a short summary section.",
       "arguments": [
         {
           "name": "<main>",
@@ -150,40 +157,40 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}"
     },
     "solutionBlock": {
-      "overview": "This task is about demonstrating normal flow using HTML only: <p> is block-level by default (each paragraph starts on a new line). <strong> and <img> are inline by default, so they appear within the same line of text unless CSS changes that.",
+      "overview": "This task demonstrates default display roles using HTML only. Block elements like paragraphs start on new lines and take full width, while inline elements like strong and img flow within a line. The markup should make the difference obvious without any CSS edits or extra wrappers.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Minimal demo with semantic structure",
-          "prose": "Wrap content in <main>, add two paragraphs, place <strong> and <img> inside the second paragraph so they flow inline, and write a short explanation in #explanation using escaped tag names or <code>.",
+          "title": "Approach 1 – Minimal demo with semantic structure",
+          "prose": "Create two paragraphs in main. In the second paragraph, include a strong word and an inline img so they sit in the same line. Add a short explanation section that explicitly states which tags are block and which are inline, using code tags or escaped text to show the element names.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n\\n    <main>\\n      <p>This is the first paragraph. It is a block-level element by default.</p>\\n\\n      <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image\\n        <img alt='Demo image' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the same line.</p>\\n    </main>\\n\\n    <section id='explanation'>\\n      <h2>Explanation</h2>\\n      <p><code>&lt;p&gt;</code> is block-level (starts on a new line). <code>&lt;strong&gt;</code> and <code>&lt;img&gt;</code> are inline by default (they flow within a line of text).</p>\\n    </section>\\n  </body>\\n</html>",
           "codeCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Don\u2019t put block elements inside a <p> (a paragraph cannot contain other block-level sections).",
+          "Don’t put block elements inside a <p> (a paragraph cannot contain other block-level sections).",
           "If you want to show tag names as text, escape them (e.g. &lt;p&gt;) or wrap in <code>."
         ],
         "techniques": [
           "Keep <strong> and <img> inside the same paragraph to demonstrate inline flow.",
-          "Use <main> as a clean landmark; keep #explanation separate so it\u2019s easy to read and test."
+          "Use <main> as a clean landmark; keep #explanation separate so it’s easy to read and test."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 Block and inline layout in normal flow",
+          "title": "MDN – Block and inline layout in normal flow",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flow_layout/Block_and_inline_layout_in_normal_flow"
         },
         {
-          "title": "MDN \u2013 <p>: The Paragraph element",
+          "title": "MDN – <p>: The Paragraph element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"
         },
         {
-          "title": "MDN \u2013 <img>: The Image Embed element",
+          "title": "MDN – <img>: The Image Embed element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"
         },
         {
-          "title": "MDN \u2013 <strong>: The Strong Importance element",
+          "title": "MDN – <strong>: The Strong Importance element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong"
         }
       ]
@@ -191,7 +198,14 @@
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n\\n    <main>\\n      <p>This is the first paragraph. It is a block-level element by default.</p>\\n      <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image <img alt='Demo image' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the same line.</p>\\n    </main>\\n\\n    <section id='explanation'>\\n      <h2>Explanation</h2>\\n      <p><code>&lt;p&gt;</code> is block-level (starts on a new line). <code>&lt;strong&gt;</code> and <code>&lt;img&gt;</code> are inline by default (they flow within a line of text).</p>\\n    </section>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-links-and-images",
@@ -208,7 +222,7 @@
       "beginner"
     ],
     "description": {
-      "summary": "Create a clickable image link that is secure (target=_blank + rel) and accessible (non-empty alt). Note: in a sandboxed preview, opening a new tab may be blocked \u2014 tests focus on correct markup.",
+      "summary": "Create semantic links and images: use anchor elements with descriptive text, add target/rel when opening new tabs, and include alt text for images. This checks basic accessibility, security, and HTML best practices in one exercise, including proper link labeling.",
       "arguments": [
         {
           "name": "<a>",
@@ -241,7 +255,7 @@
         "desc": "A clickable image link with target='_blank', rel='noopener noreferrer', and a non-empty alt."
       },
       "examples": [
-        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, the new tab may be blocked \u2014 that's expected.</p>\\n  </body>\\n</html>"
+        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, the new tab may be blocked — that's expected.</p>\\n  </body>\\n</html>"
       ]
     },
     "web": {
@@ -249,11 +263,11 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  text-align: center;\\n}\\nimg {\\n  width: 150px;\\n  height: auto;\\n  border: 2px solid #ccc;\\n  border-radius: 6px;\\n  margin-top: 1rem;\\n}\\nh1 {\\n  font-size: 1.5rem;\\n  margin-bottom: .5rem;\\n}\\n.note {\\n  font-size: .9rem;\\n  opacity: .75;\\n  margin-top: 1rem;\\n}"
     },
     "solutionBlock": {
-      "overview": "Wrap the image in an <a> to make it clickable. Use target='_blank' plus rel='noopener noreferrer' for safe external links, and provide a non-empty alt for accessibility. In sandboxed previews, opening a new tab may be blocked \u2014 tests validate the markup instead of actual navigation.",
+      "overview": "Links and images are foundational for accessibility and SEO. Links should be descriptive and unique so screen readers can announce them meaningfully, and images should always include alt text that reflects purpose. If a link opens a new tab, rel=noopener noreferrer is required for security and performance best practices.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Secure clickable image link",
-          "prose": "The <a> wraps the <img>, making it clickable. target='_blank' opens a new tab in normal browsers, while rel='noopener noreferrer' prevents window.opener access and reduces tab-napping risk. The alt text stays non-empty for screen readers.",
+          "title": "Approach 1 – Secure clickable image link",
+          "prose": "Add an anchor with clear, descriptive text and a valid href (avoid generic 'click here'). If target blank is required, include rel noopener noreferrer. Add an img with a valid src and descriptive alt that explains the image’s content or purpose. Keep markup simple and semantic so tests and accessibility checks pass, and ensure links remain understandable out of context.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }"
         }
@@ -272,15 +286,15 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 <a> element",
+          "title": "MDN – <a> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"
         },
         {
-          "title": "MDN \u2013 <img> element",
+          "title": "MDN – <img> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"
         },
         {
-          "title": "MDN \u2013 Security considerations with target=\"_blank\"",
+          "title": "MDN – Security considerations with target=\"_blank\"",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#security_and_privacy_concerns"
         }
       ]
@@ -288,7 +302,14 @@
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-lists-and-navigation",
@@ -296,7 +317,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "html",
       "lists",
@@ -305,7 +326,7 @@
       "accessibility"
     ],
     "description": {
-      "summary": "Build a semantic nav bar (nav > ul > li > a) for a single-page layout. Use hash links (#...) and CSS :target to show exactly one section at a time (no JavaScript). Only one section should be visible at any moment. When there is no hash, Home must be visible by default. You do not need to change the CSS for this task.",
+      "summary": "Build a semantic navigation bar using `nav &gt; ul &gt; li &gt; a` with hash links. Use CSS `:target` to show only one section at a time without JavaScript, and ensure the Home section is visible by default when no hash is present.",
       "arguments": [
         {
           "name": "<nav>",
@@ -346,11 +367,11 @@
       "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n"
     },
     "solutionBlock": {
-      "overview": "Use a semantic list-based nav with hash links and CSS :target so only the active section is visible (no JavaScript).",
+      "overview": "Use an unordered list for the nav links and anchor each link to a section id. The CSS `:target` selector controls visibility: the targeted section is shown while others are hidden. Ordering matters so the default Home section remains visible when no hash exists, and becomes hidden when another section is targeted.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 CSS-only navigation with :target",
-          "prose": "Make each nav link point to a section id (#home, #about, #contact). Give the sections matching ids and keep the Home section last so the sibling selector (~) can hide it when another section becomes :target (the selector only affects elements that come after the targeted section in the DOM). Add an accessible label to the nav.",
+          "title": "Approach 1 – CSS-only navigation with :target",
+          "prose": "Create `<nav aria-label=\"Primary\">` with a `<ul>` of links to `#home`, `#about`, `#contact`, etc. Give each `<section>` the matching id. Keep the Home section last in the DOM so a general sibling selector can hide it when another section is targeted. With no hash, Home stays visible by default.",
           "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home'>Home</a></li>\n        <li><a href='#about'>About</a></li>\n        <li><a href='#contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <section id='about'>\n      <h2>About</h2>\n      <p>This section becomes visible when the URL hash is #about.</p>\n    </section>\n\n    <section id='contact'>\n      <h2>Contact</h2>\n      <p>This section becomes visible when the URL hash is #contact.</p>\n    </section>\n\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Home is visible by default (when there is no hash).</p>\n    </section>\n  </body>\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n"
         }
@@ -368,11 +389,11 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 <nav> element",
+          "title": "MDN – <nav> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav"
         },
         {
-          "title": "MDN \u2013 :target",
+          "title": "MDN – :target",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/:target"
         }
       ]
@@ -380,7 +401,14 @@
     "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home'>Home</a></li>\n        <li><a href='#about'>About</a></li>\n        <li><a href='#contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <section id='about'>\n      <h2>About</h2>\n      <p>This section becomes visible when the URL hash is #about.</p>\n    </section>\n\n    <section id='contact'>\n      <h2>Contact</h2>\n      <p>This section becomes visible when the URL hash is #contact.</p>\n    </section>\n\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Home is visible by default (when there is no hash).</p>\n    </section>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-semantic-layout",
@@ -388,7 +416,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "html",
       "semantics",
@@ -397,7 +425,7 @@
       "accessibility"
     ],
     "description": {
-      "summary": "Replace the generic <div> wrappers in the starter HTML with a semantic blog layout using <header>, <main>, two <article> posts, and a <footer>. Each post must include an <h2> and a <section> for its content. Do not change the CSS or JS; HTML only.",
+      "summary": "Build a semantic page layout using header, nav, main, section, article, and footer. Focus on correct landmarks, heading hierarchy, and structure rather than styling or layout hacks so the document outline remains clear and accessible.",
       "arguments": [
         {
           "name": "<header>",
@@ -430,7 +458,7 @@
         "desc": "A semantically structured blog page where tests pass without touching CSS or JS."
       },
       "examples": [
-        "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Thoughts on web development and design</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article\u2019s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article\u2019s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>\u00a9 2025 My Blog. All rights reserved.</p>\n    </footer>\n  </body>\n</html>"
+        "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Thoughts on web development and design</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article’s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article’s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>© 2025 My Blog. All rights reserved.</p>\n    </footer>\n  </body>\n</html>"
       ]
     },
     "web": {
@@ -438,45 +466,52 @@
       "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }"
     },
     "solutionBlock": {
-      "overview": "Swap generic layout <div>s for semantic elements so the page structure is clear to assistive tech and tooling. The CSS already targets semantic tags, so once you use <header>, <main>, <article>, <section>, and <footer>, styling and tests work without changes.",
+      "overview": "A semantic layout uses header, nav, main, section, article, and footer to describe the page structure to assistive tech and search engines. The goal is to place content in the correct landmarks with a clear heading hierarchy so the page is navigable even without CSS and the document outline is meaningful and consistent.",
       "approaches": [
         {
-          "title": "Approach 1 \u2014 Replace wrappers with semantic layout",
-          "prose": "Turn the top wrapper into <header> with an <h1>. Turn the content wrapper into <main> and add exactly two <article> blocks. Each article must include an <h2> and a <section> containing the post text. Turn the bottom wrapper into <footer>.",
-          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article\u2019s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article\u2019s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>Footer placeholder.</p>\n    </footer>\n  </body>\n</html>",
+          "title": "Approach 1 — Replace wrappers with semantic layout",
+          "prose": "Create a header with an h1, a nav for links, a main containing two articles, and a footer. Each article should include an h2 and a section for the body. Avoid extra div wrappers unless needed, and keep heading levels consistent to reflect the document outline and meet the tests. Ensure there is exactly one main element and that semantic elements are used for structure, not presentation.",
+          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article’s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article’s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>Footer placeholder.</p>\n    </footer>\n  </body>\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Don\u2019t change CSS/JS \u2014 tests expect structure only.",
+          "Don’t change CSS/JS — tests expect structure only.",
           "Ensure there is exactly one <main> and exactly two <article> elements.",
           "Each <article> must include both an <h2> and a <section> (not just a <div>)."
         ],
         "techniques": [
-          "Use one clear page hierarchy: header \u2192 main \u2192 article/section \u2192 footer.",
-          "Put the page\u2019s primary heading (<h1>) inside <header>."
+          "Use one clear page hierarchy: header → main → article/section → footer.",
+          "Put the page’s primary heading (<h1>) inside <header>."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2014 Semantics in HTML",
+          "title": "MDN — Semantics in HTML",
           "url": "https://developer.mozilla.org/en-US/docs/Glossary/Semantics#semantics_in_html"
         },
         {
-          "title": "MDN \u2014 <main>",
+          "title": "MDN — <main>",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main"
         },
         {
-          "title": "MDN \u2014 <article>",
+          "title": "MDN — <article>",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n    <style>\n      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\n      header, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\n      main { margin-top: 1.5rem; }\n      article { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\n      article h2 { margin-top: 0; }\n    </style>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article\u2019s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article\u2019s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>Footer placeholder.</p>\n    </footer>\n  </body>\n</html>",
+    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n    <style>\n      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\n      header, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\n      main { margin-top: 1.5rem; }\n      article { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\n      article h2 { margin-top: 0; }\n    </style>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article’s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article’s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>Footer placeholder.</p>\n    </footer>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-tables-accessibility",
@@ -484,7 +519,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "html",
       "tables",
@@ -493,7 +528,7 @@
       "structure"
     ],
     "description": {
-      "summary": "Create an accessible table listing employees with proper structure and semantics using <table>, <thead>, <tbody>, <th>, and <caption>.",
+      "summary": "The goal is to provide a semantic table that screen readers can navigate, with a clear caption and correct header associations. Add headers with scope, captions, and keyboard considerations; test with screen readers and complex tables.",
       "arguments": [
         {
           "name": "<table>",
@@ -503,7 +538,7 @@
         {
           "name": "<caption>",
           "type": "descriptive element",
-          "desc": "Provides a concise description of the table\u2019s contents for accessibility."
+          "desc": "Provides a concise description of the table’s contents for accessibility."
         },
         {
           "name": "<thead> and <tbody>",
@@ -534,11 +569,11 @@
       "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }"
     },
     "solutionBlock": {
-      "overview": "Use semantic table markup to ensure both visual clarity and accessibility. The <caption> summarizes the table, <thead> groups header cells, and <th scope='col'> defines relationships for assistive technologies.",
+      "overview": "Assistive tech relies on th scope to announce headers correctly. Without proper thead/tbody structure and caption, users lose context when navigating cell by cell.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Accessible Employee Table",
-          "prose": "Use <caption> to describe the data, <thead> for the column headers, and <tbody> for the content rows. Each header cell should have scope='col' to help screen readers associate data cells correctly.",
+          "title": "Approach 1 – Accessible Employee Table",
+          "prose": "Include a caption describing the dataset, use thead for column headers, and tbody for data rows. If rows have headers, mark them with th scope='row'. Avoid layout tables and keep the markup purely semantic.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Accessible Table</title>\\n  </head>\\n  <body>\\n    <table>\\n      <caption>Employee Directory</caption>\\n      <thead>\\n        <tr>\\n          <th scope='col'>Name</th>\\n          <th scope='col'>Role</th>\\n          <th scope='col'>Email</th>\\n        </tr>\\n      </thead>\\n      <tbody>\\n        <tr><td>Alice Johnson</td><td>Designer</td><td>alice@example.com</td></tr>\\n        <tr><td>Bob Smith</td><td>Developer</td><td>bob@example.com</td></tr>\\n        <tr><td>Carol Lee</td><td>Manager</td><td>carol@example.com</td></tr>\\n      </tbody>\\n    </table>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }"
         }
@@ -547,7 +582,7 @@
         "pitfalls": [
           "Forgetting to add a <caption> makes the table less accessible to screen readers.",
           "Leaving out scope attributes can confuse assistive technologies.",
-          "Avoid using tables for layout purposes \u2014 use them only for structured data."
+          "Avoid using tables for layout purposes — use them only for structured data."
         ],
         "techniques": [
           "Use <thead> and <tbody> to separate structure from content.",
@@ -557,15 +592,15 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 <table> element",
+          "title": "MDN – <table> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table"
         },
         {
-          "title": "MDN \u2013 <caption> element",
+          "title": "MDN – <caption> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption"
         },
         {
-          "title": "MDN \u2013 Using the scope attribute",
+          "title": "MDN – Using the scope attribute",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th#scope"
         }
       ]
@@ -573,7 +608,14 @@
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Accessible Table</title>\\n  </head>\\n  <body>\\n    <table>\\n      <caption>Employee Directory</caption>\\n      <thead>\\n        <tr>\\n          <th scope='col'>Name</th>\\n          <th scope='col'>Role</th>\\n          <th scope='col'>Email</th>\\n        </tr>\\n      </thead>\\n      <tbody>\\n        <tr><td>Alice Johnson</td><td>Designer</td><td>alice@example.com</td></tr>\\n        <tr><td>Bob Smith</td><td>Developer</td><td>bob@example.com</td></tr>\\n        <tr><td>Carol Lee</td><td>Manager</td><td>carol@example.com</td></tr>\\n      </tbody>\\n    </table>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-contact-form-labeled",
@@ -591,7 +633,7 @@
       "labels"
     ],
     "description": {
-      "summary": "A support page needs a contact form. Write HTML that works well with keyboard and screen readers: use real <label> elements paired via for/id, correct input types, and required fields. Show an on-page success message only after a VALID submit (HTML validation must run; no JavaScript). You do NOT need to touch the CSS.",
+      "summary": "The success message should only appear after a valid submit, so native validation must be enabled and the form action should target the success section. Consider edge cases like invalid email and required fields; test accessibility by associating labels and using native validation.",
       "arguments": [
         {
           "name": "<form action=\"#thanks\">",
@@ -614,7 +656,7 @@
         "desc": "An accessible contact form with labeled, required fields. Submitting a valid form reveals a success message without JavaScript."
       },
       "examples": [
-        "Try submitting empty fields \u2192 browser blocks submit; success message stays hidden."
+        "Try submitting empty fields → browser blocks submit; success message stays hidden."
       ]
     },
     "web": {
@@ -622,11 +664,11 @@
       "starterCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n/* CSS-only success message */\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n"
     },
     "solutionBlock": {
-      "overview": "HTML constraint validation blocks invalid submissions automatically. By setting action=\"#thanks\", the page only navigates to the #thanks fragment after a valid submission attempt, which lets CSS :target reveal a success message without JavaScript.",
+      "overview": "Native HTML validation is enough here: required fields and input types block invalid submissions, and the CSS :target pattern reveals the success state. This keeps the solution accessible and JS-free.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Valid submit reveals success via :target",
-          "prose": "Use required fields and type=\"email\" so the browser blocks invalid submissions. Keep form action=\"#thanks\". The success section already exists with id=\"thanks\". CSS hides it by default and shows it only when targeted. Do not use novalidate.",
+          "title": "Approach 1 – Valid submit reveals success via :target",
+          "prose": "Ensure each input has a label and a unique id, add required to mandatory fields, and use type=email for the email field. Keep the form action pointing to #thanks so the success message becomes visible only after validation passes.",
           "codeHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>Contact</title>\n</head>\n<body>\n  <h1>Contact support</h1>\n\n  <form action=\"#thanks\" method=\"get\">\n    <label for=\"c-name\">Name</label>\n    <input id=\"c-name\" name=\"name\" type=\"text\" autocomplete=\"name\" required />\n\n    <label for=\"c-email\">Email</label>\n    <input id=\"c-email\" name=\"email\" type=\"email\" autocomplete=\"email\" required />\n\n    <label for=\"c-message\">Message</label>\n    <textarea id=\"c-message\" name=\"message\" required></textarea>\n\n    <button type=\"submit\">Send</button>\n  </form>\n\n  <section id=\"thanks\" role=\"status\" aria-live=\"polite\">\n    <h2>Message sent</h2>\n    <p>Thanks! We received your message and will reply soon.</p>\n  </section>\n</body>\n</html>\n",
           "codeCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n"
         }
@@ -645,11 +687,11 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 Constraint validation",
+          "title": "MDN – Constraint validation",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation"
         },
         {
-          "title": "MDN \u2013 :target",
+          "title": "MDN – :target",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/:target"
         }
       ]
@@ -657,7 +699,14 @@
     "webSolutionHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>Contact</title>\n</head>\n<body>\n  <h1>Contact support</h1>\n\n  <form action=\"#thanks\" method=\"get\">\n    <label for=\"c-name\">Name</label>\n    <input id=\"c-name\" name=\"name\" type=\"text\" autocomplete=\"name\" required />\n\n    <label for=\"c-email\">Email</label>\n    <input id=\"c-email\" name=\"email\" type=\"email\" autocomplete=\"email\" required />\n\n    <label for=\"c-message\">Message</label>\n    <textarea id=\"c-message\" name=\"message\" required></textarea>\n\n    <button type=\"submit\">Send</button>\n  </form>\n\n  <section id=\"thanks\" role=\"status\" aria-live=\"polite\">\n    <h2>Message sent</h2>\n    <p>Thanks! We received your message and will reply soon.</p>\n  </section>\n</body>\n</html>\n",
     "webSolutionCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-forms-validation-required",
@@ -665,7 +714,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "html",
       "forms",
@@ -675,7 +724,7 @@
       "intermediate"
     ],
     "description": {
-      "summary": "Build a signup form using built-in HTML5 validation attributes: required, type, minlength, and pattern. Ensure the browser considers the form invalid until inputs are correct. You do not need to submit data anywhere; validation behavior is the goal. Starter code already includes JavaScript for submit handling and CSS for layout and feedback \u2014 you must NOT modify the JavaScript or CSS. Focus only on writing correct HTML markup and attributes.",
+      "summary": "Build a signup form using native HTML5 validation: required fields, type constraints, minlength, and pattern. The browser should block invalid submissions without custom JS changes, and existing JS/CSS should remain untouched for tests.",
       "arguments": [
         {
           "name": "required",
@@ -685,7 +734,7 @@
         {
           "name": "type",
           "type": "attribute",
-          "desc": "Determines the input\u2019s format, such as 'email' for built-in email validation."
+          "desc": "Determines the input’s format, such as 'email' for built-in email validation."
         },
         {
           "name": "minlength",
@@ -712,16 +761,16 @@
       ]
     },
     "web": {
-      "starterHtml": "<!-- TODO: Build a signup form with built-in validation for name, email, and password. -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n    <p style='color:#666'>Add inputs for Name, Email, and Password. Use HTML5 validation attributes (required, type, minlength, pattern) so the form is invalid until inputs are correct. Do not add novalidate. You don\u2019t need to send data anywhere; focus on validation behavior.</p>\n\n    <!-- Your form goes here -->\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        // Runs after you add the form markup.\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return; // still waiting for user markup\n\n          form.addEventListener('submit', (e) => {\n            // Keep user on the page; validation is the goal.\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good \u2705';\n          });\n        };\n\n        // Try now and after DOM updates.\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
+      "starterHtml": "<!-- TODO: Build a signup form with built-in validation for name, email, and password. -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n    <p style='color:#666'>Add inputs for Name, Email, and Password. Use HTML5 validation attributes (required, type, minlength, pattern) so the form is invalid until inputs are correct. Do not add novalidate. You don’t need to send data anywhere; focus on validation behavior.</p>\n\n    <!-- Your form goes here -->\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        // Runs after you add the form markup.\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return; // still waiting for user markup\n\n          form.addEventListener('submit', (e) => {\n            // Keep user on the page; validation is the goal.\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good ✅';\n          });\n        };\n\n        // Try now and after DOM updates.\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
       "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }"
     },
     "solutionBlock": {
-      "overview": "This exercise teaches HTML5 constraint validation using attributes. The browser determines validity via required/type/minlength/pattern. JavaScript is already provided in the starter to prevent navigation and display consistent feedback using form.checkValidity() and form.reportValidity().",
+      "overview": "Native HTML validation should enforce required fields and correct formats before submission. Using type=email, minlength, and pattern rules lets the browser handle most validation without custom JS. The existing JS and CSS rely on these attributes, so changing markup is the key step and should be kept minimal and precise.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Attribute-driven validation",
-          "prose": "Create a form with Name, Email, and Password fields. Connect labels via for/id. Add required to all fields, type=\"email\" for email, and minlength + pattern for the password. Add autocomplete hints. Include a submit button and a status element with aria-live=\"polite\".",
-          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return;\n\n          form.addEventListener('submit', (e) => {\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good \u2705';\n          });\n        };\n\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
+          "title": "Approach 1 – Attribute-driven validation",
+          "prose": "Wire labels to inputs with for/id, add required to all fields, set type=email on the email input, and apply minlength and pattern to the password. Keep the provided JS and CSS unchanged so the built-in validation UI is used and tests pass reliably. Ensure each input has a label for accessibility.",
+          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return;\n\n          form.addEventListener('submit', (e) => {\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good ✅';\n          });\n        };\n\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }"
         }
       ],
@@ -739,31 +788,38 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 Form validation overview",
+          "title": "MDN – Form validation overview",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation"
         },
         {
-          "title": "MDN \u2013 HTML attribute: required",
+          "title": "MDN – HTML attribute: required",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required"
         },
         {
-          "title": "MDN \u2013 minlength attribute",
+          "title": "MDN – minlength attribute",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/minlength"
         },
         {
-          "title": "MDN \u2013 pattern attribute",
+          "title": "MDN – pattern attribute",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/pattern"
         },
         {
-          "title": "MDN \u2013 autocomplete attribute",
+          "title": "MDN – autocomplete attribute",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return;\n\n          form.addEventListener('submit', (e) => {\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good \u2705';\n          });\n        };\n\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
+    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return;\n\n          form.addEventListener('submit', (e) => {\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good ✅';\n          });\n        };\n\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-head-seo-basics",
@@ -771,7 +827,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "html",
       "seo",
@@ -781,7 +837,7 @@
       "charset"
     ],
     "description": {
-      "summary": "You\u2019re given a simple marketing page that renders fine in the browser, but it\u2019s missing production-grade <head> metadata. Update ONLY the <head> so the page has correct encoding, mobile-friendly viewport behavior, a descriptive title, and a meta description. Do not change the <body>. No CSS/JS changes are needed.",
+      "summary": "You’re given a simple marketing page that renders fine in the browser, but it’s missing production-grade &lt;head&gt; metadata. Update ONLY the &lt;head&gt; so the page has correct encoding, mobile-friendly viewport behavior, a descriptive title, and a meta description. Do not change the &lt;body&gt;. No CSS/JS changes are needed.",
       "arguments": [
         {
           "name": "<meta charset=\"utf-8\">",
@@ -794,9 +850,9 @@
           "desc": "Makes the page layout match device width on mobile (prevents weird zoom / scaling)."
         },
         {
-          "name": "<title>Brand \u2013 Page intent</title>",
+          "name": "<title>Brand – Page intent</title>",
           "type": "document metadata",
-          "desc": "Sets the browser tab title and is a primary on-page SEO signal; should be specific, not just \u201cHome\u201d."
+          "desc": "Sets the browser tab title and is a primary on-page SEO signal; should be specific, not just “Home”."
         },
         {
           "name": "<meta name=\"description\" content=\"...\">",
@@ -814,7 +870,7 @@
         "desc": "A valid HTML document where the <head> contains charset, viewport, a non-empty title, and a non-empty meta description (and keeps CSS in the external stylesheet)."
       },
       "examples": [
-        "<head>\\n  <meta charset=\"utf-8\">\\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n  <title>FrontendAtlas \u2013 Frontend Interview Practice</title>\\n  <meta name=\"description\" content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\">\\n  <link rel=\"stylesheet\" href=\"styles.css\">\\n</head>"
+        "<head>\\n  <meta charset=\"utf-8\">\\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n  <title>FrontendAtlas – Frontend Interview Practice</title>\\n  <meta name=\"description\" content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\">\\n  <link rel=\"stylesheet\" href=\"styles.css\">\\n</head>"
       ]
     },
     "web": {
@@ -822,12 +878,12 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}"
     },
     "solutionBlock": {
-      "overview": "This is a realistic production check: you can have \u201cvalid HTML\u201d that still fails basic SEO/mobile standards. The fix is to complete the <head> with the small set of tags almost every team expects in reviews: charset, viewport, meaningful title, and meta description\u2014while keeping styling in the external CSS file.",
+      "overview": "This is a realistic production check: you can have “valid HTML” that still fails basic SEO/mobile standards. The fix is to complete the <head> with the small set of tags almost every team expects in reviews: charset, viewport, meaningful title, and meta description—while keeping styling in the external CSS file.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Minimal production <head>",
+          "title": "Approach 1 – Minimal production <head>",
           "prose": "Add UTF-8 encoding first, then the viewport meta for mobile. Write a title that includes the product name plus clear intent (what the page is about). Add a short, human-readable description (one sentence) describing the value. Keep CSS loaded via the existing external stylesheet link and avoid <style>/<script> for this task.",
-          "codeHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas \u2013 Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
+          "codeHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas – Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
           "codeCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}"
         }
       ],
@@ -835,7 +891,7 @@
         "pitfalls": [
           "Putting <title> in <body> instead of <head> (invalid placement).",
           "Skipping the viewport meta, causing mobile pages to render zoomed-out.",
-          "Using a generic title like \u201cHome\u201d instead of \u201cBrand \u2013 page intent\u201d.",
+          "Using a generic title like “Home” instead of “Brand – page intent”.",
           "Writing a meta description that is empty, too vague, or stuffed with keywords."
         ],
         "techniques": [
@@ -845,27 +901,34 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 The <head> element",
+          "title": "MDN – The <head> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"
         },
         {
-          "title": "MDN \u2013 The <title> element",
+          "title": "MDN – The <title> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"
         },
         {
-          "title": "MDN \u2013 <meta> element",
+          "title": "MDN – <meta> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta"
         },
         {
-          "title": "MDN \u2013 Responsive design basics (viewport)",
+          "title": "MDN – Responsive design basics (viewport)",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas \u2013 Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
+    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas – Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "html-dialog-confirm-a11y",
@@ -873,7 +936,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "hard",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "accessibility",
       "aria-describedby",
@@ -883,7 +946,7 @@
       "html"
     ],
     "description": {
-      "summary": "Build a native confirm dialog for deleting a project using the HTML <dialog> element. The dialog must be accessible (proper name + description) and must be visible in the preview without JavaScript. Only edit HTML. Do not change CSS.",
+      "summary": "Build a native confirm dialog for deleting a project using the HTML &lt;dialog&gt; element. The dialog must be accessible (proper name + description) and must be visible in the preview without JavaScript. Only edit HTML. Do not change CSS.",
       "arguments": [
         {
           "name": "<dialog open>",
@@ -893,7 +956,7 @@
         {
           "name": "aria-labelledby",
           "type": "accessibility attribute",
-          "desc": "Points to the dialog title element id to provide the dialog\u2019s accessible name."
+          "desc": "Points to the dialog title element id to provide the dialog’s accessible name."
         },
         {
           "name": "aria-describedby",
@@ -927,7 +990,7 @@
       "overview": "Native <dialog> is a real, semantic HTML element for dialogs. Interviewers typically look for: visible title/description, correct accessible naming (aria-labelledby/aria-describedby), and predictable actions using <form method=\"dialog\">. Since this challenge is HTML-only, the dialog is kept visible using the `open` attribute (instead of JS showModal()).",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Visible <dialog> with ARIA naming + dialog form",
+          "title": "Approach 1 – Visible <dialog> with ARIA naming + dialog form",
           "prose": "Add `open` so the dialog renders in the preview without JavaScript. Put a real title and description inside, then reference them via aria-labelledby/aria-describedby. Use <form method=\"dialog\"> and two buttons with values so the dialog can close and return the selected action in real usage.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>Project Settings</title>\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <h1>Project Settings</h1>\\n    <p>Danger zone</p>\\n\\n    <dialog open aria-labelledby=\"dlg-title\" aria-describedby=\"dlg-desc\">\\n      <h2 id=\"dlg-title\">Delete project?</h2>\\n      <p id=\"dlg-desc\">This action cannot be undone. All project data will be removed.</p>\\n\\n      <form method=\"dialog\">\\n        <div class=\"row\">\\n          <button value=\"cancel\">Cancel</button>\\n          <button value=\"confirm\">Delete</button>\\n        </div>\\n      </form>\\n    </dialog>\\n  </body>\\n</html>",
           "codeCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n\\ndialog {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 520px;\\n}\\n\\n.row {\\n  display: flex;\\n  gap: 8px;\\n  justify-content: flex-end;\\n}\\n\\nbutton {\\n  padding: 8px 12px;\\n}"
@@ -936,7 +999,7 @@
       "notes": {
         "pitfalls": [
           "Forgetting `open` in an HTML-only environment (the dialog exists but is not shown).",
-          "Using aria-labelledby/aria-describedby ids that don\u2019t exist.",
+          "Using aria-labelledby/aria-describedby ids that don’t exist.",
           "Not using method=\"dialog\" and losing the native close/return-value behavior."
         ],
         "techniques": [
@@ -946,15 +1009,15 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 The <dialog> element",
+          "title": "MDN – The <dialog> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"
         },
         {
-          "title": "MDN \u2013 ARIA: aria-labelledby",
+          "title": "MDN – ARIA: aria-labelledby",
           "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby"
         },
         {
-          "title": "MDN \u2013 ARIA: aria-describedby",
+          "title": "MDN – ARIA: aria-describedby",
           "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby"
         }
       ]
@@ -965,6 +1028,13 @@
     "updatedAt": "2026-01-31",
     "companies": [
       "apple"
-    ]
+    ],
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   }
 ]

@@ -4,8 +4,12 @@
     "title": "What does CSS stand for?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 1,
     "description": "CSS stands for Cascading Style Sheets. It controls the visual presentation of HTML, including layout, spacing, colors, typography, and responsive behavior across devices and screen sizes. In practice, CSS decisions affect accessibility and performance, so test layout and contrast across breakpoints.",
+    "seo": {
+      "title": "What Does CSS Stand For? Cascading Style Sheets Explained",
+      "description": "Learn what CSS stands for, why the cascade matters, and how style sheets control layout, colors, typography, and responsive behavior across web pages."
+    },
     "answer": {
       "blocks": [
         {
@@ -74,15 +78,26 @@
       "styles",
       "html"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-link-html",
     "title": "How do you link a CSS file to an HTML document?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 1,
     "description": "Link an external CSS file with &lt;link rel=\"stylesheet\" href=\"...\"&gt; inside the HTML &lt;head&gt;. This loads the stylesheet and applies styles globally across the page. Loading CSS early avoids FOUC and improves perceived performance. Test with throttled network and verify caching.",
+    "seo": {
+      "title": "How to Link CSS to HTML: link rel=\"stylesheet\" Guide",
+      "description": "See the correct way to attach an external CSS file in the HTML head, avoid common path mistakes, and improve first render by loading stylesheets early."
+    },
     "answer": {
       "blocks": [
         {
@@ -159,15 +174,26 @@
       "external-stylesheet",
       "head"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-inline-internal-external",
     "title": "What is the difference between inline, internal, and external CSS?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "description": "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a &lt;style&gt; tag in the &lt;head&gt;, and external CSS is loaded from a separate .css file via &lt;link&gt;. External styles are reusable and best for maintainability.",
+    "seo": {
+      "title": "Inline vs Internal vs External CSS: Key Differences",
+      "description": "Understand inline, internal, and external CSS, when each method is useful, and why external stylesheets scale better for maintainability in real projects."
+    },
     "answer": {
       "blocks": [
         {
@@ -266,15 +292,26 @@
       "external",
       "stylesheets"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-background-color",
     "title": "How do you change the background color of a page using CSS?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 1,
     "description": "The background-color property in CSS sets the background color of an element or the entire webpage. It supports multiple color formats including named colors, hexadecimal, RGB, RGBA, and HSL. When applied to the &lt;body&gt; element, it changes the entire page’s background color. Backgrounds affect contrast and readability. Test with dark mode and accessibility contrast checks.",
+    "seo": {
+      "title": "How to Set Background Color in CSS (body and elements)",
+      "description": "Learn how background-color works on body and other elements, compare color formats, and keep readability high with accessible contrast choices."
+    },
     "answer": {
       "blocks": [
         {
@@ -370,15 +407,26 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-text-color",
     "title": "What property is used to change the text color in CSS?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 1,
     "description": "The color property in CSS controls the color of text content. It affects inline text and can be defined using various color formats such as names, hexadecimal, RGB, RGBA, or HSL. It is one of the most widely used CSS properties for visual styling. Text color must meet contrast ratios and theming needs. Test with different backgrounds and user zoom.",
+    "seo": {
+      "title": "CSS Text Color Property: How to Use color Correctly",
+      "description": "Understand how the CSS color property changes text color, which formats to use, and how to maintain accessible contrast across themes and backgrounds."
+    },
     "answer": {
       "blocks": [
         {
@@ -474,15 +522,26 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-center-text",
     "title": "How do you center text horizontally in CSS?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "The text-align property in CSS is used to align text content horizontally within its container. Setting text-align: center aligns inline-level content such as text and inline elements to the center of their parent container. Centering text affects readability and responsive layout, so test across breakpoints and line lengths.",
+    "seo": {
+      "title": "How to Center Text Horizontally in CSS with text-align",
+      "description": "Learn when text-align: center works, which content types it affects, and common cases where flexbox or grid is better for centering layout elements."
+    },
     "answer": {
       "blocks": [
         {
@@ -573,15 +632,26 @@
       "layout",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-font-family",
     "title": "What is the purpose of the font-family property?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "The font-family property in CSS specifies the typeface or group of typefaces to be used for displaying text. It allows developers to control the appearance and readability of textual content across different devices and platforms.",
+    "seo": {
+      "title": "CSS font-family Property: Purpose, Font Stacks, and Fallbacks",
+      "description": "Learn what font-family does, how font stacks and generic families work, and how to choose readable, cross-device fallbacks for consistent typography."
+    },
     "answer": {
       "blocks": [
         {
@@ -667,15 +737,26 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-border-property",
     "title": "How can you add a border around an element?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "Add a border with the shorthand: border: 1px solid #333;. You can also set border-width, border-style, and border-color separately for finer control. In UI validation and focus states, borders signal errors; watch layout shifts and accessibility contrast, and test across browsers.",
+    "seo": {
+      "title": "How to Add Borders in CSS: border Shorthand and Side Rules",
+      "description": "See how to add a border with width, style, and color, when to use shorthand versus per-side properties, and how to avoid layout shifts in UI states."
+    },
     "answer": {
       "blocks": [
         {
@@ -769,15 +850,26 @@
       "box-model",
       "styles"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-margin-property",
     "title": "What does the margin property do?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "Margin controls the space outside an element’s border, separating it from neighbors. It does not affect the element’s internal content (use padding for that). Margins can collapse in edge cases and affect layout flow; test nested elements and breakpoints.",
+    "seo": {
+      "title": "CSS margin Property Explained: External Spacing and Layout",
+      "description": "Understand how margin creates space outside elements, how shorthand values map to sides, and why margin collapsing can change vertical layout unexpectedly."
+    },
     "answer": {
       "blocks": [
         {
@@ -886,15 +978,26 @@
       "layout",
       "spacing"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-padding-property",
     "title": "What does the padding property do?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: css, padding, box model, layout, spacing.",
+    "seo": {
+      "title": "CSS padding Property Explained: Inner Spacing and Box Model",
+      "description": "Learn how padding adds space between content and border, increases clickable area, and interacts with box sizing for predictable component sizing."
+    },
     "answer": {
       "blocks": [
         {
@@ -985,15 +1088,26 @@
       "layout",
       "spacing"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-margin-vs-padding",
     "title": "What is the difference between margin and padding?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 1,
     "description": "Margin creates space outside an element’s border (separating it from neighbors), while padding creates space inside the border (pushing the content inward). Understanding this distinction is central to mastering layout and the CSS box model. Margins affect external spacing and can collapse; padding affects internal spacing and background painting. Test layout changes across breakpoints.",
+    "seo": {
+      "title": "Margin vs Padding in CSS: Key Differences with Examples",
+      "description": "Compare margin and padding in the box model, including outside vs inside spacing, collapsing behavior, and when each one should control layout gaps."
+    },
     "answer": {
       "blocks": [
         {
@@ -1084,15 +1198,26 @@
       "padding",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-make-text-bold",
     "title": "How do you make text bold in CSS?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 1,
     "description": "Make text bold with font-weight, e.g., font-weight: bold or font-weight: 700. The actual weight depends on what the font family provides. Use font-weight carefully for readability and accessibility; test variable fonts and fallback weights.",
+    "seo": {
+      "title": "How to Make Text Bold in CSS with font-weight Values",
+      "description": "Use font-weight keywords or numeric values to make text bold, understand font support limits, and choose weights across variable and fallback fonts."
+    },
     "answer": {
       "blocks": [
         {
@@ -1186,14 +1311,21 @@
       "font-weight",
       "text"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "css-change-text-size",
     "title": "How do you change the size of text in CSS?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "You can control the size of text using the font-size property in CSS. This property defines how large or small the text content appears on a web page and supports both absolute and relative units for flexible design scaling. Font sizing impacts accessibility and layout, so test with user zoom and different root sizes.",
     "answer": {
       "blocks": [
@@ -1277,14 +1409,25 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "How to Change Text Size in CSS with font-size Units",
+      "description": "Learn how to set text size with font-size, compare px/rem/em/% units, and keep typography responsive and accessible under zoom and root-size changes."
+    }
   },
   {
     "id": "css-id-vs-class",
     "title": "What is the difference between id and class selectors?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 1,
     "description": "An id is unique on a page and selected with #id; a class can be reused and selected with .class. IDs have higher specificity and are often used for anchors or JS hooks, while classes are for styling groups.",
     "answer": {
       "blocks": [
@@ -1368,14 +1511,25 @@
       "class",
       "specificity"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "id vs class Selectors in CSS: Differences and Specificity",
+      "description": "Understand when to use #id versus .class selectors, how specificity differs, and why class-based styling scales better in reusable component systems."
+    }
   },
   {
     "id": "css-color-property",
     "title": "What is the purpose of the color property?",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 1,
     "description": "The color property sets the foreground text color of an element (not the background). It accepts named colors, hex, rgb/rgba, hsl/hsla, and currentColor. Color choices must meet accessibility contrast and be tested across themes and backgrounds.",
     "answer": {
       "blocks": [
@@ -1463,7 +1617,18 @@
       "text",
       "values"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS color Property: Text Color Values and Best Practices",
+      "description": "See what the color property controls, which value formats are valid, and how to choose accessible text colors that work across themes and backgrounds."
+    }
   },
   {
     "id": "css-box-model",
@@ -1475,7 +1640,7 @@
       "meta"
     ],
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "The CSS box model is the foundation of web layout design. Every element in a webpage is represented as a rectangular box composed of four layers: content, padding, border, and margin. Understanding this model is essential for controlling spacing, alignment, and element sizing accurately. The box model drives layout, spacing, and layout performance, so test with box-sizing and different breakpoints.",
     "answer": {
       "blocks": [
@@ -1558,14 +1723,25 @@
       "basics",
       "spacing"
     ],
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS Box Model Explained: content, padding, border, margin",
+      "description": "Understand how the box model defines element size and spacing, how box-sizing changes calculations, and how to debug layout gaps more reliably."
+    }
   },
   {
     "id": "css-pseudo-classes-elements",
     "title": "What are pseudo-classes and pseudo-elements? Give examples.",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "Pseudo-classes and pseudo-elements extend CSS selectors to style elements based on state or to create virtual elements that do not exist directly in the DOM. They enable powerful interactions, dynamic states, and content generation without additional markup.",
     "answer": {
       "blocks": [
@@ -1647,7 +1823,18 @@
       "pseudo-elements",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Pseudo-classes vs Pseudo-elements in CSS: Examples and Use",
+      "description": "Learn the difference between pseudo-classes and pseudo-elements, with practical examples like :hover, :focus, ::before, and ::after for cleaner styling."
+    }
   },
   {
     "id": "css-position-relative-absolute-fixed",
@@ -1658,7 +1845,7 @@
       "google"
     ],
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and pins it to the viewport. Use relative for anchoring children, absolute for overlays, and fixed for sticky UI like headers. Positioning affects stacking, layout flow, and performance; test scrolling and overlap edge cases.",
     "answer": {
       "blocks": [
@@ -1743,14 +1930,25 @@
       "stacking",
       "offsets"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "relative vs absolute vs fixed in CSS Positioning",
+      "description": "Compare relative, absolute, and fixed positioning, understand layout flow and containing blocks, and avoid overlap bugs in scrolling interfaces."
+    }
   },
   {
     "id": "css-display-flex",
     "title": "What does display: flex do?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "The display: flex property enables the flexbox layout model, which allows elements within a container to align, distribute, and resize themselves dynamically. It simplifies responsive design by providing precise control over spacing, alignment, and ordering without relying on floats or manual calculations.",
     "answer": {
       "blocks": [
@@ -1823,14 +2021,25 @@
       "display",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS display: flex Explained: Alignment, Direction, and Spacing",
+      "description": "Learn what display:flex enables, how main and cross-axis alignment works, and when flexbox is best for one-dimensional responsive layouts."
+    }
   },
   {
     "id": "css-z-index",
     "title": "How does z-index work in CSS?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "z-index controls stacking order for positioned elements within the same stacking context. Higher values appear on top, but only for elements that create/participate in a stacking context (e.g., position with z-index, opacity, transform). Stacking contexts cause most bugs, so test layering with position, opacity, and transforms.",
     "answer": {
       "blocks": [
@@ -1913,14 +2122,25 @@
       "layering",
       "layout"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "How z-index Works in CSS: Stacking Context Debug Guide",
+      "description": "Understand z-index layering rules, why stacking contexts from position, transform, or opacity break expectations, and how to debug overlap issues."
+    }
   },
   {
     "id": "css-visibility-vs-display",
     "title": "What is the difference between visibility: hidden and display: none?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "Both visibility and display control element rendering in CSS, but they behave differently. visibility: hidden hides the element visually while preserving its layout space, whereas display: none removes the element completely from the document flow.",
     "answer": {
       "blocks": [
@@ -1992,14 +2212,25 @@
       "display",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "visibility: hidden vs display: none in CSS",
+      "description": "Compare visibility:hidden and display:none in layout flow, rendering, and accessibility so you can choose the right property for toggled UI states."
+    }
   },
   {
     "id": "css-float-clear",
     "title": "What is the purpose of the float and clear properties?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "The float and clear properties are part of CSS's early layout system used to wrap text around images and create multi-column designs before flexbox and grid. The float property allows elements to shift to the left or right of their container, while the clear property prevents elements from wrapping around floated elements. Floats still appear in legacy layouts and can break layout flow; test clearing and responsive wrapping.",
     "answer": {
       "blocks": [
@@ -2085,7 +2316,18 @@
       "clear",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS float and clear: Legacy Layout Behavior Explained",
+      "description": "Learn what float and clear do, how text wrapping and clearfix patterns work, and when to replace floats with flexbox or grid in modern layouts."
+    }
   },
   {
     "id": "css-specificity-hierarchy",
@@ -2096,7 +2338,7 @@
       "meta"
     ],
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Specificity determines which CSS rule takes precedence when multiple rules target the same element. Each selector type contributes a different weight, and higher specificity overrides lower ones regardless of source order (except when !important is used).",
     "answer": {
       "blocks": [
@@ -2184,14 +2426,25 @@
       "cascade",
       "basics"
     ],
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS Specificity Hierarchy: Why Selectors Override Others",
+      "description": "Understand specificity scoring across IDs, classes, and elements, how source order and !important interact, and how to avoid brittle selector wars."
+    }
   },
   {
     "id": "css-media-queries",
     "title": "What are media queries and why are they used?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "Media queries are conditional CSS rules that apply styles based on device characteristics such as screen size, resolution, or orientation. They are the foundation of responsive web design, allowing content to adapt to various devices and viewports.",
     "answer": {
       "blocks": [
@@ -2274,14 +2527,25 @@
       "layout",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS Media Queries Explained: Responsive Breakpoints and Rules",
+      "description": "Learn how media queries target viewport size, orientation, and resolution, and how to design breakpoint rules that scale cleanly across devices."
+    }
   },
   {
     "id": "css-make-element-responsive",
     "title": "How can you make an element responsive using CSS?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "Making an element responsive means it adapts fluidly to different screen sizes, container widths, and user settings. Core techniques include fluid sizing, flexible media, modern layout systems (flexbox/grid), media and container queries, responsive typography, and intrinsic sizing utilities like aspect-ratio.",
     "answer": {
       "blocks": [
@@ -2441,14 +2705,25 @@
       "units",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "How to Make Elements Responsive in CSS: Practical Patterns",
+      "description": "Learn fluid sizing with %, min/max, clamp(), flexbox/grid, media and container queries, and responsive images so components adapt across screen sizes."
+    }
   },
   {
     "id": "css-units-em-rem-percent-px",
     "title": "Explain the difference between em, rem, %, and px units.",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "CSS provides multiple units to define sizes, each with unique reference points and use cases. Understanding how em, rem, %, and px differ is essential for creating flexible, responsive layouts that behave consistently across devices and containers. Choose units based on accessibility and layout needs, and test edge cases in nested containers. Choosing units impacts accessibility and layout; test nested containers and root font-size changes.",
     "answer": {
       "blocks": [
@@ -2520,14 +2795,25 @@
       "typography",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "em vs rem vs % vs px in CSS: Unit Differences and Use Cases",
+      "description": "Understand how each CSS unit is calculated, when to choose relative or absolute sizing, and how nesting and root font size affect layout and accessibility."
+    }
   },
   {
     "id": "css-cascade-order",
     "title": "How does the CSS cascade determine which styles are applied?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "The CSS cascade resolves conflicts by comparing importance (!important), origin (user vs author), specificity, and source order. More specific selectors win; if specificity ties, later rules take precedence. Edge cases like !important and inline styles can override expectations; test computed styles.",
     "answer": {
       "blocks": [
@@ -2599,14 +2885,25 @@
       "selectors",
       "order"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS Cascade Order Explained: Importance, Specificity, Source",
+      "description": "See how the cascade resolves conflicts using origin, !important, specificity, and source order, and how to debug why one rule overrides another."
+    }
   },
   {
     "id": "css-custom-properties",
     "title": "What are CSS custom properties (variables) and how are they used?",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "CSS custom properties (variables) are declared with --name and read with var(--name). They inherit, can be scoped, and enable theming or design tokens without preprocessors. Great for theming, but fallbacks and inheritance are edge cases; test dynamic theme toggles.",
     "answer": {
       "blocks": [
@@ -2665,7 +2962,18 @@
       "design-tokens",
       "var"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS Custom Properties (Variables): var(), Scope, and Theming",
+      "description": "Learn how to declare and use CSS variables, scope them at :root or component level, add fallbacks, and build maintainable theme and design-token systems."
+    }
   },
   {
     "id": "css-grid-vs-flexbox",
@@ -2675,7 +2983,7 @@
       "google"
     ],
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 1,
     "description": "CSS Grid and Flexbox are both powerful layout systems designed to help developers create complex, responsive layouts with ease. While Flexbox excels in one-dimensional layouts (either rows or columns), Grid is built for two-dimensional layouts (rows and columns simultaneously). Understanding when to use each is key to writing efficient, scalable, and maintainable CSS.",
     "answer": {
       "blocks": [
@@ -2783,14 +3091,25 @@
       "flexbox",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Grid vs Flexbox in CSS: Differences and When to Use Each",
+      "description": "Compare Grid and Flexbox by layout dimension and alignment behavior, then choose the right system for page structure or component-level alignment."
+    }
   },
   {
     "id": "css-hardware-acceleration",
     "title": "How do hardware acceleration and compositing affect CSS animation performance?",
     "technology": "css",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 1,
     "description": "Hardware acceleration and compositing layers are critical for smooth, performant animations in CSS. Understanding how the browser's rendering pipeline works — including layout, paint, and composite steps — helps developers optimize animations and avoid costly reflows.",
     "answer": {
       "blocks": [
@@ -2886,6 +3205,17 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "CSS Animation Performance: Hardware Acceleration and Compositing",
+      "description": "Understand layout, paint, and composite costs, which properties animate cheaply (transform, opacity), and how layer promotion affects smoothness."
+    }
   }
 ]

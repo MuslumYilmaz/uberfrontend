@@ -5,14 +5,14 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
       "state"
     ],
     "description": {
-      "summary": "Build a simple counter using an Angular standalone component. Add increment, decrement, and reset buttons. Disable the decrement button when the counter is at zero.",
+      "summary": "Implement a standalone counter with increment, decrement, and reset. Guard the decrement at zero, disable the minus button when the value is 0, and keep state in a single component property for predictable behavior.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -67,7 +67,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-contact-form-starter",
@@ -75,7 +82,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "forms",
       "http",
@@ -154,7 +161,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-todo-list-starter",
@@ -162,7 +176,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "forms",
@@ -237,7 +251,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-image-slider-starter",
@@ -245,7 +266,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -254,7 +275,7 @@
       "ui"
     ],
     "description": {
-      "summary": "Build an image slider in an Angular standalone component. Show one slide at a time with next/previous buttons and clickable dot indicators.",
+      "summary": "Build an image slider with next/prev controls, a current index, and disabled states at bounds. Keep the template state-driven and update the active slide label as the index changes. Concepts: components, event-binding, ng-for.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -288,7 +309,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Model the slider as a small view model on the component: a readonly `slides` array and a `currentIndex` number. Use getters to derive `currentSlide`, `totalSlides`, and convenience flags like `canGoPrev` and `canGoNext`. The template shows the active slide and wires buttons and dot indicators to simple methods that update `currentIndex`.\n\n**Test cases**\n- Initial render shows the first slide, with \"Previous\" disabled and the first dot highlighted.\n- Clicking \"Next\" repeatedly walks through the slides and disables itself on the last slide.\n- Clicking \"Previous\" from the middle moves backward one slide at a time.\n- Clicking a dot jumps directly to that slide and updates the heading, image, and helper text.\n- The slider never goes out of range (no index smaller than 0 or greater than `slides.length - 1`).",
+      "overview": "Model the slider as a small view model on the component: a readonly `slides` array and a `currentIndex` number. Use getters to derive `currentSlide`, `totalSlides`, and convenience flags like `canGoPrev` and `canGoNext`. The template shows the active slide and wires buttons and dot indicators to simple methods that update `currentIndex`.\n\n**Test cases**\n- Initial render shows the first slide, with \"Previous\" disabled and the first dot highlighted.\n- Clicking \"Next\" repeatedly walks through the slides and disables itself on the last slide.\n- Clicking \"Previous\" from the middle moves backward one slide at a time.\n- Clicking a dot jumps directly to that slide and updates the heading, image, and helper text.\n- The slider never goes out of range (no index smaller than 0 or greater than `slides.length - 1`). Key concepts: components, event-binding, ng-for.",
       "approaches": [
         {
           "title": "Standalone component with index-based navigation",
@@ -320,7 +341,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-tabs-switcher",
@@ -395,7 +423,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-filterable-user-list",
@@ -403,7 +438,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "components",
       "state",
@@ -476,7 +511,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-faq-accordion",
@@ -484,7 +526,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "inputs",
@@ -525,7 +567,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise is about lifting state up to the parent component and controlling which FAQ items are open. The parent holds an array of FAQ items (question + answer) and a representation of which indexes are currently open. Each child row displays a question and conditionally shows its answer.\n\nIn the default (single-open) mode, the parent keeps at most one index in its open list. When the user clicks a question, the parent either sets that index as the only open one or clears it if it was already open. In multi-open mode, the parent treats the list of open indexes like a set: clicking an item either adds or removes that index.\n\n**Test cases**\n- Initially, all answers are hidden.\n- Click the first question → its answer becomes visible, others stay closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Switch to multi-open mode → currently open item(s) stay open, and you can open additional ones without closing the others.\n- Clicking an open item closes it in both modes.",
+      "overview": "This exercise is about lifting state up to the parent component and controlling which FAQ items are open. The parent holds an array of FAQ items (question + answer) and a representation of which indexes are currently open. Each child row displays a question and conditionally shows its answer.\n\nIn the default (single-open) mode, the parent keeps at most one index in its open list. When the user clicks a question, the parent either sets that index as the only open one or clears it if it was already open. In multi-open mode, the parent treats the list of open indexes like a set: clicking an item either adds or removes that index.\n\n**Test cases**\n- Initially, all answers are hidden.\n- Click the first question → its answer becomes visible, others stay closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Switch to multi-open mode → currently open item(s) stay open, and you can open additional ones without closing the others.\n- Clicking an open item closes it in both modes. Key concepts: components, inputs, outputs.",
       "approaches": [
         {
           "title": "Parent-controlled open indexes with a child FAQ item component",
@@ -553,7 +595,14 @@
     },
     "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-pagination-table",
@@ -561,7 +610,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -604,7 +653,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise centers around a single state variable: the current page index. The full dataset lives in a static array on the component. From that, you derive everything else: the total number of pages, the slice of users to display, and whether Previous/Next buttons should be disabled.\n\n**Core ideas**\n- Keep `currentPage` as a number (0-based is convenient for array math).\n- Use a constant `pageSize = 5`.\n- Compute `totalPages` with `Math.ceil(users.length / pageSize)`.\n- Derive `pagedUsers` by slicing the big array based on `currentPage` and `pageSize`.\n- Expose small boolean getters like `isFirstPage` and `isLastPage` to keep the template clean.\n\n**Test cases**\n- Initial render → shows the first 5 users, label reads `Page 1 of N`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled.",
+      "overview": "This exercise centers around a single state variable: the current page index. The full dataset lives in a static array on the component. From that, you derive everything else: the total number of pages, the slice of users to display, and whether Previous/Next buttons should be disabled.\n\n**Core ideas**\n- Keep `currentPage` as a number (0-based is convenient for array math).\n- Use a constant `pageSize = 5`.\n- Compute `totalPages` with `Math.ceil(users.length / pageSize)`.\n- Derive `pagedUsers` by slicing the big array based on `currentPage` and `pageSize`.\n- Expose small boolean getters like `isFirstPage` and `isLastPage` to keep the template clean.\n\n**Test cases**\n- Initial render → shows the first 5 users, label reads `Page 1 of N`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled. Key concepts: components, state, pagination.",
       "approaches": [
         {
           "title": "Standalone component with derived pagination slice",
@@ -635,7 +684,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-theme-toggle",
@@ -643,7 +699,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "components",
       "services",
@@ -688,7 +744,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise is about lifting theme state into a global Angular service and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") in a `ThemeService`, read an initial value from localStorage when the service is created, and apply that value to the `<html>` element via a `data-theme` attribute. The root `AppComponent` injects this service, shows a toggle in the top-right corner, and delegates all theme changes to the service. The provided CSS (in `styles.css` and `app.component.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `:host-context([data-theme='dark'])`, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode → app initializes in dark mode, without a visible flash back to light.\n- Toggle back to light → theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme.",
+      "overview": "This exercise is about lifting theme state into a global Angular service and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") in a `ThemeService`, read an initial value from localStorage when the service is created, and apply that value to the `<html>` element via a `data-theme` attribute. The root `AppComponent` injects this service, shows a toggle in the top-right corner, and delegates all theme changes to the service. The provided CSS (in `styles.css` and `app.component.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `:host-context([data-theme='dark'])`, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode → app initializes in dark mode, without a visible flash back to light.\n- Toggle back to light → theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme. Key concepts: components, services, dependency-injection.",
       "approaches": [
         {
           "title": "Global ThemeService with `data-theme` on `<html>`",
@@ -719,7 +775,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-multi-step-form-starter",
@@ -727,7 +790,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "forms",
       "reactive-forms",
@@ -805,7 +868,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-shopping-cart-mini",
@@ -813,7 +883,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -823,7 +893,7 @@
       "change-detection"
     ],
     "description": {
-      "summary": "Build a small shopping cart UI using an Angular standalone component. Render a product list with \"Add to cart\" buttons and a cart section where you can increase/decrease quantities, remove items, and show derived totals.",
+      "summary": "Build a small shopping cart UI using an Angular standalone component. Render a product list with \"Add to cart\" buttons and a cart section where you can increase/decrease quantities, remove items, and show derived totals. Concepts: components, state, derived-state.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -894,7 +964,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-debounced-search",
@@ -902,7 +979,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "angular",
       "rxjs",
@@ -984,7 +1061,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-star-rating",
@@ -1064,7 +1148,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-dynamic-table-starter",
@@ -1072,7 +1163,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "components",
       "dynamic-ui",
@@ -1141,7 +1232,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-dynamic-table-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-nested-checkboxes",
@@ -1149,7 +1247,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "dom",
@@ -1159,7 +1257,7 @@
       "ui-logic"
     ],
     "description": {
-      "summary": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "summary": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states. Concepts: components, dom, forms. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Render one parent checkbox and several child checkboxes.",
@@ -1221,7 +1319,14 @@
     },
     "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-autocomplete-search-starter",
@@ -1229,7 +1334,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "components",
       "forms",
@@ -1310,7 +1415,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-transfer-list",
@@ -1360,11 +1472,11 @@
     },
     "starterCodeHint": "Track selections with `Set<string>` per list. On transfer, split source into (moved, remaining) by `selected.has(item.id)`, then append moved to destination and clear selection set.",
     "solutionBlock": {
-      "overview": "Use two arrays (`topItems`, `bottomItems`) of `{ id, label }`. Track selected ids with `topSelected` and `bottomSelected` as `Set<string>`. Toggling a checkbox adds/removes the item id from the relevant Set. The transfer buttons call `moveDown()` and `moveUp()` which: (1) build `moved` and `remaining`, (2) update both arrays, (3) clear the selection Set.\n\n**Test cases**\n- Select 2 items in Top → \"↓\" enabled → click → items appear at end of Bottom and removed from Top.\n- Select items in Bottom → \"↑\" enabled → click → items move to end of Top.\n- After move, moved items are not selected anymore.\n- Buttons disabled when no selection in their source list.",
+      "overview": "A transfer list has two collections and selection state for each side. The key is to move selected items while preserving order, then clear selection to avoid stale UI. This models real admin UIs where items are assigned between groups or buckets and selection state must be consistent.",
       "approaches": [
         {
           "title": "Two arrays + two selection sets",
-          "prose": "Keep state in the root component: `topItems`, `bottomItems`, and `topSelected` / `bottomSelected`. Use small helpers to toggle selection, check if selected, and to split arrays based on selection. Always clear the selection set after a successful transfer."
+          "prose": "Maintain topItems and bottomItems arrays plus Set selections. On transfer, split the source list into moved and remaining using the selection set, append moved to the destination, update both lists immutably, and reset the selection set. Disable the transfer button when the selection set is empty to prevent no-op clicks."
         }
       ],
       "notes": {
@@ -1389,7 +1501,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-transfer-list-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-tictactoe-starter",
@@ -1397,7 +1516,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -1407,7 +1526,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build a simple 3×3 Tic-Tac-Toe game using an Angular standalone component. Two players take turns placing X and O. Detect wins/draws and allow resetting the game.",
+      "summary": "Build a 3x3 Tic-Tac-Toe game in an Angular standalone component. Alternate X/O turns, prevent overwrites, detect wins and draws, and offer a reset to start a new game. Concepts: components, state, event-binding.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1448,7 +1567,7 @@
       "approaches": [
         {
           "title": "Single standalone component with board array + winner helper",
-          "prose": "Keep board, current player, and computed game-over state in one component. Render the board with `*ngFor`. On each click, update the cell, compute winner, and toggle current player only if the game continues.",
+          "prose": "Keep `board` as a 9-cell array, `currentPlayer`, and `winner` or `gameOver` state in the component. Render the cells with `*ngFor`. On click, ignore filled cells or finished games, place the current mark, check the 8 winning line combinations, and then toggle the player if no winner. Add a reset method to clear the board and set the player back to X.",
           "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ntype Cell = 'X' | 'O' | null;\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"page\">\n      <section class=\"card\">\n        <h1 class=\"title\">Tic-Tac-Toe</h1>\n        <p class=\"subtitle\">Two players take turns. First to 3 in a row wins.</p>\n\n        <div class=\"status\" aria-live=\"polite\">{{ status }}</div>\n\n        <div class=\"board\" role=\"grid\" aria-label=\"tic tac toe board\">\n          <button\n            class=\"cell\"\n            *ngFor=\"let cell of board; let i = index\"\n            type=\"button\"\n            (click)=\"play(i)\"\n            [disabled]=\"isGameOver || cell !== null\"\n            [attr.aria-label]=\"'cell ' + i\"\n          >\n            {{ cell ?? '' }}\n          </button>\n        </div>\n\n        <div class=\"actions\">\n          <button class=\"ghost\" type=\"button\" (click)=\"reset()\">Reset</button>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `:host{display:block}`,\n    `.page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}`,\n    `.card{width:100%;max-width:520px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px;}`,\n    `.title{margin:0;font-size:18px;font-weight:800;}`,\n    `.subtitle{margin:0;color:#9ca3af;font-size:12px;}`,\n    `.status{padding:10px 12px;border:1px solid #1f2937;border-radius:12px;background:#0a0f1e;font-weight:700;}`,\n    `.board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}`,\n    `.cell{aspect-ratio:1/1;border-radius:14px;border:1px solid rgba(31,41,55,.7);background:#0a0f1e;color:#e5e7eb;font-size:34px;font-weight:900;cursor:pointer;display:grid;place-items:center;}`,\n    `.cell:disabled{opacity:.55;cursor:not-allowed;}`,\n    `.actions{display:flex;justify-content:flex-end;}`,\n    `.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;}`\n  ]\n})\nexport class AppComponent {\n  board: Cell[] = Array.from({ length: 9 }, () => null);\n  currentPlayer: 'X' | 'O' = 'X';\n  winner: 'X' | 'O' | null = null;\n\n  get isDraw(): boolean {\n    return !this.winner && this.board.every((c) => c !== null);\n  }\n\n  get isGameOver(): boolean {\n    return !!this.winner || this.isDraw;\n  }\n\n  get status(): string {\n    if (this.winner) return `Winner: ${this.winner}`;\n    if (this.isDraw) return 'Draw';\n    return `Next: ${this.currentPlayer}`;\n  }\n\n  play(i: number): void {\n    if (this.isGameOver) return;\n    if (this.board[i] !== null) return;\n\n    const next = this.board.slice();\n    next[i] = this.currentPlayer;\n    this.board = next;\n\n    const w = this.calculateWinner(this.board);\n    if (w) {\n      this.winner = w;\n      return;\n    }\n\n    if (!this.isDraw) {\n      this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';\n    }\n  }\n\n  reset(): void {\n    this.board = Array.from({ length: 9 }, () => null);\n    this.currentPlayer = 'X';\n    this.winner = null;\n  }\n\n  private calculateWinner(b: Cell[]): 'X' | 'O' | null {\n    const lines: number[][] = [\n      [0, 1, 2],\n      [3, 4, 5],\n      [6, 7, 8],\n      [0, 3, 6],\n      [1, 4, 7],\n      [2, 5, 8],\n      [0, 4, 8],\n      [2, 4, 6]\n    ];\n\n    for (const [a, c, d] of lines) {\n      const v = b[a];\n      if (v && v === b[c] && v === b[d]) return v;\n    }\n\n    return null;\n  }\n}\n"
         }
       ],
@@ -1476,7 +1595,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tictactoe-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-like-button",
@@ -1484,7 +1610,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -1493,7 +1619,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a Facebook-style Like button as an Angular standalone component. Clicking toggles the liked state, updates the count (+1 / -1), and changes the button style. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "summary": "Create a Like button with toggle state and a counter in Angular. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The template should reflect state immediately and apply an active class when liked. Concepts: components, event binding, state, conditional rendering, styling. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1523,11 +1649,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Store `liked` (boolean) and `count` (number) as component state. The click handler flips `liked` and updates `count` accordingly. Bind a CSS class based on `liked` to change the button appearance. Clamp `count` at 0 to avoid negative values.",
+      "overview": "Store `liked` and `count` on the component. The click handler flips `liked` and updates the count by +1 or -1, clamping at zero. Bind the button class to `liked` so the UI responds to state changes. This mirrors common toggle-with-count UI patterns. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single standalone component with class-based state",
-          "prose": "Keep everything in `AppComponent`. Add `liked = false` and `count = 0` (or any initial value). Implement `toggleLike()`:\n- If currently not liked: set liked=true and count++\n- Else: set liked=false and count=Math.max(0, count-1)\nBind `[class.active]=\"liked\"` in the template."
+          "prose": "In `AppComponent`, define `liked = false` and `count = 0`. Implement `toggleLike()` to update both values, using `Math.max(0, count - 1)` when unliking. In the template, bind `(click)` to the handler, display the count, and use `[class.active]=\"liked\"` (or `[ngClass]`) to style the active state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1552,7 +1678,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-like-button-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-input-output-two-way",
@@ -1560,7 +1693,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "inputs-outputs",
@@ -1569,7 +1702,7 @@
       "template-syntax"
     ],
     "description": {
-      "summary": "Build a reusable Angular child component that supports @Input/@Output, property binding, event emitters, and two-way binding. The parent must pass data to the child and receive changes back.",
+      "summary": "Expose a value input and a valueChange output to support two-way binding, and keep the child component stateless so the parent owns the source of truth. Concepts: components, inputs outputs, binding, event binding, template syntax.",
       "specs": {
         "requirements": [
           "Create a reusable child component (standalone) that receives `value` via @Input.",
@@ -1601,11 +1734,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Implement a child component that accepts `value` and `label` via `@Input`. To support Angular two-way binding, expose `@Output() valueChange` and emit the new value when the user types. Also expose another output like `submit` to demonstrate emitting discrete events. The parent binds `[(value)]` to keep state synchronized and listens for `(submit)` to track events.",
+      "overview": "Angular’s two-way binding is syntactic sugar for [value] and (valueChange). The child emits updates and the parent updates its own state. This keeps data flow explicit and testable. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Two-way binding via value/valueChange + submit output",
-          "prose": "Child:\n- `@Input() value: string` and `@Output() valueChange = new EventEmitter<string>()`.\n- Emit on input: `valueChange.emit(next)`.\n- Provide `@Output() submit = new EventEmitter<void>()` for button clicks.\n\nParent:\n- Store `name` and `submitCount`.\n- Use `<app-child [(value)]=\"name\" (submit)=\"onSubmit()\" [label]=\"...\" />`.\n- Show `name` and `submitCount` in parent UI.\n- Add a parent button to programmatically set the value."
+          "prose": "Define @Input() value and @Output() valueChange. Emit valueChange when the user edits. In the parent, use [(value)] to wire it up. Avoid mutating @Input inside the child, and keep validation in the parent if needed. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1631,7 +1764,14 @@
       "google"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-progress-bar-thresholds",
@@ -1639,7 +1779,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -1683,11 +1823,11 @@
     },
     "starterCodeHint": "Implement `inc()` and `dec()` to add/subtract 10 and clamp. Bind `[style.width.%]` to progress and return a threshold-based class string from `barClass`.",
     "solutionBlock": {
-      "overview": "Keep a single `progress` number in a standalone component. Use +10/−10 button handlers with clamping. Render a track and a fill element where width is bound to progress percentage. Compute threshold-based classes (red/orange/green) from progress via a getter.",
+      "overview": "Use a single progress value in the component and derive width, label, and color from it. The bar should clamp between 0 and 100, display the percentage, and change color based on thresholds. This keeps the UI declarative, avoids duplicated state, and makes the component easy to test. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls Use derived state to compute the color class from the numeric value and keep styling declarative in the template.",
       "approaches": [
         {
           "title": "Standalone component with clamped progress and threshold class",
-          "prose": "Store `progress = 0`. Implement `inc()` as `progress = Math.min(100, progress + 10)` and `dec()` as `progress = Math.max(0, progress - 10)`. Use `[style.width.%]=\"progress\"` on the fill div. Compute the fill class with a getter: `<34` red, `34–66` orange, `>66` green."
+          "prose": "Store progress = 0. Create inc/dec handlers that clamp values using Math.min/Math.max. Bind the fill width with [style.width.%]=progress and expose a getter that returns a color class based on thresholds. Render the numeric percentage so users always see the exact value and the color change is obvious. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates This emphasizes component styling plus derived state rather than mutating DOM classes directly."
         }
       ],
       "notes": {
@@ -1711,7 +1851,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-progress-bar-thresholds-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-nested-comments",
@@ -1719,7 +1866,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "components",
       "recursion",
@@ -1728,7 +1875,7 @@
       "state"
     ],
     "description": {
-      "summary": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "summary": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation. Concepts: components, recursion, tree. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular root component.",
@@ -1792,7 +1939,14 @@
     "solutionAsset": "assets/sb/angular/solution/angular-nested-comments-solution.v2.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-dynamic-counter-buttons",
@@ -1800,7 +1954,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -1839,11 +1993,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Keep an array of counts. Render a button for each count. When a button is clicked, increment that specific index, then append a new 0 at the end. This naturally grows the UI while preserving each button’s independent value.\n\n**Test cases**\n- Start: [0]\n- Click index 0 → [1,0]\n- Click index 1 → [1,1,0]\n- Click index 0 again → [2,1,0,0]",
+      "overview": "This combines list state and counter state. Keep step values in an array, render buttons for each, and update the count on click. Inputs should update the steps array immutably to keep change detection predictable. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Standalone component + counts[] array",
-          "prose": "1) Initialize `counts = [0]`.\n2) Template: `*ngFor=\"let c of counts; let i = index\"`.\n3) Button click: `onClick(i)`.\n4) In `onClick(i)`: `this.counts[i] += 1; this.counts.push(0);`.\n\nThis is minimal and matches the spec exactly."
+          "prose": "Use a count variable plus an array of steps. Render buttons with *ngFor, update count += step, and add new steps via a form input. Validate input and prevent empty steps to keep UX clean and avoid NaN. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1867,7 +2021,14 @@
     "solutionAsset": "assets/sb/angular/solution/angular-dynamic-counter-buttons-solution.v2.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-chips-input-autocomplete",
@@ -1875,7 +2036,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "forms",
@@ -1957,7 +2118,14 @@
       "airbnb"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-chessboard-click-highlight",
@@ -1965,7 +2133,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -2038,7 +2206,14 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-snake-game",
@@ -2046,7 +2221,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "hard",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -2124,6 +2299,13 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   }
 ]
