@@ -135,6 +135,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Event Loop Explained: Microtasks vs Macrotasks",
+      "description": "Understand call stack, microtask and macrotask queues, why Promise callbacks run before setTimeout, and how long task chains can block rendering."
     }
   },
   {
@@ -218,6 +222,10 @@
       "detailPenalty": 0,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Closures Explained: Scope, State, and Privacy",
+      "description": "Learn how functions retain lexical scope after outer execution ends, how closures power private state and factories, and where loop and memory bugs appear."
     }
   },
   {
@@ -341,6 +349,10 @@
       "detailPenalty": 0,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "How `this` Works in JavaScript: Call Site, bind, and Arrows",
+      "description": "Master how this is set by invocation context, why methods lose context as callbacks, and when to use call/apply/bind or arrow functions safely."
     }
   },
   {
@@ -449,6 +461,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Hoisting and TDZ: var, let, const Behavior",
+      "description": "See what hoisting really means, why let/const throw before initialization, and how temporal dead zone rules prevent unsafe early access."
     }
   },
   {
@@ -550,6 +566,10 @@
       "detailPenalty": 0,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "var vs let vs const Hoisting: Initialization Differences",
+      "description": "Compare how var, let, and const are hoisted, why only var is preinitialized to undefined, and how TDZ changes access and bug patterns."
     }
   },
   {
@@ -702,6 +722,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Promises and async/await in JavaScript: Practical Guide",
+      "description": "Understand Promise states, microtask timing, async/await error handling, and when to run tasks sequentially or in parallel with Promise combinators."
     }
   },
   {
@@ -804,6 +828,10 @@
       "detailPenalty": 0,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Event Delegation: Bubbling, target, and closest()",
+      "description": "Learn how one parent listener handles dynamic child elements, when to use event.target vs closest(), and how stopPropagation affects delegation."
     }
   },
   {
@@ -914,6 +942,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "null vs undefined vs undeclared in JavaScript",
+      "description": "Understand the meaning of undefined, intentional null, and undeclared variables, including typeof quirks, ReferenceError behavior, and comparison traps."
     }
   },
   {
@@ -1016,6 +1048,10 @@
       "detailPenalty": 1,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript == vs ===: Coercion Rules and Safe Comparisons",
+      "description": "See how loose equality performs type coercion, why strict equality is safer, and which edge cases (null/undefined, NaN, empty strings) cause hidden bugs."
     }
   },
   {
@@ -1145,6 +1181,10 @@
       "detailPenalty": 0,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Hoisting Explained: Declarations, TDZ, and Functions",
+      "description": "Learn what gets hoisted, why var is undefined before assignment, how let/const enter TDZ, and why function declarations differ from expressions."
     }
   },
   {
@@ -1229,6 +1269,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Higher-Order Functions in JavaScript: Definition and Uses",
+      "description": "Understand functions that take callbacks or return functions, and how they power map/filter/reduce, closures, composition, and reusable abstractions."
     }
   },
   {
@@ -1343,6 +1387,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Event Bubbling vs Capturing in JavaScript DOM Events",
+      "description": "Follow the capturing-target-bubbling phases, control propagation with stopPropagation, and choose the right listener phase for reliable UI behavior."
     }
   },
   {
@@ -1466,6 +1514,10 @@
       "detailPenalty": 0,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "call vs apply vs bind in JavaScript: this and Arguments",
+      "description": "Learn when call/apply execute immediately, why bind returns a new function, and how to choose each method to avoid lost this and extra allocations."
     }
   },
   {
@@ -1574,6 +1626,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "forEach vs map in JavaScript: Side Effects vs Transforms",
+      "description": "Understand when map should return a new array, when forEach fits side effects, and how this choice affects immutability, chaining, and performance."
     }
   },
   {
@@ -1684,6 +1740,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Cookie vs localStorage vs sessionStorage: Key Differences",
+      "description": "Compare browser storage by lifetime, size, server transmission, and security to pick the right option for auth, preferences, and tab-specific state."
     }
   },
   {
@@ -1808,6 +1868,10 @@
       "detailPenalty": 1,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Prototypal Inheritance and the Prototype Chain",
+      "description": "See how prototype-chain lookup works, why shared methods save memory, and how Object.create or class syntax link objects without copying behavior."
     }
   },
   {
@@ -1936,6 +2000,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Data Types: Primitives vs Objects Explained",
+      "description": "Learn all 8 JavaScript data types, how primitives differ from objects in mutability and equality, and common traps like typeof null and array detection."
     }
   },
   {
@@ -2022,6 +2090,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "NaN in JavaScript: Why It’s Not Equal to Itself",
+      "description": "Understand what produces NaN, why typeof NaN is number, and how Number.isNaN avoids coercion bugs from global isNaN in numeric validation."
     }
   },
   {
@@ -2104,6 +2176,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Currying in JavaScript: Partial Application and Trade-offs",
+      "description": "Learn how currying transforms functions into reusable chains, when partial application helps, and where readability and debugging costs appear."
     }
   },
   {
@@ -2190,6 +2266,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Callbacks Explained: Async Flow and Pitfalls",
+      "description": "Understand how callbacks power async flow and event handling, why callback hell happens, and when Promises or async/await are better for maintainability."
     }
   },
   {
@@ -2287,6 +2367,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Arrow Functions in JavaScript: Syntax, this, and Limits",
+      "description": "Use arrow functions for concise callbacks, but know lexical this behavior, missing arguments/prototype, and why they cannot be constructors."
     }
   },
   {
@@ -2397,6 +2481,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Object Destructuring in JavaScript: Patterns and Defaults",
+      "description": "Extract object fields cleanly with renaming, defaults, and nested patterns while avoiding undefined errors and keeping parameter-heavy code readable."
     }
   },
   {
@@ -2508,6 +2596,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Design Patterns: Practical Use and Trade-offs",
+      "description": "Understand common patterns like module, factory, observer, and singleton, when they improve architecture, and when abstraction adds unnecessary complexity."
     }
   },
   {
@@ -2607,6 +2699,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Deferred Scripts in JavaScript: defer vs async Behavior",
+      "description": "See deferred scripts load without blocking parsing, execute after HTML is parsed, and when to choose defer versus async for predictable startup order."
     }
   },
   {
@@ -2711,6 +2807,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Classes Explained: Syntax, Prototypes, and Inheritance",
+      "description": "Learn how ES6 classes map to prototypes, how constructors and extends/super work, and when class syntax improves readability without changing JS internals."
     }
   },
   {
@@ -2898,6 +2998,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Object Creation Methods: Literal, new, create, Class",
+      "description": "Compare literals, constructors, classes, Object.create, factories, and JSON.parse to choose the right pattern for reuse, inheritance, and simplicity."
     }
   },
   {
@@ -3002,6 +3106,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Memoization: Caching Function Results for Speed",
+      "description": "Understand when memoization improves performance, how to design cache keys, and where memory growth or impure functions make caching a bad trade-off."
     }
   },
   {
@@ -3101,6 +3209,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Microtasks vs Macrotasks in JavaScript Event Loop",
+      "description": "Learn queue priority, why Promise callbacks run before timers, and how long microtask chains can delay rendering and responsiveness."
     }
   },
   {
@@ -3210,6 +3322,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Promise.all vs allSettled vs race vs any: When to Use Each",
+      "description": "Compare Promise combinators by finish condition, output shape, and failure mode for all-or-nothing work, partial results, timeout races, and fallbacks."
     }
   },
   {
@@ -3320,6 +3436,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Object.create vs new in JavaScript: Prototype and Setup",
+      "description": "Understand how new runs constructors, how Object.create sets only prototype links, and when each pattern is better for inheritance and object setup."
     }
   },
   {
@@ -3419,6 +3539,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "prototype vs __proto__ in JavaScript: What Actually Differs",
+      "description": "Learn how function.prototype and an object’s [[Prototype]] link relate, why new wires them together, and how to inspect chains with Object.getPrototypeOf."
     }
   },
   {
@@ -3521,6 +3645,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Shallow vs Deep Copy in JavaScript: Mutation Pitfalls",
+      "description": "Understand what shallow copy still shares, when deep copy is required, and safe cloning strategies for nested state in React, Angular, and plain JS."
     }
   },
   {
@@ -3644,6 +3772,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "map vs filter vs reduce in JavaScript: When to Use Each",
+      "description": "Choose map for transforms, filter for selection, and reduce for aggregation, with patterns that keep code readable, immutable, and bug-resistant."
     }
   },
   {
@@ -3741,6 +3873,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Array.sort Pitfalls: Mutation and Comparator Rules",
+      "description": "Avoid lexicographic number sorting, in-place mutations, and bad comparators by using numeric compare functions, array copies, and stable sort awareness."
     }
   },
   {
@@ -3870,6 +4006,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Mutability vs Immutability in JavaScript State Management",
+      "description": "See how reference sharing causes hidden side effects, and when immutable update patterns improve predictability, change detection, and debugging."
     }
   },
   {
@@ -3994,6 +4134,10 @@
       "detailPenalty": 1,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Secure CORS Handling in Frontend Apps: What Actually Works",
+      "description": "Understand why browsers block cross-origin reads, what must be configured on server/proxy, and safe CORS headers for preflight and credentials."
     }
   },
   {
@@ -4143,6 +4287,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Streaming Caching Architecture: CDN, Edge, and Browser Layers",
+      "description": "Design a streaming cache strategy across browser, service worker, CDN edge, and origin shield to reduce startup latency, rebuffering, and delivery cost."
     }
   },
   {
@@ -4241,6 +4389,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Debounce vs Throttle for Search Inputs: Which and Why?",
+      "description": "Choose debounce or throttle based on UX and API cost, tune intervals like 200ms intentionally, and prevent overfetching while keeping search responsive."
     }
   },
   {
@@ -4328,6 +4480,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Map vs Object in JavaScript: Key Differences and Use Cases",
+      "description": "Know when Map is better for dynamic key-value data, iteration order, and any key types, and when plain objects are better for fixed structured records."
     }
   },
   {
@@ -4472,6 +4628,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "HTTP Caching Basics: Cache-Control, ETag, Last-Modified, 304",
+      "description": "Understand freshness and revalidation using Cache-Control, ETag, and Last-Modified, and apply safe caching rules for HTML, APIs, and versioned assets."
     }
   },
   {
@@ -4590,6 +4750,10 @@
       "detailPenalty": 2,
       "crossCompany": 1,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "How to Optimize Web Page Load Time: Practical Frontend Strategy",
+      "description": "Improve load performance with compression, caching, code splitting, image optimization, and rendering-path fixes, then verify impact with Core Web Vitals."
     }
   },
   {
@@ -4743,6 +4907,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Evaluating JavaScript Trends for Production Frontend Apps",
+      "description": "Assess trends by real production value: TypeScript, ESM, tooling, and performance impact, then adopt incrementally with clear risk and ROI criteria."
     }
   },
   {
@@ -4820,6 +4988,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Frontend AI Streaming: SSE, WebSocket, and ReadableStream UX",
+      "description": "Handle AI responses incrementally with chunk rendering, cancellation, and retry paths while keeping streaming state, errors, and final output consistent."
     }
   },
   {
@@ -4934,6 +5106,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Chat Conversation State Management for LLM Apps",
+      "description": "Model messages as an append-only timeline with streaming drafts, status transitions, truncation strategy, and recovery flows that preserve UX continuity."
     }
   },
   {
@@ -5088,6 +5264,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "SSE vs WebSocket: Choosing Real-Time Transport in Frontend",
+      "description": "Pick SSE for simple server-to-client streams and WebSocket for bidirectional low-latency flows, with clear reconnect, ordering, and infra trade-offs."
     }
   },
   {
@@ -5246,6 +5426,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "AI UX Challenges in Frontend: Latency, Trust, and Failures",
+      "description": "Design AI interfaces that expose uncertainty, stream progress clearly, support cancel/retry, and add trust, safety, and fallback cues for resilient UX."
     }
   },
   {
@@ -5359,6 +5543,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Prompt Engineering in Frontend: UX, Context, and Guardrails",
+      "description": "Shape user input, context injection, and constraints in the UI to improve output quality while reducing prompt injection risk and inconsistent results."
     }
   },
   {
@@ -5441,6 +5629,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Stack vs Queue in JavaScript: LIFO/FIFO and O(1) Patterns",
+      "description": "Understand LIFO vs FIFO behavior, core operations, and practical implementations that avoid Array.shift overhead in BFS, task queues, and stacks."
     }
   },
   {
@@ -5551,6 +5743,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Big-O Notation in JavaScript: Time vs Space Complexity",
+      "description": "Understand how Big-O describes growth, derive complexity with practical rules, and compare common classes across best, average, worst, and amortized cases."
     }
   },
   {
@@ -5655,6 +5851,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Async Race Conditions in JavaScript: Prevent Stale UI Updates",
+      "description": "Learn why async requests resolve out of order and prevent stale overwrites with AbortController, request guards, and deterministic UI state updates."
     }
   },
   {
@@ -5746,6 +5946,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Web Workers in JavaScript: Off-Main-Thread Performance",
+      "description": "Use Web Workers for CPU-heavy tasks without blocking UI, and manage message passing, transferables, lifecycle cleanup, and startup overhead trade-offs."
     }
   },
   {
@@ -5864,6 +6068,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Escaping vs Sanitizing: XSS-Safe Output and Input Rules",
+      "description": "Use context-aware escaping for output and allowlist sanitization for user HTML to prevent XSS in text, attributes, URLs, and rich content."
     }
   },
   {
@@ -6005,6 +6213,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "DOM XSS Prevention: Dangerous Sinks, Safe APIs, and CSP",
+      "description": "Trace untrusted sources to unsafe DOM sinks, replace with safe rendering APIs, validate URLs/protocols, and harden defenses with CSP and Trusted Types."
     }
   },
   {
@@ -6129,6 +6341,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Testing Edge Cases: Boundaries, Invariants, and Failures",
+      "description": "Design high-value tests with boundaries, equivalence classes, invariants, and failure modes so JavaScript bugs surface early without excessive test count."
     }
   },
   {
@@ -6265,6 +6481,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Browser Performance Profiling Workflow: DevTools, LCP, INP, CLS",
+      "description": "Follow a repeatable profiling loop: baseline metrics, record traces, isolate bottlenecks, apply fixes, and re-measure LCP, INP, and CLS improvements."
     }
   },
   {
@@ -6413,6 +6633,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Memory Leaks: Common Sources and DevTools Fix Flow",
+      "description": "Find leak roots like listeners, timers, detached DOM, and unbounded caches, then use heap snapshots and retaining paths to confirm fixes."
     }
   },
   {
@@ -6560,6 +6784,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "ESM vs CommonJS: Interop, Tooling, and Runtime Trade-offs",
+      "description": "Compare static ESM imports with CJS requires, avoid Node interop pitfalls, and see how module format affects tree-shaking, bundling, and runtime behavior."
     }
   },
   {
@@ -6665,6 +6893,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Tree-Shaking in JavaScript: How It Works and What Breaks It",
+      "description": "Learn ESM prerequisites, sideEffects and pure hints, and validation steps to prove dead code elimination while avoiding common bundler pitfalls."
     }
   },
   {
@@ -6806,6 +7038,10 @@
       "detailPenalty": 2,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Intl.DateTimeFormat: Time Zones, DST, and Safe Date Rendering",
+      "description": "Format dates with IANA zones and locale rules, handle DST edges safely, and avoid fragile manual offset math in production frontend apps."
     }
   },
   {
@@ -6893,6 +7129,10 @@
       "detailPenalty": 0,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Mocks vs Stubs vs Spies: Choosing the Right Test Double",
+      "description": "Understand what each double verifies, where mocks become brittle, and how dependency injection and async boundaries keep JavaScript tests reliable."
     }
   },
   {
@@ -7011,6 +7251,10 @@
       "detailPenalty": 1,
       "crossCompany": 0,
       "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "JavaScript Garbage Collection: GC Pauses, Jank, and Debugging",
+      "description": "Learn how JS garbage collection and reachability drive memory pressure, why GC pauses cause UI jank, and how to diagnose leaks with Chrome DevTools."
     }
   }
 ]
