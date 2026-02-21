@@ -23,15 +23,23 @@
     },
     { "source": "/:path+/", "destination": "/:path+", "permanent": true }
   ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "^/(dashboard|profile)(?:/.*)?$", "dest": "/index.html" },
-    { "src": "^/admin(?:/.*)?$", "dest": "/index.html" },
-    { "src": "^/billing(?:/.*)?$", "dest": "/index.html" },
-    { "src": "^/onboarding(?:/.*)?$", "dest": "/index.html" },
-    { "src": "^/track/[^/]+$", "dest": "/index.html" },
-    { "src": "^/tracks/[^/]+$", "dest": "/index.html" },
-    { "src": "^/companies/[^/]+(?:/(?:all|coding|trivia|system))?$", "dest": "/index.html" },
-    { "src": "^/.*$", "status": 404, "dest": "/404/index.html" }
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/dashboard/:path*", "destination": "/index.html" },
+    { "source": "/profile", "destination": "/index.html" },
+    { "source": "/profile/:path*", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin/:path*", "destination": "/index.html" },
+    { "source": "/billing", "destination": "/index.html" },
+    { "source": "/billing/:path*", "destination": "/index.html" },
+    { "source": "/onboarding", "destination": "/index.html" },
+    { "source": "/onboarding/:path*", "destination": "/index.html" },
+    { "source": "/track/:slug", "destination": "/index.html" },
+    { "source": "/tracks/:slug", "destination": "/index.html" },
+    { "source": "/companies/:slug", "destination": "/index.html" },
+    { "source": "/companies/:slug/all", "destination": "/index.html" },
+    { "source": "/companies/:slug/coding", "destination": "/index.html" },
+    { "source": "/companies/:slug/trivia", "destination": "/index.html" },
+    { "source": "/companies/:slug/system", "destination": "/index.html" }
   ]
 }
