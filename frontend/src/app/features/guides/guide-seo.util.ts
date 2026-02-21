@@ -45,9 +45,10 @@ export function buildGuideDetailSeo(
   entry: GuideEntry
 ): SeoMeta {
   const canonical = seo.buildCanonicalUrl(`/guides/${sectionPath}/${entry.slug}`);
-  const title = clamp(entry.title, 74) || 'Frontend guide';
+  const title = clamp(entry.seo?.title || entry.title, 74) || 'Frontend guide';
+  const rawDescription = entry.seo?.description || entry.summary || '';
   const description = ensureInterviewIntent(
-    clamp(entry.summary || '', DESCRIPTION_MAX_LEN)
+    clamp(rawDescription, DESCRIPTION_MAX_LEN)
       || fallbackGuideDescription(sectionTitle, title),
     sectionTitle,
     title
