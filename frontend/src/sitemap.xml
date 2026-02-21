@@ -376,9 +376,6 @@
     <loc>https://frontendatlas.com/guides/interview-blueprint</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/guides/interview-blueprint/angular-prep-path</loc>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/api-design</loc>
   </url>
   <url>
@@ -394,13 +391,7 @@
     <loc>https://frontendatlas.com/guides/interview-blueprint/javascript-interviews</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/guides/interview-blueprint/javascript-prep-path</loc>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/quiz</loc>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/guides/interview-blueprint/react-prep-path</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/resume</loc>
@@ -410,9 +401,6 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/ui-interviews</loc>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/guides/interview-blueprint/vue-prep-path</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/system-design-blueprint</loc>
