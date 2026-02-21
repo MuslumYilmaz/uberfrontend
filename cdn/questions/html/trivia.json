@@ -98,7 +98,11 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "What Is the DOM in HTML? Document Object Model Explained",
+      "description": "Understand what the DOM is, how browsers build the document tree, and how JavaScript reads and updates nodes to make web pages interactive."
+    }
   },
   {
     "id": "html-tags",
@@ -209,7 +213,11 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "What Are HTML Tags? Syntax, Structure, and Core Examples",
+      "description": "Learn how HTML tags define page structure, the difference between paired and self-closing tags, and which core tags interviewers expect you to know."
+    }
   },
   {
     "id": "html-head-tag",
@@ -311,7 +319,11 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML head Tag: Metadata, Rendering, and SEO Basics",
+      "description": "See what belongs inside the HTML head tag, including title, meta, link, and script, and why these elements matter for rendering, SEO, and sharing."
+    }
   },
   {
     "id": "html-div-vs-span",
@@ -415,7 +427,11 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "div vs span in HTML: Block vs Inline Differences",
+      "description": "Compare div and span with practical use cases, learn when to structure layout versus style inline text, and avoid common semantic and CSS mistakes."
+    }
   },
   {
     "id": "html-title-tag",
@@ -512,7 +528,11 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML title Tag: SEO Impact, Tabs, and Best Practices",
+      "description": "Learn what the title tag does, how it appears in search results and browser tabs, and how to write concise titles that improve relevance and click-through."
+    }
   },
   {
     "id": "html-img-alt-attribute",
@@ -603,7 +623,11 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML img alt Attribute: Accessibility, SEO, and Examples",
+      "description": "Understand why alt text matters for screen readers, image fallback, and SEO, plus rules for writing context-aware descriptions without keyword stuffing."
+    }
   },
   {
     "id": "html-semantic-elements",
@@ -727,7 +751,11 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Semantic HTML Elements: Meaning, Accessibility, and SEO",
+      "description": "Learn what semantic HTML elements are, when to use header, main, article, and footer tags, and why they improve accessibility, SEO, and maintainability."
+    }
   },
   {
     "id": "html-block-inline-elements",
@@ -800,7 +828,11 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Block vs Inline Elements in HTML: Differences and Use Cases",
+      "description": "Understand how block-level and inline elements differ in layout flow, sizing, and nesting, plus rules for choosing the right element in interviews."
+    }
   },
   {
     "id": "html-br-tag",
@@ -876,7 +908,11 @@
       "semantics",
       "line-break"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML br Tag: Line Break Usage Rules",
+      "description": "Learn what the HTML br tag does, when manual line breaks are semantically correct, and why CSS should handle spacing for cleaner, accessible layouts."
+    }
   },
   {
     "id": "html-a-tag",
@@ -966,7 +1002,11 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML a Tag Explained: Links, href, target, and rel",
+      "description": "Learn how the HTML anchor tag creates links, how href, target, and rel change behavior, and when to use absolute, relative, fragment, and download links."
+    }
   },
   {
     "id": "html-href-attribute",
@@ -1174,7 +1214,11 @@
       "seo",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML meta Tag: Charset, Viewport, Description, and SEO",
+      "description": "See what meta tags do in the head, including charset, viewport, and description, and how they affect rendering, indexing, and social previews."
+    }
   },
   {
     "id": "html-ol-ul-dl-difference",
@@ -1280,7 +1324,11 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "ol vs ul vs dl in HTML: List Types and When to Use Each",
+      "description": "Understand the difference between ordered, unordered, and description lists, and when to use each for steps, options, or term-definition content."
+    }
   },
   {
     "id": "html-form-default-method",
@@ -1483,7 +1531,11 @@
       "post",
       "http"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML form default method: GET vs POST",
+      "description": "Know the default form method in HTML, why browsers use GET when method is omitted, how data appears in the URL, and when switching to POST is safer."
+    }
   },
   {
     "id": "html-input-placeholder",
@@ -1564,7 +1616,11 @@
       "accessibility",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML Placeholder Attribute: Usage, UX, and Accessibility",
+      "description": "Learn what placeholder text is used for, why it should not replace labels, and how to write helpful hints for forms without hurting accessibility."
+    }
   },
   {
     "id": "html-id-vs-class",
@@ -1652,7 +1708,11 @@
       "selectors",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "id vs class in HTML: Key Differences and Best Practices",
+      "description": "Learn when to use id versus class in HTML, how uniqueness affects CSS and JavaScript selectors, and common mistakes that hurt maintainability."
+    }
   },
   {
     "id": "html-iframe-tag",
@@ -1761,7 +1821,11 @@
       "security",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML iframe Tag: How It Works, Uses, and Security Tips",
+      "description": "Understand how iframes embed external pages, videos, and maps, plus key attributes like src and title, and security controls such as sandbox and allow."
+    }
   },
   {
     "id": "html-data-attribute",
@@ -1859,7 +1923,11 @@
       "javascript",
       "attributes"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML data-* Attributes: dataset Usage and Best Practices",
+      "description": "Learn what data-* attributes are for, how to read and write values with dataset in JavaScript, and when to avoid storing sensitive or complex data in HTML."
+    }
   },
   {
     "id": "html-clickable-image",
@@ -1958,7 +2026,11 @@
       "anchor",
       "accessibility"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "How to Make an Image Clickable in HTML (a + img)",
+      "description": "See how to wrap an img inside an anchor tag, add meaningful alt text, and handle new-tab links safely with target=\"_blank\" and rel=\"noopener\"."
+    }
   },
   {
     "id": "html-vs-xhtml",
@@ -2062,7 +2134,11 @@
       "basics",
       "doctype"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML vs XHTML: Syntax Rules, Differences, and Use Cases",
+      "description": "Compare HTML and XHTML syntax, including tag closing, case sensitivity, and parsing strictness, to understand when XHTML rules still matter in practice."
+    }
   },
   {
     "id": "html-anchor-target",
@@ -2180,7 +2256,11 @@
       "links",
       "noopener"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML target Attribute in Anchor Links: _blank vs _self",
+      "description": "Learn what the target attribute does in anchor links, when to open a new tab, and why rel=\"noopener noreferrer\" matters for security and UX."
+    }
   },
   {
     "id": "html-img-srcset",
@@ -2266,7 +2346,11 @@
       "responsive",
       "performance"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "HTML srcset Attribute: Responsive Images, sizes, and Performance",
+      "description": "Learn how srcset and sizes let browsers choose the right image per viewport and DPR, reducing bandwidth while keeping image quality sharp on all screens."
+    }
   },
   {
     "id": "html-parsing-rendering",
@@ -2354,7 +2438,11 @@
       "performance",
       "scripts"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Browser HTML Parsing and Rendering Order: Critical Path Basics",
+      "description": "Understand parse order from DOM/CSSOM to render tree, layout, and paint, and learn how blocking CSS and synchronous scripts affect render performance."
+    }
   },
   {
     "id": "html-aria-roles",
@@ -2435,7 +2523,11 @@
       "roles",
       "a11y"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "ARIA Roles in HTML: When to Use Them and Common Pitfalls",
+      "description": "Learn what ARIA roles communicate to assistive tech, why native semantic elements come first, and how to avoid wrong roles that break accessibility."
+    }
   },
   {
     "id": "html-shadow-dom",
@@ -2516,7 +2608,11 @@
       "encapsulation",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Shadow DOM Explained: Web Components, Encapsulation, and Styling",
+      "description": "Understand how Shadow DOM isolates markup and CSS in web components, plus trade-offs around theming, testing, focus behavior, and accessibility."
+    }
   },
   {
     "id": "web-accessibility-make-page-accessible",
@@ -2589,7 +2685,11 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "seo": {
+      "title": "How to Make a Web Page Accessible: Practical A11y Checklist",
+      "description": "Use a practical accessibility workflow: semantic HTML, labels, keyboard navigation, focus states, contrast checks, and screen reader testing for better UX."
+    }
   },
   {
     "id": "html-dom-tree-structure",
@@ -2641,6 +2741,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "seo": {
+      "title": "DOM Tree Structure and Depth: Performance and Traversal Basics",
+      "description": "Learn how DOM nodes form a tree, why balanced vs skewed depth matters, and how deep nesting increases traversal, style recalculation, and layout cost."
+    }
   }
 ]
