@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { OfflineBannerComponent } from '../../../shared/components/offline-banner/offline-banner';
+import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
 type FrameworkPathCard = {
   slug: string;
@@ -12,7 +13,7 @@ type FrameworkPathCard = {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent],
+  imports: [CommonModule, RouterModule, OfflineBannerComponent, PrepSignalGridComponent],
   styles: [`
     :host { display:block; color: var(--uf-text-primary); background: var(--uf-bg); }
     .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 0 48px; }
@@ -64,12 +65,7 @@ type FrameworkPathCard = {
       gap: 14px;
     }
     .prep-block h2 { margin: 0; font-size: 1.06rem; }
-    .prep-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
-    .prep-grid ul, .prep-grid ol { margin: 8px 0 0 16px; }
-    .prep-grid li { margin: 6px 0; }
-    @media (max-width: 900px) {
-      .prep-grid { grid-template-columns: 1fr; }
-    }
+    .prep-grid-shared { margin: 0; }
 
     .prep-links { display:flex; gap: 10px; flex-wrap: wrap; }
     .prep-links a {
@@ -116,32 +112,13 @@ type FrameworkPathCard = {
 
       <section class="prep-block" aria-label="How to use this interview prep cluster">
         <h2>How to use this cluster</h2>
-        <div class="prep-grid">
-          <div>
-            <strong>Suggested sequence</strong>
-            <ol>
-              <li>Pick one framework path and complete its sequence first.</li>
-              <li>Run coding + trivia drills in your selected framework.</li>
-              <li>Close with system design and behavioral blueprint rounds.</li>
-            </ol>
-          </div>
-          <div>
-            <strong>Expected outcomes</strong>
-            <ul>
-              <li>Faster implementation decisions during coding rounds.</li>
-              <li>Clearer explanations for framework trade-offs.</li>
-              <li>Better consistency across screening and onsite interviews.</li>
-            </ul>
-          </div>
-          <div>
-            <strong>Common mistakes</strong>
-            <ul>
-              <li>Switching frameworks every day instead of focused loops.</li>
-              <li>Practicing random prompts without roadmap sequencing.</li>
-              <li>Ignoring interview communication quality while coding.</li>
-            </ul>
-          </div>
-        </div>
+        <app-prep-signal-grid
+          class="prep-grid-shared"
+          outcomesTitle="Expected outcomes"
+          [outcomes]="prepOutcomes"
+          [mistakes]="prepMistakes"
+          [sequence]="prepSequence">
+        </app-prep-signal-grid>
 
         <div class="prep-links">
           <a [routerLink]="['/guides/interview-blueprint']">Interview blueprint hub</a>
@@ -156,6 +133,24 @@ type FrameworkPathCard = {
   `,
 })
 export class FrameworkPrepIndexComponent {
+  readonly prepOutcomes: PrepSignalItem[] = [
+    'Faster implementation decisions during coding rounds.',
+    'Clearer explanations for framework trade-offs.',
+    'Better consistency across screening and onsite interviews.',
+  ];
+
+  readonly prepMistakes: PrepSignalItem[] = [
+    'Switching frameworks every day instead of focused loops.',
+    'Practicing random prompts without roadmap sequencing.',
+    'Ignoring interview communication quality while coding.',
+  ];
+
+  readonly prepSequence: PrepSignalItem[] = [
+    'Pick one framework path and complete its sequence first.',
+    'Run coding + trivia drills in your selected framework.',
+    'Close with system design and behavioral blueprint rounds.',
+  ];
+
   readonly frameworkPaths: FrameworkPathCard[] = [
     {
       slug: 'javascript-prep-path',
