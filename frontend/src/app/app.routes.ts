@@ -9,7 +9,7 @@ import {
 
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
-import { premiumGuard } from './core/guards/premium.guard';
+import { premiumGuard, trackPreviewAccessGuard } from './core/guards/premium.guard';
 import {
   codingDetailResolver,
   systemDesignDetailResolver,
@@ -418,6 +418,7 @@ export const routes: Routes = [
       },
       {
         path: ':slug/preview',
+        canActivate: [trackPreviewAccessGuard],
         loadComponent: () =>
           import('./features/tracks/track-preview/track-preview.component').then(
             (m) => m.TrackPreviewComponent,
