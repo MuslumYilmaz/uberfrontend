@@ -24,6 +24,7 @@
           <a class="hero-link hero-link--hub" [routerLink]="['/']">Prep roadmap homepage</a>
           <a class="hero-link hero-link--hub" [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
           <a class="hero-link hero-link--js" [routerLink]="['/guides/framework-prep/javascript-prep-path']">JavaScript path</a>
+          <a class="hero-link hero-link--mastery" [routerLink]="['/tracks/javascript-prep-path/mastery']">JavaScript mastery</a>
           <a class="hero-link hero-link--react" [routerLink]="['/guides/framework-prep/react-prep-path']">React path</a>
           <a class="hero-link hero-link--angular" [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular path</a>
           <a class="hero-link hero-link--vue" [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue path</a>
@@ -38,7 +39,7 @@
         </app-prep-signal-grid>
       </div>
       <div class="hero-callout">
-        <div class="hero-num">{{ tracks.length }}</div>
+        <div class="hero-num">{{ allTrackCardsCount }}</div>
         <div class="hero-text">Tracks to jump-start prep</div>
         <div class="hero-note">Pick one, then dive into the questions.</div>
         <a class="hero-cta" [routerLink]="['/pricing']">Unlock full interview prep</a>
@@ -48,6 +49,31 @@
 
   <div class="container">
     <div class="grid">
+      <a
+        class="card fa-card card--mastery"
+        *ngFor="let mastery of masteryCards; let i = index"
+        [routerLink]="['/tracks', mastery.slug, 'mastery']"
+        [attr.data-slot]="'mastery-' + i">
+        <div class="card-top">
+          <span class="pill">{{ mastery.durationLabel }}</span>
+          <span class="pill muted">{{ mastery.questionCountLabel }}</span>
+        </div>
+        <div class="card-title">{{ mastery.title }}</div>
+        <div class="card-sub">{{ mastery.subtitle }}</div>
+
+        <div class="focus">
+          <span *ngFor="let item of mastery.focus" class="chip">{{ item }}</span>
+        </div>
+
+        <div class="fw-note">{{ mastery.note }}</div>
+
+        <div class="meta-row">
+          <span *ngFor="let badge of mastery.badges" class="meta">{{ badge }}</span>
+        </div>
+
+        <div class="card-footer">{{ mastery.ctaLabel }} →</div>
+      </a>
+
       <a class="card fa-card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug, 'preview']" [attr.data-slot]="i">
         <div class="card-top">
           <span class="pill">{{ track.durationLabel }}</span>

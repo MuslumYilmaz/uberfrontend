@@ -168,6 +168,7 @@
 
 .hero-link--hub { --chip-tone: #6cc2ff; }
 .hero-link--js { --chip-tone: #f4c15d; }
+.hero-link--mastery { --chip-tone: #3dbf8f; }
 .hero-link--react { --chip-tone: #58c9ff; }
 .hero-link--angular { --chip-tone: #ff7286; }
 .hero-link--vue { --chip-tone: #4fd6a9; }
@@ -278,6 +279,31 @@
   border-color: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
   box-shadow: var(--uf-card-shadow-strong);
   transform: translateY(-1px) scale(1.01);
+}
+
+.card--mastery {
+  border-color: color-mix(in srgb, #3dd59c 58%, var(--uf-border-subtle) 42%);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, #3dd59c 18%, var(--uf-surface)), color-mix(in srgb, #1e90ff 14%, var(--uf-surface)));
+}
+
+.card--mastery::before {
+  background:
+    radial-gradient(circle at 18% 18%, color-mix(in srgb, #3dd59c 28%, transparent), transparent 44%);
+  opacity: 0.72;
+}
+
+.card--mastery::after {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, #3dd59c 16%, transparent), color-mix(in srgb, #1e90ff 10%, transparent));
+}
+
+.card--mastery .card-footer {
+  color: color-mix(in srgb, #8ff7d0 74%, var(--uf-text-primary));
+}
+
+.card--mastery:hover {
+  border-color: color-mix(in srgb, #3dd59c 74%, var(--uf-border-subtle));
 }
 
 .card-top {

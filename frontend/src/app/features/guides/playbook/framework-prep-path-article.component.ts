@@ -5639,6 +5639,17 @@ function onInput(value) {
       </p>
 
       <ng-container *ngIf="isJavascriptPath; else defaultFrameworkContent">
+        <section class="jp-mastery-callout">
+          <h2>JavaScript 0 to 100 mastery track</h2>
+          <p>
+            Prefer a structured drill board over long-form reading? Use the mastery crash track for module checkpoints,
+            mixed trivia + coding flow, and progress tracking.
+          </p>
+          <a [routerLink]="['/guides/framework-prep/javascript-prep-path/mastery']">
+            Open JavaScript mastery crash track
+          </a>
+        </section>
+
         <div class="jp-layout">
           <section class="jp-section jp-section--1">
         <h2>Section 1 — Introduction</h2>
@@ -7374,6 +7385,37 @@ function onInput(value) {
 
     :host ::ng-deep fa-guide-shell .content .fp-table-wrap tr:last-child td {
       border-bottom: none;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout {
+      margin: 8px 0 14px;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--uf-accent) 42%, var(--uf-border-subtle));
+      background: color-mix(in srgb, var(--uf-accent) 16%, #121922);
+      padding: 13px 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > h2,
+    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > p {
+      margin: 0;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > a {
+      width: fit-content;
+      text-decoration: none;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--uf-accent) 54%, var(--uf-border-subtle));
+      background: color-mix(in srgb, var(--uf-accent) 22%, #121922);
+      color: var(--uf-text-primary);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 11px;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > a:hover {
+      background: color-mix(in srgb, var(--uf-accent) 30%, #121922);
     }
 
     :host ::ng-deep fa-guide-shell .content .jp-layout {

@@ -107,6 +107,11 @@
   --uf-status-danger-border: color-mix(in srgb, #ef4444 44%, var(--uf-border-subtle));
   --uf-status-danger-text: color-mix(in srgb, #fee2e2 90%, var(--uf-text-primary));
 
+  /* Mastery palette (global, shared across mastery pages) */
+  --uf-mastery-accent: var(--uf-accent);
+  --uf-mastery-accent-soft: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+  --uf-mastery-surface-tint: color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface-alt));
+
   /* Motion + shell */
   --uf-motion-fast: 120ms;
   --uf-motion-base: 180ms;

@@ -25,6 +25,7 @@ import {
   playbookGuideDetailResolver,
   systemGuideDetailResolver,
 } from './core/resolvers/guide-detail.resolver';
+import { masteryPathResolver } from './core/resolvers/mastery-path.resolver';
 
 /** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -404,6 +405,11 @@ export const routes: Routes = [
     redirectTo: 'tracks/:slug/preview',
   },
   {
+    path: 'track/:slug/mastery',
+    pathMatch: 'full',
+    redirectTo: 'tracks/:slug/mastery',
+  },
+  {
     path: 'tracks',
     children: [
       {
@@ -433,6 +439,24 @@ export const routes: Routes = [
             title: 'Interview Track Preview',
             description:
               'Preview track outcomes, sample frontend interview questions, and premium unlock details.',
+            robots: 'index,follow',
+          },
+        },
+      },
+      {
+        path: ':slug/mastery',
+        loadComponent: () =>
+          import('./features/guides/mastery-path/mastery-path-page.component').then(
+            (m) => m.MasteryPathPageComponent,
+          ),
+        resolve: {
+          masteryPath: masteryPathResolver,
+        },
+        data: {
+          seo: {
+            title: 'Framework mastery crash track',
+            description:
+              'Follow a guided 0 to 100 mastery track with trivia, output prediction, coding drills, and checkpoint gates.',
             robots: 'index,follow',
           },
         },
@@ -575,6 +599,23 @@ export const routes: Routes = [
             title: 'Framework Prep Paths for Interviews',
             description:
               'Compare JavaScript, React, Angular, and Vue prep paths with recommended sequence, expected outcomes, and common mistakes to fix before interviews.',
+          },
+        },
+      },
+      {
+        path: 'framework-prep/:slug/mastery',
+        loadComponent: () =>
+          import('./features/guides/mastery-path/mastery-path-page.component').then(
+            (m) => m.MasteryPathPageComponent,
+          ),
+        resolve: {
+          masteryPath: masteryPathResolver,
+        },
+        data: {
+          seo: {
+            title: 'Framework mastery crash track',
+            description:
+              'Follow a guided 0 to 100 mastery track with trivia, output prediction, coding drills, and checkpoint gates.',
           },
         },
       },
