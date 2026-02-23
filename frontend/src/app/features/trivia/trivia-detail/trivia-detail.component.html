@@ -2,7 +2,7 @@
 <div class="page-frame">
     <ng-template #questionListTpl>
         <ul class="side-list">
-            <li *ngFor="let q of questionsList; trackBy: trackByQuestionId">
+            <li *ngFor="let q of sidebarQuestions; trackBy: trackByQuestionId">
                 <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
@@ -19,7 +19,7 @@
     <!-- Sidebar -->
     <aside class="side" #sideScroll (scroll)="onSideScroll()">
         <div class="side-head">
-            <div class="side-title">All Questions</div>
+            <div class="side-title">{{ sidebarTitle }}</div>
         </div>
         <ng-container *ngTemplateOutlet="questionListTpl"></ng-container>
     </aside>
@@ -29,7 +29,7 @@
         <div *ngIf="loadState() === 'loaded' && question() as q; else stateBlock" class="main-stack">
             <ng-container *ngIf="!locked(); else lockedView">
             <!-- Mobile/tablet: closable question nav -->
-            <section class="mobile-qnav" *ngIf="questionsList?.length">
+            <section class="mobile-qnav" *ngIf="sidebarQuestions?.length">
                 <button
                     class="mobile-qnav__trigger"
                     type="button"
@@ -37,9 +37,9 @@
                     (click)="toggleQnav()"
                     [attr.aria-expanded]="qnavOpen()"
                     aria-controls="trivia-mobile-qnav-panel">
-                    <span class="mobile-qnav__label">All questions</span>
+                    <span class="mobile-qnav__label">{{ sidebarTitle }}</span>
                     <span class="mobile-qnav__right">
-                        <span class="mobile-qnav__hint">{{ questionsList.length }} items</span>
+                        <span class="mobile-qnav__hint">{{ sidebarQuestions.length }} items</span>
                         <i class="fa-solid" [ngClass]="qnavOpen() ? 'fa-chevron-up' : 'fa-chevron-down'" aria-hidden="true"></i>
                     </span>
                 </button>
@@ -58,9 +58,9 @@
                 data-testid="trivia-mobile-qnav-panel"
                 *ngIf="qnavOpen()"
                 role="dialog"
-                aria-label="All questions">
+                [attr.aria-label]="sidebarTitle">
                 <div class="mobile-qnav__panel-head">
-                    <div class="mobile-qnav__panel-title">All questions</div>
+                    <div class="mobile-qnav__panel-title">{{ sidebarTitle }}</div>
                     <button
                         type="button"
                         class="mobile-qnav__close"

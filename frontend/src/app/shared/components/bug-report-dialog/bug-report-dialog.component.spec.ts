@@ -51,7 +51,10 @@ describe('BugReportDialogComponent', () => {
   });
 
   it('disables submit button when note is empty and enables when note has content', () => {
-    const getSendBtn = () => document.body.querySelector('.bug-btn--primary') as HTMLButtonElement | null;
+    const getSendBtn = () => {
+      const buttons = Array.from(document.body.querySelectorAll('.bug-btn--primary')) as HTMLButtonElement[];
+      return buttons.length ? buttons[buttons.length - 1] : null;
+    };
 
     expect(getSendBtn()).toBeTruthy();
     expect(getSendBtn()!.disabled).toBeTrue();

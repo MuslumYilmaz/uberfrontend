@@ -121,6 +121,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   tech!: Tech;
 
   questionsList: Question[] = [];
+  sidebarQuestions: Question[] = [];
+  sidebarTitle = 'All Questions';
   question = signal<Question | null>(null);
   copiedIndex = signal<number | null>(null);
   solved = signal(false);
@@ -148,6 +150,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // practice session
   private practice: PracticeSession = null;
+  private sessionSource: string | null = null;
   returnTo: any[] | null = null;
   private returnToUrl: string | null = null;
   private returnLabel = signal<string | null>(null);
@@ -356,6 +359,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
                 tap((all) => {
                   this.questionsList = all;
                   this.dataLoaded = true;
+                  this.refreshSidebarQuestions();
                   this.selectQuestion(id);
                   this.syncPracticeIndexById(id);
                 })
@@ -384,6 +388,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tech = resolved.tech;
     this.questionsList = resolved.list ?? [];
     this.dataLoaded = true;
+    this.refreshSidebarQuestions();
     this.selectQuestion(resolved.id);
     this.syncPracticeIndexById(resolved.id);
   }
@@ -393,9 +398,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const browserState = this.isBrowser ? history.state : null;
     const s = (navState ?? browserState) as any;
     this.practice = (s?.session ?? null) as PracticeSession;
+    this.sessionSource = typeof s?.sessionSource === 'string' ? s.sessionSource : null;
     this.returnTo = s?.returnTo ?? null;
     this.returnToUrl = typeof s?.returnToUrl === 'string' ? s.returnToUrl : null;
     this.returnLabel.set(s?.returnLabel ?? null);
+    this.refreshSidebarQuestions();
   }
 
   backToReturn() {
@@ -417,6 +424,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       }));
       const index = Math.max(0, items.findIndex(i => i.id === currentId));
       this.practice = { items, index };
+      this.refreshSidebarQuestions();
     }
   }
 
@@ -433,6 +441,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/', it.tech, it.kind, it.id], {
       state: {
         session: { items: this.practice.items, index: newIndex },
+        sessionSource: this.sessionSource ?? undefined,
         returnTo: this.returnTo ?? undefined,
         returnToUrl: this.returnToUrl ?? undefined,
         returnLabel: this.returnLabel() ?? undefined
@@ -1001,6 +1010,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
     return {
       session: normalizedSession,
+      sessionSource: this.sessionSource ?? undefined,
       returnTo: this.returnTo ?? undefined,
       returnToUrl: this.returnToUrl ?? undefined,
       returnLabel: this.returnLabel() ?? undefined,
@@ -1014,6 +1024,38 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
     const index = Math.max(0, items.findIndex((item) => item.id === this.question()?.id));
     return { items, index };
+  }
+
+  private refreshSidebarQuestions() {
+    const sessionItems = (this.practice?.items ?? [])
+      .filter((item) => item.kind === 'trivia' && item.tech === this.tech);
+
+    if (!sessionItems.length) {
+      this.sidebarQuestions = this.questionsList;
+      this.sidebarTitle = 'All Questions';
+      return;
+    }
+
+    const byId = new Map(this.questionsList.map((q) => [q.id, q] as const));
+    const ordered: Question[] = [];
+    const seen = new Set<string>();
+
+    for (const item of sessionItems) {
+      if (seen.has(item.id)) continue;
+      const hit = byId.get(item.id);
+      if (!hit) continue;
+      seen.add(item.id);
+      ordered.push(hit);
+    }
+
+    if (!ordered.length) {
+      this.sidebarQuestions = this.questionsList;
+      this.sidebarTitle = 'All Questions';
+      return;
+    }
+
+    this.sidebarQuestions = ordered;
+    this.sidebarTitle = this.sessionSource === 'mastery' ? 'Mastery Questions' : 'Practice Questions';
   }
 
   private normalizeTags(tags: unknown): string[] {

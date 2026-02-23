@@ -273,7 +273,9 @@ test.describe('lemonsqueezy integration (local)', () => {
     });
 
     await page.goto('/tracks/foundations-30d');
-    await expect(page.getByText('Premium tracks')).toBeVisible();
+    await expect(page).toHaveURL(/\/tracks\/foundations-30d\/preview/);
+    await expect(page.getByTestId('track-preview-page')).toBeVisible();
+    await expect(page.getByTestId('track-detail-page')).toHaveCount(0);
   });
 
   test('billing cancel shows message and returns to pricing', async ({ page }) => {

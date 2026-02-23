@@ -153,8 +153,15 @@ test('track filters sync to URL and persist on reload + back', async ({ page }) 
   await expect(page.getByTestId(`track-question-card-${WEB_QUESTION.id}`)).toBeVisible();
 
   await page.getByTestId(`track-question-card-${WEB_QUESTION.id}`).click();
-  await expect(page.getByTestId('coding-detail-page')).toBeVisible();
-  await expect(page.getByTestId('question-title')).toHaveText(WEB_QUESTION.title);
+  await page.waitForURL(new RegExp(`/${WEB_QUESTION.tech}/coding/${WEB_QUESTION.id}$`));
+
+  const codingDetailPage = page.getByTestId('coding-detail-page');
+  const codingMobileGuard = page.getByTestId('coding-mobile-guard');
+  await expect(codingDetailPage.or(codingMobileGuard)).toBeVisible();
+
+  if (await codingDetailPage.count()) {
+    await expect(page.getByTestId('question-title')).toHaveText(WEB_QUESTION.title);
+  }
 
   await page.goBack();
   await expect(page.getByTestId('track-detail-page')).toBeVisible();

@@ -69,7 +69,7 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     const questionServiceStub = {
-      loadAllQuestions: jasmine.createSpy('loadAllQuestions').and.callFake((kind: string) => {
+      loadAllQuestionSummaries: jasmine.createSpy('loadAllQuestionSummaries').and.callFake((kind: string) => {
         if (kind === 'coding') {
           return of([
             { id: 'react-counter', title: 'Counter', tech: 'react', tags: ['state'], difficulty: 'easy' },

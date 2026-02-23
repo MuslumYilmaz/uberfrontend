@@ -147,6 +147,7 @@ import { MasteryItemRowComponent } from './mastery-item-row.component';
         <app-mastery-item-row
           *ngFor="let item of view.items"
           [item]="item"
+          [sessionItems]="view.items"
           [locked]="view.locked"
           [completed]="completedItemIds.has(item.id)"
           (toggleItem)="toggleItemCompletion.emit(item.id)">
