@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TRACKS } from '../track.data';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
+import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 
 type MasteryTrackCard = {
   slug: string;
@@ -19,7 +20,7 @@ type MasteryTrackCard = {
 @Component({
   selector: 'app-track-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PrepSignalGridComponent],
+  imports: [CommonModule, RouterModule, PrepSignalGridComponent, FaCardComponent],
   templateUrl: './track-list.component.html',
   styleUrls: ['./track-list.component.css'],
 })

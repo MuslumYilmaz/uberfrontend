@@ -8,14 +8,14 @@
     <!-- Collapsed rail -->
     <div *ngIf="descCollapsed()" class="h-full w-full flex flex-col items-center justify-between py-2">
       <div class="flex flex-col items-center gap-2">
-        <button pButton type="button" icon="pi pi-chevron-right" class="p-button-rounded p-button-text"
+        <button faButton type="button" variant="ghost" [iconOnly]="true" icon="pi pi-chevron-right" class="p-button-rounded p-button-text"
           (click)="toggleDescription()" aria-label="Expand description"></button>
 
-        <button pButton type="button" icon="pi pi-file" class="p-button-rounded p-button-text"
+        <button faButton type="button" variant="ghost" [iconOnly]="true" icon="pi pi-file" class="p-button-rounded p-button-text"
           [ngClass]="{ 'text-white': activePanel()===0, 'opacity-60': activePanel()!==0 }"
           (click)="activePanel.set(0); toggleDescription()" aria-label="Description"></button>
 
-        <button pButton type="button" icon="pi pi-code" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
+        <button faButton type="button" variant="ghost" [iconOnly]="true" icon="pi pi-code" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
           [ngClass]="{ 'text-white': activePanel()===1, 'opacity-60': activePanel()!==1 }"
           (click)="onSolutionTabClick()" aria-label="Solution"></button>
       </div>
@@ -35,8 +35,8 @@
             (click)="onSolutionTabClick()">Solution</button>
         </div>
 
-        <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" pButton type="button"
-          icon="pi pi-chevron-left" (click)="toggleDescription()" aria-label="Hide description"></button>
+        <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" faButton variant="ghost" [iconOnly]="true"
+          icon="pi pi-chevron-left" type="button" (click)="toggleDescription()" aria-label="Hide description"></button>
       </div>
 
       <div class="flex-1 overflow-auto p-6 font-sm">
@@ -259,9 +259,9 @@
                       Viewing the solution early can reduce learning benefits. You can still load it read-only.
                     </div>
                     <div class="actions flex items-center gap-3">
-                      <button pButton label="View solution" class="p-button-danger" data-testid="solution-warning-view"
-                        (click)="confirmSolutionReveal()"></button>
-                      <button pButton label="Cancel" class="p-button-text" data-testid="solution-warning-cancel" (click)="cancelSolutionReveal()"></button>
+                      <button faButton variant="danger" class="p-button-danger" data-testid="solution-warning-view"
+                        (click)="confirmSolutionReveal()">View solution</button>
+                      <button faButton variant="ghost" class="p-button-text" data-testid="solution-warning-cancel" (click)="cancelSolutionReveal()">Cancel</button>
                     </div>
                   </div>
                 </div>
@@ -285,7 +285,7 @@
                   <span class="ap-num">{{ i + 1 }}</span>
                   <h3 class="ap-title">{{ ap.title }}</h3>
                   <div class="ap-actions">
-                    <button class="fa-btn" [attr.data-testid]="'solution-load-approach-' + i"
+                    <button faButton [attr.data-testid]="'solution-load-approach-' + i"
                       *ngIf="(isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs))"
                       (click)="loadApproach(ap)" title="Load into editor">
                       Load into editor
@@ -361,7 +361,7 @@
                 <section *ngIf="isFrameworkTech() && solutionFileList().length" class="mt-4 space-y-2">
                   <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold">Files</h3>
-                    <button type="button" class="fa-btn text-[10px]" (click)="loadSolutionIntoEditor()"
+                    <button type="button" faButton class="text-[10px]" (click)="loadSolutionIntoEditor()"
                       title="Replace all files with the official solution">
                       Load into editor
                     </button>
@@ -550,10 +550,10 @@
         <li>Write and debug code with a comfortable editor width.</li>
       </ul>
       <div class="mobile-workspace-actions">
-        <button class="fa-btn fa-btn--primary" type="button" (click)="backToReturn()">
+        <button faButton variant="primary" type="button" (click)="backToReturn()">
           Go back
         </button>
-        <a class="fa-btn fa-btn--ghost" [routerLink]="['/coding']">
+        <a faButton variant="ghost" [routerLink]="['/coding']">
           Practice catalog
         </a>
       </div>
@@ -562,19 +562,17 @@
 </ng-template>
 
 <!-- Preview dialog (Angular only) -->
-<p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
-  [resizable]="false" [style]="{ width: '90vw', maxWidth: '1400px' }" [contentStyle]="{ padding: '0', height: '80vh' }">
-  <ng-template pTemplate="header">
-    <div class="flex items-center justify-between w-full">
-      <div class="font-semibold">Preview</div>
-      <button pButton icon="pi pi-times" class="p-button-text" (click)="closePreview()"></button>
-    </div>
-  </ng-template>
+<fa-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
+  [resizable]="false" width="90vw" maxWidth="1400px" [contentStyle]="{ padding: '0', height: '80vh' }">
+  <div faDialogHeader class="flex items-center justify-between w-full">
+    <div class="font-semibold">Preview</div>
+    <button faButton variant="ghost" [iconOnly]="true" icon="pi pi-times" class="p-button-text" (click)="closePreview()"></button>
+  </div>
   <div class="w-full h-full">
     <iframe *ngIf="previewOnlyUrl" [src]="previewOnlyUrl" title="Angular preview" sandbox="allow-scripts allow-popups allow-modals"
       class="w-full h-full border-0" referrerpolicy="no-referrer"></iframe>
   </div>
-</p-dialog>
+</fa-dialog>
 
 <app-login-required-dialog [(visible)]="loginPromptOpen"
   [title]="loginPromptTitle"
@@ -583,33 +581,31 @@
   [redirectTo]="router.url">
 </app-login-required-dialog>
 
-<p-dialog
+<fa-dialog
   [(visible)]="onboardingPromptOpen"
   [modal]="true"
   [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="false"
+  header="Personalize your next actions"
   styleClass="onboarding-nudge-dialog">
-  <ng-template pTemplate="header">
-    <div class="font-semibold">Personalize your next actions</div>
-  </ng-template>
   <div class="p-4 flex flex-col gap-3" data-testid="onboarding-prompt-dialog">
     <p class="m-0 text-sm opacity-90">
       Great momentum. Answer three quick questions and we’ll generate your next highest-signal steps.
     </p>
     <div class="flex gap-2 flex-wrap">
-      <button class="fa-btn fa-btn--primary" type="button" (click)="openOnboardingQuickStart()">
+      <button faButton variant="primary" type="button" (click)="openOnboardingQuickStart()">
         Get my next actions
       </button>
-      <button class="fa-btn fa-btn--ghost" type="button" (click)="dismissOnboardingPrompt()">
+      <button faButton variant="ghost" type="button" (click)="dismissOnboardingPrompt()">
         Maybe later
       </button>
     </div>
   </div>
-</p-dialog>
+</fa-dialog>
 
-<p-dialog
+<fa-dialog
   [(visible)]="lifecyclePromptOpen"
   [modal]="true"
   [dismissableMask]="true"
@@ -625,18 +621,18 @@
       {{ lifecyclePromptBody() }}
     </p>
     <div class="flex gap-2 flex-wrap">
-      <button class="fa-btn fa-btn--primary" type="button" (click)="openLifecycleOnboarding()">
+      <button faButton variant="primary" type="button" (click)="openLifecycleOnboarding()">
         Get next actions
       </button>
-      <button class="fa-btn fa-btn--ghost" type="button" (click)="openLifecyclePricing()">
+      <button faButton variant="ghost" type="button" (click)="openLifecyclePricing()">
         View premium depth
       </button>
-      <button class="fa-btn fa-btn--ghost" type="button" (click)="dismissLifecyclePrompt()">
+      <button faButton variant="ghost" type="button" (click)="dismissLifecyclePrompt()">
         Later
       </button>
     </div>
   </div>
-</p-dialog>
+</fa-dialog>
 </ng-container>
 </ng-container>
 
@@ -689,11 +685,11 @@
         </ng-template>
       </p>
       <div class="locked-actions">
-        <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricing()">View pricing</button>
-        <button class="fa-btn fa-btn--ghost" type="button" data-testid="coding-report-access-issue-btn" (click)="reportAccessIssue()">
+        <button faButton variant="primary" type="button" (click)="goToPricing()">View pricing</button>
+        <button faButton variant="ghost" type="button" data-testid="coding-report-access-issue-btn" (click)="reportAccessIssue()">
           Report access issue
         </button>
-        <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLogin()">Sign in</button>
+        <button *ngIf="!auth.isLoggedIn()" faButton variant="ghost" type="button" (click)="goToLogin()">Sign in</button>
       </div>
     </div>
   </div>

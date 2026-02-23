@@ -2,7 +2,6 @@ import { CommonModule, Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BehaviorSubject, combineLatest, distinctUntilChanged, forkJoin, map, Observable, of, shareReplay, Subject, takeUntil } from 'rxjs';
 import { Question, QuestionKind } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
@@ -21,8 +20,10 @@ import {
   TrackQuestionKind,
   TrackQuestionRef,
 } from '../track.data';
-import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
+import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
+import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
+import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
 
 type PracticeItem = { tech: Tech; kind: QuestionKind; id: string };
 type TrackItem = {
@@ -54,7 +55,15 @@ const IMP_ORDER: ReadonlyArray<ImportanceTier> = ['low', 'medium', 'high'];
 @Component({
   selector: 'app-track-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ProgressSpinnerModule, FaChipComponent, CodingFilterPanelComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    FaChipComponent,
+    CodingFilterPanelComponent,
+    FaCardComponent,
+    FaSpinnerComponent,
+  ],
   templateUrl: './track-detail.component.html',
   styleUrls: ['./track-detail.component.css'],
 })

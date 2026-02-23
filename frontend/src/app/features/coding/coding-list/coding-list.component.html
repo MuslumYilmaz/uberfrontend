@@ -13,7 +13,7 @@
     (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
 
-  <section class="fa-prep-cluster fa-card" *ngIf="source === 'global-coding'" aria-label="Framework prep path guidance">
+  <section faCard class="fa-prep-cluster" *ngIf="source === 'global-coding'" aria-label="Framework prep path guidance">
     <div class="fa-prep-cluster__header">
       <div class="fa-prep-cluster__heading">
         <h2 class="fa-section-title">Framework prep path</h2>
@@ -22,16 +22,16 @@
         </p>
       </div>
       <div class="fa-prep-cluster__actions">
-        <a class="fa-btn fa-btn--ghost fa-link-btn" [routerLink]="['/guides/framework-prep']">
+        <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep']">
           Not sure where to start?
         </a>
         <ng-container *ngIf="currentFrameworkPrep() as prep; else defaultFrameworkPrepCta">
-          <a class="fa-btn fa-btn--ghost fa-link-btn" [routerLink]="['/guides/framework-prep', prep.slug]">
+          <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep', prep.slug]">
             Open {{ prep.label }} interview prep guide
           </a>
         </ng-container>
         <ng-template #defaultFrameworkPrepCta>
-          <a class="fa-btn fa-btn--ghost fa-link-btn" [routerLink]="['/guides/framework-prep/javascript-prep-path']">
+          <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep/javascript-prep-path']">
             Start with JavaScript prep guide
           </a>
         </ng-template>
@@ -70,7 +70,7 @@
 
   <div class="fa-questions-layout">
     <aside class="fa-filter-panel" aria-label="Filters">
-      <div class="fa-filter-panel__surface fa-card fa-card--elevated">
+      <div faCard elevated class="fa-filter-panel__surface">
         <div class="fa-filter-panel__header">
           <div>
             <p class="fa-filter-panel__eyebrow fa-meta-label">All Questions</p>
@@ -142,10 +142,10 @@
           <div class="fa-filter-section__header">
             <div class="fa-filter-section__title fa-meta-label">Tags</div>
             <div class="fa-filter-section__actions">
-              <button type="button" class="fa-btn fa-btn--ghost fa-toggle" (click)="toggleTagMatchMode()">
+              <button type="button" faButton variant="ghost" class="fa-toggle" (click)="toggleTagMatchMode()">
                 Match {{ tagMatchMode === 'all' ? 'all' : 'any' }}
               </button>
-              <button type="button" class="fa-btn fa-btn--ghost fa-link-btn"
+              <button type="button" faButton variant="ghost" class="fa-link-btn"
                 [disabled]="!((selectedTags$ | async)?.length)" (click)="clearAllTags()">
                 Clear
               </button>
@@ -177,7 +177,7 @@
           </div>
           <ng-container *ngIf="sort$ | async as currentSort">
             <div class="fa-sort sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
-              <button type="button" class="fa-sort__trigger sort-btn fa-btn fa-btn--ghost" (click)="toggleSort()"
+              <button type="button" faButton variant="ghost" class="fa-sort__trigger sort-btn" (click)="toggleSort()"
                 data-testid="coding-list-sort-trigger">
                 <span class="fa-sort__label">
                   {{ currentSortLabel(currentSort) }}
@@ -188,7 +188,7 @@
               <div class="fa-sort__menu sort-menu" *ngIf="sortOpen">
                 <button *ngFor="let opt of sortOptions" type="button"
                   [attr.data-testid]="'coding-list-sort-' + opt.key"
-                  class="fa-sort__item sort-item fa-btn fa-btn--ghost" [class.active]="opt.key === currentSort"
+                  faButton variant="ghost" class="fa-sort__item sort-item" [class.active]="opt.key === currentSort"
                   (click)="setSort(opt.key)">
                   <span class="fa-sort__text">{{ opt.label }}</span>
                   <span class="fa-sort__check">✓</span>
@@ -203,14 +203,14 @@
         <ng-container *ngIf="visible$ | async as questions; else loading">
           <div *ngIf="questions.length === 0" class="py-6 text-center fa-subtle">
             <div class="italic" data-testid="coding-empty-state">No questions match your filters.</div>
-            <button type="button" class="fa-btn fa-btn--ghost fa-link-btn mt-3" data-testid="coding-empty-reset"
+            <button type="button" faButton variant="ghost" class="fa-link-btn mt-3" data-testid="coding-empty-reset"
               (click)="resetAllFilters()">
               Reset filters
             </button>
           </div>
 
           <a *ngFor="let q of questions"
-            class="list-row fa-card fa-card--interactive fa-question-card fa-question-card--compact"
+            faCard interactive class="list-row fa-question-card fa-question-card--compact"
             [attr.data-testid]="'question-card-' + q.id"
             [class.is-solved]="auth.isLoggedIn() && solvedSet().has(q.id)"
             [class.is-locked]="isLocked(q)"
@@ -285,7 +285,7 @@
                   </span>
                 </div>
 
-                <span class="ghost-link meta-open fa-btn fa-btn--ghost">Open</span>
+                <span class="ghost-link meta-open meta-open-pill">Open</span>
               </div>
             </div>
           </a>
@@ -293,7 +293,7 @@
 
         <ng-template #loading>
           <div class="py-10 flex flex-col items-center gap-3" role="status" aria-live="polite" data-testid="coding-list-loading">
-            <p-progressSpinner></p-progressSpinner>
+            <fa-spinner label="Loading questions"></fa-spinner>
             <div class="text-sm fa-subtle">Loading questions…</div>
           </div>
         </ng-template>

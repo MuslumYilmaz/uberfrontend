@@ -4,10 +4,8 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
 
-import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subscription } from 'rxjs';
@@ -20,7 +18,7 @@ import { CodingListFilterState, CodingListStateService } from '../../../core/ser
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 import { QuestionListResolved } from '../../../core/resolvers/question-list.resolver';
 import { UserProgressService } from '../../../core/services/user-progress.service';
-import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
+import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { FRAMEWORK_FAMILY_BY_ID, frameworkLabel, FrameworkVariant } from '../../../shared/framework-families';
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
@@ -30,6 +28,9 @@ import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util'
 import { SeoMeta, SeoService } from '../../../core/services/seo.service';
 import { buildCodingListSeoMeta } from './coding-list-seo.util';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
+import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
+import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
+import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -215,10 +216,8 @@ function inferCategory(q: any): CategoryKey {
   imports: [
     CommonModule,
     RouterModule,
-    ButtonModule,
     MultiSelectModule,
     SliderModule,
-    ProgressSpinnerModule,
     InputTextModule,
     FormsModule,
     TooltipModule,
@@ -227,6 +226,9 @@ function inferCategory(q: any): CategoryKey {
     OfflineBannerComponent,
     FaChipComponent,
     PrepSignalGridComponent,
+    FaButtonComponent,
+    FaCardComponent,
+    FaSpinnerComponent,
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']

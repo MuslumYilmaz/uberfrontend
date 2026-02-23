@@ -20,8 +20,6 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
 import { filter, Subject, Subscription } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
@@ -57,6 +55,8 @@ import {
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solution-asset.util';
 import { PreviewBuilderService } from '../../../core/services/preview-builder.service';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
+import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
+import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
@@ -117,11 +117,13 @@ const SEO_DESCRIPTION_MAX_LEN = 155;
   selector: 'app-coding-detail',
   standalone: true,
   imports: [
-    CommonModule, RouterModule, HttpClientModule, ButtonModule, DialogModule,
+    CommonModule, RouterModule, HttpClientModule,
     MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
     CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
     LockedPreviewComponent,
     LoginRequiredDialogComponent,
+    FaButtonComponent,
+    FaDialogComponent,
     SafeHtmlPipe,
   ],
   templateUrl: './coding-detail.component.html',

@@ -48,6 +48,9 @@ jobs:
       - name: Lint question assets
         run: npm run lint:questions
 
+      - name: Lint design system contract
+        run: npm run lint:design-system:strict
+
       - name: Build (production)
         run: npm run build
 

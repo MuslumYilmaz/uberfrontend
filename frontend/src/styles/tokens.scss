@@ -1,0 +1,155 @@
+/* Design tokens + global aliases */
+
+/* Override Inter font-face from external themes to avoid missing asset fetches */
+@font-face {
+  font-family: 'Inter';
+  src: local('Inter'), local('Inter Regular'), local('Inter-Regular');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter var';
+  src: local('Inter var'), local('InterVar'), local('Inter Variable');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  /* Runner typography tokens (Results/Console areas) */
+  --fa-runner-font: 12px;
+  --fa-runner-font-sm: 11px;
+  --fa-runner-title: 12px;
+  --fa-runner-line: 1.35;
+
+  /* Core palette */
+  --uf-bg: #050607;
+  --uf-surface: #0b0d14;
+  --uf-surface-alt: #11141c;
+  --uf-border-subtle: #1d2230;
+  --uf-accent: #f4c15d;
+  --uf-text-primary: #f5f6fa;
+  --uf-text-secondary: #c2c7d2;
+  --uf-text-tertiary: #9aa1ae;
+
+  /* Derived surfaces */
+  --uf-surface-muted: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-bg));
+  --uf-surface-veil: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));
+  --uf-accent-soft: color-mix(in srgb, var(--uf-accent) 22%, transparent);
+  --uf-accent-strong: color-mix(in srgb, var(--uf-accent) 90%, var(--uf-text-primary) 10%);
+  --uf-card-radius: 14px;
+  --uf-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --uf-card-shadow-strong: 0 10px 26px rgba(0, 0, 0, 0.42);
+  --uf-focus-ring: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 55%, transparent), 0 10px 28px rgba(0, 0, 0, 0.38);
+
+  /* Typography */
+  --uf-font-body: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --uf-font-heading: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --uf-body-size: 14px;
+  --uf-body-line: 1.58;
+  --uf-meta-size: 13px;
+  --uf-body-weight: 400;
+  --uf-page-title-size: 28px;
+  --uf-section-title-size: 20px;
+  --uf-subsection-title-size: 16px;
+  --uf-heading-weight: 600;
+
+  /* Spacing + radius */
+  --uf-space-1: 4px;
+  --uf-space-2: 8px;
+  --uf-space-3: 12px;
+  --uf-space-4: 16px;
+  --uf-space-5: 24px;
+  --uf-space-6: 32px;
+
+  --uf-radius-8: 8px;
+  --uf-radius-12: 12px;
+  --uf-radius-16: 16px;
+  --uf-radius-pill: 999px;
+
+  /* Surface tiers + states */
+  --uf-surface-1: var(--uf-bg);
+  --uf-surface-2: var(--uf-surface);
+  --uf-surface-3: var(--uf-surface-alt);
+  --uf-surface-glass: color-mix(in srgb, var(--uf-surface) 86%, transparent);
+  --uf-border-strong: color-mix(in srgb, var(--uf-border-subtle) 64%, var(--uf-text-secondary) 36%);
+  --uf-shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.28);
+  --uf-shadow-md: 0 14px 36px rgba(0, 0, 0, 0.38);
+
+  /* Status palette */
+  --uf-status-info-bg: color-mix(in srgb, #38bdf8 18%, var(--uf-surface));
+  --uf-status-info-border: color-mix(in srgb, #38bdf8 44%, var(--uf-border-subtle));
+  --uf-status-info-text: color-mix(in srgb, #dbeafe 88%, var(--uf-text-primary));
+  --uf-status-warn-bg: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
+  --uf-status-warn-border: color-mix(in srgb, var(--uf-accent) 48%, var(--uf-border-subtle));
+  --uf-status-warn-text: var(--uf-text-primary);
+  --uf-status-danger-bg: color-mix(in srgb, #ef4444 18%, var(--uf-surface));
+  --uf-status-danger-border: color-mix(in srgb, #ef4444 44%, var(--uf-border-subtle));
+  --uf-status-danger-text: color-mix(in srgb, #fee2e2 90%, var(--uf-text-primary));
+
+  /* Mastery palette (global, shared across mastery pages) */
+  --uf-mastery-accent: var(--uf-accent);
+  --uf-mastery-accent-soft: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+  --uf-mastery-surface-tint: color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface-alt));
+
+  /* Motion + shell */
+  --uf-motion-fast: 120ms;
+  --uf-motion-base: 180ms;
+  --uf-motion-slow: 260ms;
+  --uf-page-max: 1180px;
+  --uf-page-pad-x: 24px;
+  --uf-page-pad-y: 30px;
+
+  /* Legacy aliases (for migration) */
+  --fa-bg: var(--uf-bg);
+  --fa-surface: var(--uf-surface);
+  --fa-surface-alt: var(--uf-surface-alt);
+  --fa-border-subtle: var(--uf-border-subtle);
+  --fa-border-strong: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+  --fa-accent: var(--uf-accent);
+  --fa-accent-soft: var(--uf-accent-soft);
+  --fa-accent-strong: var(--uf-accent-strong);
+  --fa-text: var(--uf-text-primary);
+  --fa-text-muted: var(--uf-text-secondary);
+  --fa-text-subtle: var(--uf-text-tertiary);
+  --fa-overlay: color-mix(in srgb, var(--uf-bg) 70%, transparent);
+
+  --fa-bg-rgb: 5, 6, 7;
+  --fa-surface-rgb: 11, 13, 20;
+  --fa-surface-alt-rgb: 17, 20, 28;
+  --fa-accent-rgb: 244, 193, 93;
+  --fa-text-rgb: 245, 246, 250;
+
+  --fa-font-body: var(--uf-font-body);
+  --fa-font-heading: var(--uf-font-heading);
+  --fa-body-size: var(--uf-body-size);
+  --fa-body-weight: var(--uf-body-weight);
+  --fa-page-title-size: var(--uf-page-title-size);
+  --fa-section-title-size: var(--uf-section-title-size);
+  --fa-heading-weight: var(--uf-heading-weight);
+
+  --fa-space-1: var(--uf-space-1);
+  --fa-space-2: var(--uf-space-2);
+  --fa-space-3: var(--uf-space-3);
+  --fa-space-4: var(--uf-space-4);
+  --fa-space-5: var(--uf-space-5);
+  --fa-space-6: var(--uf-space-6);
+
+  --fa-radius-8: var(--uf-radius-8);
+  --fa-radius-12: var(--uf-radius-12);
+  --fa-radius-16: var(--uf-radius-16);
+  --fa-radius-pill: var(--uf-radius-pill);
+
+  --fa-card-bg: var(--uf-surface);
+  --fa-card-bg-strong: var(--uf-surface-alt);
+  --fa-card-bg-hover: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-accent) 10%);
+  --fa-card-border: var(--uf-border-subtle);
+  --fa-card-border-strong: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+  --fa-card-radius: var(--uf-card-radius);
+  --fa-card-shadow: var(--uf-card-shadow);
+  --fa-card-shadow-hover: var(--uf-card-shadow-strong);
+  --fa-card-focus: var(--uf-accent);
+  --fa-focus-ring: var(--uf-focus-ring);
+}

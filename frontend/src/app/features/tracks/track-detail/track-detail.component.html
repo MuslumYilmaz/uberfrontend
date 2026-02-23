@@ -8,7 +8,7 @@
       </nav>
 
       <ng-container *ngIf="filtered$ | async as questions; else loadingTpl">
-        <section class="fa-track-header fa-card fa-card--elevated">
+        <section faCard elevated class="fa-track-header">
           <div class="fa-track-header__left">
             <div class="fa-track-header__eyebrow fa-meta-label">Track</div>
             <h1 class="fa-track-header__title fa-page-title">{{ t.title }}</h1>
@@ -26,7 +26,7 @@
           </div>
         </section>
 
-        <section class="fa-track-filters fa-card fa-card--elevated">
+        <section faCard elevated class="fa-track-filters">
           <div class="filters-row">
             <div class="filter-group">
               <div class="filter-label fa-meta-label">Type</div>
@@ -165,7 +165,7 @@
           </div>
 
           <a
-            class="fa-card fa-card--interactive fa-question-card fa-question-card--compact"
+            faCard interactive class="fa-question-card fa-question-card--compact"
             *ngFor="let item of questions; let idx = index"
             [attr.data-testid]="'track-question-card-' + item.id"
             [routerLink]="linkFor(item)"
@@ -226,7 +226,7 @@
                   </span>
                 </div>
 
-                <span class="ghost-link meta-open fa-btn fa-btn--ghost">Open</span>
+                <span class="ghost-link meta-open meta-open-pill">Open</span>
               </div>
             </div>
           </a>
@@ -235,7 +235,7 @@
 
       <ng-template #loadingTpl>
         <div class="py-10 flex flex-col items-center gap-3" role="status" aria-live="polite" data-testid="track-detail-loading">
-          <p-progressSpinner styleClass="text-blue-500"></p-progressSpinner>
+          <fa-spinner styleClass="text-blue-500" label="Loading track questions"></fa-spinner>
           <div class="text-sm opacity-80">Loading track questions…</div>
         </div>
       </ng-template>

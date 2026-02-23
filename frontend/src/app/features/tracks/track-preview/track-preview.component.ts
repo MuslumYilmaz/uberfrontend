@@ -8,6 +8,7 @@ import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { TRACK_LOOKUP, TrackConfig, TrackQuestionRef } from '../track.data';
+import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 
 type PreviewQuestion = {
   id: string;
@@ -21,7 +22,7 @@ type PreviewQuestion = {
 @Component({
   standalone: true,
   selector: 'app-track-preview',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FaCardComponent],
   templateUrl: './track-preview.component.html',
   styleUrls: ['./track-preview.component.css'],
 })

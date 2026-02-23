@@ -1,0 +1,168 @@
+/* Global utilities + typography */
+
+html, body {
+  height: 100%;
+  font-family: var(--uf-font-body, theme("fontFamily.sans"));
+  font-size: var(--uf-body-size);
+  line-height: var(--uf-body-line);
+  font-weight: var(--uf-body-weight);
+  background: var(--uf-bg);
+  color: var(--uf-text-primary);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--uf-font-heading);
+  font-weight: var(--uf-heading-weight);
+  line-height: 1.3;
+  letter-spacing: .01em;
+}
+
+:where(h1) { font-size: var(--uf-page-title-size); }
+:where(h2) { font-size: var(--uf-section-title-size); }
+:where(h3) { font-size: var(--uf-subsection-title-size); }
+:where(h4) { font-size: calc(var(--uf-body-size) + 1px); }
+
+:where(p, li, dt, dd, td, th, label, input, textarea, select, button, summary) {
+  font-family: var(--uf-font-body);
+  font-size: var(--uf-body-size);
+  line-height: var(--uf-body-line);
+}
+
+:where(small, .meta, .subtitle) {
+  font-size: var(--uf-meta-size);
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+.fa-app-root {
+  min-height: 100vh;
+  background: var(--uf-bg);
+  color: var(--uf-text-primary);
+}
+
+.fa-page-shell {
+  max-width: var(--uf-page-max);
+  margin-inline: auto;
+  padding: var(--uf-page-pad-y) var(--uf-page-pad-x) 64px;
+}
+
+.fa-section-shell {
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-card-radius);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt)), color-mix(in srgb, var(--uf-surface-alt) 90%, var(--uf-surface)));
+  box-shadow: var(--uf-shadow-sm);
+}
+
+.fa-divider {
+  border-top: 1px solid color-mix(in srgb, var(--uf-border-subtle) 76%, transparent);
+}
+
+.fa-empty-state {
+  border: 1px dashed var(--uf-border-subtle);
+  border-radius: var(--uf-radius-12);
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+  color: var(--uf-text-secondary);
+  padding: 16px;
+  text-align: center;
+}
+
+.fa-stack-2,
+.fa-stack-3,
+.fa-stack-4 {
+  display: grid;
+}
+
+.fa-stack-2 { gap: var(--uf-space-2); }
+.fa-stack-3 { gap: var(--uf-space-3); }
+.fa-stack-4 { gap: var(--uf-space-4); }
+
+.fa-muted {
+  color: color-mix(in srgb, var(--uf-text-secondary) 78%, transparent);
+}
+
+.fa-subtle {
+  color: color-mix(in srgb, var(--uf-text-tertiary) 82%, transparent);
+}
+
+@media (max-width: 768px) {
+  .fa-page-shell {
+    padding: 20px 14px 52px;
+  }
+}
+
+/* Typography helpers */
+.fa-page-header {
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fa-page-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.fa-page-title {
+  margin: 0;
+  font-family: var(--uf-font-heading);
+  font-size: var(--uf-page-title-size);
+  font-weight: var(--uf-heading-weight);
+  letter-spacing: -0.01em;
+  color: var(--uf-text-primary);
+  line-height: 1.2;
+}
+
+.fa-page-subtitle {
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 75%, transparent);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.fa-section-title {
+  margin: 0;
+  font-family: var(--uf-font-heading);
+  font-size: var(--uf-section-title-size);
+  font-weight: var(--uf-heading-weight);
+  letter-spacing: 0.01em;
+  color: var(--uf-text-primary);
+}
+
+.fa-card-title {
+  margin: 0;
+  font-family: var(--uf-font-heading);
+  font-size: 16px;
+  font-weight: var(--uf-heading-weight);
+  letter-spacing: 0;
+  color: var(--uf-text-primary);
+}
+
+.fa-body {
+  font-size: 14px;
+  font-weight: 400;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent);
+  line-height: 1.5;
+}
+
+.fa-meta-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent);
+}
+
+.fa-meta-text {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 75%, transparent);
+}

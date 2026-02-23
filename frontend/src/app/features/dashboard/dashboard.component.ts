@@ -13,6 +13,8 @@ import { UserProgressService } from '../../core/services/user-progress.service';
 import { deriveTopicIdsFromTags, loadTopics, TopicDefinition } from '../../core/utils/topics.util';
 import { collectCompanyCounts } from '../../shared/company-counts.util';
 import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner';
+import { FaButtonComponent } from '../../shared/ui/button/fa-button.component';
+import { FaCardComponent } from '../../shared/ui/card/fa-card.component';
 import { TRACKS } from '../tracks/track.data';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
@@ -64,7 +66,7 @@ type Card = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent],
+  imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

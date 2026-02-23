@@ -1,6 +1,6 @@
 <div class="dash" data-testid="dashboard-page">
   <div class="container">
-    <section class="command-center fa-card fa-card--elevated">
+    <section faCard elevated class="command-center">
       <div class="command-center__grid">
         <div class="command-center__intro">
           <p class="fa-page-kicker">Command center</p>
@@ -9,8 +9,8 @@
             Build daily momentum, focus on high-signal interview areas, and keep your prep loop tight.
           </p>
           <div class="hero-actions">
-            <a class="fa-btn fa-btn--primary" [routerLink]="continueCta.route">{{ continueCta.label }}</a>
-            <a class="fa-btn fa-btn--ghost" [routerLink]="['/guides', 'interview-blueprint']">Review blueprint</a>
+            <a faButton variant="primary" [routerLink]="continueCta.route">{{ continueCta.label }}</a>
+            <a faButton variant="ghost" [routerLink]="['/guides', 'interview-blueprint']">Review blueprint</a>
           </div>
           <p class="hero-hint fa-meta-text" *ngIf="!auth.isLoggedIn()">
             Sign in to track streaks and weekly completions.
@@ -45,7 +45,7 @@
           <p class="block-subtitle fa-meta-text">Optional gamification widgets to keep momentum and clarity.</p>
         </div>
         <button
-          class="fa-btn fa-btn--ghost block-toggle-btn"
+          faButton variant="ghost" class="block-toggle-btn"
           type="button"
           [attr.aria-expanded]="isGamificationExpanded()"
           aria-controls="dashboard-gamification-content"
@@ -57,12 +57,12 @@
 
       <ng-container *ngIf="isGamificationExpanded()">
       <div class="gamification-grid" id="dashboard-gamification-content">
-        <article class="widget widget--next-action fa-card fa-card--interactive">
+        <article faCard interactive class="widget widget--next-action">
           <div class="widget-kicker">Next best action</div>
           <h3 class="widget-title">{{ nextBestAction().title }}</h3>
           <p class="widget-copy fa-meta-text">{{ nextBestAction().description }}</p>
           <a
-            class="fa-btn fa-btn--primary"
+            faButton variant="primary"
             [routerLink]="nextBestAction().route"
             (click)="trackNextActionClick()"
           >
@@ -70,7 +70,7 @@
           </a>
         </article>
 
-        <article class="widget widget--daily fa-card" *ngIf="dailyChallenge() as daily; else dailyChallengeFallback">
+        <article faCard class="widget widget--daily" *ngIf="dailyChallenge() as daily; else dailyChallengeFallback">
           <div class="widget-kicker">Daily challenge</div>
           <h3 class="widget-title">{{ daily.title }}</h3>
           <div class="widget-meta-chips" *ngIf="daily.available !== false; else challengeUnavailable">
@@ -87,10 +87,10 @@
             <p class="widget-copy fa-meta-text">Could not load today’s challenge. You can still continue normal practice.</p>
           </ng-template>
           <div class="widget-actions widget-actions--challenge">
-            <a class="fa-btn fa-btn--ghost" [routerLink]="daily.route">{{ daily.available === false ? 'Continue practice' : 'Open challenge' }}</a>
+            <a faButton variant="ghost" [routerLink]="daily.route">{{ daily.available === false ? 'Continue practice' : 'Open challenge' }}</a>
             <button
               *ngIf="auth.isLoggedIn() && !daily.completed && daily.available !== false"
-              class="fa-btn fa-btn--primary"
+              faButton variant="primary"
               type="button"
               data-testid="dashboard-daily-complete"
               [disabled]="dailyCompletePending()"
@@ -105,7 +105,7 @@
         </article>
 
         <ng-template #dailyChallengeFallback>
-          <article class="widget widget--daily fa-card" [class.widget--guest]="!auth.isLoggedIn()">
+          <article faCard class="widget widget--daily" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">Daily challenge</div>
             <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Could not load daily challenge' : 'Sign in to get today’s challenge' }}</h3>
             <p class="widget-copy fa-meta-text">
@@ -114,12 +114,12 @@
                 : 'The challenge is deterministic per day and powers optional streak tracking.' }}
             </p>
             <div class="widget-actions widget-actions--guest">
-              <a *ngIf="auth.isLoggedIn()" class="fa-btn fa-btn--ghost" [routerLink]="['/coding']">
+              <a *ngIf="auth.isLoggedIn()" faButton variant="ghost" [routerLink]="['/coding']">
                 Continue practice
               </a>
               <a
                 *ngIf="!auth.isLoggedIn()"
-                class="fa-btn fa-btn--primary"
+                faButton variant="primary"
                 [routerLink]="['/auth/login']"
                 [queryParams]="{ redirectTo: '/dashboard' }"
               >
@@ -127,7 +127,7 @@
               </a>
               <a
                 *ngIf="!auth.isLoggedIn()"
-                class="fa-btn fa-btn--ghost"
+                faButton variant="ghost"
                 [routerLink]="['/auth/signup']"
                 [queryParams]="{ redirectTo: '/dashboard' }"
               >
@@ -137,7 +137,7 @@
           </article>
         </ng-template>
 
-        <article class="widget widget--weekly fa-card" *ngIf="weeklyGoal() as weekly; else weeklyGoalFallback">
+        <article faCard class="widget widget--weekly" *ngIf="weeklyGoal() as weekly; else weeklyGoalFallback">
           <div class="widget-kicker">Weekly goal</div>
           <h3 class="widget-title">{{ weekly.completed }} / {{ weekly.target }} completed</h3>
           <div class="mini-progress">
@@ -194,7 +194,7 @@
 
           <div class="widget-actions">
             <button
-              class="fa-btn fa-btn--ghost"
+              faButton variant="ghost"
               type="button"
               [disabled]="settingsSaving()"
               (click)="saveGamificationSettings()"
@@ -206,7 +206,7 @@
         </article>
 
         <ng-template #weeklyGoalFallback>
-          <article class="widget widget--weekly fa-card" [class.widget--guest]="!auth.isLoggedIn()">
+          <article faCard class="widget widget--weekly" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">Weekly goal</div>
             <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Weekly goal unavailable' : 'Optional goal: 10 per week' }}</h3>
             <p class="widget-copy fa-meta-text">
@@ -216,7 +216,7 @@
             </p>
             <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
               <a
-                class="fa-btn fa-btn--ghost"
+                faButton variant="ghost"
                 [routerLink]="['/auth/login']"
                 [queryParams]="{ redirectTo: '/dashboard' }"
               >
@@ -226,7 +226,7 @@
           </article>
         </ng-template>
 
-        <article class="widget widget--xp fa-card" *ngIf="xpLevel() as xp; else xpFallback">
+        <article faCard class="widget widget--xp" *ngIf="xpLevel() as xp; else xpFallback">
           <div class="widget-kicker">XP + level</div>
           <h3 class="widget-title">Level {{ xp.level }} · {{ xp.totalXp }} XP</h3>
           <div class="mini-progress">
@@ -238,7 +238,7 @@
         </article>
 
         <ng-template #xpFallback>
-          <article class="widget widget--xp fa-card" [class.widget--guest]="!auth.isLoggedIn()">
+          <article faCard class="widget widget--xp" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">XP + level</div>
             <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Leveling data unavailable' : 'Sign in to start leveling' }}</h3>
             <p class="widget-copy fa-meta-text">
@@ -248,7 +248,7 @@
             </p>
             <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
               <a
-                class="fa-btn fa-btn--ghost"
+                faButton variant="ghost"
                 [routerLink]="['/auth/login']"
                 [queryParams]="{ redirectTo: '/dashboard' }"
               >
@@ -258,7 +258,7 @@
           </article>
         </ng-template>
 
-        <article class="widget widget--progress fa-card" *ngIf="progressSummary() as progress; else progressFallback">
+        <article faCard class="widget widget--progress" *ngIf="progressSummary() as progress; else progressFallback">
           <div class="widget-kicker">Progress</div>
           <h3 class="widget-title">{{ progress.solvedPercent }}% overall solved</h3>
           <p class="widget-copy fa-meta-text">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
@@ -284,7 +284,7 @@
         </article>
 
         <ng-template #progressFallback>
-          <article class="widget widget--progress fa-card" [class.widget--guest]="!auth.isLoggedIn()">
+          <article faCard class="widget widget--progress" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">Progress</div>
             <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Progress insights unavailable' : 'Start solving to unlock progress insights' }}</h3>
             <p class="widget-copy fa-meta-text">
@@ -294,7 +294,7 @@
             </p>
             <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
               <a
-                class="fa-btn fa-btn--ghost"
+                faButton variant="ghost"
                 [routerLink]="['/auth/login']"
                 [queryParams]="{ redirectTo: '/dashboard' }"
               >
@@ -320,7 +320,7 @@
       <div class="recommended-layout" *ngIf="recommendedPrimary as primary">
         <a
           *ngIf="primary.route && !primary.disabled; else primaryDisabled"
-          class="recommend-spotlight fa-card fa-card--interactive"
+          faCard interactive class="recommend-spotlight"
           [routerLink]="primary.route"
           [queryParams]="primary.queryParams"
         >
@@ -334,7 +334,7 @@
         </a>
 
         <ng-template #primaryDisabled>
-          <div class="recommend-spotlight fa-card disabled">
+          <div faCard class="recommend-spotlight disabled">
             <div class="spotlight-head">
               <div class="row-icon row-icon--lg"><i [ngClass]="piIcon(primary.icon)"></i></div>
               <span class="recommend-chip">{{ recommendedBadgeForIndex(0) }}</span>
@@ -348,7 +348,7 @@
           <ng-container *ngFor="let card of recommendedSecondary; let i = index; trackBy: trackByTitle">
             <a
               *ngIf="card.route && !card.disabled; else recDisabled"
-              class="row fa-card fa-card--interactive"
+              faCard interactive class="row"
               [routerLink]="card.route"
               [queryParams]="card.queryParams"
             >
@@ -366,7 +366,7 @@
             </a>
 
             <ng-template #recDisabled>
-              <div class="row fa-card disabled">
+              <div faCard class="row disabled">
                 <div class="row-main">
                   <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                   <div class="row-body">
@@ -395,7 +395,7 @@
       <div class="track-list">
         <a
           *ngFor="let card of tracks; trackBy: trackByTitle"
-          class="track-row fa-card fa-card--interactive"
+          faCard interactive class="track-row"
           [routerLink]="card.route"
           [queryParams]="card.queryParams"
         >
@@ -438,7 +438,7 @@
         <div class="company-showcase-grid">
           <a
             *ngFor="let card of companyGuides; trackBy: trackByTitle"
-            class="company-showcase-card fa-card fa-card--interactive"
+            faCard interactive class="company-showcase-card"
             [routerLink]="card.route"
           >
             <div
@@ -473,7 +473,7 @@
           <p class="block-subtitle fa-meta-text">Compact map of topic density to steer what to practice next.</p>
         </div>
         <a
-          class="fa-btn fa-btn--ghost block-head__action"
+          faButton variant="ghost" class="block-head__action"
           [routerLink]="['/focus-areas']"
           data-testid="dashboard-focus-areas-link"
         >
@@ -485,7 +485,7 @@
         <div class="focus-chip-grid">
           <a
             *ngFor="let topic of stats.topics; trackBy: trackByTopicId"
-            class="focus-chip fa-card fa-card--interactive"
+            faCard interactive class="focus-chip"
             [attr.data-intensity]="focusAreaIntensity(stats, topic.id)"
             [routerLink]="['/coding']"
             [queryParams]="{ topic: topic.id, reset: 1 }"
@@ -507,7 +507,7 @@
         <div class="section-grid">
           <a
             *ngFor="let card of questionFormats; trackBy: trackByTitle"
-            class="row format-row fa-card fa-card--interactive"
+            faCard interactive class="row format-row"
             [attr.data-tone]="getFormatTone(card)"
             [routerLink]="card.route"
             [queryParams]="card.queryParams"
@@ -542,7 +542,7 @@
         <div class="section-grid">
           <a
             *ngFor="let card of frameworks; trackBy: trackByTitle"
-            class="row framework-row fa-card fa-card--interactive"
+            faCard interactive class="row framework-row"
             [attr.data-tone]="getFrameworkTone(card)"
             [routerLink]="card.route"
             [queryParams]="card.queryParams"

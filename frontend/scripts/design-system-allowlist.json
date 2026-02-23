@@ -1,0 +1,43 @@
+{
+  "rawPrimeTemplates": [
+    "src/app/features/app-sidebar/app-sidebar.component.html",
+    "src/app/features/system-design-list/system-design-detail/system-design-detail.component.html",
+    "src/app/features/system-design-list/system-design-list.component.html",
+    "src/app/features/trivia/trivia-detail/trivia-detail.component.html",
+    "src/app/features/trivia/trivia-list/trivia-list.component.html"
+  ],
+  "ngDeep": [
+    "src/app/features/app-sidebar/app-sidebar.component.css",
+    "src/app/features/auth/profile/profile.component.css",
+    "src/app/features/coding/coding-detail/coding-detail.component.css",
+    "src/app/features/coding/coding-detail/coding-framework-panel/coding-framework-panel.component.css",
+    "src/app/features/coding/coding-detail/coding-js-panel/coding-js-panel.component.css",
+    "src/app/features/coding/coding-list/coding-list.component.scss",
+    "src/app/features/company/company-detail/company-detail.component.css",
+    "src/app/features/guides/playbook/framework-prep-path-article.component.ts",
+    "src/app/features/guides/system-design/system-design-radio-framework.ts",
+    "src/app/features/showcase/showcase.page.css",
+    "src/app/features/system-design-list/system-design-detail/system-design-detail.component.css",
+    "src/app/features/system-design-list/system-design-list.component.css",
+    "src/app/features/trivia/trivia-detail/trivia-detail.component.css",
+    "src/app/features/trivia/trivia-list/trivia-list.component.css",
+    "src/app/shared/components/bug-report-dialog/bug-report-dialog.component.css",
+    "src/app/shared/components/login-required-dialog/login-required-dialog.component.ts",
+    "src/app/shared/components/premium-required-dialog/premium-required-dialog.component.ts"
+  ],
+  "rawVisualClasses": [
+    "src/app/features/coding/coding-detail/coding-detail.component.html",
+    "src/app/features/coding/coding-list/coding-list.component.html",
+    "src/app/features/company/company-detail/company-detail.component.html",
+    "src/app/features/company/company-index/company-index.component.html",
+    "src/app/features/company/company-preview/company-preview.component.html",
+    "src/app/features/dashboard/dashboard.component.html",
+    "src/app/features/filters/coding-filter-panel/coding-filter-panel.component.html",
+    "src/app/features/filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component.html",
+    "src/app/features/onboarding/quick-start/onboarding-quick-start.component.html",
+    "src/app/features/system-design-list/system-design-detail/system-design-detail.component.html",
+    "src/app/features/tracks/focus-areas/focus-areas.component.html",
+    "src/app/features/tracks/track-detail/track-detail.component.html",
+    "src/app/features/trivia/trivia-detail/trivia-detail.component.html"
+  ]
+}

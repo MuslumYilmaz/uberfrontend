@@ -10,6 +10,8 @@
     "lint:topics": "node scripts/lint-topics.mjs",
     "lint:topics:fix": "node scripts/lint-topics.mjs --fix",
     "lint:tracks": "node scripts/lint-tracks.mjs",
+    "lint:design-system": "node scripts/lint-design-system.mjs",
+    "lint:design-system:strict": "node scripts/lint-design-system.mjs --strict",
     "lint:questions": "node scripts/lint-questions.mjs",
     "lint:questions:fix": "node scripts/lint-questions.mjs --fix",
     "importance:phase1": "node scripts/score-importance-rubric.mjs --tech javascript,react",
@@ -35,7 +37,8 @@
     "seo:meta-check": "node scripts/seo-meta-check.mjs",
     "seo:smoke": "node scripts/seo-smoke.mjs",
     "seo:lighthouse": "node scripts/seo-lighthouse.mjs",
-    "seo:links": "node scripts/seo-links.mjs"
+    "seo:links": "node scripts/seo-links.mjs",
+    "metrics:design-system": "node scripts/design-system-metrics.mjs"
   },
   "private": true,
   "dependencies": {

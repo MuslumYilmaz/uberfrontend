@@ -50,7 +50,7 @@
   <div class="container">
     <div class="grid">
       <a
-        class="card fa-card card--mastery"
+        faCard class="card card--mastery"
         *ngFor="let mastery of masteryCards; let i = index"
         [routerLink]="['/tracks', mastery.slug, 'mastery']"
         [attr.data-slot]="'mastery-' + i">
@@ -74,7 +74,7 @@
         <div class="card-footer">{{ mastery.ctaLabel }} →</div>
       </a>
 
-      <a class="card fa-card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug, 'preview']" [attr.data-slot]="i">
+      <a faCard class="card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug, 'preview']" [attr.data-slot]="i">
         <div class="card-top">
           <span class="pill">{{ track.durationLabel }}</span>
           <span class="pill muted">{{ track.featured.length }} questions</span>

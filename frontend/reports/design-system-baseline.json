@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-02-23T09:42:20Z",
+  "scope": {
+    "src": "src",
+    "features": "src/app/features",
+    "buildDir": "dist/frontendatlas/browser"
+  },
+  "metrics": {
+    "bundleJsBytes": 28008243,
+    "globalCssBytes": 406921,
+    "buildFound": true,
+    "ngDeepHits": 202,
+    "ngDeepFiles": 17,
+    "rawPrimeHits": 8,
+    "rawPrimeFiles": 5,
+    "rawVisualPrimitiveClassHits": 125,
+    "rawVisualPrimitiveClassFiles": 13,
+    "inlineComponentStylesHits": 40,
+    "inlineComponentStyleFiles": 40
+  },
+  "notes": "Baseline generated manually because Node runtime was unavailable in shell; run npm run metrics:design-system in a Node-enabled environment to refresh."
+}
