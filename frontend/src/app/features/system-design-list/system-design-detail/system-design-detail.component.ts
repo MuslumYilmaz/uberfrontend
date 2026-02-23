@@ -295,6 +295,20 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   codeKey(sectionKey: string, idx: string | number) {
     return `${sectionKey}#${idx}`;
   }
+  trackByTagValue = (index: number, tag: string): string => tag || String(index);
+  trackBySectionKey = (_: number, section: RadioSection): string => section.key;
+  trackByBlock = (index: number, block: Block): string =>
+    `${block.type}:${(block as any).key || (block as any).title || index}`;
+  trackByStringValue = (index: number, value: string): string => value || String(index);
+  trackByTableRow = (index: number, row: string[]): string => `${index}:${row.join('|')}`;
+  trackByTableCell = (index: number, cell: string): string => `${index}:${cell}`;
+  trackByColumnIndex = (index: number, _col: unknown): number => index;
+  trackByInnerBlock = (index: number, block: Block): string => this.trackByBlock(index, block);
+  trackByStatItem = (index: number, item: { label: string; value: string }): string =>
+    `${item.label}:${item.value}:${index}`;
+  trackByStepTitle = (index: number, step: { title: string }): string => `${step.title}:${index}`;
+  trackByRelatedId = (_: number, item: RelatedItem): string => item.id;
+  trackByLockedPath = (_: number, path: LockedPath): string => path.id;
   /** Center column for potential responsive image sizing */
   @ViewChild('centerEl', { read: ElementRef }) centerEl!: ElementRef<HTMLElement>;
 
@@ -474,7 +488,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       this.activeKey.set(null);
 
       // Detay json'ı çek (meta + radio blokları)
-      this.qs.loadSystemDesignQuestion(id).subscribe(detail => {
+      this.qs.loadSystemDesignQuestion(id, { transferState: false }).subscribe(detail => {
         if (!detail) {
           this.navTo404();
           return;
@@ -505,7 +519,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     if (!this.forceListRefreshTried) {
       this.forceListRefreshTried = true;
       this.qs.clearCache();
-      this.qs.loadSystemDesign().subscribe((list) => {
+      this.qs.loadSystemDesign({ transferState: false }).subscribe((list) => {
         this.all = (list as SDQuestion[]) ?? [];
         this.setCurrentById(id, /*allowPending*/ false);
       });
@@ -513,7 +527,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     }
 
     // If the list is still missing the id, try loading detail directly
-    this.qs.loadSystemDesignQuestion(id).subscribe(detail => {
+    this.qs.loadSystemDesignQuestion(id, { transferState: false }).subscribe(detail => {
       if (!detail) {
         if (this.all.length) this.navTo404();
         return;

@@ -862,9 +862,9 @@ You can also reset any task back to the starter whenever you want to re-practice
     if (this.companyCountsLoaded) return;
     this.companyCountsLoaded = true;
     this.companyCounts$ = combineLatest([
-      this.qs.loadAllQuestions('coding'),
-      this.qs.loadAllQuestions('trivia'),
-      this.qs.loadSystemDesign(),
+      this.qs.loadAllQuestionSummaries('coding', { transferState: false }),
+      this.qs.loadAllQuestionSummaries('trivia', { transferState: false }),
+      this.qs.loadSystemDesign({ transferState: false }),
     ]).pipe(
       map(([coding, trivia, system]) => collectCompanyCounts({ coding, trivia, system }))
     );

@@ -53,9 +53,9 @@ export class TrackPreviewComponent implements OnInit {
     });
 
     this.previewQuestions$ = combineLatest([
-      this.questionService.loadAllQuestions('coding'),
-      this.questionService.loadAllQuestions('trivia'),
-      this.questionService.loadSystemDesign(),
+      this.questionService.loadAllQuestionSummaries('coding', { transferState: false }),
+      this.questionService.loadAllQuestionSummaries('trivia', { transferState: false }),
+      this.questionService.loadSystemDesign({ transferState: false }),
     ]).pipe(
       map(([coding, trivia, system]) => this.buildPreviewQuestions(track, coding, trivia, system)),
       shareReplay(1),

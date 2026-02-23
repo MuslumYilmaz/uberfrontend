@@ -20,9 +20,9 @@ export class CompanyDetailComponent {
   label = this.slug.pipe(map(s => this.pretty(s)));
   counts$ = combineLatest([
     this.slug,
-    this.qs.loadAllQuestions('coding'),
-    this.qs.loadAllQuestions('trivia'),
-    this.qs.loadSystemDesign()
+    this.qs.loadAllQuestionSummaries('coding', { transferState: false }),
+    this.qs.loadAllQuestionSummaries('trivia', { transferState: false }),
+    this.qs.loadSystemDesign({ transferState: false })
   ]).pipe(
     map(([slug, coding, trivia, system]) => {
       const counts = collectCompanyCounts({ coding, trivia, system });

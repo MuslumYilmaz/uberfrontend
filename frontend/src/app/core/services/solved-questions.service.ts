@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, map, Observable, of, shareReplay } from 'rxjs';
 import { Tech } from '../models/user.model';
-import { QuestionService, MixedQuestion } from './question.service';
+import { MixedQuestion, MixedQuestionListItem, QuestionService } from './question.service';
 
 export type SolvedQuestion = {
   id: string;
@@ -20,10 +20,10 @@ export class SolvedQuestionsService {
   private buildIndex(): Observable<Map<string, SolvedQuestion>> {
     if (!this.index$) {
       this.index$ = forkJoin({
-        coding: this.qs.loadAllQuestions('coding'),
-        trivia: this.qs.loadAllQuestions('trivia'),
+        coding: this.qs.loadAllQuestionSummaries('coding', { transferState: false }),
+        trivia: this.qs.loadAllQuestionSummaries('trivia', { transferState: false }),
         debug: this.loadAllDebug(),
-        systemDesign: this.qs.loadSystemDesign()
+        systemDesign: this.qs.loadSystemDesign({ transferState: false })
       }).pipe(
         map(({ coding, trivia, debug, systemDesign }) => {
           const map = new Map<string, SolvedQuestion>();
@@ -67,7 +67,7 @@ export class SolvedQuestionsService {
     );
   }
 
-  private rowFrom(q: MixedQuestion, kind: 'coding' | 'trivia'): SolvedQuestion {
+  private rowFrom(q: MixedQuestionListItem, kind: 'coding' | 'trivia'): SolvedQuestion {
     return { id: q.id, title: q.title, tech: q.tech, kind };
   }
 }

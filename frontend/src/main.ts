@@ -51,16 +51,37 @@ function installChunkLoadRecovery(): void {
   }, true);
 }
 
-if (environment.sentryDsn) {
-  import('@sentry/angular').then(({ browserTracingIntegration, init }) => {
-    init({
-      dsn: environment.sentryDsn,
-      release: environment.sentryRelease || undefined,
-      environment: environment.production ? 'production' : 'development',
-      integrations: [browserTracingIntegration()],
-      tracePropagationTargets: [environment.apiBase, /^\//],
-      tracesSampleRate: environment.sentryTracesSampleRate,
-    });
+function schedulePostLoad(task: () => void): void {
+  if (typeof window === 'undefined') return;
+  const win = window as Window & {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+  };
+  if (typeof win.requestIdleCallback === 'function') {
+    win.requestIdleCallback(task, { timeout: 3000 });
+    return;
+  }
+  window.setTimeout(task, 1200);
+}
+
+function initSentryLazily(): void {
+  if (typeof window === 'undefined') return;
+  if (!environment.sentryDsn) return;
+
+  schedulePostLoad(() => {
+    import('@sentry/angular')
+      .then(({ browserTracingIntegration, init }) => {
+        init({
+          dsn: environment.sentryDsn,
+          release: environment.sentryRelease || undefined,
+          environment: environment.production ? 'production' : 'development',
+          integrations: [browserTracingIntegration()],
+          tracePropagationTargets: [environment.apiBase, /^\//],
+          tracesSampleRate: environment.sentryTracesSampleRate,
+        });
+      })
+      .catch(() => {
+        // Monitoring should never block app startup.
+      });
   });
 }
 
@@ -68,4 +89,5 @@ enforceCanonicalOrigin();
 installChunkLoadRecovery();
 
 bootstrapApplication(AppComponent, appConfig)
+  .then(() => initSentryLazily())
   .catch((err) => console.error(err));

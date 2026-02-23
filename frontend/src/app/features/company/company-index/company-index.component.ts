@@ -56,9 +56,9 @@ export class CompanyIndexComponent {
   ngOnInit() {
     this.loading = true;
     forkJoin([
-      this.qs.loadAllQuestions('coding'),
-      this.qs.loadAllQuestions('trivia'),
-      this.qs.loadSystemDesign()
+      this.qs.loadAllQuestionSummaries('coding', { transferState: false }),
+      this.qs.loadAllQuestionSummaries('trivia', { transferState: false }),
+      this.qs.loadSystemDesign({ transferState: false })
     ])
       .pipe(
         map(([coding, trivia, system]) => {

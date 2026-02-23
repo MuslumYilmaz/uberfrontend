@@ -19,6 +19,7 @@
   </ng-template>
 
   <app-premium-required-dialog
+    *ngIf="premiumGateState().visible"
     [visible]="premiumGateState().visible"
     (visibleChange)="premiumGate.close()"
     [context]="premiumGateState().reason"
@@ -26,5 +27,5 @@
     [isLoggedIn]="premiumGateState().isLoggedIn"
   ></app-premium-required-dialog>
 
-  <app-bug-report-dialog></app-bug-report-dialog>
+  <app-bug-report-dialog *ngIf="bugReport.visible()"></app-bug-report-dialog>
 </div>

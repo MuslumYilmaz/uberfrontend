@@ -206,6 +206,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   );
   hasPrev() { return !!this.practice && this.practice.index > 0; }
   hasNext() { return !!this.practice && this.practice.index + 1 < this.practice.items.length; }
+  trackByQuestionId = (_: number, q: Question): string => q.id;
+  trackByAnswerBlock = (index: number, block: AnswerBlock): string => `${block.type}:${index}`;
+  trackByStringValue = (index: number, value: string): string => value || String(index);
+  trackByRowCells = (index: number, row: string[]): string => `${index}:${row.join('|')}`;
+  trackByCellValue = (index: number, cell: string): string => `${index}:${cell}`;
+  trackBySimilarQuestion = (_: number, item: SimilarItem): string => item.question.id;
+  trackByLockedPath = (_: number, path: LockedPath): string => path.id;
 
   /** ============== Derived UI helpers ============== */
 

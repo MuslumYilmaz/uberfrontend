@@ -35,8 +35,8 @@ export class FocusAreasComponent {
   private readonly topicsRegistry: TopicsRegistry = topicRegistryJson as TopicsRegistry;
 
   readonly stats$: Observable<FocusAreaStats> = forkJoin({
-    coding: this.questions.loadAllQuestions('coding'),
-    trivia: this.questions.loadAllQuestions('trivia'),
+    coding: this.questions.loadAllQuestionSummaries('coding', { transferState: false }),
+    trivia: this.questions.loadAllQuestionSummaries('trivia', { transferState: false }),
   }).pipe(
     map(({ coding, trivia }) => this.buildStats(coding, trivia, this.topicsRegistry.topics ?? [])),
     shareReplay(1),

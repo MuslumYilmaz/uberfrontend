@@ -170,6 +170,50 @@ describe('QuestionService', () => {
     expect(await persistence.get(systemKey)).toContain('"sys-1"');
   });
 
+  it('can bypass TransferState payload for system-design index when transferState is disabled', async () => {
+    const tsKey = makeStateKey<any[]>('system-design:index');
+    transferState.set(tsKey, [{ id: 'sys-transfer' }]);
+
+    const resultPromise = firstValueFrom(
+      service.loadSystemDesign({ transferState: false }),
+    );
+    flushDataVersion('bank-v1');
+
+    const req = await waitForRequest(
+      (r) => r.url.includes('questions/system-design/index.json'),
+      'system design fetch after transfer state bypass',
+    );
+    req.flush([{ id: 'sys-network', title: 'Network item', access: 'free' }]);
+
+    const list = await resultPromise;
+    expect(list[0]?.id).toBe('sys-network');
+  });
+
+  it('maps detail-grade questions into list-safe summaries', async () => {
+    const resultPromise = firstValueFrom(
+      service.loadQuestionSummaries('javascript', 'coding', { transferState: false }),
+    );
+    flushDataVersion('bank-v1');
+
+    const req = await waitForRequest(
+      (r) => r.url.includes('questions/javascript/coding.json'),
+      'coding summaries fetch',
+    );
+    req.flush([
+      {
+        ...makeCodingQuestion('summary-hit'),
+        tags: ['async'],
+        description: { summary: 'Short description for list views.' },
+        solution: 'heavy payload that should not be returned by summaries',
+      },
+    ]);
+
+    const list = await resultPromise;
+    expect(list[0]?.id).toBe('summary-hit');
+    expect(list[0]?.shortDescription).toContain('Short description');
+    expect((list[0] as any).solution).toBeUndefined();
+  });
+
   it('dual-writes overrides to IndexedDB and localStorage', async () => {
     service.setLocalOverride('javascript', 'coding', [makeCodingQuestion('dual-write')]);
 

@@ -17,6 +17,16 @@ type LoadQuestionsOptions = {
   transferState?: boolean;
 };
 export type MixedQuestion = Question & { tech: Tech };
+type LoadSystemDesignOptions = {
+  transferState?: boolean;
+};
+export type QuestionListItem = Pick<
+  Question,
+  'id' | 'title' | 'type' | 'technology' | 'access' | 'difficulty' | 'tags' | 'importance' | 'companies' | 'description'
+> & {
+  shortDescription?: string;
+};
+export type MixedQuestionListItem = QuestionListItem & { tech: Tech };
 
 type DataVersion = { dataVersion?: string; version?: string };
 
@@ -115,15 +125,47 @@ export class QuestionService {
   }
 
 
-  /** Load all questions for multiple techs (for companies pages, etc.). */
-  loadAllQuestions(kind: Exclude<Kind, 'debug'>): Observable<MixedQuestion[]> {
+  /** Load all questions for multiple techs (for detail-grade views). */
+  loadAllQuestions(
+    kind: Exclude<Kind, 'debug'>,
+    options: LoadQuestionsOptions = {},
+  ): Observable<MixedQuestion[]> {
     const TECHS: Tech[] = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
     return forkJoin(
       TECHS.map((t) =>
-        this.loadQuestions(t, kind).pipe(
+        this.loadQuestions(t, kind, options).pipe(
           map((list) => list.map((q) => ({ ...q, tech: t } as MixedQuestion)))
         )
       )
+    ).pipe(map((buckets) => buckets.flat()));
+  }
+
+  /** List-safe summary payload for high-cardinality list pages. */
+  loadQuestionSummaries(
+    technology: Tech,
+    kind: Kind,
+    options: LoadQuestionsOptions = { transferState: false },
+  ): Observable<QuestionListItem[]> {
+    const requestOptions: LoadQuestionsOptions = {
+      transferState: options.transferState ?? false,
+    };
+    return this.loadQuestions(technology, kind, requestOptions).pipe(
+      map((list) => list.map((q) => this.toQuestionListItem(q))),
+    );
+  }
+
+  /** List-safe summary payload for aggregated list pages. */
+  loadAllQuestionSummaries(
+    kind: Exclude<Kind, 'debug'>,
+    options: LoadQuestionsOptions = { transferState: false },
+  ): Observable<MixedQuestionListItem[]> {
+    const TECHS: Tech[] = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
+    return forkJoin(
+      TECHS.map((t) =>
+        this.loadQuestionSummaries(t, kind, options).pipe(
+          map((list) => list.map((q) => ({ ...q, tech: t } as MixedQuestionListItem))),
+        ),
+      ),
     ).pipe(map((buckets) => buckets.flat()));
   }
 
@@ -135,13 +177,14 @@ export class QuestionService {
   }
 
   /** System design list (now using index.json). */
-  loadSystemDesign(): Observable<any[]> {
+  loadSystemDesign(options: LoadSystemDesignOptions = {}): Observable<any[]> {
+    const useTransferState = options.transferState !== false;
     if (this.isServer) {
-      return this.loadSystemDesignFromFs();
+      return this.loadSystemDesignFromFs(useTransferState);
     }
 
     const tsKey = this.systemDesignStateKey();
-    if (this.transferState.hasKey(tsKey)) {
+    if (useTransferState && this.transferState.hasKey(tsKey)) {
       const list = this.transferState.get(tsKey, [] as any[]);
       this.transferState.remove(tsKey);
       return of(list);
@@ -153,13 +196,17 @@ export class QuestionService {
   }
 
   /** Load a single system-design question (meta + section blocks). */
-  loadSystemDesignQuestion(id: string): Observable<any | null> {
+  loadSystemDesignQuestion(
+    id: string,
+    options: LoadSystemDesignOptions = {},
+  ): Observable<any | null> {
+    const useTransferState = options.transferState !== false;
     if (this.isServer) {
-      return this.loadSystemDesignQuestionFromFs(id);
+      return this.loadSystemDesignQuestionFromFs(id, useTransferState);
     }
 
     const tsKey = this.systemDesignQuestionStateKey(id);
-    if (this.transferState.hasKey(tsKey)) {
+    if (useTransferState && this.transferState.hasKey(tsKey)) {
       const cached = this.transferState.get(tsKey, null as any);
       this.transferState.remove(tsKey);
       return of(cached);
@@ -214,7 +261,7 @@ export class QuestionService {
         );
       }),
       tap((full) => {
-        if (full) {
+        if (useTransferState && full) {
           this.transferState.set(this.systemDesignQuestionStateKey(id), full);
         }
       }),
@@ -330,6 +377,42 @@ export class QuestionService {
     return list;
   }
 
+  private toQuestionListItem(q: Question): QuestionListItem {
+    const shortDescription = this.extractShortDescription(q.description);
+    return {
+      id: q.id,
+      title: q.title,
+      type: q.type,
+      technology: q.technology,
+      access: q.access,
+      difficulty: q.difficulty,
+      tags: Array.isArray(q.tags) ? q.tags : [],
+      importance: Number(q.importance ?? 0),
+      companies: Array.isArray(q.companies) ? q.companies : [],
+      description: shortDescription || undefined,
+      shortDescription: shortDescription || undefined,
+    };
+  }
+
+  private extractShortDescription(description: Question['description']): string {
+    const summary =
+      description && typeof description === 'object'
+        ? (description.summary || '')
+        : '';
+    const text =
+      typeof description === 'string'
+        ? description
+        : summary;
+    const normalized = String(text || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!normalized) return '';
+    const maxLength = 220;
+    return normalized.length > maxLength
+      ? `${normalized.slice(0, maxLength - 1).trimEnd()}…`
+      : normalized;
+  }
+
   /** Normalize any supported JSON shape to Question[] and add safe defaults. */
   private normalizeQuestions(raw: any, technology: Tech, kind: Kind): Question[] {
     const list: any[] = Array.isArray(raw)
@@ -388,17 +471,19 @@ export class QuestionService {
     );
   }
 
-  private loadSystemDesignFromFs(): Observable<any[]> {
+  private loadSystemDesignFromFs(transferState = true): Observable<any[]> {
     const rel = 'assets/questions/system-design/index.json';
     const key = this.systemDesignStateKey();
     return this.assetReader.readJson(rel).pipe(
       map((raw) => Array.isArray(raw) ? raw : []),
-      tap((list) => this.transferState.set(key, list)),
+      tap((list) => {
+        if (transferState) this.transferState.set(key, list);
+      }),
       catchError(() => of([] as any[])),
     );
   }
 
-  private loadSystemDesignQuestionFromFs(id: string): Observable<any | null> {
+  private loadSystemDesignQuestionFromFs(id: string, transferState = true): Observable<any | null> {
     const metaRel = `assets/questions/system-design/${id}/meta.json`;
     const key = this.systemDesignQuestionStateKey(id);
     return this.assetReader.readJson(metaRel).pipe(
@@ -426,7 +511,7 @@ export class QuestionService {
         );
       }),
       tap((full) => {
-        if (full) this.transferState.set(key, full);
+        if (transferState && full) this.transferState.set(key, full);
       }),
       catchError(() => of(null))
     );

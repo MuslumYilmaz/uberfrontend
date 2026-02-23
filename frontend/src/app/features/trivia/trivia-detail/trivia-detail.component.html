@@ -2,7 +2,7 @@
 <div class="page-frame">
     <ng-template #questionListTpl>
         <ul class="side-list">
-            <li *ngFor="let q of questionsList">
+            <li *ngFor="let q of questionsList; trackBy: trackByQuestionId">
                 <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
@@ -129,7 +129,7 @@
                 <div class="card-body">
                     <ng-container *ngIf="answerIsRich(); else simpleAnswer">
                         <div class="blocks">
-                            <ng-container *ngFor="let b of answerBlocks(); let i = index">
+                            <ng-container *ngFor="let b of answerBlocks(); let i = index; trackBy: trackByAnswerBlock">
                                 <!-- TEXT -->
                                 <div *ngIf="b.type === 'text'" class="block b-text">
                                     <div class="content" [innerHTML]="md($any(b).text) | safeHtml"></div>
@@ -170,12 +170,12 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th *ngFor="let col of $any(b).columns" [innerHTML]="md(col) | safeHtml"></th>
+                                                    <th *ngFor="let col of $any(b).columns; trackBy: trackByStringValue" [innerHTML]="md(col) | safeHtml"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let row of $any(b).rows">
-                                                    <td *ngFor="let cell of row" [innerHTML]="md(cell) | safeHtml"></td>
+                                                <tr *ngFor="let row of $any(b).rows; trackBy: trackByRowCells">
+                                                    <td *ngFor="let cell of row; trackBy: trackByCellValue" [innerHTML]="md(cell) | safeHtml"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -221,7 +221,7 @@
                 </div>
                 <div class="card-body" *ngIf="similarOpen()">
                     <div class="similar-list">
-                        <a class="similar-item" *ngFor="let s of similarItems()"
+                        <a class="similar-item" *ngFor="let s of similarItems(); trackBy: trackBySimilarQuestion"
                             [routerLink]="['/', tech, 'trivia', s.question.id]"
                             [state]="similarNavState(s.question)">
                             <span class="similar-title">{{ s.question.title }}</span>
@@ -272,7 +272,7 @@
                     <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
                         <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
                         <ul class="locked-preview__list" *ngIf="lockedBullets().length">
-                            <li *ngFor="let item of lockedBullets()">{{ item }}</li>
+                            <li *ngFor="let item of lockedBullets(); trackBy: trackByStringValue">{{ item }}</li>
                         </ul>
                     </div>
                     <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
@@ -280,7 +280,7 @@
                     <div class="locked-paths" *ngIf="lockedPaths.length">
                         <a
                             class="locked-paths__item"
-                            *ngFor="let path of lockedPaths"
+                            *ngFor="let path of lockedPaths; trackBy: trackByLockedPath"
                             [routerLink]="path.route"
                             [queryParams]="path.queryParams"
                             (click)="trackLockedPathClick(path.id)">

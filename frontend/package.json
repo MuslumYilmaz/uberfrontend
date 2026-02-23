@@ -38,7 +38,9 @@
     "seo:smoke": "node scripts/seo-smoke.mjs",
     "seo:lighthouse": "node scripts/seo-lighthouse.mjs",
     "seo:links": "node scripts/seo-links.mjs",
-    "metrics:design-system": "node scripts/design-system-metrics.mjs"
+    "metrics:design-system": "node scripts/design-system-metrics.mjs",
+    "perf:contract": "node scripts/perf-contract.mjs",
+    "perf:contract:strict": "node scripts/perf-contract.mjs --strict"
   },
   "private": true,
   "dependencies": {

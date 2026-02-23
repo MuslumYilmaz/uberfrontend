@@ -54,6 +54,9 @@ jobs:
       - name: Build (production)
         run: npm run build
 
+      - name: Perf contract snapshot
+        run: npm run perf:contract
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
@@ -102,6 +105,9 @@ jobs:
 
       - name: Build (production)
         run: npm run build
+
+      - name: Perf contract snapshot
+        run: npm run perf:contract
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4

@@ -581,7 +581,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   private loadFeatured(track: TrackConfig): Observable<TrackItem[]> {
-    const system$ = this.qs.loadSystemDesign().pipe(shareReplay(1));
+    const system$ = this.qs.loadSystemDesign({ transferState: false }).pipe(shareReplay(1));
 
     const loaders = track.featured.map((ref) => {
       if (ref.kind === 'system-design') {

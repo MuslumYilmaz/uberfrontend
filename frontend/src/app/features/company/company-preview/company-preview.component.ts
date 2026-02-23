@@ -60,9 +60,9 @@ export class CompanyPreviewComponent implements OnInit {
     });
 
     this.data$ = combineLatest([
-      this.questionService.loadAllQuestions('coding'),
-      this.questionService.loadAllQuestions('trivia'),
-      this.questionService.loadSystemDesign(),
+      this.questionService.loadAllQuestionSummaries('coding', { transferState: false }),
+      this.questionService.loadAllQuestionSummaries('trivia', { transferState: false }),
+      this.questionService.loadSystemDesign({ transferState: false }),
     ]).pipe(
       map(([coding, trivia, system]) => {
         const counts = collectCompanyCounts({ coding, trivia, system })[this.slug]

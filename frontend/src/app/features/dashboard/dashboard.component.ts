@@ -209,9 +209,9 @@ export class DashboardComponent {
 
   // ---- STATS: company + framework + formats + topic counts ----
   stats$: Observable<Stats> = forkJoin({
-    coding: this.questions.loadAllQuestions('coding'),
-    trivia: this.questions.loadAllQuestions('trivia'),
-    system: this.questions.loadSystemDesign(),
+    coding: this.questions.loadAllQuestionSummaries('coding', { transferState: false }),
+    trivia: this.questions.loadAllQuestionSummaries('trivia', { transferState: false }),
+    system: this.questions.loadSystemDesign({ transferState: false }),
     topics: from(loadTopics()),
   }).pipe(
     map(({ coding, trivia, system, topics }) => {

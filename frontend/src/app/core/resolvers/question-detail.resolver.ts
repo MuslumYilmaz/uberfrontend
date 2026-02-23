@@ -113,8 +113,8 @@ export const systemDesignDetailResolver: ResolveFn<SystemDesignDetailResolved> =
   const id = route.paramMap.get('id') || '';
 
   return forkJoin({
-    list: qs.loadSystemDesign(),
-    detail: qs.loadSystemDesignQuestion(id),
+    list: qs.loadSystemDesign({ transferState: false }),
+    detail: qs.loadSystemDesignQuestion(id, { transferState: false }),
   }).pipe(
     map(({ list, detail }) => {
       const normalizedList = Array.isArray(list) ? list : [];

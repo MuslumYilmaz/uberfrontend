@@ -34,6 +34,9 @@ jobs:
       - name: Build (production prerender)
         run: npm run build
 
+      - name: Perf contract snapshot
+        run: npm run perf:contract
+
       - name: SEO meta coverage check
         run: npm run seo:meta-check
 

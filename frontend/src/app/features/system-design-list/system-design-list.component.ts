@@ -40,7 +40,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private readonly maxItemListItems = 50;
 
-  rawQuestions$ = this.qs.loadSystemDesign().pipe(
+  rawQuestions$ = this.qs.loadSystemDesign({ transferState: false }).pipe(
     startWith<SysDesign[] | null>(null),
     shareReplay(1),
   );

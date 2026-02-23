@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
+import { BugReportService } from './core/services/bug-report.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -23,10 +24,15 @@ describe('AppComponent', () => {
     expect(compiled.textContent).toContain('FrontendAtlas');
   });
 
-  it('mounts the global bug report dialog host', () => {
+  it('does not mount bug report dialog until requested', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-bug-report-dialog')).toBeNull();
+
+    const bugReport = TestBed.inject(BugReportService);
+    bugReport.open({ source: 'spec', url: '/spec' });
+    fixture.detectChanges();
     expect(compiled.querySelector('app-bug-report-dialog')).toBeTruthy();
   });
 });

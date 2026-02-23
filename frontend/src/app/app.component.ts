@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { BugReportService } from './core/services/bug-report.service';
 import { DailyService } from './core/services/daily.service';
 import { PremiumGateService } from './core/services/premium-gate.service';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
@@ -32,6 +33,7 @@ import { OfflineBannerComponent } from './shared/components/offline-banner/offli
 export class AppComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private currentUrl = signal(this.router.url || '/');
+  bugReport = inject(BugReportService);
   premiumGate = inject(PremiumGateService);
   premiumGateState = this.premiumGate.dialogState;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));

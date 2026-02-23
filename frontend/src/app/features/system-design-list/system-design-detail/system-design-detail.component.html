@@ -26,7 +26,7 @@
                 <div class="left-body">
                     <div class="desc">{{ description() }}</div>
                     <div class="tags">
-                        <p-chip *ngFor="let tag of tags()" [label]="tag" styleClass="custom-chip"></p-chip>
+                        <p-chip *ngFor="let tag of tags(); trackBy: trackByTagValue" [label]="tag" styleClass="custom-chip"></p-chip>
                     </div>
                 </div>
 
@@ -119,7 +119,7 @@
                     </div>
                     <div class="desc">{{ description() }}</div>
                     <div class="tags">
-                        <p-chip *ngFor="let tag of tags()" [label]="tag" styleClass="custom-chip"></p-chip>
+                        <p-chip *ngFor="let tag of tags(); trackBy: trackByTagValue" [label]="tag" styleClass="custom-chip"></p-chip>
                     </div>
                     <details class="guide-collapsible">
                         <summary class="guide-summary">Guides</summary>
@@ -153,7 +153,7 @@
                     </button>
                 </div>
                 <ul class="toc-list sdl-mobile-toc-list">
-                    <li *ngFor="let s of sections()">
+                    <li *ngFor="let s of sections(); trackBy: trackBySectionKey">
                         <button class="toc-item" [class.active]="activeKey()===s.key" (click)="scrollToKey(s.key)">
                             {{ s.title }}
                         </button>
@@ -161,13 +161,13 @@
                 </ul>
             </section>
 
-            <ng-container *ngFor="let s of sections()">
+            <ng-container *ngFor="let s of sections(); trackBy: trackBySectionKey">
                 <section class="sd-section" [attr.id]="anchorId(s.key)">
                     <h2 class="sd-h2" #sectionHeading [attr.data-key]="s.key">{{ s.title }}</h2>
 
                     <div class="sd-blocks">
                         <ng-container *ngIf="s.blocks?.length; else legacyText">
-                            <ng-container *ngFor="let b of s.blocks; let bi = index">
+                            <ng-container *ngFor="let b of s.blocks; let bi = index; trackBy: trackByBlock">
                                 <ng-container
                                     *ngTemplateOutlet="renderBlock; context: { $implicit: b, sectionKey: s.key, index: bi }">
                                 </ng-container>
@@ -220,7 +220,7 @@
                                 {{ b.title }}
                             </div>
                             <ul class="sd-checklist-list">
-                                <li *ngFor="let item of b.items">
+                                <li *ngFor="let item of b.items; trackBy: trackByStringValue">
                                     <span class="sd-checklist-bullet"></span>
                                     <span class="sd-checklist-text">{{ item }}</span>
                                 </li>
@@ -247,12 +247,12 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th *ngFor="let col of b.columns">{{ col }}</th>
+                                        <th *ngFor="let col of b.columns; trackBy: trackByStringValue">{{ col }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let row of b.rows">
-                                        <td *ngFor="let cell of row">{{ cell }}</td>
+                                    <tr *ngFor="let row of b.rows; trackBy: trackByTableRow">
+                                        <td *ngFor="let cell of row; trackBy: trackByTableCell">{{ cell }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -260,9 +260,9 @@
 
                         <!-- COLUMNS -->
                         <div *ngIf="b.type === 'columns'" class="sd-columns">
-                            <div class="sd-column" *ngFor="let col of b.columns; let ci = index"
+                            <div class="sd-column" *ngFor="let col of b.columns; let ci = index; trackBy: trackByColumnIndex"
                                 [class.w-1-3]="col.width === '1/3'" [class.w-2-3]="col.width === '2/3'">
-                                <ng-container *ngFor="let inner of col.blocks; let ii = index">
+                                <ng-container *ngFor="let inner of col.blocks; let ii = index; trackBy: trackByInnerBlock">
                                     <ng-container
                                         *ngTemplateOutlet="renderBlock; context: { $implicit: inner, sectionKey: sectionKey, index: idx + '-' + ci + '-' + ii }">
                                     </ng-container>
@@ -272,7 +272,7 @@
 
                         <!-- STATS -->
                         <div *ngIf="b.type === 'stats'" class="sd-stats">
-                            <div class="sd-stat" *ngFor="let item of b.items">
+                            <div class="sd-stat" *ngFor="let item of b.items; trackBy: trackByStatItem">
                                 <div class="sd-stat-label">{{ item.label }}</div>
                                 <div class="sd-stat-value">{{ item.value }}</div>
                                 <div class="sd-stat-helper" *ngIf="item.helperText">{{ item.helperText }}</div>
@@ -283,7 +283,7 @@
                         <div *ngIf="b.type === 'steps'" class="sd-steps">
                             <div class="sd-steps-title" *ngIf="b.title">{{ b.title }}</div>
                             <div class="sd-steps-row" [class.vertical]="b.steps?.length > 3">
-                                <ng-container *ngFor="let step of b.steps; let si = index">
+                                <ng-container *ngFor="let step of b.steps; let si = index; trackBy: trackByStepTitle">
                                     <div class="sd-step">
                                         <div class="sd-step-circle">{{ si + 1 }}</div>
                                         <div class="sd-step-body">
@@ -302,7 +302,7 @@
             <section class="sd-related" *ngIf="relatedItems().length">
                 <div class="sd-related-head">Similar questions</div>
                 <div class="sd-related-list">
-                    <a class="sd-related-item" *ngFor="let item of relatedItems()"
+                    <a class="sd-related-item" *ngFor="let item of relatedItems(); trackBy: trackByRelatedId"
                         [routerLink]="['/system-design', item.id]">
                         <span class="sd-related-title">{{ item.title }}</span>
                         <span class="sd-related-pill" *ngIf="item.access === 'premium'">Premium</span>
@@ -344,7 +344,7 @@
             <div class="toc">
                 <div class="toc-head">On this page</div>
                 <ul class="toc-list">
-                    <li *ngFor="let s of sections()">
+                    <li *ngFor="let s of sections(); trackBy: trackBySectionKey">
                         <button class="toc-item" [class.active]="activeKey()===s.key" (click)="scrollToKey(s.key)">
                             {{ s.title }}
                         </button>
@@ -375,7 +375,7 @@
             <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
                 <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
                 <ul class="locked-preview__list" *ngIf="lockedBullets().length">
-                    <li *ngFor="let item of lockedBullets()">{{ item }}</li>
+                    <li *ngFor="let item of lockedBullets(); trackBy: trackByStringValue">{{ item }}</li>
                 </ul>
             </div>
             <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
@@ -383,7 +383,7 @@
             <div class="locked-related" *ngIf="relatedItems().length">
                 <div class="locked-related__title">Related questions</div>
                 <div class="locked-related__list">
-                    <a class="locked-related__item" *ngFor="let item of relatedItems()"
+                    <a class="locked-related__item" *ngFor="let item of relatedItems(); trackBy: trackByRelatedId"
                         [routerLink]="['/system-design', item.id]">
                         <span class="locked-related__text">{{ item.title }}</span>
                         <span class="locked-related__pill" *ngIf="item.access === 'premium'">Premium</span>
@@ -393,7 +393,7 @@
             <div class="locked-paths" *ngIf="lockedPaths().length">
                 <a
                     class="locked-paths__item"
-                    *ngFor="let path of lockedPaths()"
+                    *ngFor="let path of lockedPaths(); trackBy: trackByLockedPath"
                     [routerLink]="path.route"
                     [queryParams]="path.queryParams"
                     (click)="trackLockedPathClick(path.id)">

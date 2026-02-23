@@ -1069,7 +1069,7 @@ export const APP_ROUTER_PROVIDERS = [
   provideRouter(
     routes,
     withRouterConfig({
-      onSameUrlNavigation: 'reload',
+      onSameUrlNavigation: 'ignore',
       paramsInheritanceStrategy: 'always',
     }),
     withInMemoryScrolling({

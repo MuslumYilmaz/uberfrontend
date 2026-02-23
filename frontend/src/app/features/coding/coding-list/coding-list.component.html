@@ -209,7 +209,7 @@
             </button>
           </div>
 
-          <a *ngFor="let q of questions"
+          <a *ngFor="let q of questions; trackBy: trackByQuestionId"
             faCard interactive class="list-row fa-question-card fa-question-card--compact"
             [attr.data-testid]="'question-card-' + q.id"
             [class.is-solved]="auth.isLoggedIn() && solvedSet().has(q.id)"
@@ -244,7 +244,7 @@
                     <span class="fw-hint">Open this challenge in your stack</span>
                   </div>
                   <div class="fw-chip-row">
-                    <button *ngFor="let opt of frameworkOptions(q)" type="button" class="fw-chip"
+                    <button *ngFor="let opt of frameworkOptions(q); trackBy: trackByFrameworkOption" type="button" class="fw-chip"
                       [class.active]="opt.id === q.id" [attr.aria-label]="'Open '+frameworkLabel(opt.tech)+' version'"
                       (click)="goToFramework($event, opt, q)">
                       <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>

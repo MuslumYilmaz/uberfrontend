@@ -15,7 +15,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, QuestionKind, Technology, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
-import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
+import { MixedQuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { QuestionListResolved } from '../../../core/resolvers/question-list.resolver';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
@@ -337,11 +337,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 let base$: Observable<Row[]>;
                 if (preloaded) {
                   base$ = of(preloaded).pipe(
-                    map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech })))
+                    map((list: MixedQuestionListItem[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech })))
                   );
                 } else {
-                  base$ = this.qs.loadAllQuestions(k as any).pipe(
-                    map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
+                  base$ = this.qs.loadAllQuestionSummaries(k as any, { transferState: false }).pipe(
+                    map((list: MixedQuestionListItem[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
                   );
                 }
 
@@ -371,9 +371,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
                 if (this.kind === 'all') {
                   return forkJoin([
-                    this.qs.loadQuestions(this.tech, 'coding')
+                    this.qs.loadQuestionSummaries(this.tech, 'coding', { transferState: false })
                       .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'coding' })))),
-                    this.qs.loadQuestions(this.tech, 'trivia')
+                    this.qs.loadQuestionSummaries(this.tech, 'trivia', { transferState: false })
                       .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia' }))))
                   ]).pipe(
                     map(([a, b]) => [...a, ...b]),
@@ -382,7 +382,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 }
 
                 const k = this.kind as QuestionKind;
-                return this.qs.loadQuestions(this.tech, k).pipe(
+                return this.qs.loadQuestionSummaries(this.tech, k, { transferState: false }).pipe(
                   map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: k }))),
                   startWith<Row[] | null>(null)
                 );
@@ -396,12 +396,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
             // 1) ALL company questions (coding + trivia + system)
             if (this.kind === 'all') {
               return forkJoin<[Row[], Row[], Row[]]>([
-                this.qs.loadAllQuestions('coding').pipe(
+                this.qs.loadAllQuestionSummaries('coding', { transferState: false }).pipe(
                   map(list =>
                     list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
                   )
                 ),
-                this.qs.loadAllQuestions('trivia').pipe(
+                this.qs.loadAllQuestionSummaries('trivia', { transferState: false }).pipe(
                   map(list =>
                     list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
                   )
@@ -415,7 +415,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
             // 2) CODING
             if (this.kind === 'coding') {
-              return this.qs.loadAllQuestions('coding').pipe(
+              return this.qs.loadAllQuestionSummaries('coding', { transferState: false }).pipe(
                 map(list =>
                   list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
                 ),
@@ -425,7 +425,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
             // 3) TRIVIA
             if (this.kind === 'trivia') {
-              return this.qs.loadAllQuestions('trivia').pipe(
+              return this.qs.loadAllQuestionSummaries('trivia', { transferState: false }).pipe(
                 map(list =>
                   list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
                 ),
@@ -445,7 +445,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     )
   ) as unknown as Observable<Row[] | null>;
 
-  private resolvedGlobalList(kind: SelectedKind): MixedQuestion[] | null {
+  private resolvedGlobalList(kind: SelectedKind): MixedQuestionListItem[] | null {
     const resolved = this.resolvedList;
     if (!resolved || resolved.source !== 'global-coding') return null;
     if (resolved.kind !== kind) return null;
@@ -663,6 +663,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const user = this.auth.user();
     return isQuestionLockedForTier(q, user);
   }
+
+  trackByQuestionId = (_: number, q: Row): string => q.id;
+  trackByFrameworkOption = (_: number, option: FrameworkVariant): string =>
+    `${option.kind}:${option.tech}:${option.id}`;
 
   handleCardClick(ev: Event, q: Row) {
     if (!this.isLocked(q)) return;
@@ -1408,7 +1412,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.systemDesignRowsCache$ = empty$;
       return empty$;
     }
-    const rows$ = (fn.call(anyQs) as any).pipe(
+    const rows$ = (fn.call(anyQs, { transferState: false }) as any).pipe(
       map((items: any[]) =>
         (items || []).map<Row>(it => ({
           id: it.id,

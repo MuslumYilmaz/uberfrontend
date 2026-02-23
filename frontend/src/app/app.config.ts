@@ -16,9 +16,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(
       routes,
-      // Reload component when query params or same URL changes
+      // Avoid global same-URL reload churn; opt in per-flow when required.
       withRouterConfig({
-        onSameUrlNavigation: 'reload',
+        onSameUrlNavigation: 'ignore',
         paramsInheritanceStrategy: 'always',
       }),
       // Smooth scrolling and position restoration
