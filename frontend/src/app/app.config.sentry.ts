@@ -1,2 +1,2 @@
-// This alias avoids a separate eager Sentry provider graph.
-export { appConfig } from './app.config';
+// Production replacement of app.config.ts points here, so import from a shared base.
+export { appConfig } from './app.config.base';
