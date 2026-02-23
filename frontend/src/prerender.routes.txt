@@ -139,6 +139,7 @@
 /guides/framework-prep
 /guides/framework-prep/angular-prep-path
 /guides/framework-prep/javascript-prep-path
+/guides/framework-prep/javascript-prep-path/mastery
 /guides/framework-prep/react-prep-path
 /guides/framework-prep/vue-prep-path
 /guides/interview-blueprint
@@ -456,6 +457,7 @@
 /tracks
 /tracks/crash-7d/preview
 /tracks/foundations-30d/preview
+/tracks/javascript-prep-path/mastery
 /vue/coding/vue-accordion-faq
 /vue/coding/vue-autocomplete-search
 /vue/coding/vue-chessboard-click-highlight

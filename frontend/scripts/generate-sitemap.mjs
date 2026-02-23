@@ -7,6 +7,7 @@ const ASSETS_DIR = path.join(SRC_DIR, 'assets');
 const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
 const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
 const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
+const MASTERY_PATHS_DIR = path.join(SRC_DIR, 'app', 'shared', 'mastery', 'paths');
 const OUT_PATH = path.join(SRC_DIR, 'sitemap.xml');
 const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
 const MAX_URLS = 50000;
@@ -59,6 +60,23 @@ function extractGuideSlugs(content, exportName) {
     slugs.push(match[1]);
   }
   return slugs;
+}
+
+function readActiveMasterySlugs() {
+  if (!fs.existsSync(MASTERY_PATHS_DIR)) return [];
+  const slugs = new Set();
+
+  fs.readdirSync(MASTERY_PATHS_DIR).forEach((fileName) => {
+    if (!fileName.endsWith('.ts')) return;
+    const source = fs.readFileSync(path.join(MASTERY_PATHS_DIR, fileName), 'utf8');
+    const re = /frameworkSlug:\s*['"]([^'"]+)['"]/g;
+    let match;
+    while ((match = re.exec(source))) {
+      slugs.add(match[1]);
+    }
+  });
+
+  return Array.from(slugs).sort((a, b) => a.localeCompare(b));
 }
 
 function buildUrls() {
@@ -127,6 +145,10 @@ function buildUrls() {
     system.forEach((slug) => urls.add(toUrl(`/guides/system-design-blueprint/${slug}`)));
     behavioral.forEach((slug) => urls.add(toUrl(`/guides/behavioral/${slug}`)));
   }
+
+  readActiveMasterySlugs().forEach((slug) => {
+    urls.add(toUrl(`/guides/framework-prep/${slug}/mastery`));
+  });
 
   return Array.from(urls).sort();
 }

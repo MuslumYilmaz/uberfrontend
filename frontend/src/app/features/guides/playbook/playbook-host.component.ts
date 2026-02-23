@@ -73,6 +73,23 @@ export class PlaybookHostComponent implements OnDestroy {
         return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
     }
 
+    private toGuideLink(base: string, slug: string): any[] {
+        if (base === 'interview-blueprint' && String(slug).endsWith('-prep-path')) {
+            return ['/', 'guides', 'framework-prep', slug];
+        }
+        return ['/', 'guides', base, slug];
+    }
+
+    private remapPrevNextLink(link: any[] | null, base: string): any[] | null {
+        if (!Array.isArray(link)) return link;
+        if (base !== 'interview-blueprint') return link;
+
+        const slug = String(link[link.length - 1] ?? '');
+        if (!slug.endsWith('-prep-path')) return link;
+
+        return ['/', 'guides', 'framework-prep', slug];
+    }
+
     private load(resolved: GuideDetailResolved | null) {
         const snapshotSlug = this.route.snapshot.paramMap.get('slug') || '';
         const slug = resolved?.slug || snapshotSlug;
@@ -89,6 +106,8 @@ export class PlaybookHostComponent implements OnDestroy {
             : PLAYBOOK;
 
         const { current, prev, next } = navFor(registry, slug, hostConfig.guideBase);
+        const mappedPrev = this.remapPrevNextLink(prev, hostConfig.guideBase);
+        const mappedNext = this.remapPrevNextLink(next, hostConfig.guideBase);
 
         // If the slug isn't in the registry -> go to 404 and show the missing path
         if (!resolved || !current) {
@@ -107,7 +126,7 @@ export class PlaybookHostComponent implements OnDestroy {
                     const entry = registryMap.get(it.slug)!;
                     return {
                         title: entry.title,
-                        link: ['/', 'guides', hostConfig.guideBase, entry.slug],
+                        link: this.toGuideLink(hostConfig.guideBase, entry.slug),
                         active: entry.slug === slug,
                     };
                 })
@@ -126,8 +145,8 @@ export class PlaybookHostComponent implements OnDestroy {
         try {
             const Cmp = resolved.component as Type<GuideArticleInputs>;
             const ref = this.vc.createComponent<GuideArticleInputs>(Cmp);
-            ref.instance.prev = prev;
-            ref.instance.next = next;
+            ref.instance.prev = mappedPrev;
+            ref.instance.next = mappedNext;
             ref.instance.leftNav = leftNav;
             this.showShellHeading.set(false);
         } catch {

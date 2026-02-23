@@ -113,7 +113,7 @@ import { PrepSignalGridComponent, PrepSignalItem } from '../../../../shared/comp
         <div class="sec-head fa-section-title">{{ g.title }}</div>
 
         <a *ngFor="let it of g.items"
-           class="card" [routerLink]="['/','guides','interview-blueprint', it.slug]">
+           class="card" [routerLink]="routeForSlug(it.slug)">
           <div class="num fa-chip fa-chip--label">{{ globalIdx().get(it.slug) }}</div>
           <div class="body">
             <div class="title fa-card-title">{{ entries().get(it.slug)?.title || it.slug }}</div>
@@ -147,6 +147,13 @@ export class PlaybookIndexComponent {
     { text: 'UI rounds', route: ['/guides/interview-blueprint/ui-interviews'] },
     { text: 'System design rounds', route: ['/guides/interview-blueprint/system-design'] },
   ];
+
+  routeForSlug(slug: string): string[] {
+    if (String(slug).endsWith('-prep-path')) {
+      return ['/', 'guides', 'framework-prep', slug];
+    }
+    return ['/', 'guides', 'interview-blueprint', slug];
+  }
 
   /** Section groups (order matters). */
   groups = computed(() => PLAYBOOK_GROUPS);

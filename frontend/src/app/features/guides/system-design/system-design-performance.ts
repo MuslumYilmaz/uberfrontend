@@ -464,11 +464,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>Next</h2>
       <ul>
-        <li><a [routerLink]="['/', 'guides', 'system-design', 'radio']">Back to RADIO cheat sheet</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design', 'radio', 'requirements']">R - Requirements deep dive</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design', 'radio', 'architecture']">A - Architecture deep dive</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design', 'radio', 'data-model']">D - Data model deep dive</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design', 'radio', 'interface']">I - Interface deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-framework']">Back to RADIO cheat sheet</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-requirements']">R - Requirements deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">A - Architecture deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">D - Data model deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">I - Interface deep dive</a></li>
       </ul>
     </fa-guide-shell>
   `,

@@ -7,6 +7,7 @@ const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
 const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
 const TRACK_REGISTRY = path.join(QUESTIONS_DIR, 'track-registry.json');
 const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
+const MASTERY_PATHS_DIR = path.join(SRC_DIR, 'app', 'shared', 'mastery', 'paths');
 const COMPANY_INDEX_COMPONENT = path.join(
   SRC_DIR,
   'app',
@@ -120,6 +121,24 @@ function extractGuideSlugs(content, exportName) {
   return slugs;
 }
 
+function readActiveMasterySlugs() {
+  if (!fs.existsSync(MASTERY_PATHS_DIR)) return [];
+  const slugs = new Set();
+
+  fs.readdirSync(MASTERY_PATHS_DIR).forEach((fileName) => {
+    if (!fileName.endsWith('.ts')) return;
+    const source = fs.readFileSync(path.join(MASTERY_PATHS_DIR, fileName), 'utf8');
+    const re = /frameworkSlug:\s*['"]([^'"]+)['"]/g;
+    let match;
+    while ((match = re.exec(source))) {
+      const slug = normalizeSlug(match[1]);
+      if (slug) slugs.add(slug);
+    }
+  });
+
+  return Array.from(slugs).sort((a, b) => a.localeCompare(b));
+}
+
 function buildRoutes() {
   const routes = new Set();
   const companyPreviewSlugs = new Set(readSeedCompanySlugs());
@@ -215,6 +234,11 @@ function buildRoutes() {
     system.forEach((slug) => addRoute(routes, `/guides/system-design-blueprint/${slug}`));
     behavioral.forEach((slug) => addRoute(routes, `/guides/behavioral/${slug}`));
   }
+
+  readActiveMasterySlugs().forEach((slug) => {
+    addRoute(routes, `/guides/framework-prep/${slug}/mastery`);
+    addRoute(routes, `/tracks/${slug}/mastery`);
+  });
 
   return Array.from(routes).sort((a, b) => a.localeCompare(b));
 }
