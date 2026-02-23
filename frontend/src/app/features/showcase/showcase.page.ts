@@ -234,17 +234,17 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     {
       name: 'Crash Track (7 days)',
       bullets: [
-        'Short deadline? Focused 7-day curriculum on the highest-signal topics.',
-        'Daily checkpoints on UI, JS, and system design slices.',
-        'Built for speed: compact tasks with deterministic tests.',
+        '30 high-yield questions for a focused 7-day sprint.',
+        'JS async/core + UI data flows + 2 must-know system design prompts.',
+        'Repeat-friendly sequencing built for short interview timelines.',
       ],
     },
     {
       name: 'Foundations Track (30 days)',
       bullets: [
-        'Rebuild your fundamentals step by step before going deeper.',
-        'Steady progression across HTML/CSS, state, data, and performance.',
-        'Weekly assessments to lock in habits before advancing.',
+        '113-question progression from fundamentals to medium-level concepts.',
+        'Framework coding drills in React/Angular/Vue with framework-agnostic trivia.',
+        'Includes 5 frontend system design scenarios for architecture tradeoffs.',
       ],
     },
   ];

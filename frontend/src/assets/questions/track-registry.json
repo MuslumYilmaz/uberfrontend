@@ -171,12 +171,12 @@
     {
       "slug": "crash-7d",
       "title": "Crash Track (7 days)",
-      "subtitle": "Short deadline? Focused 7-day curriculum on the highest-signal topics.",
+      "subtitle": "Short deadline? 30 high-yield questions for a focused 7-day sprint.",
       "durationLabel": "7-day focus",
       "focus": [
-        "Async JS primitives: debounce, throttle, and promises",
-        "UI data flows: search, pagination, and table state",
-        "One FE system design prompt to cover architecture patterns"
+        "Async JS essentials: debounce/throttle, promises, and event loop",
+        "UI data flows: debounced search, pagination, and table-state patterns",
+        "Two must-know FE system design prompts: real-time search and infinite scroll"
       ],
       "browseParams": {
         "view": "formats",
@@ -208,21 +208,6 @@
           "kind": "coding"
         },
         {
-          "id": "js-concurrency-map-limit",
-          "tech": "javascript",
-          "kind": "coding"
-        },
-        {
-          "id": "js-abortable-helpers",
-          "tech": "javascript",
-          "kind": "coding"
-        },
-        {
-          "id": "js-streaming-ndjson-parser",
-          "tech": "javascript",
-          "kind": "coding"
-        },
-        {
           "id": "js-memoize-function",
           "tech": "javascript",
           "kind": "coding"
@@ -233,28 +218,8 @@
           "kind": "coding"
         },
         {
-          "id": "js-deep-clone",
-          "tech": "javascript",
-          "kind": "coding"
-        },
-        {
-          "id": "js-curry-function",
-          "tech": "javascript",
-          "kind": "coding"
-        },
-        {
           "id": "react-debounced-search",
           "tech": "react",
-          "kind": "coding"
-        },
-        {
-          "id": "angular-debounced-search",
-          "tech": "angular",
-          "kind": "coding"
-        },
-        {
-          "id": "vue-debounced-search",
-          "tech": "vue",
           "kind": "coding"
         },
         {
@@ -263,12 +228,81 @@
           "kind": "coding"
         },
         {
-          "id": "react-theme-toggle",
+          "id": "css-flexbox-navbar",
+          "tech": "css",
+          "kind": "coding"
+        },
+        {
+          "id": "realtime-search-debounce-cache",
+          "kind": "system-design"
+        },
+        {
+          "id": "js-microtasks-vs-macrotasks",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-promise-combinators-all-allsettled-race-any",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-async-race-conditions",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-call-apply-bind",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-mutability-vs-immutability",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-array-prototype-reduce",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-implement-bind",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-event-emitter-mini",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-timer-manager",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-var-let-const-hoisting",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-prototype-vs-__proto__",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "react-debug-double-render",
           "tech": "react",
           "kind": "coding"
         },
         {
           "id": "js-event-loop",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-promises-async-await",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -288,37 +322,7 @@
           "kind": "trivia"
         },
         {
-          "id": "js-var-let-const-hoisting",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
-          "id": "js-promises-async-await",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
           "id": "js-event-delegation",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
-          "id": "js-null-undefined-undeclared",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
-          "id": "js-equality-vs-strict-equality",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
-          "id": "js-hoisting",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
-          "id": "js-higher-order-function",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -326,80 +330,6 @@
           "id": "js-event-bubbling-capturing",
           "tech": "javascript",
           "kind": "trivia"
-        },
-        {
-          "id": "html-dom",
-          "tech": "html",
-          "kind": "trivia"
-        },
-        {
-          "id": "html-head-tag",
-          "tech": "html",
-          "kind": "trivia"
-        },
-        {
-          "id": "html-semantic-elements",
-          "tech": "html",
-          "kind": "trivia"
-        },
-        {
-          "id": "html-a-tag",
-          "tech": "html",
-          "kind": "trivia"
-        },
-        {
-          "id": "html-title-tag",
-          "tech": "html",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-definition",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-inline-internal-external",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-background-color",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-text-color",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-center-text",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-border-property",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-margin-property",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-padding-property",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "css-font-family",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
-          "id": "realtime-search-debounce-cache",
-          "kind": "system-design"
         },
         {
           "id": "infinite-scroll-list",
@@ -410,18 +340,18 @@
     {
       "slug": "foundations-30d",
       "title": "Foundations Track (30 days)",
-      "subtitle": "Rebuild your fundamentals step by step before going deeper.",
+      "subtitle": "Build fundamentals first, then layer medium-level interview patterns over 30 days.",
       "durationLabel": "30-day fundamentals",
       "focus": [
-        "JavaScript basics, arrays, and control flow",
-        "HTML semantics and accessible forms",
-        "CSS layout fundamentals: box model, positioning, flex/grid",
-        "Starter React, Angular, and Vue components"
+        "JavaScript fundamentals plus medium async and race-condition patterns",
+        "Framework coding drills across React, Angular, and Vue (pick your stack)",
+        "Framework-agnostic trivia across JS, HTML, and CSS",
+        "Five frontend system design scenarios for architecture tradeoffs"
       ],
       "browseParams": {
         "kind": "coding",
-        "diff": "easy,intermediate",
-        "imp": "low,medium",
+        "diff": "easy,intermediate,hard",
+        "imp": "low,medium,high",
         "reset": "1"
       },
       "featured": [
@@ -670,15 +600,7 @@
           "kind": "system-design"
         },
         {
-          "id": "image-upload-preview",
-          "kind": "system-design"
-        },
-        {
           "id": "multi-step-form-autosave",
-          "kind": "system-design"
-        },
-        {
-          "id": "dashboard-widgets-draggable-resizable",
           "kind": "system-design"
         },
         {
@@ -859,6 +781,139 @@
           "id": "css-pseudo-classes-elements",
           "tech": "css",
           "kind": "trivia"
+        },
+        {
+          "id": "js-debounce",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-throttle",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-promise-all",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-add-two-promises",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-memoize-function",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-deep-equal",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "react-debounced-search",
+          "tech": "react",
+          "kind": "coding"
+        },
+        {
+          "id": "react-pagination-table",
+          "tech": "react",
+          "kind": "coding"
+        },
+        {
+          "id": "realtime-search-debounce-cache",
+          "kind": "system-design"
+        },
+        {
+          "id": "js-microtasks-vs-macrotasks",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-promise-combinators-all-allsettled-race-any",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-async-race-conditions",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-mutability-vs-immutability",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-implement-bind",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-event-emitter-mini",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "js-timer-manager",
+          "tech": "javascript",
+          "kind": "coding"
+        },
+        {
+          "id": "react-debug-double-render",
+          "tech": "react",
+          "kind": "coding"
+        },
+        {
+          "id": "infinite-scroll-list",
+          "kind": "system-design"
+        },
+        {
+          "id": "angular-debounced-search",
+          "tech": "angular",
+          "kind": "coding"
+        },
+        {
+          "id": "vue-debounced-search",
+          "tech": "vue",
+          "kind": "coding"
+        },
+        {
+          "id": "angular-pagination-table",
+          "tech": "angular",
+          "kind": "coding"
+        },
+        {
+          "id": "vue-pagination-table",
+          "tech": "vue",
+          "kind": "coding"
+        },
+        {
+          "id": "angular-theme-toggle",
+          "tech": "angular",
+          "kind": "coding"
+        },
+        {
+          "id": "vue-theme-toggle",
+          "tech": "vue",
+          "kind": "coding"
+        },
+        {
+          "id": "react-transfer-list",
+          "tech": "react",
+          "kind": "coding"
+        },
+        {
+          "id": "angular-transfer-list",
+          "tech": "angular",
+          "kind": "coding"
+        },
+        {
+          "id": "vue-transfer-list",
+          "tech": "vue",
+          "kind": "coding"
         }
       ]
     }

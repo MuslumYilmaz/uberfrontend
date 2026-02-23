@@ -86,13 +86,10 @@
           <span *ngFor="let item of track.focus" class="chip">{{ item }}</span>
         </div>
 
-        <div class="fw-note">
-          Covers UI frameworks (React, Angular, Vue) plus HTML/CSS and JS where relevant.
-        </div>
+        <div class="fw-note">{{ noteFor(track) }}</div>
 
         <div class="meta-row">
-          <span class="meta">Framework-ready</span>
-          <span class="meta">System design included</span>
+          <span *ngFor="let badge of badgesFor(track)" class="meta">{{ badge }}</span>
         </div>
 
         <div class="card-footer">View preview →</div>
