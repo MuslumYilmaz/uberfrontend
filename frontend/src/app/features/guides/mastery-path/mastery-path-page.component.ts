@@ -1,21 +1,28 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnDestroy, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { QuestionKind } from '../../../core/models/question.model';
+import { Tech } from '../../../core/models/user.model';
 import { MasteryPathResolved } from '../../../core/resolvers/mastery-path.resolver';
 import { MasteryProgressService } from '../../../core/services/mastery-progress.service';
+import { QuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import {
+  MasteryActionTarget,
   MasteryItem,
   MasteryItemType,
   MasteryModuleView,
+  MasteryPath,
 } from '../../../shared/mastery/mastery-path.model';
 import { OfflineBannerComponent } from '../../../shared/components/offline-banner/offline-banner';
 import { MasteryModuleListComponent } from './components/mastery-module-list.component';
 import { MasterySidePanelComponent } from './components/mastery-side-panel.component';
 
 type ItemTypeFilter = 'all' | MasteryItemType;
+type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
 
 @Component({
   selector: 'app-mastery-path-page',
@@ -353,10 +360,24 @@ export class MasteryPathPageComponent implements OnDestroy {
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
   private readonly progress = inject(MasteryProgressService);
+  private readonly questionService = inject(QuestionService);
+  private readonly userProgress = inject(UserProgressService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   private sub?: Subscription;
+  private readonly summaryCache = new Map<string, Promise<QuestionListItem[]>>();
+  private readonly targetQuestionMapSig = signal<Map<string, string>>(new Map<string, string>());
+  private readonly autoCompletedSetSig = signal<Set<string>>(new Set<string>());
+  private readonly supportedTechs = new Set<Tech>([
+    'javascript',
+    'react',
+    'angular',
+    'vue',
+    'html',
+    'css',
+  ]);
+  private targetBuildVersion = 0;
 
   readonly typeFilters: Array<{ id: ItemTypeFilter; label: string }> = [
     { id: 'all', label: 'All' },
@@ -371,7 +392,15 @@ export class MasteryPathPageComponent implements OnDestroy {
   readonly typeFilter = signal<ItemTypeFilter>('all');
   readonly incompleteOnly = signal(false);
 
-  readonly completedSet = this.progress.completedSet;
+  readonly completedSet = computed(() => {
+    const manual = this.progress.completedSet();
+    const auto = this.autoCompletedSetSig();
+    if (!auto.size) return manual;
+
+    const merged = new Set(manual);
+    for (const itemId of auto) merged.add(itemId);
+    return merged;
+  });
 
   readonly path = computed(() => this.resolvedSig()?.path ?? null);
 
@@ -453,13 +482,18 @@ export class MasteryPathPageComponent implements OnDestroy {
   readonly totalItemCount = computed(() => this.path()?.items.length ?? 0);
 
   readonly overallCompletedCount = computed(() => {
-    const itemIds = (this.path()?.items ?? []).map((item) => item.id);
-    return this.progress.completedCount(itemIds);
+    const completed = this.completedSet();
+    let count = 0;
+    for (const item of this.path()?.items ?? []) {
+      if (completed.has(item.id)) count += 1;
+    }
+    return count;
   });
 
   readonly overallPercent = computed(() => {
-    const itemIds = (this.path()?.items ?? []).map((item) => item.id);
-    return this.progress.completionPercent(itemIds);
+    const total = this.totalItemCount();
+    if (!total) return 0;
+    return Math.round((this.overallCompletedCount() / total) * 100);
   });
 
   readonly resumeItem = computed<MasteryItem | null>(() => {
@@ -484,12 +518,14 @@ export class MasteryPathPageComponent implements OnDestroy {
       )
       .subscribe((resolved) => {
         if (!resolved) {
+          void this.refreshTargetQuestionMap(null);
           this.go404();
           return;
         }
 
         this.resolvedSig.set(resolved);
         this.progress.load(resolved.slug);
+        void this.refreshTargetQuestionMap(resolved.path);
         this.typeFilter.set('all');
         this.incompleteOnly.set(false);
 
@@ -514,6 +550,21 @@ export class MasteryPathPageComponent implements OnDestroy {
 
         const firstUnlocked = views.find((view) => !view.locked);
         this.activeModuleId.set(firstUnlocked?.module.id ?? views[0].module.id);
+      },
+      { allowSignalWrites: true },
+    );
+
+    effect(
+      () => {
+        const solved = new Set(this.userProgress.solvedIds());
+        const targetMap = this.targetQuestionMapSig();
+        const autoCompleted = new Set<string>();
+
+        for (const [itemId, questionId] of targetMap) {
+          if (solved.has(questionId)) autoCompleted.add(itemId);
+        }
+
+        this.autoCompletedSetSig.set(autoCompleted);
       },
       { allowSignalWrites: true },
     );
@@ -552,6 +603,146 @@ export class MasteryPathPageComponent implements OnDestroy {
 
   resetProgress(): void {
     this.progress.resetActive();
+  }
+
+  private async refreshTargetQuestionMap(path: MasteryPath | null): Promise<void> {
+    const buildVersion = ++this.targetBuildVersion;
+    if (!path) {
+      this.targetQuestionMapSig.set(new Map<string, string>());
+      return;
+    }
+
+    try {
+      const map = await this.buildTargetQuestionMap(path);
+      if (buildVersion !== this.targetBuildVersion) return;
+      this.targetQuestionMapSig.set(map);
+    } catch {
+      if (buildVersion !== this.targetBuildVersion) return;
+      this.targetQuestionMapSig.set(new Map<string, string>());
+    }
+  }
+
+  private async buildTargetQuestionMap(path: MasteryPath): Promise<Map<string, string>> {
+    const pairs = await Promise.all(
+      path.items.map(async (item) => {
+        const parsed = this.parseTargetQuery(item.target);
+        if (!parsed) return null;
+
+        const questions = await this.loadQuestionSummariesCached(parsed.tech, parsed.kind);
+        const best = this.pickBestMatch(questions, parsed.query);
+        if (!best) return null;
+
+        return [item.id, best.id] as const;
+      }),
+    );
+
+    const map = new Map<string, string>();
+    for (const pair of pairs) {
+      if (!pair) continue;
+      map.set(pair[0], pair[1]);
+    }
+    return map;
+  }
+
+  private parseTargetQuery(target: MasteryActionTarget | undefined): TargetQuery | null {
+    if (!target) return null;
+    const route = target.route;
+    if (!Array.isArray(route) || route.length !== 1) return null;
+
+    const first = String(route[0] ?? '')
+      .trim()
+      .replace(/^\/+/, '');
+    if (first !== 'coding') return null;
+
+    const techRaw = String(target.queryParams?.['tech'] ?? '')
+      .trim()
+      .toLowerCase() as Tech;
+    const kindRaw = String(target.queryParams?.['kind'] ?? '')
+      .trim()
+      .toLowerCase();
+    const query = String(target.queryParams?.['q'] ?? '').trim();
+
+    if (!this.supportedTechs.has(techRaw)) return null;
+    if (kindRaw !== 'coding' && kindRaw !== 'trivia') return null;
+    if (!query) return null;
+
+    return { tech: techRaw, kind: kindRaw, query };
+  }
+
+  private async loadQuestionSummariesCached(
+    tech: Tech,
+    kind: QuestionKind,
+  ): Promise<QuestionListItem[]> {
+    const key = `${tech}:${kind}`;
+    const cached = this.summaryCache.get(key);
+    if (cached) return cached;
+
+    const pending = firstValueFrom(
+      this.questionService.loadQuestionSummaries(tech, kind, { transferState: false }),
+    ).catch(() => [] as QuestionListItem[]);
+
+    this.summaryCache.set(key, pending);
+    return pending;
+  }
+
+  private pickBestMatch(questions: QuestionListItem[], query: string): QuestionListItem | null {
+    const normalizedQuery = this.normalizeText(query);
+    const tokens = Array.from(
+      new Set(
+        normalizedQuery
+          .split(' ')
+          .map((token) => token.trim())
+          .filter((token) => token.length >= 2),
+      ),
+    );
+
+    if (!normalizedQuery || !tokens.length) return null;
+
+    let best: { item: QuestionListItem; score: number } | null = null;
+
+    for (const item of questions) {
+      const score = this.matchScore(item, normalizedQuery, tokens);
+      if (!best || score > best.score) {
+        best = { item, score };
+        continue;
+      }
+
+      if (score === best.score) {
+        const itemImportance = Number(item.importance ?? 0);
+        const bestImportance = Number(best.item.importance ?? 0);
+        if (itemImportance > bestImportance) best = { item, score };
+      }
+    }
+
+    if (!best || best.score <= 0) return null;
+    return best.item;
+  }
+
+  private matchScore(item: QuestionListItem, normalizedQuery: string, tokens: string[]): number {
+    const title = this.normalizeText(item.title);
+    const tags = (item.tags ?? []).map((tag) => this.normalizeText(tag)).join(' ');
+    const description = this.normalizeText(item.shortDescription ?? item.description ?? '');
+
+    let score = 0;
+
+    if (title.includes(normalizedQuery)) score += 80;
+    if (tags.includes(normalizedQuery)) score += 50;
+    if (description.includes(normalizedQuery)) score += 20;
+
+    for (const token of tokens) {
+      if (title.includes(token)) score += 12;
+      if (tags.includes(token)) score += 8;
+      if (description.includes(token)) score += 3;
+    }
+
+    return score;
+  }
+
+  private normalizeText(value: unknown): string {
+    return String(value ?? '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
   }
 
   private go404(): void {
