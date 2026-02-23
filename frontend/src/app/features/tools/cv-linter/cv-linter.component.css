@@ -5,6 +5,10 @@
   --cv-subcard-bg: var(--fa-card-bg);
   --cv-subcard-bg-soft: color-mix(in srgb, var(--fa-card-bg) 88%, var(--fa-card-bg-strong));
   --cv-subcard-bg-strong: color-mix(in srgb, var(--fa-card-bg-strong) 92%, var(--fa-card-bg));
+  --cv-input-bg: color-mix(in srgb, var(--uf-surface-alt) 82%, var(--uf-surface));
+  --cv-input-border: color-mix(in srgb, var(--uf-border-subtle) 58%, var(--uf-text-secondary) 42%);
+  --cv-input-border-strong: color-mix(in srgb, var(--uf-accent) 44%, var(--uf-border-subtle) 56%);
+  --cv-template-bg: color-mix(in srgb, var(--cv-subcard-bg-soft) 76%, var(--uf-surface) 24%);
 
   display: block;
   min-height: 100vh;
@@ -117,12 +121,31 @@ select,
 textarea,
 input {
   width: 100%;
-  border: 1px solid var(--uf-border-subtle);
-  background: var(--uf-surface-alt);
+  border: 1px solid var(--cv-input-border);
+  background: var(--cv-input-bg);
   color: var(--uf-text-primary);
   border-radius: 8px;
-  padding: 10px;
+  padding: 10px 12px;
   font: inherit;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+select:hover,
+textarea:hover,
+input:hover {
+  border-color: color-mix(in srgb, var(--cv-input-border) 65%, var(--uf-text-primary) 35%);
+}
+
+select:focus-visible,
+textarea:focus-visible,
+input:focus-visible {
+  border-color: var(--cv-input-border-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--uf-accent) 16%, transparent);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--uf-text-tertiary) 82%, transparent);
 }
 
 textarea {
@@ -869,11 +892,18 @@ textarea {
 .advanced-body {
   border-top: 1px solid var(--uf-border-subtle);
   padding: 16px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--cv-subcard-bg-soft) 86%, var(--cv-subcard-bg) 14%), var(--cv-subcard-bg-strong));
 }
 
 .bullet-builder h2 {
   margin: 0;
   font-size: 1.1rem;
+  color: var(--uf-text-primary);
+}
+
+.bullet-builder > .muted.small {
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, var(--uf-text-primary) 12%);
 }
 
 .tone-row {
@@ -910,7 +940,15 @@ textarea {
 .builder-grid label {
   display: grid;
   gap: 6px;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--uf-text-primary) 92%, var(--uf-text-secondary) 8%);
+}
+
+.builder-grid input {
+  font-weight: 500;
+  border-color: color-mix(in srgb, var(--cv-input-border) 72%, var(--uf-text-secondary) 28%);
+  background: color-mix(in srgb, var(--cv-input-bg) 86%, var(--uf-surface) 14%);
 }
 
 .template-list {
@@ -921,19 +959,33 @@ textarea {
 }
 
 .template-list li {
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
   border-radius: 8px;
-  padding: 8px;
+  padding: 12px 12px 10px;
+  background: var(--cv-template-bg);
   word-break: break-word;
   list-style: decimal;
 }
 
 .template-list p {
-  margin: 0 0 6px;
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--uf-text-primary) 95%, var(--uf-text-secondary) 5%);
+}
+
+.template-list li:hover {
+  border-color: color-mix(in srgb, var(--uf-accent) 36%, var(--uf-border-subtle) 64%);
 }
 
 .copy-btn {
-  font-size: 0.84rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: color-mix(in srgb, #f6cb5f 92%, var(--uf-text-primary) 8%);
+  border: 1px solid color-mix(in srgb, #f6cb5f 46%, var(--uf-border-subtle) 54%);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, #f6cb5f 10%, var(--uf-surface) 90%);
 }
 
 .results-placeholder {

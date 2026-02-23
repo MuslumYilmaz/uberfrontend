@@ -6,7 +6,7 @@ import { forkJoin, from, map, Observable, shareReplay, take } from 'rxjs';
 import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
-import { DashboardGamificationResponse } from '../../core/models/gamification.model';
+import { DashboardGamificationResponse, DashboardProgress } from '../../core/models/gamification.model';
 import { GamificationService } from '../../core/services/gamification.service';
 import { MixedQuestion, QuestionService } from '../../core/services/question.service';
 import { UserProgressService } from '../../core/services/user-progress.service';
@@ -898,6 +898,24 @@ export class DashboardComponent {
     this.isGamificationExpanded.update((value) => !value);
   }
 
-  trackTopic = (_: number, item: { topic: string }) => item.topic;
+  overallSolvedPercent(progress: DashboardProgress | null | undefined): number {
+    const solvedCount = Number(progress?.solvedCount ?? 0);
+    const totalCount = Number(progress?.totalCount ?? 0);
+    if (Number.isFinite(totalCount) && totalCount > 0 && Number.isFinite(solvedCount) && solvedCount >= 0) {
+      const precise = (solvedCount / totalCount) * 100;
+      return Math.max(0, Math.min(100, precise));
+    }
+    const fallback = Number(progress?.solvedPercent ?? 0);
+    if (!Number.isFinite(fallback)) return 0;
+    return Math.max(0, Math.min(100, fallback));
+  }
+
+  formatPercentLabel(value: number | null | undefined): string {
+    const numeric = Number(value ?? 0);
+    if (!Number.isFinite(numeric) || numeric <= 0) return '0%';
+    const rounded = Math.round(numeric * 100) / 100;
+    if (Number.isInteger(rounded)) return `${rounded}%`;
+    return `${rounded.toFixed(2).replace(/\.?0+$/, '')}%`;
+  }
 
 }

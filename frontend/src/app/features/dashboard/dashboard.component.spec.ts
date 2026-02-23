@@ -201,4 +201,26 @@ describe('DashboardComponent', () => {
     expect(localFixture.nativeElement.textContent || '').toContain('Keep your preparation momentum');
     expect(localFixture.nativeElement.textContent || '').toContain('Continue practice');
   });
+
+  it('formats global progress percentage without trailing zeros and with detail for small values', () => {
+    const component = fixture.componentInstance;
+
+    expect(component.formatPercentLabel(0)).toBe('0%');
+    expect(component.formatPercentLabel(1)).toBe('1%');
+    expect(component.formatPercentLabel(1.5)).toBe('1.5%');
+    expect(component.formatPercentLabel(0.1234)).toBe('0.12%');
+  });
+
+  it('derives precise overall solved percent from solved/total counts', () => {
+    const component = fixture.componentInstance;
+    const percent = component.overallSolvedPercent({
+      solvedCount: 2,
+      totalCount: 417,
+      solvedPercent: 0,
+      topTopics: [],
+    });
+
+    expect(percent).toBeCloseTo(0.4796, 4);
+    expect(component.formatPercentLabel(percent)).toBe('0.48%');
+  });
 });

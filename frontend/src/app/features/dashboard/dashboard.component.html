@@ -260,27 +260,11 @@
 
         <article faCard class="widget widget--progress" *ngIf="progressSummary() as progress; else progressFallback">
           <div class="widget-kicker">Progress</div>
-          <h3 class="widget-title">{{ progress.solvedPercent }}% overall solved</h3>
+          <h3 class="widget-title">{{ formatPercentLabel(overallSolvedPercent(progress)) }} overall solved</h3>
           <p class="widget-copy fa-meta-text">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
           <div class="mini-progress mini-progress--overall">
-            <span [style.width.%]="progress.solvedPercent"></span>
+            <span [style.width.%]="overallSolvedPercent(progress)"></span>
           </div>
-          <ul class="topic-list topic-list--bars" *ngIf="progress.topTopics.length > 0; else noTopics">
-            <li *ngFor="let topic of progress.topTopics; trackBy: trackTopic">
-              <div class="topic-row">
-                <div class="topic-row__label">
-                  <span>{{ topic.label }}</span>
-                  <span>{{ topic.percent }}%</span>
-                </div>
-                <div class="topic-row__bar">
-                  <span [style.width.%]="topic.percent"></span>
-                </div>
-              </div>
-            </li>
-          </ul>
-          <ng-template #noTopics>
-            <p class="widget-copy fa-meta-text">Solve a few questions to populate top topics.</p>
-          </ng-template>
         </article>
 
         <ng-template #progressFallback>
@@ -290,7 +274,7 @@
             <p class="widget-copy fa-meta-text">
               {{ auth.isLoggedIn()
                 ? 'We could not load your solved coverage right now. Keep practicing and refresh shortly.'
-                : 'Your top completion topics and solved coverage appear here after a few solved questions.' }}
+                : 'Your solved coverage appears here after a few solved questions.' }}
             </p>
             <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
               <a
