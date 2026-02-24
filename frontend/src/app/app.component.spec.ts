@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
 import { BugReportService } from './core/services/bug-report.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, RouterTestingModule, NoopAnimationsModule],
+      imports: [AppComponent, RouterTestingModule, NoopAnimationsModule, HttpClientTestingModule],
     }).compileComponents();
   });
 
@@ -33,6 +34,6 @@ describe('AppComponent', () => {
     const bugReport = TestBed.inject(BugReportService);
     bugReport.open({ source: 'spec', url: '/spec' });
     fixture.detectChanges();
-    expect(compiled.querySelector('app-bug-report-dialog')).toBeTruthy();
+    expect(bugReport.visible()).toBeTrue();
   });
 });
