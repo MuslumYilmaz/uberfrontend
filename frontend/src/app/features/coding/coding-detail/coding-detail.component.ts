@@ -376,6 +376,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // Preview dialog (Angular)
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
+  previewOnlyLoading = signal(false);
   loginPromptOpen = false;
   onboardingPromptOpen = false;
   lifecyclePromptOpen = false;
@@ -1889,6 +1890,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   closePreview() {
     this.previewVisible = false;
+    this.previewOnlyLoading.set(false);
     setTimeout(() => {
       try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
       this.previewObjectUrl = null;
@@ -1898,12 +1900,21 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   openPreview() {
     if (!this.lastPreviewHtml) return;
+    this.previewOnlyLoading.set(true);
     try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
     const blob = new Blob([this.lastPreviewHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     this.previewObjectUrl = url;
     this.previewOnlyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     this.previewVisible = true;
+  }
+
+  onPreviewIframeLoad() {
+    this.previewOnlyLoading.set(false);
+  }
+
+  onPreviewIframeError() {
+    this.previewOnlyLoading.set(false);
   }
 
   // Replace the right preview with the official solution (no modal)
@@ -1939,6 +1950,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.previewObjectUrl = null;
       this.previewVisible = false;
       this.previewOnlyUrl = null;
+      this.previewOnlyLoading.set(false);
       // clear right-side iframe immediately to avoid “stale” page
       this.setPreviewHtml(null);
 

@@ -196,6 +196,37 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
       const overlay = document.getElementById('_fa_overlay');
       const overlayMsg = document.getElementById('_fa_overlay_msg');
       const overlayMeta = document.getElementById('_fa_overlay_meta');
+      function notifyReady(reason){
+        try{
+          if (typeof window.__FA_NOTIFY_PREVIEW_READY === 'function') {
+            window.__FA_NOTIFY_PREVIEW_READY(reason || 'render');
+            return;
+          }
+        }catch(_e){}
+        try{
+          if (window.parent) {
+            window.parent.postMessage({ type: 'FA_PREVIEW_READY', reason: String(reason || 'render') }, '*');
+          }
+        }catch(_e){}
+      }
+      function waitForHostPaint(selector, timeoutMs){
+        const deadline = Date.now() + (timeoutMs || 10000);
+        const tick = () => {
+          try{
+            const host = document.querySelector(selector);
+            const painted = !!(host && host.childNodes && host.childNodes.length > 0);
+            if (painted || Date.now() >= deadline) {
+              notifyReady('render');
+              return;
+            }
+          }catch(_e){
+            notifyReady('render');
+            return;
+          }
+          requestAnimationFrame(tick);
+        };
+        tick();
+      }
 
       function showOverlay(msg, meta){
         try{
@@ -203,6 +234,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
           overlayMeta.textContent = meta || '';
           overlay.style.display = 'block';
         }catch{}
+        notifyReady('error');
       }
       function hideOverlay(){
         try{
@@ -342,6 +374,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         } else {
           root.render(React.createElement('div', null, 'No App component exported'));
         }
+        waitForHostPaint('#root', 10000);
       } catch (e) {
         const stack = e && e.stack ? '\\n' + e.stack : '';
         const where = (e && e.fileName)

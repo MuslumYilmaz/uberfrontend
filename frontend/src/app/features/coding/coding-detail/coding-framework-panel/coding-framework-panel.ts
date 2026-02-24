@@ -96,6 +96,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   previewUrl = () => this._previewUrl();
   private previewObjectUrl: string | null = null;
   private previewNavId = 0;
+  private expectedPreviewReadyToken: string | null = null;
+  private previewReadyFallbackTimer?: number;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   useMonaco = signal(true);
   editorReady = signal(false);
@@ -206,6 +208,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMoveFrameworkCols);
       window.addEventListener('pointerup', this.onPointerUpFrameworkCols);
+      window.addEventListener('message', this.onPreviewMessage);
     });
   }
 
@@ -235,10 +238,12 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       clearTimeout(this.deferredPreviewTimer);
       this.deferredPreviewTimer = undefined;
     }
+    this.clearPreviewReadyFallback();
     try {
       if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl);
     } catch { }
     this.previewObjectUrl = null;
+    this.expectedPreviewReadyToken = null;
     try {
       const frameEl = this.previewFrame?.nativeElement;
       if (frameEl?.contentWindow) {
@@ -249,6 +254,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (this.isBrowser) {
       window.removeEventListener('pointermove', this.onPointerMoveFrameworkCols);
       window.removeEventListener('pointerup', this.onPointerUpFrameworkCols);
+      window.removeEventListener('message', this.onPreviewMessage);
     }
   }
 
@@ -785,6 +791,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
     const prevUrl = this.previewObjectUrl;
     const navId = ++this.previewNavId;
+    this.clearPreviewReadyFallback();
 
     if (!html) {
       try {
@@ -795,6 +802,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       }
       this._previewUrl.set(null);
       this.previewObjectUrl = null;
+      this.expectedPreviewReadyToken = null;
       this.loadingPreview.set(false);
       if (prevUrl) {
         try { URL.revokeObjectURL(prevUrl); } catch { }
@@ -803,8 +811,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     }
 
     this.loadingPreview.set(true);
+    const bridged = this.injectPreviewReadyBridge(html, navId);
+    this.expectedPreviewReadyToken = bridged.token;
 
-    const blob = new Blob([html], { type: 'text/html' });
+    const blob = new Blob([bridged.html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
 
     this.previewObjectUrl = url;
@@ -813,7 +823,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     frameEl.onload = () => {
       if (this.destroy) return;
       if (navId !== this.previewNavId) return;
-      this.zone.run(() => this.loadingPreview.set(false));
+      if (this.loadingPreview()) {
+        this.armPreviewReadyFallback(navId);
+      }
       if (prevUrl && prevUrl !== url) {
         try { URL.revokeObjectURL(prevUrl); } catch { }
       }
@@ -826,6 +838,56 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       frameEl.src = url;
     }
   }
+
+  private clearPreviewReadyFallback() {
+    if (!this.previewReadyFallbackTimer) return;
+    clearTimeout(this.previewReadyFallbackTimer);
+    this.previewReadyFallbackTimer = undefined;
+  }
+
+  private armPreviewReadyFallback(navId: number) {
+    if (!this.isBrowser) return;
+    this.clearPreviewReadyFallback();
+    this.previewReadyFallbackTimer = window.setTimeout(() => {
+      if (this.destroy) return;
+      if (navId !== this.previewNavId) return;
+      if (!this.loadingPreview()) return;
+      this.finishPreviewLoading(navId);
+    }, 30000);
+  }
+
+  private finishPreviewLoading(navId: number) {
+    if (this.destroy) return;
+    if (navId !== this.previewNavId) return;
+    this.clearPreviewReadyFallback();
+    this.expectedPreviewReadyToken = null;
+    this.zone.run(() => this.loadingPreview.set(false));
+  }
+
+  private injectPreviewReadyBridge(html: string, navId: number): { html: string; token: string } {
+    const token = `fa-preview-${navId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const bridge = `<script>(function(){var token=${JSON.stringify(token)};var sent=false;window.__FA_PREVIEW_READY_TOKEN=token;window.__FA_NOTIFY_PREVIEW_READY=function(reason){if(sent) return; sent=true; try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_READY',token:token,reason:String(reason||'render')},'*');}}catch(_e){}};})();</script>`;
+
+    if (/<head[^>]*>/i.test(html)) {
+      return { html: html.replace(/<head[^>]*>/i, `$&\n${bridge}`), token };
+    }
+    if (/<body[^>]*>/i.test(html)) {
+      return { html: html.replace(/<body[^>]*>/i, `$&\n${bridge}`), token };
+    }
+    return { html: `${bridge}\n${html}`, token };
+  }
+
+  private onPreviewMessage = (ev: MessageEvent) => {
+    if (!this.isBrowser || this.destroy) return;
+    if (!this.loadingPreview()) return;
+    const frameWindow = this.previewFrame?.nativeElement?.contentWindow;
+    if (!frameWindow || ev.source !== frameWindow) return;
+    const payload = ev.data as { type?: unknown; token?: unknown } | null;
+    if (!payload || payload.type !== 'FA_PREVIEW_READY') return;
+    const token = typeof payload.token === 'string' ? payload.token : '';
+    if (this.expectedPreviewReadyToken && token !== this.expectedPreviewReadyToken) return;
+    this.finishPreviewLoading(this.previewNavId);
+  };
 
   // ---------- helpers ----------
 

@@ -225,7 +225,42 @@ function compileTS(src, filename){
     const overlay = document.getElementById('_fa_overlay');
     const overlayMsg = document.getElementById('_fa_overlay_msg');
     const overlayMeta = document.getElementById('_fa_overlay_meta');
-    const showOverlay = (msg, meta='') => { try { overlayMsg.textContent = String(msg||'Unknown error'); overlayMeta.textContent = meta; overlay.style.display='block'; } catch {} };
+    const notifyReady = (reason='render') => {
+      try {
+        if (typeof window.__FA_NOTIFY_PREVIEW_READY === 'function') {
+          window.__FA_NOTIFY_PREVIEW_READY(reason);
+          return;
+        }
+      } catch {}
+      try {
+        if (window.parent) {
+          window.parent.postMessage({ type: 'FA_PREVIEW_READY', reason: String(reason || 'render') }, '*');
+        }
+      } catch {}
+    };
+    const waitForHostPaint = (selector, timeoutMs = 10000) =>
+      new Promise((resolve) => {
+        const deadline = Date.now() + timeoutMs;
+        const tick = () => {
+          try {
+            const host = document.querySelector(selector);
+            const painted = !!(host && host.childNodes && host.childNodes.length > 0);
+            if (painted || Date.now() >= deadline) {
+              resolve(undefined);
+              return;
+            }
+          } catch {
+            resolve(undefined);
+            return;
+          }
+          requestAnimationFrame(tick);
+        };
+        tick();
+      });
+    const showOverlay = (msg, meta='') => {
+      try { overlayMsg.textContent = String(msg||'Unknown error'); overlayMeta.textContent = meta; overlay.style.display='block'; } catch {}
+      notifyReady('error');
+    };
     const hideOverlay = () => { try { overlay.style.display='none'; overlayMsg.textContent=''; overlayMeta.textContent=''; } catch {} };
 
     // Strip common network APIs inside the sandboxed preview (keep navigator for libs)
@@ -329,6 +364,8 @@ function compileTS(src, filename){
       // Build & import your app entry via Blob URL (no percent-encoded data URLs)
       const mainURL = self.FA_emit('src/main.ts');
       await import(mainURL);
+      await waitForHostPaint('app-root', 10000);
+      notifyReady('render');
     }catch(e){
       try{ showOverlay(e?.message || e, 'bootstrap'); }catch{}
     }

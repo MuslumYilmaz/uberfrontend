@@ -147,6 +147,37 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
     const overlay = document.getElementById('_fa_overlay');
     const overlayMsg = document.getElementById('_fa_overlay_msg');
     const overlayMeta = document.getElementById('_fa_overlay_meta');
+    function notifyReady(reason){
+      try{
+        if (typeof window.__FA_NOTIFY_PREVIEW_READY === 'function') {
+          window.__FA_NOTIFY_PREVIEW_READY(reason || 'render');
+          return;
+        }
+      } catch {}
+      try{
+        if (window.parent) {
+          window.parent.postMessage({ type: 'FA_PREVIEW_READY', reason: String(reason || 'render') }, '*');
+        }
+      } catch {}
+    }
+    function waitForHostPaint(selector, timeoutMs){
+      const deadline = Date.now() + (timeoutMs || 10000);
+      const tick = () => {
+        try{
+          const host = document.querySelector(selector);
+          const painted = !!(host && host.childNodes && host.childNodes.length > 0);
+          if (painted || Date.now() >= deadline) {
+            notifyReady('render');
+            return;
+          }
+        } catch {
+          notifyReady('render');
+          return;
+        }
+        requestAnimationFrame(tick);
+      };
+      tick();
+    }
 
     function showOverlay(msg, meta){
       try {
@@ -154,6 +185,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         overlayMeta.textContent = meta || '';
         overlay.style.display = 'block';
       } catch {}
+      notifyReady('error');
     }
 
     function hideOverlay(){
@@ -217,6 +249,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
           return;
         }
         Vue.createApp(AppRef).mount('#app');
+        waitForHostPaint('#app', 10000);
       }catch(e){
         const stack = e?.stack ? '\\n\\n'+e.stack : '';
         showOverlay(String(e) + stack, 'App');

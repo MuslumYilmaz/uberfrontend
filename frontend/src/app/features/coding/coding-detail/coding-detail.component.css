@@ -270,6 +270,57 @@
   font-size: 14px;
 }
 
+.preview-only-shell {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--uf-accent) 12%, transparent), transparent 40%),
+    color-mix(in srgb, var(--uf-surface) 92%, var(--uf-bg));
+}
+
+.preview-only-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: color-mix(in srgb, var(--uf-surface) 88%, rgba(5, 10, 20, 0.32));
+  color: var(--uf-text-primary);
+}
+
+.preview-only-loading > i {
+  font-size: 1.05rem;
+  color: color-mix(in srgb, var(--uf-accent) 80%, #9ed6ff 20%);
+}
+
+.preview-only-loading__copy {
+  display: grid;
+  gap: 2px;
+}
+
+.preview-only-loading__title {
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.preview-only-loading__sub {
+  font-size: 0.82rem;
+  color: var(--uf-text-secondary);
+}
+
+.preview-only-frame {
+  display: block;
+  opacity: 1;
+  transition: opacity 140ms ease;
+}
+
+.preview-only-frame.preview-only-frame--loading {
+  opacity: 0;
+}
+
 /* Mobile coding workspace guard */
 .mobile-workspace-shell {
   min-height: calc(100vh - var(--app-safe-top, 64px) - 24px);

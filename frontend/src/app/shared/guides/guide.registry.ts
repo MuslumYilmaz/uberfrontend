@@ -317,7 +317,7 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'architecture',
-        title: 'Frontend System Design Architecture Guide',
+        title: 'A - Frontend System Design Architecture Guide',
         minutes: 18,
         summary: 'Use this interview guide to structure frontend system design architecture decisions, from rendering boundaries and caching to clear trade-off framing.',
         seo: {
