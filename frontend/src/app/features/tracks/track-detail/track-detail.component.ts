@@ -100,7 +100,6 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     { key: 'title-asc', label: 'Title A-Z' },
   ];
   readonly crashDayLabels = Array.from({ length: CRASH_DAY_COUNT }, (_, index) => `Day ${index + 1}`);
-  activeCrashDay = 1;
   popularTags: string[] = [];
   selectedTags: string[] = [];
   tagMatchMode: 'all' | 'any' = 'all';
@@ -149,100 +148,115 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     const qp = this.route.snapshot.queryParamMap;
 
     this.track = track;
-    this.activeCrashDay = 1;
     this.crashDayLookup = this.buildCrashDayLookup(track);
+    const isCrashTrack = this.isCrashSevenDayTrack(track);
 
-    const hasAnyExplicitFilter = ['q', 'kind', 'tech', 'diff', 'imp', 'sort']
-      .some((k) => qp.get(k) !== null);
-    const saved = !hasAnyExplicitFilter ? this.trackState.get(track.slug) : null;
-
-    if (saved) {
-      this.searchTerm = saved.q || '';
-      this.search$.next(this.searchTerm);
-      this.kindFilter$.next(saved.kind);
-      this.techFilter$.next(saved.tech);
-      this.diffFilter$.next(new Set(saved.diffs || []));
-      this.impFilter$.next(new Set(saved.imps || []));
-      this.sort$.next(saved.sort);
+    if (isCrashTrack) {
+      this.searchTerm = '';
+      this.search$.next('');
+      this.kindFilter$.next('all');
+      this.techFilter$.next('all');
+      this.diffFilter$.next(new Set());
+      this.impFilter$.next(new Set());
+      this.sort$.next('diff-asc');
       this.sortOpen = false;
-
-      // Keep URL shareable when user lands on a plain /tracks/:slug.
-      this.syncQueryParams();
+      this.stripTrackFilterQueryParams();
     } else {
-      const qInit = qp.get('q') || '';
-      const kindInit = (qp.get('kind') as TrackQuestionKind | 'all') || 'all';
-      const techInit = qp.get('tech');
-      const diffInit = qp.get('diff') ?? null;
-      const impInit = qp.get('imp') ?? null;
-      const sortInit = (qp.get('sort') as 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | null) || null;
+      const hasAnyExplicitFilter = ['q', 'kind', 'tech', 'diff', 'imp', 'sort']
+        .some((k) => qp.get(k) !== null);
+      const saved = !hasAnyExplicitFilter ? this.trackState.get(track.slug) : null;
 
-      const allowedKinds = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
-      const allowedSorts = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
+      if (saved) {
+        this.searchTerm = saved.q || '';
+        this.search$.next(this.searchTerm);
+        this.kindFilter$.next(saved.kind);
+        this.techFilter$.next(saved.tech);
+        this.diffFilter$.next(new Set(saved.diffs || []));
+        this.impFilter$.next(new Set(saved.imps || []));
+        this.sort$.next(saved.sort);
+        this.sortOpen = false;
 
-      // Reset/hydrate filter state from URL every time the track changes.
-      this.searchTerm = qInit;
-      this.search$.next(qInit);
-      this.kindFilter$.next(allowedKinds.has(kindInit) ? kindInit : 'all');
-      this.techFilter$.next(this.normalizeTechFilter(techInit));
+        // Keep URL shareable when user lands on a plain /tracks/:slug.
+        this.syncQueryParams();
+      } else {
+        const qInit = qp.get('q') || '';
+        const kindInit = (qp.get('kind') as TrackQuestionKind | 'all') || 'all';
+        const techInit = qp.get('tech');
+        const diffInit = qp.get('diff') ?? null;
+        const impInit = qp.get('imp') ?? null;
+        const sortInit = (qp.get('sort') as 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | null) || null;
 
-      const parsedDiffs = (diffInit || '')
-        .split(',')
-        .map((d) => d.trim())
-        .filter((d) => !!d)
-        .map((d) => this.normalizeDifficulty(d)) as Array<'easy' | 'intermediate' | 'hard'>;
-      this.diffFilter$.next(new Set(parsedDiffs));
+        const allowedKinds = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
+        const allowedSorts = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
 
-      const parsedImps = (impInit || '')
-        .split(',')
-        .map((d) => d.trim().toLowerCase())
-        .filter((d) => d === 'low' || d === 'medium' || d === 'high') as ImportanceTier[];
-      this.impFilter$.next(new Set(parsedImps));
+        // Reset/hydrate filter state from URL every time the track changes.
+        this.searchTerm = qInit;
+        this.search$.next(qInit);
+        this.kindFilter$.next(allowedKinds.has(kindInit) ? kindInit : 'all');
+        this.techFilter$.next(this.normalizeTechFilter(techInit));
 
-      this.sort$.next(sortInit && allowedSorts.has(sortInit) ? sortInit : 'diff-asc');
-      this.sortOpen = false;
+        const parsedDiffs = (diffInit || '')
+          .split(',')
+          .map((d) => d.trim())
+          .filter((d) => !!d)
+          .map((d) => this.normalizeDifficulty(d)) as Array<'easy' | 'intermediate' | 'hard'>;
+        this.diffFilter$.next(new Set(parsedDiffs));
 
-      this.persistFilters();
+        const parsedImps = (impInit || '')
+          .split(',')
+          .map((d) => d.trim().toLowerCase())
+          .filter((d) => d === 'low' || d === 'medium' || d === 'high') as ImportanceTier[];
+        this.impFilter$.next(new Set(parsedImps));
+
+        this.sort$.next(sortInit && allowedSorts.has(sortInit) ? sortInit : 'diff-asc');
+        this.sortOpen = false;
+
+        this.persistFilters();
+      }
     }
 
     this.featured$ = this.loadFeatured(track).pipe(shareReplay(1));
-    this.filtered$ = combineLatest([
-      this.featured$,
-      this.kindFilter$,
-      this.techFilter$,
-      this.search$,
-      this.diffFilter$,
-      this.impFilter$,
-      this.sort$,
-    ]).pipe(
-      map(([items, kind, tech, term, diffs, imps, sortKey]) => {
-        const t = term.trim().toLowerCase();
-        const activeDiffs = diffs?.size
-          ? diffs
-          : new Set<'easy' | 'intermediate' | 'hard'>(['easy', 'intermediate', 'hard']);
-        const activeImps = imps?.size
-          ? imps
-          : new Set<ImportanceTier>(['low', 'medium', 'high']);
+    const filtered$: Observable<TrackItem[]> = isCrashTrack
+      ? this.featured$
+      : combineLatest([
+        this.featured$,
+        this.kindFilter$,
+        this.techFilter$,
+        this.search$,
+        this.diffFilter$,
+        this.impFilter$,
+        this.sort$,
+      ]).pipe(
+        map(([items, kind, tech, term, diffs, imps, sortKey]) => {
+          const t = term.trim().toLowerCase();
+          const activeDiffs = diffs?.size
+            ? diffs
+            : new Set<'easy' | 'intermediate' | 'hard'>(['easy', 'intermediate', 'hard']);
+          const activeImps = imps?.size
+            ? imps
+            : new Set<ImportanceTier>(['low', 'medium', 'high']);
 
-        const filtered = (items || []).filter((it) => {
-          const kindOk = kind === 'all' ? true : it.kind === kind;
-          const techOk = tech === 'all'
-            ? true
-            : tech === 'ui'
-              ? this.isUiTech(it.tech)
-              : it.tech === tech;
-          const normDiff = this.normalizeDifficulty(it.difficulty);
-          const impTier = this.tierFromImportance(it.importance);
-          const diffOk = activeDiffs.has(normDiff);
-          const impOk = activeImps.has(impTier);
-          const termOk = !t || it.title.toLowerCase().includes(t) || (it.description || '').toLowerCase().includes(t);
-          return kindOk && techOk && diffOk && impOk && termOk;
-        });
-        const sorted = filtered.slice().sort((a, b) => this.sortItems(a, b, sortKey));
-        return tech === 'ui' ? this.dedupeUiFamilies(sorted) : sorted;
-      }),
-    );
-    this.crashDayViews$ = this.isCrashSevenDayTrack(track)
-      ? this.filtered$.pipe(
+          const filtered = (items || []).filter((it) => {
+            const kindOk = kind === 'all' ? true : it.kind === kind;
+            const techOk = tech === 'all'
+              ? true
+              : tech === 'ui'
+                ? this.isUiTech(it.tech)
+                : it.tech === tech;
+            const normDiff = this.normalizeDifficulty(it.difficulty);
+            const impTier = this.tierFromImportance(it.importance);
+            const diffOk = activeDiffs.has(normDiff);
+            const impOk = activeImps.has(impTier);
+            const termOk = !t || it.title.toLowerCase().includes(t) || (it.description || '').toLowerCase().includes(t);
+            return kindOk && techOk && diffOk && impOk && termOk;
+          });
+          const sorted = filtered.slice().sort((a, b) => this.sortItems(a, b, sortKey));
+          return tech === 'ui' ? this.dedupeUiFamilies(sorted) : sorted;
+        }),
+      );
+    this.filtered$ = filtered$;
+    this.crashDayViews$ = isCrashTrack
+      ? filtered$.pipe(
         map((items) => this.buildCrashDayViews(track, items || [])),
         shareReplay(1),
       )
@@ -258,7 +272,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
 
   private persistFilters() {
     const slug = this.track?.slug;
-    if (!slug) return;
+    if (!slug || this.isCrashSevenDayTrack()) return;
 
     const diffs = Array.from(this.diffFilter$.value);
     diffs.sort((a, b) => DIFF_ORDER.indexOf(a) - DIFF_ORDER.indexOf(b));
@@ -277,22 +291,14 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onSearch(term: string) {
+    if (this.isCrashSevenDayTrack()) return;
     this.searchTerm = term ?? '';
     this.search$.next(this.searchTerm);
     this.syncQueryParams();
   }
 
-  setActiveCrashDay(day: number): void {
-    if (day < 1 || day > CRASH_DAY_COUNT) return;
-    this.activeCrashDay = day;
-  }
-
-  activeCrashDayView(dayViews: CrashDayView[]): CrashDayView | null {
-    if (!dayViews?.length) return null;
-    return dayViews.find((day) => day.day === this.activeCrashDay) ?? dayViews[0];
-  }
-
   onKindChange(val: TrackQuestionKind | 'all') {
+    if (this.isCrashSevenDayTrack()) return;
     const allowed = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
     const next = allowed.has(val) ? val : 'all';
     this.kindFilter$.next(next);
@@ -300,12 +306,14 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onTechChange(val: TrackTechFilter | Tech) {
+    if (this.isCrashSevenDayTrack()) return;
     const next = this.normalizeTechFilter(val);
     this.techFilter$.next(next);
     this.syncQueryParams();
   }
 
   onDiffToggle(level: 'easy' | 'intermediate' | 'hard') {
+    if (this.isCrashSevenDayTrack()) return;
     const current = new Set(this.diffFilter$.value);
     if (current.has(level)) {
       current.delete(level);
@@ -317,6 +325,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onDifficultyChange(val: { difficulty: 'easy' | 'intermediate' | 'hard'; checked: boolean }) {
+    if (this.isCrashSevenDayTrack()) return;
     const next = new Set(this.diffFilter$.value);
     if (val.checked) {
       next.add(val.difficulty);
@@ -328,6 +337,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onImportanceChange(val: { tier: ImportanceTier; checked: boolean }) {
+    if (this.isCrashSevenDayTrack()) return;
     const next = new Set(this.impFilter$.value);
     if (val.checked) {
       next.add(val.tier);
@@ -339,6 +349,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onSortChange(val: SortKey) {
+    if (this.isCrashSevenDayTrack()) return;
     const next = this.clampSortKey(val);
     this.sort$.next(next);
     this.syncQueryParams();
@@ -347,6 +358,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   toggleSort() { this.sortOpen = !this.sortOpen; }
   closeSort() { this.sortOpen = false; }
   setSort(val: SortKey) {
+    if (this.isCrashSevenDayTrack()) return;
     this.onSortChange(val);
     this.sortOpen = false;
   }
@@ -364,6 +376,11 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   private syncQueryParams() {
+    if (this.isCrashSevenDayTrack()) {
+      this.stripTrackFilterQueryParams();
+      return;
+    }
+
     const q = this.searchTerm.trim();
     const kind = this.kindFilter$.value;
     const tech = this.techFilter$.value;
@@ -395,6 +412,13 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     const qs = url.searchParams.toString();
     this.location.replaceState(`${url.pathname}${qs ? `?${qs}` : ''}${url.hash}`);
     this.persistFilters();
+  }
+
+  private stripTrackFilterQueryParams(): void {
+    const url = new URL(window.location.href);
+    ['q', 'kind', 'tech', 'diff', 'imp', 'sort'].forEach((key) => url.searchParams.delete(key));
+    const qs = url.searchParams.toString();
+    this.location.replaceState(`${url.pathname}${qs ? `?${qs}` : ''}${url.hash}`);
   }
 
   startPractice(items: TrackItem[]): void {
@@ -432,6 +456,54 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     if (v === 'medium' || v === 'intermediate') return 'Intermediate';
     if (v === 'hard') return 'Hard';
     return v ? v.charAt(0).toUpperCase() + v.slice(1) : '—';
+  }
+
+  trackKindLabel(item: TrackItem): string {
+    if (item.kind === 'system-design') return 'System Design';
+    return item.kind === 'coding' ? 'Coding' : 'Trivia';
+  }
+
+  trackActionLabel(item: TrackItem): string {
+    if (item.kind === 'system-design') return 'Open system design';
+    return item.kind === 'coding' ? 'Practice coding' : 'Practice trivia';
+  }
+
+  trackDifficultyLabel(d?: string): string {
+    const diff = this.normalizeDifficulty(d);
+    if (diff === 'easy') return 'Easy';
+    if (diff === 'hard') return 'Hard';
+    return 'Medium';
+  }
+
+  trackDifficultyClass(d?: string): string {
+    const diff = this.normalizeDifficulty(d);
+    if (diff === 'easy') return 'crash-chip--easy';
+    if (diff === 'hard') return 'crash-chip--hard';
+    return 'crash-chip--intermediate';
+  }
+
+  estimateMinutes(item: TrackItem): number {
+    if (item.kind === 'system-design') return 20;
+
+    const diff = this.normalizeDifficulty(item.difficulty);
+    if (item.kind === 'coding') {
+      if (diff === 'easy') return 12;
+      if (diff === 'hard') return 22;
+      return 16;
+    }
+
+    if (diff === 'easy') return 8;
+    if (diff === 'hard') return 12;
+    return 10;
+  }
+
+  daySolvedCount(items: TrackItem[]): number {
+    return items.reduce((count, item) => (this.isSolved(item.id) ? count + 1 : count), 0);
+  }
+
+  dayCompletionPercent(items: TrackItem[]): number {
+    if (!items.length) return 0;
+    return Math.round((this.daySolvedCount(items) / items.length) * 100);
   }
 
   linkFor(item: TrackItem): any[] {

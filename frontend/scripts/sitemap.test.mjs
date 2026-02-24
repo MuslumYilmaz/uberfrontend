@@ -185,6 +185,19 @@ function joinRoutePath(parentPath, segment) {
   return normalizePath(`${parent}/${child}`);
 }
 
+function hasStaticDefaultRedirectChild(routeObject) {
+  const children = readArrayProperty(routeObject, 'children');
+  if (!children) return false;
+
+  return children.elements.some((child) => {
+    if (!ts.isObjectLiteralExpression(child)) return false;
+    const childPath = readStringProperty(child, 'path');
+    const redirectTo = readStringProperty(child, 'redirectTo');
+    if (childPath !== '' || !redirectTo) return false;
+    return isStaticPathSegment(redirectTo);
+  });
+}
+
 function collectRouteSeoEntries(routeArray, parentPath, out) {
   routeArray.elements.forEach((element) => {
     if (!ts.isObjectLiteralExpression(element)) return;
@@ -192,10 +205,11 @@ function collectRouteSeoEntries(routeArray, parentPath, out) {
     const pathSegment = readStringProperty(element, 'path');
     const currentPath = joinRoutePath(parentPath, pathSegment);
     const hasRedirect = Boolean(getObjectProperty(element, 'redirectTo'));
+    const hasDefaultRedirectChild = hasStaticDefaultRedirectChild(element);
     const dataObject = readObjectProperty(element, 'data');
     const seoObject = dataObject ? readObjectProperty(dataObject, 'seo') : null;
 
-    if (seoObject && !hasRedirect && isStaticPathSegment(pathSegment)) {
+    if (seoObject && !hasRedirect && !hasDefaultRedirectChild && isStaticPathSegment(pathSegment)) {
       const title = readStringProperty(seoObject, 'title');
       if (title) {
         out.push({
