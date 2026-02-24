@@ -58,6 +58,15 @@
   );
 }
 
+.fa-track-header--crash {
+  display: block;
+  padding: 16px;
+}
+
+.fa-track-header--crash .fa-track-header__left {
+  gap: 12px;
+}
+
 @media (max-width: 900px) {
   .fa-track-header {
     flex-direction: column;
@@ -99,6 +108,11 @@
   max-width: 58ch;
 }
 
+.fa-track-header--crash .fa-track-header__subtitle {
+  margin: 0;
+  max-width: 62ch;
+}
+
 .fa-track-header__bullets {
   display: flex;
   flex-wrap: wrap;
@@ -106,12 +120,59 @@
   margin-top: 4px;
 }
 
-.fa-track-header__bullets--days .fa-track-header__bullet {
-  min-width: 64px;
-  justify-content: center;
+.fa-track-header__progress-line {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--fa-text) 68%, transparent);
+}
+
+.fa-track-header__bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fa-surface-alt) 80%, var(--fa-surface));
+  overflow: hidden;
+}
+
+.fa-track-header__bar > span {
+  position: absolute;
+  inset: 0;
+  width: var(--progress, 0%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fa-accent) 64%, #10b981 36%);
+}
+
+.fa-track-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.fa-track-header__action {
+  border-radius: 999px;
+  border: 1px solid var(--fa-border-subtle);
+  background: color-mix(in srgb, var(--fa-surface) 92%, var(--fa-surface-alt));
+  color: var(--fa-text);
+  font-size: 12px;
   font-weight: 700;
-  border-color: color-mix(in srgb, var(--fa-accent) 56%, var(--fa-border-subtle));
-  background: color-mix(in srgb, var(--fa-accent-soft) 20%, var(--fa-surface));
+  line-height: 1;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.fa-track-header__action:hover {
+  border-color: color-mix(in srgb, var(--fa-border-subtle) 60%, var(--fa-accent) 40%);
+  background: color-mix(in srgb, var(--fa-accent) 16%, var(--fa-surface));
+}
+
+.fa-track-header__action--primary {
+  border-color: color-mix(in srgb, var(--fa-accent) 54%, var(--fa-border-subtle));
+  background: color-mix(in srgb, var(--fa-accent) 20%, var(--fa-surface));
 }
 
 .fa-track-header__meta-row {

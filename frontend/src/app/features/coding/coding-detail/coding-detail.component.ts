@@ -1046,6 +1046,29 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return d.toISOString();
   }
 
+  private resolvePublishedIso(dateModified: string | null): string {
+    return dateModified || '2025-01-01T00:00:00.000Z';
+  }
+
+  private structuredDataImageUrl(): string {
+    return this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
+  }
+
+  private estimateHowToTotalTime(q: Question): string {
+    const raw = Number(
+      (q as any).estimatedMinutes
+      ?? (q as any).durationMin
+      ?? (q as any).durationMinutes
+    );
+    const byDifficulty = q.difficulty === 'hard'
+      ? 45
+      : q.difficulty === 'intermediate'
+        ? 30
+        : 20;
+    const minutes = Number.isFinite(raw) && raw > 0 ? Math.max(5, Math.round(raw)) : byDifficulty;
+    return `PT${minutes}M`;
+  }
+
   authorLabel(q?: Question | null): string {
     if (!q) return 'FrontendAtlas Team';
     return this.resolveAuthor(q);
@@ -1071,6 +1094,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const keywords = this.questionKeywords(q);
     const authorName = this.resolveAuthor(q);
     const dateModified = this.resolveUpdatedIso(q);
+    const datePublished = this.resolvePublishedIso(dateModified);
+    const imageUrl = this.structuredDataImageUrl();
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -1101,12 +1126,23 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       '@id': canonical,
       headline: q.title,
       description,
+      url: canonical,
+      image: [imageUrl],
+      datePublished,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
       author: { '@type': 'Organization', name: authorName },
+      publisher: {
+        '@type': 'Organization',
+        name: 'FrontendAtlas',
+        logo: {
+          '@type': 'ImageObject',
+          url: imageUrl,
+        },
+      },
       isAccessibleForFree: q.access !== 'premium',
       keywords: keywords.join(', '),
-      ...(dateModified ? { dateModified } : {}),
+      dateModified: dateModified || datePublished,
     };
 
     const howTo = this.buildHowToSchema(q, canonical);
@@ -1132,6 +1168,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       '@id': `${canonical}#howto`,
       name: q.title,
       description: this.seoDescription(q),
+      image: [this.structuredDataImageUrl()],
+      totalTime: this.estimateHowToTotalTime(q),
       inLanguage: 'en',
       step: steps.map((text, idx) => ({
         '@type': 'HowToStep',

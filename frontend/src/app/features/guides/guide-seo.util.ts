@@ -53,6 +53,8 @@ export function buildGuideDetailSeo(
     sectionTitle,
     title
   );
+  const imageUrl = seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
+  const datePublished = '2025-01-01T00:00:00.000Z';
 
   const breadcrumb = {
     '@type': 'BreadcrumbList',
@@ -89,12 +91,24 @@ export function buildGuideDetailSeo(
     '@id': canonical,
     headline: title,
     description,
+    url: canonical,
+    image: [imageUrl],
+    datePublished,
+    dateModified: datePublished,
     mainEntityOfPage: canonical,
     inLanguage: 'en',
     isAccessibleForFree: true,
     author: {
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'FrontendAtlas',
+      logo: {
+        '@type': 'ImageObject',
+        url: imageUrl,
+      },
     },
   };
 

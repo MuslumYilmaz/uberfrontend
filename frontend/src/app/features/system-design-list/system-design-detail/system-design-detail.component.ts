@@ -699,6 +699,14 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     return d.toISOString();
   }
 
+  private resolvePublishedIso(dateModified: string | null): string {
+    return dateModified || '2025-01-01T00:00:00.000Z';
+  }
+
+  private structuredDataImageUrl(): string {
+    return this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
+  }
+
   authorLabel(q?: SDQuestion | null): string {
     if (!q) return 'FrontendAtlas Team';
     return this.resolveAuthor(q);
@@ -718,6 +726,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const keywords = this.sdKeywords(question);
     const authorName = this.resolveAuthor(question);
     const dateModified = this.resolveUpdatedIso(question);
+    const datePublished = this.resolvePublishedIso(dateModified);
+    const imageUrl = this.structuredDataImageUrl();
     const isLocked = this.locked();
 
     const breadcrumb = {
@@ -749,12 +759,23 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       '@id': canonical,
       headline: question.title,
       description,
+      url: canonical,
+      image: [imageUrl],
+      datePublished,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
       author: { '@type': 'Organization', name: authorName },
+      publisher: {
+        '@type': 'Organization',
+        name: 'FrontendAtlas',
+        logo: {
+          '@type': 'ImageObject',
+          url: imageUrl,
+        },
+      },
       isAccessibleForFree: question.access !== 'premium',
       keywords: keywords.join(', '),
-      ...(dateModified ? { dateModified } : {}),
+      dateModified: dateModified || datePublished,
     };
 
     const learningResource = this.buildLearningResourceSchema(question, canonical);

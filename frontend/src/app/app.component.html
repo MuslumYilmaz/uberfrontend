@@ -11,21 +11,26 @@
   <!-- Regular app pages -->
   <ng-template #regularLayout>
     <div class="app-layout">
-      <app-sidebar></app-sidebar>
+      @defer (when showSidebar()) {
+        <app-sidebar></app-sidebar>
+      }
       <main class="main">
         <router-outlet></router-outlet>
       </main>
     </div>
   </ng-template>
 
-  <app-premium-required-dialog
-    *ngIf="premiumGateState().visible"
-    [visible]="premiumGateState().visible"
-    (visibleChange)="premiumGate.close()"
-    [context]="premiumGateState().reason"
-    [targetUrl]="premiumGateState().targetUrl"
-    [isLoggedIn]="premiumGateState().isLoggedIn"
-  ></app-premium-required-dialog>
+  @defer (when premiumGateState().visible) {
+    <app-premium-required-dialog
+      [visible]="premiumGateState().visible"
+      (visibleChange)="premiumGate.close()"
+      [context]="premiumGateState().reason"
+      [targetUrl]="premiumGateState().targetUrl"
+      [isLoggedIn]="premiumGateState().isLoggedIn"
+    ></app-premium-required-dialog>
+  }
 
-  <app-bug-report-dialog *ngIf="bugReport.visible()"></app-bug-report-dialog>
+  @defer (when bugReport.visible()) {
+    <app-bug-report-dialog></app-bug-report-dialog>
+  }
 </div>

@@ -1,6 +1,5 @@
 // app.component.ts
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -11,7 +10,6 @@ import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.componen
 import { BugReportDialogComponent } from './shared/components/bug-report-dialog/bug-report-dialog.component';
 import { PremiumRequiredDialogComponent } from './shared/components/premium-required-dialog/premium-required-dialog.component';
 import { HeaderComponent } from './shared/components/header/header.component';
-import { OfflineBannerComponent } from './shared/components/offline-banner/offline-banner';
 
 @Component({
   selector: 'app-root',
@@ -20,10 +18,8 @@ import { OfflineBannerComponent } from './shared/components/offline-banner/offli
     CommonModule,
     RouterOutlet,
     RouterModule,
-    HttpClientModule,
     HeaderComponent,
     AppSidebarComponent,
-    OfflineBannerComponent,
     BugReportDialogComponent,
     PremiumRequiredDialogComponent,
   ],

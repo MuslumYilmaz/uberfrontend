@@ -1,12 +1,7 @@
 import { Type } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 
-import {
-  BEHAVIORAL,
-  GuideEntry,
-  PLAYBOOK,
-  SYSTEM,
-} from '../../shared/guides/guide.registry';
+import type { GuideEntry } from '../../shared/guides/guide.registry';
 
 export type GuideDetailResolved = {
   slug: string;
@@ -33,21 +28,35 @@ async function resolveGuide(
 }
 
 export const playbookGuideDetailResolver: ResolveFn<GuideDetailResolved | null> = (route) => {
+  return resolvePlaybookGuide(route);
+};
+
+async function resolvePlaybookGuide(route: Parameters<ResolveFn<GuideDetailResolved | null>>[0]) {
   const slug = String(route.paramMap.get('slug') || '').trim();
   const frameworkOnly = route.data?.['frameworkOnly'] === true;
+  const { PLAYBOOK } = await import('../../shared/guides/guide.registry');
   const registry = frameworkOnly
     ? PLAYBOOK.filter((entry) => PREP_PATH_RX.test(entry.slug))
     : PLAYBOOK;
   return resolveGuide(slug, registry);
-};
+}
 
 export const systemGuideDetailResolver: ResolveFn<GuideDetailResolved | null> = (route) => {
-  const slug = String(route.paramMap.get('slug') || '').trim();
-  return resolveGuide(slug, SYSTEM);
+  return resolveSystemGuide(route);
 };
+
+async function resolveSystemGuide(route: Parameters<ResolveFn<GuideDetailResolved | null>>[0]) {
+  const slug = String(route.paramMap.get('slug') || '').trim();
+  const { SYSTEM } = await import('../../shared/guides/guide.registry');
+  return resolveGuide(slug, SYSTEM);
+}
 
 export const behavioralGuideDetailResolver: ResolveFn<GuideDetailResolved | null> = (route) => {
-  const slug = String(route.paramMap.get('slug') || '').trim();
-  return resolveGuide(slug, BEHAVIORAL);
+  return resolveBehavioralGuide(route);
 };
 
+async function resolveBehavioralGuide(route: Parameters<ResolveFn<GuideDetailResolved | null>>[0]) {
+  const slug = String(route.paramMap.get('slug') || '').trim();
+  const { BEHAVIORAL } = await import('../../shared/guides/guide.registry');
+  return resolveGuide(slug, BEHAVIORAL);
+}

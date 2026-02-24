@@ -1,6 +1,5 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';
@@ -29,7 +28,7 @@ type VisibleEntry = {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule],
   styleUrls: ['./header.component.css'],
   template: `
   <div class="fah-topbar" role="banner" (click)="$event.stopPropagation()">
@@ -176,7 +175,7 @@ type VisibleEntry = {
            tabindex="-1" role="menu" aria-label="Study menu">
         <div class="study-search">
           <i class="pi pi-search"></i>
-          <input type="text" [(ngModel)]="searchTerm" placeholder="Search study resources" />
+          <input type="text" [value]="searchTerm" (input)="onSearchInput($event)" placeholder="Search study resources" />
           <span class="shortcut" aria-hidden="true">/</span>
         </div>
         <div class="study-scroll">
@@ -406,6 +405,11 @@ export class HeaderComponent implements OnInit {
   // —— utils / routing ——
   isSearching(): boolean {
     return (this.searchTerm || '').trim().length > 0;
+  }
+
+  onSearchInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.searchTerm = target?.value ?? '';
   }
 
   private resolveTech(): Tech {

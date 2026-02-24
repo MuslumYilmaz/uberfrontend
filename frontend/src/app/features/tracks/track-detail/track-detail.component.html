@@ -8,28 +8,50 @@
       </nav>
 
       <ng-container *ngIf="filtered$ | async as questions; else loadingTpl">
-        <section faCard elevated class="fa-track-header">
-          <div class="fa-track-header__left">
-            <div class="fa-track-header__eyebrow fa-meta-label">Track</div>
-            <h1 class="fa-track-header__title fa-page-title">{{ t.title }}</h1>
-            <p class="fa-track-header__subtitle fa-body">{{ t.subtitle }}</p>
-            <div class="fa-track-header__bullets" *ngIf="!isCrashSevenDayTrack(t); else crashHeaderDays">
-              <span class="fa-track-header__bullet fa-chip fa-chip--label" *ngFor="let item of t.focus">{{ item }}</span>
-            </div>
-            <ng-template #crashHeaderDays>
-              <div class="fa-track-header__bullets fa-track-header__bullets--days">
-                <span class="fa-track-header__bullet fa-chip fa-chip--label" *ngFor="let day of crashDayLabels">{{ day }}</span>
+        <ng-container *ngIf="isCrashSevenDayTrack(t); else standardTrackHeader">
+          <section faCard elevated class="fa-track-header fa-track-header--crash">
+            <div class="fa-track-header__left">
+              <h1 class="fa-track-header__title fa-page-title">{{ t.title }}</h1>
+              <p class="fa-track-header__subtitle fa-body">{{ t.subtitle }}</p>
+              <div class="fa-track-header__progress-line">
+                <span>{{ trackSolvedCount(questions) }}/{{ questions.length }} complete</span>
+                <span>{{ trackCompletionPercent(questions) }}/100 track score</span>
+                <span>{{ t.durationLabel }} · {{ questions.length }} questions</span>
               </div>
-            </ng-template>
-          </div>
-
-          <div class="fa-track-header__right">
-            <div class="fa-track-header__meta-row">
-              <span class="meta-chip fa-chip fa-chip--accent">{{ t.durationLabel }}</span>
-              <span class="meta-chip fa-chip fa-chip--accent">{{ questions.length }} questions</span>
+              <div class="fa-track-header__bar" [style.--progress]="trackCompletionPercent(questions) + '%'">
+                <span></span>
+              </div>
+              <div class="fa-track-header__actions">
+                <button type="button" class="fa-track-header__action fa-track-header__action--primary" (click)="resumeCrashTrack(questions)">
+                  Resume: {{ crashResumeLabel(questions) }}
+                </button>
+                <button type="button" class="fa-track-header__action" (click)="startPractice(questions)">
+                  Start from beginning
+                </button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </ng-container>
+
+        <ng-template #standardTrackHeader>
+          <section faCard elevated class="fa-track-header">
+            <div class="fa-track-header__left">
+              <div class="fa-track-header__eyebrow fa-meta-label">Track</div>
+              <h1 class="fa-track-header__title fa-page-title">{{ t.title }}</h1>
+              <p class="fa-track-header__subtitle fa-body">{{ t.subtitle }}</p>
+              <div class="fa-track-header__bullets">
+                <span class="fa-track-header__bullet fa-chip fa-chip--label" *ngFor="let item of t.focus">{{ item }}</span>
+              </div>
+            </div>
+
+            <div class="fa-track-header__right">
+              <div class="fa-track-header__meta-row">
+                <span class="meta-chip fa-chip fa-chip--accent">{{ t.durationLabel }}</span>
+                <span class="meta-chip fa-chip fa-chip--accent">{{ questions.length }} questions</span>
+              </div>
+            </div>
+          </section>
+        </ng-template>
 
         <section faCard elevated class="fa-track-filters" *ngIf="!isCrashSevenDayTrack(t)">
           <div class="filters-row">

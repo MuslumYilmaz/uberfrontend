@@ -535,6 +535,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return d.toISOString();
   }
 
+  private resolvePublishedIso(dateModified: string | null): string {
+    return dateModified || '2025-01-01T00:00:00.000Z';
+  }
+
+  private structuredDataImageUrl(): string {
+    return this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
+  }
+
   authorLabel(q?: Question | null): string {
     if (!q) return 'FrontendAtlas Team';
     return this.resolveAuthor(q);
@@ -564,6 +572,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const isLocked = isQuestionLockedForTier(q, this.auth.user());
     const authorName = this.resolveAuthor(q);
     const dateModified = this.resolveUpdatedIso(q);
+    const datePublished = this.resolvePublishedIso(dateModified);
+    const imageUrl = this.structuredDataImageUrl();
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -594,12 +604,23 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       '@id': canonical,
       headline: q.title,
       description,
+      url: canonical,
+      image: [imageUrl],
+      datePublished,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
       author: { '@type': 'Organization', name: authorName },
+      publisher: {
+        '@type': 'Organization',
+        name: 'FrontendAtlas',
+        logo: {
+          '@type': 'ImageObject',
+          url: imageUrl,
+        },
+      },
       isAccessibleForFree: q.access !== 'premium',
       keywords: keywords.join(', '),
-      ...(dateModified ? { dateModified } : {}),
+      dateModified: dateModified || datePublished,
     };
 
     const faq = this.buildFaqSchema(q, canonical, isLocked);

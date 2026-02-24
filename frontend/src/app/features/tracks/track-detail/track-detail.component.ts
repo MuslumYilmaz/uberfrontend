@@ -99,7 +99,6 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     { key: 'importance-desc', label: 'Highest importance' },
     { key: 'title-asc', label: 'Title A-Z' },
   ];
-  readonly crashDayLabels = Array.from({ length: CRASH_DAY_COUNT }, (_, index) => `Day ${index + 1}`);
   popularTags: string[] = [];
   selectedTags: string[] = [];
   tagMatchMode: 'all' | 'any' = 'all';
@@ -450,6 +449,35 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     return this.toPracticeItems(items).length > 0;
   }
 
+  trackSolvedCount(items: TrackItem[]): number {
+    return items.reduce((count, item) => (this.isSolved(item.id) ? count + 1 : count), 0);
+  }
+
+  trackCompletionPercent(items: TrackItem[]): number {
+    if (!items.length) return 0;
+    return Math.round((this.trackSolvedCount(items) / items.length) * 100);
+  }
+
+  crashResumeLabel(items: TrackItem[]): string {
+    const target = this.nextCrashTarget(items);
+    if (!target) return 'Start practice';
+    return this.preview(target.title, 44);
+  }
+
+  resumeCrashTrack(items: TrackItem[]): void {
+    const target = this.nextCrashTarget(items);
+    if (!target) return;
+
+    if (target.kind === 'system-design') {
+      this.router.navigate(this.linkFor(target));
+      return;
+    }
+
+    this.router.navigate(this.linkFor(target), {
+      state: this.navState(items, target),
+    });
+  }
+
   displayDifficulty(d?: string): string {
     const v = (d || '').toLowerCase();
     if (v === 'easy') return 'Beginner';
@@ -504,6 +532,11 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   dayCompletionPercent(items: TrackItem[]): number {
     if (!items.length) return 0;
     return Math.round((this.daySolvedCount(items) / items.length) * 100);
+  }
+
+  private nextCrashTarget(items: TrackItem[]): TrackItem | null {
+    if (!items.length) return null;
+    return items.find((item) => !this.isSolved(item.id)) ?? items[0];
   }
 
   linkFor(item: TrackItem): any[] {

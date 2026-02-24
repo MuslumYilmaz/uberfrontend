@@ -29,12 +29,12 @@ type PracticeSession = { items: PracticeItem[]; index: number };
       gap: 12px;
       padding: 12px 14px;
       border-top: 1px solid var(--uf-border-subtle);
-      background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+      background: color-mix(in srgb, var(--uf-surface) 95%, var(--uf-bg));
       transition: border-color 160ms ease, background-color 160ms ease;
     }
 
     .row--done {
-      background: color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface));
+      background: color-mix(in srgb, var(--uf-surface) 93%, var(--uf-accent) 7%);
     }
 
     .row--locked {
@@ -74,9 +74,9 @@ type PracticeSession = { items: PracticeItem[]; index: number };
     }
 
     .state--done {
-      border-color: color-mix(in srgb, var(--uf-accent) 56%, var(--uf-border-subtle));
-      background: color-mix(in srgb, var(--uf-accent) 24%, var(--uf-surface));
-      color: var(--uf-text-primary);
+      border-color: color-mix(in srgb, #c89f45 68%, var(--uf-border-subtle));
+      background: color-mix(in srgb, #c89f45 24%, var(--uf-surface));
+      color: color-mix(in srgb, #f5d77f 88%, var(--uf-text-primary));
       font-weight: 700;
     }
 
@@ -95,19 +95,22 @@ type PracticeSession = { items: PracticeItem[]; index: number };
 
     .title {
       margin: 0;
-      font-size: 0.99rem;
+      font-size: 1.05rem;
+      font-weight: 700;
       color: var(--uf-text-primary);
+      line-height: 1.28;
     }
 
     .summary {
       margin: 0;
-      color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
+      color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
       font-size: 13px;
+      line-height: 1.4;
     }
 
     .hint {
       margin: 0;
-      color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+      color: color-mix(in srgb, var(--uf-text-secondary) 78%, transparent);
       font-size: 12px;
       font-weight: 700;
     }
@@ -123,18 +126,18 @@ type PracticeSession = { items: PracticeItem[]; index: number };
     }
 
     .chip--type {
-      background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
-      color: var(--uf-text-primary);
+      background: color-mix(in srgb, #c89f45 24%, var(--uf-surface));
+      color: color-mix(in srgb, #e9cc78 90%, var(--uf-text-primary));
     }
 
     .chip--difficulty {
-      background: color-mix(in srgb, var(--uf-surface-alt) 62%, var(--uf-surface));
-      color: var(--uf-text-secondary);
+      background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-bg));
+      color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
     }
 
-    .chip--easy { color: #138a4c; }
-    .chip--intermediate { color: #a16207; }
-    .chip--hard { color: #b91c1c; }
+    .chip--easy { color: #16a34a; }
+    .chip--intermediate { color: #0ea5e9; }
+    .chip--hard { color: #ef4444; }
 
     .time {
       font-size: 12px;
