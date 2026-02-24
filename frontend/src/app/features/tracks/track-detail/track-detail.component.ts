@@ -37,6 +37,13 @@ type TrackItem = {
   tags?: string[];
   category?: string;
 };
+type CrashDayView = {
+  day: number;
+  label: string;
+  items: TrackItem[];
+  totalCount: number;
+  visibleCount: number;
+};
 type ImportanceTier = 'low' | 'medium' | 'high';
 type SortKey =
   | 'default'
@@ -51,6 +58,8 @@ type TrackTechFilter = 'all' | 'javascript' | 'html' | 'css' | 'ui';
 const UI_TECHS: ReadonlySet<Tech> = new Set<Tech>(['react', 'angular', 'vue']);
 const DIFF_ORDER: ReadonlyArray<'easy' | 'intermediate' | 'hard'> = ['easy', 'intermediate', 'hard'];
 const IMP_ORDER: ReadonlyArray<ImportanceTier> = ['low', 'medium', 'high'];
+const CRASH_TRACK_SLUG = 'crash-7d';
+const CRASH_DAY_COUNT = 7;
 
 @Component({
   selector: 'app-track-detail',
@@ -71,8 +80,10 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   track: TrackConfig | null = null;
   featured$?: Observable<TrackItem[]>;
   filtered$?: Observable<TrackItem[]>;
+  crashDayViews$?: Observable<CrashDayView[]>;
 
   private destroy$ = new Subject<void>();
+  private crashDayLookup = new Map<string, number>();
 
   kindFilter$ = new BehaviorSubject<TrackQuestionKind | 'all'>('all');
   techFilter$ = new BehaviorSubject<TrackTechFilter>('all');
@@ -88,6 +99,8 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     { key: 'importance-desc', label: 'Highest importance' },
     { key: 'title-asc', label: 'Title A-Z' },
   ];
+  readonly crashDayLabels = Array.from({ length: CRASH_DAY_COUNT }, (_, index) => `Day ${index + 1}`);
+  activeCrashDay = 1;
   popularTags: string[] = [];
   selectedTags: string[] = [];
   tagMatchMode: 'all' | 'any' = 'all';
@@ -104,6 +117,10 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
 
   isSolved(id: string | undefined): boolean {
     return id ? this.progress.isSolved(id) : false;
+  }
+
+  isCrashSevenDayTrack(track: TrackConfig | null = this.track): boolean {
+    return (track?.slug || '') === CRASH_TRACK_SLUG;
   }
 
   ngOnInit(): void {
@@ -132,6 +149,8 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     const qp = this.route.snapshot.queryParamMap;
 
     this.track = track;
+    this.activeCrashDay = 1;
+    this.crashDayLookup = this.buildCrashDayLookup(track);
 
     const hasAnyExplicitFilter = ['q', 'kind', 'tech', 'diff', 'imp', 'sort']
       .some((k) => qp.get(k) !== null);
@@ -222,6 +241,12 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
         return tech === 'ui' ? this.dedupeUiFamilies(sorted) : sorted;
       }),
     );
+    this.crashDayViews$ = this.isCrashSevenDayTrack(track)
+      ? this.filtered$.pipe(
+        map((items) => this.buildCrashDayViews(track, items || [])),
+        shareReplay(1),
+      )
+      : of([]);
 
     this.seo.updateTags({
       title: `${track.title} track`,
@@ -255,6 +280,16 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     this.searchTerm = term ?? '';
     this.search$.next(this.searchTerm);
     this.syncQueryParams();
+  }
+
+  setActiveCrashDay(day: number): void {
+    if (day < 1 || day > CRASH_DAY_COUNT) return;
+    this.activeCrashDay = day;
+  }
+
+  activeCrashDayView(dayViews: CrashDayView[]): CrashDayView | null {
+    if (!dayViews?.length) return null;
+    return dayViews.find((day) => day.day === this.activeCrashDay) ?? dayViews[0];
   }
 
   onKindChange(val: TrackQuestionKind | 'all') {
@@ -578,6 +613,82 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
       return normalized;
     }
     return 'diff-asc';
+  }
+
+  private buildCrashDayViews(track: TrackConfig, items: TrackItem[]): CrashDayView[] {
+    const totals = this.buildCrashDayTotals(track.featured.length);
+    const grouped = new Map<number, TrackItem[]>();
+
+    for (let day = 1; day <= CRASH_DAY_COUNT; day += 1) {
+      grouped.set(day, []);
+    }
+
+    for (const item of items) {
+      const day = this.dayForTrackItem(item);
+      const bucket = grouped.get(day);
+      if (!bucket) continue;
+      bucket.push(item);
+    }
+
+    const views: CrashDayView[] = [];
+    for (let day = 1; day <= CRASH_DAY_COUNT; day += 1) {
+      const dayItems = grouped.get(day) ?? [];
+      views.push({
+        day,
+        label: `Day ${day}`,
+        items: dayItems,
+        totalCount: totals[day - 1] ?? 0,
+        visibleCount: dayItems.length,
+      });
+    }
+
+    return views;
+  }
+
+  private buildCrashDayLookup(track: TrackConfig): Map<string, number> {
+    const lookup = new Map<string, number>();
+    if (!this.isCrashSevenDayTrack(track)) return lookup;
+
+    const totals = this.buildCrashDayTotals(track.featured.length);
+    let cursor = 0;
+
+    for (let day = 1; day <= CRASH_DAY_COUNT; day += 1) {
+      const count = totals[day - 1] ?? 0;
+      for (let i = 0; i < count; i += 1) {
+        const ref = track.featured[cursor];
+        cursor += 1;
+        if (!ref) continue;
+        lookup.set(this.trackRefKey(ref), day);
+        lookup.set(`id:${ref.id}`, day);
+      }
+    }
+
+    return lookup;
+  }
+
+  private buildCrashDayTotals(totalItems: number): number[] {
+    const base = Math.floor(totalItems / CRASH_DAY_COUNT);
+    const remainder = totalItems % CRASH_DAY_COUNT;
+    return Array.from(
+      { length: CRASH_DAY_COUNT },
+      (_, index) => base + (index < remainder ? 1 : 0),
+    );
+  }
+
+  private dayForTrackItem(item: TrackItem): number {
+    const exact = this.crashDayLookup.get(this.trackItemKey(item));
+    if (exact) return exact;
+    const byId = this.crashDayLookup.get(`id:${item.id}`);
+    if (byId) return byId;
+    return 1;
+  }
+
+  private trackRefKey(ref: TrackQuestionRef): string {
+    return `${ref.kind}:${ref.tech || 'none'}:${ref.id}`;
+  }
+
+  private trackItemKey(item: TrackItem): string {
+    return `${item.kind}:${item.tech || 'none'}:${item.id}`;
   }
 
   private loadFeatured(track: TrackConfig): Observable<TrackItem[]> {

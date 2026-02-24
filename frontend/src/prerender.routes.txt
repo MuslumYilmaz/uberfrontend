@@ -28,6 +28,7 @@
 /angular/coding/angular-todo-list-starter
 /angular/coding/angular-transfer-list
 /angular/debug/ng-debug-counter-change-detection
+/angular/interview-questions
 /angular/trivia/angular-appmodule-standalone-changes
 /angular/trivia/angular-change-detection-strategies
 /angular/trivia/angular-component-metadata
@@ -165,6 +166,7 @@
 /guides/system-design-blueprint/radio-requirements
 /guides/system-design-blueprint/state-data
 /guides/system-design-blueprint/ux
+/html-css/interview-questions
 /html/coding/html-basic-structure
 /html/coding/html-contact-form-labeled
 /html/coding/html-dialog-confirm-a11y
@@ -293,6 +295,7 @@
 /javascript/debug/js-debug-async-race
 /javascript/debug/js-debug-mutating-input
 /javascript/debug/js-debug-off-by-one
+/javascript/interview-questions
 /javascript/trivia/ai-streaming-data-handling
 /javascript/trivia/ai-ux-integration-challenges
 /javascript/trivia/chat-conversation-state-management
@@ -391,6 +394,7 @@
 /react/coding/react-todo-list
 /react/coding/react-transfer-list
 /react/coding/react-use-effect-once
+/react/interview-questions
 /react/trivia/react-18-whats-new
 /react/trivia/react-component-rerendering
 /react/trivia/react-concurrent-rendering
@@ -483,6 +487,7 @@
 /vue/coding/vue-tictactoe
 /vue/coding/vue-todo-list
 /vue/coding/vue-transfer-list
+/vue/interview-questions
 /vue/trivia/vue-architecture-decisions-scalability
 /vue/trivia/vue-child-mutates-prop-directly
 /vue/trivia/vue-composition-api

@@ -62,8 +62,8 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
   `],
   template: `
     <div class="wrap">
-      <h1 class="hero-title">Frontend System Design Blueprint</h1>
-      <div class="hero-sub">Use this system design interview roadmap to structure frontend architecture answers, trade-offs, and common mistakes.</div>
+      <h1 class="hero-title">Frontend System Design Interview Blueprint</h1>
+      <div class="hero-sub">Use this frontend system design interview blueprint to structure architecture answers, trade-offs, and common mistakes.</div>
       <div class="pill-row">
         <span class="pill fa-chip fa-chip--label">Architecture diagrams</span>
         <span class="pill fa-chip fa-chip--label">Scalability & reliability</span>

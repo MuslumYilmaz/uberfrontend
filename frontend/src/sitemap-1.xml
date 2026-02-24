@@ -85,6 +85,9 @@
     <loc>https://frontendatlas.com/angular/debug/ng-debug-counter-change-detection</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/interview-questions</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/trivia/angular-appmodule-standalone-changes</loc>
   </url>
   <url>
@@ -443,6 +446,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/system-design-blueprint/ux</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/html-css/interview-questions</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/html/coding/html-basic-structure</loc>
@@ -829,6 +835,9 @@
     <loc>https://frontendatlas.com/javascript/debug/js-debug-off-by-one</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/interview-questions</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/ai-streaming-data-handling</loc>
   </url>
   <url>
@@ -1117,6 +1126,9 @@
     <loc>https://frontendatlas.com/react/coding/react-use-effect-once</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/react/interview-questions</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/react/trivia/react-18-whats-new</loc>
   </url>
   <url>
@@ -1382,6 +1394,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-transfer-list</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/vue/interview-questions</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/trivia/vue-architecture-decisions-scalability</loc>

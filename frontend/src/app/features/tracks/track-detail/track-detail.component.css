@@ -49,6 +49,15 @@
   padding: 16px 18px;
 }
 
+.track--crash .fa-track-header {
+  border-color: color-mix(in srgb, var(--fa-accent) 46%, var(--fa-border-subtle) 54%);
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--fa-accent-soft) 24%, var(--fa-surface) 76%) 0%,
+    color-mix(in srgb, var(--fa-surface) 82%, var(--fa-bg) 18%) 100%
+  );
+}
+
 @media (max-width: 900px) {
   .fa-track-header {
     flex-direction: column;
@@ -95,6 +104,14 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 4px;
+}
+
+.fa-track-header__bullets--days .fa-track-header__bullet {
+  min-width: 64px;
+  justify-content: center;
+  font-weight: 700;
+  border-color: color-mix(in srgb, var(--fa-accent) 56%, var(--fa-border-subtle));
+  background: color-mix(in srgb, var(--fa-accent-soft) 20%, var(--fa-surface));
 }
 
 .fa-track-header__meta-row {
@@ -217,6 +234,10 @@
   min-height: 50vh;
 }
 
+.fa-track-questions--day-mode {
+  margin-top: 2px;
+}
+
 .list-head {
   display: flex;
   align-items: center;
@@ -253,6 +274,54 @@
 
 .note {
   color: var(--fa-text-muted);
+  font-size: 13px;
+}
+
+.crash-day-rail {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.crash-day-rail__item {
+  border: 1px solid var(--fa-border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fa-surface) 92%, var(--fa-bg));
+  color: var(--fa-text);
+  padding: 9px 8px;
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.crash-day-rail__item:hover {
+  border-color: color-mix(in srgb, var(--fa-border-subtle) 56%, var(--fa-accent) 44%);
+  background: color-mix(in srgb, var(--fa-accent-soft) 14%, var(--fa-surface));
+}
+
+.crash-day-rail__item--active {
+  border-color: color-mix(in srgb, var(--fa-accent) 68%, var(--fa-border-subtle));
+  background: color-mix(in srgb, var(--fa-accent-soft) 20%, var(--fa-surface));
+}
+
+.crash-day-rail__title {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.crash-day-rail__meta {
+  font-size: 11px;
+  color: var(--fa-text-muted);
+}
+
+.empty-day {
+  border: 1px solid var(--fa-border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fa-surface) 94%, var(--fa-bg));
+  color: var(--fa-text-muted);
+  padding: 12px 14px;
   font-size: 13px;
 }
 
@@ -333,4 +402,16 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border:1px solid color-mix(in srgb, var(--fa-accent) 55%, var(--fa-border-subtle));
+}
+
+@media (max-width: 1080px) {
+  .crash-day-rail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .crash-day-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

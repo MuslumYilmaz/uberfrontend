@@ -1,5 +1,5 @@
 <ng-container *ngIf="track as t; else missing">
-  <div class="track" data-testid="track-detail-page">
+  <div class="track" [class.track--crash]="isCrashSevenDayTrack(t)" data-testid="track-detail-page">
     <div class="container">
       <nav class="breadcrumb">
         <a routerLink="/tracks">Tracks</a>
@@ -13,9 +13,14 @@
             <div class="fa-track-header__eyebrow fa-meta-label">Track</div>
             <h1 class="fa-track-header__title fa-page-title">{{ t.title }}</h1>
             <p class="fa-track-header__subtitle fa-body">{{ t.subtitle }}</p>
-            <div class="fa-track-header__bullets">
+            <div class="fa-track-header__bullets" *ngIf="!isCrashSevenDayTrack(t); else crashHeaderDays">
               <span class="fa-track-header__bullet fa-chip fa-chip--label" *ngFor="let item of t.focus">{{ item }}</span>
             </div>
+            <ng-template #crashHeaderDays>
+              <div class="fa-track-header__bullets fa-track-header__bullets--days">
+                <span class="fa-track-header__bullet fa-chip fa-chip--label" *ngFor="let day of crashDayLabels">{{ day }}</span>
+              </div>
+            </ng-template>
           </div>
 
           <div class="fa-track-header__right">
@@ -155,82 +160,185 @@
           </div>
         </section>
 
-        <section class="fa-track-questions">
-          <div class="list-head">
-            <div class="list-title">
-              <span class="list-kicker fa-meta-label">Track questions</span>
-              <span class="count" data-testid="track-filtered-count">{{ questions.length }}</span>
+        <ng-container *ngIf="isCrashSevenDayTrack(t)">
+          <nav class="crash-day-rail" aria-label="7-day crash plan" *ngIf="crashDayViews$ | async as dayViews">
+            <button
+              type="button"
+              class="crash-day-rail__item"
+              *ngFor="let day of dayViews"
+              [class.crash-day-rail__item--active]="day.day === activeCrashDay"
+              (click)="setActiveCrashDay(day.day)">
+              <span class="crash-day-rail__title">{{ day.label }}</span>
+              <span class="crash-day-rail__meta">{{ day.visibleCount }}/{{ day.totalCount }} shown</span>
+            </button>
+          </nav>
+        </ng-container>
+
+        <ng-container *ngIf="isCrashSevenDayTrack(t); else standardTrackQuestions">
+          <ng-container *ngIf="crashDayViews$ | async as dayViews">
+            <ng-container *ngIf="activeCrashDayView(dayViews) as activeDay">
+              <section class="fa-track-questions fa-track-questions--day-mode">
+                <div class="list-head">
+                  <div class="list-title">
+                    <span class="list-kicker fa-meta-label">{{ activeDay.label }}</span>
+                    <span class="count" data-testid="track-filtered-count">{{ activeDay.items.length }}</span>
+                  </div>
+                  <div class="note">Daily sprint board aligned to the 7-day crash route.</div>
+                </div>
+
+                <a
+                  faCard interactive class="fa-question-card fa-question-card--compact"
+                  *ngFor="let item of activeDay.items; let idx = index"
+                  [attr.data-testid]="'track-question-card-' + item.id"
+                  [routerLink]="linkFor(item)"
+                  [state]="navState(activeDay.items, item)">
+                  <div class="fa-question-card__grid">
+                    <div class="fa-question-card__main">
+                      <div class="fa-question-card__eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        <span>{{ activeDay.label }} · Question {{ idx + 1 }} / {{ activeDay.items.length }}</span>
+                        <span class="solved-pill" *ngIf="isSolved(item.id)">Solved</span>
+                      </div>
+                      <div class="fa-question-card__title fa-card-title">{{ item.title }}</div>
+                      <div class="fa-question-card__description fa-meta-text" *ngIf="item.description">
+                        {{ preview(item.description, 160) }}
+                      </div>
+
+                      <div class="framework-switcher" *ngIf="frameworkOptions(item).length > 1">
+                        <div class="fw-label-row">
+                          <span class="fw-label">Framework versions</span>
+                          <span class="fw-hint">Open in your stack</span>
+                        </div>
+                        <div class="fw-chip-row">
+                          <button
+                            type="button"
+                            class="fw-chip"
+                            *ngFor="let opt of frameworkOptions(item)"
+                            [class.active]="opt.id === item.id"
+                            (click)="goToFramework($event, opt)">
+                            <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
+                            <span class="fw-cta">Open</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="fa-question-card__meta-row">
+                      <div class="fa-question-card__meta-item">
+                        <span class="fa-meta-label">Difficulty</span>
+                        <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="(item.difficulty || 'intermediate').toLowerCase()">
+                          {{ displayDifficulty(item.difficulty) }}
+                        </span>
+                      </div>
+
+                      <div class="fa-question-card__meta-item">
+                        <span class="fa-meta-label">Importance</span>
+                        <span
+                          class="fa-chip fa-chip--importance"
+                          [attr.data-importance]="(item.importance ?? 0) >= 4 ? 'high' : (item.importance ?? 0) >= 2 ? 'medium' : 'low'">
+                          {{ (item.importance ?? 0) >= 4 ? 'High' : (item.importance ?? 0) >= 2 ? 'Medium' : 'Low' }}
+                        </span>
+                      </div>
+
+                      <div class="fa-question-card__meta-item" *ngIf="item.tech">
+                        <span class="fa-meta-label">Tech</span>
+                        <span class="fa-chip fa-chip--tech">
+                          <span class="chip-icon" aria-hidden="true">⟡</span>
+                          {{ item.tech | titlecase }}
+                        </span>
+                      </div>
+
+                      <span class="ghost-link meta-open meta-open-pill">Open</span>
+                    </div>
+                  </div>
+                </a>
+
+                <div class="empty-day" *ngIf="!activeDay.items.length">
+                  No questions match current filters for {{ activeDay.label }}.
+                </div>
+              </section>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
+        <ng-template #standardTrackQuestions>
+          <section class="fa-track-questions">
+            <div class="list-head">
+              <div class="list-title">
+                <span class="list-kicker fa-meta-label">Track questions</span>
+                <span class="count" data-testid="track-filtered-count">{{ questions.length }}</span>
+              </div>
+              <div class="note">Pace yourself — no daily check-ins.</div>
             </div>
-            <div class="note">Pace yourself — no daily check-ins.</div>
-          </div>
 
-          <a
-            faCard interactive class="fa-question-card fa-question-card--compact"
-            *ngFor="let item of questions; let idx = index"
-            [attr.data-testid]="'track-question-card-' + item.id"
-            [routerLink]="linkFor(item)"
-            [state]="navState(questions, item)">
-            <div class="fa-question-card__grid">
-              <div class="fa-question-card__main">
-                <div class="fa-question-card__eyebrow">
-                  <span class="eyebrow-dot"></span>
-                  <span>Track question {{ idx + 1 }} / {{ questions.length }}</span>
-                  <span class="solved-pill" *ngIf="isSolved(item.id)">Solved</span>
-                </div>
-                <div class="fa-question-card__title fa-card-title">{{ item.title }}</div>
-                <div class="fa-question-card__description fa-meta-text" *ngIf="item.description">
-                  {{ preview(item.description, 160) }}
+            <a
+              faCard interactive class="fa-question-card fa-question-card--compact"
+              *ngFor="let item of questions; let idx = index"
+              [attr.data-testid]="'track-question-card-' + item.id"
+              [routerLink]="linkFor(item)"
+              [state]="navState(questions, item)">
+              <div class="fa-question-card__grid">
+                <div class="fa-question-card__main">
+                  <div class="fa-question-card__eyebrow">
+                    <span class="eyebrow-dot"></span>
+                    <span>Track question {{ idx + 1 }} / {{ questions.length }}</span>
+                    <span class="solved-pill" *ngIf="isSolved(item.id)">Solved</span>
+                  </div>
+                  <div class="fa-question-card__title fa-card-title">{{ item.title }}</div>
+                  <div class="fa-question-card__description fa-meta-text" *ngIf="item.description">
+                    {{ preview(item.description, 160) }}
+                  </div>
+
+                  <div class="framework-switcher" *ngIf="frameworkOptions(item).length > 1">
+                    <div class="fw-label-row">
+                      <span class="fw-label">Framework versions</span>
+                      <span class="fw-hint">Open in your stack</span>
+                    </div>
+                    <div class="fw-chip-row">
+                      <button
+                        type="button"
+                        class="fw-chip"
+                        *ngFor="let opt of frameworkOptions(item)"
+                        [class.active]="opt.id === item.id"
+                        (click)="goToFramework($event, opt)">
+                        <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
+                        <span class="fw-cta">Open</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="framework-switcher" *ngIf="frameworkOptions(item).length > 1">
-                  <div class="fw-label-row">
-                    <span class="fw-label">Framework versions</span>
-                    <span class="fw-hint">Open in your stack</span>
+                <div class="fa-question-card__meta-row">
+                  <div class="fa-question-card__meta-item">
+                    <span class="fa-meta-label">Difficulty</span>
+                    <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="(item.difficulty || 'intermediate').toLowerCase()">
+                      {{ displayDifficulty(item.difficulty) }}
+                    </span>
                   </div>
-                  <div class="fw-chip-row">
-                    <button
-                      type="button"
-                      class="fw-chip"
-                      *ngFor="let opt of frameworkOptions(item)"
-                      [class.active]="opt.id === item.id"
-                      (click)="goToFramework($event, opt)">
-                      <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
-                      <span class="fw-cta">Open</span>
-                    </button>
+
+                  <div class="fa-question-card__meta-item">
+                    <span class="fa-meta-label">Importance</span>
+                    <span
+                      class="fa-chip fa-chip--importance"
+                      [attr.data-importance]="(item.importance ?? 0) >= 4 ? 'high' : (item.importance ?? 0) >= 2 ? 'medium' : 'low'">
+                      {{ (item.importance ?? 0) >= 4 ? 'High' : (item.importance ?? 0) >= 2 ? 'Medium' : 'Low' }}
+                    </span>
                   </div>
+
+                  <div class="fa-question-card__meta-item" *ngIf="item.tech">
+                    <span class="fa-meta-label">Tech</span>
+                    <span class="fa-chip fa-chip--tech">
+                      <span class="chip-icon" aria-hidden="true">⟡</span>
+                      {{ item.tech | titlecase }}
+                    </span>
+                  </div>
+
+                  <span class="ghost-link meta-open meta-open-pill">Open</span>
                 </div>
               </div>
-
-              <div class="fa-question-card__meta-row">
-                <div class="fa-question-card__meta-item">
-                  <span class="fa-meta-label">Difficulty</span>
-                  <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="(item.difficulty || 'intermediate').toLowerCase()">
-                    {{ displayDifficulty(item.difficulty) }}
-                  </span>
-                </div>
-
-                <div class="fa-question-card__meta-item">
-                  <span class="fa-meta-label">Importance</span>
-                  <span
-                    class="fa-chip fa-chip--importance"
-                    [attr.data-importance]="(item.importance ?? 0) >= 4 ? 'high' : (item.importance ?? 0) >= 2 ? 'medium' : 'low'">
-                    {{ (item.importance ?? 0) >= 4 ? 'High' : (item.importance ?? 0) >= 2 ? 'Medium' : 'Low' }}
-                  </span>
-                </div>
-
-                <div class="fa-question-card__meta-item" *ngIf="item.tech">
-                  <span class="fa-meta-label">Tech</span>
-                  <span class="fa-chip fa-chip--tech">
-                    <span class="chip-icon" aria-hidden="true">⟡</span>
-                    {{ item.tech | titlecase }}
-                  </span>
-                </div>
-
-                <span class="ghost-link meta-open meta-open-pill">Open</span>
-              </div>
-            </div>
-          </a>
-        </section>
+            </a>
+          </section>
+        </ng-template>
       </ng-container>
 
       <ng-template #loadingTpl>

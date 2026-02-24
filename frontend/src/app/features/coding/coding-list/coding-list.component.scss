@@ -45,6 +45,23 @@ app-coding-tech-kind-tabs {
   max-width: 720px;
 }
 
+.fa-access-note {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, rgba(var(--fa-accent-rgb), 0.36));
+  background: color-mix(in srgb, var(--surface-2) 92%, rgba(var(--fa-accent-rgb), 0.08));
+}
+
+.fa-access-note p {
+  margin: 0;
+}
+
+.fa-access-note a {
+  color: color-mix(in srgb, var(--fa-accent) 82%, var(--ink-sub));
+  text-decoration: underline;
+}
+
 .fa-prep-cluster {
   margin: 0 0 18px;
   padding: 16px 18px;

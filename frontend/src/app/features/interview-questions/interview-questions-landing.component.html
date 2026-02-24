@@ -1,0 +1,91 @@
+<div class="iq-wrap">
+  <header class="fa-page-header iq-header">
+    <p class="fa-page-kicker">Framework landing page</p>
+    <h1 class="fa-page-title">{{ config.title }}</h1>
+    <p class="fa-page-subtitle">
+      {{ keywordSentenceCase() }} are grouped here so you can run focused practice loops instead of random drills.
+    </p>
+  </header>
+
+  <section class="iq-intro">
+    <p>
+      This page is built for frontend interview preparation: start with coding implementation, then verify explanation quality with trivia rounds in the same stack.
+    </p>
+    <p>
+      Use this hub when you need predictable practice volume for {{ keywordSentenceCase() }} before interviews, especially when deadlines are short and topic switching slows you down.
+    </p>
+    <p>
+      Pair these drills with the main prep hubs so your practice stays balanced across coding, architecture, and communication.
+    </p>
+    <div class="iq-links">
+      <a [routerLink]="['/coding']" [queryParams]="codingHubQueryParams()">Open coding hub</a>
+      <a [routerLink]="['/guides']">Open guides hub</a>
+      <a [routerLink]="['/tracks']">Open tracks hub</a>
+    </div>
+  </section>
+
+  <section class="iq-section">
+    <div class="iq-section__head">
+      <h2 class="fa-section-title">Coding challenges to start with</h2>
+      <p class="fa-meta-text">Solve first, then review trade-offs and edge cases you can explain in interviews.</p>
+    </div>
+    <ng-container *ngIf="!loading; else loadingState">
+      <ul class="iq-list" *ngIf="codingQuestions.length; else emptyCoding">
+        <li *ngFor="let q of codingQuestions">
+          <a class="iq-item" [routerLink]="q.link">
+            <div class="iq-item__title">{{ q.title }}</div>
+            <div class="iq-item__meta">
+              <span>{{ q.difficulty | titlecase }}</span>
+              <span *ngIf="supportsMultipleTechs()">{{ techLabel(q.tech) }}</span>
+            </div>
+            <p class="iq-item__desc">{{ q.description || 'Open the prompt to review requirements and expected output.' }}</p>
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+  </section>
+
+  <section class="iq-section">
+    <div class="iq-section__head">
+      <h2 class="fa-section-title">Trivia questions for explanation speed</h2>
+      <p class="fa-meta-text">Use quick recall checks to improve how clearly you explain decisions under pressure.</p>
+    </div>
+    <ng-container *ngIf="!loading; else loadingState">
+      <ul class="iq-list" *ngIf="triviaQuestions.length; else emptyTrivia">
+        <li *ngFor="let q of triviaQuestions">
+          <a class="iq-item" [routerLink]="q.link">
+            <div class="iq-item__title">{{ q.title }}</div>
+            <div class="iq-item__meta">
+              <span>{{ q.difficulty | titlecase }}</span>
+              <span *ngIf="supportsMultipleTechs()">{{ techLabel(q.tech) }}</span>
+            </div>
+            <p class="iq-item__desc">{{ q.description || 'Open the question to practice concise interview-ready explanations.' }}</p>
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+  </section>
+
+  <section class="iq-next">
+    <h2 class="fa-section-title">Complete the prep loop</h2>
+    <p>
+      After these {{ config.title }} drills, continue with
+      <a [routerLink]="['/guides']">frontend interview preparation guides</a>
+      and
+      <a [routerLink]="['/tracks']">frontend interview preparation tracks</a>
+      to keep your weekly plan structured.
+    </p>
+  </section>
+
+  <ng-template #loadingState>
+    <div class="iq-loading">Loading interview questions…</div>
+  </ng-template>
+
+  <ng-template #emptyCoding>
+    <div class="iq-empty">No coding challenges found for this landing page yet.</div>
+  </ng-template>
+
+  <ng-template #emptyTrivia>
+    <div class="iq-empty">No trivia questions found for this landing page yet.</div>
+  </ng-template>
+</div>

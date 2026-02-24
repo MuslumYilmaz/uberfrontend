@@ -1,9 +1,16 @@
 <div class="coding-shell mx-auto max-w-7xl px-4 py-6" data-testid="coding-list-page">
   <header class="fa-page-header">
     <p class="fa-page-kicker">Practice library</p>
-    <h1 class="fa-page-title">Frontend interview questions</h1>
-    <p class="fa-page-subtitle fa-body">Use this coding hub as part of your interview roadmap: filter by framework, difficulty, and focus area to prepare with intent.</p>
+    <h1 class="fa-page-title">Frontend coding challenges</h1>
+    <p class="fa-page-subtitle fa-body">Use these frontend coding challenges as part of your interview roadmap: filter by framework, difficulty, and focus area to prepare with intent.</p>
   </header>
+
+  <section class="fa-access-note" *ngIf="source === 'global-coding'" aria-label="Access and pricing">
+    <p class="fa-meta-text">
+      Most challenges are free to start. Premium solutions and deeper walkthroughs are explained once on the
+      <a [routerLink]="['/pricing']">pricing page</a>.
+    </p>
+  </section>
 
   <app-coding-tech-kind-tabs *ngIf="source!=='company'" [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
     [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
@@ -223,7 +230,7 @@
                 <div class="fa-question-card__eyebrow">
                   <span class="eyebrow-dot"></span>
                   <span>{{ q.__kind === 'trivia' ? 'Quiz' : 'Coding' }} prompt</span>
-                  <span class="premium-pill" *ngIf="isLocked(q)">Premium</span>
+                  <span class="premium-pill" *ngIf="isLocked(q)">Locked</span>
                 </div>
                 <div class="fa-question-card__title fa-card-title">{{ q.title }}</div>
                 <div class="solved-pill" *ngIf="auth.isLoggedIn() && solvedSet().has(q.id)" aria-label="Solved">

@@ -46,9 +46,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'Frontend Interview Prep Roadmap and Practice',
+        title: 'Frontend Interview Preparation Roadmap and Practice',
         description:
-          'Prepare for frontend interviews with structured coding, trivia, system design, and guide-based practice paths that improve speed, clarity, and confidence.',
+          'Follow a frontend interview preparation roadmap with coding challenges, guides, tracks, and system design practice to prepare with focus and confidence.',
         keywords: [
           'front end interview questions',
           'javascript interview',
@@ -422,7 +422,7 @@ export const routes: Routes = [
           seo: {
             title: 'Frontend Interview Preparation Tracks',
             description:
-              'Choose a frontend interview preparation track with structured coding, trivia, and system design question paths.',
+              'Explore frontend interview preparation tracks with structured coding, trivia, and system design question paths.',
             robots: 'index,follow',
           },
         },
@@ -581,8 +581,8 @@ export const routes: Routes = [
     path: 'guides',
     data: {
       seo: {
-        title: 'Frontend interview preparation guides',
-        description: 'Interview blueprints and framework prep paths for frontend coding, system design, and behavioral rounds.',
+        title: 'Frontend Interview Preparation Guides',
+        description: 'Frontend interview preparation guides for coding challenges, system design interviews, and behavioral rounds.',
       },
     },
     children: [
@@ -659,8 +659,8 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend Interview Blueprint and Checklist',
-            description: 'Use this step-by-step frontend interview blueprint to prepare coding, UI, system design, and behavioral rounds with a practical checklist.',
+            title: 'Frontend Interview Preparation Guides',
+            description: 'Use these frontend interview preparation guides to plan coding, UI, system design, and behavioral rounds with a practical checklist.',
           },
         },
       },
@@ -754,8 +754,8 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend System Design Blueprint',
-            description: 'Principles, patterns, and examples for front-end system design interviews.',
+            title: 'Frontend System Design Interview Blueprint',
+            description: 'Use this frontend system design interview blueprint for principles, patterns, and examples you can apply in real interview rounds.',
           },
         },
       },
@@ -957,8 +957,100 @@ export const routes: Routes = [
       source: 'global-coding',
       kind: 'coding',
       seo: {
-        title: 'Frontend Coding Interview Questions',
-        description: 'Practice frontend coding interview questions by framework, difficulty, and focus area, then follow a clear prep roadmap from drills to review.',
+        title: 'Frontend Coding Challenges',
+        description: 'Practice frontend coding challenges by framework, difficulty, and focus area, then follow a clear interview prep roadmap from drills to review.',
+      },
+    },
+  },
+
+  // Framework interview-question landing pages
+  {
+    path: 'javascript/interview-questions',
+    loadComponent: () =>
+      import('./features/interview-questions/interview-questions-landing.component').then(
+        (m) => m.InterviewQuestionsLandingComponent,
+      ),
+    data: {
+      interviewQuestions: {
+        keyword: 'javascript interview questions',
+        title: 'JavaScript Interview Questions',
+        techs: ['javascript'],
+      },
+      seo: {
+        title: 'JavaScript Interview Questions',
+        description: 'JavaScript interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+      },
+    },
+  },
+  {
+    path: 'react/interview-questions',
+    loadComponent: () =>
+      import('./features/interview-questions/interview-questions-landing.component').then(
+        (m) => m.InterviewQuestionsLandingComponent,
+      ),
+    data: {
+      interviewQuestions: {
+        keyword: 'react interview questions',
+        title: 'React Interview Questions',
+        techs: ['react'],
+      },
+      seo: {
+        title: 'React Interview Questions',
+        description: 'React interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+      },
+    },
+  },
+  {
+    path: 'angular/interview-questions',
+    loadComponent: () =>
+      import('./features/interview-questions/interview-questions-landing.component').then(
+        (m) => m.InterviewQuestionsLandingComponent,
+      ),
+    data: {
+      interviewQuestions: {
+        keyword: 'angular interview questions',
+        title: 'Angular Interview Questions',
+        techs: ['angular'],
+      },
+      seo: {
+        title: 'Angular Interview Questions',
+        description: 'Angular interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+      },
+    },
+  },
+  {
+    path: 'vue/interview-questions',
+    loadComponent: () =>
+      import('./features/interview-questions/interview-questions-landing.component').then(
+        (m) => m.InterviewQuestionsLandingComponent,
+      ),
+    data: {
+      interviewQuestions: {
+        keyword: 'vue interview questions',
+        title: 'Vue Interview Questions',
+        techs: ['vue'],
+      },
+      seo: {
+        title: 'Vue Interview Questions',
+        description: 'Vue interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+      },
+    },
+  },
+  {
+    path: 'html-css/interview-questions',
+    loadComponent: () =>
+      import('./features/interview-questions/interview-questions-landing.component').then(
+        (m) => m.InterviewQuestionsLandingComponent,
+      ),
+    data: {
+      interviewQuestions: {
+        keyword: 'html css interview questions',
+        title: 'HTML CSS Interview Questions',
+        techs: ['html', 'css'],
+      },
+      seo: {
+        title: 'HTML CSS Interview Questions',
+        description: 'HTML CSS interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
       },
     },
   },

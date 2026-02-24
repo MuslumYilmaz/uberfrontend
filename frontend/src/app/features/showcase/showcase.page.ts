@@ -160,8 +160,8 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'High-signal feedback', tone: 'muted' },
   ];
 
-  heroHeadline = 'Frontend interview preparation roadmap with real practice.';
-  heroLede = 'This frontend interview preparation roadmap uses real practice loops for frontend interviews: practice questions, run tests, preview UI, and review interview-ready signals.';
+  heroHeadline = 'Frontend interview preparation roadmap';
+  heroLede = 'Use this frontend interview preparation roadmap to run real coding challenges, test UI behavior, and build interview-ready communication signals.';
   heroPrimaryCtaLabel = 'Start free challenge';
   private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
