@@ -37,12 +37,19 @@ type TrackItem = {
   tags?: string[];
   category?: string;
 };
-type CrashDayView = {
-  day: number;
+type TrackSectionView = {
+  section: number;
   label: string;
   items: TrackItem[];
   totalCount: number;
   visibleCount: number;
+};
+type SectionedTrackLayout = {
+  bucketCount: number;
+  labelPrefix: 'Day' | 'Week';
+  boardLabel: string;
+  boardNote: string;
+  summaryTail: string;
 };
 type ImportanceTier = 'low' | 'medium' | 'high';
 type SortKey =
@@ -59,7 +66,23 @@ const UI_TECHS: ReadonlySet<Tech> = new Set<Tech>(['react', 'angular', 'vue']);
 const DIFF_ORDER: ReadonlyArray<'easy' | 'intermediate' | 'hard'> = ['easy', 'intermediate', 'hard'];
 const IMP_ORDER: ReadonlyArray<ImportanceTier> = ['low', 'medium', 'high'];
 const CRASH_TRACK_SLUG = 'crash-7d';
-const CRASH_DAY_COUNT = 7;
+const FOUNDATIONS_TRACK_SLUG = 'foundations-30d';
+const SECTIONED_TRACK_LAYOUTS: Readonly<Record<string, SectionedTrackLayout>> = {
+  [CRASH_TRACK_SLUG]: {
+    bucketCount: 7,
+    labelPrefix: 'Day',
+    boardLabel: '7-day crash board',
+    boardNote: 'Sectioned daily plan, all days unlocked.',
+    summaryTail: 'sprint',
+  },
+  [FOUNDATIONS_TRACK_SLUG]: {
+    bucketCount: 5,
+    labelPrefix: 'Week',
+    boardLabel: '30-day foundations board',
+    boardNote: 'Sectioned weekly plan, all weeks unlocked.',
+    summaryTail: 'plan',
+  },
+};
 
 @Component({
   selector: 'app-track-detail',
@@ -80,10 +103,10 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   track: TrackConfig | null = null;
   featured$?: Observable<TrackItem[]>;
   filtered$?: Observable<TrackItem[]>;
-  crashDayViews$?: Observable<CrashDayView[]>;
+  sectionViews$?: Observable<TrackSectionView[]>;
 
   private destroy$ = new Subject<void>();
-  private crashDayLookup = new Map<string, number>();
+  private sectionLookup = new Map<string, number>();
 
   kindFilter$ = new BehaviorSubject<TrackQuestionKind | 'all'>('all');
   techFilter$ = new BehaviorSubject<TrackTechFilter>('all');
@@ -117,8 +140,21 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     return id ? this.progress.isSolved(id) : false;
   }
 
-  isCrashSevenDayTrack(track: TrackConfig | null = this.track): boolean {
-    return (track?.slug || '') === CRASH_TRACK_SLUG;
+  isSectionedTrack(track: TrackConfig | null = this.track): boolean {
+    return !!this.sectionLayout(track);
+  }
+
+  sectionBoardLabel(track: TrackConfig | null = this.track): string {
+    return this.sectionLayout(track)?.boardLabel ?? 'Track questions';
+  }
+
+  sectionBoardNote(track: TrackConfig | null = this.track): string {
+    return this.sectionLayout(track)?.boardNote ?? 'Pace yourself — no daily check-ins.';
+  }
+
+  sectionSummary(label: string, track: TrackConfig | null = this.track): string {
+    const tail = this.sectionLayout(track)?.summaryTail ?? 'plan';
+    return `Focused drills mapped to ${label.toLowerCase()} of the ${tail}.`;
   }
 
   ngOnInit(): void {
@@ -147,10 +183,10 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     const qp = this.route.snapshot.queryParamMap;
 
     this.track = track;
-    this.crashDayLookup = this.buildCrashDayLookup(track);
-    const isCrashTrack = this.isCrashSevenDayTrack(track);
+    this.sectionLookup = this.buildSectionLookup(track);
+    const isSectioned = this.isSectionedTrack(track);
 
-    if (isCrashTrack) {
+    if (isSectioned) {
       this.searchTerm = '';
       this.search$.next('');
       this.kindFilter$.next('all');
@@ -215,7 +251,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     }
 
     this.featured$ = this.loadFeatured(track).pipe(shareReplay(1));
-    const filtered$: Observable<TrackItem[]> = isCrashTrack
+    const filtered$: Observable<TrackItem[]> = isSectioned
       ? this.featured$
       : combineLatest([
         this.featured$,
@@ -254,9 +290,9 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
         }),
       );
     this.filtered$ = filtered$;
-    this.crashDayViews$ = isCrashTrack
+    this.sectionViews$ = isSectioned
       ? filtered$.pipe(
-        map((items) => this.buildCrashDayViews(track, items || [])),
+        map((items) => this.buildSectionViews(track, items || [])),
         shareReplay(1),
       )
       : of([]);
@@ -271,7 +307,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
 
   private persistFilters() {
     const slug = this.track?.slug;
-    if (!slug || this.isCrashSevenDayTrack()) return;
+    if (!slug || this.isSectionedTrack()) return;
 
     const diffs = Array.from(this.diffFilter$.value);
     diffs.sort((a, b) => DIFF_ORDER.indexOf(a) - DIFF_ORDER.indexOf(b));
@@ -290,14 +326,14 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onSearch(term: string) {
-    if (this.isCrashSevenDayTrack()) return;
+    if (this.isSectionedTrack()) return;
     this.searchTerm = term ?? '';
     this.search$.next(this.searchTerm);
     this.syncQueryParams();
   }
 
   onKindChange(val: TrackQuestionKind | 'all') {
-    if (this.isCrashSevenDayTrack()) return;
+    if (this.isSectionedTrack()) return;
     const allowed = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
     const next = allowed.has(val) ? val : 'all';
     this.kindFilter$.next(next);
@@ -305,14 +341,14 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onTechChange(val: TrackTechFilter | Tech) {
-    if (this.isCrashSevenDayTrack()) return;
+    if (this.isSectionedTrack()) return;
     const next = this.normalizeTechFilter(val);
     this.techFilter$.next(next);
     this.syncQueryParams();
   }
 
   onDiffToggle(level: 'easy' | 'intermediate' | 'hard') {
-    if (this.isCrashSevenDayTrack()) return;
+    if (this.isSectionedTrack()) return;
     const current = new Set(this.diffFilter$.value);
     if (current.has(level)) {
       current.delete(level);
@@ -324,7 +360,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onDifficultyChange(val: { difficulty: 'easy' | 'intermediate' | 'hard'; checked: boolean }) {
-    if (this.isCrashSevenDayTrack()) return;
+    if (this.isSectionedTrack()) return;
     const next = new Set(this.diffFilter$.value);
     if (val.checked) {
       next.add(val.difficulty);
@@ -336,7 +372,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onImportanceChange(val: { tier: ImportanceTier; checked: boolean }) {
-    if (this.isCrashSevenDayTrack()) return;
+    if (this.isSectionedTrack()) return;
     const next = new Set(this.impFilter$.value);
     if (val.checked) {
       next.add(val.tier);
@@ -348,7 +384,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   onSortChange(val: SortKey) {
-    if (this.isCrashSevenDayTrack()) return;
+    if (this.isSectionedTrack()) return;
     const next = this.clampSortKey(val);
     this.sort$.next(next);
     this.syncQueryParams();
@@ -357,7 +393,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   toggleSort() { this.sortOpen = !this.sortOpen; }
   closeSort() { this.sortOpen = false; }
   setSort(val: SortKey) {
-    if (this.isCrashSevenDayTrack()) return;
+    if (this.isSectionedTrack()) return;
     this.onSortChange(val);
     this.sortOpen = false;
   }
@@ -375,7 +411,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
   }
 
   private syncQueryParams() {
-    if (this.isCrashSevenDayTrack()) {
+    if (this.isSectionedTrack()) {
       this.stripTrackFilterQueryParams();
       return;
     }
@@ -458,14 +494,14 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     return Math.round((this.trackSolvedCount(items) / items.length) * 100);
   }
 
-  crashResumeLabel(items: TrackItem[]): string {
-    const target = this.nextCrashTarget(items);
+  sectionedResumeLabel(items: TrackItem[]): string {
+    const target = this.nextSectionedTarget(items);
     if (!target) return 'Start practice';
     return this.preview(target.title, 44);
   }
 
-  resumeCrashTrack(items: TrackItem[]): void {
-    const target = this.nextCrashTarget(items);
+  resumeSectionedTrack(items: TrackItem[]): void {
+    const target = this.nextSectionedTarget(items);
     if (!target) return;
 
     if (target.kind === 'system-design') {
@@ -525,16 +561,16 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     return 10;
   }
 
-  daySolvedCount(items: TrackItem[]): number {
+  sectionSolvedCount(items: TrackItem[]): number {
     return items.reduce((count, item) => (this.isSolved(item.id) ? count + 1 : count), 0);
   }
 
-  dayCompletionPercent(items: TrackItem[]): number {
+  sectionCompletionPercent(items: TrackItem[]): number {
     if (!items.length) return 0;
-    return Math.round((this.daySolvedCount(items) / items.length) * 100);
+    return Math.round((this.sectionSolvedCount(items) / items.length) * 100);
   }
 
-  private nextCrashTarget(items: TrackItem[]): TrackItem | null {
+  private nextSectionedTarget(items: TrackItem[]): TrackItem | null {
     if (!items.length) return null;
     return items.find((item) => !this.isSolved(item.id)) ?? items[0];
   }
@@ -720,70 +756,80 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     return 'diff-asc';
   }
 
-  private buildCrashDayViews(track: TrackConfig, items: TrackItem[]): CrashDayView[] {
-    const totals = this.buildCrashDayTotals(track.featured.length);
+  private sectionLayout(track: TrackConfig | null = this.track): SectionedTrackLayout | null {
+    if (!track) return null;
+    return SECTIONED_TRACK_LAYOUTS[track.slug] ?? null;
+  }
+
+  private buildSectionViews(track: TrackConfig, items: TrackItem[]): TrackSectionView[] {
+    const layout = this.sectionLayout(track);
+    if (!layout) return [];
+
+    const totals = this.buildSectionTotals(track.featured.length, layout.bucketCount);
     const grouped = new Map<number, TrackItem[]>();
 
-    for (let day = 1; day <= CRASH_DAY_COUNT; day += 1) {
-      grouped.set(day, []);
+    for (let section = 1; section <= layout.bucketCount; section += 1) {
+      grouped.set(section, []);
     }
 
     for (const item of items) {
-      const day = this.dayForTrackItem(item);
-      const bucket = grouped.get(day);
+      const section = this.sectionForTrackItem(item);
+      const bucket = grouped.get(section);
       if (!bucket) continue;
       bucket.push(item);
     }
 
-    const views: CrashDayView[] = [];
-    for (let day = 1; day <= CRASH_DAY_COUNT; day += 1) {
-      const dayItems = grouped.get(day) ?? [];
+    const views: TrackSectionView[] = [];
+    for (let section = 1; section <= layout.bucketCount; section += 1) {
+      const sectionItems = grouped.get(section) ?? [];
       views.push({
-        day,
-        label: `Day ${day}`,
-        items: dayItems,
-        totalCount: totals[day - 1] ?? 0,
-        visibleCount: dayItems.length,
+        section,
+        label: `${layout.labelPrefix} ${section}`,
+        items: sectionItems,
+        totalCount: totals[section - 1] ?? 0,
+        visibleCount: sectionItems.length,
       });
     }
 
     return views;
   }
 
-  private buildCrashDayLookup(track: TrackConfig): Map<string, number> {
+  private buildSectionLookup(track: TrackConfig): Map<string, number> {
     const lookup = new Map<string, number>();
-    if (!this.isCrashSevenDayTrack(track)) return lookup;
+    const layout = this.sectionLayout(track);
+    if (!layout) return lookup;
 
-    const totals = this.buildCrashDayTotals(track.featured.length);
+    const totals = this.buildSectionTotals(track.featured.length, layout.bucketCount);
     let cursor = 0;
 
-    for (let day = 1; day <= CRASH_DAY_COUNT; day += 1) {
-      const count = totals[day - 1] ?? 0;
+    for (let section = 1; section <= layout.bucketCount; section += 1) {
+      const count = totals[section - 1] ?? 0;
       for (let i = 0; i < count; i += 1) {
         const ref = track.featured[cursor];
         cursor += 1;
         if (!ref) continue;
-        lookup.set(this.trackRefKey(ref), day);
-        lookup.set(`id:${ref.id}`, day);
+        lookup.set(this.trackRefKey(ref), section);
+        lookup.set(`id:${ref.id}`, section);
       }
     }
 
     return lookup;
   }
 
-  private buildCrashDayTotals(totalItems: number): number[] {
-    const base = Math.floor(totalItems / CRASH_DAY_COUNT);
-    const remainder = totalItems % CRASH_DAY_COUNT;
+  private buildSectionTotals(totalItems: number, bucketCount: number): number[] {
+    if (bucketCount <= 0) return [];
+    const base = Math.floor(totalItems / bucketCount);
+    const remainder = totalItems % bucketCount;
     return Array.from(
-      { length: CRASH_DAY_COUNT },
+      { length: bucketCount },
       (_, index) => base + (index < remainder ? 1 : 0),
     );
   }
 
-  private dayForTrackItem(item: TrackItem): number {
-    const exact = this.crashDayLookup.get(this.trackItemKey(item));
+  private sectionForTrackItem(item: TrackItem): number {
+    const exact = this.sectionLookup.get(this.trackItemKey(item));
     if (exact) return exact;
-    const byId = this.crashDayLookup.get(`id:${item.id}`);
+    const byId = this.sectionLookup.get(`id:${item.id}`);
     if (byId) return byId;
     return 1;
   }

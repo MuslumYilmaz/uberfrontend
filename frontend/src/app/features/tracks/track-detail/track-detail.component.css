@@ -49,7 +49,7 @@
   padding: 16px 18px;
 }
 
-.track--crash .fa-track-header {
+.track--sectioned .fa-track-header {
   border-color: color-mix(in srgb, var(--fa-accent) 46%, var(--fa-border-subtle) 54%);
   background: linear-gradient(
     140deg,

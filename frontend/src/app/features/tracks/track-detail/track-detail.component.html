@@ -1,5 +1,5 @@
 <ng-container *ngIf="track as t; else missing">
-  <div class="track" [class.track--crash]="isCrashSevenDayTrack(t)" data-testid="track-detail-page">
+  <div class="track" [class.track--sectioned]="isSectionedTrack(t)" data-testid="track-detail-page">
     <div class="container">
       <nav class="breadcrumb">
         <a routerLink="/tracks">Tracks</a>
@@ -8,7 +8,7 @@
       </nav>
 
       <ng-container *ngIf="filtered$ | async as questions; else loadingTpl">
-        <ng-container *ngIf="isCrashSevenDayTrack(t); else standardTrackHeader">
+        <ng-container *ngIf="isSectionedTrack(t); else standardTrackHeader">
           <section faCard elevated class="fa-track-header fa-track-header--crash">
             <div class="fa-track-header__left">
               <h1 class="fa-track-header__title fa-page-title">{{ t.title }}</h1>
@@ -22,8 +22,8 @@
                 <span></span>
               </div>
               <div class="fa-track-header__actions">
-                <button type="button" class="fa-track-header__action fa-track-header__action--primary" (click)="resumeCrashTrack(questions)">
-                  Resume: {{ crashResumeLabel(questions) }}
+                <button type="button" class="fa-track-header__action fa-track-header__action--primary" (click)="resumeSectionedTrack(questions)">
+                  Resume: {{ sectionedResumeLabel(questions) }}
                 </button>
                 <button type="button" class="fa-track-header__action" (click)="startPractice(questions)">
                   Start from beginning
@@ -53,7 +53,7 @@
           </section>
         </ng-template>
 
-        <section faCard elevated class="fa-track-filters" *ngIf="!isCrashSevenDayTrack(t)">
+        <section faCard elevated class="fa-track-filters" *ngIf="!isSectionedTrack(t)">
           <div class="filters-row">
             <div class="filter-group">
               <div class="filter-label fa-meta-label">Type</div>
@@ -182,35 +182,35 @@
           </div>
         </section>
 
-        <ng-container *ngIf="isCrashSevenDayTrack(t); else standardTrackQuestions">
-          <section class="fa-track-questions fa-track-questions--sections" *ngIf="crashDayViews$ | async as dayViews">
+        <ng-container *ngIf="isSectionedTrack(t); else standardTrackQuestions">
+          <section class="fa-track-questions fa-track-questions--sections" *ngIf="sectionViews$ | async as sectionViews">
             <div class="list-head">
               <div class="list-title">
-                <span class="list-kicker fa-meta-label">7-day crash board</span>
+                <span class="list-kicker fa-meta-label">{{ sectionBoardLabel(t) }}</span>
                 <span class="count" data-testid="track-filtered-count">{{ questions.length }}</span>
               </div>
-              <div class="note">Sectioned daily plan, all days unlocked.</div>
+              <div class="note">{{ sectionBoardNote(t) }}</div>
             </div>
 
-            <section class="crash-day-section" *ngFor="let day of dayViews">
+            <section class="crash-day-section" *ngFor="let section of sectionViews">
               <header class="crash-day-section__head">
                 <div class="crash-day-section__head-top">
-                  <h3 class="crash-day-section__title">{{ day.label }}</h3>
-                  <span class="crash-day-section__meta">{{ day.visibleCount }}/{{ day.totalCount }} shown</span>
+                  <h3 class="crash-day-section__title">{{ section.label }}</h3>
+                  <span class="crash-day-section__meta">{{ section.visibleCount }}/{{ section.totalCount }} shown</span>
                 </div>
-                <p class="crash-day-section__summary">Focused drills mapped to {{ day.label }} of the sprint.</p>
-                <div class="crash-day-section__progress">{{ daySolvedCount(day.items) }}/{{ day.items.length }} complete</div>
-                <div class="crash-day-section__bar" [style.--progress]="dayCompletionPercent(day.items) + '%'">
+                <p class="crash-day-section__summary">{{ sectionSummary(section.label, t) }}</p>
+                <div class="crash-day-section__progress">{{ sectionSolvedCount(section.items) }}/{{ section.items.length }} complete</div>
+                <div class="crash-day-section__bar" [style.--progress]="sectionCompletionPercent(section.items) + '%'">
                   <span></span>
                 </div>
               </header>
 
-              <ng-container *ngFor="let item of day.items; let idx = index">
+              <ng-container *ngFor="let item of section.items">
                 <a
                   class="crash-item-row"
                   [attr.data-testid]="'track-question-card-' + item.id"
                   [routerLink]="linkFor(item)"
-                  [state]="navState(day.items, item)">
+                  [state]="navState(section.items, item)">
                   <span class="crash-item-state" [class.crash-item-state--done]="isSolved(item.id)">
                     <span *ngIf="isSolved(item.id)">✓</span>
                   </span>
@@ -252,8 +252,8 @@
                 </a>
               </ng-container>
 
-              <div class="empty-day" *ngIf="!day.items.length">
-                No questions available for {{ day.label }}.
+              <div class="empty-day" *ngIf="!section.items.length">
+                No questions available for {{ section.label }}.
               </div>
             </section>
           </section>
