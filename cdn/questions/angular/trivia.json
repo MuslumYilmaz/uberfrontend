@@ -5636,5 +5636,839 @@
       "crossCompany": 0,
       "frequencyBonus": 0
     }
+  },
+  {
+    "id": "rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject",
+    "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular: when do you use which?",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 2,
+    "description": "All four are RxJS Subject variants, but they differ in what late subscribers receive and when values are emitted. Interviewers expect you to choose the right one based on initial value needs, replay history, completion behavior, and memory tradeoffs.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>These are all multicasting primitives, but they answer different product questions:<br>• Do I need an initial value right now?<br>• Should late subscribers see old values?<br>• Do I only care about the final value after completion?<br><br>Pick the wrong one and your UI will either miss state, replay too much history, or never emit when you expect."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Type",
+            "Initial value required?",
+            "What a late subscriber gets",
+            "Best fit"
+          ],
+          "rows": [
+            [
+              "<code>Subject</code>",
+              "No",
+              "Only future emissions",
+              "Fire-and-forget events (click intents, toast triggers)"
+            ],
+            [
+              "<code>BehaviorSubject</code>",
+              "Yes",
+              "Latest value immediately",
+              "Current UI state (selected tab, auth status, filter value)"
+            ],
+            [
+              "<code>ReplaySubject(n)</code>",
+              "No",
+              "Last <code>n</code> values",
+              "History/buffer use-cases (chat stream, recent actions)"
+            ],
+            [
+              "<code>AsyncSubject</code>",
+              "No",
+              "Final value only, and only after completion",
+              "One-shot workflows where only the final result matters"
+            ]
+          ],
+          "caption": "The interview-grade difference in one table"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Subject, BehaviorSubject, ReplaySubject, AsyncSubject } from 'rxjs';\n\n// 1) Subject: event bus for \"do something now\" signals\nconst refreshClick$ = new Subject<void>();\n\n// 2) BehaviorSubject: always has a current state value\nconst selectedTheme$ = new BehaviorSubject<'light' | 'dark'>('light');\n\n// 3) ReplaySubject: keep last N values for late subscribers\nconst recentSearches$ = new ReplaySubject<string>(3);\n\n// 4) AsyncSubject: emit only final value when complete() is called\nconst finalReport$ = new AsyncSubject<string>();\nfinalReport$.next('draft');\nfinalReport$.next('final');\nfinalReport$.complete(); // subscribers receive only 'final'"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "Pick",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Button click intent stream",
+              "<code>Subject</code>",
+              "No initial or replayed value needed"
+            ],
+            [
+              "Store current search/filter state",
+              "<code>BehaviorSubject</code>",
+              "New subscribers need immediate current value"
+            ],
+            [
+              "Keep a short in-memory event history",
+              "<code>ReplaySubject(2-5)</code>",
+              "Late subscribers need recent context"
+            ],
+            [
+              "Only publish final batch/job result",
+              "<code>AsyncSubject</code>",
+              "Intermediate values are noise"
+            ]
+          ],
+          "caption": "Fast decision guide for real Angular code"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Injectable } from '@angular/core';\nimport { BehaviorSubject, Subject } from 'rxjs';\n\n@Injectable({ providedIn: 'root' })\nexport class SearchUiStore {\n  private readonly querySubject = new BehaviorSubject<string>('');\n  readonly query$ = this.querySubject.asObservable();\n\n  private readonly refreshSubject = new Subject<void>();\n  readonly refresh$ = this.refreshSubject.asObservable();\n\n  setQuery(value: string): void {\n    this.querySubject.next(value);\n  }\n\n  refresh(): void {\n    this.refreshSubject.next();\n  }\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common pitfall",
+            "Why it hurts",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Using <code>BehaviorSubject</code> with a fake default like <code>null</code>",
+              "Consumers must handle meaningless initial states everywhere",
+              "Use <code>ReplaySubject(1)</code> if no true initial value exists"
+            ],
+            [
+              "Using large <code>ReplaySubject</code> buffers in long-lived services",
+              "Memory grows and old state lingers too long",
+              "Keep buffer small and intentional"
+            ],
+            [
+              "Choosing <code>AsyncSubject</code> for never-ending streams",
+              "No value is emitted because completion never happens",
+              "Use <code>BehaviorSubject</code>/<code>ReplaySubject</code> for ongoing streams"
+            ],
+            [
+              "Exposing the Subject itself publicly",
+              "Any consumer can call <code>next()</code> and break state discipline",
+              "Keep Subject private and expose only <code>asObservable()</code>"
+            ]
+          ],
+          "caption": "Mistakes that show up in production code reviews"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br><code>Subject</code> = live events only. <code>BehaviorSubject</code> = current value + future updates. <code>ReplaySubject</code> = recent history + future updates. <code>AsyncSubject</code> = only final value on completion. In Angular, default to BehaviorSubject for local UI state, Subject for intent events, and ReplaySubject only when you truly need history."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "angular",
+      "rxjs",
+      "observables",
+      "state",
+      "basics"
+    ],
+    "updatedAt": "2026-02-26",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular (RxJS)",
+      "description": "Understand when to use Subject, BehaviorSubject, ReplaySubject, and AsyncSubject in Angular with practical examples, tradeoffs, and common interview pitfalls."
+    }
+  },
+  {
+    "id": "rxjs-tap-vs-map-angular-when-to-use",
+    "title": "RxJS tap vs map in Angular: side effects vs transformation (with real examples)",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 2,
+    "description": "tap and map are frequently confused in Angular RxJS pipelines. map transforms emitted values; tap runs side effects without changing emissions. Interviewers use this to test stream thinking, operator intent, and your ability to avoid subtle production bugs.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>If you’re unsure which one to use, ask one question: <strong>“Should the next operator receive a different value?”</strong><br><br>If yes, use <code>map</code>. If no, and you only need a side effect (logging, loading flags, analytics), use <code>tap</code>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Rule",
+            "map",
+            "tap"
+          ],
+          "rows": [
+            [
+              "Changes emitted value?",
+              "✅ Yes",
+              "❌ No (passes through original value)"
+            ],
+            [
+              "Primary purpose",
+              "Transform data",
+              "Run side effects (log, metrics, local state flags)"
+            ],
+            [
+              "Purity expectation",
+              "Prefer pure deterministic functions",
+              "Can be impure (side effects), but keep intent explicit"
+            ],
+            [
+              "Typical Angular usage",
+              "DTO -> view model mapping",
+              "Set loading flags, debug, analytics pings"
+            ]
+          ],
+          "caption": "The practical difference interviewers care about"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { catchError, debounceTime, distinctUntilChanged, finalize, map, of, switchMap, tap } from 'rxjs';\n\ntype UserDto = { id: string; full_name: string };\ntype UserVm = { id: string; name: string };\n\nthis.results$ = this.searchControl.valueChanges.pipe(\n  debounceTime(250),\n  distinctUntilChanged(),\n\n  // side effect (does not change stream value)\n  tap(() => this.isLoading = true),\n\n  switchMap(query =>\n    this.http.get<UserDto[]>(`/api/users?q=${encodeURIComponent(query)}`).pipe(\n      // transformation (changes value type/shape)\n      map(dtos => dtos.map(d => ({ id: d.id, name: d.full_name }) as UserVm)),\n      catchError(() => of([] as UserVm[])),\n      finalize(() => this.isLoading = false)\n    )\n  )\n);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common trap #1</strong><br><br><code>tap</code> does not transform values. Returning a value inside <code>tap</code> is ignored:"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "of(2).pipe(\n  tap(v => v * 10) // ignored\n).subscribe(console.log); // prints 2, not 20"
+        },
+        {
+          "type": "text",
+          "text": "Use <code>map</code> when the emitted value must change:"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "of(2).pipe(\n  map(v => v * 10)\n).subscribe(console.log); // prints 20"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "Choose",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Convert API response shape",
+              "<code>map</code>",
+              "You need a new emitted value"
+            ],
+            [
+              "Log values during debugging",
+              "<code>tap</code>",
+              "Observation without altering data"
+            ],
+            [
+              "Set <code>isLoading</code>, emit telemetry, debug stream values",
+              "<code>tap</code> (+ <code>finalize</code>)",
+              "Imperative side effects belong outside transformations"
+            ],
+            [
+              "Compute derived fields",
+              "<code>map</code>",
+              "Pure data shaping keeps pipeline predictable"
+            ]
+          ],
+          "caption": "Fast decision guide for day-to-day Angular code"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common mistake",
+            "Why it hurts",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Encoding/normalizing data inside <code>tap</code>",
+              "Other developers assume <code>tap</code> is non-transforming; pipeline intent becomes misleading",
+              "Move data shaping to <code>map</code>"
+            ],
+            [
+              "Mutating objects in <code>tap</code>",
+              "Hidden shared-state bugs and OnPush surprises",
+              "Create new objects in <code>map</code> (immutable style)"
+            ],
+            [
+              "Forgetting to return in <code>map</code>",
+              "Emits <code>undefined</code> unexpectedly",
+              "Always return transformed value from <code>map</code>"
+            ],
+            [
+              "Using <code>tap</code> for critical logic while assuming it always runs",
+              "No subscription means pipeline never executes",
+              "Ensure stream is consumed (<code>async</code> pipe or explicit subscribe)"
+            ]
+          ],
+          "caption": "Production footguns to avoid"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br><code>map</code> is for transformation; <code>tap</code> is for side effects. A clean stream keeps data-shaping logic in <code>map</code> and keeps <code>tap</code> for observability/imperative work. That boundary is what makes RxJS code readable, testable, and safer in real Angular apps."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "angular",
+      "rxjs",
+      "operators",
+      "transformations",
+      "basics"
+    ],
+    "updatedAt": "2026-02-26",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "RxJS tap vs map in Angular: Difference, Use Cases, and Best Practices",
+      "description": "Learn tap vs map in RxJS for Angular with practical examples. Understand side effects vs transformation, where to place each operator, and common mistakes asked in interviews."
+    }
+  },
+  {
+    "id": "ngrx-data-flow-end-to-end-angular",
+    "title": "NgRx data flow end-to-end in Angular: actions, reducers, effects, selectors",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 2,
+    "description": "NgRx data flow in Angular follows a predictable loop: component dispatches actions, reducers create the next immutable state, selectors read and derive view data, and effects handle async side effects before dispatching success/failure actions. This is the core actions-reducers-effects-selectors flow interviewers expect.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core mental model</strong><br><br>Think of NgRx as a one-way loop:<br><br><code>Component event -> dispatch(action) -> reducer computes new state -> selector derives VM -> template renders</code><br><br>Effects run <em>beside</em> this loop for async work (HTTP, analytics, router side effects), then dispatch follow-up actions like success/failure."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "Who does it",
+            "What happens",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "1. UI intent",
+              "Component",
+              "User clicks/searches; component dispatches an action",
+              "Events become explicit and traceable"
+            ],
+            [
+              "2. State transition",
+              "Reducer",
+              "Pure function returns next immutable state",
+              "Predictable updates and easy debugging"
+            ],
+            [
+              "3. Async side effect",
+              "Effect",
+              "Listens to action, calls API, dispatches success/failure",
+              "Keeps reducers pure and components thin"
+            ],
+            [
+              "4. Read model",
+              "Selector",
+              "Memoized selection/derivation from store state",
+              "Performance + reusable view logic"
+            ],
+            [
+              "5. Render",
+              "Template + async pipe",
+              "Subscribes to selector output and updates UI",
+              "Reactive view with minimal manual subscriptions"
+            ]
+          ],
+          "caption": "NgRx data flow diagram (end-to-end loop)"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// books.actions.ts\nimport { createAction, props } from '@ngrx/store';\n\nexport const loadBooks = createAction('[Books Page] Load Books');\nexport const loadBooksSuccess = createAction(\n  '[Books API] Load Books Success',\n  props<{ books: Book[] }>()\n);\nexport const loadBooksFailure = createAction(\n  '[Books API] Load Books Failure',\n  props<{ error: string }>()\n);\n\n// books.reducer.ts\nimport { createReducer, on } from '@ngrx/store';\n\nexport interface BooksState {\n  books: Book[];\n  loading: boolean;\n  error: string | null;\n}\n\nexport const initialState: BooksState = {\n  books: [],\n  loading: false,\n  error: null\n};\n\nexport const booksReducer = createReducer(\n  initialState,\n  on(loadBooks, state => ({ ...state, loading: true, error: null })),\n  on(loadBooksSuccess, (state, { books }) => ({ ...state, books, loading: false })),\n  on(loadBooksFailure, (state, { error }) => ({ ...state, error, loading: false }))\n);\n\n// books.effects.ts\nimport { Injectable, inject } from '@angular/core';\nimport { Actions, createEffect, ofType } from '@ngrx/effects';\nimport { catchError, map, of, switchMap } from 'rxjs';\n\n@Injectable()\nexport class BooksEffects {\n  private actions$ = inject(Actions);\n  private api = inject(BooksApiService);\n\n  loadBooks$ = createEffect(() =>\n    this.actions$.pipe(\n      ofType(loadBooks),\n      switchMap(() =>\n        this.api.getBooks().pipe(\n          map(books => loadBooksSuccess({ books })),\n          catchError(err => of(loadBooksFailure({ error: String(err) })))\n        )\n      )\n    )\n  );\n}\n\n// books.selectors.ts\nimport { createFeatureSelector, createSelector } from '@ngrx/store';\n\nexport const selectBooksState = createFeatureSelector<BooksState>('books');\nexport const selectBooks = createSelector(selectBooksState, s => s.books);\nexport const selectLoading = createSelector(selectBooksState, s => s.loading);\nexport const selectError = createSelector(selectBooksState, s => s.error);\nexport const selectVm = createSelector(\n  selectBooks,\n  selectLoading,\n  selectError,\n  (books, loading, error) => ({ books, loading, error, total: books.length })\n);\n\n// books-page.component.ts\nimport { ChangeDetectionStrategy, Component, inject } from '@angular/core';\nimport { Store } from '@ngrx/store';\n\n@Component({\n  selector: 'app-books-page',\n  template: `\n    <button (click)=\"reload()\">Reload</button>\n\n    <ng-container *ngIf=\"vm$ | async as vm\">\n      <p *ngIf=\"vm.loading\">Loading...</p>\n      <p *ngIf=\"vm.error\">Error: {{ vm.error }}</p>\n      <p>Total: {{ vm.total }}</p>\n      <li *ngFor=\"let b of vm.books\">{{ b.title }}</li>\n    </ng-container>\n  `,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class BooksPageComponent {\n  private store = inject(Store);\n  readonly vm$ = this.store.select(selectVm);\n\n  ngOnInit(): void {\n    this.store.dispatch(loadBooks());\n  }\n\n  reload(): void {\n    this.store.dispatch(loadBooks());\n  }\n}\n"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common mistake",
+            "Why it breaks",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Putting HTTP in reducers",
+              "Reducers must be synchronous and pure",
+              "Move async work to effects"
+            ],
+            [
+              "Doing heavy mapping in components",
+              "Duplicates logic and hurts performance",
+              "Use memoized selectors for derived view models"
+            ],
+            [
+              "Subscribing manually everywhere",
+              "Leak risk and boilerplate",
+              "Use <code>store.select(...)</code> + <code>async</code> pipe"
+            ],
+            [
+              "Dispatching vague action names",
+              "Hard to trace intent in DevTools",
+              "Use event-style action naming (<code>[Source] Event</code>)"
+            ]
+          ],
+          "caption": "What interviewers flag quickly"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br>In Angular state management with NgRx, components dispatch actions for user intent, reducers compute next immutable state, selectors expose memoized read models, and templates render selector output. Effects handle async side effects and dispatch success/failure actions back into the same loop. If you can explain that loop clearly, you understand NgRx data flow."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "angular",
+      "store",
+      "selectors",
+      "effects",
+      "state-management"
+    ],
+    "updatedAt": "2026-02-26",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "NgRx Data Flow in Angular: Actions, Reducers, Effects, Selectors",
+      "description": "Learn the end-to-end NgRx data flow in Angular: component dispatch, reducer state updates, effect side effects, selector memoization, and view rendering with success/failure action loops."
+    }
+  },
+  {
+    "id": "ngrx-store-vs-component-state-angular-when-to-use",
+    "title": "NgRx Store vs local component state in Angular: global vs local, and when to use NgRx",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 2,
+    "description": "One of the most practical Angular state management decisions is choosing NgRx Store vs local component state. Use local state for short-lived UI details and use Store for shared, long-lived, globally relevant state. Interviewers expect clear rules for global vs local state in Angular and when NgRx is worth it.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>Don’t ask “Is NgRx good or bad?” Ask: <strong>“Who needs this state, how long should it live, and does it need traceable transitions?”</strong><br><br>If state is screen-local and short-lived, keep it in the component. If it is shared, persistent, or business-critical across features, move it to Store."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "State example",
+            "Best home",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Modal open/close",
+              "Component local state",
+              "Purely visual, page-specific, short lifetime"
+            ],
+            [
+              "Form draft on one screen",
+              "Component local state (or form state service)",
+              "Usually local workflow; avoid global complexity too early"
+            ],
+            [
+              "Authenticated user/session",
+              "NgRx Store",
+              "Needed across app (header, guards, permissions, API flows)"
+            ],
+            [
+              "Shared filters used by multiple pages/widgets",
+              "NgRx Store (or URL + Store facade)",
+              "Multiple consumers need consistent synchronized state"
+            ],
+            [
+              "Server-backed entity cache (users/orders/products)",
+              "NgRx Store",
+              "Shared read model, dedupe/loading/error handling, normalized updates"
+            ]
+          ],
+          "caption": "Decision matrix: global vs local state in Angular"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Put it in Store if...",
+            "Why this is a good signal"
+          ],
+          "rows": [
+            [
+              "More than one feature/component tree needs it",
+              "Store gives a single source of truth"
+            ],
+            [
+              "You need time-travel/debuggable action history",
+              "Actions + reducers make transitions explicit"
+            ],
+            [
+              "You need robust loading/error/retry flows for shared data",
+              "Effects + selectors centralize async behavior and read models"
+            ],
+            [
+              "You need derived state reused across screens",
+              "Memoized selectors prevent duplicated transformation logic"
+            ],
+            [
+              "State must survive route changes or be rehydrated",
+              "Global state lifetime matches app-level concerns"
+            ]
+          ],
+          "caption": "Practical rule set for when to use NgRx"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// Example split: local UI state + global business state\n@Component({\n  selector: 'app-products-page',\n  template: `...`\n})\nexport class ProductsPageComponent {\n  // local UI state (ephemeral)\n  isFilterPanelOpen = false;\n\n  // global shared state (Store)\n  readonly vm$ = this.store.select(selectProductsVm);\n\n  constructor(private store: Store) {}\n\n  ngOnInit(): void {\n    this.store.dispatch(loadProducts());\n  }\n\n  onFilterChanged(filter: ProductFilter): void {\n    this.store.dispatch(setSharedProductFilter({ filter }));\n  }\n\n  togglePanel(): void {\n    this.isFilterPanelOpen = !this.isFilterPanelOpen;\n  }\n}\n"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Anti-pattern",
+            "Why it hurts",
+            "Better approach"
+          ],
+          "rows": [
+            [
+              "Putting every tiny UI flag in Store",
+              "Action/reducer noise, slower iteration, harder readability",
+              "Keep ephemeral view state in component"
+            ],
+            [
+              "Keeping cross-feature business state in random components",
+              "Duplicate logic, drift, race conditions between screens",
+              "Promote to Store with selectors/effects"
+            ],
+            [
+              "Using Store as a dump of raw API payloads only",
+              "Components become transformation-heavy and inconsistent",
+              "Create memoized selectors for derived view models"
+            ],
+            [
+              "Mixing local and global ownership without boundaries",
+              "Unclear source of truth and hard-to-debug updates",
+              "Document state ownership per feature"
+            ]
+          ],
+          "caption": "What senior reviewers usually call out"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br>Use local component state for UI-ephemeral, screen-specific concerns. Use NgRx Store for shared, durable, business-relevant state that multiple parts of the app depend on. The best architecture is mixed: local for view mechanics, Store for app-level truth."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "angular",
+      "store",
+      "state-management",
+      "architecture",
+      "basics"
+    ],
+    "updatedAt": "2026-02-26",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "NgRx Store vs Component State in Angular: Global vs Local State",
+      "description": "Learn when to use NgRx Store vs local component state in Angular with a practical decision matrix: modal state, form drafts, auth user, shared filters, and server cache."
+    }
+  },
+  {
+    "id": "ngrx-reducer-pure-function-immutability-side-effects",
+    "title": "NgRx reducer pure function in practice: immutability, side effects, and common mistakes",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 2,
+    "description": "A reducer in NgRx must be a pure function: same input state + action must always produce the same next state, with no side effects. Interviewers test reducer immutability and whether you can spot forbidden reducer side effects like mutation, Math.random(), HTTP, router navigation, and service calls.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>An NgRx reducer is a synchronous, deterministic state transition function. It should only compute the next immutable state from <code>(state, action)</code>. If it reaches outside (network, router, random values, services), it is no longer a pure reducer."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Forbidden in reducers",
+            "Why it is wrong",
+            "Where it belongs"
+          ],
+          "rows": [
+            [
+              "State mutation (<code>push</code>, direct assignment, in-place edits)",
+              "Breaks immutability and memoization assumptions",
+              "Return new objects/arrays in reducer"
+            ],
+            [
+              "<code>Math.random()</code> / time-dependent values",
+              "Same input may produce different output",
+              "Generate IDs/timestamps before dispatch or in effects"
+            ],
+            [
+              "HTTP calls",
+              "Async side effect inside supposedly pure function",
+              "Effects"
+            ],
+            [
+              "Router navigation",
+              "External side effect not a state calculation",
+              "Effects or component/facade orchestration"
+            ],
+            [
+              "Service calls (analytics, storage, logging APIs)",
+              "Leaks imperative side effects into reducer",
+              "Effects or dedicated services triggered elsewhere"
+            ]
+          ],
+          "caption": "Reducer purity guardrails"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// ❌ Bad reducer: impure + mutating\nexport const ordersReducer = createReducer(\n  initialState,\n  on(placeOrder, (state, { item, router, api, audit }) => {\n    state.orders.push(item); // mutation\n\n    const id = Math.random().toString(36).slice(2); // non-deterministic\n\n    api.postOrder(item).subscribe(); // HTTP side effect\n    router.navigate(['/orders', id]); // navigation side effect\n    audit.track('order_placed', item); // service side effect\n\n    return state; // same reference returned\n  })\n);"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// ✅ Good reducer: pure + immutable\nexport interface OrdersState {\n  orders: Array<{ id: string; name: string }>;\n  loading: boolean;\n  error: string | null;\n}\n\nexport const initialState: OrdersState = {\n  orders: [],\n  loading: false,\n  error: null\n};\n\nexport const ordersReducer = createReducer(\n  initialState,\n  on(placeOrder, state => ({ ...state, loading: true, error: null })),\n  on(placeOrderSuccess, (state, { order }) => ({\n    ...state,\n    orders: [...state.orders, order],\n    loading: false\n  })),\n  on(placeOrderFailure, (state, { error }) => ({ ...state, error, loading: false }))\n);"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// ✅ Side effects move to effects\n@Injectable()\nexport class OrdersEffects {\n  placeOrder$ = createEffect(() =>\n    this.actions$.pipe(\n      ofType(placeOrder),\n      switchMap(({ draft }) =>\n        this.api.postOrder(draft).pipe(\n          map(order => placeOrderSuccess({ order })),\n          catchError(err => of(placeOrderFailure({ error: String(err) })))\n        )\n      )\n    )\n  );\n\n  navigateOnSuccess$ = createEffect(\n    () =>\n      this.actions$.pipe(\n        ofType(placeOrderSuccess),\n        tap(({ order }) => this.router.navigate(['/orders', order.id]))\n      ),\n    { dispatch: false }\n  );\n\n  constructor(\n    private actions$: Actions,\n    private api: OrdersApiService,\n    private router: Router\n  ) {}\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Reducer purity checklist",
+            "Pass condition"
+          ],
+          "rows": [
+            [
+              "Deterministic output",
+              "Same state + action always yields same next state"
+            ],
+            [
+              "No mutation",
+              "Original state untouched; new references returned"
+            ],
+            [
+              "No async work",
+              "No HTTP/subscription/promise in reducer"
+            ],
+            [
+              "No framework side effects",
+              "No router navigation, no service invocations"
+            ],
+            [
+              "Synchronous and small",
+              "Just state transition logic, nothing else"
+            ]
+          ],
+          "caption": "Quick review rubric before merge"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br>An NgRx reducer pure function does one thing: compute next immutable state. It must avoid mutation and all side effects, including <code>Math.random()</code>, HTTP, router calls, and service usage. Put side effects in effects, keep reducers deterministic, and selector memoization and debugging stay reliable."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "angular",
+      "store",
+      "state-management",
+      "effects",
+      "basics"
+    ],
+    "updatedAt": "2026-02-26",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "NgRx Reducer Pure Function: Immutability and Side Effects Explained",
+      "description": "Learn NgRx reducer purity in practice: reducer immutability rules, forbidden reducer side effects, and bad vs good reducer examples with a production checklist."
+    }
+  },
+  {
+    "id": "ngrx-selectors-memoization-derived-state-performance",
+    "title": "NgRx selectors beyond getting state: memoization, derived state, and Angular performance",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 2,
+    "description": "NgRx selectors are not just state getters. They create memoized, composable read models that power derived state in Angular apps. Interviewers expect you to explain selector composition, NgRx selector memoization behavior, and why this improves performance.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>Selectors are your app’s <em>read layer</em>. Instead of pushing filtering/sorting/mapping logic into components, you compose selectors once and expose a memoized view model. This keeps components thin and avoids repeated recalculation."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Selector level",
+            "Example",
+            "Responsibility"
+          ],
+          "rows": [
+            [
+              "Feature selector",
+              "<code>selectProductsFeature</code>",
+              "Grab one feature slice from root state"
+            ],
+            [
+              "Entity/base selectors",
+              "<code>selectEntities</code>, <code>selectIds</code>",
+              "Read normalized raw state"
+            ],
+            [
+              "Derived selectors",
+              "<code>selectAllProducts</code>, <code>selectFilteredProducts</code>",
+              "Transform/filter/sort domain data"
+            ],
+            [
+              "VM selector",
+              "<code>selectProductsVm</code>",
+              "Return final UI-ready shape for component/template"
+            ]
+          ],
+          "caption": "Composed selector flow: feature -> entities -> filtered/sorted VM"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { createFeatureSelector, createSelector } from '@ngrx/store';\n\ntype Product = { id: string; name: string; price: number };\ntype SortKey = 'name-asc' | 'price-desc';\n\ninterface ProductsState {\n  entities: Record<string, Product>;\n  ids: string[];\n  query: string;\n  sort: SortKey;\n  loading: boolean;\n  error: string | null;\n}\n\nconst selectProductsFeature = createFeatureSelector<ProductsState>('products');\n\nconst selectEntities = createSelector(selectProductsFeature, s => s.entities);\nconst selectIds = createSelector(selectProductsFeature, s => s.ids);\nconst selectQuery = createSelector(selectProductsFeature, s => s.query);\nconst selectSort = createSelector(selectProductsFeature, s => s.sort);\nconst selectLoading = createSelector(selectProductsFeature, s => s.loading);\nconst selectError = createSelector(selectProductsFeature, s => s.error);\n\nconst selectAllProducts = createSelector(selectIds, selectEntities, (ids, entities) =>\n  ids.map(id => entities[id])\n);\n\nconst selectFilteredProducts = createSelector(selectAllProducts, selectQuery, (products, query) => {\n  const q = query.trim().toLowerCase();\n  if (!q) return products;\n  return products.filter(p => p.name.toLowerCase().includes(q));\n});\n\nconst selectSortedProducts = createSelector(selectFilteredProducts, selectSort, (products, sort) => {\n  const copy = [...products];\n  if (sort === 'name-asc') return copy.sort((a, b) => a.name.localeCompare(b.name));\n  return copy.sort((a, b) => b.price - a.price);\n});\n\nexport const selectProductsVm = createSelector(\n  selectSortedProducts,\n  selectLoading,\n  selectError,\n  (items, loading, error) => ({ items, loading, error, total: items.length })\n);"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Memoization behavior",
+            "What happens",
+            "Practical impact"
+          ],
+          "rows": [
+            [
+              "First evaluation",
+              "Projector runs and result is cached",
+              "Expected initial compute cost"
+            ],
+            [
+              "Same input selector references",
+              "Cached result returned, projector does not re-run",
+              "Avoids unnecessary CPU and re-renders"
+            ],
+            [
+              "Any input reference changes",
+              "Projector re-runs once and cache is updated",
+              "Recompute only when data actually changed"
+            ],
+            [
+              "Inputs recreated every time",
+              "Memoization is defeated",
+              "Performance degrades and UI churn increases"
+            ]
+          ],
+          "caption": "How NgRx selector memoization actually works"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// ❌ Pitfall: selecting whole state and rebuilding arrays/objects in component\n@Component({ selector: 'app-products', template: `...` })\nexport class ProductsComponent {\n  // broad selection + local mapping each emission\n  readonly vm$ = this.store.select(state => state).pipe(\n    map(state => {\n      const items = Object.values(state.products.entities)\n        .filter(p => p.name.includes(state.products.query))\n        .sort((a, b) => a.name.localeCompare(b.name));\n\n      return {\n        items: [...items], // new object/array every time\n        total: items.length,\n        loading: state.products.loading\n      };\n    })\n  );\n}\n\n// ✅ Better: keep composition in selectors, component only selects VM\n@Component({ selector: 'app-products', template: `...` })\nexport class ProductsComponent {\n  readonly vm$ = this.store.select(selectProductsVm);\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common pitfall",
+            "Why it hurts",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Selecting the whole root state in components",
+              "Any unrelated state change can trigger unnecessary recalculation",
+              "Select the narrowest feature/VM selector"
+            ],
+            [
+              "Doing filter/sort/map in components repeatedly",
+              "Logic duplication + unstable references + harder tests",
+              "Move derivation into composed selectors"
+            ],
+            [
+              "Returning brand-new objects everywhere without need",
+              "Memoization cannot help if inputs are constantly rebuilt",
+              "Preserve stable references where possible and compose selectors"
+            ],
+            [
+              "Keeping selectors too shallow (no VM selector)",
+              "Components become bloated orchestration layers",
+              "Create a single UI-focused VM selector"
+            ]
+          ],
+          "caption": "Selector performance pitfalls senior reviewers spot"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br>NgRx selectors are a memoized read-model layer, not just property accessors. Compose selectors from feature state to entities to derived filtered/sorted data, then expose a final view model selector to components. This improves Angular selector performance, reduces component complexity, and keeps state logic reusable."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "angular",
+      "store",
+      "selectors",
+      "memoization",
+      "performance"
+    ],
+    "updatedAt": "2026-02-26",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    },
+    "seo": {
+      "title": "NgRx Selectors Memoization: Derived State and Angular Performance",
+      "description": "Learn NgRx selectors beyond state access: composed selectors, derived state in NgRx, memoization behavior, and Angular selector performance pitfalls to avoid."
+    }
   }
 ]
