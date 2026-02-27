@@ -1,6 +1,6 @@
 <div class="iq-wrap">
   <header class="fa-page-header iq-header">
-    <p class="fa-page-kicker">Framework landing page</p>
+    <p class="fa-page-kicker">{{ isMasterHub() ? 'Interview questions master hub' : 'Framework landing page' }}</p>
     <h1 class="fa-page-title">{{ config.title }}</h1>
     <p class="fa-page-subtitle">
       {{ keywordSentenceCase() }} are grouped here so you can run focused practice loops instead of random drills.
@@ -18,9 +18,15 @@
       Pair these drills with the main prep hubs so your practice stays balanced across coding, architecture, and communication.
     </p>
     <div class="iq-links">
-      <a [routerLink]="['/coding']" [queryParams]="codingHubQueryParams()">Open coding hub</a>
+      <a [routerLink]="['/coding']">Open coding hub</a>
       <a [routerLink]="['/guides']">Open guides hub</a>
       <a [routerLink]="['/tracks']">Open tracks hub</a>
+    </div>
+    <div class="iq-hub-links">
+      <p class="iq-hub-links__label">Interview question hubs</p>
+      <div class="iq-links iq-links--hubs">
+        <a *ngFor="let hub of relatedHubLinks" [routerLink]="hub.route">{{ hub.label }}</a>
+      </div>
     </div>
   </section>
 
@@ -70,6 +76,8 @@
     <h2 class="fa-section-title">Complete the prep loop</h2>
     <p>
       After these {{ config.title }} drills, continue with
+      <a [routerLink]="['/interview-questions']">frontend interview questions hub</a>,
+      then
       <a [routerLink]="['/guides']">frontend interview preparation guides</a>
       and
       <a [routerLink]="['/tracks']">frontend interview preparation tracks</a>

@@ -35,6 +35,7 @@
     "postbuild": "node scripts/sentry-release.mjs",
     "seo:sitemap-sample": "node scripts/sitemap-sample-audit.mjs",
     "seo:meta-check": "node scripts/seo-meta-check.mjs",
+    "seo:baseline:trivia": "node scripts/seo-baseline-trivia-hubs.mjs",
     "seo:smoke": "node scripts/seo-smoke.mjs",
     "seo:lighthouse": "node scripts/seo-lighthouse.mjs",
     "seo:links": "node scripts/seo-links.mjs",

@@ -2181,6 +2181,29 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   isWebTech(): boolean { return this.tech === 'html' || this.tech === 'css'; }
   isFrameworkTech(): boolean { return this.tech === 'angular' || this.tech === 'react' || this.tech === 'vue'; }
 
+  interviewQuestionsHubRoute(): any[] {
+    return [this.interviewQuestionsHubPath()];
+  }
+
+  interviewQuestionsHubLabel(): string {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'javascript':
+        return 'JavaScript interview questions';
+      case 'react':
+        return 'React interview questions';
+      case 'angular':
+        return 'Angular interview questions';
+      case 'vue':
+        return 'Vue interview questions';
+      case 'html':
+        return 'HTML interview questions';
+      case 'css':
+        return 'CSS interview questions';
+      default:
+        return 'Frontend interview questions';
+    }
+  }
+
   frameworkPrepRoute(): any[] {
     const slug = this.frameworkPrepSlugForTech();
     return slug ? ['/guides/framework-prep', slug] : ['/guides/framework-prep'];
@@ -2217,6 +2240,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         return 'vue-prep-path';
       default:
         return null;
+    }
+  }
+
+  private interviewQuestionsHubPath(): string {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'javascript':
+      case 'react':
+      case 'angular':
+      case 'vue':
+      case 'html':
+      case 'css':
+        return `/${this.tech}/interview-questions`;
+      default:
+        return '/interview-questions';
     }
   }
 

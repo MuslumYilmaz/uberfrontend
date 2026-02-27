@@ -166,6 +166,19 @@ describe('CodingDetailComponent', () => {
     expect(document.body.style.overflow).toBe('hidden');
   });
 
+  it('maps coding detail tech to interview hub routes', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'react';
+    expect(component.interviewQuestionsHubRoute()).toEqual(['/react/interview-questions']);
+    expect(component.interviewQuestionsHubLabel()).toBe('React interview questions');
+
+    component.tech = 'css';
+    expect(component.interviewQuestionsHubRoute()).toEqual(['/css/interview-questions']);
+    expect(component.interviewQuestionsHubLabel()).toBe('CSS interview questions');
+  });
+
   it('restores document overflow on destroy', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

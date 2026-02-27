@@ -3,7 +3,12 @@
     <ng-template #questionListTpl>
         <ul class="side-list">
             <li *ngFor="let q of sidebarQuestions; trackBy: trackByQuestionId">
-                <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
+                <a
+                    class="side-item"
+                    [class.is-active]="isActive(q)"
+                    [routerLink]="sidebarQuestionRoute(q)"
+                    [state]="sidebarNavState(q)"
+                    (click)="onSidebarQuestionClick(q)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
                         <span class="chip chip-premium" *ngIf="q.access === 'premium'">Premium</span>
@@ -11,7 +16,7 @@
                     <div class="side-item-tail">
                         <i class="fa-solid fa-chevron-right" *ngIf="!isActive(q)"></i>
                     </div>
-                </button>
+                </a>
             </li>
         </ul>
     </ng-template>
@@ -108,6 +113,7 @@
                         Use guided tracks for structured prep, then practice company-specific question sets when you want targeted interview coverage.
                     </p>
                     <div class="prep-bridge__links">
+                        <a [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
                         <a [routerLink]="['/tracks']">Explore interview tracks</a>
                         <a [routerLink]="['/companies']">Browse company questions</a>
                         <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>

@@ -74,6 +74,11 @@ type FrameworkPrepLink = {
   sequenceLabel: string;
 };
 
+type InterviewHubLink = {
+  label: string;
+  route: any[];
+};
+
 type FocusSlug =
   | 'accessibility'
   | 'async'
@@ -598,6 +603,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { key: 'vue' as Tech, label: 'Vue', badge: 'V', cls: 'bg-emerald-400 text-black' },
     { key: 'html' as Tech, label: 'HTML', badge: 'H5', cls: 'bg-orange-600 text-white' },
     { key: 'css' as Tech, label: 'CSS', badge: 'C3', cls: 'bg-blue-600 text-white' },
+  ];
+
+  interviewHubLinks: InterviewHubLink[] = [
+    { label: 'Frontend interview questions', route: ['/interview-questions'] },
+    { label: 'JavaScript interview questions', route: ['/javascript/interview-questions'] },
+    { label: 'React interview questions', route: ['/react/interview-questions'] },
+    { label: 'Angular interview questions', route: ['/angular/interview-questions'] },
+    { label: 'Vue interview questions', route: ['/vue/interview-questions'] },
+    { label: 'HTML interview questions', route: ['/html/interview-questions'] },
+    { label: 'CSS interview questions', route: ['/css/interview-questions'] },
+    { label: 'HTML CSS interview questions', route: ['/html-css/interview-questions'] },
   ];
 
   categoryTabs: Array<{ key: CategoryKey; label: string }> = [

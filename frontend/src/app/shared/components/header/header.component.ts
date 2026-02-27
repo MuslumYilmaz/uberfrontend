@@ -54,6 +54,9 @@ type VisibleEntry = {
       <div class="fah-right" (click)="$event.stopPropagation()">
         <div class="fah-desktop-actions">
           <a class="fah-btn" routerLink="/dashboard">Dashboard</a>
+          <a class="fah-btn fah-btn--hub" routerLink="/interview-questions" data-testid="header-interview-hub">
+            Interview Qs
+          </a>
           <a *ngIf="!isPro()" class="fah-btn" routerLink="/pricing">Pricing</a>
 
           <div class="fah-profile fah-profile-right">
@@ -96,6 +99,13 @@ type VisibleEntry = {
         </div>
 
         <div class="fah-mobile-actions">
+          <a
+            class="fah-iconbtn fah-iconbtn--hub"
+            routerLink="/interview-questions"
+            data-testid="header-mobile-interview-hub"
+            aria-label="Open interview question hubs">
+            <i class="pi pi-list"></i>
+          </a>
           <button
             type="button"
             class="fah-iconbtn"
@@ -130,6 +140,14 @@ type VisibleEntry = {
         <a class="fah-mobile-item" routerLink="/dashboard" (click)="closeAll()" data-testid="header-mobile-dashboard">
           <i class="pi pi-home"></i>
           <span>Dashboard</span>
+        </a>
+        <a
+          class="fah-mobile-item fah-mobile-item--hub"
+          routerLink="/interview-questions"
+          (click)="closeAll()"
+          data-testid="header-mobile-interview-hub-row">
+          <i class="pi pi-list"></i>
+          <span>Interview questions</span>
         </a>
         <a *ngIf="!isPro()" class="fah-mobile-item" routerLink="/pricing" (click)="closeAll()" data-testid="header-mobile-pricing">
           <i class="pi pi-tag"></i>

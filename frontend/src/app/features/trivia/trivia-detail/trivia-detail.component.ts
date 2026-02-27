@@ -574,6 +574,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const dateModified = this.resolveUpdatedIso(q);
     const datePublished = this.resolvePublishedIso(dateModified);
     const imageUrl = this.structuredDataImageUrl();
+    const interviewHubUrl = this.interviewQuestionsHubUrl();
+    const interviewHubLabel = this.interviewQuestionsHubLabel();
+    const tracksUrl = this.seo.buildCanonicalUrl('/tracks');
+    const companiesUrl = this.seo.buildCanonicalUrl('/companies');
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -618,6 +622,21 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           url: imageUrl,
         },
       },
+      isPartOf: {
+        '@type': 'CollectionPage',
+        '@id': interviewHubUrl,
+        url: interviewHubUrl,
+        name: interviewHubLabel,
+      },
+      about: [
+        { '@type': 'Thing', name: `${this.interviewTopicLabel()} interview concepts` },
+        { '@type': 'Thing', name: 'Frontend interview preparation' },
+      ],
+      mentions: [
+        { '@type': 'WebPage', name: interviewHubLabel, url: interviewHubUrl },
+        { '@type': 'WebPage', name: 'Frontend interview tracks', url: tracksUrl },
+        { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
+      ],
       isAccessibleForFree: q.access !== 'premium',
       keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
@@ -636,13 +655,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onSelect(q: Question) {
+  onSidebarQuestionClick(q: Question) {
     this.closeQnav();
     this.saveSidebarScrollPosition();
     this.ensurePracticeBuilt(q.id);
-    this.router.navigate(['/', this.tech, 'trivia', q.id], {
-      state: this.buildNavState(q.id),
-    });
+  }
+
+  sidebarQuestionRoute(q: Question): any[] {
+    return ['/', this.tech, 'trivia', q.id];
+  }
+
+  sidebarNavState(q: Question) {
+    return this.buildNavState(q.id);
   }
 
   toggleQnav() {
@@ -687,6 +711,29 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return slug ? ['/guides/framework-prep', slug] : ['/guides/framework-prep'];
   }
 
+  interviewQuestionsHubRoute(): any[] {
+    return [this.interviewQuestionsHubPath()];
+  }
+
+  interviewQuestionsHubLabel(): string {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'javascript':
+        return 'JavaScript interview questions';
+      case 'react':
+        return 'React interview questions';
+      case 'angular':
+        return 'Angular interview questions';
+      case 'vue':
+        return 'Vue interview questions';
+      case 'html':
+        return 'HTML interview questions';
+      case 'css':
+        return 'CSS interview questions';
+      default:
+        return 'Frontend interview questions';
+    }
+  }
+
   hasFrameworkPrepPath(): boolean {
     return this.frameworkPrepSlugForTech() !== null;
   }
@@ -718,6 +765,43 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         return 'vue-prep-path';
       default:
         return null;
+    }
+  }
+
+  private interviewQuestionsHubPath(): string {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'javascript':
+      case 'react':
+      case 'angular':
+      case 'vue':
+      case 'html':
+      case 'css':
+        return `/${this.tech}/interview-questions`;
+      default:
+        return '/interview-questions';
+    }
+  }
+
+  private interviewQuestionsHubUrl(): string {
+    return this.seo.buildCanonicalUrl(this.interviewQuestionsHubPath());
+  }
+
+  private interviewTopicLabel(): string {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'javascript':
+        return 'JavaScript';
+      case 'react':
+        return 'React';
+      case 'angular':
+        return 'Angular';
+      case 'vue':
+        return 'Vue';
+      case 'html':
+        return 'HTML';
+      case 'css':
+        return 'CSS';
+      default:
+        return 'Frontend';
     }
   }
 

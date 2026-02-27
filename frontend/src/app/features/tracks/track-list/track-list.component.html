@@ -31,6 +31,16 @@
           <a class="hero-link hero-link--system" [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
           <a class="hero-link hero-link--focus" [routerLink]="['/focus-areas']">All focus areas</a>
         </div>
+        <p class="chip-group-title chip-group-title--links">Interview question hubs</p>
+        <div class="hero-links" aria-label="Interview question hubs">
+          <a
+            *ngFor="let hub of interviewHubQuickLinks"
+            class="hero-link"
+            [ngClass]="hub.toneClass"
+            [routerLink]="hub.route">
+            {{ hub.label }}
+          </a>
+        </div>
         <app-prep-signal-grid
           class="prep-path-panel"
           [outcomes]="trackPrepOutcomes"

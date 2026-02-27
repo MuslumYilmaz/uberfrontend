@@ -65,6 +65,24 @@
   border-color: color-mix(in srgb, var(--uf-border-subtle) 56%, var(--uf-accent) 44%);
 }
 
+.iq-hub-links {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid color-mix(in srgb, var(--uf-border-subtle) 74%, transparent);
+}
+
+.iq-hub-links__label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+}
+
+.iq-links--hubs {
+  margin-top: 8px;
+}
+
 .iq-section {
   margin: 0 0 16px;
 }

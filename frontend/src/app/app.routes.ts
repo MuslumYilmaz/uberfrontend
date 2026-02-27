@@ -19,6 +19,7 @@ import {
   systemDesignDetailResolver,
   triviaDetailResolver,
 } from './core/resolvers/question-detail.resolver';
+import { interviewQuestionsHubResolver } from './core/resolvers/interview-questions.resolver';
 import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
 import {
   behavioralGuideDetailResolver,
@@ -965,11 +966,36 @@ export const routes: Routes = [
 
   // Framework interview-question landing pages
   {
+    path: 'interview-questions',
+    loadComponent: () =>
+      import('./features/interview-questions/interview-questions-landing.component').then(
+        (m) => m.InterviewQuestionsLandingComponent,
+      ),
+    resolve: {
+      interviewQuestionsList: interviewQuestionsHubResolver,
+    },
+    data: {
+      interviewQuestions: {
+        keyword: 'frontend interview questions',
+        title: 'Frontend Interview Questions',
+        techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
+        isMasterHub: true,
+      },
+      seo: {
+        title: 'Frontend Interview Questions',
+        description: 'Frontend interview questions across JavaScript, React, Angular, Vue, HTML, and CSS, with coding and trivia practice linked to interview tracks.',
+      },
+    },
+  },
+  {
     path: 'javascript/interview-questions',
     loadComponent: () =>
       import('./features/interview-questions/interview-questions-landing.component').then(
         (m) => m.InterviewQuestionsLandingComponent,
       ),
+    resolve: {
+      interviewQuestionsList: interviewQuestionsHubResolver,
+    },
     data: {
       interviewQuestions: {
         keyword: 'javascript interview questions',
@@ -988,6 +1014,9 @@ export const routes: Routes = [
       import('./features/interview-questions/interview-questions-landing.component').then(
         (m) => m.InterviewQuestionsLandingComponent,
       ),
+    resolve: {
+      interviewQuestionsList: interviewQuestionsHubResolver,
+    },
     data: {
       interviewQuestions: {
         keyword: 'react interview questions',
@@ -1006,6 +1035,9 @@ export const routes: Routes = [
       import('./features/interview-questions/interview-questions-landing.component').then(
         (m) => m.InterviewQuestionsLandingComponent,
       ),
+    resolve: {
+      interviewQuestionsList: interviewQuestionsHubResolver,
+    },
     data: {
       interviewQuestions: {
         keyword: 'angular interview questions',
@@ -1024,6 +1056,9 @@ export const routes: Routes = [
       import('./features/interview-questions/interview-questions-landing.component').then(
         (m) => m.InterviewQuestionsLandingComponent,
       ),
+    resolve: {
+      interviewQuestionsList: interviewQuestionsHubResolver,
+    },
     data: {
       interviewQuestions: {
         keyword: 'vue interview questions',
@@ -1042,6 +1077,9 @@ export const routes: Routes = [
       import('./features/interview-questions/interview-questions-landing.component').then(
         (m) => m.InterviewQuestionsLandingComponent,
       ),
+    resolve: {
+      interviewQuestionsList: interviewQuestionsHubResolver,
+    },
     data: {
       interviewQuestions: {
         keyword: 'html css interview questions',
@@ -1051,6 +1089,48 @@ export const routes: Routes = [
       seo: {
         title: 'HTML CSS Interview Questions',
         description: 'HTML CSS interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+      },
+    },
+  },
+  {
+    path: 'html/interview-questions',
+    loadComponent: () =>
+      import('./features/interview-questions/interview-questions-landing.component').then(
+        (m) => m.InterviewQuestionsLandingComponent,
+      ),
+    resolve: {
+      interviewQuestionsList: interviewQuestionsHubResolver,
+    },
+    data: {
+      interviewQuestions: {
+        keyword: 'html interview questions',
+        title: 'HTML Interview Questions',
+        techs: ['html'],
+      },
+      seo: {
+        title: 'HTML Interview Questions',
+        description: 'HTML interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+      },
+    },
+  },
+  {
+    path: 'css/interview-questions',
+    loadComponent: () =>
+      import('./features/interview-questions/interview-questions-landing.component').then(
+        (m) => m.InterviewQuestionsLandingComponent,
+      ),
+    resolve: {
+      interviewQuestionsList: interviewQuestionsHubResolver,
+    },
+    data: {
+      interviewQuestions: {
+        keyword: 'css interview questions',
+        title: 'CSS Interview Questions',
+        techs: ['css'],
+      },
+      seo: {
+        title: 'CSS Interview Questions',
+        description: 'CSS interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
       },
     },
   },

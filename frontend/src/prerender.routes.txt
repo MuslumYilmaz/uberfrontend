@@ -64,8 +64,14 @@
 /angular/trivia/angular-template-driven-vs-reactive-forms-which-scales
 /angular/trivia/angular-vs-angularjs
 /angular/trivia/angular-zonejs-change-detection
+/angular/trivia/ngrx-data-flow-end-to-end-angular
+/angular/trivia/ngrx-reducer-pure-function-immutability-side-effects
+/angular/trivia/ngrx-selectors-memoization-derived-state-performance
+/angular/trivia/ngrx-store-vs-component-state-angular-when-to-use
 /angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app
+/angular/trivia/rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject
 /angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use
+/angular/trivia/rxjs-tap-vs-map-angular-when-to-use
 /auth/callback
 /auth/login
 /auth/signup
@@ -94,6 +100,7 @@
 /css/coding/css-selectors-text-basics
 /css/coding/css-theme-variables-dark-mode
 /css/coding/css-transitions-transforms-lift
+/css/interview-questions
 /css/trivia/css-background-color
 /css/trivia/css-border-property
 /css/trivia/css-box-model
@@ -177,6 +184,7 @@
 /html/coding/html-lists-and-navigation
 /html/coding/html-semantic-layout
 /html/coding/html-tables-accessibility
+/html/interview-questions
 /html/trivia/html-a-tag
 /html/trivia/html-anchor-target
 /html/trivia/html-aria-roles
@@ -204,6 +212,7 @@
 /html/trivia/html-title-tag
 /html/trivia/html-vs-xhtml
 /html/trivia/web-accessibility-make-page-accessible
+/interview-questions
 /javascript/coding/js-abortable-helpers
 /javascript/coding/js-add-strings
 /javascript/coding/js-add-two-promises

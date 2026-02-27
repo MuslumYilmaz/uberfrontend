@@ -12,6 +12,16 @@
     </p>
   </section>
 
+  <section class="fa-hub-cluster" *ngIf="source === 'global-coding'" aria-label="Interview question hubs">
+    <h2 class="fa-section-title">Interview question hubs</h2>
+    <p class="fa-meta-text">
+      Use these hubs when you want focused framework lists before moving into drills and tracks.
+    </p>
+    <div class="fa-hub-cluster__links">
+      <a *ngFor="let hub of interviewHubLinks" [routerLink]="hub.route">{{ hub.label }}</a>
+    </div>
+  </section>
+
   <app-coding-tech-kind-tabs *ngIf="source!=='company'" [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
     [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
     [selectedKind]="selectedKind$ | async" [selectedCategory]="selectedCategory$ | async"

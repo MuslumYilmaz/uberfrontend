@@ -193,10 +193,28 @@
     <loc>https://frontendatlas.com/angular/trivia/angular-zonejs-change-detection</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/trivia/ngrx-reducer-pure-function-immutability-side-effects</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/trivia/ngrx-selectors-memoization-derived-state-performance</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/trivia/ngrx-store-vs-component-state-angular-when-to-use</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/trivia/rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/trivia/rxjs-tap-vs-map-angular-when-to-use</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/changelog</loc>
@@ -236,6 +254,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/css/coding/css-transitions-transforms-lift</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/css/interview-questions</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/css/trivia/css-background-color</loc>
@@ -481,6 +502,9 @@
     <loc>https://frontendatlas.com/html/coding/html-tables-accessibility</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/html/interview-questions</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/html/trivia/html-a-tag</loc>
   </url>
   <url>
@@ -560,6 +584,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/html/trivia/web-accessibility-make-page-accessible</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/interview-questions</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-abortable-helpers</loc>

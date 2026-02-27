@@ -72,6 +72,10 @@
   border:1px solid var(--fah-border);
 }
 .fah-btn:hover{ background: color-mix(in srgb, var(--uf-text-primary) 8%, var(--uf-surface)); }
+.fah-btn--hub{
+  border-color: color-mix(in srgb, var(--uf-accent) 38%, var(--fah-border));
+  background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
+}
 
 /* Avatar + profile menu */
 .fah-profile{ position:relative; }
@@ -94,6 +98,10 @@
 }
 .fah-iconbtn:hover{
   background: color-mix(in srgb, var(--uf-text-primary) 10%, var(--uf-surface));
+}
+.fah-iconbtn--hub{
+  border-color: color-mix(in srgb, var(--uf-accent) 40%, var(--fah-border));
+  background: color-mix(in srgb, var(--uf-accent) 16%, var(--uf-surface));
 }
 
 .fah-menu{
@@ -174,6 +182,10 @@
 .fah-mobile-item--accent{
   border-color: color-mix(in srgb, var(--uf-accent) 40%, var(--fah-border));
   background: color-mix(in srgb, var(--uf-accent) 16%, var(--uf-surface));
+}
+.fah-mobile-item--hub{
+  border-color: color-mix(in srgb, var(--uf-accent) 34%, var(--fah-border));
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
 }
 
 .study-panel{

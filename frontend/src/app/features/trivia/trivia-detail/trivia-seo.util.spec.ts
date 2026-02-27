@@ -29,6 +29,7 @@ describe('trivia-seo.util', () => {
       'vue'
     );
     expect(fallback).toContain('Vue interview answer');
+    expect(fallback.toLowerCase()).toContain('frontend interview prep');
     expect(fallback.toLowerCase()).not.toContain('question focus:');
     expect(fallback.length).toBeLessThanOrEqual(155);
   });
@@ -80,5 +81,6 @@ describe('trivia-seo.util', () => {
     expect(title).toBe('React stale closures: why state gets stale');
     expect(description).toContain('dependency-safe patterns');
     expect(description.toLowerCase()).not.toContain('question focus:');
+    expect(description.toLowerCase()).not.toContain('frontend interview prep routine');
   });
 });

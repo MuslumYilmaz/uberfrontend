@@ -146,15 +146,21 @@ export function seoDescriptionForQuestion(
     || slugToConcept((q as any).id, (q as any).technology || tech)
     || 'front-end concept';
   const questionTitle = normalizedQuestionTitle(q);
-  const descFromContent = sanitizeSerpText(plainDescription || '', 120);
   const lead = questionTitle
     ? `${framework} interview answer for ${questionTitle}.`
     : `${framework} interview answer for ${concept}.`;
+  const platformHint = 'Use it in your frontend interview prep routine with guided tracks and company-specific drills.';
+  const leadAndHint = sanitizeSerpText(`${lead} ${platformHint}`, DESCRIPTION_MAX_LEN);
+  const remainingForBody = Math.max(40, DESCRIPTION_MAX_LEN - leadAndHint.length - 1);
+  const descFromContent = sanitizeSerpText(plainDescription || '', remainingForBody);
   const body = descFromContent
-    || `${framework} explanation with tradeoffs, common mistakes, and real-world examples.`;
+    || sanitizeSerpText(
+      `${framework} explanation with tradeoffs, common mistakes, and real-world examples.`,
+      remainingForBody
+    );
 
   return sanitizeSerpText(
-    `${lead} ${body}`,
+    `${lead} ${body} ${platformHint}`,
     DESCRIPTION_MAX_LEN
   );
 }

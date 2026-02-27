@@ -17,6 +17,12 @@ type MasteryTrackCard = {
   ctaLabel: string;
 };
 
+type HubQuickLink = {
+  label: string;
+  route: any[];
+  toneClass: string;
+};
+
 @Component({
   selector: 'app-track-list',
   standalone: true,
@@ -50,6 +56,48 @@ export class TrackListComponent {
     },
   ];
   allTrackCardsCount = this.tracks.length + this.masteryCards.length;
+  interviewHubQuickLinks: HubQuickLink[] = [
+    {
+      label: 'Frontend interview questions hub',
+      route: ['/interview-questions'],
+      toneClass: 'hero-link--iq-master',
+    },
+    {
+      label: 'JavaScript interview questions',
+      route: ['/javascript/interview-questions'],
+      toneClass: 'hero-link--iq-js',
+    },
+    {
+      label: 'React interview questions',
+      route: ['/react/interview-questions'],
+      toneClass: 'hero-link--iq-react',
+    },
+    {
+      label: 'Angular interview questions',
+      route: ['/angular/interview-questions'],
+      toneClass: 'hero-link--iq-angular',
+    },
+    {
+      label: 'Vue interview questions',
+      route: ['/vue/interview-questions'],
+      toneClass: 'hero-link--iq-vue',
+    },
+    {
+      label: 'HTML interview questions',
+      route: ['/html/interview-questions'],
+      toneClass: 'hero-link--iq-html',
+    },
+    {
+      label: 'CSS interview questions',
+      route: ['/css/interview-questions'],
+      toneClass: 'hero-link--iq-css',
+    },
+    {
+      label: 'HTML CSS interview questions',
+      route: ['/html-css/interview-questions'],
+      toneClass: 'hero-link--iq-htmlcss',
+    },
+  ];
 
   trackPrepOutcomes: PrepSignalItem[] = [
     'Follow a clear interview roadmap instead of random practice.',
@@ -63,6 +111,7 @@ export class TrackListComponent {
 
   trackPrepSequence: PrepSignalItem[] = [
     { text: 'Interview blueprint', route: ['/guides/interview-blueprint'] },
+    { text: 'Interview question hubs', route: ['/interview-questions'] },
     { text: 'Framework prep path', route: ['/guides/framework-prep'] },
     { text: 'Guided tracks', route: ['/tracks'] },
     { text: 'Company question sets', route: ['/companies'] },

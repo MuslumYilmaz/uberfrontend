@@ -235,6 +235,8 @@
                 Preparing for interviews? Use guided tracks for structure, then drill company-specific question sets when you need targeted practice.
               </p>
               <div class="detail-prep-bridge__links">
+                <a [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
+                <a [routerLink]="['/interview-questions']">Open frontend interview questions hub</a>
                 <a [routerLink]="['/tracks']">Explore interview tracks</a>
                 <a [routerLink]="['/companies']">Browse company questions</a>
                 <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>

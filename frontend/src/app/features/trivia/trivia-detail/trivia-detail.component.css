@@ -32,10 +32,16 @@ html, body { height: 100%; background: var(--uf-bg); }
   border: 1px solid var(--uf-border-subtle);
   background: var(--uf-surface);
   color: var(--uf-text-primary); cursor: pointer;
+  text-decoration: none;
   transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
   box-shadow: var(--uf-card-shadow);
 }
 .side-item:hover { transform: translateY(-1px); box-shadow: var(--uf-card-shadow-strong); border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%); }
+.side-item:focus-visible {
+  outline: none;
+  box-shadow: var(--uf-focus-ring);
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
+}
 .side-item.is-active { background: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-accent) 14%); border-color: color-mix(in srgb, var(--uf-border-subtle) 50%, var(--uf-accent) 50%); }
 .side-item-title { font-weight: 800; font-size: 13.75px; line-height: 1.25; }
 .side-item-desc { font-size: 11.5px; color: var(--uf-text-tertiary); margin-top: 4px; }
