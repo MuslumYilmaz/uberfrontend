@@ -421,9 +421,9 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend Interview Preparation Tracks',
+            title: 'Frontend Interview Prep Platform and Tracks',
             description:
-              'Explore frontend interview preparation tracks with structured coding, trivia, and system design question paths.',
+              'Use the frontend interview prep platform to run guided practice tracks, then connect each track with frontend interview question hubs by technology.',
             robots: 'index,follow',
           },
         },
@@ -977,13 +977,14 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'frontend interview questions',
-        title: 'Frontend Interview Questions',
+        title: 'Frontend Interview Questions Library',
         techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
         isMasterHub: true,
       },
       seo: {
-        title: 'Frontend Interview Questions',
-        description: 'Frontend interview questions across JavaScript, React, Angular, Vue, HTML, and CSS, with coding and trivia practice linked to interview tracks.',
+        title: 'Frontend Interview Questions Library',
+        description:
+          'Frontend interview questions library for JavaScript, React, Angular, Vue, HTML, and CSS, with coding and trivia hubs linked to the interview practice platform.',
       },
     },
   },
@@ -999,12 +1000,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'javascript interview questions',
-        title: 'JavaScript Interview Questions',
+        title: 'JavaScript Interview Questions for Frontend Interviews',
         techs: ['javascript'],
       },
       seo: {
-        title: 'JavaScript Interview Questions',
-        description: 'JavaScript interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+        title: 'JavaScript Interview Questions for Frontend Interviews',
+        description:
+          'JavaScript interview questions hub with coding and trivia practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
       },
     },
   },
@@ -1020,12 +1022,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'react interview questions',
-        title: 'React Interview Questions',
+        title: 'React Interview Questions for Frontend Interviews',
         techs: ['react'],
       },
       seo: {
-        title: 'React Interview Questions',
-        description: 'React interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+        title: 'React Interview Questions for Frontend Interviews',
+        description:
+          'React interview questions hub with coding and trivia practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
       },
     },
   },
@@ -1041,12 +1044,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'angular interview questions',
-        title: 'Angular Interview Questions',
+        title: 'Angular Interview Questions for Frontend Interviews',
         techs: ['angular'],
       },
       seo: {
-        title: 'Angular Interview Questions',
-        description: 'Angular interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+        title: 'Angular Interview Questions for Frontend Interviews',
+        description:
+          'Angular interview questions hub with coding and trivia practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
       },
     },
   },
@@ -1062,12 +1066,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'vue interview questions',
-        title: 'Vue Interview Questions',
+        title: 'Vue Interview Questions for Frontend Interviews',
         techs: ['vue'],
       },
       seo: {
-        title: 'Vue Interview Questions',
-        description: 'Vue interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+        title: 'Vue Interview Questions for Frontend Interviews',
+        description:
+          'Vue interview questions hub with coding and trivia practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
       },
     },
   },
@@ -1104,12 +1109,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'html interview questions',
-        title: 'HTML Interview Questions',
+        title: 'HTML Interview Questions for Frontend Interviews',
         techs: ['html'],
       },
       seo: {
-        title: 'HTML Interview Questions',
-        description: 'HTML interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+        title: 'HTML Interview Questions for Frontend Interviews',
+        description:
+          'HTML interview questions hub with coding and trivia practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
       },
     },
   },
@@ -1125,12 +1131,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'css interview questions',
-        title: 'CSS Interview Questions',
+        title: 'CSS Interview Questions for Frontend Interviews',
         techs: ['css'],
       },
       seo: {
-        title: 'CSS Interview Questions',
-        description: 'CSS interview questions for frontend interview preparation, with coding and trivia practice plus links to guides and tracks.',
+        title: 'CSS Interview Questions for Frontend Interviews',
+        description:
+          'CSS interview questions hub with coding and trivia practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
       },
     },
   },

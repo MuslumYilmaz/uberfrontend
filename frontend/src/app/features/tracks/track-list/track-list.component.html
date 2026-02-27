@@ -3,16 +3,26 @@
     <div class="hero-inner">
       <div>
         <p class="eyebrow">Tracks</p>
-        <h1>Frontend Interview Preparation Tracks</h1>
+        <h1>Frontend Interview Prep Platform and Tracks</h1>
         <p class="lede">
-          Choose the path that matches your timeline and interview goal. Each track bundles coding, trivia, and system design practice into one focused progression.
+          Use this interview prep platform when you need a guided sequence instead of random practice tabs. Each track combines coding, trivia, and system design in one flow.
         </p>
         <p class="lede lede-sub">
-          Use tracks when you need structure: foundations for long-term prep, crash plans for short deadlines, and role-focused sets for frontend interviews.
+          Start from the interview questions library, then run these tracks to keep weekly prep focused on one target stack and timeline.
         </p>
         <p class="lede lede-sub">
           Track pages are previewable so you can evaluate scope first, then unlock full guided flows when you are ready.
         </p>
+        <p class="chip-group-title chip-group-title--links">Interview questions library</p>
+        <div class="hero-links" aria-label="Interview question hubs">
+          <a
+            *ngFor="let hub of interviewHubQuickLinks"
+            class="hero-link"
+            [ngClass]="hub.toneClass"
+            [routerLink]="hub.route">
+            {{ hub.label }}
+          </a>
+        </div>
         <p class="chip-group-title">Coverage areas</p>
         <div class="badges" aria-label="Coverage areas">
           <span class="badge badge--system">UI + System Design</span>
@@ -31,16 +41,6 @@
           <a class="hero-link hero-link--system" [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
           <a class="hero-link hero-link--focus" [routerLink]="['/focus-areas']">All focus areas</a>
         </div>
-        <p class="chip-group-title chip-group-title--links">Interview question hubs</p>
-        <div class="hero-links" aria-label="Interview question hubs">
-          <a
-            *ngFor="let hub of interviewHubQuickLinks"
-            class="hero-link"
-            [ngClass]="hub.toneClass"
-            [routerLink]="hub.route">
-            {{ hub.label }}
-          </a>
-        </div>
         <app-prep-signal-grid
           class="prep-path-panel"
           [outcomes]="trackPrepOutcomes"
@@ -58,52 +58,120 @@
   </div>
 
   <div class="container">
-    <div class="grid">
-      <a
-        faCard class="card card--mastery"
-        *ngFor="let mastery of masteryCards; let i = index"
-        [routerLink]="['/tracks', mastery.slug, 'mastery']"
-        [attr.data-slot]="'mastery-' + i">
-        <div class="card-top">
-          <span class="pill">{{ mastery.durationLabel }}</span>
-          <span class="pill muted">{{ mastery.questionCountLabel }}</span>
-        </div>
-        <div class="card-title">{{ mastery.title }}</div>
-        <div class="card-sub">{{ mastery.subtitle }}</div>
+    <section class="platform-architecture" aria-labelledby="tracks-platform-h2">
+      <div class="platform-architecture__intro">
+        <p class="section-kicker">Platform model</p>
+        <h2 id="tracks-platform-h2">How this interview prep platform avoids thin practice loops</h2>
+        <p>
+          Many prep plans fail because candidates collect random questions without running a repeatable execution system.
+          This platform is designed to convert interview question hubs into weekly practice cycles with clear scope, sequence, and outcome checks.
+        </p>
+        <p>
+          Use the flow below to connect the frontend interview questions library, guided tracks, and company-specific drills in one pipeline.
+        </p>
+      </div>
 
-        <div class="focus">
-          <span *ngFor="let item of mastery.focus" class="chip">{{ item }}</span>
-        </div>
+      <div class="platform-architecture__steps">
+        <a
+          *ngFor="let step of platformSteps"
+          class="platform-step"
+          [routerLink]="step.route">
+          <span class="platform-step__kicker">{{ step.kicker }}</span>
+          <span class="platform-step__title">{{ step.title }}</span>
+          <span class="platform-step__desc">{{ step.description }}</span>
+          <span class="platform-step__cta">{{ step.ctaLabel }} →</span>
+        </a>
+      </div>
+    </section>
 
-        <div class="fw-note">{{ mastery.note }}</div>
+    <section class="tracks-catalog" aria-labelledby="tracks-catalog-h2">
+      <header class="tracks-catalog__head">
+        <p class="section-kicker">Track catalog</p>
+        <h2 id="tracks-catalog-h2">Choose one path and finish it before switching stacks</h2>
+        <p>
+          Each track bundles coding, trivia, and system design prompts so interview performance improves across implementation,
+          explanation, and architecture communication. Pick the timeline that matches your interview window, then complete the path in order.
+        </p>
+      </header>
 
-        <div class="meta-row">
-          <span *ngFor="let badge of mastery.badges" class="meta">{{ badge }}</span>
-        </div>
+      <div class="grid">
+        <a
+          faCard class="card card--mastery"
+          *ngFor="let mastery of masteryCards; let i = index"
+          [routerLink]="['/tracks', mastery.slug, 'mastery']"
+          [attr.data-slot]="'mastery-' + i">
+          <div class="card-top">
+            <span class="pill">{{ mastery.durationLabel }}</span>
+            <span class="pill muted">{{ mastery.questionCountLabel }}</span>
+          </div>
+          <div class="card-title">{{ mastery.title }}</div>
+          <div class="card-sub">{{ mastery.subtitle }}</div>
 
-        <div class="card-footer">{{ mastery.ctaLabel }} →</div>
-      </a>
+          <div class="focus">
+            <span *ngFor="let item of mastery.focus" class="chip">{{ item }}</span>
+          </div>
 
-      <a faCard class="card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug, 'preview']" [attr.data-slot]="i">
-        <div class="card-top">
-          <span class="pill">{{ track.durationLabel }}</span>
-          <span class="pill muted">{{ track.featured.length }} questions</span>
-        </div>
-        <div class="card-title">{{ track.title }}</div>
-        <div class="card-sub">{{ track.subtitle }}</div>
+          <div class="fw-note">{{ mastery.note }}</div>
 
-        <div class="focus">
-          <span *ngFor="let item of track.focus" class="chip">{{ item }}</span>
-        </div>
+          <div class="meta-row">
+            <span *ngFor="let badge of mastery.badges" class="meta">{{ badge }}</span>
+          </div>
 
-        <div class="fw-note">{{ noteFor(track) }}</div>
+          <div class="card-footer">{{ mastery.ctaLabel }} →</div>
+        </a>
 
-        <div class="meta-row">
-          <span *ngFor="let badge of badgesFor(track)" class="meta">{{ badge }}</span>
-        </div>
+        <a faCard class="card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug, 'preview']" [attr.data-slot]="i">
+          <div class="card-top">
+            <span class="pill">{{ track.durationLabel }}</span>
+            <span class="pill muted">{{ track.featured.length }} questions</span>
+          </div>
+          <div class="card-title">{{ track.title }}</div>
+          <div class="card-sub">{{ track.subtitle }}</div>
 
-        <div class="card-footer">View preview →</div>
-      </a>
-    </div>
+          <div class="focus">
+            <span *ngFor="let item of track.focus" class="chip">{{ item }}</span>
+          </div>
+
+          <div class="fw-note">{{ noteFor(track) }}</div>
+
+          <div class="meta-row">
+            <span *ngFor="let badge of badgesFor(track)" class="meta">{{ badge }}</span>
+          </div>
+
+          <div class="card-footer">View preview →</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="tracks-playbook" aria-labelledby="tracks-playbook-h2">
+      <p class="section-kicker">Execution playbook</p>
+      <h2 id="tracks-playbook-h2">Three-week structure for frontend interview preparation</h2>
+      <p class="tracks-playbook__lead">
+        This format keeps your preparation deep enough for search-engine quality content and practical enough for interview deadlines.
+        Pair it with
+        <a [routerLink]="['/interview-questions']">frontend interview question hubs</a>,
+        <a [routerLink]="['/guides/framework-prep']">framework prep paths</a>,
+        and
+        <a [routerLink]="['/companies']">company interview sets</a>
+        to maintain coverage without fragmentation.
+      </p>
+      <div class="tracks-playbook__grid">
+        <article class="playbook-col" *ngFor="let col of playbookColumns">
+          <h3>{{ col.title }}</h3>
+          <ul>
+            <li *ngFor="let point of col.points">{{ point }}</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="tracks-faq" aria-labelledby="tracks-faq-h2">
+      <p class="section-kicker">Platform FAQ</p>
+      <h2 id="tracks-faq-h2">Common questions about using interview tracks</h2>
+      <article class="faq-item" *ngFor="let faq of faqEntries">
+        <h3>{{ faq.question }}</h3>
+        <p>{{ faq.answer }}</p>
+      </article>
+    </section>
   </div>
 </div>

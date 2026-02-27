@@ -1,9 +1,9 @@
 <div class="iq-wrap">
   <header class="fa-page-header iq-header">
-    <p class="fa-page-kicker">{{ isMasterHub() ? 'Interview questions master hub' : 'Framework landing page' }}</p>
+    <p class="fa-page-kicker">{{ isMasterHub() ? 'Interview questions library' : 'Technology interview questions hub' }}</p>
     <h1 class="fa-page-title">{{ config.title }}</h1>
     <p class="fa-page-subtitle">
-      {{ keywordSentenceCase() }} are grouped here so you can run focused practice loops instead of random drills.
+      {{ introLead() }}
     </p>
   </header>
 
@@ -35,22 +35,24 @@
   </section>
 
   <section class="iq-intro">
-    <p>
-      This page is built for frontend interview preparation: start with coding implementation, then verify explanation quality with trivia rounds in the same stack.
-    </p>
-    <p>
-      Use this hub when you need predictable practice volume for {{ keywordSentenceCase() }} before interviews, especially when deadlines are short and topic switching slows you down.
-    </p>
-    <p>
-      Pair these drills with the main prep hubs so your practice stays balanced across coding, architecture, and communication.
-    </p>
+    <p class="iq-intro__lead">Use this page as a planning surface for interview prep, not just a random question feed.</p>
+    <ul class="iq-intent-list">
+      <li *ngFor="let item of listIntentItems()">{{ item }}</li>
+    </ul>
     <div class="iq-links">
+      <a *ngIf="!isMasterHub()" [routerLink]="['/interview-questions']">Open frontend interview questions library</a>
+      <a [routerLink]="['/tracks']">Open interview practice platform (/tracks)</a>
       <a [routerLink]="['/coding']">Open coding hub</a>
       <a [routerLink]="['/guides']">Open guides hub</a>
-      <a [routerLink]="['/tracks']">Open tracks hub</a>
     </div>
-    <div class="iq-hub-links">
-      <p class="iq-hub-links__label">Interview question hubs</p>
+    <div class="iq-hub-links" *ngIf="isMasterHub()">
+      <p class="iq-hub-links__label">Technology interview question hubs</p>
+      <div class="iq-links iq-links--hubs">
+        <a *ngFor="let hub of masterTechHubLinks()" [routerLink]="hub.route">{{ hub.label }}</a>
+      </div>
+    </div>
+    <div class="iq-hub-links" *ngIf="!isMasterHub()">
+      <p class="iq-hub-links__label">Related interview question hubs</p>
       <div class="iq-links iq-links--hubs">
         <a *ngFor="let hub of relatedHubLinks" [routerLink]="hub.route">{{ hub.label }}</a>
       </div>

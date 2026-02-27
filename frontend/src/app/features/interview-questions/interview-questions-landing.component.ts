@@ -81,6 +81,15 @@ const INTERVIEW_HUB_LINKS: HubLink[] = [
   },
 ];
 
+const PRIMARY_TECH_HUB_PATHS = new Set<string>([
+  '/javascript/interview-questions',
+  '/react/interview-questions',
+  '/angular/interview-questions',
+  '/vue/interview-questions',
+  '/html/interview-questions',
+  '/css/interview-questions',
+]);
+
 const DIFFICULTY_RANK: Record<string, number> = {
   easy: 0,
   intermediate: 1,
@@ -134,6 +143,35 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   keywordSentenceCase(): string {
     return this.config.keyword.charAt(0).toUpperCase() + this.config.keyword.slice(1);
+  }
+
+  introLead(): string {
+    if (this.isMasterHub()) {
+      return 'Use this frontend interview questions library to pick a technology hub, open coding and trivia leaves, and keep weekly prep consistent.';
+    }
+
+    return `Use this ${this.keywordSentenceCase()} hub to practice coding and trivia leaves, then return to the master library and interview practice platform.`;
+  }
+
+  listIntentItems(): string[] {
+    if (this.isMasterHub()) {
+      return [
+        'Choose a technology hub based on your current interview pipeline.',
+        'Mix coding implementation drills with trivia explanation checks.',
+        'Move from question libraries to structured interview practice tracks.',
+      ];
+    }
+
+    const techName = this.currentHubTechLabel();
+    return [
+      `Prioritize high-impact ${techName} coding prompts first.`,
+      `Use ${techName} trivia rounds to sharpen explanation speed.`,
+      'Escalate into the frontend interview prep platform for guided sequencing.',
+    ];
+  }
+
+  masterTechHubLinks(): HubLink[] {
+    return INTERVIEW_HUB_LINKS.filter((hub) => PRIMARY_TECH_HUB_PATHS.has(hub.path));
   }
 
   supportsMultipleTechs(): boolean {
@@ -280,6 +318,8 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const currentPath = this.currentRoutePath();
     const canonicalUrl = this.seo.buildCanonicalUrl(currentPath);
     const masterHubUrl = this.seo.buildCanonicalUrl('/interview-questions');
+    const tracksUrl = this.seo.buildCanonicalUrl('/tracks');
+    const companiesUrl = this.seo.buildCanonicalUrl('/companies');
     const description = String(
       routeSeo.description
       || `${this.config.title} with coding and trivia prompts for frontend interview preparation.`,
@@ -305,8 +345,8 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'Thing', name: 'Frontend interview questions' },
       ],
       mentions: [
-        { '@type': 'WebPage', name: 'Frontend interview tracks', url: this.seo.buildCanonicalUrl('/tracks') },
-        { '@type': 'WebPage', name: 'Company frontend interview questions', url: this.seo.buildCanonicalUrl('/companies') },
+        { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
+        { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ],
     };
 
@@ -317,6 +357,21 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         url: masterHubUrl,
         name: 'Frontend Interview Questions',
       };
+      collectionPage['mentions'] = [
+        { '@type': 'WebPage', name: 'Frontend interview questions library', url: masterHubUrl },
+        { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
+        { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
+      ];
+    } else {
+      collectionPage['hasPart'] = this.masterTechHubLinks().map((hub) => ({
+        '@type': 'WebPage',
+        name: hub.label,
+        url: this.seo.buildCanonicalUrl(hub.path),
+      }));
+      collectionPage['mentions'] = [
+        { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
+        { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
+      ];
     }
 
     if (itemListElement.length) {
@@ -424,5 +479,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     return '/interview-questions';
+  }
+
+  private currentHubTechLabel(): string {
+    if (!this.config.techs.length) return 'frontend';
+    return this.techLabel(this.config.techs[0]).toLowerCase();
   }
 }

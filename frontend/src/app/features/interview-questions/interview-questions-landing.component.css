@@ -127,6 +127,24 @@
   line-height: 1.55;
 }
 
+.iq-intro__lead {
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  line-height: 1.55;
+}
+
+.iq-intent-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.iq-intent-list li {
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+  line-height: 1.5;
+}
+
 .iq-intro p:last-of-type,
 .iq-next p:last-of-type {
   margin-bottom: 0;
