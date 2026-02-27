@@ -442,18 +442,19 @@
   overflow: hidden;
 }
 
-:host ::ng-deep .system-frame .left,
-:host ::ng-deep .system-frame .right {
+:host ::ng-deep .system-frame .sdl-left,
+:host ::ng-deep .system-frame .sdl-right {
   position: static !important;
+  top: auto !important;
   width: auto;
   height: auto;
 }
 
-:host ::ng-deep .system-frame .right {
+:host ::ng-deep .system-frame .sdl-right {
   display: none !important;
 }
 
-:host ::ng-deep .system-frame .center {
+:host ::ng-deep .system-frame .sdl-center {
   margin: 0;
   height: 100%;
   overflow: hidden;
@@ -464,9 +465,9 @@
   overflow: hidden !important;
 }
 
-:host ::ng-deep .system-frame .center,
+:host ::ng-deep .system-frame .sdl-center,
 :host ::ng-deep .system-frame .sdl-main,
-:host ::ng-deep .system-frame .left {
+:host ::ng-deep .system-frame .sdl-left {
   overflow: hidden !important;
 }
 

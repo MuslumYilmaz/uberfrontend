@@ -12,6 +12,104 @@
   margin-bottom: 14px;
 }
 
+.iq-overview {
+  margin: 0 0 16px;
+  padding: 16px;
+  border-radius: var(--uf-card-radius);
+  border: 1px solid var(--uf-border-subtle);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--uf-accent) 11%, var(--uf-surface)),
+      color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt))
+    );
+  box-shadow: var(--uf-card-shadow);
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.iq-overview__copy {
+  min-width: 0;
+}
+
+.iq-overview__eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent);
+}
+
+.iq-overview__title {
+  margin: 0;
+  font-size: clamp(17px, 2.2vw, 21px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--uf-text-primary);
+}
+
+.iq-overview__text {
+  margin: 8px 0 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  line-height: 1.55;
+}
+
+.iq-tech-pills {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.iq-tech-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 56%, var(--uf-accent) 44%);
+  background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt));
+  font-size: 12px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
+}
+
+.iq-overview__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.iq-stat {
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+  display: grid;
+  gap: 6px;
+  align-content: center;
+  min-height: 90px;
+}
+
+.iq-stat__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+}
+
+.iq-stat__value {
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--uf-text-primary);
+}
+
 .iq-intro,
 .iq-next {
   margin: 0 0 16px;
@@ -87,8 +185,20 @@
   margin: 0 0 16px;
 }
 
+.iq-section--surface {
+  padding: 16px;
+  border-radius: var(--uf-card-radius);
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+  box-shadow: var(--uf-card-shadow);
+}
+
 .iq-section__head {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.iq-section__title {
+  margin: 0;
 }
 
 .iq-section__head p {
@@ -101,6 +211,7 @@
   list-style: none;
   display: grid;
   gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .iq-item {
@@ -127,10 +238,22 @@
 }
 
 .iq-item__meta {
-  margin-top: 4px;
+  margin-top: 8px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.iq-item__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
   font-size: 12px;
+  font-weight: 600;
   color: color-mix(in srgb, var(--uf-text-tertiary) 82%, transparent);
 }
 
@@ -141,6 +264,16 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
 }
 
+.iq-item__cta {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--uf-accent) 82%, var(--uf-text-primary));
+}
+
 .iq-loading,
 .iq-empty {
   padding: 14px;
@@ -148,4 +281,28 @@
   border: 1px dashed var(--uf-border-subtle);
   color: color-mix(in srgb, var(--uf-text-tertiary) 82%, transparent);
   background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+}
+
+@media (max-width: 940px) {
+  .iq-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .iq-overview__stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .iq-wrap {
+    padding-top: 14px;
+  }
+
+  .iq-overview__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .iq-list {
+    grid-template-columns: 1fr;
+  }
 }

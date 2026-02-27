@@ -7,6 +7,33 @@
     </p>
   </header>
 
+  <section class="iq-overview">
+    <div class="iq-overview__copy">
+      <p class="iq-overview__eyebrow">Practice snapshot</p>
+      <p class="iq-overview__title">Focus by stack, not random tabs.</p>
+      <p class="iq-overview__text">
+        This hub keeps coding and trivia in one flow so implementation and explanation skills improve together.
+      </p>
+      <div class="iq-tech-pills">
+        <span class="iq-tech-pill" *ngFor="let tech of config.techs">{{ techLabel(tech) }}</span>
+      </div>
+    </div>
+    <div class="iq-overview__stats" aria-label="Question snapshot">
+      <article class="iq-stat">
+        <span class="iq-stat__label">Coding</span>
+        <span class="iq-stat__value">{{ loading ? '—' : codingQuestions.length }}</span>
+      </article>
+      <article class="iq-stat">
+        <span class="iq-stat__label">Trivia</span>
+        <span class="iq-stat__value">{{ loading ? '—' : triviaQuestions.length }}</span>
+      </article>
+      <article class="iq-stat">
+        <span class="iq-stat__label">Total shown</span>
+        <span class="iq-stat__value">{{ loading ? '—' : (codingQuestions.length + triviaQuestions.length) }}</span>
+      </article>
+    </div>
+  </section>
+
   <section class="iq-intro">
     <p>
       This page is built for frontend interview preparation: start with coding implementation, then verify explanation quality with trivia rounds in the same stack.
@@ -30,9 +57,9 @@
     </div>
   </section>
 
-  <section class="iq-section">
+  <section class="iq-section iq-section--surface">
     <div class="iq-section__head">
-      <h2 class="fa-section-title">Coding challenges to start with</h2>
+      <h2 class="fa-section-title iq-section__title">Coding challenges to start with</h2>
       <p class="fa-meta-text">Solve first, then review trade-offs and edge cases you can explain in interviews.</p>
     </div>
     <ng-container *ngIf="!loading; else loadingState">
@@ -41,19 +68,20 @@
           <a class="iq-item" [routerLink]="q.link">
             <div class="iq-item__title">{{ q.title }}</div>
             <div class="iq-item__meta">
-              <span>{{ q.difficulty | titlecase }}</span>
-              <span *ngIf="supportsMultipleTechs()">{{ techLabel(q.tech) }}</span>
+              <span class="iq-item__chip">{{ q.difficulty | titlecase }}</span>
+              <span class="iq-item__chip" *ngIf="supportsMultipleTechs()">{{ techLabel(q.tech) }}</span>
             </div>
             <p class="iq-item__desc">{{ q.description || 'Open the prompt to review requirements and expected output.' }}</p>
+            <span class="iq-item__cta">Open challenge →</span>
           </a>
         </li>
       </ul>
     </ng-container>
   </section>
 
-  <section class="iq-section">
+  <section class="iq-section iq-section--surface">
     <div class="iq-section__head">
-      <h2 class="fa-section-title">Trivia questions for explanation speed</h2>
+      <h2 class="fa-section-title iq-section__title">Trivia questions for explanation speed</h2>
       <p class="fa-meta-text">Use quick recall checks to improve how clearly you explain decisions under pressure.</p>
     </div>
     <ng-container *ngIf="!loading; else loadingState">
@@ -62,10 +90,11 @@
           <a class="iq-item" [routerLink]="q.link">
             <div class="iq-item__title">{{ q.title }}</div>
             <div class="iq-item__meta">
-              <span>{{ q.difficulty | titlecase }}</span>
-              <span *ngIf="supportsMultipleTechs()">{{ techLabel(q.tech) }}</span>
+              <span class="iq-item__chip">{{ q.difficulty | titlecase }}</span>
+              <span class="iq-item__chip" *ngIf="supportsMultipleTechs()">{{ techLabel(q.tech) }}</span>
             </div>
             <p class="iq-item__desc">{{ q.description || 'Open the question to practice concise interview-ready explanations.' }}</p>
+            <span class="iq-item__cta">Open question →</span>
           </a>
         </li>
       </ul>
