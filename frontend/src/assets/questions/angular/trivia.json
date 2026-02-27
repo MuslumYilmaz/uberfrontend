@@ -5948,7 +5948,7 @@
     "title": "NgRx data flow end-to-end in Angular: actions, reducers, effects, selectors",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "description": "NgRx data flow in Angular follows a predictable loop: component dispatches actions, reducers create the next immutable state, selectors read and derive view data, and effects handle async side effects before dispatching success/failure actions. This is the core actions-reducers-effects-selectors flow interviewers expect.",
     "answer": {
       "blocks": [
@@ -6067,7 +6067,7 @@
     "title": "NgRx Store vs local component state in Angular: global vs local, and when to use NgRx",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "description": "One of the most practical Angular state management decisions is choosing NgRx Store vs local component state. Use local state for short-lived UI details and use Store for shared, long-lived, globally relevant state. Interviewers expect clear rules for global vs local state in Angular and when NgRx is worth it.",
     "answer": {
       "blocks": [
@@ -6210,7 +6210,7 @@
     "title": "NgRx reducer pure function in practice: immutability, side effects, and common mistakes",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "description": "A reducer in NgRx must be a pure function: same input state + action must always produce the same next state, with no side effects. Interviewers test reducer immutability and whether you can spot forbidden reducer side effects like mutation, Math.random(), HTTP, router navigation, and service calls.",
     "answer": {
       "blocks": [
@@ -6332,7 +6332,7 @@
     "title": "NgRx selectors beyond getting state: memoization, derived state, and Angular performance",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "description": "NgRx selectors are not just state getters. They create memoized, composable read models that power derived state in Angular apps. Interviewers expect you to explain selector composition, NgRx selector memoization behavior, and why this improves performance.",
     "answer": {
       "blocks": [
