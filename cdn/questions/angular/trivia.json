@@ -5948,7 +5948,7 @@
     "title": "NgRx data flow end-to-end in Angular: actions, reducers, effects, selectors",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "description": "NgRx data flow in Angular follows a predictable loop: component dispatches actions, reducers create the next immutable state, selectors read and derive view data, and effects handle async side effects before dispatching success/failure actions. This is the core actions-reducers-effects-selectors flow interviewers expect.",
     "answer": {
       "blocks": [
