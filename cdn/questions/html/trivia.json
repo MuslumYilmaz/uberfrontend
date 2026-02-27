@@ -4,8 +4,8 @@
     "title": "What is the DOM?",
     "description": "The DOM (Document Object Model) is a programming interface for web documents. It represents the structure of an HTML or XML document as a tree of nodes, allowing developers to read, modify, and manipulate the page’s content, structure, and styles dynamically using JavaScript.",
     "seo": {
-      "title": "What Is the DOM in HTML? Document Object Model Explained",
-      "description": "Understand what the DOM is, how browsers build the document tree, and how JavaScript reads and updates nodes to make web pages interactive."
+      "title": "What is the DOM in HTML and JavaScript?",
+      "description": "The DOM is a tree-like object model of an HTML document that JavaScript can read and update at runtime."
     },
     "type": "trivia",
     "technology": "html",
@@ -116,8 +116,8 @@
     "title": "What are HTML tags?",
     "description": "HTML tags are the basic building blocks of an HTML document. They define the structure, content, and meaning of a web page by marking elements like headings, paragraphs, images, and links.",
     "seo": {
-      "title": "What Are HTML Tags? Syntax, Structure, and Core Examples",
-      "description": "Learn how HTML tags define page structure, the difference between paired and self-closing tags, and which core tags interviewers expect you to know."
+      "title": "What are HTML tags and how do they work?",
+      "description": "HTML tags are markup keywords enclosed in angle brackets that define elements and structure on a web page."
     },
     "type": "trivia",
     "technology": "html",
@@ -238,8 +238,8 @@
     "title": "What is the purpose of the <head> tag in HTML?",
     "description": "The &lt;head&gt; tag in HTML contains metadata and resources about the document that are not directly visible to users. It provides essential information such as the page title, linked stylesheets, scripts, and meta tags that help browsers, search engines, and social networks understand and render the page correctly.",
     "seo": {
-      "title": "HTML head Tag: Metadata, Rendering, and SEO Basics",
-      "description": "See what belongs inside the HTML head tag, including title, meta, link, and script, and why these elements matter for rendering, SEO, and sharing."
+      "title": "What is the purpose of the HTML head tag?",
+      "description": "The <head> tag stores document metadata such as title, meta, links, and scripts that browsers and search engines use."
     },
     "type": "trivia",
     "technology": "html",
@@ -351,8 +351,8 @@
     "title": "What is the difference between <div> and <span>?",
     "description": "The &lt;div&gt; and &lt;span&gt; tags are both generic container elements in HTML, but they differ in how they behave and are used. &lt;div&gt; is a block-level element used for structuring larger sections of a webpage, while &lt;span&gt; is an inline element used to style or manipulate small portions of text or content within a line.",
     "seo": {
-      "title": "div vs span in HTML: Block vs Inline Differences",
-      "description": "Compare div and span with practical use cases, learn when to structure layout versus style inline text, and avoid common semantic and CSS mistakes."
+      "title": "What is the difference between div and span?",
+      "description": "<div> is a block-level container for larger sections, while <span> is an inline container for small text-level styling."
     },
     "type": "trivia",
     "technology": "html",
@@ -466,8 +466,8 @@
     "title": "What does the <title> tag do?",
     "description": "The &lt;title&gt; tag defines the title of an HTML document. It appears in the browser’s title bar or tab and is used by search engines and social networks to identify and display the page. Though not visible within the webpage itself, it plays a crucial role in SEO, accessibility, and user experience.",
     "seo": {
-      "title": "HTML title Tag: SEO Impact, Tabs, and Best Practices",
-      "description": "Learn what the title tag does, how it appears in search results and browser tabs, and how to write concise titles that improve relevance and click-through."
+      "title": "What does the HTML title tag do?",
+      "description": "The <title> tag sets the page title shown in browser tabs and often used as the clickable headline in search results."
     },
     "type": "trivia",
     "technology": "html",
@@ -574,8 +574,8 @@
     "title": "What is the purpose of the alt attribute in the <img> tag?",
     "description": "The alt (alternative text) attribute in the &lt;img&gt; tag provides a textual description of an image. It helps users who cannot see the image — such as visually impaired users using screen readers — and also appears if the image fails to load. Additionally, alt text improves SEO by allowing search engines to understand image content.",
     "seo": {
-      "title": "HTML img alt Attribute: Accessibility, SEO, and Examples",
-      "description": "Understand why alt text matters for screen readers, image fallback, and SEO, plus rules for writing context-aware descriptions without keyword stuffing."
+      "title": "What is the alt attribute in an image tag?",
+      "description": "The alt attribute provides alternative text for an image so screen readers and fallback displays can convey its meaning."
     },
     "type": "trivia",
     "technology": "html",
@@ -676,8 +676,8 @@
     "title": "What are semantic HTML elements?",
     "description": "Semantic HTML elements clearly describe their meaning in a way that both browsers and developers can understand. Unlike generic containers such as &lt;div&gt; or &lt;span&gt;, semantic elements like &lt;header&gt;, &lt;article&gt;, &lt;section&gt;, and &lt;footer&gt; convey the purpose and structure of the content, improving accessibility, SEO, and maintainability.",
     "seo": {
-      "title": "Semantic HTML Elements: Meaning, Accessibility, and SEO",
-      "description": "Learn what semantic HTML elements are, when to use header, main, article, and footer tags, and why they improve accessibility, SEO, and maintainability."
+      "title": "What are semantic HTML elements?",
+      "description": "Semantic HTML elements describe the meaning and role of content, such as header, main, article, and footer."
     },
     "type": "trivia",
     "technology": "html",
@@ -814,8 +814,8 @@
     "importance": 1,
     "description": "Block-level elements start on a new line and take up the full width available, while inline elements stay within a line without breaking the flow of text. They play different roles in structuring and styling HTML documents. Choosing the right display affects layout, accessibility semantics, and performance; test with nested content.",
     "seo": {
-      "title": "Block vs Inline Elements in HTML: Differences and Use Cases",
-      "description": "Understand how block-level and inline elements differ in layout flow, sizing, and nesting, plus rules for choosing the right element in interviews."
+      "title": "Block vs inline elements in HTML: what is the difference?",
+      "description": "Block elements start on a new line and take full width by default, while inline elements flow within text content."
     },
     "answer": {
       "blocks": [
@@ -898,8 +898,8 @@
     "importance": 1,
     "description": "The &lt;br&gt; tag inserts a line break inside text content. It’s an empty element and should be used for line breaks in prose, not for layout (use CSS for spacing). Use it only for semantic line breaks (addresses, poems), not layout. Overuse can hurt accessibility and maintainability; test with screen readers.",
     "seo": {
-      "title": "HTML br Tag: Line Break Usage Rules",
-      "description": "Learn what the HTML br tag does, when manual line breaks are semantically correct, and why CSS should handle spacing for cleaner, accessible layouts."
+      "title": "What does the br tag do in HTML?",
+      "description": "The <br> tag inserts a single line break inside text content without creating a new paragraph block."
     },
     "answer": {
       "blocks": [
@@ -985,8 +985,8 @@
     "importance": 1,
     "description": "The &lt;a&gt; (anchor) tag in HTML is used to create hyperlinks that allow users to navigate from one page or resource to another. It is one of the most essential tags for connecting documents and enabling web navigation.",
     "seo": {
-      "title": "HTML a Tag Explained: Links, href, target, and rel",
-      "description": "Learn how the HTML anchor tag creates links, how href, target, and rel change behavior, and when to use absolute, relative, fragment, and download links."
+      "title": "What is the a tag used for in HTML?",
+      "description": "The <a> tag creates hyperlinks that navigate to URLs, page sections, files, or other destinations."
     },
     "answer": {
       "blocks": [
@@ -1086,8 +1086,8 @@
     "importance": 1,
     "description": "The `href` (Hypertext Reference) attribute in HTML defines the target destination of a link or resource. It is most commonly used within the `&lt;a&gt;` (anchor) tag to specify the URL a user will navigate to when clicking the link.",
     "seo": {
-      "title": "HTML href attribute: definition & examples",
-      "description": "href (Hypertext Reference) sets a link’s URL. See absolute vs relative paths, fragments (#), mailto/tel links, and common pitfalls—quick examples."
+      "title": "What is the href attribute used for in HTML?",
+      "description": "The href attribute specifies the destination URL for links and related elements like anchors and stylesheets."
     },
     "answer": {
       "blocks": [
@@ -1186,8 +1186,8 @@
     "importance": 1,
     "description": "The &lt;meta&gt; tag provides metadata—data about the webpage itself—such as character encoding, viewport settings, description, keywords, and author information. It helps browsers, search engines, and social media platforms understand and display the page correctly.",
     "seo": {
-      "title": "HTML meta Tag: Charset, Viewport, Description, and SEO",
-      "description": "See what meta tags do in the head, including charset, viewport, and description, and how they affect rendering, indexing, and social previews."
+      "title": "What is the meta tag used for in HTML?",
+      "description": "The <meta> tag provides document metadata such as charset, viewport, and descriptions used by browsers and search engines."
     },
     "answer": {
       "blocks": [
@@ -1312,8 +1312,8 @@
     "importance": 1,
     "description": "The &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; tags are all list-related elements in HTML, but they serve different purposes. &lt;ol&gt; defines an ordered (numbered) list, &lt;ul&gt; defines an unordered (bulleted) list, and &lt;dl&gt; defines a description (definition) list used for terms and their definitions.",
     "seo": {
-      "title": "ol vs ul vs dl in HTML: List Types and When to Use Each",
-      "description": "Understand the difference between ordered, unordered, and description lists, and when to use each for steps, options, or term-definition content."
+      "title": "What is the difference between ol ul and dl?",
+      "description": "<ol> is an ordered list, <ul> is an unordered list, and <dl> is a description list for terms and definitions."
     },
     "answer": {
       "blocks": [
@@ -1631,8 +1631,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "HTML form default method: GET vs POST",
-      "description": "Know the default form method in HTML, why browsers use GET when method is omitted, how data appears in the URL, and when switching to POST is safer."
+      "title": "What is the default form method in HTML?",
+      "description": "The default HTML form method is GET when no method attribute is specified."
     }
   },
   {
@@ -1643,8 +1643,8 @@
     "importance": 1,
     "description": "The placeholder attribute provides a short hint that describes the expected value of an input field. It appears inside the input box as gray text until the user enters a value, helping users understand what kind of data to type.",
     "seo": {
-      "title": "HTML Placeholder Attribute: Usage, UX, and Accessibility",
-      "description": "Learn what placeholder text is used for, why it should not replace labels, and how to write helpful hints for forms without hurting accessibility."
+      "title": "What is the placeholder attribute in HTML input?",
+      "description": "The placeholder attribute shows hint text inside an input until the user enters a value."
     },
     "answer": {
       "blocks": [
@@ -1735,8 +1735,8 @@
     "importance": 1,
     "description": "Both id and class are used to identify HTML elements, but they serve different purposes. The id attribute uniquely identifies a single element, while the class attribute groups multiple elements under a shared name for styling or scripting.",
     "seo": {
-      "title": "id vs class in HTML: Key Differences and Best Practices",
-      "description": "Learn when to use id versus class in HTML, how uniqueness affects CSS and JavaScript selectors, and common mistakes that hurt maintainability."
+      "title": "What is the difference between id and class in HTML?",
+      "description": "An id identifies one unique element, while a class groups multiple elements for shared styling or behavior."
     },
     "answer": {
       "blocks": [
@@ -1834,8 +1834,8 @@
     "importance": 1,
     "description": "The &lt;iframe&gt; (inline frame) tag allows you to embed another HTML page within the current page. It’s commonly used to display external content such as videos, maps, ads, or other web pages without leaving the parent site.",
     "seo": {
-      "title": "HTML iframe Tag: How It Works, Uses, and Security Tips",
-      "description": "Understand how iframes embed external pages, videos, and maps, plus key attributes like src and title, and security controls such as sandbox and allow."
+      "title": "What is an iframe in HTML and how does it work?",
+      "description": "An iframe embeds another webpage or resource inside the current page using a nested browsing context."
     },
     "answer": {
       "blocks": [
@@ -1954,8 +1954,8 @@
     "importance": 1,
     "description": "data-* attributes store custom data on elements. They are accessible via dataset in JavaScript (e.g., el.dataset.userId) and are useful for hooks without affecting semantics. Use data-* as lightweight hooks, but test parsing and accessibility, and avoid sensitive data.",
     "seo": {
-      "title": "HTML data-* Attributes: dataset Usage and Best Practices",
-      "description": "Learn what data-* attributes are for, how to read and write values with dataset in JavaScript, and when to avoid storing sensitive or complex data in HTML."
+      "title": "What is the data attribute in HTML used for?",
+      "description": "data-* attributes store custom, non-visible metadata on elements that JavaScript can read and update."
     },
     "answer": {
       "blocks": [
@@ -2063,8 +2063,8 @@
     "importance": 1,
     "description": "You can make an image clickable by wrapping it in an anchor tag. This creates a linked image that behaves like a normal link and is accessible when you include alt text and descriptive link context. Use rel=noopener when opening in a new tab.",
     "seo": {
-      "title": "How to Make an Image Clickable in HTML (a + img)",
-      "description": "See how to wrap an img inside an anchor tag, add meaningful alt text, and handle new-tab links safely with target=\"_blank\" and rel=\"noopener\"."
+      "title": "How do you make an image clickable in HTML?",
+      "description": "Make an image clickable by wrapping the <img> element inside an <a> tag with an href destination."
     },
     "answer": {
       "blocks": [
@@ -2173,8 +2173,8 @@
     "importance": 1,
     "description": "HTML and XHTML are both markup languages for creating web pages, but XHTML is a stricter and more XML-based version of HTML. It enforces well-formed syntax, case sensitivity, and proper closing of all tags. XHTML enforces stricter syntax, which can reduce ambiguity but adds complexity. For modern web apps, test parsing behavior across browsers.",
     "seo": {
-      "title": "HTML vs XHTML: Syntax Rules, Differences, and Use Cases",
-      "description": "Compare HTML and XHTML syntax, including tag closing, case sensitivity, and parsing strictness, to understand when XHTML rules still matter in practice."
+      "title": "HTML vs XHTML: what is the difference?",
+      "description": "HTML is more forgiving in syntax, while XHTML follows strict XML rules like proper nesting and closed tags."
     },
     "answer": {
       "blocks": [
@@ -2288,8 +2288,8 @@
     "importance": 1,
     "description": "The target attribute controls where a link opens. target=\"_blank\" opens a new tab/window; target=\"_self\" is the default. For _blank, add rel=\"noopener noreferrer\" for security. New tabs are a UX and security trade-off, so test keyboard flow and rel attributes.",
     "seo": {
-      "title": "HTML target Attribute in Anchor Links: _blank vs _self",
-      "description": "Learn what the target attribute does in anchor links, when to open a new tab, and why rel=\"noopener noreferrer\" matters for security and UX."
+      "title": "What does target _blank do in an anchor tag?",
+      "description": "The target attribute controls where a linked document opens, and _blank opens it in a new tab or window."
     },
     "answer": {
       "blocks": [
@@ -2417,8 +2417,8 @@
     "importance": 1,
     "description": "srcset provides multiple image sources for different resolutions or sizes. Combined with sizes, it lets the browser choose the best image for the device and viewport. This impacts performance and data usage, so test the chosen image under throttled network.",
     "seo": {
-      "title": "HTML srcset Attribute: Responsive Images, sizes, and Performance",
-      "description": "Learn how srcset and sizes let browsers choose the right image per viewport and DPR, reducing bandwidth while keeping image quality sharp on all screens."
+      "title": "What is srcset in the HTML img tag?",
+      "description": "srcset provides multiple image sources so the browser can choose the most appropriate file for screen size and pixel density."
     },
     "answer": {
       "blocks": [
@@ -2514,8 +2514,8 @@
     "importance": 1,
     "description": "Browsers parse HTML top-to-bottom, building the DOM as they go. CSS can block rendering, and synchronous scripts can block parsing unless deferred or async.",
     "seo": {
-      "title": "Browser HTML Parsing and Rendering Order: Critical Path Basics",
-      "description": "Understand parse order from DOM/CSSOM to render tree, layout, and paint, and learn how blocking CSS and synchronous scripts affect render performance."
+      "title": "How does browser HTML parsing and rendering work?",
+      "description": "Browsers parse HTML into the DOM, combine it with CSS to build render data, then layout and paint the page."
     },
     "answer": {
       "blocks": [
@@ -2613,8 +2613,8 @@
     "importance": 1,
     "description": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren’t available, but should not replace proper HTML tags. ARIA should match real behavior; incorrect roles hurt accessibility. Test with keyboard navigation and screen readers.",
     "seo": {
-      "title": "ARIA Roles in HTML: When to Use Them and Common Pitfalls",
-      "description": "Learn what ARIA roles communicate to assistive tech, why native semantic elements come first, and how to avoid wrong roles that break accessibility."
+      "title": "What are ARIA roles in HTML?",
+      "description": "ARIA roles describe element purpose to assistive technologies when native HTML semantics are not sufficient."
     },
     "answer": {
       "blocks": [
@@ -2705,8 +2705,8 @@
     "importance": 1,
     "description": "The Shadow DOM is a browser feature that encapsulates a component’s internal structure, keeping its styles and markup isolated from the main document. It’s a core part of Web Components for building reusable, self-contained UI elements. It improves style isolation but can complicate theming and testing; be mindful of accessibility and focus behavior.",
     "seo": {
-      "title": "Shadow DOM Explained: Web Components, Encapsulation, and Styling",
-      "description": "Understand how Shadow DOM isolates markup and CSS in web components, plus trade-offs around theming, testing, focus behavior, and accessibility."
+      "title": "What is Shadow DOM in web components?",
+      "description": "Shadow DOM provides encapsulated markup and styles for a component so internal structure is isolated from the main document."
     },
     "answer": {
       "blocks": [
@@ -2794,8 +2794,8 @@
     "title": "How would you make a page accessible?",
     "description": "Describe practical steps to make a web page accessible: semantic HTML, ARIA usage, color contrast, keyboard navigation, focus management, and screen reader testing.",
     "seo": {
-      "title": "How to Make a Web Page Accessible: Practical A11y Checklist",
-      "description": "Use a practical accessibility workflow: semantic HTML, labels, keyboard navigation, focus states, contrast checks, and screen reader testing for better UX."
+      "title": "How do you make a web page accessible?",
+      "description": "Make a page accessible with semantic HTML, proper labels, keyboard navigation, visible focus states, sufficient contrast, and screen reader testing."
     },
     "type": "trivia",
     "technology": "html",
@@ -2878,8 +2878,8 @@
     "title": "DOM Tree Structure and Depth",
     "description": "Explain the DOM as a tree of nodes, estimate tree depth/height, and discuss performance implications. A balanced DOM has height about log_b(n) (O(log n)), while a skewed DOM can be O(n) deep. Mention node types and why depth affects traversal and layout.",
     "seo": {
-      "title": "DOM Tree Structure and Depth: Performance and Traversal Basics",
-      "description": "Learn how DOM nodes form a tree, why balanced vs skewed depth matters, and how deep nesting increases traversal, style recalculation, and layout cost."
+      "title": "What is DOM tree structure and why does depth matter?",
+      "description": "DOM tree structure is the parent-child hierarchy of nodes in a document, and excessive depth can increase traversal, style, and layout cost."
     },
     "type": "trivia",
     "technology": "html",

@@ -125,8 +125,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "What Problem Does React Solve? Scope, Non-Goals, and Trade-offs",
-      "description": "Understand React’s core job—state-driven UI rendering—and what it intentionally leaves to the ecosystem, like routing, data fetching, and global state."
+      "title": "What problem does React solve and what does it not solve?",
+      "description": "React solves state-driven UI rendering and reconciliation, but it does not include built-in routing, data fetching, or global state by default."
     }
   },
   {
@@ -137,8 +137,8 @@
     "importance": 5,
     "description": "Explain why React expects rendering to be a pure computation (UI = f(props, state, context)) and why side effects must be moved to effects/event handlers. Connect it to render vs commit, Concurrent Rendering, StrictMode double-invocation, memoization, and predictable reconciliation. Pure rendering improves predictability and testing, but side effects must live in effects/hooks. Test with StrictMode and rerenders.",
     "seo": {
-      "title": "React Pure Functions of Props and State",
-      "description": "Learn why React rendering must stay pure, where side effects belong, and how this model improves concurrency safety, memoization, and debugging clarity."
+      "title": "Why should React components be pure functions of props and state?",
+      "description": "React components should be pure because the same props and state must produce the same UI output without side effects during render."
     },
     "answer": {
       "blocks": [
@@ -419,8 +419,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Functional vs Class Components in React: Key Differences",
-      "description": "Compare function and class components by state, lifecycle, hooks, and reuse patterns, and know when legacy class knowledge still matters in real codebases."
+      "title": "Functional vs class components in React: what is the difference?",
+      "description": "Functional components use hooks and are the modern default, while class components use lifecycle methods and class syntax."
     }
   },
   {
@@ -549,8 +549,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React JSX transform: why import changed",
-      "description": "Understand how JSX compiles to JavaScript, classic vs automatic runtimes, and why newer React setups no longer require import React in every file."
+      "title": "How is JSX transformed in React and do you need it?",
+      "description": "JSX compiles to JavaScript function calls, and React does not require JSX because you can write elements with plain JavaScript APIs."
     }
   },
   {
@@ -685,8 +685,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Component Function Rules: JSX Naming, Returns, Hooks",
-      "description": "Learn what makes a function a React component, why uppercase names matter, what it can return, and why hook-based components must not be called directly."
+      "title": "What makes a function a React component?",
+      "description": "A function is treated as a React component when used as a JSX tag, follows component naming conventions, and returns renderable React output."
     }
   },
   {
@@ -831,8 +831,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "How React Decides to Re-render: Render vs DOM Update",
-      "description": "Understand re-render triggers from state, props, and context, what rendering actually does, and why a render pass does not always produce DOM changes."
+      "title": "How does React know when to re-render a component?",
+      "description": "React re-renders a component when its state, props, or consumed context changes, then render computes the next UI tree."
     }
   },
   {
@@ -976,8 +976,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React render nothing: null, false, fragments",
-      "description": "Clarify what happens when a React component returns null, false, or an empty fragment, and how each option affects output, layout, and rendering behavior."
+      "title": "What happens when a React component returns null?",
+      "description": "Returning null or false tells React to render nothing for that component, while fragments render children without adding extra DOM nodes."
     }
   },
   {
@@ -1101,8 +1101,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Why React Uses One-Way Data Flow (and Why It Scales)",
-      "description": "See how unidirectional data flow improves predictability, debugging, and state ownership by keeping data down and updates up through explicit callbacks."
+      "title": "Why does React use one-way data flow?",
+      "description": "React uses one-way data flow to keep updates predictable: data moves down through props and updates move up through events or callbacks."
     }
   },
   {
@@ -1113,8 +1113,8 @@
     "importance": 5,
     "description": "Explain why React treats props as read-only inputs (UI = f(props, state, context)). Connect this to predictable rendering, parent ownership, referential equality optimizations (PureComponent/React.memo), and why mutating props can cause missed updates, shared-state bugs, and inconsistent UI—especially under concurrent rendering and StrictMode.",
     "seo": {
-      "title": "React Props Immutability: What Breaks?",
-      "description": "Understand why React treats props as read-only, how mutation breaks memoization and update flow, and how to explain the trade-offs clearly in interviews."
+      "title": "Why are props immutable in React?",
+      "description": "Props are immutable in React because parent components own them, and mutating them in children breaks predictable updates and memoization."
     },
     "answer": {
       "blocks": [
@@ -1360,8 +1360,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React useState Explained: Guarantees, Updates, and Pitfalls",
-      "description": "Learn what useState guarantees, how setters schedule renders, and how lazy init, functional updates, batching, and immutability affect correctness."
+      "title": "What does useState do in React?",
+      "description": "useState lets function components store local state and trigger re-renders by calling the state setter."
     }
   },
   {
@@ -1476,8 +1476,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React 17 event delegation: root container vs document",
-      "description": "React uses delegated root listeners (SyntheticEvent) instead of per-node handlers. React 17+ attaches listeners to the root container, not document, to avoid cross-root interference."
+      "title": "Why does React use event delegation?",
+      "description": "React uses event delegation by attaching a small set of root listeners and dispatching events to components through its event system."
     }
   },
   {
@@ -1573,8 +1573,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Keys in Lists: Why They Matter for Reconciliation",
-      "description": "Understand why stable keys preserve item identity, improve list diffing performance, and prevent bugs like lost state or wrong row updates."
+      "title": "Why are keys important in React lists?",
+      "description": "Keys give list items stable identity so React can correctly match, move, and preserve state during reconciliation."
     }
   },
   {
@@ -1656,8 +1656,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Controlled vs Uncontrolled Components in React Forms",
-      "description": "Compare controlled and uncontrolled form inputs, when each approach is practical, and how choices affect validation, testability, and state sync."
+      "title": "Controlled vs uncontrolled inputs in React: what's the difference?",
+      "description": "Controlled inputs store value in React state, while uncontrolled inputs keep state in the DOM and are usually accessed with refs."
     }
   },
   {
@@ -1668,8 +1668,8 @@
     "importance": 1,
     "description": "Incorrectly mixing default exports and named exports can cause React to import the wrong thing (often undefined). The app may compile, but crash at runtime when React tries to render a component that isn’t actually a component. This often shows up as a runtime crash, so testing and lint rules are critical.",
     "seo": {
-      "title": "React Default vs Named Exports: Runtime Bugs",
-      "description": "Avoid import/export mismatches that crash React at runtime. Learn how default vs named exports resolve, common failure patterns, and fast debugging checks."
+      "title": "Default vs named exports in React: why do import errors happen?",
+      "description": "Mixing up default and named imports resolves the component to undefined and can cause runtime errors like invalid element type."
     },
     "answer": {
       "blocks": [
@@ -1966,8 +1966,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Conditional Rendering: Patterns, Trade-offs, and Pitfalls",
-      "description": "Learn when to use &&, ternary, and early return patterns, and avoid common issues around falsey rendering, focus loss, and layout jumps in dynamic UI."
+      "title": "How do you do conditional rendering in React?",
+      "description": "React conditional rendering uses if statements, ternaries, or && to show different UI based on state and props."
     }
   },
   {
@@ -2137,8 +2137,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React useEffect Explained: Dependencies, Timing, and Cleanup",
-      "description": "Understand what useEffect is for, when it runs after commit, how dependency arrays control reruns, and how cleanup prevents leaks and stale subscriptions."
+      "title": "What is useEffect used for in React?",
+      "description": "useEffect is used to run side effects after render, such as subscriptions, data fetching, timers, or syncing with external systems."
     }
   },
   {
@@ -2284,8 +2284,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Fragments: DOM Output, Keys, and Reconciliation",
-      "description": "See how fragments avoid extra DOM wrappers while still affecting React tree identity, keyed list behavior, and remount/state preservation during updates."
+      "title": "What do React fragments do and when should you use them?",
+      "description": "React fragments group children without adding extra DOM nodes, helping keep markup clean while preserving component structure."
     }
   },
   {
@@ -2424,8 +2424,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Virtual DOM and Reconciliation: What Actually Happens",
-      "description": "Understand how React builds new element trees, diffs them with reconciliation heuristics and keys, and commits minimal DOM updates."
+      "title": "What is the Virtual DOM in React?",
+      "description": "The Virtual DOM is React's in-memory UI representation used to compare renders and apply minimal real DOM updates during reconciliation."
     }
   },
   {
@@ -2602,8 +2602,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Re-render vs DOM Update: When React Actually Commits",
-      "description": "Understand what triggers re-renders from state, props, context, and parent updates, and why reconciliation often produces zero DOM mutations after render."
+      "title": "When does React re-render and update the DOM?",
+      "description": "React re-renders when state, props, or context change, but the DOM updates only if reconciliation finds actual output differences."
     }
   },
   {
@@ -2734,8 +2734,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "State vs Props Ownership in React: Bugs from Mixed Responsibility",
-      "description": "Learn why mixing prop-owned and local state creates two sources of truth, causing stale UI, loops, and reset bugs, and how single ownership avoids them."
+      "title": "What happens when state and props responsibilities are mixed?",
+      "description": "Mixing state and props ownership creates multiple sources of truth, which leads to stale UI, reset bugs, and harder debugging."
     }
   },
   {
@@ -2818,8 +2818,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Lifting State Up: Shared State Pattern Explained",
-      "description": "See how lifting state to the nearest common parent keeps siblings in sync, when prop drilling becomes painful, and when context/store patterns fit better."
+      "title": "How do you lift state up in React?",
+      "description": "Lift state up by moving shared state to the nearest common parent and passing values and update handlers down as props."
     }
   },
   {
@@ -3002,8 +3002,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Higher-Order Components (HOCs): Use Cases and Trade-offs",
-      "description": "Understand what HOCs are, where they still fit in legacy React code, and how to avoid prop collisions, wrapper hell, and debugging complexity."
+      "title": "What is a higher-order component in React?",
+      "description": "A higher-order component is a function that takes a component and returns an enhanced component with added behavior."
     }
   },
   {
@@ -3014,8 +3014,8 @@
     "importance": 1,
     "description": "useMemo memoizes a computed value; useCallback memoizes a function reference. Use them to avoid expensive recalculations or re-renders, but only when it actually helps.",
     "seo": {
-      "title": "useMemo vs useCallback in React: the difference (with examples)",
-      "description": "useMemo caches a computed value; useCallback caches a function reference. Learn when each prevents re-renders, when it doesn’t help, and common misuse patterns."
+      "title": "useMemo vs useCallback in React: what is the difference?",
+      "description": "useMemo memoizes a computed value, while useCallback memoizes a function reference between renders."
     },
     "answer": {
       "blocks": [
@@ -3195,8 +3195,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "How to Prevent Unnecessary Re-renders in React",
-      "description": "Learn practical render-optimization tactics with React.memo, useMemo, useCallback, stable props, and state partitioning to reduce wasted render work."
+      "title": "How do you prevent unnecessary re-renders in React?",
+      "description": "Prevent unnecessary React re-renders by stabilizing props, splitting state, and using memoization tools like React.memo, useMemo, and useCallback."
     }
   },
   {
@@ -3288,8 +3288,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React.StrictMode Purpose: Dev Checks and Double Invocations",
-      "description": "Understand what StrictMode verifies in development, why components/effects run extra times, and how to write idempotent side effects that stay safe."
+      "title": "What is React.StrictMode used for?",
+      "description": "React.StrictMode enables extra development checks to surface unsafe patterns and side effects before production."
     }
   },
   {
@@ -3384,8 +3384,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Reconciliation Explained: Tree Matching, Keys, and Updates",
-      "description": "Learn how React reconciles old and new trees, when components are preserved or remounted, and how keys control identity and state across updates."
+      "title": "What is reconciliation in React?",
+      "description": "Reconciliation is React's process of comparing previous and next element trees to decide the minimal UI updates."
     }
   },
   {
@@ -3480,8 +3480,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Diffing Algorithm: How DOM Updates Are Chosen",
-      "description": "Understand the heuristics React uses to diff trees in near O(n), how element type and keys affect matching, and why list identity matters for performance."
+      "title": "How does React's diffing algorithm work?",
+      "description": "React diffing compares old and new trees with heuristics based on element type and keys to update only changed nodes."
     }
   },
   {
@@ -3575,8 +3575,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Render Props vs HOCs in React: Reuse Patterns Compared",
-      "description": "Compare render props and HOCs for logic reuse, understand trade-offs in composition and readability, and know when hooks are the simpler modern option."
+      "title": "Render props vs HOCs in React: what is the difference?",
+      "description": "Render props share logic through a function prop, while HOCs share logic by wrapping a component and injecting behavior."
     }
   },
   {
@@ -3668,8 +3668,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Portals: Use Cases, Event Bubbling, and Accessibility",
-      "description": "See when to use portals for modals and overlays, how events still bubble through the React tree, and what focus patterns are required for accessible UX."
+      "title": "What are React portals and when should you use them?",
+      "description": "React portals render children into a different DOM node while keeping them in the same React tree for events and context."
     }
   },
   {
@@ -3764,8 +3764,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Concurrent Rendering in React 18: Why It Feels Faster",
-      "description": "Understand how concurrent rendering enables interruptible work, prioritizes urgent updates, and improves responsiveness during expensive UI transitions."
+      "title": "What is concurrent rendering in React?",
+      "description": "Concurrent rendering lets React interrupt and prioritize rendering work so urgent updates stay responsive during expensive UI updates."
     }
   },
   {
@@ -3865,8 +3865,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Why React Hooks Have Rules: Call Order and State Slots",
-      "description": "Learn how Hooks map by call order, why conditional Hook calls break state/effect mapping, and how lint rules prevent subtle production bugs."
+      "title": "Why do React Hooks have rules?",
+      "description": "Hooks have rules because React maps hook state by call order, so conditional or reordered calls break state and effect matching."
     }
   },
   {
@@ -3981,8 +3981,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React stale closures: why state gets stale",
-      "description": "Learn why closures capture stale React state in effects, timers, and handlers, then fix it with functional updates, refs, and dependency-safe patterns."
+      "title": "Why does stale state happen in React closures?",
+      "description": "Stale state happens because closures capture values from the render when they were created, not the latest state after future renders."
     }
   },
   {
@@ -4148,8 +4148,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "useRef vs useState in React: Differences and When to Use Each",
-      "description": "Understand when useState should drive UI and when useRef should hold mutable values like DOM refs, timers, or previous values without re-rendering."
+      "title": "useRef vs useState in React: what is the difference?",
+      "description": "useState stores reactive values that trigger re-renders, while useRef stores mutable values that persist across renders without re-rendering."
     }
   },
   {
@@ -4293,8 +4293,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React state batching: when it does not batch",
-      "description": "Learn when React batches state updates automatically, where batching can split, and how that behavior changes render counts, timing, and UI consistency."
+      "title": "Why does React batch state updates?",
+      "description": "React batches state updates to reduce extra renders and apply related updates together for more consistent UI."
     }
   },
   {
@@ -4305,8 +4305,8 @@
     "importance": 5,
     "description": "Explain why storing data in state that can be computed from props/state creates duplication and sync bugs, the concept of single source of truth, and when derived state is acceptable (initialization, controlled/uncontrolled transitions, memoized expensive computations, and snapshotting external values).",
     "seo": {
-      "title": "React Derived State Anti-Pattern Explained",
-      "description": "See why derived state creates sync bugs in React, when it is acceptable, and how to preserve a single source of truth in real interview scenarios."
+      "title": "Why is derived state an anti-pattern in React?",
+      "description": "Derived state is often an anti-pattern because duplicated sources of truth drift out of sync and create stale or conflicting UI."
     },
     "answer": {
       "blocks": [
@@ -4602,8 +4602,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Context Performance Issues: Causes and Fixes",
-      "description": "Learn why Context value identity can trigger broad consumer re-renders, and how memoized values, split contexts, and selectors reduce render fan-out."
+      "title": "Why can React Context cause performance issues?",
+      "description": "React Context can cause performance issues because all consumers re-render when provider value identity changes."
     }
   },
   {
@@ -4734,8 +4734,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Error Boundaries: What They Catch and What They Do Not",
-      "description": "See how Error Boundaries isolate render-time crashes with fallback UI, and where they do not apply: event handlers, async code, SSR, and self-errors."
+      "title": "What do React Error Boundaries catch?",
+      "description": "Error Boundaries catch render, lifecycle, and constructor errors in trees and show fallback UI. They do not catch event-handler, async, or SSR errors."
     }
   },
   {
@@ -4868,8 +4868,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React StrictMode: why useEffect runs twice",
-      "description": "In React StrictMode, effects run setup→cleanup→setup (dev only) to catch missing cleanup, duplicate subscriptions, and non-idempotent side effects."
+      "title": "Why does useEffect run twice in React StrictMode?",
+      "description": "In StrictMode development, React intentionally runs effect setup-cleanup-setup to expose missing cleanup and non-idempotent side effects."
     }
   },
   {
@@ -5019,8 +5019,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "useEffect vs useLayoutEffect in React: Timing and Use Cases",
-      "description": "Understand timing differences, when layout effects are needed to measure or prevent flicker, and why standard effects are safer for most side effects."
+      "title": "useEffect vs useLayoutEffect: what is the difference?",
+      "description": "useLayoutEffect runs synchronously after DOM mutations but before paint, while useEffect runs after paint for non-blocking side effects."
     }
   },
   {
@@ -5129,8 +5129,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Which React Hooks to Use and When: Practical Selection Guide",
-      "description": "Map common Hooks to use cases-state, effects, refs, memoization, reducers, and context-so you can explain trade-offs and choose intentionally."
+      "title": "Which React Hooks should you use and when?",
+      "description": "Choose hooks by purpose: useState/useReducer for state, useEffect for side effects, useRef for mutable values, and useMemo/useCallback for memoization."
     }
   },
   {
@@ -5219,8 +5219,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "What's New in React 18? Concurrency, Batching, Transitions",
-      "description": "Learn the React 18 changes that matter most: createRoot, automatic batching, transitions, concurrent rendering behavior, and stricter development checks."
+      "title": "What is new in React 18?",
+      "description": "React 18 introduced createRoot, automatic batching, transitions, and concurrent rendering features that improve responsiveness and update scheduling."
     }
   }
 ]

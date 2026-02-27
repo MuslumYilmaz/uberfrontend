@@ -1732,8 +1732,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "CSS Box Model Explained: content, padding, border, margin",
-      "description": "Understand how the box model defines element size and spacing, how box-sizing changes calculations, and how to debug layout gaps more reliably."
+      "title": "What is the CSS box model?",
+      "description": "The CSS box model treats each element as content, padding, border, and margin, which together determine rendered size and spacing."
     }
   },
   {
@@ -1832,8 +1832,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Pseudo-classes vs Pseudo-elements in CSS: Examples and Use",
-      "description": "Learn the difference between pseudo-classes and pseudo-elements, with practical examples like :hover, :focus, ::before, and ::after for cleaner styling."
+      "title": "Pseudo-class vs pseudo-element in CSS: what is the difference?",
+      "description": "Pseudo-classes style existing elements in specific states, while pseudo-elements style generated or specific parts of an element."
     }
   },
   {
@@ -1939,8 +1939,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "relative vs absolute vs fixed in CSS Positioning",
-      "description": "Compare relative, absolute, and fixed positioning, understand layout flow and containing blocks, and avoid overlap bugs in scrolling interfaces."
+      "title": "position relative vs absolute vs fixed: what is the difference?",
+      "description": "Relative keeps the element in normal flow with offsets, absolute positions it to the nearest positioned ancestor, and fixed pins it to the viewport."
     }
   },
   {
@@ -2030,8 +2030,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "CSS display: flex Explained: Alignment, Direction, and Spacing",
-      "description": "Learn what display:flex enables, how main and cross-axis alignment works, and when flexbox is best for one-dimensional responsive layouts."
+      "title": "What does display: flex do in CSS?",
+      "description": "display: flex makes an element a flex container so its children can be aligned and distributed along main and cross axes."
     }
   },
   {
@@ -2131,8 +2131,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "How z-index Works in CSS: Stacking Context Debug Guide",
-      "description": "Understand z-index layering rules, why stacking contexts from position, transform, or opacity break expectations, and how to debug overlap issues."
+      "title": "How does z-index work in CSS?",
+      "description": "z-index controls stack order among positioned elements in the same stacking context, with higher values appearing on top."
     }
   },
   {
@@ -2221,8 +2221,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "visibility: hidden vs display: none in CSS",
-      "description": "Compare visibility:hidden and display:none in layout flow, rendering, and accessibility so you can choose the right property for toggled UI states."
+      "title": "visibility hidden vs display none: what is the difference?",
+      "description": "visibility:hidden hides an element but keeps its layout space, while display:none removes it from layout and rendering flow."
     }
   },
   {
@@ -2325,8 +2325,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "CSS float and clear: Legacy Layout Behavior Explained",
-      "description": "Learn what float and clear do, how text wrapping and clearfix patterns work, and when to replace floats with flexbox or grid in modern layouts."
+      "title": "What do float and clear do in CSS?",
+      "description": "float moves an element left or right so text wraps around it, and clear prevents following elements from wrapping around floats."
     }
   },
   {
@@ -2435,8 +2435,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "CSS Specificity Hierarchy: Why Selectors Override Others",
-      "description": "Understand specificity scoring across IDs, classes, and elements, how source order and !important interact, and how to avoid brittle selector wars."
+      "title": "How does CSS specificity work?",
+      "description": "CSS specificity assigns selector weights, and the highest-weight matching rule wins unless !important or later equal-specificity rules override it."
     }
   },
   {
@@ -2536,8 +2536,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "CSS Media Queries Explained: Responsive Breakpoints and Rules",
-      "description": "Learn how media queries target viewport size, orientation, and resolution, and how to design breakpoint rules that scale cleanly across devices."
+      "title": "What are media queries in CSS?",
+      "description": "Media queries apply CSS rules only when conditions like viewport width, orientation, or resolution match."
     }
   },
   {
@@ -2714,8 +2714,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "How to Make Elements Responsive in CSS: Practical Patterns",
-      "description": "Learn fluid sizing with %, min/max, clamp(), flexbox/grid, media and container queries, and responsive images so components adapt across screen sizes."
+      "title": "How do you make an element responsive in CSS?",
+      "description": "Make an element responsive with fluid units, flexible layouts, and min/max constraints so it adapts across different screen sizes."
     }
   },
   {
@@ -2804,8 +2804,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "em vs rem vs % vs px in CSS: Unit Differences and Use Cases",
-      "description": "Understand how each CSS unit is calculated, when to choose relative or absolute sizing, and how nesting and root font size affect layout and accessibility."
+      "title": "em vs rem vs percent vs px: what is the difference?",
+      "description": "px is fixed, percent is relative to a parent value, em is relative to the current font size, and rem is relative to the root font size."
     }
   },
   {
@@ -2894,8 +2894,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "CSS Cascade Order Explained: Importance, Specificity, Source",
-      "description": "See how the cascade resolves conflicts using origin, !important, specificity, and source order, and how to debug why one rule overrides another."
+      "title": "How does the CSS cascade decide which style wins?",
+      "description": "The CSS cascade resolves conflicts by origin and importance, then specificity, then source order when selectors still tie."
     }
   },
   {
@@ -2971,8 +2971,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "CSS Custom Properties (Variables): var(), Scope, and Theming",
-      "description": "Learn how to declare and use CSS variables, scope them at :root or component level, add fallbacks, and build maintainable theme and design-token systems."
+      "title": "What are CSS custom properties and how do you use them?",
+      "description": "CSS custom properties are reusable variables declared with --name and read with var(), allowing scoped theming and consistent design tokens."
     }
   },
   {
@@ -3100,8 +3100,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Grid vs Flexbox in CSS: Differences and When to Use Each",
-      "description": "Compare Grid and Flexbox by layout dimension and alignment behavior, then choose the right system for page structure or component-level alignment."
+      "title": "CSS Grid vs Flexbox: when should you use each?",
+      "description": "Use Grid for two-dimensional page or section layouts, and use Flexbox for one-dimensional alignment along a row or column."
     }
   },
   {
@@ -3214,8 +3214,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "CSS Animation Performance: Hardware Acceleration and Compositing",
-      "description": "Understand layout, paint, and composite costs, which properties animate cheaply (transform, opacity), and how layer promotion affects smoothness."
+      "title": "How does hardware acceleration affect CSS animations?",
+      "description": "Hardware acceleration improves animation smoothness by offloading composited properties like transform and opacity to the GPU."
     }
   }
 ]
