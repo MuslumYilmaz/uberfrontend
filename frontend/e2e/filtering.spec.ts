@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
-import { JS_QUESTION, WEB_QUESTION } from './helpers';
+import { JS_QUESTION } from './helpers';
 
 type DifficultyFilter = 'easy' | 'intermediate' | 'hard';
 type ImportanceTier = 'low' | 'medium' | 'high';
@@ -10,6 +10,13 @@ type CodingQuestionPayload = {
   difficulty?: string;
   importance?: number;
 };
+
+const TRACK_FILTER_TEST = {
+  slug: 'faang',
+  tech: 'javascript',
+  id: 'js-throttle',
+  title: 'Throttle Function',
+} as const;
 
 function normalizeDifficulty(raw?: string): DifficultyFilter {
   const v = (raw || '').toLowerCase();
@@ -120,47 +127,47 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
 });
 
 test('track filters sync to URL and persist on reload + back', async ({ page }) => {
-  const webFilters = await resolveQuestionFilters(page, WEB_QUESTION.tech, WEB_QUESTION.id);
+  const trackFilters = await resolveQuestionFilters(page, TRACK_FILTER_TEST.tech, TRACK_FILTER_TEST.id);
 
   await seedPremiumSession(page);
-  await page.goto('/tracks/foundations-30d');
+  await page.goto(`/tracks/${TRACK_FILTER_TEST.slug}`);
   await expect(page.getByTestId('track-detail-page')).toBeVisible();
   await expect(page.getByTestId('track-filter-kind-all')).toBeVisible();
 
   await page.getByTestId('track-filter-kind-coding').click();
-  await page.getByTestId('track-filter-tech-html').click();
-  await page.getByTestId(`track-filter-diff-${webFilters.difficulty}`).click();
-  await page.getByTestId(`track-filter-imp-${webFilters.importance}`).click();
-  await page.getByTestId('track-filter-search').fill('Basic Structure');
+  await page.getByTestId('track-filter-tech-javascript').click();
+  await page.getByTestId(`track-filter-diff-${trackFilters.difficulty}`).click();
+  await page.getByTestId(`track-filter-imp-${trackFilters.importance}`).click();
+  await page.getByTestId('track-filter-search').fill(TRACK_FILTER_TEST.title);
 
-  await expect(page).toHaveURL(/\/tracks\/foundations-30d/);
+  await expect(page).toHaveURL(new RegExp(`/tracks/${TRACK_FILTER_TEST.slug}`));
   await expect(page).toHaveURL(/kind=coding/);
-  await expect(page).toHaveURL(/tech=html/);
-  await expect(page).toHaveURL(new RegExp(`diff=${webFilters.difficulty}`));
-  await expect(page).toHaveURL(new RegExp(`imp=${webFilters.importance}`));
-  await expect(page).toHaveURL(/q=Basic(?:\+|%20)Structure/);
-  await expect(page.getByTestId(`track-question-card-${WEB_QUESTION.id}`)).toBeVisible();
+  await expect(page).toHaveURL(/tech=javascript/);
+  await expect(page).toHaveURL(new RegExp(`diff=${trackFilters.difficulty}`));
+  await expect(page).toHaveURL(new RegExp(`imp=${trackFilters.importance}`));
+  await expect(page).toHaveURL(/q=Throttle(?:\+|%20)Function/);
+  await expect(page.getByTestId(`track-question-card-${TRACK_FILTER_TEST.id}`)).toBeVisible();
 
   await page.reload();
   await expect(page.getByTestId('track-detail-page')).toBeVisible();
   await expect(page.getByTestId('track-filter-kind-all')).toBeVisible();
 
-  await expect(page.getByTestId('track-filter-search')).toHaveValue('Basic Structure');
+  await expect(page.getByTestId('track-filter-search')).toHaveValue(TRACK_FILTER_TEST.title);
   await expect(page.getByTestId('track-filter-kind-coding')).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId('track-filter-tech-html')).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId(`track-filter-diff-${webFilters.difficulty}`)).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId(`track-filter-imp-${webFilters.importance}`)).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId(`track-question-card-${WEB_QUESTION.id}`)).toBeVisible();
+  await expect(page.getByTestId('track-filter-tech-javascript')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-filter-diff-${trackFilters.difficulty}`)).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-filter-imp-${trackFilters.importance}`)).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-question-card-${TRACK_FILTER_TEST.id}`)).toBeVisible();
 
-  await page.getByTestId(`track-question-card-${WEB_QUESTION.id}`).click();
-  await page.waitForURL(new RegExp(`/${WEB_QUESTION.tech}/coding/${WEB_QUESTION.id}$`));
+  await page.getByTestId(`track-question-card-${TRACK_FILTER_TEST.id}`).click();
+  await page.waitForURL(new RegExp(`/${TRACK_FILTER_TEST.tech}/coding/${TRACK_FILTER_TEST.id}$`));
 
   const codingDetailPage = page.getByTestId('coding-detail-page');
   const codingMobileGuard = page.getByTestId('coding-mobile-guard');
   await expect(codingDetailPage.or(codingMobileGuard)).toBeVisible();
 
   if (await codingDetailPage.count()) {
-    await expect(page.getByTestId('question-title')).toHaveText(WEB_QUESTION.title);
+    await expect(page.getByTestId('question-title')).toHaveText(TRACK_FILTER_TEST.title);
   }
 
   await page.goBack();
@@ -168,16 +175,16 @@ test('track filters sync to URL and persist on reload + back', async ({ page }) 
   await expect(page.getByTestId('track-filter-kind-all')).toBeVisible();
 
   await expect(page).toHaveURL(/kind=coding/);
-  await expect(page).toHaveURL(/tech=html/);
-  await expect(page).toHaveURL(new RegExp(`diff=${webFilters.difficulty}`));
-  await expect(page).toHaveURL(new RegExp(`imp=${webFilters.importance}`));
-  await expect(page).toHaveURL(/q=Basic(?:\+|%20)Structure/);
-  await expect(page.getByTestId('track-filter-search')).toHaveValue('Basic Structure');
+  await expect(page).toHaveURL(/tech=javascript/);
+  await expect(page).toHaveURL(new RegExp(`diff=${trackFilters.difficulty}`));
+  await expect(page).toHaveURL(new RegExp(`imp=${trackFilters.importance}`));
+  await expect(page).toHaveURL(/q=Throttle(?:\+|%20)Function/);
+  await expect(page.getByTestId('track-filter-search')).toHaveValue(TRACK_FILTER_TEST.title);
   await expect(page.getByTestId('track-filter-kind-coding')).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId('track-filter-tech-html')).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId(`track-filter-diff-${webFilters.difficulty}`)).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId(`track-filter-imp-${webFilters.importance}`)).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId(`track-question-card-${WEB_QUESTION.id}`)).toBeVisible();
+  await expect(page.getByTestId('track-filter-tech-javascript')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-filter-diff-${trackFilters.difficulty}`)).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-filter-imp-${trackFilters.importance}`)).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-question-card-${TRACK_FILTER_TEST.id}`)).toBeVisible();
 });
 
 test('coding list keeps last filters after reloading another route', async ({ page }) => {
@@ -221,21 +228,28 @@ test('coding list keeps last filters after reloading another route', async ({ pa
 
 test('track keeps last filters after reloading another route', async ({ page }) => {
   await seedPremiumSession(page);
-  const trackSlug = 'foundations-30d';
-  const targetId = 'js-equality-vs-strict-equality';
+  const trackSlug = TRACK_FILTER_TEST.slug;
+  const targetId = TRACK_FILTER_TEST.id;
+  const targetFilters = await resolveQuestionFilters(page, TRACK_FILTER_TEST.tech, TRACK_FILTER_TEST.id);
+  const trackQuery = new URLSearchParams({
+    tech: TRACK_FILTER_TEST.tech,
+    kind: 'coding',
+    diff: targetFilters.difficulty,
+    q: TRACK_FILTER_TEST.title,
+  });
 
-  await page.goto(`/tracks/${trackSlug}?tech=javascript&kind=trivia&diff=easy&q=javascript`);
+  await page.goto(`/tracks/${trackSlug}?${trackQuery.toString()}`);
   await expect(page.getByTestId('track-detail-page')).toBeVisible();
 
-  await expect(page.getByTestId('track-filter-search')).toHaveValue('javascript');
-  await expect(page.getByTestId('track-filter-kind-trivia')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId('track-filter-search')).toHaveValue(TRACK_FILTER_TEST.title);
+  await expect(page.getByTestId('track-filter-kind-coding')).toHaveClass(/fa-chip--selected/);
   await expect(page.getByTestId('track-filter-tech-javascript')).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId('track-filter-diff-easy')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-filter-diff-${targetFilters.difficulty}`)).toHaveClass(/fa-chip--selected/);
   await expect(page.getByTestId(`track-question-card-${targetId}`)).toBeVisible();
 
   // Leave the track, reload elsewhere, then come back without params.
   await page.getByTestId(`track-question-card-${targetId}`).click();
-  await expect(page).toHaveURL(new RegExp(`/javascript/trivia/${targetId}$`));
+  await expect(page).toHaveURL(new RegExp(`/${TRACK_FILTER_TEST.tech}/coding/${targetId}$`));
 
   await page.goto('/dashboard');
   await expect(page.getByTestId('dashboard-page')).toBeVisible();
@@ -246,13 +260,13 @@ test('track keeps last filters after reloading another route', async ({ page }) 
   await expect(page.getByTestId('track-detail-page')).toBeVisible();
 
   await expect(page).toHaveURL(/tech=javascript/);
-  await expect(page).toHaveURL(/kind=trivia/);
-  await expect(page).toHaveURL(/diff=easy/);
-  await expect(page).toHaveURL(/q=javascript/i);
+  await expect(page).toHaveURL(/kind=coding/);
+  await expect(page).toHaveURL(new RegExp(`diff=${targetFilters.difficulty}`));
+  await expect(page).toHaveURL(/q=Throttle(?:\+|%20)Function/);
 
-  await expect(page.getByTestId('track-filter-search')).toHaveValue('javascript');
-  await expect(page.getByTestId('track-filter-kind-trivia')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId('track-filter-search')).toHaveValue(TRACK_FILTER_TEST.title);
+  await expect(page.getByTestId('track-filter-kind-coding')).toHaveClass(/fa-chip--selected/);
   await expect(page.getByTestId('track-filter-tech-javascript')).toHaveClass(/fa-chip--selected/);
-  await expect(page.getByTestId('track-filter-diff-easy')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-filter-diff-${targetFilters.difficulty}`)).toHaveClass(/fa-chip--selected/);
   await expect(page.getByTestId(`track-question-card-${targetId}`)).toBeVisible();
 });
