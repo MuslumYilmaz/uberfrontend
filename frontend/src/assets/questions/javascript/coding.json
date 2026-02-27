@@ -97,8 +97,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "JavaScript clamp(): Keep Values Within a Range",
-      "description": "Implement clamp(value, lower, upper) with inclusive bounds for sliders, percentages, and animations, handling in-range values and overflows predictably."
+      "title": "Clamp a Number in JavaScript (Min/Max Bounds)",
+      "description": "Given a value and lower and upper bounds, return the bounded value while preserving values already inside the range."
     }
   },
   {
@@ -194,8 +194,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Reverse a String in JavaScript Without reverse()",
-      "description": "Reverse characters using index traversal to show string immutability and loop fundamentals, while preserving punctuation, spaces, and edge-case behavior."
+      "title": "Reverse a String in JavaScript",
+      "description": "Given a string, return a new string with characters in reverse order, including spaces and punctuation."
     }
   },
   {
@@ -290,8 +290,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Count Vowels in JavaScript with a Single Pass",
-      "description": "Build countVowels(str) using case normalization and a Set for O(1) checks, and handle empty input plus rules like whether to treat y as a vowel."
+      "title": "Count Vowels in JavaScript Strings",
+      "description": "Given a string, return how many vowels it contains, handling uppercase and lowercase input consistently."
     }
   },
   {
@@ -385,8 +385,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Flatten One Array Level in JavaScript (flat(1) Behavior)",
-      "description": "Implement shallow flattening that removes only one nesting level, preserves order, and correctly handles mixed values, sparse arrays, and nested leftovers."
+      "title": "Flatten One Array Level in JavaScript",
+      "description": "Given a nested array, flatten only one level and keep the original item order without changing deeper nesting."
     }
   },
   {
@@ -489,8 +489,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Remove Array Duplicates in JavaScript While Keeping Order",
-      "description": "Use Set-based deduplication in O(n) to keep first occurrences, and clarify behavior for mixed types, NaN, and object reference equality."
+      "title": "Remove Duplicates From an Array in JavaScript",
+      "description": "Given an array, return a new array with duplicates removed while preserving first-occurrence order."
     }
   },
   {
@@ -582,8 +582,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Find the Most Frequent Character in a String (JavaScript)",
-      "description": "Compute maxChar(str) with a frequency map in one pass, return the first winner on ties, and handle empty-string input safely."
+      "title": "Find Most Frequent Character in JavaScript String",
+      "description": "Given a string, return the character that appears most frequently. If there is a tie, return the first character among tied results."
     }
   },
   {
@@ -682,8 +682,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Capitalize Words in JavaScript While Preserving Spacing",
-      "description": "Capitalize each word’s first letter without collapsing spaces, keeping punctuation and non-letter characters intact for predictable text formatting."
+      "title": "Capitalize Words in JavaScript (Preserve Spacing)",
+      "description": "Given a string, return it with each word capitalized while preserving original spacing and punctuation."
     }
   },
   {
@@ -789,8 +789,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Sum Numeric Values in a JavaScript Array Safely",
-      "description": "Aggregate only real numbers from an array, ignore non-numeric values and NaN, and keep type handling explicit instead of coercing strings."
+      "title": "Sum Numbers in a JavaScript Array (Ignore Non-Numeric)",
+      "description": "Given an array of mixed values, return the total of numeric entries while ignoring non-numeric values."
     }
   },
   {
@@ -884,8 +884,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Remove Falsy Values from Arrays in JavaScript (Compact)",
-      "description": "Filter out false, 0, empty string, null, undefined, and NaN while preserving order and returning a new array without mutating input."
+      "title": "Remove Falsy Values From Array in JavaScript",
+      "description": "Given an array, return a new array containing only truthy values in the same order as the input."
     }
   },
   {
@@ -994,8 +994,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Check If Two Arrays Are Equal in JavaScript",
-      "description": "Compare arrays by length and index values using strict equality, with early exits for mismatches where order matters."
+      "title": "Check if Two Arrays Are Equal in JavaScript (Ordered)",
+      "description": "Given two arrays, return true only when they have the same length and matching values at each index in order."
     }
   },
   {
@@ -1081,8 +1081,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Shallow Clone Objects or Arrays in JavaScript",
-      "description": "Create top-level copies for objects and arrays while retaining nested references, and understand when shallow cloning is not enough."
+      "title": "Shallow Clone Object or Array in JavaScript",
+      "description": "Given an object or array, return a shallow copy where top-level values are copied but nested references remain shared."
     }
   },
   {
@@ -1167,8 +1167,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a sleep(ms) Delay Promise in JavaScript",
-      "description": "Return a non-blocking Promise that resolves after a timeout for async flows like retries, backoff, UI pacing, and test helpers."
+      "title": "Create sleep(ms) in JavaScript (Promise Delay)",
+      "description": "Given a millisecond value, return a Promise-based delay utility that resolves after the specified time without blocking the event loop."
     }
   },
   {
@@ -1252,8 +1252,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement once(fn) in JavaScript: Execute Only Once",
-      "description": "Wrap a function so it runs only on the first call, then returns cached results while preserving this and arguments for predictable side-effect control."
+      "title": "Implement once(fn) in JavaScript",
+      "description": "Given a function, return a wrapper that allows only the first invocation to execute and defines consistent behavior for later calls."
     }
   },
   {
@@ -1343,8 +1343,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create Objects with a Prototype in JavaScript",
-      "description": "Build objectCreate(proto) like Object.create, set prototype links correctly, support null prototypes, and avoid mutating __proto__ directly."
+      "title": "Implement Object.create Polyfill in JavaScript",
+      "description": "Given a prototype value, return a new object linked to that prototype, including null-prototype support and invalid-input handling."
     }
   },
   {
@@ -1436,8 +1436,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Immutable Array Update at Index in JavaScript",
-      "description": "Return a new array with one index replaced while keeping the original untouched, including out-of-range handling for reducer and state-update patterns."
+      "title": "Update Array Item by Index in JavaScript (Immutable)",
+      "description": "Given an array, index, and value, return an updated array without mutating the original, including clear handling for out-of-range indexes."
     }
   },
   {
@@ -1546,8 +1546,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Debounce Function in JavaScript: Delay Rapid Calls",
-      "description": "Implement debounce(fn, wait) by resetting timers on each trigger, preserving this/args, and running only the final call after input settles."
+      "title": "Debounce Function in JavaScript (Coding Problem)",
+      "description": "Build a debounced wrapper that limits rapid repeated calls and only triggers execution based on a wait interval."
     }
   },
   {
@@ -1649,8 +1649,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Throttle Function in JavaScript (Leading-Only)",
-      "description": "Implement throttle(fn, interval) so calls run at most once per window, with first-call immediacy and ignored repeats until the interval expires."
+      "title": "Throttle Function in JavaScript (Coding Problem)",
+      "description": "Build a throttled wrapper that limits call frequency so repeated invocations are controlled within a time window."
     }
   },
   {
@@ -1758,8 +1758,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Deep Clone Objects and Arrays in JavaScript",
-      "description": "Copy nested data without shared references, choose strategies for dates/functions/cycles, and use map-based recursion to avoid circular clone bugs."
+      "title": "Deep Clone Object in JavaScript (Nested Data)",
+      "description": "Given nested input, return a fully independent copy that does not share internal references with the original."
     }
   },
   {
@@ -1877,8 +1877,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Deep Equality in JavaScript: Compare Objects, Arrays, Dates",
-      "description": "Implement deepEqual(a,b) to recursively compare nested structures, handle NaN/Date/RegExp correctly, and avoid false positives from shallow reference checks."
+      "title": "Deep Equality Check in JavaScript",
+      "description": "Given two values, return whether they are structurally equivalent across nested objects, arrays, and special value cases."
     }
   },
   {
@@ -1976,8 +1976,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Flatten Arrays by Depth in JavaScript (flat Depth Logic)",
-      "description": "Implement flatten(arr, depth) with predictable level control, depth=0 behavior, and mixed-value handling while preserving order and avoiding over-flattening."
+      "title": "Flatten Array by Depth in JavaScript",
+      "description": "Given a nested array and depth value, return a flattened result up to that depth while preserving input order."
     }
   },
   {
@@ -2073,8 +2073,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Curry a Function in JavaScript with Partial Application",
-      "description": "Convert multi-argument functions into chained calls, accumulate arguments across invocations, and execute only when enough parameters are collected."
+      "title": "Curry Function in JavaScript (Coding Problem)",
+      "description": "Given a function, return a curried version that accepts arguments across multiple calls until all required parameters are provided."
     }
   },
   {
@@ -2171,8 +2171,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Memoize Functions in JavaScript: Caching and Trade-offs",
-      "description": "Cache repeated results for pure functions, choose safe keying, and consider memory growth or eviction strategies to avoid stale data and leaks."
+      "title": "Memoize Function in JavaScript (Coding Problem)",
+      "description": "Given a deterministic function, return a wrapper that reuses previous results for repeated inputs and handles varying argument sets."
     }
   },
   {
@@ -2286,8 +2286,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Compose Functions in JavaScript (Right-to-Left Pipeline)",
-      "description": "Implement compose(...fns) to run functions from right to left, support multiple args on the rightmost call, and return identity when no functions are provided."
+      "title": "Compose Functions in JavaScript (Right-to-Left)",
+      "description": "Given multiple functions, return one function that applies them in right-to-left order and returns the final computed value."
     }
   },
   {
@@ -2394,8 +2394,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Group By in JavaScript: Key Selector or Property Name",
-      "description": "Group array items into object or Map buckets by function or property, preserving input order within groups for reporting, filtering, and aggregation tasks."
+      "title": "Group Array Items by Key in JavaScript",
+      "description": "Given an array and a grouping rule, return grouped results keyed by selector output while preserving input order within each group."
     }
   },
   {
@@ -2482,8 +2482,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Mini JavaScript Event Emitter (on/off/emit)",
-      "description": "Implement on, off, and emit with per-event listener lists, multiple handlers, and precise unsubscribe behavior without removing unrelated callbacks."
+      "title": "Build a Mini Event Emitter in JavaScript",
+      "description": "Create an event utility that supports subscribing, unsubscribing, and emitting named events with multiple listeners."
     }
   },
   {
@@ -2598,8 +2598,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Concurrency-Limited Async Map in JavaScript (Order-Preserving)",
-      "description": "Run async tasks with max N concurrency, keep output order stable, and handle fail-fast or all-settled modes without leaving work hanging."
+      "title": "Concurrency-Limited Async Map in JavaScript",
+      "description": "Given items, an async mapper, and a concurrency limit, return results in input order while respecting the maximum in-flight tasks."
     }
   },
   {
@@ -2709,8 +2709,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Abortable JavaScript Helpers: Timeout + Composed Signals",
-      "description": "Combine AbortController timeouts, signal composition, and abort-aware wrappers so async utilities cancel predictably and clean up resources."
+      "title": "Abortable Async Helpers in JavaScript",
+      "description": "Build async utilities that support cancellation, timeout behavior, and composed abort signals with predictable error handling."
     }
   },
   {
@@ -2813,8 +2813,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Streaming NDJSON Parser in JavaScript (Web Streams)",
-      "description": "Parse chunked NDJSON line by line, handle partial lines across chunks, ignore empty rows, and report bad JSON lines without breaking the stream."
+      "title": "Parse Streaming NDJSON in JavaScript",
+      "description": "Given streamed text chunks, emit parsed NDJSON records while handling chunk boundaries, empty lines, and malformed rows."
     }
   },
   {
@@ -2918,8 +2918,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Array.prototype.map Polyfill Correctly",
-      "description": "Recreate native map behavior with callback args, thisArg binding, hole preservation, and initial-length snapshot semantics for spec-accurate iteration."
+      "title": "Implement Array.prototype.map Polyfill in JavaScript",
+      "description": "Given an array-like input and callback, return a mapped array that follows native map behavior for edge cases and sparse arrays."
     }
   },
   {
@@ -3063,8 +3063,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Array.prototype.reduce Polyfill Correctly",
-      "description": "Match native reduce semantics for holes, optional initialValue, accumulator seeding from first existing element, and empty-input TypeError behavior."
+      "title": "Implement Array.prototype.reduce Polyfill in JavaScript",
+      "description": "Given an array-like input and reducer, return the accumulated result while matching native reduce behavior for initial values and empty input."
     }
   },
   {
@@ -3160,8 +3160,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Array.prototype.filter Polyfill Correctly",
-      "description": "Match native filter behavior: callback(value,index,array), truthy selection, hole skipping, thisArg binding, and initial-length snapshot semantics."
+      "title": "Implement Array.prototype.filter Polyfill in JavaScript",
+      "description": "Given an array-like input and predicate callback, return only items that satisfy the condition while matching native filter edge cases."
     }
   },
   {
@@ -3258,8 +3258,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement arrayForEach Utility with Native Behavior",
-      "description": "Call callbacks in order with (value, index, array), support thisArg, skip sparse holes, and return undefined exactly like native forEach."
+      "title": "Implement forEach Utility in JavaScript (Native Behavior)",
+      "description": "Given an array-like input and callback, invoke the callback for each valid element in order using native forEach argument semantics."
     }
   },
   {
@@ -3363,8 +3363,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Sort Numbers in JavaScript Without Mutating Input",
-      "description": "Build sortNumbers(arr, ascending) using numeric comparators, return a new sorted array, and preserve original data while handling asc/desc modes."
+      "title": "Sort Number Array in JavaScript (Non-Mutating)",
+      "description": "Given numbers and a direction flag, return a sorted array while leaving the original input unchanged."
     }
   },
   {
@@ -3449,8 +3449,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create Counter with Closures in JavaScript",
-      "description": "Use closures to encapsulate mutable count state with optional initial value, and verify independent counters, increment behavior, and no state leakage."
+      "title": "Create Counter Function in JavaScript (Closure State)",
+      "description": "Build a counter utility that keeps internal state across calls and supports predictable initialization and increment behavior."
     }
   },
   {
@@ -3539,8 +3539,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Check if Object or Array Is Empty in JavaScript",
-      "description": "Return true only for empty objects/arrays, false for populated ones, and throw TypeError for unsupported inputs with clear validation rules."
+      "title": "Check Empty Object or Array in JavaScript",
+      "description": "Given a value, determine whether it is an empty object or array with clear handling for unsupported input types."
     }
   },
   {
@@ -3635,8 +3635,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Add Two Promises in JavaScript with async/await",
-      "description": "Resolve two numeric promises and return their sum as a Promise, composing async results cleanly once both inputs fulfill."
+      "title": "Add Two Promise Values in JavaScript",
+      "description": "Given two Promise inputs that resolve to numbers, return a Promise that resolves to their combined result."
     }
   },
   {
@@ -3731,8 +3731,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Promise.all in JavaScript (Order + Early Reject)",
-      "description": "Build promiseAll(promises) that resolves values in input order and rejects immediately on first failure, including support for plain values and mixed promise arrays."
+      "title": "Implement Promise.all in JavaScript",
+      "description": "Given multiple async inputs, return a single Promise that preserves result ordering and reflects failure behavior consistently."
     }
   },
   {
@@ -3832,8 +3832,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Function.prototype.bind in JavaScript (Including new)",
-      "description": "Create myBind(fn, thisArg, ...args) with this binding, partial application, and correct constructor behavior so bound functions still work with new and prototype chains."
+      "title": "Implement Function.prototype.bind in JavaScript",
+      "description": "Given a function and binding context, return a bound function that supports preset arguments and constructor-style invocation behavior."
     }
   },
   {
@@ -3926,8 +3926,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement the new Operator in JavaScript Step by Step",
-      "description": "Recreate new semantics by linking prototypes, invoking constructors with this, and returning constructor-provided objects when needed for accurate object creation behavior."
+      "title": "Implement new Operator Behavior in JavaScript",
+      "description": "Given a constructor and arguments, return an instance that follows JavaScript object-construction semantics."
     }
   },
   {
@@ -4021,8 +4021,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement instanceof in JavaScript via Prototype Chain",
-      "description": "Check whether Constructor.prototype appears in an object's prototype chain, handling primitives and null safely to mirror native instanceof behavior."
+      "title": "Implement instanceof Check in JavaScript",
+      "description": "Given an object and constructor, return whether the object should be treated as an instance of that constructor."
     }
   },
   {
@@ -4126,8 +4126,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Delegated Event Handler in JavaScript (DOM)",
-      "description": "Implement delegate(root, type, selector, handler) with one root listener, closest-match targeting, and cleanup removal to handle dynamic DOM elements efficiently."
+      "title": "Event Delegation Utility in JavaScript (Single Listener)",
+      "description": "Create a utility that handles matching child events through one root listener and supports dynamic elements."
     }
   },
   {
@@ -4237,8 +4237,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Advanced Event Delegation in JavaScript (capture + once)",
-      "description": "Extend delegated handlers with capture and once options, ensure matches stay inside root, and return cleanup logic for leak-free, production-ready DOM event handling."
+      "title": "Event Delegation with capture/once in JavaScript",
+      "description": "Extend delegated event behavior with capture and once options while keeping predictable cleanup and root-bound matching."
     }
   },
   {
@@ -4353,8 +4353,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Advanced Event Delegation in JavaScript (ignore/until/stop)",
-      "description": "Build delegate() with root boundary checks, selector matching, capture/once options, and ignore-until-stop rules for robust delegated event handling in dynamic UIs."
+      "title": "Advanced Event Delegation Rules in JavaScript",
+      "description": "Support delegated event handling with boundary, ignore, and stop conditions for complex interaction requirements."
     }
   },
   {
@@ -4449,8 +4449,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Traverse a DOM-Like Tree to Collect Text Content in JavaScript",
-      "description": "Implement collectText(node) with document-order DFS, null-safe nodeValue handling, and left-to-right traversal to concatenate all text nodes predictably."
+      "title": "Collect Text from DOM-Like Tree in JavaScript",
+      "description": "Given a DOM-like node tree, return concatenated text content in document order while handling missing or empty text nodes."
     }
   },
   {
@@ -4543,8 +4543,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Find the Closest Ancestor Within a Boundary (JavaScript)",
-      "description": "Implement closestWithin(node, selector, boundary) for DOM-like trees with parent walking, selector matching, and inclusive boundary stopping like a safe closest()."
+      "title": "Find Closest Matching Ancestor in JavaScript",
+      "description": "Given a node, selector, and boundary, return the nearest matching ancestor within the allowed traversal limit."
     }
   },
   {
@@ -4635,8 +4635,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Tiny querySelectorAll for a DOM-Like Tree in JavaScript",
-      "description": "Create queryAll(root, selector) supporting tag, class, id, tag.class, and descendant selectors with document-order traversal and strict input validation."
+      "title": "Implement querySelectorAll for DOM-Like Tree in JavaScript",
+      "description": "Given a DOM-like root and selector, return all matching nodes in document order with clear behavior for unsupported selectors."
     }
   },
   {
@@ -4724,8 +4724,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Element.matches() Logic for Simple Selectors",
-      "description": "Write matchesSimple(node, selector) for tag, #id, .class, and tag.class matching with defensive false returns for invalid inputs in DOM-like data."
+      "title": "Implement Element.matches Polyfill in JavaScript",
+      "description": "Given a node and selector, return whether the node matches supported selector patterns with safe handling for invalid input."
     }
   },
   {
@@ -4809,8 +4809,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Recover a BST with Two Swapped Nodes in JavaScript",
-      "description": "Fix a corrupted BST in place by identifying the two out-of-order nodes during traversal and swapping values back while preserving tree structure."
+      "title": "Recover BST with Two Swapped Nodes in JavaScript",
+      "description": "Given a binary search tree with two swapped values, restore BST validity without changing tree structure."
     }
   },
   {
@@ -4899,8 +4899,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement closest() Polyfill in JavaScript with parentNode Traversal",
-      "description": "Build closestSimple(node, selector) for DOM-like trees by matching self first, then ancestors, with safe null handling and simple selector support."
+      "title": "Implement closest Polyfill in JavaScript",
+      "description": "Given a node and selector, return the nearest matching ancestor (or self) within the available parent chain."
     }
   },
   {
@@ -4996,8 +4996,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement querySelectorAll Polyfill for DOM-Like Trees (Hard)",
-      "description": "Create queryAllSimple(root, selector) with document-order traversal, descendant selector matching, and strict validation for unsupported selector syntax."
+      "title": "Implement querySelectorAll Polyfill in JavaScript",
+      "description": "Given a DOM-like root and selector, return all matching elements with deterministic ordering and defined invalid-selector behavior."
     }
   },
   {
@@ -5088,8 +5088,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Safely Get Nested Object Values by Path in JavaScript",
-      "description": "Implement getByPath(obj, path, fallback) for dot or array paths, return fallback only when segments are missing, and preserve valid falsy values."
+      "title": "Get Nested Value by Path in JavaScript",
+      "description": "Given an object, a path, and a fallback, return the nested value when present or the fallback when any segment is missing."
     }
   },
   {
@@ -5180,8 +5180,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Set Nested Values by Path Immutably in JavaScript",
-      "description": "Implement setByPath(obj, path, value) to create missing object/array branches, replace invalid intermediates, and return a new immutable tree."
+      "title": "Set Nested Value by Path in JavaScript (Immutable)",
+      "description": "Given an object, path, and value, return an updated structure with the change applied without mutating the original input."
     }
   },
   {
@@ -5264,8 +5264,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Deep Clone Objects with Circular References in JavaScript",
-      "description": "Write deepClone(value) using memoization to prevent infinite recursion, preserve shared references, and copy arrays/objects without mutating input."
+      "title": "Deep Clone Circular Objects in JavaScript",
+      "description": "Given an object that may include circular or shared references, return a deep copy that preserves structure safely."
     }
   },
   {
@@ -5350,8 +5350,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Parse URL Query Strings into Objects in JavaScript",
-      "description": "Implement parseQueryString(qs) with percent-decoding, plus-to-space conversion, repeated-key last-write wins, and robust handling of malformed pairs."
+      "title": "Parse Query String in JavaScript",
+      "description": "Given a query-string input, return parsed key-value data with defined behavior for decoding, empty parts, and repeated keys."
     }
   },
   {
@@ -5436,8 +5436,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Stringify Query Params in JavaScript (Stable, Encoded Output)",
-      "description": "Implement stringifyQueryString(params) with key sorting, array key repetition, null or undefined handling, and encodeURIComponent-safe output for URL filters."
+      "title": "Stringify Query Params in JavaScript",
+      "description": "Given key-value parameters, return a query-string output with consistent ordering and encoded values for URL usage."
     }
   },
   {
@@ -5522,8 +5522,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Parse Advanced Query Strings into Nested Objects in JavaScript",
-      "description": "Build parseQueryStringAdvanced(qs) with repeated keys, bracket arrays, nested objects, plus-decoding, and conflict-safe merges without URLSearchParams."
+      "title": "Parse Nested Query Strings in JavaScript",
+      "description": "Given a query string, return parsed nested data with clear handling for repeated keys, arrays, objects, and malformed input."
     }
   },
   {
@@ -5609,8 +5609,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Add Very Large Integer Strings in JavaScript Without BigInt",
-      "description": "Implement digit-by-digit string addition with carry to sum arbitrarily large non-negative integers when number conversion and BigInt are disallowed."
+      "title": "Add Large Integer Strings in JavaScript",
+      "description": "Given two non-negative integer strings, return their sum as a string without relying on numeric conversion limits."
     }
   },
   {
@@ -5698,8 +5698,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement lodash.get in JavaScript (Dot and Bracket Paths)",
-      "description": "Create get(obj, path, defaultValue) that safely resolves nested values from dot and bracket notation, supports array indices, and returns defaults only when missing."
+      "title": "Implement lodash.get in JavaScript",
+      "description": "Given an object, path, and default value, return the nested value when present or the default when resolution fails."
     }
   },
   {
@@ -5778,8 +5778,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Solve 3Sum in JavaScript with Sorting and Two Pointers",
-      "description": "Return all unique triplets summing to zero using sorted traversal, duplicate skipping, and two-pointer scans for interview-grade O(n^2) performance."
+      "title": "Solve 3Sum in JavaScript",
+      "description": "Given an integer array, return all unique triplets whose values sum to zero with no duplicate triplets in output."
     }
   },
   {
@@ -5862,8 +5862,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Merge Two Sorted Arrays in JavaScript Using Two Pointers",
-      "description": "Implement linear-time merge without calling sort, preserving non-decreasing order and correctly handling duplicates plus uneven input lengths."
+      "title": "Merge Two Sorted Arrays in JavaScript",
+      "description": "Given two sorted arrays, return one merged sorted array while preserving duplicates and full input coverage."
     }
   },
   {
@@ -5944,8 +5944,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Check Valid Anagrams in JavaScript (Character Frequency Method)",
-      "description": "Implement an anagram checker that compares exact character counts with case-sensitive rules, including spaces and symbols, for reliable string validation."
+      "title": "Check Valid Anagrams in JavaScript",
+      "description": "Given two strings, return whether they contain the same characters with matching counts under defined comparison rules."
     }
   },
   {
@@ -6022,8 +6022,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Find the Median of an Array in JavaScript Without Mutating Input",
-      "description": "Compute median for odd and even lengths using sorted copies, return the middle value or average, and keep original arrays unchanged."
+      "title": "Find Median of Number Array in JavaScript",
+      "description": "Given an array of numbers, return the median value for odd or even lengths while preserving expected numeric precision."
     }
   },
   {
@@ -6109,8 +6109,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a JSON-to-DOM Renderer in JavaScript (No innerHTML)",
-      "description": "Implement render(node) with createElement or createTextNode, className-to-class mapping, null-safe child handling, and recursive tree rendering in O(n)."
+      "title": "Render JSON Tree to DOM in JavaScript",
+      "description": "Given a JSON-like node definition, return rendered DOM output with proper element, text, and child handling rules."
     }
   },
   {
@@ -6201,8 +6201,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Custom setTimeout and clearTimeout Manager in JavaScript",
-      "description": "Create mySetTimeout, myClearTimeout, and myClearAllTimeouts with custom numeric IDs, native handle registry, and cleanup logic for predictable timer control."
+      "title": "Build Timer Manager in JavaScript (set/clear/clearAll)",
+      "description": "Implement timer APIs that return custom IDs, support cancellation by ID, and allow clearing all active scheduled timers."
     }
   },
   {
@@ -6277,8 +6277,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "JavaScript Interview Combo: Clear Timers and Render DOM Trees",
-      "description": "Solve clearAllTimeouts timer cleanup and nested object DOM rendering as separate utilities, with leak-safe timer handling and no innerHTML rendering."
+      "title": "Clear Timers and Render DOM Tree in JavaScript",
+      "description": "Implement two utilities: one for global timer cleanup and one for rendering nested node definitions into DOM output."
     }
   },
   {
@@ -6364,8 +6364,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Find a DOM Node by Predicate in JavaScript (DFS or BFS)",
-      "description": "Implement findNode(root, predicate) with tree traversal and early exit to return the first matching element efficiently in large DOM structures."
+      "title": "Find Node in DOM-Like Tree by Predicate in JavaScript",
+      "description": "Given a root node and predicate, return the first matching node or null when no node satisfies the condition."
     }
   },
   {
@@ -6455,8 +6455,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Find the Matching Node in Twin DOM Trees (JavaScript)",
-      "description": "Return the corresponding node in tree B for a target node in tree A by synchronized traversal or path indexing across identical DOM structures."
+      "title": "Find Matching Node in Twin DOM Trees in JavaScript",
+      "description": "Given equivalent trees and a target node from the first tree, return the corresponding node from the second tree."
     }
   },
   {
@@ -6529,8 +6529,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Stack and Queue in JavaScript with O(1) Operations",
-      "description": "Build Stack and Queue APIs with push/pop or enqueue/dequeue, including peek and size, while keeping queue performance O(1) using a head index."
+      "title": "Implement Stack and Queue in JavaScript",
+      "description": "Build Stack and Queue utilities with core operations and deterministic behavior for empty structures and repeated operations."
     }
   },
   {
@@ -6611,8 +6611,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Palindrome Check in JavaScript (Normalize + Two Pointers)",
-      "description": "Validate palindromes by lowercasing and removing non-alphanumerics, then compare from both ends for fast and reliable string matching."
+      "title": "Check Palindrome String in JavaScript",
+      "description": "Given a string, return whether it reads the same forward and backward under the stated comparison rules."
     }
   },
   {
@@ -6703,8 +6703,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Find a Path in a Grid Maze Using BFS or DFS (JavaScript)",
-      "description": "Determine whether a route exists from start to end in a 0 or 1 maze using 4-direction traversal with visited tracking to avoid loops."
+      "title": "Find Path in Grid Maze in JavaScript",
+      "description": "Given a grid with blocked and open cells, return whether a valid path exists from start to destination."
     }
   },
   {
@@ -6792,8 +6792,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement takeLatest in JavaScript with AbortController",
-      "description": "Wrap async calls so only the latest request can resolve, cancel previous ones with AbortController, and prevent stale UI updates in live search."
+      "title": "Implement takeLatest in JavaScript",
+      "description": "Create a utility that runs async tasks and guarantees only the most recent invocation can produce a final result."
     }
   },
   {
@@ -6880,8 +6880,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Promise.any in JavaScript (First Fulfilled Result)",
-      "description": "Resolve with the first fulfilled value, ignore intermediate rejections, and throw AggregateError with all reasons when every input fails or is empty."
+      "title": "Implement Promise.any in JavaScript",
+      "description": "Given multiple async inputs, return the first successful result and define clear behavior when all inputs fail."
     }
   },
   {
@@ -6969,8 +6969,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement pollUntil in JavaScript (Interval, Timeout, Abort)",
-      "description": "Build pollUntil(check, options) that retries on a fixed interval, resolves on the first truthy result, and rejects on timeout or AbortSignal cancellation."
+      "title": "Implement pollUntil in JavaScript",
+      "description": "Create a polling utility that checks a condition repeatedly until success, timeout, or external cancellation."
     }
   },
   {
@@ -7063,8 +7063,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Fetch JSON with Timeout and AbortController in JavaScript",
-      "description": "Implement fetchJson(url, options) with timeout-based aborts, external signal support, and clear error handling for non-2xx HTTP responses."
+      "title": "Fetch JSON with Timeout in JavaScript",
+      "description": "Build a JSON request helper with timeout behavior and clear handling for network failures and non-success responses."
     }
   },
   {
@@ -7156,8 +7156,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Convert ReadableStream to Text in JavaScript with TextDecoder",
-      "description": "Read byte chunks from a ReadableStream, decode safely across chunk boundaries using stream mode, and support AbortSignal-based cancellation."
+      "title": "Convert ReadableStream to Text in JavaScript",
+      "description": "Given a readable byte stream, return its full text content while preserving correct decoding behavior across chunks."
     }
   },
   {
@@ -7245,8 +7245,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a TTL Storage Cache in JavaScript (localStorage/sessionStorage)",
-      "description": "Create createTtlStorage(storage, now) with set/get/remove, JSON serialization, optional expiration, and automatic cleanup of expired entries on read."
+      "title": "TTL Storage Cache in JavaScript (Expiration Support)",
+      "description": "Build a storage utility that saves values with optional expiration and returns only non-expired entries under clear cache rules."
     }
   },
   {
@@ -7339,8 +7339,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Escape HTML Special Characters in JavaScript for Safer Output",
-      "description": "Encode &, <, >, double quotes, and single quotes into HTML entities so untrusted text renders safely instead of becoming executable markup."
+      "title": "Escape HTML Special Characters in JavaScript",
+      "description": "Given text input, return a safely escaped HTML string so special characters are rendered as text instead of markup."
     }
   },
   {
@@ -7430,8 +7430,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Validate Usernames in JavaScript with Strict Rule Checks",
-      "description": "Implement validateUsername(name) for 3-16 chars, lowercase letters digits underscore, required starting letter, and no trailing or consecutive underscores."
+      "title": "Validate Username String in JavaScript",
+      "description": "Given a username, return whether it satisfies required format rules for length, allowed characters, and placement constraints."
     }
   },
   {
@@ -7520,8 +7520,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Safe JSON Parsing in JavaScript with Fallback Values",
-      "description": "Implement safeJsonParse(text, fallback) to return parsed data for valid JSON and a safe fallback for invalid or non-string inputs without throwing."
+      "title": "Safe JSON Parse with Fallback in JavaScript",
+      "description": "Given an input string and fallback value, return parsed JSON on valid input or the fallback when parsing is not valid."
     }
   },
   {
@@ -7607,8 +7607,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Measure Sync and Async Function Duration in JavaScript",
-      "description": "Build a measure(fn, now) profiling wrapper that returns result and durationMs, supports promises, and uses injectable clocks for deterministic testing."
+      "title": "Measure Function Duration in JavaScript",
+      "description": "Given a function, return its output together with elapsed time while supporting both synchronous and asynchronous execution."
     }
   },
   {
@@ -7684,8 +7684,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a Cleanup Bag Utility in JavaScript to Prevent Leaks",
-      "description": "Implement createCleanupBag() with add, dispose, and size to track event and timer cleanups, remove handlers safely, and dispose only once."
+      "title": "Create Cleanup Bag Utility in JavaScript",
+      "description": "Build a cleanup manager that registers teardown callbacks and provides predictable disposal behavior for repeated calls."
     }
   },
   {
@@ -7775,8 +7775,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Format Dates by Time Zone in JavaScript (YYYY-MM-DD)",
-      "description": "Use Intl.DateTimeFormat to format Date or timestamp values in a specific IANA time zone and handle invalid date inputs safely."
+      "title": "Format Date by Time Zone in JavaScript",
+      "description": "Given a date input and time zone, return a formatted date string with consistent output and invalid-input handling."
     }
   },
   {
@@ -7861,8 +7861,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement a Spy Function in JavaScript for Unit Testing",
-      "description": "Create createSpy(impl) that records call arguments and this context, optionally delegates behavior, and helps verify side effects in tests."
+      "title": "Create Spy Function Utility in JavaScript",
+      "description": "Create a spy wrapper that tracks invocation details and supports optional passthrough behavior for testing scenarios."
     }
   },
   {
@@ -7941,8 +7941,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create Deferred Promises in JavaScript for Async Test Control",
-      "description": "Implement createDeferred() returning promise, resolve, and reject so async flows can be controlled deterministically during unit and integration tests."
+      "title": "Create Deferred Promise in JavaScript",
+      "description": "Return a deferred object exposing a promise plus external settle controls for deterministic async test orchestration."
     }
   },
   {
@@ -8027,8 +8027,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create an LRU Cache in JavaScript with Size-Based Eviction",
-      "description": "Implement createLruCache(maxSize) with O(1) get/set behavior, recency updates, and least-recently-used eviction to keep long-lived app memory bounded."
+      "title": "Create LRU Cache in JavaScript",
+      "description": "Build a bounded cache that keeps recent entries and evicts old ones according to least-recently-used policy."
     }
   },
   {
@@ -8124,8 +8124,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Run JavaScript Tasks with a Performance Budget (Sync + Async)",
-      "description": "Build runWithPerfBudget(fn, budgetMs, now) to measure sync or async execution time and report whether operations stay within defined latency limits."
+      "title": "Run Tasks with Performance Budget in JavaScript",
+      "description": "Given a task and budget threshold, return execution outcome plus whether runtime stays within the allowed time limit."
     }
   },
   {
@@ -8216,8 +8216,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Resolve package.json Exports for import vs require in JavaScript",
-      "description": "Implement resolvePackageEntry(pkg, options) using exports, module, and main with conditions like browser/default to select correct ESM or CJS entry files."
+      "title": "Resolve package Exports for import/require in JavaScript",
+      "description": "Given package metadata and runtime conditions, return the correct entry path for module loading mode and environment."
     }
   },
   {
@@ -8308,8 +8308,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Sanitize href URLs in JavaScript to Block javascript: XSS",
-      "description": "Validate user-provided href values with safe scheme allowlists and relative URL rules, strip control characters, and reject dangerous protocols."
+      "title": "Sanitize href URL Values in JavaScript",
+      "description": "Given an href input, return a safe URL value that enforces allowed protocols and rejects potentially dangerous patterns."
     }
   }
 ]
