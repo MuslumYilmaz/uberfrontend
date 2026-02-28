@@ -3083,8 +3083,8 @@
     "type": "trivia",
     "tags": [
       "react",
-      "useMemo",
-      "useCallback",
+      "memoization",
+      "callbacks",
       "performance",
       "hooks"
     ],

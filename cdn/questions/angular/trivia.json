@@ -4343,7 +4343,7 @@
     "id": "angular-onpush-change-detection-debugging-real-bug",
     "title": "Explain OnPush Change Detection in Angular Like You’re Debugging a Real Production Bug",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 1,
     "description": "OnPush change detection tells Angular to skip checking a component unless one of a few specific triggers happens (Input reference change, event inside the component, async pipe emission, or manual markForCheck/detectChanges). It dramatically improves performance, but breaks the UI if you mutate objects or arrays instead of changing references.",
     "answer": {
@@ -4497,7 +4497,7 @@
     "id": "rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
     "title": "switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 3,
     "description": "These RxJS flattening operators control how Angular handles overlapping async work (HTTP calls, saves, clicks, search). switchMap cancels previous, mergeMap runs in parallel, concatMap queues sequentially, and exhaustMap ignores new triggers while busy. Choosing the right one prevents race conditions, double submits, and UI glitches.",
     "answer": {
@@ -4661,7 +4661,7 @@
     "id": "angular-prevent-memory-leaks-unsubscribe-patterns",
     "title": "How Do You Prevent Memory Leaks in Angular? All Real-World Unsubscribe Patterns Explained",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 1,
     "description": "Memory leaks in Angular almost always come from forgotten subscriptions, long-lived streams, or global listeners. The correct fixes include using the async pipe, takeUntilDestroyed/DestroyRef, takeUntil with a Subject, and understanding which streams complete automatically and which never do.",
     "answer": {
@@ -4818,7 +4818,7 @@
     "id": "angular-controlvalueaccessor-vs-custom-two-way-binding",
     "title": "What Is ControlValueAccessor in Angular and Why Is It Better Than Custom Two-Way Binding?",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 1,
     "description": "ControlValueAccessor (CVA) is Angular’s official bridge between custom components and Angular Forms. It lets your component behave like a real form control (ngModel, formControl, formControlName) with validation, touched/dirty state, and disabled handling—unlike custom two-way binding which only syncs values and breaks form integration.",
     "answer": {
@@ -4956,7 +4956,7 @@
     "id": "angular-template-driven-vs-reactive-forms-which-scales",
     "title": "Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 1,
     "description": "Template-driven forms rely on directives in the template and implicit state, while reactive forms define the entire form model in TypeScript. Reactive forms scale better because they are explicit, testable, composable, and predictable for complex validation and dynamic form structures.",
     "answer": {
@@ -5113,7 +5113,7 @@
     "id": "rxjs-sharereplay-angular-how-it-breaks-your-app",
     "title": "What Is shareReplay in RxJS and How Can It Silently Break Your Angular App?",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 1,
     "description": "shareReplay is an RxJS operator that turns a cold observable into a shared hot one and caches the last emitted values. Used incorrectly, it can cause memory leaks, stale data bugs, and unexpected behavior—especially in Angular services and HTTP streams.",
     "answer": {
@@ -5306,7 +5306,7 @@
     "id": "angular-http-what-actually-cancels-request",
     "title": "What Actually Cancels an HTTP Request in Angular?",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 1,
     "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. This triggers the browser AbortController/XHR abort under the hood. But not all operators or patterns truly cancel the network request—some only ignore the result.",
     "answer": {
@@ -5484,7 +5484,7 @@
     "id": "angular-hierarchical-dependency-injection-real-bug",
     "title": "Explain Hierarchical Dependency Injection in Angular With a Real Bug Example",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 1,
     "description": "Angular’s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get multiple instances and break shared state, caching, or coordination logic.",
     "seo": {

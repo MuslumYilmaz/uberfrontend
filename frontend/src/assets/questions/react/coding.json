@@ -1375,7 +1375,7 @@
     "title": "Autocomplete Search Bar (Hooks)",
     "type": "coding",
     "technology": "react",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 3,
     "tags": [
       "react",
@@ -1471,7 +1471,7 @@
     "title": "React Transfer List (Select + Move Between Two Lists)",
     "type": "coding",
     "technology": "react",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "react",
@@ -1658,7 +1658,7 @@
     "title": "useEffectOnce: Run an Effect Only Once",
     "type": "coding",
     "technology": "react",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 1,
     "tags": [
       "react",
@@ -1920,7 +1920,7 @@
     "title": "React Nested Comments (Infinite Replies, Single Active Reply Input)",
     "type": "coding",
     "technology": "react",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "react",
@@ -2011,7 +2011,7 @@
     "title": "React Dynamic Counter Buttons (Grow-on-Click)",
     "type": "coding",
     "technology": "react",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "react",
@@ -2275,7 +2275,7 @@
     "title": "Invite Chips Input (Tags + Autocomplete)",
     "type": "coding",
     "technology": "react",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "react",
@@ -2374,7 +2374,7 @@
     "title": "React Chessboard Click/Highlight (N×N Board)",
     "type": "coding",
     "technology": "react",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "react",

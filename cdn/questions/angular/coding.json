@@ -1393,7 +1393,7 @@
     "title": "Autocomplete Search Bar (Standalone Component)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 3,
     "tags": [
       "components",
@@ -1493,7 +1493,7 @@
     "title": "Angular Transfer List (Select + Move Between Two Lists)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 3,
     "tags": [
       "components",
@@ -1949,7 +1949,7 @@
     "title": "Nested Comments (Infinite Replies)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 3,
     "tags": [
       "components",
@@ -2041,7 +2041,7 @@
     "title": "Angular Dynamic Counter Buttons (Grow-on-Click)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "components",
@@ -2127,7 +2127,7 @@
     "title": "Invite Chips Input (Tags + Autocomplete)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "components",

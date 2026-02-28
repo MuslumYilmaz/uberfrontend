@@ -1009,7 +1009,7 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-prototypal-inheritance</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/trivia/js-prototype-vs-__proto__</loc>
+    <loc>https://frontendatlas.com/javascript/trivia/js-prototype-vs-proto</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-queue-vs-stack</loc>
@@ -1450,7 +1450,7 @@
     <loc>https://frontendatlas.com/vue/trivia/vue-data-must-be-function</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/vue/trivia/vue-destructuring-breaks-reactivity-toRefs-toRef</loc>
+    <loc>https://frontendatlas.com/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/trivia/vue-directives</loc>

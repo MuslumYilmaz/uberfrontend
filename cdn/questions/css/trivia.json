@@ -2881,7 +2881,7 @@
       "css",
       "cascade",
       "specificity",
-      "!important",
+      "best-practices",
       "selectors",
       "order"
     ],

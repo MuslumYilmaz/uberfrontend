@@ -353,7 +353,7 @@
 /javascript/trivia/js-promise-combinators-all-allsettled-race-any
 /javascript/trivia/js-promises-async-await
 /javascript/trivia/js-prototypal-inheritance
-/javascript/trivia/js-prototype-vs-__proto__
+/javascript/trivia/js-prototype-vs-proto
 /javascript/trivia/js-queue-vs-stack
 /javascript/trivia/js-secure-cors-handling
 /javascript/trivia/js-shallow-vs-deep-copy
@@ -505,7 +505,7 @@
 /vue/trivia/vue-computed-vs-watchers
 /vue/trivia/vue-conditional-list-rendering
 /vue/trivia/vue-data-must-be-function
-/vue/trivia/vue-destructuring-breaks-reactivity-toRefs-toRef
+/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref
 /vue/trivia/vue-directives
 /vue/trivia/vue-internal-rendering-pipeline
 /vue/trivia/vue-lifecycle-hooks

@@ -287,7 +287,7 @@
           "kind": "trivia"
         },
         {
-          "id": "js-prototype-vs-__proto__",
+          "id": "js-prototype-vs-proto",
           "tech": "javascript",
           "kind": "trivia"
         },

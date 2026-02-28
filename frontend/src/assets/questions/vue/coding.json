@@ -1383,7 +1383,7 @@
     "title": "Autocomplete Search (debounce + keyboard + outside click)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 1,
     "tags": [
       "vue",
@@ -1489,7 +1489,7 @@
     "title": "Transfer List (Move Selected Items Between Two Lists)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "vue",
@@ -1855,7 +1855,7 @@
     "title": "Vue Nested Comments (Infinite Replies, Single Active Reply Input)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 3,
     "tags": [
       "vue",
@@ -1944,7 +1944,7 @@
     "title": "Vue Dynamic Counter Buttons (Grow-on-Click)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 3,
     "tags": [
       "vue",
@@ -2030,7 +2030,7 @@
     "title": "Invite Chips Input (Tags + Autocomplete)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 4,
     "tags": [
       "vue",
@@ -2131,7 +2131,7 @@
     "title": "Vue Chessboard Click/Highlight (N×N Board)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 4,
     "tags": [
       "vue",

@@ -3443,7 +3443,7 @@
     }
   },
   {
-    "id": "js-prototype-vs-__proto__",
+    "id": "js-prototype-vs-proto",
     "title": "prototype vs __proto__ in JavaScript (Prototype Chain, new, and Object.getPrototypeOf)",
     "description": "prototype is a property on constructor functions that becomes the [[Prototype]] of instances created with new. __proto__ is the (legacy) accessor for an object's [[Prototype]] link used for property lookup. Mastering this distinction explains inheritance, the prototype chain, and why obj.__proto__ === Foo.prototype after new Foo().",
     "type": "trivia",
