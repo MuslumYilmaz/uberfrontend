@@ -81,8 +81,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue 3 Counter with Guarded Decrement and Reset Logic",
-      "description": "Create a Vue counter with reactive state, increment and decrement actions, zero-floor protection, and disabled UI states that stay synced with value changes."
+      "title": "Build Vue Counter Component",
+      "description": "Build a counter UI with increment, decrement, and reset actions while preventing negative values and keeping controls in sync."
     }
   },
   {
@@ -175,8 +175,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue Contact Form with Validation and POST Request Handling",
-      "description": "Implement a Vue 3 script setup form with v-model inputs, submit validation, fetch POST integration, and clear loading success error feedback states."
+      "title": "Build Vue Contact Form with Validation and Submit",
+      "description": "Create a contact form that validates required fields, submits data, and displays loading, success, and error states."
     }
   },
   {
@@ -266,8 +266,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a Vue 3 Todo List with Add Toggle Remove and Clear Completed",
-      "description": "Build a Composition API todo app with reactive lists, immutable-style updates, task completion toggles, and bulk cleanup of completed items."
+      "title": "Build Vue Todo List (Add Toggle Remove)",
+      "description": "Create a todo list that supports adding tasks, toggling completion, removing items, and clearing completed entries."
     }
   },
   {
@@ -360,8 +360,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue Image Slider with Prev Next and Disabled Boundaries",
-      "description": "Implement an index-driven slider that updates image and labels, blocks out-of-range navigation, and keeps button disabled states in sync."
+      "title": "Build Vue Image Slider with Navigation Controls",
+      "description": "Create an image slider with previous and next navigation, boundary-aware controls, and current-slide display updates."
     }
   },
   {
@@ -447,8 +447,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement a Vue Tabs Switcher with Single Active Panel Rendering",
-      "description": "Use one activeTab state to switch views, render a single panel with conditional directives, and provide clear active styling with keyboard-friendly controls."
+      "title": "Build Vue Tabs Switcher with Active Panels",
+      "description": "Create a tabs component that switches active panels, updates tab state, and preserves keyboard-friendly interaction."
     }
   },
   {
@@ -540,8 +540,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Filterable User List in Vue with Search and Role Filters",
-      "description": "Derive filtered user results using computed properties, combine text and role criteria, preserve original data, and show empty-state feedback when no matches exist."
+      "title": "Build Filterable User List in Vue",
+      "description": "Create a user list that filters by search text and role criteria, with clear behavior when no records match."
     }
   },
   {
@@ -630,8 +630,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue 3 Accordion FAQ with Single or Multi-Open Modes",
-      "description": "Implement an FAQ accordion with reactive open state, item toggle handling, and optional multi-open behavior for clean and predictable interactions."
+      "title": "Build Vue Accordion FAQ Component",
+      "description": "Create an FAQ accordion that expands and collapses items with configurable single-open or multi-open behavior."
     }
   },
   {
@@ -720,8 +720,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a Paginated Data Table in Vue 3 with Prev and Next Controls",
-      "description": "Build client-side pagination with page index state, computed row slices, and boundary-safe Previous or Next navigation plus page indicators."
+      "title": "Build Paginated Data Table in Vue",
+      "description": "Create a data table with page navigation that shows current-page rows and handles first or last page boundaries."
     }
   },
   {
@@ -814,8 +814,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement a Vue Theme Toggle with localStorage Persistence",
-      "description": "Build a global light dark mode toggle, persist theme preference in localStorage, and restore root-level theme state correctly after reload."
+      "title": "Build Vue Theme Toggle with Persistence",
+      "description": "Create a light and dark theme toggle that applies globally and restores the saved preference after reload."
     }
   },
   {
@@ -914,8 +914,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Multi-Step Signup Form in Vue 3 with Step Validation",
-      "description": "Create a 3-step wizard that validates each section before moving forward and displays a final summary for confirmation before submit."
+      "title": "Build Multi-Step Signup Form in Vue",
+      "description": "Create a multi-step signup flow with step validation, navigation controls, and a final review before submission."
     }
   },
   {
@@ -1010,8 +1010,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue 3 Shopping Cart with Quantity Controls and Totals",
-      "description": "Implement add remove and quantity updates for cart items, then derive total item count and total price with reactive computed values."
+      "title": "Build Vue Shopping Cart Component",
+      "description": "Create a shopping cart UI that supports adding items, updating quantities, removing entries, and showing accurate totals."
     }
   },
   {
@@ -1107,8 +1107,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Debounced Search in Vue 3 with Watch and Cleanup",
-      "description": "Use watch plus timeout cleanup to debounce API calls, cancel stale results, and manage loading error and empty states for better search UX."
+      "title": "Build Debounced Search in Vue 3",
+      "description": "Create a search input that delays requests while typing, shows loading and empty states, and prevents stale results from replacing newer ones."
     }
   },
   {
@@ -1197,8 +1197,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Reusable Vue 3 Star Rating Component with Controlled Value",
-      "description": "Create a star rating widget using props and emits, render 1..max stars, handle click selection, and keep parent state as the single source of truth."
+      "title": "Build Reusable Star Rating in Vue 3",
+      "description": "Create a star rating component with configurable max value, click selection, and synced parent-child state using props and emits."
     }
   },
   {
@@ -1285,8 +1285,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Generate a Dynamic Row and Column Table in Vue 3",
-      "description": "Build a table from row and column inputs, normalize values safely, regenerate grid data on demand, and render stable labels with v-for loops."
+      "title": "Build Dynamic Rows and Columns Table in Vue 3",
+      "description": "Generate a table from user-defined row and column counts, render stable labels, and handle missing or invalid cell values safely."
     }
   },
   {
@@ -1374,8 +1374,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create Nested Checkboxes in Vue with Indeterminate Parent State",
-      "description": "Sync parent and child checkbox behavior so parent toggles all children while computed logic updates checked and indeterminate states correctly."
+      "title": "Build Nested Checkboxes with Parent State in Vue",
+      "description": "Implement parent and child checkboxes where parent can toggle all items and parent state reflects checked, unchecked, or mixed selections."
     }
   },
   {
@@ -1480,8 +1480,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue 3 Autocomplete Search with Debounce and Keyboard Navigation",
-      "description": "Implement debounced suggestions, up down Enter Escape interactions, and outside-click closing for accessible and responsive autocomplete UX."
+      "title": "Build Vue 3 Autocomplete Search with Keyboard Support",
+      "description": "Create an autocomplete input with delayed suggestions, arrow-key navigation, Enter select, Escape close, and outside-click dismissal."
     }
   },
   {
@@ -1569,8 +1569,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement a Vue Transfer List with Multi-Select and Move Actions",
-      "description": "Build dual lists with selection state, move selected items between panels, preserve item order, and clear selections after transfers."
+      "title": "Build Transfer List in Vue with Multi-Select",
+      "description": "Create dual lists where users select items and move them between panels while preserving order and clearing selection after each move."
     }
   },
   {
@@ -1667,8 +1667,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build Tic Tac Toe in Vue with Winner Detection and Reset",
-      "description": "Create a reactive Tic Tac Toe board with alternating turns, overwrite guards, win or draw status messages, and restart functionality."
+      "title": "Build Tic Tac Toe Game in Vue",
+      "description": "Create a 3x3 game board with turn-based moves, blocked occupied cells, winner-or-draw status, and reset behavior."
     }
   },
   {
@@ -1758,8 +1758,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue 3 Like Button with Toggle State and Safe Counter",
-      "description": "Implement a like button that toggles liked state, updates count up or down correctly, blocks negative totals, and keeps UI feedback instant on clicks."
+      "title": "Build Like Button Toggle in Vue 3",
+      "description": "Create a like button that toggles state, updates the visible count correctly on each click, and prevents the displayed total from going below zero."
     }
   },
   {
@@ -1846,8 +1846,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a Vue Progress Bar with 0 to 100 Clamping and Color Thresholds",
-      "description": "Build progress controls with safe value clamping, percentage display, and computed red orange green threshold styling for clear status communication."
+      "title": "Build Progress Bar with Threshold Colors in Vue",
+      "description": "Create progress controls that clamp values to 0-100, show current percentage, and update visual status colors at defined thresholds."
     }
   },
   {
@@ -1935,8 +1935,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build Nested Comments in Vue with Infinite Replies and Single Active Input",
-      "description": "Create recursive comment threads with top-level and child replies, keep one active reply box at a time, and render deep hierarchies predictably."
+      "title": "Build Nested Comments with Replies in Vue",
+      "description": "Create threaded comments with top-level and reply inputs, support deep nesting, and keep only one active reply editor at a time."
     }
   },
   {
@@ -2021,8 +2021,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Dynamic Counter Step Buttons in Vue 3",
-      "description": "Let users add or remove step buttons dynamically and update one shared counter by each button value using reactive arrays and stable list rendering."
+      "title": "Build Dynamic Counter Buttons in Vue 3",
+      "description": "Create dynamic step buttons users can add or remove, then update one shared counter by each selected step value."
     }
   },
   {
@@ -2122,8 +2122,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue Chips Input with Autocomplete and Keyboard Shortcuts",
-      "description": "Implement an invite field that filters suggestions, converts selections into removable chips, and supports Enter comma backspace interactions accessibly."
+      "title": "Build Chips Input with Autocomplete in Vue",
+      "description": "Create an input that turns selections into removable chips, filters suggestions while typing, and supports Enter, comma, and Backspace."
     }
   },
   {
@@ -2215,8 +2215,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create an Interactive N x N Chessboard in Vue with Click Highlight",
-      "description": "Build a clickable grid board that highlights one selected cell at a time and updates layout dynamically when board size changes."
+      "title": "Build Interactive N x N Chessboard in Vue",
+      "description": "Create a grid chessboard where users click to highlight one cell at a time, and resizing the board keeps layout and selection stable."
     }
   },
   {
@@ -2313,8 +2313,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Vue Snake Game with Grid Movement, Food, and Collision Rules",
-      "description": "Implement keyboard-controlled snake movement on a grid, timed game ticks, random food spawning, score updates, and game-over handling for wall or self collisions."
+      "title": "Build Snake Game in Vue",
+      "description": "Create a grid-based snake game with keyboard movement, timed updates, food spawning, score tracking, and game over on wall or self collisions."
     }
   }
 ]

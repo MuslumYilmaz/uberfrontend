@@ -93,8 +93,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Style Hero Text with CSS Selectors and Typography Hierarchy",
-      "description": "Use element and class selectors to build readable hero typography, apply emphasis overrides, and demonstrate cascade plus specificity in a realistic UI block."
+      "title": "Style Hero Text with CSS Selectors",
+      "description": "Build hero text styles using element and class selectors, apply readable hierarchy, and verify cascade behavior across emphasized content."
     }
   },
   {
@@ -187,8 +187,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Understand CSS Box Model with Margin Padding and Border Layers",
-      "description": "Build card spacing with visible box-model boundaries by combining padding for inner space, borders for edges, and margins for separation between elements."
+      "title": "Practice CSS Box Model Spacing and Borders",
+      "description": "Build a card layout using margin, padding, and border layers to control inner spacing, outer separation, and visual boundaries."
     }
   },
   {
@@ -281,8 +281,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Center Inline Content in CSS Without Flexbox",
-      "description": "Use text-align and inline display behavior to center labels horizontally, handle wrapping and whitespace edge cases, and choose simple alignment for text-first layouts."
+      "title": "Center Inline Content with CSS",
+      "description": "Center inline text and labels horizontally without Flexbox, and handle wrapping or whitespace behavior in a simple text-first layout."
     }
   },
   {
@@ -374,8 +374,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Anchor a Notification Badge with Relative and Absolute Positioning",
-      "description": "Position a badge reliably on dynamic card content using relative parent and absolute child rules, with responsive overlap control and readable contrast."
+      "title": "Position Notification Badge with CSS",
+      "description": "Attach a badge to a card corner using relative parent and absolute child positioning while keeping overlap and readability consistent."
     }
   },
   {
@@ -468,8 +468,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Responsive Navbar Layout with CSS Flexbox",
-      "description": "Create a one-row navbar with aligned brand links and actions, apply gap spacing, and ensure clean wrapping behavior on smaller screens."
+      "title": "Build Responsive Navbar with CSS Flexbox",
+      "description": "Create a single-row navbar with aligned brand, links, and actions, then keep spacing and wrapping usable on smaller screens."
     }
   },
   {
@@ -561,8 +561,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Responsive CSS Grid Card Gallery from 2 to 4 Columns",
-      "description": "Create a fluid card gallery using repeat and minmax tracks with consistent gap spacing so cards auto-flow cleanly across tablet and desktop breakpoints."
+      "title": "Build Responsive CSS Grid Card Gallery",
+      "description": "Create a card gallery that shifts from fewer to more columns across breakpoints while keeping spacing and card alignment consistent."
     }
   },
   {
@@ -654,8 +654,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Use CSS clamp() for Fluid Typography and Spacing That Stays Readable",
-      "description": "Implement clamp-based font sizes and spacing with safe min and max bounds to scale smoothly across viewports without excessive media queries."
+      "title": "Use CSS clamp() for Fluid Typography",
+      "description": "Set fluid font and spacing values with clamp so text scales smoothly between screen sizes while respecting minimum and maximum limits."
     }
   },
   {
@@ -729,8 +729,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Style Form States with CSS Focus Invalid and Required Pseudo-Classes",
-      "description": "Design accessible form feedback with visible focus rings, invalid and required state styling, and helper text patterns that avoid layout shifts."
+      "title": "Style Form States with CSS Pseudo-Classes",
+      "description": "Style focus, invalid, and required states for form fields with visible feedback and stable layout behavior during validation."
     }
   },
   {
@@ -832,8 +832,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a Smooth Hover Lift Effect with CSS Transforms and Transitions",
-      "description": "Build card elevation animations using transform plus box-shadow, avoid layout jank by animating performant properties, and include reduced-motion support."
+      "title": "Create Hover Lift Animation with CSS",
+      "description": "Build a hover lift effect using transitions and transforms so cards animate smoothly without triggering layout shifts."
     }
   },
   {
@@ -933,8 +933,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build CSS Variable Theming with Dark Mode and Manual Override",
-      "description": "Define theme tokens on root, adapt for prefers-color-scheme dark, and enforce a manual html.theme-dark override through cascade order without JavaScript."
+      "title": "Build CSS Variables Theme with Dark Mode",
+      "description": "Define theme tokens with CSS variables, support system dark mode, and allow manual override using a root-level theme class."
     }
   }
 ]

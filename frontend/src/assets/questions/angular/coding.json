@@ -76,8 +76,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular Counter Component with Increment Decrement Reset",
-      "description": "Create a standalone Angular counter with state-driven UI, zero-floor decrement guard, disabled minus button logic, and predictable reset behavior."
+      "title": "Build Angular Counter Component",
+      "description": "Build a counter UI with increment, decrement, and reset actions while preventing values below zero and keeping controls in sync."
     }
   },
   {
@@ -174,8 +174,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular Contact Form with Reactive Validation and HTTP POST",
-      "description": "Implement a standalone component using reactive forms, validate on submit, send POST requests, and handle loading success and error states cleanly."
+      "title": "Build Angular Contact Form with Validation and Submit",
+      "description": "Create a contact form that validates required fields, submits data, and shows loading, success, and error feedback states."
     }
   },
   {
@@ -268,8 +268,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create an Angular Todo List with Add Toggle and Remove Actions",
-      "description": "Build a standalone todo component using ngFor rendering, controlled input handling, and state updates for task creation completion toggles and deletion."
+      "title": "Build Angular Todo List (Add Toggle Remove)",
+      "description": "Create a todo list interface that supports adding tasks, toggling completion, and removing items while keeping list state consistent."
     }
   },
   {
@@ -362,8 +362,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular Image Slider with Prev Next and Disabled Bounds",
-      "description": "Implement a state-driven image carousel with current index tracking, boundary-safe navigation buttons, and dynamic slide label updates."
+      "title": "Build Angular Image Slider with Navigation Controls",
+      "description": "Create an image slider with previous and next navigation, boundary-aware controls, and current-slide display updates."
     }
   },
   {
@@ -448,8 +448,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement an Angular Tabs Switcher with Active Panel Rendering",
-      "description": "Use a single activeTab value, update it from tab buttons, render panels with ngIf, and keep active styles plus click targets accessible."
+      "title": "Build Angular Tabs Switcher with Active Panels",
+      "description": "Create a tabs component that switches active panels, updates tab state, and preserves accessible keyboard and focus behavior."
     }
   },
   {
@@ -540,8 +540,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Filterable User List in Angular with Search and Role Filters",
-      "description": "Derive filtered results without mutating source arrays, combine text and role filtering logic, and show a clear empty state when no users match."
+      "title": "Build Filterable User List in Angular",
+      "description": "Create a user list that filters by search text and role criteria, with clear behavior when no records match."
     }
   },
   {
@@ -628,8 +628,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular FAQ Accordion with Single or Multi-Open Modes",
-      "description": "Implement an accordion component using Input and Output patterns, toggle answers on click, and control whether one or multiple items stay expanded."
+      "title": "Build FAQ Accordion Component in Angular",
+      "description": "Create an accordion that expands and collapses FAQ items with configurable single-open or multi-open behavior."
     }
   },
   {
@@ -721,8 +721,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create an Angular Paginated Table with Previous and Next Controls",
-      "description": "Build client-side pagination for user rows, keep page index in component state, derive page slices, and disable navigation at first and last pages."
+      "title": "Build Paginated Data Table in Angular",
+      "description": "Create a data table with page navigation that displays only current-page rows and handles first or last page boundaries."
     }
   },
   {
@@ -816,8 +816,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Angular Theme Toggle with localStorage Persistence",
-      "description": "Use a ThemeService to switch light or dark mode, persist user preference in localStorage, and restore root-level theme state on reload."
+      "title": "Build Angular Theme Toggle with Persistence",
+      "description": "Create a theme toggle that applies light or dark mode globally and restores the saved preference on reload."
     }
   },
   {
@@ -913,8 +913,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Multi-Step Signup Form in Angular with Reactive Validation",
-      "description": "Create a 3-step signup flow with reactive forms, block step transitions until valid input, and show a final review summary before submit."
+      "title": "Build Multi-Step Signup Form in Angular",
+      "description": "Create a multi-step signup flow with step validation, navigation controls, and a final review before submission."
     }
   },
   {
@@ -1013,8 +1013,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular Shopping Cart with Quantity Updates and Totals",
-      "description": "Implement add remove and quantity actions in a standalone component, then derive cart item count and total price from state updates."
+      "title": "Build Angular Shopping Cart Component",
+      "description": "Create a shopping cart UI that supports adding items, removing items, updating quantities, and showing accurate totals."
     }
   },
   {
@@ -1114,8 +1114,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Debounced Search in Angular with RxJS switchMap",
-      "description": "Use debounceTime, distinctUntilChanged, and switchMap to cancel stale requests and manage loading, error, and empty UI states for search."
+      "title": "Build Debounced Search in Angular",
+      "description": "Create a search input that delays rapid queries and handles loading, empty, success, and error result states."
     }
   },
   {
@@ -1205,8 +1205,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Reusable Angular Star Rating Component with Input and Output",
-      "description": "Create a clickable star rating widget as a standalone component, bind value via Input, and emit rating changes to parent components with Output."
+      "title": "Build Reusable Star Rating in Angular",
+      "description": "Create a star rating component that supports selection, configurable limits, and parent value updates."
     }
   },
   {
@@ -1293,8 +1293,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Generate a Dynamic Rows x Columns Table in Angular",
-      "description": "Build a standalone Angular table generator using form-bound row and column inputs and ngFor loops to render dynamic grid structures."
+      "title": "Build Dynamic Rows and Columns Table in Angular",
+      "description": "Create a table from row and column inputs and render the grid with consistent behavior for valid and invalid values."
     }
   },
   {
@@ -1384,8 +1384,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create Nested Checkboxes in Angular with Indeterminate Parent State",
-      "description": "Implement parent child checkbox syncing so parent toggles all children and child changes correctly update checked unchecked and indeterminate states."
+      "title": "Build Nested Checkbox Tree in Angular",
+      "description": "Create nested checkbox behavior where parent and child selections stay synchronized, including partial-selection states."
     }
   },
   {
@@ -1484,8 +1484,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular Autocomplete Search Bar with Debounce and Keyboard Nav",
-      "description": "Implement filtered suggestions with debounced input, mouse selection, and arrow Enter Escape keyboard controls in a standalone Angular component."
+      "title": "Build Angular Autocomplete Search Component",
+      "description": "Create an autocomplete input that shows matching suggestions, supports keyboard and mouse selection, and handles open or close states."
     }
   },
   {
@@ -1574,8 +1574,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement an Angular Transfer List with Multi-Select and Move Controls",
-      "description": "Build two list panels with checkbox selection, move actions, disabled button states, and order-preserving transfers using immutable updates."
+      "title": "Build Angular Transfer List Component",
+      "description": "Create a transfer list UI that moves selected items between two lists while preserving expected ordering and selection behavior."
     }
   },
   {
@@ -1672,8 +1672,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build Tic Tac Toe in Angular with Winner Detection and Reset",
-      "description": "Create a 3x3 game board with alternating turns, filled-cell guards, win and draw detection, and reset logic in a standalone Angular component."
+      "title": "Build Tic Tac Toe Game in Angular",
+      "description": "Create a tic tac toe game that tracks turns, detects wins or draws, blocks invalid moves, and supports restart."
     }
   },
   {
@@ -1759,8 +1759,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular Like Button with Toggle State and Count",
-      "description": "Implement a Facebook-style like button that toggles active state, adjusts count up or down safely, prevents negative values, and updates UI instantly."
+      "title": "Build Angular Like Button with Counter",
+      "description": "Create a like button that toggles state and updates count while keeping labels and totals consistent with user actions."
     }
   },
   {
@@ -1849,8 +1849,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Angular Two-Way Binding with Input and Output",
-      "description": "Create a reusable child component with value Input and valueChange Output so parent components keep source-of-truth state while child stays stateless."
+      "title": "Implement Angular Two-Way Binding with Input/Output",
+      "description": "Create parent-child value synchronization using Input and Output contracts with predictable update flow and event behavior."
     }
   },
   {
@@ -1940,8 +1940,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular Progress Bar with Threshold Color States",
-      "description": "Create 0-100 progress controls with clamped values, percentage labels, and red orange green threshold styling using ngClass or ngStyle bindings."
+      "title": "Build Angular Progress Bar with Threshold Colors",
+      "description": "Create a progress bar that updates from user actions, enforces valid range limits, and changes visual style by value thresholds."
     }
   },
   {
@@ -2032,8 +2032,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create Nested Comments in Angular with Infinite Reply Depth",
-      "description": "Build recursive comment rendering with per-node reply inputs, top-level and child comment creation, and indentation for deeply nested discussion threads."
+      "title": "Build Nested Comments UI in Angular",
+      "description": "Create a nested comments interface that supports replying at any level and renders thread hierarchy correctly."
     }
   },
   {
@@ -2118,8 +2118,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Dynamic Counter Step Buttons in Angular",
-      "description": "Let users add or remove step buttons rendered via ngFor and update a shared counter by each button value using predictable state updates."
+      "title": "Build Dynamic Counter Buttons in Angular",
+      "description": "Create a counter interface with configurable step buttons that can be added or removed and still update shared state correctly."
     }
   },
   {
@@ -2219,8 +2219,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Angular Chips Input with Autocomplete and Keyboard Shortcuts",
-      "description": "Implement an invite field that filters suggestions, converts picks into removable chips, and supports Enter comma backspace interactions accessibly."
+      "title": "Build Angular Chips Input with Autocomplete",
+      "description": "Create an input that lets users add and remove chips, shows matching suggestions, and handles keyboard interaction states."
     }
   },
   {
@@ -2311,8 +2311,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Interactive N x N Chessboard in Angular with Click Highlight",
-      "description": "Implement a clickable grid chessboard where one selected cell is highlighted at a time and board size can be changed dynamically from user input."
+      "title": "Build Interactive N x N Chessboard in Angular",
+      "description": "Create an n by n chessboard UI where selecting a cell updates highlight state and supports board-size changes."
     }
   },
   {
@@ -2408,8 +2408,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Snake Game in Angular with Grid Movement and Collisions",
-      "description": "Create a keyboard-controlled snake game with timed movement, random food spawning, score tracking, and game-over logic for wall and body collisions."
+      "title": "Build Snake Game in Angular",
+      "description": "Create a snake game interface with movement, food collection, scoring, and clear game-over behavior for collisions."
     }
   }
 ]

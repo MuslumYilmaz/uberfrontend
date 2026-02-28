@@ -100,8 +100,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a Valid HTML Document Structure from Scratch",
-      "description": "Build a proper HTML skeleton with doctype, html, head, meta charset, title, and body content to ensure semantic and standards-compliant page setup."
+      "title": "Build Basic HTML Document Structure",
+      "description": "Create a valid HTML page skeleton with doctype, head metadata, title, and body content using semantic structure and correct element order."
     }
   },
   {
@@ -211,8 +211,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Understand Inline vs Block Elements in HTML with Examples",
-      "description": "Demonstrate how block elements start on new lines while inline elements flow within text, and explain practical layout behavior differences clearly."
+      "title": "Practice Inline vs Block Elements in HTML",
+      "description": "Identify and apply inline and block elements in a sample layout, then verify how each changes line breaks and content flow."
     }
   },
   {
@@ -319,8 +319,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build Accessible HTML Links and Images with Best Practices",
-      "description": "Use descriptive anchor text, safe target and rel attributes for new tabs, and meaningful alt text to improve accessibility and link security."
+      "title": "Build Accessible HTML Links and Images",
+      "description": "Create links and images with descriptive text, safe new-tab attributes, and meaningful alt text for accessibility and usability."
     }
   },
   {
@@ -422,8 +422,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create Semantic HTML Navigation with Lists and Hash Links",
-      "description": "Build nav ul li a structure using anchor targets, show section switching without JavaScript, and keep default home content visible for usability."
+      "title": "Create HTML Navigation with Lists and Anchors",
+      "description": "Build a semantic nav menu using ul/li/a and in-page anchors so users can jump between sections while keeping default content visible."
     }
   },
   {
@@ -529,8 +529,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Semantic HTML Page Layout with Landmark Elements",
-      "description": "Use header, nav, main, section, article, and footer with clear heading hierarchy to create accessible document structure and readable page outlines."
+      "title": "Build Semantic HTML Layout with Landmarks",
+      "description": "Structure a page with header, nav, main, section, article, and footer while maintaining clear heading hierarchy and readable content flow."
     }
   },
   {
@@ -637,8 +637,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create Accessible HTML Tables with Captions and Header Scope",
-      "description": "Build semantic tables with caption and scoped headers so assistive technologies can map data correctly and users navigate tabular content confidently."
+      "title": "Build Accessible HTML Table with Caption and Scope",
+      "description": "Create a data table using caption and header scope so screen readers map rows and columns correctly and tabular data stays easy to scan."
     }
   },
   {
@@ -732,8 +732,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Accessible HTML Contact Form with Proper Labels",
-      "description": "Create a contact form with correctly associated labels, required fields, and native email validation so success feedback appears only after valid submission."
+      "title": "Build Labeled Contact Form in HTML",
+      "description": "Create a contact form with properly associated labels, required fields, and native email input validation before successful submission."
     }
   },
   {
@@ -849,8 +849,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Use Native HTML5 Form Validation with Required and Pattern Rules",
-      "description": "Build a signup form using required, type, minlength, and pattern attributes so browsers block invalid submissions without custom JavaScript validation."
+      "title": "Use Native HTML5 Form Validation Rules",
+      "description": "Create a signup form with required, type, minlength, and pattern constraints so invalid input is blocked before submit."
     }
   },
   {
@@ -962,8 +962,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Add Essential HTML Head SEO Metadata: Title, Description, Viewport",
-      "description": "Update only the head section with charset, responsive viewport, descriptive page title, and meta description to improve search and mobile rendering basics."
+      "title": "Add Essential SEO Meta Tags in HTML Head",
+      "description": "Update the head with charset, viewport, title, and meta description to improve snippet quality and responsive rendering."
     }
   },
   {
@@ -1073,8 +1073,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build an Accessible Native HTML Dialog Confirm Modal",
-      "description": "Implement a delete confirmation using the dialog element with proper accessible naming and description, visible without JavaScript and compliant with semantic HTML."
+      "title": "Build Accessible Confirm Dialog in HTML",
+      "description": "Create a delete confirmation modal with the native dialog element, clear labels, and keyboard-friendly interaction states."
     }
   }
 ]

@@ -76,8 +76,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Counter with Disabled Decrement at Zero",
-      "description": "Create a React counter using useState with increment/decrement actions, enforce a zero floor, and keep button disabled states and UI text fully in sync."
+      "title": "Build React Counter Component",
+      "description": "Build a counter UI that increments and decrements value, prevents negative counts, and reflects disabled states correctly."
     }
   },
   {
@@ -173,8 +173,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Contact Form with Validation and POST Request",
-      "description": "Implement controlled form inputs in React, validate before submit, send a POST request, and display loading, success, and error feedback states."
+      "title": "Build React Contact Form with Validation and Submit",
+      "description": "Create a contact form that captures user input, validates required fields, submits data, and shows loading, success, and error states."
     }
   },
   {
@@ -264,8 +264,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a React Todo List with Add, Toggle, and Delete",
-      "description": "Build a local-state todo app with controlled inputs, stable item IDs, immutable array updates, and predictable re-render behavior for each action."
+      "title": "Build React Todo List (Add Toggle Delete)",
+      "description": "Create a todo list interface that supports adding items, toggling completion, and deleting tasks while keeping UI state consistent."
     }
   },
   {
@@ -357,8 +357,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Image Slider with Dots and Prev/Next Controls",
-      "description": "Implement slide navigation with index state, dot indicators, and disabled boundary buttons while showing current slide title and progress text."
+      "title": "Build React Image Slider with Navigation Controls",
+      "description": "Create an image slider that supports previous and next navigation, dot indicators, boundary behavior, and current-slide display updates."
     }
   },
   {
@@ -442,8 +442,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Accessible React Tabs with Active State Switching",
-      "description": "Use a single activeTab state to render panels conditionally, apply active styles, and add keyboard navigation plus focus management for accessibility."
+      "title": "Build Accessible React Tabs with Active Panel",
+      "description": "Create a tabs component that switches active panels, updates visual state, and supports keyboard-friendly tab interaction."
     }
   },
   {
@@ -534,8 +534,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Filterable User List in React (Search + Role Filters)",
-      "description": "Derive filtered users from source data using search text and role filters, show empty states, and keep list updates immutable and scalable."
+      "title": "Build Filterable User List in React",
+      "description": "Create a user list that updates results based on search text and role filters, with clear behavior for empty matches."
     }
   },
   {
@@ -623,8 +623,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Accordion FAQ with Single and Multi-Open Modes",
-      "description": "Implement an FAQ accordion in React with lifted open state, item toggle handlers, and optional multi-open behavior for predictable interactions."
+      "title": "Build React Accordion FAQ Component",
+      "description": "Create an FAQ accordion that toggles sections open and closed, supporting both single-open and multi-open interaction rules."
     }
   },
   {
@@ -714,8 +714,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a Paginated Data Table in React (Prev/Next + Page Count)",
-      "description": "Build client-side pagination for user rows, keep page index in state, derive current page slices, and disable navigation at list boundaries."
+      "title": "Build Paginated Data Table in React",
+      "description": "Create a table with page navigation that shows only current-page rows and handles first or last page boundaries correctly."
     }
   },
   {
@@ -807,8 +807,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Theme Toggle with Context and localStorage Persistence",
-      "description": "Implement global light and dark mode with React Context, persist user preference in localStorage, and restore plus apply theme on reload."
+      "title": "Build React Theme Toggle with Persistence",
+      "description": "Create a light and dark theme toggle that applies globally and restores the saved preference on page reload."
     }
   },
   {
@@ -904,8 +904,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Multi-Step Signup Form in React with Step Validation",
-      "description": "Create a 3-step signup flow with controlled inputs, per-step validation before navigation, and a final read-only summary before submit."
+      "title": "Build Multi-Step Signup Form in React",
+      "description": "Create a multi-step signup flow with step-by-step navigation, validation requirements, and final review before submit."
     }
   },
   {
@@ -1002,8 +1002,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Shopping Cart with Quantity Updates and Totals",
-      "description": "Implement add, remove, and quantity updates using immutable cart state, then derive total item count and total price for checkout UI."
+      "title": "Build React Shopping Cart Component",
+      "description": "Create a shopping cart UI that supports adding items, updating quantities, removing items, and showing totals accurately."
     }
   },
   {
@@ -1100,8 +1100,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Debounced Search in React with useEffect Cleanup",
-      "description": "Create a debounced search input that avoids stale requests, and manage loading, error, and empty states for realistic async UX."
+      "title": "Build Debounced Search in React",
+      "description": "Create a search experience that delays rapid input triggers and handles loading, empty, success, and error result states."
     }
   },
   {
@@ -1190,8 +1190,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Reusable React Star Rating Component (Controlled)",
-      "description": "Implement a clickable StarRating widget with selected value state, parent onChange callbacks, and reusable props for configurable rating UIs."
+      "title": "Build Reusable Star Rating Component in React",
+      "description": "Create a star rating component that supports user selection, configurable limits, and predictable value updates."
     }
   },
   {
@@ -1277,8 +1277,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Generate a Dynamic Rows x Columns Table in React",
-      "description": "Create a React table from controlled row and column inputs, normalize values, rebuild grid data on demand, and render stable labels consistently."
+      "title": "Build Dynamic Rows and Columns Table in React",
+      "description": "Create a table that renders from user-provided row and column counts with consistent layout and valid input handling."
     }
   },
   {
@@ -1366,8 +1366,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "React Nested Checkbox Tree with Indeterminate Parent State",
-      "description": "Sync parent and child checkboxes so parent toggles all children and child selections update checked or indeterminate states correctly."
+      "title": "Build Nested Checkbox Tree in React",
+      "description": "Create nested checkbox behavior where parent and child selections stay synchronized, including partial-selection states."
     }
   },
   {
@@ -1462,8 +1462,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Autocomplete Search Bar with Keyboard Support",
-      "description": "Implement debounced suggestions, arrow and Enter navigation, Escape close, outside-click handling, and accessible selection behavior in React."
+      "title": "Build React Autocomplete Search Component",
+      "description": "Create an autocomplete input that shows matching suggestions, supports keyboard interaction, and handles selection and close states."
     }
   },
   {
@@ -1552,8 +1552,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement a React Transfer List with Multi-Select and Move Actions",
-      "description": "Build dual list panels with checkbox selection, immutable item transfers, order preservation, and disabled controls when no items are selected."
+      "title": "Build React Transfer List Component",
+      "description": "Create a transfer list UI that moves selected items between two lists while preserving expected ordering and selection behavior."
     }
   },
   {
@@ -1649,8 +1649,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build Tic Tac Toe in React with Winner and Draw Detection",
-      "description": "Create a 3x3 game board with turn-based state, win or draw calculation, filled-cell guards, game-over lock, and restart functionality."
+      "title": "Build Tic Tac Toe Game in React",
+      "description": "Create a tic tac toe game that tracks turns, detects wins or draws, blocks invalid moves, and supports restart."
     }
   },
   {
@@ -1734,8 +1734,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create a useEffectOnce Hook in React (StrictMode Safe)",
-      "description": "Implement a custom hook that runs effects only on mount and cleans up on unmount, with idempotent behavior under React StrictMode double-invocation."
+      "title": "Create useEffectOnce Hook in React",
+      "description": "Build a custom hook for one-time effect behavior with clear cleanup handling and predictable lifecycle semantics."
     }
   },
   {
@@ -1822,8 +1822,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Like Button with Toggle State and Counter",
-      "description": "Create a like or unlike button that updates count safely, prevents negative totals, and keeps UI labels synchronized with React state changes."
+      "title": "Build React Like Button with Counter",
+      "description": "Create a like button that toggles state and updates count while keeping labels and totals consistent with user actions."
     }
   },
   {
@@ -1911,8 +1911,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Progress Bar with Threshold-Based Colors",
-      "description": "Implement 0-100 progress controls with clamped updates, dynamic color thresholds, and live percentage rendering for accurate state-driven feedback."
+      "title": "Build React Progress Bar with Threshold Colors",
+      "description": "Create a progress bar that updates from user actions, enforces valid range limits, and changes visual style by value thresholds."
     }
   },
   {
@@ -2002,8 +2002,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build Nested Comments in React with Infinite Reply Threads",
-      "description": "Create recursive comment rendering with add and reply actions, single active reply input state, and indentation for deeply nested discussion trees."
+      "title": "Build Nested Comments UI in React",
+      "description": "Create a nested comments interface that supports replying at any level and renders thread hierarchy correctly."
     }
   },
   {
@@ -2090,8 +2090,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Implement Dynamic Counter Step Buttons in React",
-      "description": "Manage a mutable set of step buttons in state, allow add and remove actions, and update a shared counter immutably by each button value."
+      "title": "Build Dynamic Counter Buttons in React",
+      "description": "Create a counter interface with configurable step buttons that can be added or removed and still update shared state correctly."
     }
   },
   {
@@ -2178,8 +2178,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Fix Double Render Issues in React from Derived State Effects",
-      "description": "Debug extra renders caused by storing derived values in useEffect, and refactor to compute from source state during render for cleaner updates."
+      "title": "Fix Double Render State Issue in React",
+      "description": "Given a component with duplicate renders, refactor state handling so output stays consistent without unnecessary render cycles."
     }
   },
   {
@@ -2266,8 +2266,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Chat UI with Token-by-Token Streaming Responses",
-      "description": "Implement a ChatGPT-style interface that streams assistant output incrementally, manages chat state efficiently, and handles loading plus cancel actions smoothly."
+      "title": "Build Streaming Chat UI in React",
+      "description": "Create a chat interface that displays assistant responses incrementally and supports loading, canceling, and message state updates."
     }
   },
   {
@@ -2365,8 +2365,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a React Chips Input with Autocomplete and Keyboard Controls",
-      "description": "Create an invite field that turns selections into removable chips, filters suggestions as users type, and supports Enter comma and backspace shortcuts."
+      "title": "Build React Chips Input with Autocomplete",
+      "description": "Create an input that lets users add and remove chips, shows matching suggestions, and handles keyboard interaction states."
     }
   },
   {
@@ -2459,8 +2459,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Create an Interactive N x N Chessboard in React with Cell Highlight",
-      "description": "Build a clickable grid chessboard that highlights the selected cell, clears previous selection, and supports dynamic board size changes with state updates."
+      "title": "Build Interactive N x N Chessboard in React",
+      "description": "Create an n by n chessboard UI where selecting a cell updates highlight state and supports board-size changes."
     }
   },
   {
@@ -2556,8 +2556,8 @@
       "frequencyBonus": 0
     },
     "seo": {
-      "title": "Build a Snake Game in React (Grid, Food, Collision, Score)",
-      "description": "Implement keyboard-driven snake movement with timer ticks, random food spawning, score tracking, and wall or body collision game-over logic."
+      "title": "Build Snake Game in React",
+      "description": "Create a snake game interface with movement, food collection, scoring, and clear game-over behavior for collisions."
     }
   }
 ]
