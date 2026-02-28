@@ -799,7 +799,7 @@
       "types",
       "variables"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [
       "google"
     ],
@@ -905,7 +905,7 @@
       "types",
       "javascript"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [
       "google",
       "apple"
@@ -1130,7 +1130,7 @@
       "functional-programming",
       "functions"
     ],
-    "importance": 3,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1442,7 +1442,7 @@
       "functional-programming",
       "array-methods"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1548,7 +1548,7 @@
       "storage",
       "web-apis"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1654,7 +1654,7 @@
       "oop",
       "objects"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [
       "google",
       "netflix",
@@ -1901,7 +1901,7 @@
       "numbers",
       "type-coercion"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2146,7 +2146,7 @@
       "functions",
       "syntax"
     ],
-    "importance": 3,
+    "importance": 4,
     "companies": [
       "meta"
     ],
@@ -2240,7 +2240,7 @@
       "variables",
       "objects"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2347,7 +2347,7 @@
       "functional-programming",
       "best-practices"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2455,7 +2455,7 @@
       "defer",
       "async"
     ],
-    "importance": 3,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2551,7 +2551,7 @@
       "es6",
       "syntax"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2652,7 +2652,7 @@
       "prototypes",
       "es6"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2836,7 +2836,7 @@
       "functions",
       "cache"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3140,7 +3140,7 @@
       "oop",
       "classes"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3343,7 +3343,7 @@
       "arrays",
       "state"
     ],
-    "importance": 3,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3443,7 +3443,7 @@
       "immutability",
       "accumulators"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3562,7 +3562,7 @@
       "immutability",
       "array-methods"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3787,7 +3787,7 @@
       "bff",
       "fetch"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [
       "netflix",
       "meta"
@@ -3906,7 +3906,7 @@
       "streaming",
       "web-performance"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [
       "netflix"
     ],
@@ -4052,7 +4052,7 @@
       "optimization",
       "frontend-interview"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [
       "netflix"
     ],
@@ -4137,7 +4137,7 @@
       "bytedance"
     ],
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "Map is a dedicated key-value collection with any key type, stable iteration order, and a size property. Plain Objects are great for structured records, but keys are limited to strings/symbols and require care with prototypes and ordering.",
     "type": "trivia",
     "tags": [
@@ -4231,7 +4231,7 @@
       "web-performance",
       "performance"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [
       "bytedance"
     ],
@@ -4372,7 +4372,7 @@
       "rendering",
       "script-loading"
     ],
-    "importance": 1,
+    "importance": 5,
     "companies": [
       "bytedance",
       "apple"
@@ -4477,7 +4477,7 @@
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 2,
     "description": "Interview-ready JavaScript trends answer focused on durable themes: TypeScript adoption, ESM-first packaging, performance budgets, runtime/tooling changes, and practical ways to stay current without hype.",
     "type": "trivia",
     "tags": [
@@ -4627,7 +4627,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "description": "This checks whether you know how to implement streaming responses (SSE/WebSocket/ReadableStream), update the UI incrementally, and handle cancellation or errors cleanly.",
     "type": "trivia",
     "tags": [
@@ -4701,7 +4701,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "This probes your ability to model a conversation, manage streaming messages, and handle memory limits or truncation without breaking UX.",
     "type": "trivia",
     "tags": [
@@ -4812,7 +4812,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Practical SSE vs WebSocket comparison for frontend interviews: protocol behavior, reconnect strategy, infrastructure trade-offs, and architecture decisions for AI streaming, notifications, chat, and collaboration.",
     "type": "trivia",
     "tags": [
@@ -4963,7 +4963,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "description": "Deep dive on AI UX design for frontend interviews: uncertainty handling, streaming states, trust and safety cues, retries, cancellation, and robust interaction patterns for LLM-powered features.",
     "type": "trivia",
     "tags": [
@@ -5118,7 +5118,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 2,
     "description": "This checks if you understand that prompts are part of product design and can be influenced by frontend UX and input shaping.",
     "type": "trivia",
     "tags": [
@@ -5228,7 +5228,7 @@
       "meta"
     ],
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 3,
     "description": "Explain the difference between stack (LIFO) and queue (FIFO) in JavaScript, list core operations, compare time complexity, and show clean O(1) implementations (array head index or two-stacks). Include practical use cases (call stack, BFS, task queue) and common pitfalls.",
     "type": "trivia",
     "tags": [
@@ -5307,7 +5307,7 @@
       "meta"
     ],
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "Define Big-O time and space complexity, explain why it matters for scalability, show how to derive it with rules of thumb, and list common classes. Include best/average/worst-case and amortized complexity examples.",
     "type": "trivia",
     "tags": [
@@ -5522,7 +5522,7 @@
       "events",
       "browser"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5609,7 +5609,7 @@
       "dom",
       "best-practices"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5727,7 +5727,7 @@
       "validation",
       "user-input"
     ],
-    "importance": 1,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5863,7 +5863,7 @@
       "validation",
       "error-handling"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5984,7 +5984,7 @@
       "browser",
       "best-practices"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -6121,7 +6121,7 @@
       "events",
       "best-practices"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -6265,7 +6265,7 @@
       "optimization",
       "runtime"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -6406,7 +6406,7 @@
       "tree",
       "performance"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -6510,7 +6510,7 @@
       "edge-cases",
       "browser"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -6647,7 +6647,7 @@
       "architecture",
       "async-await"
     ],
-    "importance": 5,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -6731,7 +6731,7 @@
       "browser",
       "best-practices"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
