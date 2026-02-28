@@ -92,13 +92,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Basic HTML Document Structure",
       "description": "Create a valid HTML page skeleton with doctype, head metadata, title, and body content using semantic structure and correct element order."
@@ -203,13 +196,6 @@
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Practice Inline vs Block Elements in HTML",
       "description": "Identify and apply inline and block elements in a sample layout, then verify how each changes line breaks and content flow."
@@ -311,13 +297,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Accessible HTML Links and Images",
       "description": "Create links and images with descriptive text, safe new-tab attributes, and meaningful alt text for accessibility and usability."
@@ -414,13 +393,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create HTML Navigation with Lists and Anchors",
       "description": "Build a semantic nav menu using ul/li/a and in-page anchors so users can jump between sections while keeping default content visible."
@@ -521,13 +493,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Semantic HTML Layout with Landmarks",
       "description": "Structure a page with header, nav, main, section, article, and footer while maintaining clear heading hierarchy and readable content flow."
@@ -629,13 +594,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Accessible HTML Table with Caption and Scope",
       "description": "Create a data table using caption and header scope so screen readers map rows and columns correctly and tabular data stays easy to scan."
@@ -724,13 +682,6 @@
     "webSolutionCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Labeled Contact Form in HTML",
       "description": "Create a contact form with properly associated labels, required fields, and native email input validation before successful submission."
@@ -841,13 +792,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Use Native HTML5 Form Validation Rules",
       "description": "Create a signup form with required, type, minlength, and pattern constraints so invalid input is blocked before submit."
@@ -954,13 +898,6 @@
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Add Essential SEO Meta Tags in HTML Head",
       "description": "Update the head with charset, viewport, title, and meta description to improve snippet quality and responsive rendering."
@@ -1065,13 +1002,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Accessible Confirm Dialog in HTML",
       "description": "Create a delete confirmation modal with the native dialog element, clear labels, and keyboard-friendly interaction states."

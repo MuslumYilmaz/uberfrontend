@@ -85,13 +85,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nh1 { font-size: 2rem; margin: 0; color: #111; }\np { margin: 0.5rem 0 0; line-height: 1.6; color: #333; }\n.tagline { color: #555; }\n.highlight { color: #3b82f6; font-weight: 600; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Style Hero Text with CSS Selectors",
       "description": "Build hero text styles using element and class selectors, apply readable hierarchy, and verify cascade behavior across emphasized content."
@@ -179,13 +172,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; line-height: 1.6; }\n.card { padding: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; background: #fff; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Practice CSS Box Model Spacing and Borders",
       "description": "Build a card layout using margin, padding, and border layers to control inner spacing, outer separation, and visual boundaries."
@@ -273,13 +259,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; }\\n.box { background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto; }\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Center Inline Content with CSS",
       "description": "Center inline text and labels horizontally without Flexbox, and handle wrapping or whitespace behavior in a simple text-first layout."
@@ -366,13 +345,6 @@
     "webSolutionCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Position Notification Badge with CSS",
       "description": "Attach a badge to a card corner using relative parent and absolute child positioning while keeping overlap and readability consistent."
@@ -460,13 +432,6 @@
     "webSolutionCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Responsive Navbar with CSS Flexbox",
       "description": "Create a single-row navbar with aligned brand, links, and actions, then keep spacing and wrapping usable on smaller screens."
@@ -553,13 +518,6 @@
     "webSolutionCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Responsive CSS Grid Card Gallery",
       "description": "Create a card gallery that shifts from fewer to more columns across breakpoints while keeping spacing and card alignment consistent."
@@ -646,13 +604,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.6; background: #fafafa; color: #111; }\\n.hero { background: #222; color: #fff; padding-inline: clamp(1rem, 4vw, 3rem); padding-block: 2rem; border-bottom: 1px solid #444; }\\n.hero h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 3vw + 1rem, 3rem); }\\n.hero p { margin: 0; opacity: 0.9; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Use CSS clamp() for Fluid Typography",
       "description": "Set fluid font and spacing values with clamp so text scales smoothly between screen sizes while respecting minimum and maximum limits."
@@ -721,13 +672,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; color: #111; }\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Style Form States with CSS Pseudo-Classes",
       "description": "Style focus, invalid, and required states for form fields with visible feedback and stable layout behavior during validation."
@@ -824,13 +768,6 @@
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; color: #111; }\\n.lift { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(0,0,0,.06); transition: transform 200ms ease, box-shadow 200ms ease; }\\n.lift:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 24px rgba(0,0,0,.15); }\\n@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create Hover Lift Animation with CSS",
       "description": "Build a hover lift effect using transitions and transforms so cards animate smoothly without triggering layout shifts."
@@ -925,13 +862,6 @@
     "webSolutionCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border:rgba(0,0,0,0.12); --accent-contrast:#ffffff; }\n@media (prefers-color-scheme: dark) { :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,0.14); --accent-contrast:#0b0b0c; } }\nhtml.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,0.14); --accent-contrast:#0b0b0c; }",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build CSS Variables Theme with Dark Mode",
       "description": "Define theme tokens with CSS variables, support system dark mode, and allow manual override using a root-level theme class."

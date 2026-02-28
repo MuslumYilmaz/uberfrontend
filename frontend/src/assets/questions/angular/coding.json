@@ -68,13 +68,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Counter Component",
       "description": "Build a counter UI with increment, decrement, and reset actions while preventing values below zero and keeping controls in sync."
@@ -166,13 +159,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Contact Form with Validation and Submit",
       "description": "Create a contact form that validates required fields, submits data, and shows loading, success, and error feedback states."
@@ -260,13 +246,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Todo List (Add Toggle Remove)",
       "description": "Create a todo list interface that supports adding tasks, toggling completion, and removing items while keeping list state consistent."
@@ -354,13 +333,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Image Slider with Navigation Controls",
       "description": "Create an image slider with previous and next navigation, boundary-aware controls, and current-slide display updates."
@@ -440,13 +412,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Tabs Switcher with Active Panels",
       "description": "Create a tabs component that switches active panels, updates tab state, and preserves accessible keyboard and focus behavior."
@@ -532,13 +497,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Filterable User List in Angular",
       "description": "Create a user list that filters by search text and role criteria, with clear behavior when no records match."
@@ -620,13 +578,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build FAQ Accordion Component in Angular",
       "description": "Create an accordion that expands and collapses FAQ items with configurable single-open or multi-open behavior."
@@ -713,13 +664,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Paginated Data Table in Angular",
       "description": "Create a data table with page navigation that displays only current-page rows and handles first or last page boundaries."
@@ -808,13 +752,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Theme Toggle with Persistence",
       "description": "Create a theme toggle that applies light or dark mode globally and restores the saved preference on reload."
@@ -905,13 +842,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Multi-Step Signup Form in Angular",
       "description": "Create a multi-step signup flow with step validation, navigation controls, and a final review before submission."
@@ -1005,13 +935,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Shopping Cart Component",
       "description": "Create a shopping cart UI that supports adding items, removing items, updating quantities, and showing accurate totals."
@@ -1106,13 +1029,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Debounced Search in Angular",
       "description": "Create a search input that delays rapid queries and handles loading, empty, success, and error result states."
@@ -1197,13 +1113,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Reusable Star Rating in Angular",
       "description": "Create a star rating component that supports selection, configurable limits, and parent value updates."
@@ -1285,13 +1194,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-dynamic-table-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Dynamic Rows and Columns Table in Angular",
       "description": "Create a table from row and column inputs and render the grid with consistent behavior for valid and invalid values."
@@ -1376,13 +1278,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Nested Checkbox Tree in Angular",
       "description": "Create nested checkbox behavior where parent and child selections stay synchronized, including partial-selection states."
@@ -1476,13 +1371,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Autocomplete Search Component",
       "description": "Create an autocomplete input that shows matching suggestions, supports keyboard and mouse selection, and handles open or close states."
@@ -1566,13 +1454,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-transfer-list-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Transfer List Component",
       "description": "Create a transfer list UI that moves selected items between two lists while preserving expected ordering and selection behavior."
@@ -1664,13 +1545,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-tictactoe-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Tic Tac Toe Game in Angular",
       "description": "Create a tic tac toe game that tracks turns, detects wins or draws, blocks invalid moves, and supports restart."
@@ -1751,13 +1625,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-like-button-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Like Button with Counter",
       "description": "Create a like button that toggles state and updates count while keeping labels and totals consistent with user actions."
@@ -1841,13 +1708,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Angular Two-Way Binding with Input/Output",
       "description": "Create parent-child value synchronization using Input and Output contracts with predictable update flow and event behavior."
@@ -1932,13 +1792,6 @@
     "solutionAsset": "assets/sb/angular/solution/angular-progress-bar-thresholds-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Progress Bar with Threshold Colors",
       "description": "Create a progress bar that updates from user actions, enforces valid range limits, and changes visual style by value thresholds."
@@ -2024,13 +1877,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Nested Comments UI in Angular",
       "description": "Create a nested comments interface that supports replying at any level and renders thread hierarchy correctly."
@@ -2110,13 +1956,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Dynamic Counter Buttons in Angular",
       "description": "Create a counter interface with configurable step buttons that can be added or removed and still update shared state correctly."
@@ -2211,13 +2050,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Angular Chips Input with Autocomplete",
       "description": "Create an input that lets users add and remove chips, shows matching suggestions, and handles keyboard interaction states."
@@ -2303,13 +2135,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Interactive N x N Chessboard in Angular",
       "description": "Create an n by n chessboard UI where selecting a cell updates highlight state and supports board-size changes."
@@ -2400,13 +2225,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Snake Game in Angular",
       "description": "Create a snake game interface with movement, food collection, scoring, and clear game-over behavior for collisions."

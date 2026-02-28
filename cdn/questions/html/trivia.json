@@ -102,14 +102,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-tags",
@@ -224,14 +217,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-head-tag",
@@ -337,14 +323,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-div-vs-span",
@@ -452,14 +431,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-title-tag",
@@ -560,14 +532,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-img-alt-attribute",
@@ -662,14 +627,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-semantic-elements",
@@ -797,14 +755,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-block-inline-elements",
@@ -881,14 +832,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-br-tag",
@@ -968,14 +912,7 @@
       "semantics",
       "line-break"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-a-tag",
@@ -1069,14 +1006,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-href-attribute",
@@ -1169,14 +1099,7 @@
       "basics",
       "anchor"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-meta-tag",
@@ -1295,14 +1218,7 @@
       "seo",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-ol-ul-dl-difference",
@@ -1412,14 +1328,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-form-default-method",
@@ -1623,13 +1532,6 @@
       "http"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is the default form method in HTML?",
       "description": "The default HTML form method is GET when no method attribute is specified."
@@ -1718,14 +1620,7 @@
       "accessibility",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-id-vs-class",
@@ -1817,14 +1712,7 @@
       "selectors",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-iframe-tag",
@@ -1937,14 +1825,7 @@
       "security",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-data-attribute",
@@ -2046,14 +1927,7 @@
       "javascript",
       "attributes"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-clickable-image",
@@ -2156,14 +2030,7 @@
       "anchor",
       "accessibility"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-vs-xhtml",
@@ -2271,14 +2138,7 @@
       "basics",
       "doctype"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-anchor-target",
@@ -2400,14 +2260,7 @@
       "links",
       "noopener"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-img-srcset",
@@ -2497,14 +2350,7 @@
       "responsive",
       "performance"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-parsing-rendering",
@@ -2596,14 +2442,7 @@
       "performance",
       "scripts"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-aria-roles",
@@ -2688,14 +2527,7 @@
       "roles",
       "a11y"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-shadow-dom",
@@ -2780,14 +2612,7 @@
       "encapsulation",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "web-accessibility-make-page-accessible",
@@ -2864,14 +2689,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-31"
   },
   {
     "id": "html-dom-tree-structure",
@@ -2927,13 +2745,6 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-02-01"
   }
 ]

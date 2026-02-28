@@ -129,13 +129,6 @@
       "frameworks"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Vue Reactivity vs React: Conceptual Differences That Matter",
       "description": "Vue's reactivity auto-tracks dependencies and updates affected views, while React uses explicit state updates and re-render flow."
@@ -267,13 +260,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Vue rendering pipeline: state to DOM",
       "description": "Vue tracks reactive reads with effects, schedules updates in a job queue, and patches the virtual DOM to update only changed nodes."
@@ -378,13 +364,6 @@
       "best-practices"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why Vue Component data Must Be a Function",
       "description": "In Vue components, data must be a function so each instance gets its own state object and tracks state independently."
@@ -478,13 +457,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Vue Reactive Interpolation: From {{ }} to DOM Updates",
       "description": "Vue compiles template interpolation into render functions, tracks reactive dependencies, and patches only the DOM nodes whose values changed."
@@ -618,13 +590,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How v-bind Maps Vue Reactivity to DOM Attributes",
       "description": "v-bind maps reactive state to DOM attributes or properties, and Vue updates bindings as reactivity tracks source changes."
@@ -765,13 +730,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How Does v-if Affect Component Creation and Destruction in Vue?",
       "description": "v-if removes and recreates components, so Vue tracks mount/unmount cycles and local component state resets on each toggle."
@@ -891,13 +849,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why Are Stable Keys Required in Vue v-for Lists?",
       "description": "Keys in v-for give each item a stable identity, so Vue tracks the right node and patches updates without DOM mismatch bugs."
@@ -1034,13 +985,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Does v-model Expand To in Vue Templates?",
       "description": "v-model is syntax sugar that expands to prop binding plus update events, and Vue tracks model changes through those bindings."
@@ -1165,13 +1109,6 @@
       "lifecycle"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Is the Difference Between v-show and v-if in Vue?",
       "description": "v-if adds or removes DOM nodes, while v-show toggles display on mounted nodes, and Vue tracks state without destroying the element."
@@ -1279,13 +1216,6 @@
       "performance"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Are Computed Properties in Vue and When Should You Use Them?",
       "description": "Computed properties are cached derived values, and Vue tracks their dependencies so recalculation happens only when source state changes."
@@ -1390,13 +1320,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Happens When You Call Methods in Vue Templates?",
       "description": "Methods called in Vue templates run on every render and are not cached. Vue tracks reactive changes, but these method calls execute each re-render."
@@ -1555,13 +1478,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How Do Native and Component Events Differ in Vue?",
       "description": "Native events come from DOM elements, while component events are emitted with $emit. Vue tracks listeners differently for DOM nodes and component emits."
@@ -1690,13 +1606,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How Should You Structure a Vue Project for Scalability?",
       "description": "SPA vs SSR, routing, and state patterns determine Vue scalability because each decision tracks performance, maintainability, and team velocity over time."
@@ -1794,13 +1703,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Is the Difference Between computed and watch in Vue?",
       "description": "computed is cached derived state, while watch handles side effects, and Vue tracks computed dependencies so recalculation happens only when inputs change."
@@ -1920,13 +1822,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Are Vue Lifecycle Hooks and When Should You Use Them?",
       "description": "Lifecycle hooks are callbacks like created, mounted, updated, and unmounted, and Vue tracks when each runs during render, update, and teardown."
@@ -2038,13 +1933,6 @@
       "templates"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Are Vue Directives and How Do They Work?",
       "description": "Vue directives bind data, conditionally render nodes, loop lists, and handle events in templates, while Vue tracks dependencies for updates."
@@ -2165,13 +2053,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why Are v-bind and v-on Fundamental in Vue Templates?",
       "description": "v-bind and v-on are fundamental because they map reactive state to DOM output and events back to updates, and Vue tracks that loop."
@@ -2273,13 +2154,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Happens If a Child Mutates a Prop Directly in Vue?",
       "description": "If a child mutates a prop directly, parent renders can overwrite it and break one-way flow, while Vue tracks prop ownership to warn and enforce emits."
@@ -2405,13 +2279,6 @@
       "typescript"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why Does Vue Recommend the Composition API Over Mixins?",
       "description": "Vue recommends the Composition API over mixins because composables make reuse explicit and typed, and Vue tracks dependencies without mixin collisions."
@@ -2526,13 +2393,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Is the Difference Between Vue SFCs and Global Components?",
       "description": "Single-file components keep template, logic, and styles together, while global components are app-wide; Vue tracks local imports for clearer ownership."
@@ -2627,13 +2487,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How Does Vue Render v-if, v-show, and v-for Efficiently?",
       "description": "Vue handles conditional and list rendering by diffing virtual DOM changes, and it tracks keyed nodes to patch only affected items efficiently."
@@ -2752,13 +2605,6 @@
       "guards"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Is Vue Router and How Does Navigation Work?",
       "description": "Vue Router maps URLs to components for SPA navigation with router-link and router-view, and it tracks route changes through guards and params."
@@ -2896,13 +2742,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How Does Vue Reactivity Work Internally?",
       "description": "Vue's reactivity uses proxies to track property reads and writes, then schedules effects so only components with changed dependencies re-render."
@@ -2994,13 +2833,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Are setup(), ref(), and reactive() in Vue?",
       "description": "setup(), ref(), and reactive() are Composition API primitives for organizing component logic, and Vue tracks reactive state explicitly."
@@ -3117,13 +2949,6 @@
       "architecture"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Is Vuex and How Does It Manage State in Vue Apps?",
       "description": "Vuex centralizes shared state in a single store with predictable mutation flow, and it tracks updates so large Vue apps stay consistent."
@@ -3260,13 +3085,6 @@
       "rendering"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How Does Vue Virtual DOM Diffing Optimize Updates?",
       "description": "Vue optimizes updates by diffing virtual DOM trees and patching only changed nodes, and Vue tracks dependencies so unchanged branches are skipped."
@@ -3394,13 +3212,6 @@
       "slots"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Are Default, Named, and Scoped Slots in Vue?",
       "description": "Default slots render unnamed content, named slots target specific outlets, and scoped slots pass child data to parents while Vue tracks slot dependencies."
@@ -3538,13 +3349,6 @@
       "architecture"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "When to Use provide/inject vs Prop Drilling in Vue?",
       "description": "Use provide/inject for deeply nested shared dependencies without long prop chains, but Vue tracks this implicit wiring less explicitly than props."
@@ -3657,13 +3461,6 @@
       "best-practices"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why Should You Declare emits in Vue Components?",
       "description": "Declaring emits defines a component's event contract, and Vue tracks allowed events so typos and invalid payload usage are caught earlier."
@@ -3815,13 +3612,6 @@
       "objects"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What Is the Difference Between ref and reactive in Vue?",
       "description": "ref wraps single values while reactive wraps object-like state, and Vue tracks their access patterns differently for updates and destructuring behavior."
@@ -3931,13 +3721,6 @@
       "best-practices"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why does destructuring break reactivity in Vue?",
       "description": "Destructuring breaks Vue reactivity because extracted variables are no longer tracked by Vue's Proxy. Use toRefs() or toRef() to preserve reactivity."
@@ -4117,13 +3900,6 @@
       "performance"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "When should you use watch vs watchEffect in Vue?",
       "description": "Use watch for explicit sources and watchEffect for automatic tracking. Infinite loops happen when an effect writes to the same reactive state it reads."
@@ -4275,13 +4051,6 @@
       "reactivity"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What does nextTick do in Vue?",
       "description": "nextTick waits for Vue to flush pending DOM updates after reactive state changes. Use it before reading layout, refs, or element measurements."
@@ -4428,13 +4197,6 @@
       "structure",
       "keys"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   }
 ]

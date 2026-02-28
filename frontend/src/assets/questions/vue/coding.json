@@ -73,13 +73,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-counter-solution.v1.json",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue Counter Component",
       "description": "Build a counter UI with increment, decrement, and reset actions while preventing negative values and keeping controls in sync."
@@ -167,13 +160,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-contact-form-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue Contact Form with Validation and Submit",
       "description": "Create a contact form that validates required fields, submits data, and displays loading, success, and error states."
@@ -258,13 +244,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue Todo List (Add Toggle Remove)",
       "description": "Create a todo list that supports adding tasks, toggling completion, removing items, and clearing completed entries."
@@ -352,13 +331,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-image-slider-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue Image Slider with Navigation Controls",
       "description": "Create an image slider with previous and next navigation, boundary-aware controls, and current-slide display updates."
@@ -439,13 +411,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-tabs-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue Tabs Switcher with Active Panels",
       "description": "Create a tabs component that switches active panels, updates tab state, and preserves keyboard-friendly interaction."
@@ -532,13 +497,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-filterable-user-list-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Filterable User List in Vue",
       "description": "Create a user list that filters by search text and role criteria, with clear behavior when no records match."
@@ -622,13 +580,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue Accordion FAQ Component",
       "description": "Create an FAQ accordion that expands and collapses items with configurable single-open or multi-open behavior."
@@ -712,13 +663,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-pagination-table-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Paginated Data Table in Vue",
       "description": "Create a data table with page navigation that shows current-page rows and handles first or last page boundaries."
@@ -806,13 +750,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-theme-toggle-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue Theme Toggle with Persistence",
       "description": "Create a light and dark theme toggle that applies globally and restores the saved preference after reload."
@@ -906,13 +843,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-multi-step-form-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Multi-Step Signup Form in Vue",
       "description": "Create a multi-step signup flow with step validation, navigation controls, and a final review before submission."
@@ -1002,13 +932,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-shopping-cart-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue Shopping Cart Component",
       "description": "Create a shopping cart UI that supports adding items, updating quantities, removing entries, and showing accurate totals."
@@ -1099,13 +1022,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Debounced Search in Vue 3",
       "description": "Create a search input that delays requests while typing, shows loading and empty states, and prevents stale results from replacing newer ones."
@@ -1189,13 +1105,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-star-rating-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Reusable Star Rating in Vue 3",
       "description": "Create a star rating component with configurable max value, click selection, and synced parent-child state using props and emits."
@@ -1277,13 +1186,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-table-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Dynamic Rows and Columns Table in Vue 3",
       "description": "Generate a table from user-defined row and column counts, render stable labels, and handle missing or invalid cell values safely."
@@ -1366,13 +1268,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Nested Checkboxes with Parent State in Vue",
       "description": "Implement parent and child checkboxes where parent can toggle all items and parent state reflects checked, unchecked, or mixed selections."
@@ -1472,13 +1367,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Vue 3 Autocomplete Search with Keyboard Support",
       "description": "Create an autocomplete input with delayed suggestions, arrow-key navigation, Enter select, Escape close, and outside-click dismissal."
@@ -1561,13 +1449,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-transfer-list-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Transfer List in Vue with Multi-Select",
       "description": "Create dual lists where users select items and move them between panels while preserving order and clearing selection after each move."
@@ -1659,13 +1540,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Tic Tac Toe Game in Vue",
       "description": "Create a 3x3 game board with turn-based moves, blocked occupied cells, winner-or-draw status, and reset behavior."
@@ -1750,13 +1624,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Like Button Toggle in Vue 3",
       "description": "Create a like button that toggles state, updates the visible count correctly on each click, and prevents the displayed total from going below zero."
@@ -1838,13 +1705,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-progress-bar-thresholds-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Progress Bar with Threshold Colors in Vue",
       "description": "Create progress controls that clamp values to 0-100, show current percentage, and update visual status colors at defined thresholds."
@@ -1927,13 +1787,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-nested-comments-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Nested Comments with Replies in Vue",
       "description": "Create threaded comments with top-level and reply inputs, support deep nesting, and keep only one active reply editor at a time."
@@ -2013,13 +1866,6 @@
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Dynamic Counter Buttons in Vue 3",
       "description": "Create dynamic step buttons users can add or remove, then update one shared counter by each selected step value."
@@ -2114,13 +1960,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Chips Input with Autocomplete in Vue",
       "description": "Create an input that turns selections into removable chips, filters suggestions while typing, and supports Enter, comma, and Backspace."
@@ -2207,13 +2046,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Interactive N x N Chessboard in Vue",
       "description": "Create a grid chessboard where users click to highlight one cell at a time, and resizing the board keeps layout and selection stable."
@@ -2305,13 +2137,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Snake Game in Vue",
       "description": "Create a grid-based snake game with keyboard movement, timed updates, food spawning, score tracking, and game over on wall or self collisions."

@@ -106,13 +106,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Angular constructor vs ngOnInit vs ngAfterViewInit: when to use",
       "description": "Use constructor for DI and simple class setup, ngOnInit for initialization that depends on bindings, and ngAfterViewInit for DOM or ViewChild access."
@@ -259,13 +252,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is the difference between Angular and AngularJS?",
       "description": "AngularJS is the older 1.x framework, while Angular is a rewritten TypeScript-based platform with components, RxJS patterns, and modern tooling."
@@ -395,13 +381,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Angular component vs service: what belongs where?",
       "description": "Components should handle template state and user interactions, while services should own reusable business logic, data access, and side effects."
@@ -531,13 +510,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What does @Component metadata do in Angular?",
       "description": "@Component metadata tells Angular how to create and render a class as a UI component. It defines selector, template, styles, imports, and runtime behavior."
@@ -650,13 +622,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Do you still need NgModules with standalone Angular components?",
       "description": "Most new Angular apps can rely on standalone components, but NgModules still help with legacy declarations and some module-based library integrations."
@@ -829,13 +794,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What replaces AppModule in standalone Angular?",
       "description": "In standalone Angular, AppModule is replaced by bootstrapApplication, component-level imports, and route-level providers for app setup."
@@ -1050,14 +1008,7 @@
       "data-binding",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-data-binding",
@@ -1237,13 +1188,6 @@
       "components"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are the types of data binding in Angular?",
       "description": "Angular data binding includes interpolation, property/attribute/class/style bindings, event binding, and two-way binding to sync UI and component state."
@@ -1380,13 +1324,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Interpolation vs property binding in Angular: what's different?",
       "description": "Interpolation writes text content as strings, while property binding sets real DOM or directive properties with expression results."
@@ -1513,13 +1450,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Angular event binding vs @Output: what's the difference?",
       "description": "Event binding listens to native DOM events on elements, while @Output emits custom events from child components to parent templates."
@@ -1690,13 +1620,6 @@
       "components"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are directives in Angular and what does * syntax mean?",
       "description": "Angular directives are classes that add behavior to templates, and * syntax is shorthand for creating an ng-template with a structural directive."
@@ -1824,13 +1747,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Structural vs attribute directives: what is the difference?",
       "description": "Structural directives add or remove views from the DOM, while attribute directives change the behavior or appearance of existing elements."
@@ -1997,13 +1913,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does *ngIf affect the DOM and component lifecycle in Angular?",
       "description": "*ngIf creates and destroys embedded views, so components inside it are mounted and destroyed as the condition toggles."
@@ -2154,13 +2063,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why is trackBy important in Angular *ngFor lists?",
       "description": "trackBy lets Angular identify items by stable keys so it can reuse DOM nodes and preserve component or input state during list updates."
@@ -2331,13 +2233,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is an Angular service and when should you use it?",
       "description": "An Angular service is an injectable class for shared business logic, data access, and side effects that should stay outside UI components."
@@ -2532,13 +2427,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is dependency injection in Angular?",
       "description": "Dependency injection in Angular is a pattern where the framework creates and supplies class dependencies from providers and injector hierarchies."
@@ -2667,13 +2555,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Constructor vs ngOnInit in Angular: what is the difference?",
       "description": "Constructor runs when Angular instantiates the class for DI setup, while ngOnInit runs after input bindings are set and is better for initialization logic."
@@ -2872,13 +2753,6 @@
       "transformations"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are pipes in Angular and when should you use them?",
       "description": "Angular pipes transform data for display in templates, and the async pipe also subscribes and unsubscribes automatically for observable or promise values."
@@ -2983,13 +2857,6 @@
       "forms"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How do you create two-way binding in a custom Angular component?",
       "description": "Custom two-way binding uses an @Input property and a matching @Output named propertyChange, enabling [(property)] syntax in parent templates."
@@ -3176,13 +3043,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "When do Angular lifecycle hooks run and what is each for?",
       "description": "Angular lifecycle hooks run at defined stages from input changes to destroy, letting you place setup, view logic, and cleanup in the correct phase."
@@ -3314,13 +3174,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How do @Input and @Output work in Angular?",
       "description": "@Input passes data from parent to child, and @Output uses EventEmitter to send events from child to parent."
@@ -3570,13 +3423,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are Observables in Angular and how does RxJS fit in?",
       "description": "Observables are lazy async data streams, and Angular uses RxJS to compose, transform, and cancel those streams cleanly."
@@ -3664,13 +3510,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does Angular routing work and how do you define routes?",
       "description": "Angular routing maps URL paths to components through a route configuration and renders matched views via RouterOutlet without full page reloads."
@@ -3774,13 +3613,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is lazy loading in Angular routing?",
       "description": "Lazy loading in Angular loads feature code only when its route is visited, reducing initial bundle size and improving first-load performance."
@@ -3871,13 +3703,6 @@
       "components"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Default vs OnPush in Angular: what is the difference?",
       "description": "Default checks components frequently, while OnPush checks mainly on input reference changes, events, or observable emissions."
@@ -3945,13 +3770,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does Zone.js trigger change detection in Angular?",
       "description": "Zone.js patches async APIs and notifies Angular when tasks complete, so Angular knows when to run change detection."
@@ -4051,13 +3869,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "ngOnChanges vs ngDoCheck in Angular: what is the difference?",
       "description": "ngOnChanges runs when an @Input reference changes, while ngDoCheck runs each detection cycle for custom change checks."
@@ -4167,13 +3978,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are forRoot and forChild used for in Angular?",
       "description": "forRoot configures providers once at the app root, while forChild adds feature routes or config without recreating root singletons."
@@ -4327,13 +4131,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How do you optimize performance in large Angular apps?",
       "description": "Angular performance improves when you reduce change detection work and bundle size with OnPush, lazy loading, trackBy, and efficient rendering."
@@ -4481,13 +4278,6 @@
       "performance"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What triggers OnPush change detection in Angular?",
       "description": "OnPush checks run when input references change, component events fire, async pipe emits, or ChangeDetectorRef is used to mark updates."
@@ -4645,13 +4435,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "switchMap vs mergeMap vs concatMap vs exhaustMap: when to use?",
       "description": "Use switchMap to cancel stale streams, mergeMap for parallel streams, concatMap for ordered queues, and exhaustMap to ignore triggers during active work."
@@ -4802,13 +4585,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How do you prevent memory leaks in Angular?",
       "description": "Prevent Angular memory leaks by cleaning subscriptions with AsyncPipe, takeUntil patterns, and ngOnDestroy teardown for long-lived streams."
@@ -4940,13 +4716,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is ControlValueAccessor in Angular and when to use it?",
       "description": "ControlValueAccessor is Angular's form bridge for custom inputs, enabling value sync, validation, touched or dirty state, and disabled handling."
@@ -5097,13 +4866,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Template-driven vs reactive forms in Angular: which to use?",
       "description": "Reactive forms scale better for complex, dynamic, and testable form logic, while template-driven forms fit simpler scenarios."
@@ -5290,13 +5052,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What does shareReplay do in RxJS and why break Angular apps?",
       "description": "shareReplay caches and multicasts source emissions, but wrong buffer or refCount settings can retain stale data or leak subscriptions."
@@ -5468,13 +5223,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What cancels an HTTP request in Angular HttpClient?",
       "description": "An Angular HttpClient request is canceled when its subscription is unsubscribed, such as via switchMap, takeUntil, or AsyncPipe cleanup."
@@ -5628,14 +5376,7 @@
       "debugging",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject",
@@ -5774,13 +5515,6 @@
       "basics"
     ],
     "updatedAt": "2026-02-26",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject?",
       "description": "Use Subject for events, BehaviorSubject for current state, ReplaySubject for buffered history, and AsyncSubject for final-on-complete emission."
@@ -5931,13 +5665,6 @@
       "basics"
     ],
     "updatedAt": "2026-02-26",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "tap vs map in RxJS: what is the difference?",
       "description": "Use map to transform emitted values, and use tap for side effects like logging without changing the stream output."
@@ -6050,13 +5777,6 @@
       "state-management"
     ],
     "updatedAt": "2026-02-26",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does NgRx data flow work in Angular?",
       "description": "NgRx data flows from dispatched actions to reducers and effects, then selectors expose updated state back to components."
@@ -6193,13 +5913,6 @@
       "basics"
     ],
     "updatedAt": "2026-02-26",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "NgRx store vs component state in Angular: when to use?",
       "description": "Use local component state for UI-local short-lived data, and use NgRx Store for shared, long-lived, or cross-feature state."
@@ -6315,13 +6028,6 @@
       "basics"
     ],
     "updatedAt": "2026-02-26",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is a pure reducer in NgRx?",
       "description": "An NgRx reducer is a pure function that returns new state from current state and action without side effects or mutations."
@@ -6459,13 +6165,6 @@
       "performance"
     ],
     "updatedAt": "2026-02-26",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are NgRx selectors and how does memoization work?",
       "description": "NgRx selectors derive and read state efficiently, and memoization reuses the last result until selector inputs change."

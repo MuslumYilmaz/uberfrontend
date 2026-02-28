@@ -89,13 +89,6 @@
     "testsTs": "import clamp from './clamp';\n\ndescribe('clamp (TypeScript)', () => {\n  it('returns the same value when within range', () => {\n    expect(clamp(3, 0, 5)).toBe(3);\n  });\n  it('clamps to lower bound when below range', () => {\n    expect(clamp(-10, -3, 5)).toBe(-3);\n  });\n  it('clamps to upper bound when above range', () => {\n    expect(clamp(10, -5, 5)).toBe(5);\n  });\n  it('returns bounds when value is exactly on them', () => {\n    expect(clamp(0, 0, 5)).toBe(0);\n    expect(clamp(5, 0, 5)).toBe(5);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Clamp a Number in JavaScript (Min/Max Bounds)",
       "description": "Given a value and lower and upper bounds, return the bounded value while preserving values already inside the range."
@@ -186,13 +179,6 @@
       "apple",
       "meta"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Reverse a String in JavaScript",
       "description": "Given a string, return a new string with characters in reverse order, including spaces and punctuation."
@@ -282,13 +268,6 @@
     "testsTs": "import countVowels from './countVowels';\n\ndescribe('countVowels (TypeScript)', () => {\n  it('counts lowercase vowels', () => {\n    expect(countVowels('hello')).toBe(2);\n    expect(countVowels('rhythm')).toBe(0);\n  });\n\n  it('counts uppercase vowels', () => {\n    expect(countVowels('AEIOU')).toBe(5);\n  });\n\n  it('counts vowels in mixed case and spaces', () => {\n    expect(countVowels('A quick brown fox')).toBe(5);\n  });\n\n  it('handles empty string', () => {\n    expect(countVowels('')).toBe(0);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Count Vowels in JavaScript Strings",
       "description": "Given a string, return how many vowels it contains, handling uppercase and lowercase input consistently."
@@ -377,13 +356,6 @@
     "testsTs": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce (TypeScript)', () => {\n  it('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  it('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  it('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  it('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Flatten One Array Level in JavaScript",
       "description": "Given a nested array, flatten only one level and keep the original item order without changing deeper nesting."
@@ -481,13 +453,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Remove Duplicates From an Array in JavaScript",
       "description": "Given an array, return a new array with duplicates removed while preserving first-occurrence order."
@@ -574,13 +539,6 @@
     "testsTs": "import maxChar from './maxChar';\n\ndescribe('maxChar (TypeScript)', () => {\n  it('finds the most common letter', () => {\n    expect(maxChar('hello')).toBe('l');\n  });\n\n  it('works with multiple repetitions', () => {\n    expect(maxChar('aabbbcc')).toBe('b');\n    expect(maxChar('abcccccccd')).toBe('c');\n  });\n\n  it('returns first character when tie', () => {\n    expect(maxChar('aabb')).toBe('a');\n  });\n\n  it('returns empty string when input is empty', () => {\n    expect(maxChar('')).toBe('');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Find Most Frequent Character in JavaScript String",
       "description": "Given a string, return the character that appears most frequently. If there is a tie, return the first character among tied results."
@@ -674,13 +632,6 @@
     "testsTs": "import capitalizeWords from './capitalizeWords';\n\ndescribe('capitalizeWords (TypeScript)', () => {\n  it('capitalizes each word in a simple sentence', () => {\n    expect(capitalizeWords('hello world')).toBe('Hello World');\n  });\n\n  it('handles mixed casing', () => {\n    expect(capitalizeWords('jaVaScript IS fUn')).toBe('Javascript Is Fun');\n  });\n\n  it('preserves multiple spaces', () => {\n    expect(capitalizeWords('  welcome   to  earth  ')).toBe('  Welcome   To  Earth  ');\n  });\n\n  it('returns empty string for empty input', () => {\n    expect(capitalizeWords('')).toBe('');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Capitalize Words in JavaScript (Preserve Spacing)",
       "description": "Given a string, return it with each word capitalized while preserving original spacing and punctuation."
@@ -781,13 +732,6 @@
     "testsTs": "import sum from './sum';\n\ndescribe('sum (TypeScript)', () => {\n  it('sums numbers in a simple array', () => {\n    expect(sum([1, 2, 3])).toBe(6);\n  });\n\n  it('ignores non-numeric values', () => {\n    expect(sum(['a', 5, true, 7])).toBe(12);\n  });\n\n  it('ignores numeric strings', () => {\n    expect(sum([10, '20', 30])).toBe(40);\n  });\n\n  it('returns 0 for empty or all-non-numeric arrays', () => {\n    expect(sum([])).toBe(0);\n    expect(sum(['x', false, null])).toBe(0);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Sum Numbers in a JavaScript Array (Ignore Non-Numeric)",
       "description": "Given an array of mixed values, return the total of numeric entries while ignoring non-numeric values."
@@ -876,13 +820,6 @@
     "testsTs": "import compact from './compact';\n\ndescribe('compact (TypeScript)', () => {\n  it('removes falsy values', () => {\n    expect(compact([0, 1, false, 2, '', 3])).toEqual([1, 2, 3]);\n  });\n\n  it('returns same array when all truthy', () => {\n    expect(compact(['a', true, 42])).toEqual(['a', true, 42]);\n  });\n\n  it('removes null and undefined', () => {\n    expect(compact([null, undefined, 'x'])).toEqual(['x']);\n  });\n\n  it('removes NaN', () => {\n    expect(compact([NaN, 1, 2])).toEqual([1, 2]);\n  });\n\n  it('handles empty array', () => {\n    expect(compact([])).toEqual([]);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Remove Falsy Values From Array in JavaScript",
       "description": "Given an array, return a new array containing only truthy values in the same order as the input."
@@ -986,13 +923,6 @@
     "testsTs": "import arraysEqual from './arraysEqual';\n\ndescribe('arraysEqual (TypeScript)', () => {\n  it('returns true for identical arrays', () => {\n    expect(arraysEqual([1, 2, 3], [1, 2, 3])).toBe(true);\n  });\n\n  it('returns false for different element order', () => {\n    expect(arraysEqual([1, 2, 3], [3, 2, 1])).toBe(false);\n  });\n\n  it('returns false for different lengths', () => {\n    expect(arraysEqual([1, 2], [1, 2, 3])).toBe(false);\n  });\n\n  it('works with string arrays', () => {\n    expect(arraysEqual(['a', 'b'], ['a', 'b'])).toBe(true);\n  });\n\n  it('returns false for mixed type differences', () => {\n    expect(arraysEqual([1, '2', 3], [1, 2, 3])).toBe(false);\n  });\n\n  it('handles empty arrays', () => {\n    expect(arraysEqual([], [])).toBe(true);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Check if Two Arrays Are Equal in JavaScript (Ordered)",
       "description": "Given two arrays, return true only when they have the same length and matching values at each index in order."
@@ -1073,13 +1003,6 @@
     "testsTs": "import shallowClone from './file';\n\ndescribe('shallowClone (TypeScript)', () => {\n  it('clones arrays shallowly', () => {\n    const arr = [1, { x: 2 }];\n    const copy = shallowClone(arr);\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n  });\n\n  it('clones objects shallowly', () => {\n    const obj = { a: 1, b: { c: 2 } };\n    const copy = shallowClone(obj);\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Shallow Clone Object or Array in JavaScript",
       "description": "Given an object or array, return a shallow copy where top-level values are copied but nested references remain shared."
@@ -1159,13 +1082,6 @@
     "testsTs": "import sleep from './file';\n\ndescribe('sleep (TypeScript)', () => {\n  it('returns a promise', () => {\n    const p = sleep(1);\n    expect(p && typeof p.then).toBe('function');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create sleep(ms) in JavaScript (Promise Delay)",
       "description": "Given a millisecond value, return a Promise-based delay utility that resolves after the specified time without blocking the event loop."
@@ -1244,13 +1160,6 @@
     "testsTs": "import once from './file';\n\ndescribe('once (TypeScript)', () => {\n  it('calls only once', () => {\n    let calls = 0;\n    const fn = once(() => { calls += 1; return calls; });\n    fn();\n    fn();\n    expect(calls).toBe(1);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement once(fn) in JavaScript",
       "description": "Given a function, return a wrapper that allows only the first invocation to execute and defines consistent behavior for later calls."
@@ -1335,13 +1244,6 @@
     "testsTs": "import createObject from './file';\n\ndescribe('createObject (TypeScript)', () => {\n  it('creates object with prototype', () => {\n    const proto = { x: 1 };\n    const obj = createObject(proto, { y: 2 });\n    expect(Object.getPrototypeOf(obj)).toBe(proto);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Object.create Polyfill in JavaScript",
       "description": "Given a prototype value, return a new object linked to that prototype, including null-prototype support and invalid-input handling."
@@ -1428,13 +1330,6 @@
     "testsTs": "import updateAt from './file';\n\ndescribe('updateAt (TypeScript)', () => {\n  it('updates immutably', () => {\n    const arr = [1, 2, 3];\n    const out = updateAt(arr, 2, 5);\n    expect(out).toEqual([1, 2, 5]);\n    expect(out === arr).toBe(false);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Update Array Item by Index in JavaScript (Immutable)",
       "description": "Given an array, index, and value, return an updated array without mutating the original, including clear handling for out-of-range indexes."
@@ -1538,13 +1433,6 @@
     "testsTs": "import debounce from './debounce';\n\nconst wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));\n\ndescribe('debounce (TypeScript)', () => {\n  it('delays function execution', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 120);\n\n    debounced();\n    expect(calls).toBe(0);\n\n    await wait(140);\n    expect(calls).toBe(1);\n  });\n\n  it('restarts timer on multiple calls', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 100);\n\n    debounced();\n    await wait(50);\n    debounced();\n    await wait(50);\n    debounced();\n\n    await wait(90);\n    expect(calls).toBe(0);\n\n    await wait(20);\n    expect(calls).toBe(1);\n  });\n\n  it('forwards parameters correctly', async () => {\n    let captured = '';\n    const debounced = debounce((msg: string) => { captured = msg; }, 80);\n\n    debounced('Hello');\n    await wait(100);\n    expect(captured).toBe('Hello');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Debounce Function in JavaScript (Coding Problem)",
       "description": "Build a debounced wrapper that limits rapid repeated calls and only triggers execution based on a wait interval."
@@ -1641,13 +1529,6 @@
     "testsTs": "import throttle from './throttle';\n\nconst wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));\n\ndescribe('throttle (TypeScript)', () => {\n  it('executes immediately and ignores rapid calls', async () => {\n    let calls = 0;\n    const throttled = throttle(() => { calls += 1; }, 200);\n\n    throttled();\n    throttled();\n    throttled();\n\n    expect(calls).toBe(1);\n\n    await wait(220);\n    throttled();\n    expect(calls).toBe(2);\n  });\n\n  it('maintains proper intervals', async () => {\n    let times: number[] = [];\n    const throttled = throttle(() => { times.push(Date.now()); }, 100);\n\n    throttled();\n    await wait(30);\n    throttled();\n    await wait(80);\n    throttled();\n\n    await wait(120);\n    throttled();\n\n    expect(times.length).toBe(3);\n  });\n\n  it('passes arguments correctly', async () => {\n    let last = '';\n    const throttled = throttle((msg: string) => { last = msg; }, 150);\n\n    throttled('Hi');\n    throttled('Ignore');\n\n    await wait(160);\n    throttled('Final');\n\n    expect(last).toBe('Final');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Throttle Function in JavaScript (Coding Problem)",
       "description": "Build a throttled wrapper that limits call frequency so repeated invocations are controlled within a time window."
@@ -1750,13 +1631,6 @@
     "testsTs": "import deepClone from './deepClone';\n\ndescribe('deepClone (TypeScript)', () => {\n  it('deeply clones nested objects', () => {\n    const obj = { a: 1, b: { c: 2 } };\n    const clone = deepClone(obj);\n    expect(clone).toEqual(obj);\n    clone.b.c = 99;\n    expect(obj.b.c).toBe(2);\n  });\n\n  it('clones arrays correctly', () => {\n    const arr = [1, { x: 10 }, [2, 3]];\n    const clone = deepClone(arr);\n    expect(clone).toEqual(arr);\n    clone[1].x = 50;\n    expect(arr[1].x).toBe(10);\n  });\n\n  it('handles Dates and RegExps robustly', () => {\n    const obj = { d: new Date('2020-01-01T00:00:00Z'), r: /test/g };\n    const clone = deepClone(obj);\n\n    expect(clone.d instanceof Date).toBe(true);\n    expect(clone.d === obj.d).toBe(false);\n    expect(clone.d.getTime()).toBe(obj.d.getTime());\n\n    const sameRegExp = (\n      clone.r instanceof RegExp &&\n      clone.r !== obj.r &&\n      clone.r.source === obj.r.source &&\n      (('flags' in clone.r && 'flags' in obj.r)\n        ? clone.r.flags === obj.r.flags\n        : String(clone.r) === String(obj.r)) &&\n      clone.r.lastIndex === obj.r.lastIndex\n    );\n    expect(sameRegExp).toBe(true);\n  });\n\n  it('returns primitives unchanged', () => {\n    expect(deepClone('abc')).toBe('abc');\n    expect(deepClone(123)).toBe(123);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Deep Clone Object in JavaScript (Nested Data)",
       "description": "Given nested input, return a fully independent copy that does not share internal references with the original."
@@ -1869,13 +1743,6 @@
     "testsTs": "import deepEqual from './deepEqual';\n\ndescribe('deepEqual (TypeScript)', () => {\n  it('compares primitives', () => {\n    expect(deepEqual(1, 1)).toBe(true);\n    expect(deepEqual(1 as any, '1' as any)).toBe(false);\n    expect(deepEqual(NaN, NaN)).toBe(true);\n  });\n\n  it('compares nested objects', () => {\n    const a = { x: 1, y: { z: 2 } };\n    const b = { x: 1, y: { z: 2 } };\n    expect(deepEqual(a, b)).toBe(true);\n    const c = { x: 1, y: { z: 3 } };\n    expect(deepEqual(a, c)).toBe(false);\n  });\n\n  it('compares arrays (order matters)', () => {\n    expect(deepEqual([1, 2, 3], [1, 2, 3])).toBe(true);\n    expect(deepEqual([1, 2, 3], [3, 2, 1])).toBe(false);\n  });\n\n  it('handles Date and RegExp', () => {\n    const d1 = new Date('2020-01-01T00:00:00Z');\n    const d2 = new Date('2020-01-01T00:00:00Z');\n    expect(deepEqual(d1, d2)).toBe(true);\n\n    const r1 = /ab/i;\n    const r2 = new RegExp('ab', 'i');\n    expect(deepEqual(r1, r2)).toBe(true);\n  });\n\n  it('null vs undefined', () => {\n    expect(deepEqual(null as any, undefined as any)).toBe(false);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Deep Equality Check in JavaScript",
       "description": "Given two values, return whether they are structurally equivalent across nested objects, arrays, and special value cases."
@@ -1968,13 +1835,6 @@
     "testsTs": "import flatten from './flatten';\n\ndescribe('flatten (TypeScript)', () => {\n  it('flattens one level', () => {\n    expect(flatten([1, [2, [3, [4]]]], 1)).toEqual([1, 2, [3, [4]]]);\n  });\n\n  it('flattens up to given depth', () => {\n    expect(flatten([1, [2, [3, [4]]]], 2)).toEqual([1, 2, 3, [4]]);\n  });\n\n  it('fully flattens if depth is large', () => {\n    expect(flatten([1, [2, [3, [4]]]], 10)).toEqual([1, 2, 3, 4]);\n  });\n\n  it('returns array unchanged when already flat', () => {\n    expect(flatten([1, 2, 3], 2)).toEqual([1, 2, 3]);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Flatten Array by Depth in JavaScript",
       "description": "Given a nested array and depth value, return a flattened result up to that depth while preserving input order."
@@ -2065,13 +1925,6 @@
     "testsTs": "import curry from './curry';\n\ndescribe('curry (TypeScript)', () => {\n  it('curries a three-argument function', () => {\n    const add = (a: number, b: number, c: number) => a + b + c;\n    const curriedAdd = curry(add);\n    expect(curriedAdd(1)(2)(3)).toBe(6);\n  });\n\n  it('supports partial application', () => {\n    const add = (a: number, b: number, c: number) => a + b + c;\n    const curriedAdd = curry(add);\n    const add5 = curriedAdd(2)(3);\n    expect(add5(10)).toBe(15);\n  });\n\n  it('works with binary functions and mixed grouping', () => {\n    const multiply = (a: number, b: number) => a * b;\n    const curriedMultiply = curry(multiply);\n    expect(curriedMultiply(4)(5)).toBe(20);\n    expect(curriedMultiply(4, 5)).toBe(20);\n  });\n\n  it('handles unary functions', () => {\n    const negate = (x: number) => -x;\n    const curriedNegate = curry(negate);\n    expect(curriedNegate(3)).toBe(-3);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Curry Function in JavaScript (Coding Problem)",
       "description": "Given a function, return a curried version that accepts arguments across multiple calls until all required parameters are provided."
@@ -2163,13 +2016,6 @@
     "testsTs": "import memoize from './memoize';\n\ndescribe('memoize (TypeScript)', () => {\n  it('caches computed results', () => {\n    let count = 0;\n    const add = (a: number, b: number) => { count++; return a + b; };\n    const memoAdd = memoize(add);\n    expect(memoAdd(3, 4)).toBe(7);\n    expect(memoAdd(3, 4)).toBe(7);\n    expect(count).toBe(1);\n  });\n\n  it('treats unique argument sets separately', () => {\n    let count = 0;\n    const diff = (a: number, b: number) => { count++; return a - b; };\n    const memoDiff = memoize(diff);\n    memoDiff(10, 5);\n    memoDiff(8, 3);\n    expect(count).toBe(2);\n  });\n\n  it('works for multi-arg functions', () => {\n    const concat = (...args: string[]) => args.join('_');\n    const memoConcat = memoize(concat);\n    expect(memoConcat('a', 'b', 'c')).toBe('a_b_c');\n    expect(memoConcat('a', 'b', 'c')).toBe('a_b_c');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Memoize Function in JavaScript (Coding Problem)",
       "description": "Given a deterministic function, return a wrapper that reuses previous results for repeated inputs and handles varying argument sets."
@@ -2278,13 +2124,6 @@
     "testsTs": "import compose from './compose';\n\ndescribe('compose (TypeScript)', () => {\n  const add1 = (n: number) => n + 1;\n  const double = (n: number) => n * 2;\n  const subtract10 = (n: number) => n - 10;\n\n  it('applies functions right-to-left', () => {\n    const fn = compose(subtract10, double, add1);\n    expect(fn(3)).toBe(-2);\n  });\n\n  it('works with single function', () => {\n    const fn = compose(add1);\n    expect(fn(4)).toBe(5);\n  });\n\n  it('returns identity when empty', () => {\n    const fn = compose();\n    expect(fn(10)).toBe(10);\n  });\n\n  it('allows rightmost function to take multiple arguments', () => {\n    const add = (a: number, b: number) => a + b;\n    const double2 = (n: number) => n * 2;\n    const fn = compose(double2, add);\n    expect(fn(2, 3)).toBe(10);\n  });\n\n  it('supports type transformation in the middle of the pipeline', () => {\n    const add = (a: number, b: number) => a + b; // number\n    const toStr = (n: number) => String(n); // number -> string\n    const wrap = (s: string) => `#${s}`; // string -> string\n\n    const fn = compose(wrap, toStr, add);\n    expect(fn(2, 3)).toBe('#5');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Compose Functions in JavaScript (Right-to-Left)",
       "description": "Given multiple functions, return one function that applies them in right-to-left order and returns the final computed value."
@@ -2386,13 +2225,6 @@
     "companies": [
       "openai"
     ],
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Group Array Items by Key in JavaScript",
       "description": "Given an array and a grouping rule, return grouped results keyed by selector output while preserving input order within each group."
@@ -2474,13 +2306,6 @@
     "companies": [
       "meta"
     ],
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build a Mini Event Emitter in JavaScript",
       "description": "Create an event utility that supports subscribing, unsubscribing, and emitting named events with multiple listeners."
@@ -2590,13 +2415,6 @@
     "testsTs": "import mapAsyncLimit from './mapAsyncLimit';\n\nconst sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));\n\ndescribe('mapAsyncLimit (TS)', () => {\n  test('keeps output order', async () => {\n    const res = await mapAsyncLimit<number, number>([15, 5, 10], 2, async (ms) => { await sleep(ms); return ms / 5; });\n    expect(res).toEqual([3, 1, 2]);\n  });\n\n  test('caps concurrency', async () => {\n    const items = [20, 20, 20, 20];\n    let active = 0, maxActive = 0;\n    const res = await mapAsyncLimit<number, number>(items, 2, async (ms) => {\n      active++; if (active > maxActive) maxActive = active;\n      await sleep(ms);\n      active--; return ms;\n    });\n    expect(res).toEqual(items);\n    expect(maxActive <= 2).toEqual(true);\n  });\n\n  test('fail-fast rejects on first error', async () => {\n    let threw = false;\n    try {\n      await mapAsyncLimit<number, number>([5, 10, 5], 2, async (ms, idx) => {\n        await sleep(ms);\n        if (idx === 1) throw new Error('boom');\n        return idx;\n      }, 'fail-fast');\n    } catch (e: any) {\n      threw = true;\n      expect(e && e.message).toEqual('boom');\n    }\n    expect(threw).toEqual(true);\n  });\n\n  test('all-settled returns settled outcomes', async () => {\n    const res = await mapAsyncLimit<number, number>([5, 10, 5], 2, async (ms, idx) => {\n      await sleep(ms);\n      if (idx === 1) throw new Error('x');\n      return idx * 2;\n    }, 'all-settled') as Array<{ status: 'fulfilled' | 'rejected'; value?: number; reason?: any }>;\n\n    expect(res[0]).toEqual({ status: 'fulfilled', value: 0 });\n    expect(res[1].status).toEqual('rejected');\n    expect(typeof (res[1] as any).reason).toEqual('object');\n    expect(res[2]).toEqual({ status: 'fulfilled', value: 4 });\n  });\n\n  test('throws on invalid limit', () => {\n    let threw = false;\n    try { mapAsyncLimit<number, number>([1], 0, async (x) => x); } catch { threw = true; }\n    expect(threw).toEqual(true);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Concurrency-Limited Async Map in JavaScript",
       "description": "Given items, an async mapper, and a concurrency limit, return results in input order while respecting the maximum in-flight tasks."
@@ -2701,13 +2519,6 @@
     "testsTs": "import helpers from './abortable-helpers';\nconst { withTimeout, withAbort, composeAbort, sleep } = helpers as unknown as {\n  withTimeout: <T>(p: Promise<T>, ms: number, reason?: any) => Promise<T>,\n  withAbort: <T>(factory: (signal: AbortSignal) => Promise<T>, signal: AbortSignal) => Promise<T>,\n  composeAbort: (...signals: AbortSignal[]) => AbortSignal,\n  sleep: (ms: number) => Promise<void>\n};\n\nfunction _sleep(ms: number){ return new Promise<void>(r=>setTimeout(r, ms)); }\nconst nap = typeof sleep === 'function' ? sleep : _sleep;\n\ndescribe('Abortable Helpers (TS)', () => {\n  test('withTimeout resolves fast', async () => {\n    const res = await withTimeout(Promise.resolve(5), 100);\n    expect(res).toEqual(5);\n  });\n\n  test('withTimeout rejects on timeout', async () => {\n    let threw = false;\n    try { await withTimeout(nap(200).then(()=>42), 10, new Error('Timeout')); }\n    catch { threw = true; }\n    expect(threw).toEqual(true);\n  });\n\n  test('withAbort resolves when not aborted', async () => {\n    const ac = new AbortController();\n    const v = await withAbort(async (signal) => { await nap(15); return signal.aborted ? -1 : 9; }, ac.signal);\n    expect(v).toEqual(9);\n  });\n\n  test('withAbort rejects when aborted', async () => {\n    const ac = new AbortController();\n    let threw = false;\n    const p = withAbort(async () => { await nap(100); return 1; }, ac.signal);\n    setTimeout(()=>ac.abort(new Error('cancel')), 10);\n    try { await p; } catch { threw = true; }\n    expect(threw).toEqual(true);\n  });\n\n  test('composeAbort aborts if any input aborts', async () => {\n    const a = new AbortController();\n    const b = new AbortController();\n    const sig = composeAbort(a.signal, b.signal);\n    let threw = false;\n    const p = withAbort(async () => { await nap(100); return 'ok'; }, sig);\n    setTimeout(()=>a.abort(new Error('stop')), 10);\n    try { await p; } catch { threw = true; }\n    expect(sig.aborted).toEqual(true);\n    expect(threw).toEqual(true);\n  });\n\n  test('composeAbort reflects already-aborted inputs', () => {\n    const a = new AbortController(); a.abort(new Error('early'));\n    const sig = composeAbort(a.signal);\n    expect(sig.aborted).toEqual(true);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Abortable Async Helpers in JavaScript",
       "description": "Build async utilities that support cancellation, timeout behavior, and composed abort signals with predictable error handling."
@@ -2805,13 +2616,6 @@
     "testsTs": "import parseNDJSON from './ndjson-parser';\n\nconst te = new TextEncoder();\nfunction streamFromStrings(chunks: string[]): ReadableStream<Uint8Array> {\n  return new ReadableStream<Uint8Array>({\n    start(controller) {\n      let i = 0;\n      const pump = () => {\n        if (i >= chunks.length) { controller.close(); return; }\n        controller.enqueue(te.encode(chunks[i++]));\n        setTimeout(pump, 0);\n      };\n      pump();\n    }\n  });\n}\n\nfunction expectEqual(a: any, b: any){ expect(JSON.stringify(a)).toEqual(JSON.stringify(b)); }\n\ndescribe('Streaming NDJSON Parser (TS)', () => {\n  test('parses across chunk boundaries', async () => {\n    const res = await parseNDJSON(streamFromStrings(['{\"a\":1}\\n{\"b\"', ':2}\\n']));\n    expectEqual(res, [{a:1},{b:2}]);\n  });\n\n  test('no trailing newline', async () => {\n    const res = await parseNDJSON(streamFromStrings(['{\"x\":1}\\n{\"y\":2}']));\n    expectEqual(res, [{x:1},{y:2}]);\n  });\n\n  test('error isolation', async () => {\n    const errors: string[] = [];\n    const res = await parseNDJSON(streamFromStrings(['{\"ok\":1}\\n','{oops}\\n','{\"ok\":2}\\n']), (line) => errors.push(line));\n    expectEqual(res, [{ok:1},{ok:2}]);\n    expectEqual(errors, ['{oops}']);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Parse Streaming NDJSON in JavaScript",
       "description": "Given streamed text chunks, emit parsed NDJSON records while handling chunk boundaries, empty lines, and malformed rows."
@@ -2910,13 +2714,6 @@
     "testsTs": "// @ts-nocheck\n\ndescribe('Array.prototype.myMap (TypeScript)', () => {\n  it('throws if callbackFn is not a function', () => {\n    expect(() => ([1, 2] as any).myMap(null)).toThrow(TypeError);\n  });\n\n  it('maps values and preserves holes', () => {\n    // eslint-disable-next-line no-sparse-arrays\n    const a: any[] = [, 10, , 30];\n    const r = (a as any).myMap((v: any, i: number) => i);\n    expect(r.length).toBe(4);\n    expect(0 in r).toBe(false);\n    expect(1 in r).toBe(true);\n    expect(2 in r).toBe(false);\n    expect(3 in r).toBe(true);\n  });\n\n  it('binds thisArg', () => {\n    const ctx = { add: 5 };\n    const out = ([1] as any).myMap(function (x: number) { return (this as any).add + x; }, ctx);\n    expect(out).toEqual([6]);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Array.prototype.map Polyfill in JavaScript",
       "description": "Given an array-like input and callback, return a mapped array that follows native map behavior for edge cases and sparse arrays."
@@ -3055,13 +2852,6 @@
     "testsTs": "// @ts-nocheck\nconst _shimReduce = (arr, cb, initProvided, initVal) => {\n  const len = arr.length;\n  let k = 0;\n  let acc;\n  if (initProvided) {\n    acc = initVal;\n  } else {\n    while (k < len && !Object.prototype.hasOwnProperty.call(arr, k)) k++;\n    if (k >= len) throw new TypeError('Reduce of empty array with no initial value');\n    acc = arr[k++];\n  }\n  for (; k < len; k++) if (Object.prototype.hasOwnProperty.call(arr, k)) acc = cb(acc, arr[k], k, arr);\n  return acc;\n};\n\nconst callReduce = (arr, cb, ...rest) =>\n  typeof arr.myReduce === 'function'\n    ? arr.myReduce(cb, ...rest)\n    : _shimReduce(arr, cb, rest.length > 0, rest[0]);\n\nconst sum = (a, x) => a + x;\n\nconst expectThrowsTypeError = (fn) => {\n  let ok = false; try { fn(); } catch (e) { ok = e instanceof TypeError; } expect(ok).toBe(true);\n};\n\ndescribe('Array.prototype.myReduce (TS)', () => {\n  test('sum with initialValue', () => {\n    expect(callReduce([1, 2, 3], sum, 0)).toBe(6);\n  });\n  test('sum without initialValue (holes at start)', () => {\n    expect(callReduce([,1,,3], sum)).toBe(4);\n  });\n  test('sparse array skipping with initialValue', () => {\n    expect(callReduce([,1,,3], sum, 0)).toBe(4);\n  });\n  test('empty + initial returns initial', () => {\n    expect(callReduce([], sum, 7)).toBe(7);\n  });\n  test('empty without initial throws', () => {\n    expectThrowsTypeError(() => callReduce([], sum));\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Array.prototype.reduce Polyfill in JavaScript",
       "description": "Given an array-like input and reducer, return the accumulated result while matching native reduce behavior for initial values and empty input."
@@ -3152,13 +2942,6 @@
     "testsTs": "describe('Array.prototype.myFilter (TypeScript)', () => {\n  it('should filter even numbers', () => {\n    const result = [1, 2, 3, 4, 5].myFilter(n => n % 2 === 0);\n    expect(result).toEqual([2, 4]);\n  });\n\n  it('should handle empty results correctly', () => {\n    const result = [1, 3, 5].myFilter(n => n % 2 === 0);\n    expect(result).toEqual([]);\n  });\n\n  it('should use thisArg for context', () => {\n    const ctx = { min: 3 };\n    const result = [1, 2, 3, 4, 5].myFilter(function(x) { return x > this.min; }, ctx);\n    expect(result).toEqual([4, 5]);\n  });\n\n  it('snapshots length (does not visit appended elements)', () => {\n    const arr = [1, 2, 3];\n    const seen: number[] = [];\n\n    const res = arr.myFilter((v, i, a) => {\n      seen.push(v);\n      if (i === 0) (a as any).push(999);\n      return true;\n    });\n\n    expect(res).toEqual([1, 2, 3]);\n    expect(seen).toEqual([1, 2, 3]);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Array.prototype.filter Polyfill in JavaScript",
       "description": "Given an array-like input and predicate callback, return only items that satisfy the condition while matching native filter edge cases."
@@ -3250,13 +3033,6 @@
     "testsTs": "import arrayForEach from './file';\n\ndescribe('arrayForEach (TypeScript)', () => {\n  it('iterates in order', () => {\n    const a = [3, 1, 2];\n    const seen: number[] = [];\n    arrayForEach(a, (v) => { seen.push(v as number); });\n    expect(seen).toEqual([3, 1, 2]);\n  });\n\n  it('binds thisArg', () => {\n    const ctx = { out: '' };\n    arrayForEach(['a', 'b'], function(v) { this.out += v; }, ctx);\n    expect(ctx.out).toBe('ab');\n  });\n\n  it('skips holes (sparse arrays)', () => {\n    // eslint-disable-next-line no-sparse-arrays\n    const a = [1, , 3];\n    const seen: Array<[number, number]> = [];\n    arrayForEach(a, (v, i) => { if (v !== undefined) seen.push([v as number, i]); });\n    expect(seen).toEqual([[1, 0], [3, 2]]);\n  });\n\n  it('snapshots length (push during iteration not visited)', () => {\n    const arr = [1, 2, 3];\n    const seen: number[] = [];\n\n    arrayForEach(arr, (v, i, a) => {\n      seen.push(v as number);\n      if (i === 0) (a as any).push(999);\n    });\n\n    expect(seen).toEqual([1, 2, 3]);\n  });\n\n  it('skips elements deleted before their turn (hole check)', () => {\n    const arr = [1, 2, 3];\n    const seen: number[] = [];\n\n    arrayForEach(arr, (v, i, a) => {\n      if (i === 0) delete (a as any)[1];\n      seen.push(v as number);\n    });\n\n    expect(seen).toEqual([1, 3]);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement forEach Utility in JavaScript (Native Behavior)",
       "description": "Given an array-like input and callback, invoke the callback for each valid element in order using native forEach argument semantics."
@@ -3355,13 +3131,6 @@
     "testsTs": "import sortNumbers from './sortNumbers';\n\ndescribe('sortNumbers (TypeScript)', () => {\n  it('sorts numbers ascending by default', () => {\n    expect(sortNumbers([3, 1, 10])).toEqual([1, 3, 10]);\n    expect(sortNumbers([-2, 5, 0, -10])).toEqual([-10, -2, 0, 5]);\n  });\n\n  it('sorts numbers descending when ascending is false', () => {\n    expect(sortNumbers([3, 1, 10], false)).toEqual([10, 3, 1]);\n    expect(sortNumbers([-2, 5, 0, -10], false)).toEqual([5, 0, -2, -10]);\n  });\n\n  it('does not mutate the original array', () => {\n    const nums = [5, 2, 11];\n    const copy = [...nums];\n    const sorted = sortNumbers(nums);\n\n    expect(sorted).toEqual([2, 5, 11]);\n    expect(nums).toEqual(copy);\n  });\n\n  it('handles empty and single-element arrays', () => {\n    expect(sortNumbers([])).toEqual([]);\n    expect(sortNumbers([42])).toEqual([42]);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Sort Number Array in JavaScript (Non-Mutating)",
       "description": "Given numbers and a direction flag, return a sorted array while leaving the original input unchanged."
@@ -3441,13 +3210,6 @@
     "testsTs": "import createCounter from './file';\n\ndescribe('createCounter (TypeScript)', () => {\n  it('increments sequentially', () => {\n    const counter = createCounter(5);\n    expect(counter()).toBe(5);\n    expect(counter()).toBe(6);\n    expect(counter()).toBe(7);\n  });\n\n  it('works with negative numbers', () => {\n    const counter = createCounter(-2);\n    expect(counter()).toBe(-2);\n    expect(counter()).toBe(-1);\n    expect(counter()).toBe(0);\n  });\n\n  it('independent counters maintain separate state', () => {\n    const c1 = createCounter(1);\n    const c2 = createCounter(50);\n    expect(c1()).toBe(1);\n    expect(c2()).toBe(50);\n    expect(c1()).toBe(2);\n    expect(c2()).toBe(51);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create Counter Function in JavaScript (Closure State)",
       "description": "Build a counter utility that keeps internal state across calls and supports predictable initialization and increment behavior."
@@ -3531,13 +3293,6 @@
     "testsTs": "import isEmpty from './file';\n\ndescribe('isEmpty (TypeScript)', () => {\n  it('returns false for non-empty object', () => {\n    expect(isEmpty({ x: 5, y: 42 })).toBe(false);\n  });\n\n  it('returns true for empty object', () => {\n    expect(isEmpty({})).toBe(true);\n  });\n\n  it('returns false for non-empty array', () => {\n    expect(isEmpty([1, 2, 3])).toBe(false);\n  });\n\n  it('returns true for empty array', () => {\n    expect(isEmpty([])).toBe(true);\n  });\n\n  it('throws TypeError for non-object/array inputs', () => {\n    expect(() => isEmpty(42 as any)).toThrow(TypeError);\n    expect(() => isEmpty('foo' as any)).toThrow(TypeError);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Check Empty Object or Array in JavaScript",
       "description": "Given a value, determine whether it is an empty object or array with clear handling for unsupported input types."
@@ -3627,13 +3382,6 @@
     "testsTs": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises (TypeScript)', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles mix of negative and positive', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with immediately resolved promises (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(3), Promise.resolve(4));\n    expect(result).toBe(7);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Add Two Promise Values in JavaScript",
       "description": "Given two Promise inputs that resolve to numbers, return a Promise that resolves to their combined result."
@@ -3723,13 +3471,6 @@
     "testsTs": "import promiseAll from './promiseAll';\n\ndescribe('promiseAll (TypeScript)', () => {\n  it('resolves array of values in order when all succeed', async () => {\n    const p1 = Promise.resolve(1);\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(2), 5));\n    const p3 = 3;\n\n    await expect(promiseAll([p1, p2, p3])).resolves.toEqual([1, 2, 3]);\n  });\n\n  it('resolves immediately for empty array', async () => {\n    await expect(promiseAll<number>([])).resolves.toEqual([]);\n  });\n\n  it('rejects when any promise rejects', async () => {\n    const error = new Error('fail');\n    const p1 = Promise.resolve('ok');\n    const p2 = Promise.reject(error);\n\n    await expect(promiseAll([p1, p2])).rejects.toThrow('fail');\n  });\n\n  it('rejects with TypeError when input is not an array', async () => {\n    // @ts-expect-error runtime guard only\n    await expect(promiseAll(null as any)).rejects.toThrow(TypeError);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Promise.all in JavaScript",
       "description": "Given multiple async inputs, return a single Promise that preserves result ordering and reflects failure behavior consistently."
@@ -3824,13 +3565,6 @@
     "testsTs": "import myBind from './file';\n\ndescribe('myBind (TypeScript)', () => {\n  it('binds this for normal calls', () => {\n    function getX(this: any) { return this.x; }\n    const obj = { x: 42 };\n    const bound = myBind(getX as any, obj);\n    expect(bound()).toBe(42);\n  });\n\n  it('supports partial application', () => {\n    function add(a: number, b: number, c: number) { return a + b + c; }\n    const add5 = myBind(add, null, 2, 3);\n    expect(add5(10)).toBe(15);\n  });\n\n  it('supports new and preserves prototype chain', () => {\n    function Person(this: any, name: string) { this.name = name; }\n    (Person as any).prototype.say = function() { return this.name; };\n\n    const BoundPerson: any = myBind(Person as any, { name: 'NOPE' });\n    const p = new BoundPerson('Ada');\n\n    expect(p.name).toBe('Ada');\n    expect(p.say()).toBe('Ada');\n    expect(p instanceof (Person as any)).toBe(true);\n    expect(p instanceof BoundPerson).toBe(true);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Function.prototype.bind in JavaScript",
       "description": "Given a function and binding context, return a bound function that supports preset arguments and constructor-style invocation behavior."
@@ -3918,13 +3652,6 @@
     "testsTs": "import myNew from './file';\n\ndescribe('myNew (TypeScript)', () => {\n  it('creates an instance with correct prototype and runs constructor', () => {\n    function Person(this: any, name: string) { this.name = name; }\n    (Person as any).prototype.say = function() { return `hi ${this.name}`; };\n\n    const p: any = myNew(Person as any, 'Ada');\n    expect(p.name).toBe('Ada');\n    expect(p.say()).toBe('hi Ada');\n    expect(p instanceof (Person as any)).toBe(true);\n  });\n\n  it('returns object returned by constructor', () => {\n    function Factory(this: any, name: string) {\n      this.name = name;\n      return { ok: true, name } as any;\n    }\n\n    const f: any = myNew(Factory as any, 'Ada');\n    expect(f).toEqual({ ok: true, name: 'Ada' });\n  });\n\n  it('ignores primitive returned by constructor', () => {\n    function Weird(this: any, name: string) {\n      this.name = name;\n      return 123 as any;\n    }\n\n    const w: any = myNew(Weird as any, 'Ada');\n    expect(w.name).toBe('Ada');\n    expect(w instanceof (Weird as any)).toBe(true);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement new Operator Behavior in JavaScript",
       "description": "Given a constructor and arguments, return an instance that follows JavaScript object-construction semantics."
@@ -4013,13 +3740,6 @@
     "testsTs": "import myInstanceOf from './file';\n\ndescribe('myInstanceOf (TypeScript)', () => {\n  it('returns true when Constructor.prototype is in the prototype chain', () => {\n    function Person(this: any) {}\n    const p = new (Person as any)();\n    expect(myInstanceOf(p, Person)).toBe(true);\n  });\n\n  it('works for arrays', () => {\n    expect(myInstanceOf([], Array)).toBe(true);\n    expect(myInstanceOf({}, Array)).toBe(false);\n  });\n\n  it('returns false for primitives and null/undefined', () => {\n    expect(myInstanceOf(1, Number)).toBe(false);\n    expect(myInstanceOf('a', String)).toBe(false);\n    expect(myInstanceOf(null, Object)).toBe(false);\n    expect(myInstanceOf(undefined, Object)).toBe(false);\n  });\n\n  it('throws if Constructor is not a function', () => {\n    try {\n      myInstanceOf({}, 123 as any);\n      expect(true).toBe(false);\n    } catch (e: any) {\n      expect(!!e).toBe(true);\n      expect(e.name).toBe('TypeError');\n    }\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement instanceof Check in JavaScript",
       "description": "Given an object and constructor, return whether the object should be treated as an instance of that constructor."
@@ -4118,13 +3838,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Event Delegation Utility in JavaScript (Single Listener)",
       "description": "Create a utility that handles matching child events through one root listener and supports dynamic elements."
@@ -4229,13 +3942,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Event Delegation with capture/once in JavaScript",
       "description": "Extend delegated event behavior with capture and once options while keeping predictable cleanup and root-bound matching."
@@ -4345,13 +4051,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Advanced Event Delegation Rules in JavaScript",
       "description": "Support delegated event handling with boundary, ignore, and stop conditions for complex interaction requirements."
@@ -4441,13 +4140,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Collect Text from DOM-Like Tree in JavaScript",
       "description": "Given a DOM-like node tree, return concatenated text content in document order while handling missing or empty text nodes."
@@ -4535,13 +4227,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Find Closest Matching Ancestor in JavaScript",
       "description": "Given a node, selector, and boundary, return the nearest matching ancestor within the allowed traversal limit."
@@ -4627,13 +4312,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement querySelectorAll for DOM-Like Tree in JavaScript",
       "description": "Given a DOM-like root and selector, return all matching nodes in document order with clear behavior for unsupported selectors."
@@ -4716,13 +4394,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Element.matches Polyfill in JavaScript",
       "description": "Given a node and selector, return whether the node matches supported selector patterns with safe handling for invalid input."
@@ -4801,13 +4472,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Recover BST with Two Swapped Nodes in JavaScript",
       "description": "Given a binary search tree with two swapped values, restore BST validity without changing tree structure."
@@ -4891,13 +4555,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement closest Polyfill in JavaScript",
       "description": "Given a node and selector, return the nearest matching ancestor (or self) within the available parent chain."
@@ -4988,13 +4645,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement querySelectorAll Polyfill in JavaScript",
       "description": "Given a DOM-like root and selector, return all matching elements with deterministic ordering and defined invalid-selector behavior."
@@ -5080,13 +4730,6 @@
     "testsTs": "import getByPath from './file';\n\ndescribe('getByPath (TypeScript)', () => {\n  it('works with common cases', () => {\n    const data: any = { user: { profile: { name: 'Ada' } }, items: [{ name: 'x' }] };\n    expect(getByPath(data, 'user.profile.name')).toBe('Ada');\n    expect(getByPath(data, 'items.0.name')).toBe('x');\n    expect(getByPath(data, 'missing', 1)).toBe(1);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Get Nested Value by Path in JavaScript",
       "description": "Given an object, a path, and a fallback, return the nested value when present or the fallback when any segment is missing."
@@ -5172,13 +4815,6 @@
     "testsTs": "import setByPath from './file';\n\ndescribe('setByPath (TypeScript)', () => {\n  it('updates deep path', () => {\n    const state: any = { user: { profile: { name: 'Ada' } }, other: { x: 1 } };\n    const next = setByPath(state, 'user.profile.name', 'Bob');\n\n    expect(next.user.profile.name).toEqual('Bob');\n    expect(state.user.profile.name).toEqual('Ada');\n    expect(state).toEqual({ user: { profile: { name: 'Ada' } }, other: { x: 1 } });\n  });\n\n  it('creates missing containers', () => {\n    const next = setByPath({}, 'a.b.0.c', 1);\n    expect(next).toEqual({ a: { b: [{ c: 1 }] } });\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Set Nested Value by Path in JavaScript (Immutable)",
       "description": "Given an object, path, and value, return an updated structure with the change applied without mutating the original input."
@@ -5256,13 +4892,6 @@
     "testsTs": "import deepClone from './file';\n\nfunction assert(condition: any, message: string) {\n  if (!condition) throw new Error(message);\n}\n\ndescribe('deepClone (TypeScript)', () => {\n  it('clones cycles correctly', () => {\n    const a: any = { x: 1 };\n    a.self = a;\n\n    const b = deepClone(a);\n\n    expect(b.x).toEqual(1);\n    assert(b !== a, 'Expected cloned root to be a different reference');\n    assert(b.self === b, 'Expected b.self === b');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Deep Clone Circular Objects in JavaScript",
       "description": "Given an object that may include circular or shared references, return a deep copy that preserves structure safely."
@@ -5342,13 +4971,6 @@
     "testsTs": "import parseQueryString from './file';\n\ndescribe('parseQueryString (TypeScript)', () => {\n  it('parses and decodes', () => {\n    expect(parseQueryString('?a=1&b=two')).toEqual({ a: '1', b: 'two' });\n    expect(parseQueryString('q=hello+world')).toEqual({ q: 'hello world' });\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Parse Query String in JavaScript",
       "description": "Given a query-string input, return parsed key-value data with defined behavior for decoding, empty parts, and repeated keys."
@@ -5428,13 +5050,6 @@
     "testsTs": "import stringifyQueryString from './file';\n\ndescribe('stringifyQueryString (TypeScript)', () => {\n  it('repeats keys for arrays', () => {\n    expect(stringifyQueryString({ tag: ['a', 'b'], page: 1 })).toBe('page=1&tag=a&tag=b');\n  });\n\n  it('skips undefined and keeps null', () => {\n    expect(stringifyQueryString({ a: undefined, b: null })).toBe('b=');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Stringify Query Params in JavaScript",
       "description": "Given key-value parameters, return a query-string output with consistent ordering and encoded values for URL usage."
@@ -5514,13 +5129,6 @@
     "testsTs": "import parseQueryStringAdvanced from './file';\n\ndescribe('parseQueryStringAdvanced (TypeScript)', () => {\n  it('parses nested objects', () => {\n    expect(parseQueryStringAdvanced('a[b]=1')).toEqual({ a: { b: '1' } });\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Parse Nested Query Strings in JavaScript",
       "description": "Given a query string, return parsed nested data with clear handling for repeated keys, arrays, objects, and malformed input."
@@ -5601,13 +5209,6 @@
     "testsTs": "import addStrings from './addStrings';\n\ndescribe('addStrings (TypeScript)', () => {\n  it('adds numbers as strings', () => {\n    expect(addStrings('500', '500')).toBe('1000');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Add Large Integer Strings in JavaScript",
       "description": "Given two non-negative integer strings, return their sum as a string without relying on numeric conversion limits."
@@ -5690,13 +5291,6 @@
     "testsTs": "import get from './get';\n\ndescribe('get (TypeScript)', () => {\n  it('returns value or default', () => {\n    const obj = { a: { b: 2 } };\n    expect(get(obj, 'a.b', 0)).toBe(2);\n    expect(get(obj, 'a.c', 0)).toBe(0);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement lodash.get in JavaScript",
       "description": "Given an object, path, and default value, return the nested value when present or the default when resolution fails."
@@ -5770,13 +5364,6 @@
     "testsTs": "import threeSum from './threeSum';\n\ndescribe('threeSum (TypeScript)', () => {\n  it('returns empty when no match', () => {\n    expect(threeSum([1, 2, 3])).toEqual([]);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Solve 3Sum in JavaScript",
       "description": "Given an integer array, return all unique triplets whose values sum to zero with no duplicate triplets in output."
@@ -5854,13 +5441,6 @@
     "testsTs": "import mergeSortedArrays from './mergeSortedArrays';\n\ndescribe('mergeSortedArrays (TypeScript)', () => {\n  it('merges arrays', () => {\n    expect(mergeSortedArrays([0], [1])).toEqual([0,1]);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Merge Two Sorted Arrays in JavaScript",
       "description": "Given two sorted arrays, return one merged sorted array while preserving duplicates and full input coverage."
@@ -5936,13 +5516,6 @@
     "testsTs": "import isAnagram from './isAnagram';\n\ndescribe('isAnagram (TypeScript)', () => {\n  it('handles repeats', () => {\n    expect(isAnagram('aabb', 'bbaa')).toBe(true);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Check Valid Anagrams in JavaScript",
       "description": "Given two strings, return whether they contain the same characters with matching counts under defined comparison rules."
@@ -6014,13 +5587,6 @@
     "testsTs": "import median from './median';\n\ndescribe('median (TypeScript)', () => {\n  it('handles negatives', () => {\n    expect(median([-1, -5, -3])).toBe(-3);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Find Median of Number Array in JavaScript",
       "description": "Given an array of numbers, return the median value for odd or even lengths while preserving expected numeric precision."
@@ -6101,13 +5667,6 @@
     "testsTs": "import render from './render';\n\nconst ensureDocument = () => {\n  if (typeof document !== 'undefined') return;\n\n  class TextNode {\n    constructor(value) {\n      this.nodeType = 3;\n      this.nodeValue = String(value);\n    }\n    get textContent() {\n      return this.nodeValue;\n    }\n  }\n\n  class ElementNode {\n    constructor(tag) {\n      this.nodeType = 1;\n      this.tagName = String(tag).toUpperCase();\n      this.attributes = {};\n      this.children = [];\n      this.id = '';\n    }\n    setAttribute(key, value) {\n      this.attributes[key] = String(value);\n    }\n    getAttribute(key) {\n      return Object.prototype.hasOwnProperty.call(this.attributes, key) ? this.attributes[key] : null;\n    }\n    appendChild(child) {\n      this.children.push(child);\n      return child;\n    }\n    get textContent() {\n      return this.children.map((c) => (c.nodeType === 3 ? c.nodeValue : c.textContent)).join('');\n    }\n  }\n\n  globalThis.document = {\n    createElement: (tag) => new ElementNode(tag),\n    createTextNode: (value) => new TextNode(value)\n  };\n};\n\nensureDocument();\n\n\ndescribe('render', () => {\n  test('creates elements with props and nested children', () => {\n    const dom = {\n      type: 'div',\n      props: { id: 'root', className: 'wrap' },\n      children: [\n        { type: 'h1', children: 'HELLO' },\n        { type: 'p', children: 'World' }\n      ]\n    };\n    const el = render(dom);\n    expect(el.tagName).toBe('DIV');\n    expect(el.getAttribute('id')).toBe('root');\n    expect(el.getAttribute('class')).toBe('wrap');\n    expect(el.children.length).toBe(2);\n    expect(el.children[0].tagName).toBe('H1');\n    expect(el.children[0].textContent).toBe('HELLO');\n  });\n\n  test('handles string children', () => {\n    const el = render({ type: 'span', children: 'Hi' });\n    expect(el.textContent).toBe('Hi');\n  });\n\n  test('keeps numeric children and skips null', () => {\n    const el = render({ type: 'div', children: [0, null, '', { type: 'em', children: 'ok' }] });\n    expect(el.textContent).toBe('0ok');\n  });\n\n  test('returns a text node for null input', () => {\n    const node = render(null);\n    expect(node.nodeType).toBe(3);\n    expect(node.textContent).toBe('');\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Render JSON Tree to DOM in JavaScript",
       "description": "Given a JSON-like node definition, return rendered DOM output with proper element, text, and child handling rules."
@@ -6193,13 +5752,6 @@
     "testsTs": "import timerManager from './timerManager';\nconst { mySetTimeout, myClearTimeout, myClearAllTimeouts } = timerManager;\n\nconst withFakeTimers = (fn) => {\n  const realSetTimeout = globalThis.setTimeout;\n  const realClearTimeout = globalThis.clearTimeout;\n\n  let now = 0;\n  let nextId = 1;\n  const timers = new Map();\n\n  const fakeSetTimeout = (cb, delay = 0) => {\n    const id = nextId++;\n    const ms = typeof delay === 'number' && delay > 0 ? delay : 0;\n    timers.set(id, { time: now + ms, cb });\n    return id;\n  };\n\n  const fakeClearTimeout = (id) => {\n    timers.delete(id);\n  };\n\n  const advance = (ms) => {\n    const target = now + ms;\n    while (true) {\n      let nextTime = Infinity;\n      let nextTimerId = null;\n      for (const [id, t] of timers.entries()) {\n        if (t.time <= target && t.time < nextTime) {\n          nextTime = t.time;\n          nextTimerId = id;\n        }\n      }\n      if (nextTimerId == null) break;\n      const { cb } = timers.get(nextTimerId);\n      timers.delete(nextTimerId);\n      now = nextTime;\n      cb();\n    }\n    now = target;\n  };\n\n  globalThis.setTimeout = fakeSetTimeout;\n  globalThis.clearTimeout = fakeClearTimeout;\n\n  try {\n    fn({ advance });\n  } finally {\n    globalThis.setTimeout = realSetTimeout;\n    globalThis.clearTimeout = realClearTimeout;\n  }\n};\n\ndescribe('timer manager', () => {\n  test('runs scheduled callback', () => {\n    withFakeTimers(({ advance }) => {\n      let called = 0;\n      mySetTimeout(() => { called += 1; }, 50);\n      expect(called).toBe(0);\n      advance(49);\n      expect(called).toBe(0);\n      advance(1);\n      expect(called).toBe(1);\n    });\n  });\n\n  test('clears a specific timer', () => {\n    withFakeTimers(({ advance }) => {\n      let called = 0;\n      const id = mySetTimeout(() => { called += 1; }, 30);\n      myClearTimeout(id);\n      advance(30);\n      expect(called).toBe(0);\n    });\n  });\n\n  test('clears all timers', () => {\n    withFakeTimers(({ advance }) => {\n      let called = 0;\n      mySetTimeout(() => { called += 1; }, 10);\n      mySetTimeout(() => { called += 1; }, 20);\n      myClearAllTimeouts();\n      advance(25);\n      expect(called).toBe(0);\n    });\n  });\n\n  test('returns unique ids and ignores unknown clear', () => {\n    withFakeTimers(() => {\n      const id1 = mySetTimeout(() => {}, 5);\n      const id2 = mySetTimeout(() => {}, 5);\n      expect(id1 === id2).toBe(false);\n      let threw = false;\n      try { myClearTimeout(99999); } catch { threw = true; }\n      expect(threw).toBe(false);\n    });\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Timer Manager in JavaScript (set/clear/clearAll)",
       "description": "Implement timer APIs that return custom IDs, support cancellation by ID, and allow clearing all active scheduled timers."
@@ -6269,13 +5821,6 @@
     "testsTs": "import timerRender from './timerRender';\nconst { clearAllTimeouts, render } = timerRender;\n\nconst ensureDocument = () => {\n  if (typeof document !== 'undefined') return;\n\n  class TextNode {\n    constructor(value) {\n      this.nodeType = 3;\n      this.nodeValue = String(value);\n    }\n    get textContent() {\n      return this.nodeValue;\n    }\n  }\n\n  class ElementNode {\n    constructor(tag) {\n      this.nodeType = 1;\n      this.tagName = String(tag).toUpperCase();\n      this.attributes = {};\n      this.children = [];\n      this.id = '';\n    }\n    setAttribute(key, value) {\n      this.attributes[key] = String(value);\n    }\n    getAttribute(key) {\n      return Object.prototype.hasOwnProperty.call(this.attributes, key) ? this.attributes[key] : null;\n    }\n    appendChild(child) {\n      this.children.push(child);\n      return child;\n    }\n    get textContent() {\n      return this.children.map((c) => (c.nodeType === 3 ? c.nodeValue : c.textContent)).join('');\n    }\n  }\n\n  globalThis.document = {\n    createElement: (tag) => new ElementNode(tag),\n    createTextNode: (value) => new TextNode(value)\n  };\n};\n\nensureDocument();\n\n\ndescribe('clearAllTimeouts + render', () => {\n  test('render builds nested DOM', () => {\n    const dom = { type: 'div', children: [{ type: 'span', children: 'Hi' }] };\n    const el = render(dom);\n    expect(el.tagName).toBe('DIV');\n    expect(el.textContent).toBe('Hi');\n  });\n\n  test('render maps className and preserves numbers', () => {\n    const el = render({ type: 'div', props: { className: 'box', 'data-x': 1 }, children: 0 });\n    expect(el.getAttribute('class')).toBe('box');\n    expect(el.getAttribute('data-x')).toBe('1');\n    expect(el.textContent).toBe('0');\n  });\n\n  test('render skips null children', () => {\n    const el = render({ type: 'p', children: [null, 'ok'] });\n    expect(el.textContent).toBe('ok');\n  });\n\n  test('clearAllTimeouts is callable', () => {\n    let threw = false;\n    try {\n      clearAllTimeouts();\n    } catch {\n      threw = true;\n    }\n    expect(threw).toBe(false);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Clear Timers and Render DOM Tree in JavaScript",
       "description": "Implement two utilities: one for global timer cleanup and one for rendering nested node definitions into DOM output."
@@ -6356,13 +5901,6 @@
     "testsTs": "import findNode from './findNode';\n\nconst ensureDocument = () => {\n  if (typeof document !== 'undefined') return;\n\n  class TextNode {\n    constructor(value) {\n      this.nodeType = 3;\n      this.nodeValue = String(value);\n    }\n    get textContent() {\n      return this.nodeValue;\n    }\n  }\n\n  class ElementNode {\n    constructor(tag) {\n      this.nodeType = 1;\n      this.tagName = String(tag).toUpperCase();\n      this.attributes = {};\n      this.children = [];\n      this.id = '';\n    }\n    setAttribute(key, value) {\n      this.attributes[key] = String(value);\n    }\n    getAttribute(key) {\n      return Object.prototype.hasOwnProperty.call(this.attributes, key) ? this.attributes[key] : null;\n    }\n    appendChild(child) {\n      this.children.push(child);\n      return child;\n    }\n    get textContent() {\n      return this.children.map((c) => (c.nodeType === 3 ? c.nodeValue : c.textContent)).join('');\n    }\n  }\n\n  globalThis.document = {\n    createElement: (tag) => new ElementNode(tag),\n    createTextNode: (value) => new TextNode(value)\n  };\n};\n\nensureDocument();\n\n\ndescribe('findNode', () => {\n  test('finds a node by predicate', () => {\n    const root = document.createElement('div');\n    const a = document.createElement('span');\n    const b = document.createElement('p');\n    b.id = 'target';\n    root.appendChild(a);\n    root.appendChild(b);\n\n    const found = findNode(root, (el) => el.id === 'target');\n    expect(found).toBe(b);\n  });\n\n  test('returns null when not found', () => {\n    const root = document.createElement('div');\n    expect(findNode(root, () => false)).toBe(null);\n  });\n\n  test('returns root when it matches', () => {\n    const root = document.createElement('div');\n    const found = findNode(root, (el) => el.tagName === 'DIV');\n    expect(found).toBe(root);\n  });\n\n  test('finds deep nested node', () => {\n    const root = document.createElement('div');\n    const mid = document.createElement('section');\n    const deep = document.createElement('span');\n    deep.id = 'deep';\n    mid.appendChild(deep);\n    root.appendChild(mid);\n    const found = findNode(root, (el) => el.id === 'deep');\n    expect(found).toBe(deep);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Find Node in DOM-Like Tree by Predicate in JavaScript",
       "description": "Given a root node and predicate, return the first matching node or null when no node satisfies the condition."
@@ -6447,13 +5985,6 @@
     "testsTs": "import findTwin from './findTwin';\n\nconst ensureDocument = () => {\n  if (typeof document !== 'undefined') return;\n\n  class TextNode {\n    constructor(value) {\n      this.nodeType = 3;\n      this.nodeValue = String(value);\n    }\n    get textContent() {\n      return this.nodeValue;\n    }\n  }\n\n  class ElementNode {\n    constructor(tag) {\n      this.nodeType = 1;\n      this.tagName = String(tag).toUpperCase();\n      this.attributes = {};\n      this.children = [];\n      this.id = '';\n    }\n    setAttribute(key, value) {\n      this.attributes[key] = String(value);\n    }\n    getAttribute(key) {\n      return Object.prototype.hasOwnProperty.call(this.attributes, key) ? this.attributes[key] : null;\n    }\n    appendChild(child) {\n      this.children.push(child);\n      return child;\n    }\n    get textContent() {\n      return this.children.map((c) => (c.nodeType === 3 ? c.nodeValue : c.textContent)).join('');\n    }\n  }\n\n  globalThis.document = {\n    createElement: (tag) => new ElementNode(tag),\n    createTextNode: (value) => new TextNode(value)\n  };\n};\n\nensureDocument();\n\n\nconst buildTree = () => {\n  const root = document.createElement('div');\n  const a = document.createElement('span');\n  const b = document.createElement('p');\n  const c = document.createElement('em');\n  b.appendChild(c);\n  root.appendChild(a);\n  root.appendChild(b);\n  return { root, target: c };\n};\n\ndescribe('findTwin', () => {\n  test('finds corresponding node in twin tree', () => {\n    const a = buildTree();\n    const b = buildTree();\n    const twin = findTwin(a.root, b.root, a.target);\n    expect(twin).toBe(b.target);\n  });\n\n  test('returns root when target is root', () => {\n    const a = buildTree();\n    const b = buildTree();\n    const twin = findTwin(a.root, b.root, a.root);\n    expect(twin).toBe(b.root);\n  });\n\n  test('returns null for missing target', () => {\n    const a = buildTree();\n    const b = buildTree();\n    const other = document.createElement('div');\n    const twin = findTwin(a.root, b.root, other);\n    expect(twin).toBe(null);\n  });\n\n  test('returns null for missing roots', () => {\n    const a = buildTree();\n    expect(findTwin(null, a.root, a.target)).toBe(null);\n    expect(findTwin(a.root, null, a.target)).toBe(null);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Find Matching Node in Twin DOM Trees in JavaScript",
       "description": "Given equivalent trees and a target node from the first tree, return the corresponding node from the second tree."
@@ -6521,13 +6052,6 @@
     "testsTs": "import stackQueue from './stackQueue';\nconst { Stack, Queue } = stackQueue;\n\ndescribe('Stack', () => {\n  test('push/pop/peek/size', () => {\n    const s = new Stack();\n    s.push(1); s.push(2);\n    expect(s.peek()).toBe(2);\n    expect(s.size()).toBe(2);\n    expect(s.pop()).toBe(2);\n    expect(s.pop()).toBe(1);\n    expect(s.pop()).toBe(undefined);\n  });\n\n  test('empty peek returns undefined', () => {\n    const s = new Stack();\n    expect(s.peek()).toBe(undefined);\n  });\n});\n\ndescribe('Queue', () => {\n  test('enqueue/dequeue/peek/size', () => {\n    const q = new Queue();\n    q.enqueue(1); q.enqueue(2);\n    expect(q.peek()).toBe(1);\n    expect(q.size()).toBe(2);\n    expect(q.dequeue()).toBe(1);\n    expect(q.dequeue()).toBe(2);\n    expect(q.dequeue()).toBe(undefined);\n  });\n\n  test('empty dequeue/peek returns undefined', () => {\n    const q = new Queue();\n    expect(q.dequeue()).toBe(undefined);\n    expect(q.peek()).toBe(undefined);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Stack and Queue in JavaScript",
       "description": "Build Stack and Queue utilities with core operations and deterministic behavior for empty structures and repeated operations."
@@ -6603,13 +6127,6 @@
     "testsTs": "import isPalindrome from './isPalindrome';\n\ndescribe('isPalindrome', () => {\n  test('simple palindromes', () => {\n    expect(isPalindrome('racecar')).toBe(true);\n    expect(isPalindrome('Racecar')).toBe(true);\n  });\n\n  test('ignores non-alphanumerics', () => {\n    expect(isPalindrome('A man, a plan, a canal: Panama')).toBe(true);\n  });\n\n  test('handles digits', () => {\n    expect(isPalindrome('12321')).toBe(true);\n    expect(isPalindrome('12310')).toBe(false);\n  });\n\n  test('non-palindrome', () => {\n    expect(isPalindrome('hello')).toBe(false);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Check Palindrome String in JavaScript",
       "description": "Given a string, return whether it reads the same forward and backward under the stated comparison rules."
@@ -6695,13 +6212,6 @@
     "testsTs": "import hasPath from './mazePath';\n\ndescribe('hasPath', () => {\n  test('finds path in grid', () => {\n    const grid = [\n      [0,0,1],\n      [1,0,1],\n      [0,0,0]\n    ];\n    expect(hasPath(grid, [0,0], [2,2])).toBe(true);\n  });\n\n  test('returns false when blocked', () => {\n    const grid = [\n      [0,1,1],\n      [1,1,1],\n      [1,1,0]\n    ];\n    expect(hasPath(grid, [0,0], [2,2])).toBe(false);\n  });\n\n  test('start equals end', () => {\n    const grid = [[0]];\n    expect(hasPath(grid, [0,0], [0,0])).toBe(true);\n  });\n\n  test('returns false if start or end is a wall', () => {\n    const grid = [\n      [1,0],\n      [0,1]\n    ];\n    expect(hasPath(grid, [0,0], [0,1])).toBe(false);\n    expect(hasPath(grid, [1,0], [1,1])).toBe(false);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Find Path in Grid Maze in JavaScript",
       "description": "Given a grid with blocked and open cells, return whether a valid path exists from start to destination."
@@ -6784,13 +6294,6 @@
     "testsTs": "import takeLatest from './takeLatest';\n\nfunction toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { (err as any).name = 'AbortError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nfunction delay(ms: number, value: string, signal?: AbortSignal): Promise<string> {\n  return new Promise((resolve, reject) => {\n    const id = setTimeout(() => resolve(value), ms);\n    if (signal) {\n      if (signal.aborted) {\n        clearTimeout(id);\n        return reject(toAbortError((signal as any).reason));\n      }\n      signal.addEventListener(\n        'abort',\n        () => {\n          clearTimeout(id);\n          reject(toAbortError((signal as any).reason));\n        },\n        { once: true }\n      );\n    }\n  });\n}\n\ndescribe('takeLatest (TypeScript)', () => {\n  it('resolves only the latest call', async () => {\n    const latest = takeLatest((signal, value: string, ms: number) => delay(ms, value, signal));\n\n    const p1 = latest('first', 30);\n    const p2 = latest('second', 5);\n\n    await expect(p1).rejects.toMatchObject({ name: 'AbortError' });\n    await expect(p2).resolves.toBe('second');\n  });\n\n  it('propagates errors from the latest call', async () => {\n    const latest = takeLatest(async () => {\n      throw new Error('boom');\n    });\n\n    await expect(latest()).rejects.toThrow('boom');\n  });\n\n  it('aborts the previous controller immediately', async () => {\n    const latest = takeLatest((signal) => delay(20, 'ok', signal));\n\n    const p1 = latest();\n    await new Promise((r) => setTimeout(r, 1));\n    const p2 = latest();\n\n    await expect(p1).rejects.toMatchObject({ name: 'AbortError' });\n    await expect(p2).resolves.toBe('ok');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement takeLatest in JavaScript",
       "description": "Create a utility that runs async tasks and guarantees only the most recent invocation can produce a final result."
@@ -6872,13 +6375,6 @@
     "testsTs": "import promiseAny from './promiseAny';\n\ndescribe('promiseAny (TypeScript)', () => {\n  it('resolves on first fulfillment', async () => {\n    const bad = Promise.reject(new Error('nope'));\n    const slow = new Promise<string>((resolve) => setTimeout(() => resolve('slow'), 20));\n    const fast = Promise.resolve('fast');\n\n    await expect(promiseAny([bad, slow, fast])).resolves.toBe('fast');\n  });\n\n  it('handles non-promise values', async () => {\n    await expect(promiseAny<number | Promise<number>>([0, Promise.resolve(2)])).resolves.toBe(0);\n  });\n\n  it('rejects with AggregateError when all reject', async () => {\n    let err: any;\n    try {\n      await promiseAny([Promise.reject('a'), Promise.reject('b')]);\n    } catch (e) {\n      err = e;\n    }\n    expect(err).toBeTruthy();\n    expect(err.name).toBe('AggregateError');\n    expect(Array.isArray((err as any).errors)).toBe(true);\n    expect((err as any).errors.length).toBe(2);\n  });\n\n  it('rejects for empty input', async () => {\n    let err: any;\n    try {\n      await promiseAny([]);\n    } catch (e) {\n      err = e;\n    }\n    expect(err).toBeTruthy();\n    expect(err.name).toBe('AggregateError');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement Promise.any in JavaScript",
       "description": "Given multiple async inputs, return the first successful result and define clear behavior when all inputs fail."
@@ -6961,13 +6457,6 @@
     "testsTs": "import pollUntil from './pollUntil';\n\ndescribe('pollUntil (TypeScript)', () => {\n  it('resolves when check becomes truthy', async () => {\n    let count = 0;\n    const result = await pollUntil(() => {\n      count += 1;\n      return count >= 3 ? 'ready' : false;\n    }, { interval: 5, timeout: 50 });\n\n    expect(result).toBe('ready');\n  });\n\n  it('supports async checks', async () => {\n    let count = 0;\n    const result = await pollUntil(async () => {\n      count += 1;\n      await new Promise((r) => setTimeout(r, 2));\n      return count === 2 ? 42 : false;\n    }, { interval: 5, timeout: 50 });\n\n    expect(result).toBe(42);\n  });\n\n  it('rejects on timeout', async () => {\n    await expect(\n      pollUntil(() => false, { interval: 5, timeout: 20 })\n    ).rejects.toThrow('Timeout');\n  });\n\n  it('rejects when aborted', async () => {\n    const ac = new AbortController();\n    const p = pollUntil(() => false, { interval: 5, signal: ac.signal });\n    setTimeout(() => ac.abort(), 10);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Implement pollUntil in JavaScript",
       "description": "Create a polling utility that checks a condition repeatedly until success, timeout, or external cancellation."
@@ -7055,13 +6544,6 @@
     "testsTs": "import fetchJson from './fetchJson';\n\nfunction toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { (err as any).name = 'AbortError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nfunction makeFetch({ delay = 0, ok = true, status = 200, jsonData = {} } = {}) {\n  return function fetchMock(_url: string, init: any = {}) {\n    const signal: AbortSignal | undefined = init.signal;\n    return new Promise((resolve, reject) => {\n      let done = false;\n      const finish = () => {\n        if (done) return;\n        done = true;\n        if (signal) signal.removeEventListener('abort', onAbort);\n        resolve({\n          ok,\n          status,\n          json: async () => jsonData\n        });\n      };\n\n      const onAbort = () => {\n        if (done) return;\n        done = true;\n        clearTimeout(timerId);\n        reject(toAbortError(signal && (signal as any).reason));\n      };\n\n      if (signal) {\n        if (signal.aborted) return onAbort();\n        signal.addEventListener('abort', onAbort, { once: true });\n      }\n\n      const timerId = setTimeout(finish, delay);\n    });\n  };\n}\n\ndescribe('fetchJson (TypeScript)', () => {\n  it('resolves JSON for ok responses', async () => {\n    const fetchFn = makeFetch({ jsonData: { ok: true } });\n    await expect(fetchJson('/ok', { fetchFn, timeoutMs: 100 })).resolves.toEqual({ ok: true });\n  });\n\n  it('throws on non-ok status', async () => {\n    const fetchFn = makeFetch({ ok: false, status: 404 });\n    await expect(fetchJson('/missing', { fetchFn })).rejects.toThrow('HTTP 404');\n  });\n\n  it('aborts on timeout', async () => {\n    const fetchFn = makeFetch({ delay: 50, jsonData: { ok: true } });\n    await expect(fetchJson('/slow', { fetchFn, timeoutMs: 10 })).rejects.toMatchObject({\n      name: 'AbortError',\n      message: 'Timeout'\n    });\n  });\n\n  it('respects external abort signal', async () => {\n    const ac = new AbortController();\n    const fetchFn = makeFetch({ delay: 30, jsonData: { ok: true } });\n    const p = fetchJson('/abort', { fetchFn, signal: ac.signal });\n    setTimeout(() => ac.abort(new Error('Cancelled')), 5);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Fetch JSON with Timeout in JavaScript",
       "description": "Build a JSON request helper with timeout behavior and clear handling for network failures and non-success responses."
@@ -7148,13 +6630,6 @@
     "testsTs": "import streamToText from './streamToText';\n\nfunction makeStream(chunks: Uint8Array[]) {\n  let i = 0;\n  let cancelled = false;\n  return {\n    getReader() {\n      return {\n        read() {\n          if (cancelled) return Promise.resolve({ done: true });\n          if (i >= chunks.length) return Promise.resolve({ done: true, value: undefined });\n          return Promise.resolve({ done: false, value: chunks[i++] });\n        },\n        cancel() {\n          cancelled = true;\n        }\n      };\n    }\n  };\n}\n\ndescribe('streamToText (TypeScript)', () => {\n  it('concatenates chunks', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('Hello '), enc.encode('World')]);\n    await expect(streamToText(stream)).resolves.toBe('Hello World');\n  });\n\n  it('handles multibyte characters across chunks', async () => {\n    const enc = new TextEncoder();\n    const bytes = enc.encode('Hi 🌍');\n    const part1 = bytes.slice(0, 4);\n    const part2 = bytes.slice(4);\n    const stream = makeStream([part1, part2]);\n    await expect(streamToText(stream)).resolves.toBe('Hi 🌍');\n  });\n\n  it('rejects on abort', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('data')]);\n    const ac = new AbortController();\n    ac.abort(new Error('Stop'));\n    await expect(streamToText(stream, { signal: ac.signal })).rejects.toMatchObject({\n      name: 'AbortError'\n    });\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Convert ReadableStream to Text in JavaScript",
       "description": "Given a readable byte stream, return its full text content while preserving correct decoding behavior across chunks."
@@ -7237,13 +6712,6 @@
     "testsTs": "import createTtlStorage from './createTtlStorage';\n\nfunction makeStorage() {\n  const map = new Map<string, string>();\n  return {\n    getItem: (k: string) => (map.has(k) ? map.get(k)! : null),\n    setItem: (k: string, v: string) => { map.set(k, String(v)); },\n    removeItem: (k: string) => { map.delete(k); },\n    _map: map\n  };\n}\n\ndescribe('createTtlStorage (TypeScript)', () => {\n  it('stores and retrieves values without ttl', () => {\n    const store = makeStorage();\n    const cache = createTtlStorage(store, () => 0);\n    cache.set('a', { x: 1 });\n    expect(cache.get('a')).toEqual({ x: 1 });\n  });\n\n  it('expires values after ttl', () => {\n    const store = makeStorage();\n    let t = 0;\n    const cache = createTtlStorage(store, () => t);\n    cache.set('a', 'ok', 10);\n    expect(cache.get('a')).toBe('ok');\n    t = 10;\n    expect(cache.get('a')).toBe(null);\n  });\n\n  it('removes corrupted JSON entries', () => {\n    const store = makeStorage();\n    store.setItem('bad', '{not json');\n    const cache = createTtlStorage(store, () => 0);\n    expect(cache.get('bad')).toBe(null);\n    expect(store.getItem('bad')).toBe(null);\n  });\n\n  it('remove deletes key', () => {\n    const store = makeStorage();\n    const cache = createTtlStorage(store, () => 0);\n    cache.set('x', 1);\n    cache.remove('x');\n    expect(cache.get('x')).toBe(null);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "TTL Storage Cache in JavaScript (Expiration Support)",
       "description": "Build a storage utility that saves values with optional expiration and returns only non-expired entries under clear cache rules."
@@ -7331,13 +6799,6 @@
     "testsTs": "import escapeHtml from './escapeHtml';\n\ndescribe('escapeHtml (TypeScript)', () => {\n  it('escapes HTML special characters', () => {\n    const input = '<div class=\"x\">Tom & Jerry\\'s</div>';\n    const out = '&lt;div class=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/div&gt;';\n    expect(escapeHtml(input)).toBe(out);\n  });\n\n  it('leaves safe text unchanged', () => {\n    expect(escapeHtml('hello world')).toBe('hello world');\n  });\n\n  it('escapes ampersands in existing entities', () => {\n    expect(escapeHtml('&lt;script&gt;')).toBe('&amp;lt;script&amp;gt;');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Escape HTML Special Characters in JavaScript",
       "description": "Given text input, return a safely escaped HTML string so special characters are rendered as text instead of markup."
@@ -7422,13 +6883,6 @@
     "testsTs": "import validateUsername from './validateUsername';\n\ndescribe('validateUsername (TypeScript)', () => {\n  it('accepts valid usernames', () => {\n    expect(validateUsername('alice_1')).toBe(true);\n    expect(validateUsername('abc')).toBe(true);\n    expect(validateUsername('a123456789012345')).toBe(true);\n  });\n\n  it('rejects invalid length', () => {\n    expect(validateUsername('ab')).toBe(false);\n    expect(validateUsername('a1234567890123456')).toBe(false);\n  });\n\n  it('rejects uppercase or invalid chars', () => {\n    expect(validateUsername('Alice')).toBe(false);\n    expect(validateUsername('bob-dash')).toBe(false);\n  });\n\n  it('rejects leading digit, trailing underscore, or consecutive underscores', () => {\n    expect(validateUsername('2cool')).toBe(false);\n    expect(validateUsername('bob_')).toBe(false);\n    expect(validateUsername('bob__x')).toBe(false);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Validate Username String in JavaScript",
       "description": "Given a username, return whether it satisfies required format rules for length, allowed characters, and placement constraints."
@@ -7512,13 +6966,6 @@
     "testsTs": "import safeJsonParse from './safeJsonParse';\n\ndescribe('safeJsonParse (TypeScript)', () => {\n  it('parses valid JSON objects and arrays', () => {\n    expect(safeJsonParse('{\"ok\":true}')).toEqual({ ok: true });\n    expect(safeJsonParse('[1,2,3]')).toEqual([1, 2, 3]);\n  });\n\n  it('parses valid primitives', () => {\n    expect(safeJsonParse('0')).toBe(0);\n    expect(safeJsonParse('true')).toBe(true);\n    expect(safeJsonParse('null')).toBe(null);\n  });\n\n  it('returns fallback on invalid JSON', () => {\n    const fallback = { ok: false };\n    expect(safeJsonParse('{bad}', fallback)).toBe(fallback);\n  });\n\n  it('returns fallback for non-string input', () => {\n    expect(safeJsonParse(42 as any, [])).toEqual([]);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Safe JSON Parse with Fallback in JavaScript",
       "description": "Given an input string and fallback value, return parsed JSON on valid input or the fallback when parsing is not valid."
@@ -7599,13 +7046,6 @@
     "testsTs": "import measure from './measure';\n\ndescribe('measure (TypeScript)', () => {\n  it('measures sync functions', async () => {\n    let t = 0;\n    const now = () => (t += 5);\n    const { result, durationMs } = await measure(() => 42, now);\n    expect(result).toBe(42);\n    expect(durationMs).toBe(5);\n  });\n\n  it('measures async functions', async () => {\n    let t = 100;\n    const now = () => (t += 10);\n    const { result, durationMs } = await measure(async () => 'ok', now);\n    expect(result).toBe('ok');\n    expect(durationMs).toBe(10);\n  });\n\n  it('propagates errors', async () => {\n    const now = () => 1;\n    await expect(measure(() => { throw new Error('boom'); }, now)).rejects.toThrow('boom');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Measure Function Duration in JavaScript",
       "description": "Given a function, return its output together with elapsed time while supporting both synchronous and asynchronous execution."
@@ -7676,13 +7116,6 @@
     "testsTs": "import createCleanupBag from './createCleanupBag';\n\ndescribe('createCleanupBag (TypeScript)', () => {\n  it('disposes remaining cleanups', () => {\n    const bag = createCleanupBag();\n    const calls: string[] = [];\n    const offA = bag.add(() => calls.push('a'));\n    bag.add(() => calls.push('b'));\n    offA();\n\n    bag.dispose();\n\n    expect(calls).toEqual(['b']);\n    expect(bag.size()).toBe(0);\n  });\n\n  it('dispose is idempotent', () => {\n    const bag = createCleanupBag();\n    let count = 0;\n    bag.add(() => count++);\n    bag.dispose();\n    bag.dispose();\n    expect(count).toBe(1);\n  });\n\n  it('add after dispose runs immediately', () => {\n    const bag = createCleanupBag();\n    let ran = 0;\n    bag.dispose();\n    bag.add(() => ran++);\n    expect(ran).toBe(1);\n    expect(bag.size()).toBe(0);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create Cleanup Bag Utility in JavaScript",
       "description": "Build a cleanup manager that registers teardown callbacks and provides predictable disposal behavior for repeated calls."
@@ -7767,13 +7200,6 @@
     "testsTs": "import formatDateInTimeZone from './formatDateInTimeZone';\n\ndescribe('formatDateInTimeZone (TypeScript)', () => {\n  it('formats date in different time zones', () => {\n    const date = new Date('2020-01-01T00:30:00Z');\n    expect(formatDateInTimeZone(date, 'America/Los_Angeles')).toBe('2019-12-31');\n    expect(formatDateInTimeZone(date, 'Asia/Tokyo')).toBe('2020-01-01');\n  });\n\n  it('accepts a timestamp', () => {\n    const ts = Date.parse('2020-07-01T23:30:00Z');\n    expect(formatDateInTimeZone(ts, 'UTC')).toBe('2020-07-01');\n  });\n\n  it('throws on invalid date', () => {\n    expect(() => formatDateInTimeZone(new Date('invalid'), 'UTC')).toThrow();\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Format Date by Time Zone in JavaScript",
       "description": "Given a date input and time zone, return a formatted date string with consistent output and invalid-input handling."
@@ -7853,13 +7279,6 @@
     "testsTs": "import createSpy from './createSpy';\n\ndescribe('createSpy (TypeScript)', () => {\n  it('records calls and arguments', () => {\n    const spy = createSpy<[number, number], number>();\n    spy(1, 2);\n\n    expect(spy.callCount()).toBe(1);\n    expect(spy.calls).toEqual([[1, 2]]);\n    expect(spy.lastCall()).toEqual([1, 2]);\n  });\n\n  it('delegates to the implementation and returns its value', () => {\n    const spy = createSpy<[number, number], number>((a, b) => a + b);\n    expect(spy(2, 3)).toBe(5);\n    expect(spy.calls[0]).toEqual([2, 3]);\n  });\n\n  it('preserves this binding when used as a method', () => {\n    const obj = {\n      x: 7,\n      fn: createSpy<[number], number>(function (this: any, n) { return this.x + n; })\n    };\n\n    expect(obj.fn(5)).toBe(12);\n    expect(obj.fn.thisValues[0]).toBe(obj);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-05",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create Spy Function Utility in JavaScript",
       "description": "Create a spy wrapper that tracks invocation details and supports optional passthrough behavior for testing scenarios."
@@ -7933,13 +7352,6 @@
     "testsTs": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred (TypeScript)', () => {\n  it('resolves when resolve is called', async () => {\n    const d = createDeferred<number>();\n    d.resolve(42);\n    const out = await d.promise;\n    expect(out).toBe(42);\n  });\n\n  it('rejects when reject is called', async () => {\n    const d = createDeferred<number>();\n    const err = new Error('fail');\n    d.reject(err);\n\n    try {\n      await d.promise;\n      throw new Error('Expected promise to reject');\n    } catch (e) {\n      expect(e).toBe(err);\n    }\n  });\n\n  it('adopts another promise when resolving', async () => {\n    const d = createDeferred<string>();\n    d.resolve(Promise.resolve('ok'));\n    expect(await d.promise).toBe('ok');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-05",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create Deferred Promise in JavaScript",
       "description": "Return a deferred object exposing a promise plus external settle controls for deterministic async test orchestration."
@@ -8019,13 +7431,6 @@
     "testsTs": "import createLruCache from './createLruCache';\n\ndescribe('createLruCache (TypeScript)', () => {\n  it('evicts least-recently-used on overflow', () => {\n    const c = createLruCache<string, number>(2);\n    c.set('a', 1);\n    c.set('b', 2);\n    c.set('c', 3);\n\n    expect(c.has('a')).toBe(false);\n    expect(c.keys()).toEqual(['b', 'c']);\n  });\n\n  it('get refreshes recency', () => {\n    const c = createLruCache<string, number>(2);\n    c.set('a', 1);\n    c.set('b', 2);\n\n    expect(c.get('a')).toBe(1);\n    c.set('c', 3);\n    expect(c.has('b')).toBe(false);\n    expect(c.keys()).toEqual(['a', 'c']);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-05",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create LRU Cache in JavaScript",
       "description": "Build a bounded cache that keeps recent entries and evicts old ones according to least-recently-used policy."
@@ -8116,13 +7521,6 @@
     "testsTs": "import runWithPerfBudget from './runWithPerfBudget';\n\ndescribe('runWithPerfBudget (TypeScript)', () => {\n  it('times sync functions and returns ok status', async () => {\n    const times = [100, 110];\n    const now = () => times.shift() as number;\n\n    const res = await runWithPerfBudget<number>(() => 7, 9, now);\n    expect(res).toEqual({ ok: false, durationMs: 10, value: 7 });\n  });\n\n  it('times async functions and awaits the result', async () => {\n    const times = [0, 1];\n    const now = () => times.shift() as number;\n\n    const res = await runWithPerfBudget<string>(async () => 'ok', 5, now);\n    expect(res.ok).toBe(true);\n    expect(res.durationMs).toBe(1);\n    expect(res.value).toBe('ok');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-05",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Run Tasks with Performance Budget in JavaScript",
       "description": "Given a task and budget threshold, return execution outcome plus whether runtime stays within the allowed time limit."
@@ -8208,13 +7606,6 @@
     "testsTs": "import resolvePackageEntry from './resolvePackageEntry';\n\ndescribe('resolvePackageEntry (TypeScript)', () => {\n  it('resolves conditional exports with browser + kind', () => {\n    const pkg = {\n      exports: {\n        '.': {\n          browser: {\n            import: './dist/browser.mjs',\n            require: './dist/browser.cjs'\n          },\n          default: './dist/index.js'\n        }\n      }\n    } as any;\n\n    expect(resolvePackageEntry(pkg, { kind: 'import', conditions: ['browser'] })).toBe('./dist/browser.mjs');\n    expect(resolvePackageEntry(pkg, { kind: 'require', conditions: ['browser'] })).toBe('./dist/browser.cjs');\n  });\n\n  it('falls back to module/main when exports is missing', () => {\n    const pkg = { module: './esm.js', main: './cjs.js' } as any;\n    expect(resolvePackageEntry(pkg, { kind: 'import' })).toBe('./esm.js');\n    expect(resolvePackageEntry(pkg, { kind: 'require' })).toBe('./cjs.js');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-05",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Resolve package Exports for import/require in JavaScript",
       "description": "Given package metadata and runtime conditions, return the correct entry path for module loading mode and environment."
@@ -8300,13 +7691,6 @@
     "testsTs": "import sanitizeHrefUrl from './sanitizeHrefUrl';\n\ndescribe('sanitizeHrefUrl (TypeScript)', () => {\n  it('blocks javascript: and data: URLs', () => {\n    expect(sanitizeHrefUrl('javascript:alert(1)')).toBe(null);\n    expect(sanitizeHrefUrl('data:text/html,<svg onload=alert(1)>')).toBe(null);\n  });\n\n  it('allows relative and https URLs', () => {\n    expect(sanitizeHrefUrl('/settings')).toBe('/settings');\n    expect(sanitizeHrefUrl('https://example.com')).toBe('https://example.com/');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-06",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Sanitize href URL Values in JavaScript",
       "description": "Given an href input, return a safe URL value that enforces allowed protocols and rejects potentially dangerous patterns."

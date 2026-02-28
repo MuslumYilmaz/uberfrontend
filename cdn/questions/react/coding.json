@@ -68,13 +68,6 @@
     "companies": [],
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Counter Component",
       "description": "Build a counter UI that increments and decrements value, prevents negative counts, and reflects disabled states correctly."
@@ -165,13 +158,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Contact Form with Validation and Submit",
       "description": "Create a contact form that captures user input, validates required fields, submits data, and shows loading, success, and error states."
@@ -256,13 +242,6 @@
     "companies": [],
     "access": "free",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Todo List (Add Toggle Delete)",
       "description": "Create a todo list interface that supports adding items, toggling completion, and deleting tasks while keeping UI state consistent."
@@ -349,13 +328,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Image Slider with Navigation Controls",
       "description": "Create an image slider that supports previous and next navigation, dot indicators, boundary behavior, and current-slide display updates."
@@ -434,13 +406,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Accessible React Tabs with Active Panel",
       "description": "Create a tabs component that switches active panels, updates visual state, and supports keyboard-friendly tab interaction."
@@ -526,13 +491,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Filterable User List in React",
       "description": "Create a user list that updates results based on search text and role filters, with clear behavior for empty matches."
@@ -615,13 +573,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Accordion FAQ Component",
       "description": "Create an FAQ accordion that toggles sections open and closed, supporting both single-open and multi-open interaction rules."
@@ -706,13 +657,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Paginated Data Table in React",
       "description": "Create a table with page navigation that shows only current-page rows and handles first or last page boundaries correctly."
@@ -799,13 +743,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Theme Toggle with Persistence",
       "description": "Create a light and dark theme toggle that applies globally and restores the saved preference on page reload."
@@ -896,13 +833,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Multi-Step Signup Form in React",
       "description": "Create a multi-step signup flow with step-by-step navigation, validation requirements, and final review before submit."
@@ -994,13 +924,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Shopping Cart Component",
       "description": "Create a shopping cart UI that supports adding items, updating quantities, removing items, and showing totals accurately."
@@ -1092,13 +1015,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Debounced Search in React",
       "description": "Create a search experience that delays rapid input triggers and handles loading, empty, success, and error result states."
@@ -1182,13 +1098,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Reusable Star Rating Component in React",
       "description": "Create a star rating component that supports user selection, configurable limits, and predictable value updates."
@@ -1269,13 +1178,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Dynamic Rows and Columns Table in React",
       "description": "Create a table that renders from user-provided row and column counts with consistent layout and valid input handling."
@@ -1358,13 +1260,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Nested Checkbox Tree in React",
       "description": "Create nested checkbox behavior where parent and child selections stay synchronized, including partial-selection states."
@@ -1454,13 +1349,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Autocomplete Search Component",
       "description": "Create an autocomplete input that shows matching suggestions, supports keyboard interaction, and handles selection and close states."
@@ -1544,13 +1432,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Transfer List Component",
       "description": "Create a transfer list UI that moves selected items between two lists while preserving expected ordering and selection behavior."
@@ -1641,13 +1522,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Tic Tac Toe Game in React",
       "description": "Create a tic tac toe game that tracks turns, detects wins or draws, blocks invalid moves, and supports restart."
@@ -1726,13 +1600,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Create useEffectOnce Hook in React",
       "description": "Build a custom hook for one-time effect behavior with clear cleanup handling and predictable lifecycle semantics."
@@ -1814,13 +1681,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Like Button with Counter",
       "description": "Create a like button that toggles state and updates count while keeping labels and totals consistent with user actions."
@@ -1903,13 +1763,6 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Progress Bar with Threshold Colors",
       "description": "Create a progress bar that updates from user actions, enforces valid range limits, and changes visual style by value thresholds."
@@ -1994,13 +1847,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Nested Comments UI in React",
       "description": "Create a nested comments interface that supports replying at any level and renders thread hierarchy correctly."
@@ -2082,13 +1928,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Dynamic Counter Buttons in React",
       "description": "Create a counter interface with configurable step buttons that can be added or removed and still update shared state correctly."
@@ -2170,13 +2009,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Fix Double Render State Issue in React",
       "description": "Given a component with duplicate renders, refactor state handling so output stays consistent without unnecessary render cycles."
@@ -2258,13 +2090,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Streaming Chat UI in React",
       "description": "Create a chat interface that displays assistant responses incrementally and supports loading, canceling, and message state updates."
@@ -2357,13 +2182,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build React Chips Input with Autocomplete",
       "description": "Create an input that lets users add and remove chips, shows matching suggestions, and handles keyboard interaction states."
@@ -2451,13 +2269,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Interactive N x N Chessboard in React",
       "description": "Create an n by n chessboard UI where selecting a cell updates highlight state and supports board-size changes."
@@ -2548,13 +2359,6 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Build Snake Game in React",
       "description": "Create a snake game interface with movement, food collection, scoring, and clear game-over behavior for collisions."

@@ -78,14 +78,7 @@
       "styles",
       "html"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-link-html",
@@ -174,14 +167,7 @@
       "external-stylesheet",
       "head"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-inline-internal-external",
@@ -292,14 +278,7 @@
       "external",
       "stylesheets"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-background-color",
@@ -407,14 +386,7 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-text-color",
@@ -522,14 +494,7 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-center-text",
@@ -632,14 +597,7 @@
       "layout",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-font-family",
@@ -737,14 +695,7 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-border-property",
@@ -850,14 +801,7 @@
       "box-model",
       "styles"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-margin-property",
@@ -978,14 +922,7 @@
       "layout",
       "spacing"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-padding-property",
@@ -1088,14 +1025,7 @@
       "layout",
       "spacing"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-margin-vs-padding",
@@ -1198,14 +1128,7 @@
       "padding",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-make-text-bold",
@@ -1311,14 +1234,7 @@
       "font-weight",
       "text"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-change-text-size",
@@ -1410,13 +1326,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How to Change Text Size in CSS with font-size Units",
       "description": "Learn how to set text size with font-size, compare px/rem/em/% units, and keep typography responsive and accessible under zoom and root-size changes."
@@ -1512,13 +1421,6 @@
       "specificity"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "id vs class Selectors in CSS: Differences and Specificity",
       "description": "Understand when to use #id versus .class selectors, how specificity differs, and why class-based styling scales better in reusable component systems."
@@ -1618,13 +1520,6 @@
       "values"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "CSS color Property: Text Color Values and Best Practices",
       "description": "See what the color property controls, which value formats are valid, and how to choose accessible text colors that work across themes and backgrounds."
@@ -1724,13 +1619,6 @@
       "spacing"
     ],
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is the CSS box model?",
       "description": "The CSS box model treats each element as content, padding, border, and margin, which together determine rendered size and spacing."
@@ -1824,13 +1712,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Pseudo-class vs pseudo-element in CSS: what is the difference?",
       "description": "Pseudo-classes style existing elements in specific states, while pseudo-elements style generated or specific parts of an element."
@@ -1931,13 +1812,6 @@
       "offsets"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "position relative vs absolute vs fixed: what is the difference?",
       "description": "Relative keeps the element in normal flow with offsets, absolute positions it to the nearest positioned ancestor, and fixed pins it to the viewport."
@@ -2022,13 +1896,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What does display: flex do in CSS?",
       "description": "display: flex makes an element a flex container so its children can be aligned and distributed along main and cross axes."
@@ -2123,13 +1990,6 @@
       "layout"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does z-index work in CSS?",
       "description": "z-index controls stack order among positioned elements in the same stacking context, with higher values appearing on top."
@@ -2213,13 +2073,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "visibility hidden vs display none: what is the difference?",
       "description": "visibility:hidden hides an element but keeps its layout space, while display:none removes it from layout and rendering flow."
@@ -2317,13 +2170,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What do float and clear do in CSS?",
       "description": "float moves an element left or right so text wraps around it, and clear prevents following elements from wrapping around floats."
@@ -2427,13 +2273,6 @@
       "basics"
     ],
     "updatedAt": "2026-02-01",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does CSS specificity work?",
       "description": "CSS specificity assigns selector weights, and the highest-weight matching rule wins unless !important or later equal-specificity rules override it."
@@ -2528,13 +2367,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are media queries in CSS?",
       "description": "Media queries apply CSS rules only when conditions like viewport width, orientation, or resolution match."
@@ -2706,13 +2538,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How do you make an element responsive in CSS?",
       "description": "Make an element responsive with fluid units, flexible layouts, and min/max constraints so it adapts across different screen sizes."
@@ -2796,13 +2621,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "em vs rem vs percent vs px: what is the difference?",
       "description": "px is fixed, percent is relative to a parent value, em is relative to the current font size, and rem is relative to the root font size."
@@ -2886,13 +2704,6 @@
       "order"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does the CSS cascade decide which style wins?",
       "description": "The CSS cascade resolves conflicts by origin and importance, then specificity, then source order when selectors still tie."
@@ -2963,13 +2774,6 @@
       "var"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are CSS custom properties and how do you use them?",
       "description": "CSS custom properties are reusable variables declared with --name and read with var(), allowing scoped theming and consistent design tokens."
@@ -3092,13 +2896,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "CSS Grid vs Flexbox: when should you use each?",
       "description": "Use Grid for two-dimensional page or section layouts, and use Flexbox for one-dimensional alignment along a row or column."
@@ -3206,13 +3003,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does hardware acceleration affect CSS animations?",
       "description": "Hardware acceleration improves animation smoothness by offloading composited properties like transform and opacity to the GPU."

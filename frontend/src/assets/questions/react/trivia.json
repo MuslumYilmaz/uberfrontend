@@ -117,13 +117,6 @@
       "ecosystem"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What problem does React solve and what does it not solve?",
       "description": "React solves state-driven UI rendering and reconciliation, but it does not include built-in routing, data fetching, or global state by default."
@@ -245,14 +238,7 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-functional-vs-class-components",
@@ -411,13 +397,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Functional vs class components in React: what is the difference?",
       "description": "Functional components use hooks and are the modern default, while class components use lifecycle methods and class syntax."
@@ -541,13 +520,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How is JSX transformed in React and do you need it?",
       "description": "JSX compiles to JavaScript function calls, and React does not require JSX because you can write elements with plain JavaScript APIs."
@@ -677,13 +649,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What makes a function a React component?",
       "description": "A function is treated as a React component when used as a JSX tag, follows component naming conventions, and returns renderable React output."
@@ -823,13 +788,6 @@
       "performance"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does React know when to re-render a component?",
       "description": "React re-renders a component when its state, props, or consumed context changes, then render computes the next UI tree."
@@ -968,13 +926,6 @@
       "components"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What happens when a React component returns null?",
       "description": "Returning null or false tells React to render nothing for that component, while fragments render children without adding extra DOM nodes."
@@ -1093,13 +1044,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why does React use one-way data flow?",
       "description": "React uses one-way data flow to keep updates predictable: data moves down through props and updates move up through events or callbacks."
@@ -1234,14 +1178,7 @@
       "data-flow",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-usestate-purpose",
@@ -1352,13 +1289,6 @@
       "components"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What does useState do in React?",
       "description": "useState lets function components store local state and trigger re-renders by calling the state setter."
@@ -1468,13 +1398,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why does React use event delegation?",
       "description": "React uses event delegation by attaching a small set of root listeners and dispatching events to components through its event system."
@@ -1565,13 +1488,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why are keys important in React lists?",
       "description": "Keys give list items stable identity so React can correctly match, move, and preserve state during reconciliation."
@@ -1648,13 +1564,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Controlled vs uncontrolled inputs in React: what's the difference?",
       "description": "Controlled inputs store value in React state, while uncontrolled inputs keep state in the DOM and are usually accessed with refs."
@@ -1781,14 +1690,7 @@
       "imports",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-conditional-rendering",
@@ -1958,13 +1860,6 @@
       "best-practices"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How do you do conditional rendering in React?",
       "description": "React conditional rendering uses if statements, ternaries, or && to show different UI based on state and props."
@@ -2129,13 +2024,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is useEffect used for in React?",
       "description": "useEffect is used to run side effects after render, such as subscriptions, data fetching, timers, or syncing with external systems."
@@ -2276,13 +2164,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What do React fragments do and when should you use them?",
       "description": "React fragments group children without adding extra DOM nodes, helping keep markup clean while preserving component structure."
@@ -2416,13 +2297,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is the Virtual DOM in React?",
       "description": "The Virtual DOM is React's in-memory UI representation used to compare renders and apply minimal real DOM updates during reconciliation."
@@ -2594,13 +2468,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "When does React re-render and update the DOM?",
       "description": "React re-renders when state, props, or context change, but the DOM updates only if reconciliation finds actual output differences."
@@ -2726,13 +2593,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What happens when state and props responsibilities are mixed?",
       "description": "Mixing state and props ownership creates multiple sources of truth, which leads to stale UI, reset bugs, and harder debugging."
@@ -2810,13 +2670,6 @@
       "data-flow"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How do you lift state up in React?",
       "description": "Lift state up by moving shared state to the nearest common parent and passing values and update handlers down as props."
@@ -2994,13 +2847,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is a higher-order component in React?",
       "description": "A higher-order component is a function that takes a component and returns an enhanced component with added behavior."
@@ -3088,14 +2934,7 @@
       "performance",
       "hooks"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-prevent-unnecessary-rerenders",
@@ -3187,13 +3026,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How do you prevent unnecessary re-renders in React?",
       "description": "Prevent unnecessary React re-renders by stabilizing props, splitting state, and using memoization tools like React.memo, useMemo, and useCallback."
@@ -3280,13 +3112,6 @@
       "hooks"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is React.StrictMode used for?",
       "description": "React.StrictMode enables extra development checks to surface unsafe patterns and side effects before production."
@@ -3376,13 +3201,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is reconciliation in React?",
       "description": "Reconciliation is React's process of comparing previous and next element trees to decide the minimal UI updates."
@@ -3472,13 +3290,6 @@
     "companies": [
       "apple"
     ],
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "How does React's diffing algorithm work?",
       "description": "React diffing compares old and new trees with heuristics based on element type and keys to update only changed nodes."
@@ -3567,13 +3378,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Render props vs HOCs in React: what is the difference?",
       "description": "Render props share logic through a function prop, while HOCs share logic by wrapping a component and injecting behavior."
@@ -3660,13 +3464,6 @@
       "dom"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What are React portals and when should you use them?",
       "description": "React portals render children into a different DOM node while keeping them in the same React tree for events and context."
@@ -3756,13 +3553,6 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is concurrent rendering in React?",
       "description": "Concurrent rendering lets React interrupt and prioritize rendering work so urgent updates stay responsive during expensive UI updates."
@@ -3857,13 +3647,6 @@
       "control-flow"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why do React Hooks have rules?",
       "description": "Hooks have rules because React maps hook state by call order, so conditional or reordered calls break state and effect matching."
@@ -3973,13 +3756,6 @@
       "callbacks"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why does stale state happen in React closures?",
       "description": "Stale state happens because closures capture values from the render when they were created, not the latest state after future renders."
@@ -4140,13 +3916,6 @@
       "dom"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "useRef vs useState in React: what is the difference?",
       "description": "useState stores reactive values that trigger re-renders, while useRef stores mutable values that persist across renders without re-rendering."
@@ -4285,13 +4054,6 @@
       "state-management"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why does React batch state updates?",
       "description": "React batches state updates to reduce extra renders and apply related updates together for more consistent UI."
@@ -4443,14 +4205,7 @@
       "state-management",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 2,
-      "passCritical": 2,
-      "detailPenalty": 0,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-context-performance-issues",
@@ -4594,13 +4349,6 @@
       "state-management"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why can React Context cause performance issues?",
       "description": "React Context can cause performance issues because all consumers re-render when provider value identity changes."
@@ -4726,13 +4474,6 @@
       "best-practices"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What do React Error Boundaries catch?",
       "description": "Error Boundaries catch render, lifecycle, and constructor errors in trees and show fallback UI. They do not catch event-handler, async, or SSR errors."
@@ -4860,13 +4601,6 @@
       "best-practices"
     ],
     "updatedAt": "2026-01-30",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Why does useEffect run twice in React StrictMode?",
       "description": "In StrictMode development, React intentionally runs effect setup-cleanup-setup to expose missing cleanup and non-idempotent side effects."
@@ -5011,13 +4745,6 @@
       "dom"
     ],
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 0,
-      "detailPenalty": 2,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "useEffect vs useLayoutEffect: what is the difference?",
       "description": "useLayoutEffect runs synchronously after DOM mutations but before paint, while useEffect runs after paint for non-blocking side effects."
@@ -5121,13 +4848,6 @@
       "performance"
     ],
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 1,
-      "passCritical": 1,
-      "detailPenalty": 0,
-      "crossCompany": 1,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "Which React Hooks should you use and when?",
       "description": "Choose hooks by purpose: useState/useReducer for state, useEffect for side effects, useRef for mutable values, and useMemo/useCallback for memoization."
@@ -5211,13 +4931,6 @@
       "hooks"
     ],
     "updatedAt": "2026-01-31",
-    "importanceRubric": {
-      "coreness": 0,
-      "passCritical": 0,
-      "detailPenalty": 1,
-      "crossCompany": 0,
-      "frequencyBonus": 0
-    },
     "seo": {
       "title": "What is new in React 18?",
       "description": "React 18 introduced createRoot, automatic batching, transitions, and concurrent rendering features that improve responsiveness and update scheduling."
