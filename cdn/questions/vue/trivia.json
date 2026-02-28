@@ -1487,7 +1487,7 @@
     "id": "vue-architecture-decisions-scalability",
     "title": "What architectural decisions are made when creating a Vue project, and how do they affect scalability?",
     "technology": "vue",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 2,
     "description": "When starting a Vue app, teams choose the build/runtime platform, state and routing strategy, code organization, and quality/performance tooling. These decisions directly affect maintainability, performance, testability, and how well multiple teams can work in parallel.",
     "answer": {
@@ -2614,7 +2614,7 @@
     "id": "vue-reactivity-system",
     "title": "What is the Vue reactivity system and how does it work internally?",
     "technology": "vue",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 5,
     "description": "The Vue reactivity system is the core mechanism that automatically updates the DOM whenever data changes. Internally, it uses proxies (in Vue 3) to track dependencies and trigger re-renders when reactive data is modified.",
     "answer": {
@@ -2958,7 +2958,7 @@
     "id": "vue-virtual-dom-diffing",
     "title": "How does Vue’s virtual DOM and diffing algorithm optimize updates?",
     "technology": "vue",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance. Diffing optimizes updates, but keys and stable identity matter for performance and correctness.",
     "answer": {
@@ -3221,7 +3221,7 @@
     "id": "vue-provide-inject-vs-prop-drilling-tradeoffs",
     "title": "Provide / Inject in Vue: when should you use it instead of prop drilling, and what are the hidden trade-offs?",
     "technology": "vue",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 2,
     "description": "Explain how provide/inject works in Vue, what problem it solves (prop drilling), when it is appropriate to use, and the architectural trade-offs and pitfalls compared to explicit props and state management.",
     "answer": {
@@ -3621,7 +3621,7 @@
     "id": "vue-destructuring-breaks-reactivity-torefs-toref",
     "title": "Why does destructuring break reactivity in Vue? Explain toRefs, toRef, and how to safely extract reactive state",
     "technology": "vue",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 5,
     "description": "Explain why destructuring a reactive object in Vue breaks reactivity, how Vue’s Proxy-based tracking works, and how to use toRefs() and toRef() to safely extract reactive properties without losing updates.",
     "answer": {
@@ -3730,7 +3730,7 @@
     "id": "vue-watch-vs-watcheffect-differences-infinite-loops",
     "title": "watch vs watchEffect in Vue: what’s the difference, when does each run, and how can you accidentally create infinite loops?",
     "technology": "vue",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Explain the difference between watch() and watchEffect() in Vue 3, when each one runs, how dependency tracking works (explicit vs automatic), and the common patterns that accidentally cause infinite update loops.",
     "answer": {

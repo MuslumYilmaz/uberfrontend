@@ -140,7 +140,7 @@
     "description": "A closure happens when a function keeps access to variables from its outer scope, even after that outer function has finished. It’s how JavaScript allows private data and persistent state inside functions.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "tags": [
       "closure",
       "functions",
@@ -220,7 +220,7 @@
     "description": "The value of `this` in JavaScript depends on how a function is called — not where it’s defined. It can refer to the global object, a specific object, or be `undefined` in strict mode or arrow functions. The value of this depends on call site, strict mode, and arrow functions. Misbinding is a common source of bugs; test with call/apply/bind.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "tags": [
       "binding",
       "context",
@@ -340,7 +340,7 @@
     "description": "During the creation phase, JavaScript moves declarations to the top of their scope (hoisting). However, variables declared with `let` and `const` exist in a 'temporal dead zone' until their declaration is reached, making them inaccessible before initialization.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "tags": [
       "hoisting",
       "temporal-dead-zone",
@@ -543,7 +543,7 @@
     "description": "Promises represent a value that may be available now, later, or never. `async/await` is syntax sugar over Promises that makes asynchronous code look synchronous, while preserving microtask scheduling and error propagation via rejections.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "tags": [
       "async-await",
       "concurrency",
@@ -1123,7 +1123,7 @@
     "description": "A higher-order function is a function that either takes another function as an argument, returns a function, or does both. It treats functions as values, enabling powerful patterns like callbacks, closures, and function composition.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "tags": [
       "callbacks",
       "closure",
@@ -2339,7 +2339,7 @@
     "description": "JavaScript design patterns are reusable solutions to common programming problems. They provide structured approaches for organizing code, improving maintainability, scalability, and readability in both small and large applications.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "tags": [
       "design-patterns",
       "architecture",
@@ -2543,7 +2543,7 @@
     "description": "Classes in JavaScript are syntactic sugar over prototype-based inheritance. Introduced in ES6, they provide a cleaner and more familiar syntax for creating objects and handling inheritance, making JavaScript feel more like traditional object-oriented languages.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "tags": [
       "classes",
       "oop",
@@ -3025,7 +3025,7 @@
     "description": "Promise combinators coordinate multiple async operations. all fails fast, allSettled always returns results, race resolves/rejects with the first settled promise, and any resolves with the first fulfilled promise (or rejects with AggregateError if all reject). Know the exact output shapes and failure behavior for interviews.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "tags": [
       "promise",
       "async",
@@ -4136,7 +4136,7 @@
     "companies": [
       "bytedance"
     ],
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 1,
     "description": "Map is a dedicated key-value collection with any key type, stable iteration order, and a size property. Plain Objects are great for structured records, but keys are limited to strings/symbols and require care with prototypes and ordering.",
     "type": "trivia",

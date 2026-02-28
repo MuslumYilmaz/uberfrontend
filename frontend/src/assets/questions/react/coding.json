@@ -338,7 +338,7 @@
     "title": "React Tabs / Multi-View Switcher",
     "type": "coding",
     "technology": "react",
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "importance": 3,
     "tags": [
       "react",
@@ -843,7 +843,7 @@
     "title": "React Shopping Cart Mini",
     "type": "coding",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "react",
@@ -934,7 +934,7 @@
     "title": "React Debounced Search with Fake API",
     "type": "coding",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "react",
@@ -2192,7 +2192,7 @@
     "title": "React Chessboard Click/Highlight (N×N Board)",
     "type": "coding",
     "technology": "react",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 5,
     "tags": [
       "react",

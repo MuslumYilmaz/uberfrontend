@@ -2679,7 +2679,7 @@
     "id": "react-higher-order-components",
     "title": "Higher-order components (HOCs) in React: what are they and when should you use them?",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., injecting props, guarding access, subscriptions). They’re common in older/legacy React and some libraries (e.g., Redux connect), even though hooks are the modern default for new code. HOCs enable reuse but can complicate debugging and typing. Test prop collisions and display names.",
     "answer": {
@@ -2856,7 +2856,7 @@
     "id": "react-usememo-vs-usecallback",
     "title": "What is the difference between useMemo() and useCallback()?",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "useMemo memoizes a computed value; useCallback memoizes a function reference. Use them to avoid expensive recalculations or re-renders, but only when it actually helps.",
     "seo": {
@@ -3121,7 +3121,7 @@
     "id": "react-reconciliation",
     "title": "What is React reconciliation and how does it work?",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Reconciliation is the process React uses to compare the current Virtual DOM with the previous one and determine the minimal set of changes needed to update the real DOM. It ensures React applications stay fast and efficient even when rendering complex UI trees.",
     "answer": {
@@ -3210,7 +3210,7 @@
     "id": "react-diffing-algorithm",
     "title": "Explain how React’s diffing algorithm determines which parts of the DOM to update.",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "React’s diffing algorithm efficiently compares two Virtual DOM trees to find the minimal number of operations needed to synchronize the real DOM with the new state. It uses intelligent heuristics that make the process nearly O(n) instead of O(n³).",
     "answer": {
@@ -3299,7 +3299,7 @@
     "id": "react-render-props-vs-hocs",
     "title": "What are render props and how do they differ from HOCs?",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 5,
     "description": "Render props and higher-order components (HOCs) are both React patterns used for code reuse. Render props use a function passed as a prop to control what to render, while HOCs wrap components to inject additional logic or data.",
     "answer": {
@@ -3387,7 +3387,7 @@
     "id": "react-portals",
     "title": "What are React portals and when would you use them?",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Portals render children into a DOM node outside the parent hierarchy, useful for modals, tooltips, and overlays while preserving React event bubbling. Portals help overlays but require focus management and accessibility checks; test event bubbling and scroll lock.",
     "answer": {
@@ -3473,7 +3473,7 @@
     "id": "react-concurrent-rendering",
     "title": "How does React’s concurrent rendering improve performance?",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Concurrent rendering is a feature introduced in React 18 that allows React to prepare multiple versions of the UI simultaneously, improving responsiveness and user experience. It makes rendering interruptible, enabling React to prioritize urgent updates and avoid UI blocking during heavy computations.",
     "answer": {
@@ -3656,7 +3656,7 @@
     "id": "react-stale-state-closures",
     "title": "Why does React sometimes show stale state in closures? How do you fix it?",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 5,
     "description": "Explain how JavaScript closures capture values from a specific render, why React renders create new closures, and how this leads to stale state bugs in effects, timeouts, and event handlers — and how to fix them.",
     "answer": {
@@ -4483,7 +4483,7 @@
     "id": "react-strictmode-double-invoke-effects",
     "title": "Why does StrictMode double-invoke effects in dev? What bugs does it expose?",
     "technology": "react",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Explain why React StrictMode intentionally double-invokes certain lifecycles and effects in development, how this simulates mount–unmount–remount, and what kinds of side-effect and cleanup bugs it is designed to reveal.",
     "answer": {
@@ -4613,7 +4613,7 @@
     "companies": [
       "bytedance"
     ],
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Explain the timing difference between useEffect and useLayoutEffect in the render/commit/paint pipeline, why useLayoutEffect blocks painting, and when it is required (DOM measurements, preventing visual flicker) versus when useEffect is preferred.",
     "answer": {

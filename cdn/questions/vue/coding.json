@@ -170,7 +170,7 @@
     "title": "Todo List (Refs + List Rendering)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 5,
     "tags": [
       "vue",
@@ -344,7 +344,7 @@
     "companies": [
       "amazon"
     ],
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "importance": 3,
     "tags": [
       "vue",
@@ -853,7 +853,7 @@
     "title": "Vue Shopping Cart Mini",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 2,
     "tags": [
       "vue",
@@ -942,7 +942,7 @@
     "title": "Vue Debounced Search with Fake API",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 2,
     "tags": [
       "vue",
@@ -1970,7 +1970,7 @@
     "title": "Vue Chessboard Click/Highlight (N×N Board)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 4,
     "tags": [
       "vue",

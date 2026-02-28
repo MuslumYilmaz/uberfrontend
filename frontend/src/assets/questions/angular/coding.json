@@ -169,7 +169,7 @@
     "title": "Todo List (Standalone Component with ngFor)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 5,
     "tags": [
       "components",
@@ -852,7 +852,7 @@
     "title": "Shopping Cart Mini (Standalone Component)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "components",
@@ -945,7 +945,7 @@
     "title": "Angular Debounced Search with Fake API (RxJS)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 2,
     "tags": [
       "angular",
@@ -1635,7 +1635,7 @@
     "title": "Reusable Child Component with @Input/@Output (Two-way Binding)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "importance": 5,
     "tags": [
       "components",
@@ -2060,7 +2060,7 @@
     "title": "Angular Chessboard Click/Highlight (N×N Board)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 5,
     "tags": [
       "components",

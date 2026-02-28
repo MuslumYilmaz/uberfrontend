@@ -9,7 +9,7 @@
     },
     "type": "trivia",
     "technology": "html",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "tags": [
       "dom",
       "html",
@@ -544,7 +544,7 @@
     },
     "type": "trivia",
     "technology": "html",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "tags": [
       "accessibility",
       "attributes",
@@ -639,7 +639,7 @@
     },
     "type": "trivia",
     "technology": "html",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "tags": [
       "accessibility",
       "html",
@@ -1105,7 +1105,7 @@
     "id": "html-meta-tag",
     "title": "What is the purpose of the <meta> tag?",
     "technology": "html",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 1,
     "description": "The &lt;meta&gt; tag provides metadata—data about the webpage itself—such as character encoding, viewport settings, description, keywords, and author information. It helps browsers, search engines, and social media platforms understand and display the page correctly.",
     "seo": {
@@ -2533,7 +2533,7 @@
     "id": "html-shadow-dom",
     "title": "What is the Shadow DOM and how does it relate to web components?",
     "technology": "html",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "The Shadow DOM is a browser feature that encapsulates a component’s internal structure, keeping its styles and markup isolated from the main document. It’s a core part of Web Components for building reusable, self-contained UI elements. It improves style isolation but can complicate theming and testing; be mindful of accessibility and focus behavior.",
     "seo": {

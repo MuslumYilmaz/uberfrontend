@@ -403,7 +403,7 @@
     "title": "Semantic Page Layout",
     "type": "coding",
     "technology": "html",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 1,
     "tags": [
       "html",
@@ -802,7 +802,7 @@
     "title": "SEO: Essential <head> Metadata",
     "type": "coding",
     "technology": "html",
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "importance": 1,
     "tags": [
       "html",
@@ -908,7 +908,7 @@
     "title": "Modal: Native <dialog> Confirm (Accessible Naming)",
     "type": "coding",
     "technology": "html",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "tags": [
       "accessibility",

@@ -1849,7 +1849,7 @@
       "google"
     ],
     "importance": 2,
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "tags": [
       "closure",
       "currying",
@@ -2632,7 +2632,7 @@
     ],
     "technology": "javascript",
     "importance": 5,
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "tags": [
       "arrays",
       "callbacks",
@@ -2867,7 +2867,7 @@
       "apple"
     ],
     "importance": 5,
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "tags": [
       "arrays",
       "callbacks",
@@ -2953,7 +2953,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 2,
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "tags": [
       "arrays",
       "iteration",
@@ -3307,7 +3307,7 @@
       "google"
     ],
     "importance": 5,
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "tags": [
       "promise",
       "async",
@@ -3751,7 +3751,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 5,
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "tags": [
       "dom",
       "events",
@@ -3849,7 +3849,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 5,
-    "difficulty": "intermediate",
+    "difficulty": "hard",
     "tags": [
       "dom",
       "events",
@@ -4062,7 +4062,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 2,
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "tags": [
       "dom",
       "tree",
@@ -4656,7 +4656,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 1,
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "tags": [
       "objects",
       "arrays",
@@ -5143,7 +5143,7 @@
       "bytedance"
     ],
     "importance": 1,
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "tags": [
       "strings",
       "numbers",
@@ -5305,7 +5305,7 @@
       "bytedance"
     ],
     "importance": 1,
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "tags": [
       "arrays",
       "algorithms",
@@ -6063,7 +6063,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 1,
-    "difficulty": "intermediate",
+    "difficulty": "easy",
     "tags": [
       "strings",
       "iteration",
@@ -6977,7 +6977,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 3,
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "tags": [
       "performance",
       "web-performance",
@@ -7363,7 +7363,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 3,
-    "difficulty": "intermediate",
+    "difficulty": "hard",
     "tags": [
       "memory",
       "cache",
@@ -7532,7 +7532,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 1,
-    "difficulty": "intermediate",
+    "difficulty": "hard",
     "tags": [
       "modules",
       "tooling",

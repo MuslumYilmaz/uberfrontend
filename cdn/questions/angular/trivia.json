@@ -1333,7 +1333,7 @@
     "id": "angular-event-binding-dom-vs-output-change-detection",
     "title": "How does Angular event binding work (DOM events vs @Output events), and what are the common pitfalls?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 5,
     "description": "Angular event binding uses the (event) syntax to listen to either native DOM events (click, input, submit, keydown, etc.) or custom events emitted by child components via @Output(). When the event fires, Angular runs the bound template statement/method with access to $event, and (in typical setups) triggers change detection for affected views. Events trigger change detection, so test performance under rapid input and large templates.",
     "answer": {
@@ -3622,7 +3622,7 @@
     "id": "angular-change-detection-strategies",
     "title": "What are change detection strategies in Angular, and how do they work?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Change detection in Angular is the mechanism that keeps the view in sync with the component’s data. Angular provides two strategies — Default and OnPush — to determine when and how it checks for changes and updates the DOM.",
     "answer": {
@@ -3712,7 +3712,7 @@
     "id": "angular-zonejs-change-detection",
     "title": "How does Angular’s Zone.js help in change detection?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Zone.js is a library used by Angular to automatically track and intercept asynchronous operations such as events, promises, and timers. It notifies Angular whenever an async event completes so the framework can trigger change detection automatically.",
     "answer": {
@@ -3779,7 +3779,7 @@
     "id": "angular-ngonchanges-vs-ngdocheck",
     "title": "What is the purpose of ngOnChanges() and how does it differ from ngDoCheck()?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "ngOnChanges() and ngDoCheck() are Angular lifecycle hooks that detect and respond to changes in component data. ngOnChanges() automatically runs when @Input() values change, while ngDoCheck() allows developers to perform custom change detection logic beyond Angular’s default mechanism.",
     "answer": {
@@ -3878,7 +3878,7 @@
     "id": "angular-forroot-forchild",
     "title": "What are Angular modules’ forRoot() and forChild() methods used for?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "forRoot() and forChild() are Angular module configuration methods that help manage singleton services and routing across root and feature modules. forRoot() configures global providers and routes for the root module, while forChild() configures additional routes for feature modules without duplicating providers.",
     "answer": {
@@ -3987,7 +3987,7 @@
     "id": "angular-performance-optimization",
     "title": "How does Angular handle performance optimization for large applications?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Angular provides a variety of built-in tools and best practices for optimizing performance in large applications. These include efficient change detection strategies, lazy loading, Ahead-of-Time (AOT) compilation, tree-shaking, and other advanced techniques to minimize bundle size and rendering time.",
     "answer": {
@@ -4140,7 +4140,7 @@
     "id": "angular-onpush-change-detection-debugging-real-bug",
     "title": "Explain OnPush Change Detection in Angular Like You’re Debugging a Real Production Bug",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "OnPush change detection tells Angular to skip checking a component unless one of a few specific triggers happens (Input reference change, event inside the component, async pipe emission, or manual markForCheck/detectChanges). It dramatically improves performance, but breaks the UI if you mutate objects or arrays instead of changing references.",
     "answer": {
@@ -4287,7 +4287,7 @@
     "id": "rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
     "title": "switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 3,
     "description": "These RxJS flattening operators control how Angular handles overlapping async work (HTTP calls, saves, clicks, search). switchMap cancels previous, mergeMap runs in parallel, concatMap queues sequentially, and exhaustMap ignores new triggers while busy. Choosing the right one prevents race conditions, double submits, and UI glitches.",
     "answer": {
@@ -4444,7 +4444,7 @@
     "id": "angular-prevent-memory-leaks-unsubscribe-patterns",
     "title": "How Do You Prevent Memory Leaks in Angular? All Real-World Unsubscribe Patterns Explained",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Memory leaks in Angular almost always come from forgotten subscriptions, long-lived streams, or global listeners. The correct fixes include using the async pipe, takeUntilDestroyed/DestroyRef, takeUntil with a Subject, and understanding which streams complete automatically and which never do.",
     "answer": {
@@ -4594,7 +4594,7 @@
     "id": "angular-controlvalueaccessor-vs-custom-two-way-binding",
     "title": "What Is ControlValueAccessor in Angular and Why Is It Better Than Custom Two-Way Binding?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "ControlValueAccessor (CVA) is Angular’s official bridge between custom components and Angular Forms. It lets your component behave like a real form control (ngModel, formControl, formControlName) with validation, touched/dirty state, and disabled handling—unlike custom two-way binding which only syncs values and breaks form integration.",
     "answer": {
@@ -4725,7 +4725,7 @@
     "id": "angular-template-driven-vs-reactive-forms-which-scales",
     "title": "Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Template-driven forms rely on directives in the template and implicit state, while reactive forms define the entire form model in TypeScript. Reactive forms scale better because they are explicit, testable, composable, and predictable for complex validation and dynamic form structures.",
     "answer": {
@@ -4875,7 +4875,7 @@
     "id": "rxjs-sharereplay-angular-how-it-breaks-your-app",
     "title": "What Is shareReplay in RxJS and How Can It Silently Break Your Angular App?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "shareReplay is an RxJS operator that turns a cold observable into a shared hot one and caches the last emitted values. Used incorrectly, it can cause memory leaks, stale data bugs, and unexpected behavior—especially in Angular services and HTTP streams.",
     "answer": {
@@ -5061,7 +5061,7 @@
     "id": "angular-http-what-actually-cancels-request",
     "title": "What Actually Cancels an HTTP Request in Angular?",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. This triggers the browser AbortController/XHR abort under the hood. But not all operators or patterns truly cancel the network request—some only ignore the result.",
     "answer": {
@@ -5232,7 +5232,7 @@
     "id": "angular-hierarchical-dependency-injection-real-bug",
     "title": "Explain Hierarchical Dependency Injection in Angular With a Real Bug Example",
     "technology": "angular",
-    "difficulty": "hard",
+    "difficulty": "intermediate",
     "importance": 1,
     "description": "Angular’s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get multiple instances and break shared state, caching, or coordination logic.",
     "seo": {
