@@ -30,37 +30,8 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 1
 fi
 
-ZERO_SHA="0000000000000000000000000000000000000000"
-CHANGED_FILES="$(mktemp)"
-BEFORE_STATE="$(mktemp)"
-AFTER_STATE="$(mktemp)"
 SYNC_DIFF="$(mktemp)"
-trap 'rm -f "$CHANGED_FILES" "$BEFORE_STATE" "$AFTER_STATE" "$SYNC_DIFF"' EXIT
-
-# Collect file paths included in the refs that are being pushed.
-while read -r local_ref local_sha remote_ref remote_sha; do
-  [ -z "${local_ref:-}" ] && continue
-
-  # Branch deletion.
-  if [ "$local_sha" = "$ZERO_SHA" ]; then
-    continue
-  fi
-
-  if [ "$remote_sha" = "$ZERO_SHA" ]; then
-    # New branch/tag push: include commits not already present on remotes.
-    mapfile -t commits < <(git rev-list "$local_sha" --not --remotes 2>/dev/null || true)
-    if [ "${#commits[@]}" -eq 0 ]; then
-      commits=("$local_sha")
-    fi
-    for commit in "${commits[@]}"; do
-      git diff-tree --no-commit-id --name-only -r "$commit" >> "$CHANGED_FILES" || true
-    done
-  else
-    git diff --name-only "$remote_sha" "$local_sha" >> "$CHANGED_FILES" || true
-  fi
-done
-
-sort -u -o "$CHANGED_FILES" "$CHANGED_FILES"
+trap 'rm -f "$SYNC_DIFF"' EXIT
 
 echo "[pre-push] Verifying frontend assets/questions and cdn/questions are in sync..."
 if ! diff -qr frontend/src/assets/questions cdn/questions > "$SYNC_DIFF"; then
@@ -72,29 +43,7 @@ if ! diff -qr frontend/src/assets/questions cdn/questions > "$SYNC_DIFF"; then
 fi
 echo "[pre-push] OK: cdn/questions is in sync."
 
-if grep -Eq '^frontend/src/assets/questions/(javascript|react|angular|vue|html|css)/(coding|trivia)\.json$' "$CHANGED_FILES"; then
-  echo "[pre-push] Detected question-bank JSON changes. Running importance rubric apply..."
-
-  git status --porcelain -- frontend/src/assets/questions | LC_ALL=C sort > "$BEFORE_STATE"
-
-  if ! node frontend/scripts/score-importance-rubric.mjs \
-    --tech javascript,react,angular,vue,html,css \
-    --report /tmp/importance-rubric-pre-push.report.json \
-    --apply; then
-    echo "[pre-push] ERROR: importance rubric apply failed. Push aborted." >&2
-    exit 1
-  fi
-
-  git status --porcelain -- frontend/src/assets/questions | LC_ALL=C sort > "$AFTER_STATE"
-  if ! cmp -s "$BEFORE_STATE" "$AFTER_STATE"; then
-    echo "[pre-push] ERROR: importance updates changed question JSON files." >&2
-    echo "[pre-push] Commit generated updates, then push again." >&2
-    git status --short -- frontend/src/assets/questions >&2 || true
-    exit 1
-  fi
-
-  echo "[pre-push] OK: importance values already up-to-date."
-fi
+# Legacy importance rubric tooling was removed. Keep hook aligned with active workflow.
 
 echo "[pre-push] Running FrontendAtlas unit tests (Karma)..."
 
