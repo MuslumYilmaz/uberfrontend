@@ -4,7 +4,7 @@
     "title": "Clamp",
     "type": "coding",
     "technology": "javascript",
-    "importance": 3,
+    "importance": 2,
     "difficulty": "easy",
     "tags": [
       "numbers",
@@ -99,7 +99,7 @@
     "title": "Reverse a String",
     "type": "coding",
     "technology": "javascript",
-    "importance": 4,
+    "importance": 3,
     "difficulty": "easy",
     "tags": [
       "strings",
@@ -188,7 +188,7 @@
     "id": "js-count-vowels",
     "title": "Count Vowels",
     "type": "coding",
-    "importance": 3,
+    "importance": 2,
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
@@ -365,7 +365,7 @@
     "id": "js-unique-array",
     "title": "Remove Duplicates",
     "type": "coding",
-    "importance": 3,
+    "importance": 4,
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
@@ -548,7 +548,7 @@
     "id": "js-capitalize-words",
     "title": "Capitalize Words",
     "type": "coding",
-    "importance": 3,
+    "importance": 2,
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
@@ -641,7 +641,7 @@
     "id": "js-sum-numbers",
     "title": "Sum of Numbers in an Array",
     "type": "coding",
-    "importance": 1,
+    "importance": 2,
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
@@ -933,7 +933,7 @@
     "title": "Shallow Clone (Object or Array)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 3,
+    "importance": 4,
     "difficulty": "easy",
     "tags": [
       "clone",
@@ -1013,7 +1013,7 @@
     "title": "Sleep / Delay Promise",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "easy",
     "tags": [
       "async",
@@ -1254,7 +1254,7 @@
     "title": "Update Array at Index (Immutable)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 3,
+    "importance": 4,
     "difficulty": "easy",
     "tags": [
       "arrays",
@@ -1538,7 +1538,7 @@
     "id": "js-deep-clone",
     "title": "Deep Clone",
     "type": "coding",
-    "importance": 1,
+    "importance": 4,
     "technology": "javascript",
     "companies": [
       "google"
@@ -1645,7 +1645,7 @@
       "google"
     ],
     "difficulty": "hard",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "comparison",
       "equality",
@@ -1757,7 +1757,7 @@
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "tags": [
       "arrays",
       "depth",
@@ -1848,7 +1848,7 @@
     "companies": [
       "google"
     ],
-    "importance": 2,
+    "importance": 3,
     "difficulty": "intermediate",
     "tags": [
       "closure",
@@ -1939,7 +1939,7 @@
       "google",
       "meta"
     ],
-    "importance": 3,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "caching",
@@ -2030,7 +2030,7 @@
       "google"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "tags": [
       "composition",
       "functions",
@@ -2135,7 +2135,7 @@
     "type": "coding",
     "technology": "javascript",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "arrays",
       "grouping",
@@ -2236,7 +2236,7 @@
     "type": "coding",
     "technology": "javascript",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "async",
       "design-patterns",
@@ -2320,7 +2320,7 @@
       "bytedance"
     ],
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "async",
       "concurrency",
@@ -2425,7 +2425,7 @@
     "title": "Abortable Helpers (Timeout + Composed Abort)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 3,
     "difficulty": "hard",
     "tags": [
       "abort-controller",
@@ -2529,7 +2529,7 @@
     "title": "Streaming NDJSON Parser (Web Streams)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 3,
     "difficulty": "hard",
     "tags": [
       "backpressure",
@@ -2631,7 +2631,7 @@
       "bytedance"
     ],
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "arrays",
@@ -2729,7 +2729,7 @@
       "apple",
       "bytedance"
     ],
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "arrays",
@@ -2866,7 +2866,7 @@
       "amazon",
       "apple"
     ],
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "arrays",
@@ -2952,7 +2952,7 @@
     "title": "Implement arrayForEach (no prototype mutation)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 2,
+    "importance": 3,
     "difficulty": "intermediate",
     "tags": [
       "arrays",
@@ -3141,7 +3141,7 @@
     "title": "Create a Counter Function",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 3,
     "difficulty": "easy",
     "tags": [
       "closure",
@@ -3220,7 +3220,7 @@
     "title": "Check if an Object or Array is Empty",
     "type": "coding",
     "technology": "javascript",
-    "importance": 3,
+    "importance": 2,
     "difficulty": "easy",
     "tags": [
       "objects",
@@ -3306,7 +3306,7 @@
     "companies": [
       "google"
     ],
-    "importance": 5,
+    "importance": 3,
     "difficulty": "intermediate",
     "tags": [
       "promise",
@@ -3392,7 +3392,7 @@
     "title": "Implement Promise.all",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "promise",
@@ -3481,7 +3481,7 @@
     "title": "Implement Function.prototype.bind",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "hard",
     "tags": [
       "this",
@@ -3575,7 +3575,7 @@
     "title": "Implement the `new` Operator",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 4,
     "difficulty": "hard",
     "tags": [
       "prototypes",
@@ -3662,7 +3662,7 @@
     "title": "Implement `instanceof`",
     "type": "coding",
     "technology": "javascript",
-    "importance": 3,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "prototypes",
@@ -3750,7 +3750,7 @@
     "title": "Delegated Event Handler (E)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "dom",
@@ -3848,7 +3848,7 @@
     "title": "Delegated Event Handler (M)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "hard",
     "tags": [
       "dom",
@@ -3952,7 +3952,7 @@
     "title": "Delegated Event Handler (H)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 3,
     "difficulty": "hard",
     "tags": [
       "dom",
@@ -4322,7 +4322,7 @@
     "title": "Selector Polyfill 1: Implement `matchesSimple`",
     "type": "coding",
     "technology": "javascript",
-    "importance": 2,
+    "importance": 3,
     "difficulty": "easy",
     "tags": [
       "dom",
@@ -4404,7 +4404,7 @@
     "title": "Recover a BST with Two Swapped Nodes",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 2,
     "difficulty": "intermediate",
     "tags": [
       "tree",
@@ -4482,7 +4482,7 @@
     "title": "Selector Polyfill 2: Implement `closestSimple`",
     "type": "coding",
     "technology": "javascript",
-    "importance": 2,
+    "importance": 3,
     "difficulty": "intermediate",
     "tags": [
       "dom",
@@ -4565,7 +4565,7 @@
     "title": "Selector Polyfill 3: Implement `queryAllSimple` (Hard)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 2,
     "difficulty": "hard",
     "tags": [
       "dom",
@@ -4655,7 +4655,7 @@
     "title": "Data Helper 1: Get Value by Path",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "objects",
@@ -4740,7 +4740,7 @@
     "title": "Data Helper 2: Set Value by Path",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "objects",
@@ -4825,7 +4825,7 @@
     "title": "Data Helper 3: Deep Clone with Cycles",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 3,
     "difficulty": "hard",
     "tags": [
       "clone",
@@ -4902,7 +4902,7 @@
     "title": "Querystring Helper 1: Implement `parseQueryString`",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 3,
     "difficulty": "easy",
     "tags": [
       "parsing",
@@ -4981,7 +4981,7 @@
     "title": "Querystring Helper 2: Implement `stringifyQueryString`",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 3,
     "difficulty": "intermediate",
     "tags": [
       "string",
@@ -5060,7 +5060,7 @@
     "title": "Querystring Helper 3: Implement `parseQueryStringAdvanced`",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 4,
     "difficulty": "hard",
     "tags": [
       "parsing",
@@ -5142,7 +5142,7 @@
     "companies": [
       "bytedance"
     ],
-    "importance": 1,
+    "importance": 3,
     "difficulty": "easy",
     "tags": [
       "strings",
@@ -5222,7 +5222,7 @@
     "companies": [
       "bytedance"
     ],
-    "importance": 1,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "objects",
@@ -5304,7 +5304,7 @@
     "companies": [
       "bytedance"
     ],
-    "importance": 1,
+    "importance": 3,
     "difficulty": "intermediate",
     "tags": [
       "arrays",
@@ -5378,7 +5378,7 @@
       "apple",
       "meta"
     ],
-    "importance": 2,
+    "importance": 3,
     "difficulty": "easy",
     "tags": [
       "arrays",
@@ -5454,7 +5454,7 @@
     "companies": [
       "apple"
     ],
-    "importance": 1,
+    "importance": 2,
     "difficulty": "easy",
     "tags": [
       "strings",
@@ -5529,7 +5529,7 @@
     "companies": [
       "apple"
     ],
-    "importance": 1,
+    "importance": 2,
     "difficulty": "easy",
     "tags": [
       "arrays",
@@ -5677,7 +5677,7 @@
     "title": "Custom setTimeout/clearTimeout Timer Manager",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "timers",
@@ -5995,7 +5995,7 @@
     "title": "Implement Stack and Queue in JavaScript",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 2,
     "difficulty": "intermediate",
     "tags": [
       "algorithms",
@@ -6137,7 +6137,7 @@
     "title": "Maze Traversal (Find a Path in a Grid)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 2,
     "difficulty": "intermediate",
     "tags": [
       "algorithms",
@@ -6222,7 +6222,7 @@
     "title": "Take Latest (Abort Previous Requests)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 3,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "async",
@@ -6304,7 +6304,7 @@
     "title": "Promise.any (First Fulfilled)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "promise",
@@ -6467,7 +6467,7 @@
     "title": "Fetch JSON with Timeout + Abort",
     "type": "coding",
     "technology": "javascript",
-    "importance": 3,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "web-apis",
@@ -6640,7 +6640,7 @@
     "title": "Storage TTL Cache (localStorage/sessionStorage)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 3,
     "difficulty": "intermediate",
     "tags": [
       "web-apis",
@@ -6809,7 +6809,7 @@
     "title": "Validate Username (Rules + Edge Cases)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 2,
     "difficulty": "easy",
     "tags": [
       "validation",
@@ -6893,7 +6893,7 @@
     "title": "Safe JSON Parse (Fallback on Error)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 2,
     "difficulty": "easy",
     "tags": [
       "error-handling",
@@ -7126,7 +7126,7 @@
     "title": "Format Date in Time Zone (YYYY-MM-DD)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 3,
     "difficulty": "intermediate",
     "tags": [
       "date-time",
@@ -7210,7 +7210,7 @@
     "title": "Create a Spy Function (Test Double)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "testing",
@@ -7289,7 +7289,7 @@
     "title": "Create a Deferred Promise (For Async Tests)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "testing",
@@ -7441,7 +7441,7 @@
     "title": "Run With a Performance Budget (Sync or Async)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 5,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "performance",
@@ -7531,7 +7531,7 @@
     "title": "Resolve package.json Exports (Import vs Require)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 1,
+    "importance": 2,
     "difficulty": "hard",
     "tags": [
       "modules",
@@ -7616,7 +7616,7 @@
     "title": "Sanitize href URL (Block javascript: XSS)",
     "type": "coding",
     "technology": "javascript",
-    "importance": 3,
+    "importance": 4,
     "difficulty": "intermediate",
     "tags": [
       "security",

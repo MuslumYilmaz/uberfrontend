@@ -220,3 +220,323 @@ Scale: `1` (low interview value) to `5` (must-know for frontend interviews).
   - `js-garbage-collection-and-gc-pauses`: Strong performance/debugging competency signal for long-lived frontend apps.
 - Validation: `lint-questions` pass; frontend/CDN parity pass.
 - Remaining in file: 0
+
+### Batch 13
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-number-clamp`, `js-reverse-string`, `js-count-vowels`, `js-flatten-once`, `js-unique-array`
+- Old -> new:
+  - `js-number-clamp`: `3` -> `2`
+  - `js-reverse-string`: `4` -> `3`
+  - `js-count-vowels`: `3` -> `2`
+  - `js-flatten-once`: `3` -> `3`
+  - `js-unique-array`: `3` -> `4`
+- Rationale:
+  - `js-number-clamp`: Useful utility pattern, but generally a lower-signal warm-up question.
+  - `js-reverse-string`: Common introductory interview exercise with moderate signal on basic iteration/string handling.
+  - `js-count-vowels`: Basic loop/counting drill with limited depth for frontend role evaluation.
+  - `js-flatten-once`: Practical array-normalization task with moderate real-world utility and clear edge-case checks.
+  - `js-unique-array`: Very common practical pattern (dedupe + order preservation) with strong day-to-day relevance.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 83
+
+### Batch 14
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-max-char`, `js-capitalize-words`, `js-sum-numbers`, `js-compact`, `js-arrays-equal`
+- Old -> new:
+  - `js-max-char`: `3` -> `3`
+  - `js-capitalize-words`: `3` -> `2`
+  - `js-sum-numbers`: `1` -> `2`
+  - `js-compact`: `3` -> `3`
+  - `js-arrays-equal`: `3` -> `3`
+- Rationale:
+  - `js-max-char`: Solid frequency-map warm-up with moderate interview signal.
+  - `js-capitalize-words`: Basic string-formatting drill; useful but lower-signal versus broader array/state patterns.
+  - `js-sum-numbers`: Foundational accumulator/type-check exercise; low-to-moderate baseline relevance.
+  - `js-compact`: Practical filtering/falsy handling pattern with moderate day-to-day usefulness.
+  - `js-arrays-equal`: Common shallow-comparison pattern; moderate interview utility when framing equality semantics.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 78
+
+### Batch 15
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-shallow-clone`, `js-sleep`, `js-once`, `js-object-create`, `js-update-at-index`
+- Old -> new:
+  - `js-shallow-clone`: `3` -> `4`
+  - `js-sleep`: `5` -> `4`
+  - `js-once`: `3` -> `3`
+  - `js-object-create`: `3` -> `3`
+  - `js-update-at-index`: `3` -> `4`
+- Rationale:
+  - `js-shallow-clone`: High practical relevance for reference semantics and mutation bug prevention.
+  - `js-sleep`: Useful async utility but narrower interview signal than core state/reference patterns.
+  - `js-once`: Solid closure/HOF exercise with moderate interview utility.
+  - `js-object-create`: Prototype-focused concept useful for depth checks, but not universal in most loops.
+  - `js-update-at-index`: Core immutable update pattern used widely in frontend state management.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 73
+
+### Batch 16
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-debounce`, `js-throttle`, `js-deep-clone`, `js-deep-equal`, `js-flatten-depth`
+- Old -> new:
+  - `js-debounce`: `4` -> `4`
+  - `js-throttle`: `4` -> `4`
+  - `js-deep-clone`: `1` -> `4`
+  - `js-deep-equal`: `1` -> `4`
+  - `js-flatten-depth`: `1` -> `3`
+- Rationale:
+  - `js-debounce`: High practical frontend utility for input/network/perf control.
+  - `js-throttle`: High practical frontend utility for scroll/resize/perf control.
+  - `js-deep-clone`: Common utility/interview topic with meaningful edge-case reasoning requirements.
+  - `js-deep-equal`: Strong interview signal for recursive reasoning and object semantics.
+  - `js-flatten-depth`: Useful recursive/iterative pattern, but slightly lower signal than clone/equality tasks.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 68
+
+### Batch 17
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-curry-function`, `js-memoize-function`, `js-compose`, `js-group-by`, `js-event-emitter-mini`
+- Old -> new:
+  - `js-curry-function`: `2` -> `3`
+  - `js-memoize-function`: `3` -> `4`
+  - `js-compose`: `1` -> `3`
+  - `js-group-by`: `1` -> `4`
+  - `js-event-emitter-mini`: `5` -> `4`
+- Rationale:
+  - `js-curry-function`: Useful functional pattern with moderate interview frequency.
+  - `js-memoize-function`: Practical optimization pattern with strong real-world and interview relevance.
+  - `js-compose`: Important abstraction/composability pattern, but generally medium signal in typical frontend loops.
+  - `js-group-by`: High practical utility pattern frequently needed in data-transform tasks.
+  - `js-event-emitter-mini`: Strong architecture signal, but not always a universal must-ask at top priority.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 63
+
+### Batch 18
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-concurrency-map-limit`, `js-abortable-helpers`, `js-streaming-ndjson-parser`, `js-array-prototype-map`, `js-array-prototype-reduce`
+- Old -> new:
+  - `js-concurrency-map-limit`: `5` -> `4`
+  - `js-abortable-helpers`: `5` -> `3`
+  - `js-streaming-ndjson-parser`: `1` -> `3`
+  - `js-array-prototype-map`: `5` -> `4`
+  - `js-array-prototype-reduce`: `5` -> `4`
+- Rationale:
+  - `js-concurrency-map-limit`: Strong async-control pattern with high value, but not a universal must-ask in every frontend loop.
+  - `js-abortable-helpers`: Useful modern async utility design, though comparatively specialized.
+  - `js-streaming-ndjson-parser`: Relevant streaming/parsing exercise with moderate practical interview signal.
+  - `js-array-prototype-map`: Classic JavaScript internals exercise with strong but not always top-priority coding-round frequency.
+  - `js-array-prototype-reduce`: Classic JavaScript internals exercise with strong but not always top-priority coding-round frequency.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 58
+
+### Batch 19
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-array-prototype-filter`, `js-array-foreach`, `js-array-sort`, `js-create-counter`, `js-is-object-empty`
+- Old -> new:
+  - `js-array-prototype-filter`: `5` -> `4`
+  - `js-array-foreach`: `2` -> `3`
+  - `js-array-sort`: `4` -> `4`
+  - `js-create-counter`: `5` -> `3`
+  - `js-is-object-empty`: `3` -> `2`
+- Rationale:
+  - `js-array-prototype-filter`: Strong API-internals exercise with good interview signal, but not universal top-priority.
+  - `js-array-foreach`: Core iteration/callback semantics with moderate practical relevance.
+  - `js-array-sort`: High practical importance due to comparator/mutation pitfalls and frequent real-world use.
+  - `js-create-counter`: Useful closure warm-up, but lower-signal than broader data/async/state problems.
+  - `js-is-object-empty`: Basic utility check with limited depth in most interview contexts.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 53
+
+### Batch 20
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-add-two-promises`, `js-promise-all`, `js-implement-bind`, `js-implement-new`, `js-implement-instanceof`
+- Old -> new:
+  - `js-add-two-promises`: `5` -> `3`
+  - `js-promise-all`: `5` -> `4`
+  - `js-implement-bind`: `5` -> `4`
+  - `js-implement-new`: `1` -> `4`
+  - `js-implement-instanceof`: `3` -> `4`
+- Rationale:
+  - `js-add-two-promises`: Useful async warm-up, but narrower signal than broader promise/orchestration tasks.
+  - `js-promise-all`: High-value async coordination pattern with frequent interview relevance.
+  - `js-implement-bind`: Strong JavaScript internals depth-check topic, but not always top-priority in every loop.
+  - `js-implement-new`: Important prototype/constructor semantics question and strong language-depth signal.
+  - `js-implement-instanceof`: Clear prototype-chain reasoning exercise with solid practical interview value.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 48
+
+### Batch 21
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-delegated-events-1`, `js-delegated-events-2`, `js-delegated-events-3`, `js-dom-walk-text-content-1`, `js-dom-walk-text-content-2`
+- Old -> new:
+  - `js-delegated-events-1`: `5` -> `4`
+  - `js-delegated-events-2`: `5` -> `4`
+  - `js-delegated-events-3`: `5` -> `3`
+  - `js-dom-walk-text-content-1`: `2` -> `2`
+  - `js-dom-walk-text-content-2`: `3` -> `3`
+- Rationale:
+  - `js-delegated-events-1`: Event delegation is a high-value frontend pattern with strong practical interview relevance.
+  - `js-delegated-events-2`: Advanced delegation options are valuable, but still a variation on the same core concept.
+  - `js-delegated-events-3`: Third variant overlaps heavily with the same topic, so relative importance is lower.
+  - `js-dom-walk-text-content-1`: Useful tree-traversal exercise, but less common in standard frontend interview loops.
+  - `js-dom-walk-text-content-2`: Practical ancestor traversal pattern with moderate day-to-day utility.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 43
+
+### Batch 22
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-dom-walk-text-content-3`, `js-selector-polyfill-matches-1`, `js-recover-bst-swapped-nodes`, `js-selector-polyfill-closest-2`, `js-selector-polyfill-qsa-3`
+- Old -> new:
+  - `js-dom-walk-text-content-3`: `2` -> `2`
+  - `js-selector-polyfill-matches-1`: `2` -> `3`
+  - `js-recover-bst-swapped-nodes`: `1` -> `2`
+  - `js-selector-polyfill-closest-2`: `2` -> `3`
+  - `js-selector-polyfill-qsa-3`: `1` -> `2`
+- Rationale:
+  - `js-dom-walk-text-content-3`: Valuable traversal/selector-engine depth check, but comparatively specialized.
+  - `js-selector-polyfill-matches-1`: Common frontend utility pattern with moderate practical interview relevance.
+  - `js-recover-bst-swapped-nodes`: General algorithm exercise with some signal, but less frontend-specific.
+  - `js-selector-polyfill-closest-2`: Frequently used delegation/boundary pattern in real frontend code.
+  - `js-selector-polyfill-qsa-3`: Advanced selector traversal is useful, but more niche than common DOM utility questions.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 38
+
+### Batch 23
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-get-by-path-1`, `js-set-by-path-2`, `js-deep-clone-cycles-3`, `js-querystring-parse-1`, `js-querystring-stringify-2`
+- Old -> new:
+  - `js-get-by-path-1`: `1` -> `4`
+  - `js-set-by-path-2`: `1` -> `4`
+  - `js-deep-clone-cycles-3`: `1` -> `3`
+  - `js-querystring-parse-1`: `1` -> `3`
+  - `js-querystring-stringify-2`: `1` -> `3`
+- Rationale:
+  - `js-get-by-path-1`: Very common frontend data-access utility with strong practical and interview relevance.
+  - `js-set-by-path-2`: High-value immutable update pattern frequently used in state/data manipulation tasks.
+  - `js-deep-clone-cycles-3`: Useful advanced clone/graph-reference reasoning, but more specialized than core day-to-day helpers.
+  - `js-querystring-parse-1`: Common URL/filter state parsing task with practical interview value.
+  - `js-querystring-stringify-2`: Common URL-building task with moderate practical/frontend interview relevance.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 33
+
+### Batch 24
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-querystring-parse-3`, `js-add-strings`, `js-lodash-get`, `js-three-sum`, `js-merge-sorted-arrays`
+- Old -> new:
+  - `js-querystring-parse-3`: `1` -> `4`
+  - `js-add-strings`: `1` -> `3`
+  - `js-lodash-get`: `1` -> `4`
+  - `js-three-sum`: `1` -> `3`
+  - `js-merge-sorted-arrays`: `2` -> `3`
+- Rationale:
+  - `js-querystring-parse-3`: Advanced URL-state parsing is a common high-signal frontend utility/problem.
+  - `js-add-strings`: Useful digit/carry logic drill with moderate interview value.
+  - `js-lodash-get`: Very common nested-path access helper pattern in practical frontend data handling.
+  - `js-three-sum`: Classic algorithmic reasoning task with moderate coding-round relevance.
+  - `js-merge-sorted-arrays`: Foundational two-pointer pattern with steady practical interview utility.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 28
+
+### Batch 25
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-valid-anagram`, `js-median-of-array`, `js-dom-renderer`, `js-timer-manager`, `js-timer-manager-and-dom-renderer`
+- Old -> new:
+  - `js-valid-anagram`: `1` -> `2`
+  - `js-median-of-array`: `1` -> `2`
+  - `js-dom-renderer`: `3` -> `3`
+  - `js-timer-manager`: `5` -> `4`
+  - `js-timer-manager-and-dom-renderer`: `3` -> `3`
+- Rationale:
+  - `js-valid-anagram`: Standard baseline algorithm drill with low-to-moderate frontend interview signal.
+  - `js-median-of-array`: Useful fundamentals check, but typically not a top frontend-specific discriminator.
+  - `js-dom-renderer`: Solid frontend-oriented rendering/data-to-UI transformation exercise with moderate relevance.
+  - `js-timer-manager`: Strong practical async/timer-control pattern, but not universally must-ask at top priority.
+  - `js-timer-manager-and-dom-renderer`: Combined practical exercise with steady mid-level frontend utility.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 23
+
+### Batch 26
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-dom-find-node`, `js-dom-twin-node`, `js-stack-queue-implementation`, `js-palindrome-check`, `js-maze-path`
+- Old -> new:
+  - `js-dom-find-node`: `3` -> `3`
+  - `js-dom-twin-node`: `3` -> `3`
+  - `js-stack-queue-implementation`: `1` -> `2`
+  - `js-palindrome-check`: `1` -> `1`
+  - `js-maze-path`: `1` -> `2`
+- Rationale:
+  - `js-dom-find-node`: Practical traversal pattern with moderate frontend interview relevance.
+  - `js-dom-twin-node`: Useful DOM-index/path reasoning exercise with moderate practical signal.
+  - `js-stack-queue-implementation`: Foundational data-structure exercise with low-to-moderate frontend-specific signal.
+  - `js-palindrome-check`: Basic warm-up algorithm with low discriminative value for frontend roles.
+  - `js-maze-path`: Classic traversal/search exercise with moderate coding-round relevance.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 18
+
+### Batch 27
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-take-latest`, `js-promise-any`, `js-poll-until`, `js-fetch-json-timeout`, `js-stream-to-text`
+- Old -> new:
+  - `js-take-latest`: `3` -> `4`
+  - `js-promise-any`: `5` -> `4`
+  - `js-poll-until`: `3` -> `3`
+  - `js-fetch-json-timeout`: `3` -> `4`
+  - `js-stream-to-text`: `3` -> `3`
+- Rationale:
+  - `js-take-latest`: Common UI correctness pattern for search/typeahead race prevention.
+  - `js-promise-any`: Useful async combinator internals question, but not universal top-priority across all loops.
+  - `js-poll-until`: Practical utility with moderate relevance in real-world async workflows.
+  - `js-fetch-json-timeout`: High practical frontend utility for robust API clients.
+  - `js-stream-to-text`: Relevant streaming utility with moderate frontend interview frequency.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 13
+
+### Batch 28
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-storage-ttl-cache`, `js-escape-html`, `js-validate-username`, `js-safe-json-parse`, `js-measure-duration`
+- Old -> new:
+  - `js-storage-ttl-cache`: `1` -> `3`
+  - `js-escape-html`: `3` -> `3`
+  - `js-validate-username`: `1` -> `2`
+  - `js-safe-json-parse`: `1` -> `2`
+  - `js-measure-duration`: `3` -> `3`
+- Rationale:
+  - `js-storage-ttl-cache`: Practical frontend caching utility with moderate real-world relevance.
+  - `js-escape-html`: Security-oriented helper with steady practical/interview utility.
+  - `js-validate-username`: Basic validation exercise with low-to-moderate signal.
+  - `js-safe-json-parse`: Common defensive utility pattern with low-to-moderate signal.
+  - `js-measure-duration`: Useful profiling wrapper pattern with moderate practical relevance.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 8
+
+### Batch 29
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-create-cleanup-bag`, `js-format-date-timezone`, `js-create-spy-function`, `js-create-deferred-promise`, `js-create-lru-cache`
+- Old -> new:
+  - `js-create-cleanup-bag`: `3` -> `3`
+  - `js-format-date-timezone`: `1` -> `3`
+  - `js-create-spy-function`: `5` -> `4`
+  - `js-create-deferred-promise`: `5` -> `4`
+  - `js-create-lru-cache`: `3` -> `3`
+- Rationale:
+  - `js-create-cleanup-bag`: Useful lifecycle-cleanup utility with moderate practical frontend relevance.
+  - `js-format-date-timezone`: Common real-world date/time correctness problem with meaningful interview utility.
+  - `js-create-spy-function`: Strong testing-depth topic, but not universal top-priority across all loops.
+  - `js-create-deferred-promise`: Useful async testing control pattern, but similarly not always top-priority.
+  - `js-create-lru-cache`: Valuable bounded-memory/cache concept with moderate practical relevance.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 3
+
+### Batch 30
+- File: `javascript/coding.json` (frontend + CDN mirror)
+- IDs: `js-run-with-perf-budget`, `js-resolve-package-exports`, `js-sanitize-href-url`
+- Old -> new:
+  - `js-run-with-perf-budget`: `5` -> `4`
+  - `js-resolve-package-exports`: `1` -> `2`
+  - `js-sanitize-href-url`: `3` -> `4`
+- Rationale:
+  - `js-run-with-perf-budget`: Strong practical profiling/perf-budget concept, but not universal top-priority in all interview loops.
+  - `js-resolve-package-exports`: Useful bundler/runtime-depth topic with narrower frontend interview frequency.
+  - `js-sanitize-href-url`: High-value security utility pattern with strong practical and interview relevance.
+- Validation: `lint-questions` pass; frontend/CDN parity pass.
+- Remaining in file: 0
