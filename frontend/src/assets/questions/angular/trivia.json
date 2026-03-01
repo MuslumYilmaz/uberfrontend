@@ -4,7 +4,7 @@
     "title": "What’s the difference between constructor, ngOnInit, and ngAfterViewInit, and which one is correct for DOM/ViewChild access?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "constructor is for DI + trivial class setup, ngOnInit is for initialization that depends on inputs/bindings, and ngAfterViewInit is for work that needs the component view (DOM, ViewChild). For DOM/ViewChild access, ngAfterViewInit is usually correct—except @ViewChild({ static: true }) cases which are available earlier.",
     "answer": {
       "blocks": [
@@ -116,7 +116,7 @@
     "title": "What is the difference between Angular and AngularJS?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "description": "AngularJS (1.x) and Angular (2+) share a name but are different frameworks. Angular (2+) is a rewrite with TypeScript, components, RxJS-first patterns, modern tooling, and a different rendering/change-detection model. Explain the practical differences and why migration is non-trivial.",
     "answer": {
       "blocks": [
@@ -391,7 +391,7 @@
     "title": "What metadata does @Component provide, and why does Angular need it?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "The @Component decorator attaches metadata to a TypeScript class so Angular can treat it as a component. This metadata tells Angular how to render the view (template + styles), how to match it in HTML (selector), what dependencies it can use (imports/providers), and how to run it (change detection, encapsulation, host bindings). Angular needs this because a plain class doesn’t contain enough information to compile and instantiate a UI component.",
     "answer": {
       "blocks": [
@@ -520,7 +520,7 @@
     "title": "What problems do NgModules solve that standalone components don’t?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Standalone components remove the need for NgModules for most app composition, routing, and DI setup. NgModules still solve a few practical problems: packaging legacy (non-standalone) declarations, consuming module-based third-party libraries (forRoot/forChild), and providing a single import/export “bundle” boundary that some teams and libraries still rely on. Covers: angular, modules, standalone, architecture, basics.",
     "answer": {
       "blocks": [
@@ -632,7 +632,7 @@
     "title": "AppModule in the standalone era: what moved to components, bootstrapApplication, and route providers?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "With standalone, AppModule is no longer the central “assembly point”. Template scope moves from NgModule declarations/imports to each standalone component’s imports, and app-wide configuration moves to bootstrapApplication(...) (or an ApplicationConfig) and route-level providers. AppModule often disappears in greenfield apps, but NgModules still exist for legacy code and module-shaped libraries. The trade-off is simpler bootstrapping versus managing provider scope per component; test DI boundaries when migrating.",
     "answer": {
       "blocks": [
@@ -804,7 +804,7 @@
     "title": "How does Angular compile templates and bind them to component state?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "Angular turns your component template into generated render/update instructions (AOT or JIT). At runtime, change detection re-runs the update phase so bindings (text, properties, attributes, events) stay in sync with the component instance (state). Covers: angular, templates, compilation, data binding, basics.",
     "seo": {
       "title": "How does Angular compile templates and update bindings?",
@@ -1015,7 +1015,7 @@
     "title": "Angular data binding: interpolation, property/attribute/class/style, events, and two-way ([(...)])",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Data binding is how Angular connects component state (TS) to the template (HTML) and back. It’s mostly one-way (component ➜ view via interpolation/property bindings, view ➜ component via event bindings). Two-way binding is optional syntactic sugar that combines both directions (commonly via forms/ngModel or custom @Input/@Output pairs).",
     "answer": {
       "blocks": [
@@ -1198,7 +1198,7 @@
     "title": "Interpolation vs property binding in Angular: what actually gets updated (text vs DOM property), and what bugs does it prevent?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Explain the practical difference: interpolation ({{ }}) writes strings into text nodes (and can do string attribute interpolation), while property binding ([...]) sets real DOM properties (booleans/numbers/objects) and is the correct choice for element state (disabled, checked, value, src). Include the common interview trap: interpolation in boolean-ish attributes can produce wrong behavior. Property binding avoids string coercion edge cases; test boolean attributes and template performance.",
     "answer": {
       "blocks": [
@@ -1334,7 +1334,7 @@
     "title": "How does Angular event binding work (DOM events vs @Output events), and what are the common pitfalls?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "Angular event binding uses the (event) syntax to listen to either native DOM events (click, input, submit, keydown, etc.) or custom events emitted by child components via @Output(). When the event fires, Angular runs the bound template statement/method with access to $event, and (in typical setups) triggers change detection for affected views. Events trigger change detection, so test performance under rapid input and large templates.",
     "answer": {
       "blocks": [
@@ -1460,7 +1460,7 @@
     "title": "Angular directives: structural vs attribute vs components — and what the * syntax really does",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "A directive is a class that Angular attaches to an element (or an &lt;ng-template&gt;) to add behavior, change styling, or control whether a chunk of template exists at all. Interview focus: the 3 directive categories, how structural directives desugar from * syntax into &lt;ng-template&gt;, and how to build safe custom directives (HostBinding/HostListener, Renderer2, TemplateRef/ViewContainerRef). Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
     "answer": {
       "blocks": [
@@ -1630,7 +1630,7 @@
     "title": "Structural vs Attribute Directives in Angular: what changes the DOM tree (and what does * actually mean)?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Structural directives change the rendered template tree by creating/destroying embedded views (real DOM + component instances). Attribute directives do not change the tree; they modify an existing element’s properties/classes/styles/behavior. Key interview nuance: the * syntax is just sugar for &lt;ng-template&gt; + directive inputs. Structural directives change the DOM tree, so test lifecycle, performance, and accessibility side effects.",
     "answer": {
       "blocks": [
@@ -1757,7 +1757,7 @@
     "title": "How does *ngIf affect the DOM and component lifecycle?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "description": "*ngIf is a structural directive that conditionally creates and destroys an embedded view. That means DOM nodes, component instances, directives, listeners, and template bindings inside the *ngIf block are actually created when the condition becomes true and destroyed when it becomes false.",
     "answer": {
       "blocks": [
@@ -1923,7 +1923,7 @@
     "title": "Why is trackBy important in *ngFor, and what breaks without it?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "trackBy tells Angular how to uniquely identify items in an *ngFor list so it can reuse existing DOM nodes and component instances when the array changes. Without it (or with a bad trackBy), Angular may destroy and recreate rows unnecessarily, which hurts performance and can reset UI state like input values, focus, and child component state. TrackBy preserves DOM state and performance; test with reorders and large lists.",
     "answer": {
       "blocks": [
@@ -2073,7 +2073,7 @@
     "title": "What is an Angular service, how does DI provide it (providedIn/providers), and why do teams use services?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "In Angular, a “service” is just a class that becomes useful when it’s provided through Angular’s dependency injection (DI). Services are used to centralize reusable logic and side effects (HTTP, caching, orchestration, shared state) so components stay focused on UI + event wiring. Service scope is controlled by where you provide it (root/module/component), which determines lifetime and instance sharing.",
     "answer": {
       "blocks": [
@@ -2243,7 +2243,7 @@
     "title": "What is dependency injection in Angular?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Angular dependency injection (DI) is the framework mechanism that creates and supplies dependencies (services/config/values) to classes (components, directives, pipes, other services) based on providers. Instead of constructing dependencies manually, you register providers (how to build a value for a token) and Angular resolves them through a hierarchical injector tree. Interview focus: provider configuration, token types (class vs InjectionToken), scoping/lifetime (root vs component), and common pitfalls (multiple instances, circular deps, Optional/Self/SkipSelf). DI affects testability and architecture; test with mocks and scope providers carefully.",
     "answer": {
       "blocks": [
@@ -2437,7 +2437,7 @@
     "title": "Constructor vs ngOnInit(): DI timing, @Input timing, and what belongs where",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Constructor runs when the class instance is created (mainly for DI + trivial field setup). ngOnInit() runs once after Angular has set initial @Input() bindings (after the first ngOnChanges). Put Angular-dependent initialization (inputs, data streams, side effects) in ngOnInit, not in the constructor. Covers: angular, lifecycle, hooks, components, basics.",
     "answer": {
       "blocks": [
@@ -2565,7 +2565,7 @@
     "title": "Angular pipes: built-in, async pipe, and pure vs impure (performance + pitfalls)",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "description": "Angular pipes transform values in templates using the | operator (formatting, slicing, mapping) without mutating the source. Most pipes are pure (run only when input reference/primitive changes). The async pipe is special: it subscribes/unsubscribes automatically and triggers view updates.",
     "answer": {
       "blocks": [
@@ -2763,7 +2763,7 @@
     "title": "How would you implement two-way binding for a custom component (Input/Output naming convention), and what can go wrong?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "description": "Custom two-way binding uses an @Input() value and a paired @Output() valueChange event. The binding syntax [(value)] listens to valueChange and updates value. Mismatched names or missing emitters break the binding. Covers: angular, two way binding, input, output, components, forms.",
     "answer": {
       "blocks": [
@@ -2867,7 +2867,7 @@
     "title": "Angular lifecycle hooks: when do they run, and what should you put in each?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Angular lifecycle hooks are framework callbacks on components/directives that run at specific moments (creation, input changes, content/view init + checks, destruction). Interviewers care less about memorizing names and more about choosing the correct hook for inputs, DOM/ViewChild, content projection, change-detection edge cases, and cleanup. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
     "answer": {
       "blocks": [
@@ -3053,7 +3053,7 @@
     "title": "How do @Input() and @Output() work in Angular, and what pitfalls do seniors mention in interviews?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "@Input() defines an API for data flowing from parent → child via property binding. @Output() defines an API for events flowing from child → parent via EventEmitter (or newer output helpers). Interviewers expect you to explain timing (updates over time), typing, OnPush/immutability implications, and when NOT to use EventEmitter (cross-component event bus).",
     "answer": {
       "blocks": [
@@ -3433,7 +3433,7 @@
     "title": "What is Angular routing and how do you define routes?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Angular routing is a feature that allows navigation between different views or components in a single-page application (SPA). Routes are defined using the RouterModule and configured with path-component mappings in a routing module.",
     "answer": {
       "blocks": [
@@ -3520,7 +3520,7 @@
     "title": "What is lazy loading in Angular?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Lazy loading in Angular is a technique that loads feature modules only when they are needed, rather than at application startup. It improves performance by reducing the initial bundle size and speeding up the first load.",
     "answer": {
       "blocks": [
@@ -3623,7 +3623,7 @@
     "title": "What are change detection strategies in Angular, and how do they work?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Change detection in Angular is the mechanism that keeps the view in sync with the component’s data. Angular provides two strategies — Default and OnPush — to determine when and how it checks for changes and updates the DOM.",
     "answer": {
       "blocks": [
@@ -3713,7 +3713,7 @@
     "title": "How does Angular’s Zone.js help in change detection?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Zone.js is a library used by Angular to automatically track and intercept asynchronous operations such as events, promises, and timers. It notifies Angular whenever an async event completes so the framework can trigger change detection automatically.",
     "answer": {
       "blocks": [
@@ -3780,7 +3780,7 @@
     "title": "What is the purpose of ngOnChanges() and how does it differ from ngDoCheck()?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "ngOnChanges() and ngDoCheck() are Angular lifecycle hooks that detect and respond to changes in component data. ngOnChanges() automatically runs when @Input() values change, while ngDoCheck() allows developers to perform custom change detection logic beyond Angular’s default mechanism.",
     "answer": {
       "blocks": [
@@ -3879,7 +3879,7 @@
     "title": "What are Angular modules’ forRoot() and forChild() methods used for?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "description": "forRoot() and forChild() are Angular module configuration methods that help manage singleton services and routing across root and feature modules. forRoot() configures global providers and routes for the root module, while forChild() configures additional routes for feature modules without duplicating providers.",
     "answer": {
       "blocks": [
@@ -3988,7 +3988,7 @@
     "title": "How does Angular handle performance optimization for large applications?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Angular provides a variety of built-in tools and best practices for optimizing performance in large applications. These include efficient change detection strategies, lazy loading, Ahead-of-Time (AOT) compilation, tree-shaking, and other advanced techniques to minimize bundle size and rendering time.",
     "answer": {
       "blocks": [
@@ -4141,7 +4141,7 @@
     "title": "Explain OnPush Change Detection in Angular Like You’re Debugging a Real Production Bug",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "OnPush change detection tells Angular to skip checking a component unless one of a few specific triggers happens (Input reference change, event inside the component, async pipe emission, or manual markForCheck/detectChanges). It dramatically improves performance, but breaks the UI if you mutate objects or arrays instead of changing references.",
     "answer": {
       "blocks": [
@@ -4288,7 +4288,7 @@
     "title": "switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 5,
     "description": "These RxJS flattening operators control how Angular handles overlapping async work (HTTP calls, saves, clicks, search). switchMap cancels previous, mergeMap runs in parallel, concatMap queues sequentially, and exhaustMap ignores new triggers while busy. Choosing the right one prevents race conditions, double submits, and UI glitches.",
     "answer": {
       "blocks": [
@@ -4445,7 +4445,7 @@
     "title": "How Do You Prevent Memory Leaks in Angular? All Real-World Unsubscribe Patterns Explained",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Memory leaks in Angular almost always come from forgotten subscriptions, long-lived streams, or global listeners. The correct fixes include using the async pipe, takeUntilDestroyed/DestroyRef, takeUntil with a Subject, and understanding which streams complete automatically and which never do.",
     "answer": {
       "blocks": [
@@ -4595,7 +4595,7 @@
     "title": "What Is ControlValueAccessor in Angular and Why Is It Better Than Custom Two-Way Binding?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "ControlValueAccessor (CVA) is Angular’s official bridge between custom components and Angular Forms. It lets your component behave like a real form control (ngModel, formControl, formControlName) with validation, touched/dirty state, and disabled handling—unlike custom two-way binding which only syncs values and breaks form integration.",
     "answer": {
       "blocks": [
@@ -4726,7 +4726,7 @@
     "title": "Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Template-driven forms rely on directives in the template and implicit state, while reactive forms define the entire form model in TypeScript. Reactive forms scale better because they are explicit, testable, composable, and predictable for complex validation and dynamic form structures.",
     "answer": {
       "blocks": [
@@ -4876,7 +4876,7 @@
     "title": "What Is shareReplay in RxJS and How Can It Silently Break Your Angular App?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "shareReplay is an RxJS operator that turns a cold observable into a shared hot one and caches the last emitted values. Used incorrectly, it can cause memory leaks, stale data bugs, and unexpected behavior—especially in Angular services and HTTP streams.",
     "answer": {
       "blocks": [
@@ -5062,7 +5062,7 @@
     "title": "What Actually Cancels an HTTP Request in Angular?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. This triggers the browser AbortController/XHR abort under the hood. But not all operators or patterns truly cancel the network request—some only ignore the result.",
     "answer": {
       "blocks": [
@@ -5233,7 +5233,7 @@
     "title": "Explain Hierarchical Dependency Injection in Angular With a Real Bug Example",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Angular’s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get multiple instances and break shared state, caching, or coordination logic.",
     "seo": {
       "title": "How does hierarchical dependency injection work in Angular?",
@@ -5383,7 +5383,7 @@
     "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular: when do you use which?",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "description": "All four are RxJS Subject variants, but they differ in what late subscribers receive and when values are emitted. Interviewers expect you to choose the right one based on initial value needs, replay history, completion behavior, and memory tradeoffs.",
     "answer": {
       "blocks": [
@@ -5525,7 +5525,7 @@
     "title": "RxJS tap vs map in Angular: side effects vs transformation (with real examples)",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "description": "tap and map are frequently confused in Angular RxJS pipelines. map transforms emitted values; tap runs side effects without changing emissions. Interviewers use this to test stream thinking, operator intent, and your ability to avoid subtle production bugs.",
     "answer": {
       "blocks": [
@@ -5787,7 +5787,7 @@
     "title": "NgRx Store vs local component state in Angular: global vs local, and when to use NgRx",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "One of the most practical Angular state management decisions is choosing NgRx Store vs local component state. Use local state for short-lived UI details and use Store for shared, long-lived, globally relevant state. Interviewers expect clear rules for global vs local state in Angular and when NgRx is worth it.",
     "answer": {
       "blocks": [
@@ -5923,7 +5923,7 @@
     "title": "NgRx reducer pure function in practice: immutability, side effects, and common mistakes",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "A reducer in NgRx must be a pure function: same input state + action must always produce the same next state, with no side effects. Interviewers test reducer immutability and whether you can spot forbidden reducer side effects like mutation, Math.random(), HTTP, router navigation, and service calls.",
     "answer": {
       "blocks": [
@@ -6038,7 +6038,7 @@
     "title": "NgRx selectors beyond getting state: memoization, derived state, and Angular performance",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "NgRx selectors are not just state getters. They create memoized, composable read models that power derived state in Angular apps. Interviewers expect you to explain selector composition, NgRx selector memoization behavior, and why this improves performance.",
     "answer": {
       "blocks": [

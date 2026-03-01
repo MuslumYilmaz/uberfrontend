@@ -5,7 +5,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -79,7 +79,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "react",
       "forms",
@@ -169,7 +169,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "react",
       "state",
@@ -253,7 +253,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "react",
       "state",
@@ -339,7 +339,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -502,7 +502,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "react",
       "state",
@@ -584,7 +584,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "react",
       "state",
@@ -668,7 +668,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "react",
       "context",
@@ -754,7 +754,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "react",
       "forms",
@@ -844,7 +844,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "react",
       "state",
@@ -1026,7 +1026,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -1109,7 +1109,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -1189,7 +1189,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "react",
       "state",
@@ -1271,7 +1271,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "react",
       "hooks",
@@ -1360,7 +1360,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "react",
       "state",
@@ -1443,7 +1443,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -1533,7 +1533,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "tags": [
       "react",
       "hooks",
@@ -1611,7 +1611,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -1692,7 +1692,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -1774,7 +1774,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "react",
       "state",
@@ -1858,7 +1858,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -2020,7 +2020,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "react",
       "state",
@@ -2101,7 +2101,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "react",
       "state",
@@ -2193,7 +2193,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "react",
       "state",
@@ -2280,7 +2280,7 @@
     "type": "coding",
     "technology": "react",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "react",
       "state",

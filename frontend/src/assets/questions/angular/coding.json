@@ -5,7 +5,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "components",
       "event-binding",
@@ -79,7 +79,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "forms",
       "http",
@@ -170,7 +170,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "components",
       "forms",
@@ -257,7 +257,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "components",
       "event-binding",
@@ -344,7 +344,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "components",
       "state",
@@ -508,7 +508,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "components",
       "inputs",
@@ -589,7 +589,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "components",
       "state",
@@ -675,7 +675,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "components",
       "services",
@@ -763,7 +763,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "forms",
       "reactive-forms",
@@ -853,7 +853,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "components",
       "state",
@@ -946,7 +946,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 5,
     "tags": [
       "angular",
       "rxjs",
@@ -1040,7 +1040,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "components",
       "inputs-outputs",
@@ -1124,7 +1124,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 2,
     "tags": [
       "components",
       "dynamic-ui",
@@ -1205,7 +1205,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "components",
       "dom",
@@ -1289,7 +1289,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "components",
       "forms",
@@ -1465,7 +1465,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "components",
       "state",
@@ -1556,7 +1556,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "components",
       "event-binding",
@@ -1719,7 +1719,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "components",
       "event-binding",
@@ -1803,7 +1803,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "components",
       "recursion",
@@ -1888,7 +1888,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "components",
       "event-binding",
@@ -1967,7 +1967,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "tags": [
       "components",
       "forms",
@@ -2061,7 +2061,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "components",
       "state",
@@ -2146,7 +2146,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "components",
       "state",

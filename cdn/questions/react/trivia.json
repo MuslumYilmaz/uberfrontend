@@ -4,7 +4,7 @@
     "title": "What core problem does React solve, and what does it deliberately NOT solve?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "React solves predictable UI rendering from state with a component model and reconciliation. It does not provide routing, data fetching, or state management out of the box. This clarity guides architecture decisions; the trade-off is adding routing or state libraries and testing their integration.",
     "answer": {
       "blocks": [
@@ -127,7 +127,7 @@
     "title": "Why are React components expected to be pure functions of props and state?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "Explain why React expects rendering to be a pure computation (UI = f(props, state, context)) and why side effects must be moved to effects/event handlers. Connect it to render vs commit, Concurrent Rendering, StrictMode double-invocation, memoization, and predictable reconciliation. Pure rendering improves predictability and testing, but side effects must live in effects/hooks. Test with StrictMode and rerenders.",
     "seo": {
       "title": "Why should React components be pure functions of props and state?",
@@ -245,7 +245,7 @@
     "title": "Functional vs class components in React: what actually differs?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "description": "Functional components are plain functions with hooks for state and lifecycle. Class components use this.state and lifecycle methods. Modern React favors function components with hooks. Trade-offs matter: hooks simplify composition, but legacy code still uses classes, so test lifecycle and performance behavior.",
     "answer": {
       "blocks": [
@@ -407,7 +407,7 @@
     "title": "How does JSX get transformed, and why doesn’t React require it?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 2,
     "description": "Explain what JSX actually is (syntax sugar), how a compiler (Babel/TypeScript) transforms it into plain JavaScript calls, and why React can work without JSX (you can call the element factory directly). Mention the two JSX runtimes (classic createElement vs automatic react/jsx-runtime) and the practical implications (React import, tooling, and why JSX isn’t HTML). Modern JSX transform removes the explicit React import, but tooling must be configured. Test build output and lint rules.",
     "answer": {
       "blocks": [
@@ -530,7 +530,7 @@
     "title": "What rules must a function follow to be treated as a React component?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "Explain what makes React treat a function as a component (element type), the JSX naming rule (Uppercase vs lowercase), what it must return, and the practical rules around calling it (don’t call directly if it uses Hooks). Include common runtime errors and gotchas. Uppercase naming and hook rules are common edge cases, so add tests for warnings and invalid returns.",
     "answer": {
       "blocks": [
@@ -798,7 +798,7 @@
     "title": "Why does a React component sometimes render nothing, and how does React interpret its return value?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 2,
     "description": "React renders nothing when a component returns null, false, or an empty fragment. This is useful for conditional UI without extra wrapper nodes. Covers: react, rendering, null, conditional, components. Return null/false for no UI, and keep layout stable. This affects conditional rendering, accessibility, and testing of empty states.",
     "answer": {
       "blocks": [
@@ -1185,7 +1185,7 @@
     "title": "Why useState() exists in React (and what it actually guarantees)",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "description": "Explain what useState() is for (local component state), what it returns, how updates trigger re-renders, and the key mental models interviewers expect: initial state (including lazy init), functional updates, batching, Object.is bailout, and why you must treat state as immutable.",
     "answer": {
       "blocks": [
@@ -1299,7 +1299,7 @@
     "title": "Why does React use event delegation instead of native listeners?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "Explain how React’s event system works (SyntheticEvent + root-level listeners) and why delegation is used: fewer listeners, easier updates for dynamic trees, consistent cross-browser behavior, and better integration with React’s scheduling/batching. Mention the React 17+ change (listeners attached to the root container instead of document) and common trade-offs (native vs synthetic, non-bubbling events).",
     "answer": {
       "blocks": [
@@ -1408,7 +1408,7 @@
     "title": "What is the significance of keys in lists in React?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Keys in React help identify which list items have changed, been added, or been removed. They make the reconciliation process efficient by allowing React to re-render only the modified elements instead of rebuilding the entire list.",
     "answer": {
       "blocks": [
@@ -1498,7 +1498,7 @@
     "title": "What is the difference between controlled and uncontrolled components?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 5,
     "description": "Controlled components in React are those whose form data is managed by React state, while uncontrolled components manage their own state internally through the DOM. Controlled components offer more predictable, testable, and synchronized data flow, whereas uncontrolled components are simpler but less flexible. Controlled inputs enable validation and state sync but can be verbose; uncontrolled inputs are simpler but harder to test. Test with form reset and validation.",
     "answer": {
       "blocks": [
@@ -1574,7 +1574,7 @@
     "title": "How can incorrect default vs named exports break a React application at runtime?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 2,
     "description": "Incorrectly mixing default exports and named exports can cause React to import the wrong thing (often undefined). The app may compile, but crash at runtime when React tries to render a component that isn’t actually a component. This often shows up as a runtime crash, so testing and lint rules are critical.",
     "seo": {
       "title": "Default vs named exports in React: why do import errors happen?",
@@ -1697,7 +1697,7 @@
     "title": "Conditional rendering in React: patterns, trade-offs, and gotchas",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Conditional rendering in React means showing different UI based on state or props. Common patterns include && for simple toggles, ternaries for two branches, and early returns for guards. This keeps rendering logic explicit and makes components easier to read. Conditional UI affects accessibility and layout stability. Test empty states, transitions, and focus behavior.",
     "answer": {
       "blocks": [
@@ -1873,7 +1873,7 @@
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Explain what useEffect is actually for (synchronizing with external systems), when it runs (after commit), how dependencies control re-running, and how cleanup prevents leaks. Cover common patterns (fetching, subscriptions, timers) and common pitfalls (stale closures, infinite loops, derived state in effects).",
     "answer": {
       "blocks": [
@@ -2034,7 +2034,7 @@
     "title": "How do fragments affect the rendered DOM and reconciliation?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "description": "Explain what React fragments change in the real DOM (no extra wrapper node) and what they still represent in React’s tree (a Fragment fiber). Connect this to reconciliation: identity/type matching, keys (especially keyed fragments in lists), and common remount/state-loss gotchas when adding/removing a fragment wrapper.",
     "answer": {
       "blocks": [
@@ -2174,7 +2174,7 @@
     "title": "What is the Virtual DOM in React, and how does it relate to reconciliation?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Explain what people mean by “Virtual DOM” in React (React element tree in memory), how React re-renders to produce a new tree, how reconciliation (diffing + heuristics + keys) computes changes, and how the commit phase applies DOM mutations. Emphasize: re-render ≠ DOM update.",
     "answer": {
       "blocks": [
@@ -2478,7 +2478,7 @@
     "title": "What bugs appear when state and props responsibilities are mixed?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "Explain what typically breaks when a component treats the same piece of data as both “props-owned” and “state-owned” (multiple sources of truth). Cover common symptoms (stale UI, input jumps, infinite loops, memo bugs) and the correct patterns (single source of truth, controlled vs uncontrolled, derived state). Confusing state vs props leads to bugs and re-render issues. Test with prop changes and derived state updates.",
     "answer": {
       "blocks": [
@@ -2680,7 +2680,7 @@
     "title": "Higher-order components (HOCs) in React: what are they and when should you use them?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 2,
     "description": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., injecting props, guarding access, subscriptions). They’re common in older/legacy React and some libraries (e.g., Redux connect), even though hooks are the modern default for new code. HOCs enable reuse but can complicate debugging and typing. Test prop collisions and display names.",
     "answer": {
       "blocks": [
@@ -2857,7 +2857,7 @@
     "title": "What is the difference between useMemo() and useCallback()?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "useMemo memoizes a computed value; useCallback memoizes a function reference. Use them to avoid expensive recalculations or re-renders, but only when it actually helps.",
     "seo": {
       "title": "useMemo vs useCallback in React: what is the difference?",
@@ -2944,7 +2944,7 @@
       "netflix"
     ],
     "difficulty": "hard",
-    "importance": 1,
+    "importance": 5,
     "description": "Preventing unnecessary re-renders in React is crucial for maintaining optimal performance. Re-renders occur when a component's state, props, or context changes, but React provides several techniques and patterns to minimize them — including memoization, pure components, stable references, and smart state management.",
     "answer": {
       "blocks": [
@@ -3036,7 +3036,7 @@
     "title": "What is the purpose of the React.StrictMode component?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "description": "React.StrictMode runs extra checks in development to surface unsafe lifecycles, deprecated APIs, and side-effect bugs. It does not affect production output. StrictMode catches unsafe patterns by double-invoking in dev; ensure effects are idempotent and tested.",
     "answer": {
       "blocks": [
@@ -3122,7 +3122,7 @@
     "title": "What is React reconciliation and how does it work?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Reconciliation is the process React uses to compare the current Virtual DOM with the previous one and determine the minimal set of changes needed to update the real DOM. It ensures React applications stay fast and efficient even when rendering complex UI trees.",
     "answer": {
       "blocks": [
@@ -3211,7 +3211,7 @@
     "title": "Explain how React’s diffing algorithm determines which parts of the DOM to update.",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "React’s diffing algorithm efficiently compares two Virtual DOM trees to find the minimal number of operations needed to synchronize the real DOM with the new state. It uses intelligent heuristics that make the process nearly O(n) instead of O(n³).",
     "answer": {
       "blocks": [
@@ -3300,7 +3300,7 @@
     "title": "What are render props and how do they differ from HOCs?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Render props and higher-order components (HOCs) are both React patterns used for code reuse. Render props use a function passed as a prop to control what to render, while HOCs wrap components to inject additional logic or data.",
     "answer": {
       "blocks": [
@@ -3388,7 +3388,7 @@
     "title": "What are React portals and when would you use them?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Portals render children into a DOM node outside the parent hierarchy, useful for modals, tooltips, and overlays while preserving React event bubbling. Portals help overlays but require focus management and accessibility checks; test event bubbling and scroll lock.",
     "answer": {
       "blocks": [
@@ -3474,7 +3474,7 @@
     "title": "How does React’s concurrent rendering improve performance?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Concurrent rendering is a feature introduced in React 18 that allows React to prepare multiple versions of the UI simultaneously, improving responsiveness and user experience. It makes rendering interruptible, enabling React to prioritize urgent updates and avoid UI blocking during heavy computations.",
     "answer": {
       "blocks": [
@@ -3563,7 +3563,7 @@
     "title": "Why do Hooks have rules? What breaks if you call Hooks conditionally?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 5,
     "description": "Explain why React Hooks must be called unconditionally and in the same order, how React internally matches Hook calls to state slots, and what breaks when that order changes. Hooks rely on call order, so violations cause subtle bugs. Test with lint rules and ensure stable hook order.",
     "answer": {
       "blocks": [
@@ -3766,7 +3766,7 @@
     "title": "What’s the difference between useRef and useState? When should each be used?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "description": "Explain how useState triggers re-renders and is used for UI state, while useRef holds a mutable value that persists across renders without re-rendering — and when each is the correct tool (DOM refs, timers, previous values, avoiding stale closures, and render-driving state).",
     "answer": {
       "blocks": [
@@ -3926,7 +3926,7 @@
     "title": "Why does React batch state updates? When does it not batch?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "Explain why React batches multiple state updates into a single render for performance, how automatic batching works (especially in React 18), and in which situations batching does not apply or can be disabled.",
     "answer": {
       "blocks": [
@@ -4064,7 +4064,7 @@
     "title": "Why is derived state considered an anti-pattern? When is it OK?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 4,
     "description": "Explain why storing data in state that can be computed from props/state creates duplication and sync bugs, the concept of single source of truth, and when derived state is acceptable (initialization, controlled/uncontrolled transitions, memoized expensive computations, and snapshotting external values).",
     "seo": {
       "title": "Why is derived state an anti-pattern in React?",
@@ -4212,7 +4212,7 @@
     "title": "Why does Context cause performance issues? How do you fix them?",
     "technology": "react",
     "difficulty": "hard",
-    "importance": 2,
+    "importance": 4,
     "description": "Explain why Context updates can trigger re-renders across many consumers (especially when the Provider value identity changes), common pitfalls (inline objects/functions), and practical fixes: memoizing Provider values, splitting contexts, narrowing provider scope, memoizing consumers, and using selector-based patterns when needed.",
     "answer": {
       "blocks": [
@@ -4359,7 +4359,7 @@
     "title": "What problem do Error Boundaries solve? What don’t they catch?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Explain how React Error Boundaries prevent a whole app from crashing due to rendering errors by showing a fallback UI, what they catch (render/lifecycle/constructor errors in descendants), and what they do NOT catch (event handlers, async code, SSR, and errors inside the boundary itself).",
     "answer": {
       "blocks": [
@@ -4484,7 +4484,7 @@
     "title": "Why does StrictMode double-invoke effects in dev? What bugs does it expose?",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "Explain why React StrictMode intentionally double-invokes certain lifecycles and effects in development, how this simulates mount–unmount–remount, and what kinds of side-effect and cleanup bugs it is designed to reveal.",
     "answer": {
       "blocks": [
@@ -4614,7 +4614,7 @@
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "Explain the timing difference between useEffect and useLayoutEffect in the render/commit/paint pipeline, why useLayoutEffect blocks painting, and when it is required (DOM measurements, preventing visual flicker) versus when useEffect is preferred.",
     "answer": {
       "blocks": [
@@ -4759,7 +4759,7 @@
       "apple"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "description": "Interviewers want to see that you can choose Hooks intentionally: state, effects, refs, memoization, context, reducers, and concurrent features. Explain what each Hook is for, when you reach for it, and the trade-offs.",
     "answer": {
       "blocks": [
@@ -4861,7 +4861,7 @@
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "description": "React 18 introduced the concurrent rendering foundation plus new APIs like createRoot, automatic batching, transitions, and new hooks. Explain the key changes and why they matter to users and developers.",
     "answer": {
       "blocks": [

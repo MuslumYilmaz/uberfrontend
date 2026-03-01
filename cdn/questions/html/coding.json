@@ -5,7 +5,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "html",
       "basics",
@@ -103,7 +103,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 3,
     "tags": [
       "html",
       "display",
@@ -207,7 +207,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "html",
       "links",
@@ -308,7 +308,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 3,
     "tags": [
       "html",
       "lists",
@@ -404,7 +404,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 5,
     "tags": [
       "html",
       "semantics",
@@ -504,7 +504,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "tags": [
       "html",
       "tables",
@@ -605,7 +605,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "accessibility",
       "beginner",
@@ -693,7 +693,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "html",
       "forms",
@@ -803,7 +803,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "html",
       "seo",
@@ -909,7 +909,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "accessibility",
       "aria-describedby",

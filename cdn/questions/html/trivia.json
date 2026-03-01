@@ -17,7 +17,7 @@
       "tree",
       "javascript"
     ],
-    "importance": 1,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -122,7 +122,7 @@
       "structure",
       "syntax"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -237,7 +237,7 @@
       "seo",
       "structure"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -345,7 +345,7 @@
       "inline",
       "block"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -451,7 +451,7 @@
       "seo",
       "head"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -552,7 +552,7 @@
       "images",
       "seo"
     ],
-    "importance": 1,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -647,7 +647,7 @@
       "seo",
       "structure"
     ],
-    "importance": 1,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -762,7 +762,7 @@
     "title": "What is the difference between block-level and inline elements?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "Block-level elements start on a new line and take up the full width available, while inline elements stay within a line without breaking the flow of text. They play different roles in structuring and styling HTML documents. Choosing the right display affects layout, accessibility semantics, and performance; test with nested content.",
     "seo": {
       "title": "Block vs inline elements in HTML: what is the difference?",
@@ -839,7 +839,7 @@
     "title": "What does the <br> tag do?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 2,
     "description": "The &lt;br&gt; tag inserts a line break inside text content. It’s an empty element and should be used for line breaks in prose, not for layout (use CSS for spacing). Use it only for semantic line breaks (addresses, poems), not layout. Overuse can hurt accessibility and maintainability; test with screen readers.",
     "seo": {
       "title": "What does the br tag do in HTML?",
@@ -919,7 +919,7 @@
     "title": "What is the use of the <a> tag?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "The &lt;a&gt; (anchor) tag in HTML is used to create hyperlinks that allow users to navigate from one page or resource to another. It is one of the most essential tags for connecting documents and enabling web navigation.",
     "seo": {
       "title": "What is the a tag used for in HTML?",
@@ -1013,7 +1013,7 @@
     "title": "What is the href attribute used for?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "The `href` (Hypertext Reference) attribute in HTML defines the target destination of a link or resource. It is most commonly used within the `&lt;a&gt;` (anchor) tag to specify the URL a user will navigate to when clicking the link.",
     "seo": {
       "title": "What is the href attribute used for in HTML?",
@@ -1106,7 +1106,7 @@
     "title": "What is the purpose of the <meta> tag?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 5,
     "description": "The &lt;meta&gt; tag provides metadata—data about the webpage itself—such as character encoding, viewport settings, description, keywords, and author information. It helps browsers, search engines, and social media platforms understand and display the page correctly.",
     "seo": {
       "title": "What is the meta tag used for in HTML?",
@@ -1225,7 +1225,7 @@
     "title": "What is the difference between <ol>, <ul>, and <dl>?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "The &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; tags are all list-related elements in HTML, but they serve different purposes. &lt;ol&gt; defines an ordered (numbered) list, &lt;ul&gt; defines an unordered (bulleted) list, and &lt;dl&gt; defines a description (definition) list used for terms and their definitions.",
     "seo": {
       "title": "What is the difference between ol ul and dl?",
@@ -1335,7 +1335,7 @@
     "title": "What is the default method for form submission in HTML?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "The default HTML form method is GET. Form fields are encoded into the URL query string unless method=\"post\" is specified. Default GET can leak data in URLs, so consider security and privacy. Test with network tools to verify method and payload.",
     "answer": {
       "blocks": [
@@ -1542,7 +1542,7 @@
     "title": "What is the placeholder attribute used for in input fields?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 3,
     "description": "The placeholder attribute provides a short hint that describes the expected value of an input field. It appears inside the input box as gray text until the user enters a value, helping users understand what kind of data to type.",
     "seo": {
       "title": "What is the placeholder attribute in HTML input?",
@@ -1627,7 +1627,7 @@
     "title": "What is the difference between id and class attributes in HTML?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "Both id and class are used to identify HTML elements, but they serve different purposes. The id attribute uniquely identifies a single element, while the class attribute groups multiple elements under a shared name for styling or scripting.",
     "seo": {
       "title": "What is the difference between id and class in HTML?",
@@ -1719,7 +1719,7 @@
     "title": "How does the <iframe> tag work and what is it used for?",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "description": "The &lt;iframe&gt; (inline frame) tag allows you to embed another HTML page within the current page. It’s commonly used to display external content such as videos, maps, ads, or other web pages without leaving the parent site.",
     "seo": {
       "title": "What is an iframe in HTML and how does it work?",
@@ -1832,7 +1832,7 @@
     "title": "What is the purpose of the data-* attribute?",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "data-* attributes store custom data on elements. They are accessible via dataset in JavaScript (e.g., el.dataset.userId) and are useful for hooks without affecting semantics. Use data-* as lightweight hooks, but test parsing and accessibility, and avoid sensitive data.",
     "seo": {
       "title": "What is the data attribute in HTML used for?",
@@ -1934,7 +1934,7 @@
     "title": "How can you make an image clickable in HTML?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "You can make an image clickable by wrapping it in an anchor tag. This creates a linked image that behaves like a normal link and is accessible when you include alt text and descriptive link context. Use rel=noopener when opening in a new tab.",
     "seo": {
       "title": "How do you make an image clickable in HTML?",
@@ -2037,7 +2037,7 @@
     "title": "What is the difference between HTML and XHTML?",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 2,
     "description": "HTML and XHTML are both markup languages for creating web pages, but XHTML is a stricter and more XML-based version of HTML. It enforces well-formed syntax, case sensitivity, and proper closing of all tags. XHTML enforces stricter syntax, which can reduce ambiguity but adds complexity. For modern web apps, test parsing behavior across browsers.",
     "seo": {
       "title": "HTML vs XHTML: what is the difference?",
@@ -2145,7 +2145,7 @@
     "title": "What is the purpose of the target attribute in an <a> tag?",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 4,
     "description": "The target attribute controls where a link opens. target=\"_blank\" opens a new tab/window; target=\"_self\" is the default. For _blank, add rel=\"noopener noreferrer\" for security. New tabs are a UX and security trade-off, so test keyboard flow and rel attributes.",
     "seo": {
       "title": "What does target _blank do in an anchor tag?",
@@ -2267,7 +2267,7 @@
     "title": "What is the purpose of the srcset attribute in the <img> tag?",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "description": "srcset provides multiple image sources for different resolutions or sizes. Combined with sizes, it lets the browser choose the best image for the device and viewport. This impacts performance and data usage, so test the chosen image under throttled network.",
     "seo": {
       "title": "What is srcset in the HTML img tag?",
@@ -2357,7 +2357,7 @@
     "title": "How does the browser handle HTML parsing and rendering order?",
     "technology": "html",
     "difficulty": "hard",
-    "importance": 1,
+    "importance": 4,
     "description": "Browsers parse HTML top-to-bottom, building the DOM as they go. CSS can block rendering, and synchronous scripts can block parsing unless deferred or async.",
     "seo": {
       "title": "How does browser HTML parsing and rendering work?",
@@ -2449,7 +2449,7 @@
     "title": "What are ARIA roles and why are they important in modern HTML?",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 5,
     "description": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren’t available, but should not replace proper HTML tags. ARIA should match real behavior; incorrect roles hurt accessibility. Test with keyboard navigation and screen readers.",
     "seo": {
       "title": "What are ARIA roles in HTML?",
@@ -2534,7 +2534,7 @@
     "title": "What is the Shadow DOM and how does it relate to web components?",
     "technology": "html",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 2,
     "description": "The Shadow DOM is a browser feature that encapsulates a component’s internal structure, keeping its styles and markup isolated from the main document. It’s a core part of Web Components for building reusable, self-contained UI elements. It improves style isolation but can complicate theming and testing; be mindful of accessibility and focus behavior.",
     "seo": {
       "title": "What is Shadow DOM in web components?",
@@ -2631,7 +2631,7 @@
       "keyboard",
       "labels"
     ],
-    "importance": 1,
+    "importance": 5,
     "companies": [
       "apple"
     ],
@@ -2707,7 +2707,7 @@
       "tree",
       "browser"
     ],
-    "importance": 1,
+    "importance": 4,
     "companies": [
       "meta"
     ],

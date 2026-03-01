@@ -5,7 +5,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -84,7 +84,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "vue",
       "forms",
@@ -171,7 +171,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "vue",
       "lists",
@@ -259,7 +259,7 @@
       "google"
     ],
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "components",
@@ -345,7 +345,7 @@
       "amazon"
     ],
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -422,7 +422,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 3,
     "tags": [
       "vue",
       "components",
@@ -508,7 +508,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "vue",
       "components",
@@ -591,7 +591,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "vue",
       "components",
@@ -674,7 +674,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "vue",
       "composition-api",
@@ -761,7 +761,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "vue",
       "forms",
@@ -854,7 +854,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 4,
     "tags": [
       "vue",
       "components",
@@ -943,7 +943,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 5,
     "tags": [
       "vue",
       "composition-api",
@@ -1033,7 +1033,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -1116,7 +1116,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -1197,7 +1197,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "vue",
       "components",
@@ -1279,7 +1279,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 1,
+    "importance": 4,
     "tags": [
       "vue",
       "composition-api",
@@ -1378,7 +1378,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "tags": [
       "vue",
       "components",
@@ -1460,7 +1460,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "vue",
       "composition-api",
@@ -1551,7 +1551,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -1635,7 +1635,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "vue",
       "reactivity",
@@ -1716,7 +1716,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "vue",
       "composition-api",
@@ -1798,7 +1798,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -1971,7 +1971,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 2,
     "tags": [
       "vue",
       "composition-api",
