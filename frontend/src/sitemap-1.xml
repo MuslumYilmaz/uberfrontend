@@ -889,10 +889,25 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-arrow-functions</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-arrow-vs-regular-functions</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-async-await-example-when-promise-is-preferred</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-async-race-conditions</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-big-o-notation</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-bigint-data-type</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-block-scoped-or-function-scoped</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-calback-hell-resolved-with-promise</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-call-apply-bind</loc>
@@ -901,10 +916,19 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-callbacks</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-check-data-type-with-typeof</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-classes</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-closures</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-compare-two-objects</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-cookie-options</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-cookie-sessionstorage-localstorage</loc>
@@ -964,6 +988,9 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-map-filter-reduce</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-map-set-get</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-map-vs-object</loc>
   </url>
   <url>
@@ -985,6 +1012,9 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-nan-property</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-null-coalescing-operator</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-null-undefined-undeclared</loc>
   </url>
   <url>
@@ -997,10 +1027,16 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-object-destructuring</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-passing-by-value-and-by-reference</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-performance-profiling-workflow</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-promise-combinators-all-allsettled-race-any</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-promise-fundamental-understanding</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-promises-async-await</loc>
@@ -1015,10 +1051,19 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-queue-vs-stack</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-repaint-reflow</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-secure-cors-handling</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-shallow-vs-deep-copy</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-spread-vs-rest-parameters</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-static-vs-dynamic-typing</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-testing-edge-cases-strategy</loc>
@@ -1030,10 +1075,25 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-tree-shaking</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-truthy-falsy-pass-by-value-reference-strict-equality-use-case</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-type-coercion</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-undefined-vs-not-defined</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-use-strict-describe</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-var-let-const-hoisting</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-web-workers-basics</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-why-eval-function-considered-dangerous</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-xss-dom-sinks</loc>

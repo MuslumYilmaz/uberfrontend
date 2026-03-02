@@ -96,13 +96,18 @@ const METRIC_PATTERNS = [
 ];
 
 const RESPONSIBLE_FOR_RE = /^responsible\s+for\b/i;
-const STACK_WINDOW_LINES = 8;
+const STACK_WINDOW_LINES = 4;
 const STACK_EXCEPTION_PATTERNS = [
   /angular\s+frontend\s*(?:and|\+)\s*node\s+backend/i,
   /react(?:\s+app)?\s+(?:embedded|inside)\s+in\s+angular\s+shell/i,
   /migrated\s+from\s+react\s+to\s+angular/i,
   /\bfrontend\b[\s\w,-]{0,30}\bbackend\b/i,
   /\bbackend\b[\s\w,-]{0,30}\bfrontend\b/i,
+];
+const STACK_CONTEXT_CLARIFIER_PATTERNS = [
+  /\b(?:frontend|backend|full[- ]stack|api|service|services|server|micro[- ]frontend|shell)\b/i,
+  /\b(?:using|via)\s+(?:angular|react|next(?:\.js)?|mern|mean)\b/i,
+  /\b(?:migrat(?:ed|ion)|integrat(?:ed|ion)|embedded|hybrid)\b/i,
 ];
 const STACK_RULES = [
   {
@@ -331,6 +336,14 @@ function assignRegion(section, line, rank) {
   return 'other';
 }
 
+function stackSignalConfidence(windowText, windowLineCount) {
+  if (STACK_CONTEXT_CLARIFIER_PATTERNS.some((regex) => regex.test(windowText))) {
+    return 'low';
+  }
+  if (windowLineCount <= 2) return 'high';
+  return 'medium';
+}
+
 function buildStackContradictions(lineEntries) {
   const scopedLines = (lineEntries || []).filter((entry) => entry.region === 'experience');
   const byBlock = new Map();
@@ -369,6 +382,7 @@ function buildStackContradictions(lineEntries) {
             right: rule.rightLabel,
             lineStart,
             lineEnd,
+            confidence: stackSignalConfidence(windowText, windowLines.length),
             snippet: windowText,
             reason: `matched ${rule.leftLabel} + ${rule.rightLabel} within ${windowLines.length} lines`,
           });

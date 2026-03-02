@@ -6,6 +6,11 @@ function formatPercent(value) {
   return `${Math.round(numeric * 100)}%`;
 }
 
+const NUMERIC_RATIO_TARGET = 0.2;
+const NUMERIC_RATIO_TOLERANCE = 0.03;
+const OUTCOME_RATIO_TARGET = 0.25;
+const OUTCOME_RATIO_TOLERANCE = 0.05;
+
 function topLineEvidence(ctx, count = 2) {
   return (ctx.lineEntries || [])
     .filter((line) => !line.isHeading)
@@ -266,24 +271,33 @@ function createRules() {
       severity: 'warn',
       category: 'impact',
       scoreDelta: -6,
-      evaluate: (ctx) => (ctx.bulletCount >= 6 && ctx.numericBulletRatio < 0.2 ? {
-        title: 'Low quantified impact',
-        message: `Only ${formatPercent(ctx.numericBulletRatio)} of bullets include metrics.`,
-        why: 'Quantified impact strongly improves credibility for senior candidates.',
-        fix: 'Add metrics such as %, latency, conversion, scale, or cost savings.',
-        evidence: topBulletEvidence(
-          (ctx.bulletLines || []).filter((line) => !line.hasMetric),
-          2,
-          'bullet without metric'
-        ),
-      } : null),
+      evaluate: (ctx) => {
+        if (ctx.bulletCount < 6 || ctx.numericBulletRatio >= NUMERIC_RATIO_TARGET) return null;
+
+        const borderline = ctx.numericBulletRatio >= (NUMERIC_RATIO_TARGET - NUMERIC_RATIO_TOLERANCE);
+        return {
+          severity: borderline ? 'info' : 'warn',
+          scoreDelta: borderline ? -2 : -6,
+          title: borderline ? 'Quantified impact is slightly below target' : 'Low quantified impact',
+          message: borderline
+            ? `${formatPercent(ctx.numericBulletRatio)} of bullets include metrics (target: ${formatPercent(NUMERIC_RATIO_TARGET)}).`
+            : `Only ${formatPercent(ctx.numericBulletRatio)} of bullets include metrics.`,
+          why: 'Quantified impact strongly improves credibility for senior candidates.',
+          fix: 'Add metrics such as %, latency, conversion, scale, or cost savings.',
+          evidence: topBulletEvidence(
+            (ctx.bulletLines || []).filter((line) => !line.hasMetric),
+            2,
+            'bullet without metric'
+          ),
+        };
+      },
     },
     {
       id: 'low_numeric_density_small_sample',
       severity: 'info',
       category: 'impact',
       scoreDelta: -1,
-      evaluate: (ctx) => (ctx.bulletCount > 0 && ctx.bulletCount < 6 && ctx.numericBulletRatio < 0.2 ? {
+      evaluate: (ctx) => (ctx.bulletCount > 0 && ctx.bulletCount < 6 && ctx.numericBulletRatio < NUMERIC_RATIO_TARGET ? {
         title: 'Add more bullets before metric-density scoring',
         message: 'The CV has too few bullets for strong metric-density analysis.',
         why: 'Small bullet sets can produce noisy metric-density signals.',
@@ -364,7 +378,7 @@ function createRules() {
         const totalBullets = ctx.experienceBulletCount;
         if (totalBullets === 0) return null;
 
-        if (totalBullets < 6 && ctx.outcomeRatio < 0.25) {
+        if (totalBullets < 6 && ctx.outcomeRatio < OUTCOME_RATIO_TARGET) {
           return {
             severity: 'info',
             scoreDelta: -1,
@@ -376,7 +390,20 @@ function createRules() {
           };
         }
 
-        if (ctx.outcomeRatio >= 0.25) return null;
+        if (ctx.outcomeRatio >= OUTCOME_RATIO_TARGET) return null;
+
+        const borderlineOutcome = ctx.outcomeRatio >= (OUTCOME_RATIO_TARGET - OUTCOME_RATIO_TOLERANCE);
+        if (borderlineOutcome) {
+          return {
+            severity: 'info',
+            scoreDelta: -1,
+            title: 'Outcome language is slightly below target',
+            message: `${formatPercent(ctx.outcomeRatio)} of experience bullets show outcomes (target: ${formatPercent(OUTCOME_RATIO_TARGET)}).`,
+            why: 'Recruiters prioritize outcomes over task descriptions.',
+            fix: 'Add one more result-oriented bullet per role using outcome verbs and impact details.',
+            evidence: topBulletEvidence(ctx.bulletsWithoutOutcome, 2, 'bullet lacks outcome evidence'),
+          };
+        }
 
         const extractionLow = ctx.extractionQuality?.level === 'low';
         const confidentlyDetectedBullets = totalBullets >= 8 && !ctx.mergedBullets?.suspected;
@@ -533,51 +560,81 @@ function createRules() {
       severity: 'warn',
       category: 'consistency',
       scoreDelta: -5,
-      evaluate: (ctx) => ((ctx.stackContradictions || []).length > 0 ? {
-        title: 'Potential stack contradiction',
-        message: 'Conflicting stack acronyms/frameworks were detected in nearby lines.',
-        why: 'Contradictory stack descriptions can confuse ATS and reviewers.',
-        fix: 'Clarify architecture boundaries (frontend vs backend) or correct the acronym.',
-        evidence: ctx.stackContradictions.map((item) => ({
-          lineStart: item.lineStart,
-          lineEnd: item.lineEnd,
-          snippet: item.snippet,
-          reason: item.reason,
-        })),
-      } : null),
+      evaluate: (ctx) => {
+        const contradictions = ctx.stackContradictions || [];
+        if (!contradictions.length) return null;
+
+        const hasHighConfidence = contradictions.some((item) => item.confidence === 'high');
+        const hasMediumConfidence = contradictions.some((item) => item.confidence === 'medium');
+        const softSignalOnly = !hasHighConfidence && !hasMediumConfidence;
+
+        return {
+          severity: softSignalOnly ? 'info' : 'warn',
+          scoreDelta: hasHighConfidence ? -5 : (hasMediumConfidence ? -3 : -2),
+          title: softSignalOnly ? 'Mixed stack context detected' : 'Potential stack contradiction',
+          message: softSignalOnly
+            ? 'Multiple stack terms were found with architecture context cues. Clarify boundaries to avoid ATS confusion.'
+            : 'Conflicting stack acronyms/frameworks were detected in nearby lines.',
+          why: 'Ambiguous stack descriptions can confuse ATS and reviewers.',
+          fix: 'Clarify architecture boundaries (frontend vs backend) and migration context where relevant.',
+          evidence: contradictions.map((item) => ({
+            lineStart: item.lineStart,
+            lineEnd: item.lineEnd,
+            snippet: item.snippet,
+            reason: item.reason,
+          })),
+        };
+      },
     },
     {
       id: 'keyword_missing',
       severity: 'warn',
       category: 'keywords',
       scoreDelta: -6,
-      evaluate: (ctx) => (ctx.keywordCoverage.weightedCoveragePct < 50 ? {
-        title: 'Keyword coverage is low',
-        message: `Weighted keyword coverage is ${ctx.keywordCoverage.weightedCoveragePct}% (experience-weighted).`,
-        why: 'Role-aligned terms improve ATS matching for interview screening.',
-        fix: 'Add relevant role keywords naturally in experience and project bullets.',
-        explanation: `Missing critical keywords (sample): ${ctx.keywordCoverage.missingByTier.critical.slice(0, 6).join(', ') || 'none'}.`,
-        evidence: [{
-          snippet: `Missing critical: ${ctx.keywordCoverage.missingByTier.critical.slice(0, 6).join(', ') || 'none'}`,
-          reason: 'critical keyword gap',
-        }],
-      } : null),
+      evaluate: (ctx) => {
+        const missingCritical = ctx.keywordCoverage.missingByTier.critical;
+        if (ctx.keywordCoverage.weightedCoveragePct >= 50 || missingCritical.length > 0) return null;
+
+        const missingNonCritical = [
+          ...ctx.keywordCoverage.missingByTier.strong,
+          ...ctx.keywordCoverage.missingByTier.nice,
+        ].slice(0, 6);
+
+        return {
+          title: 'Keyword coverage is low',
+          message: `Weighted keyword coverage is ${ctx.keywordCoverage.weightedCoveragePct}% (experience-weighted).`,
+          why: 'Role-aligned terms improve ATS matching for interview screening.',
+          fix: 'Add relevant role keywords naturally in experience and project bullets.',
+          explanation: `Coverage gaps are mostly in strong/nice terms (sample): ${missingNonCritical.join(', ') || 'none'}.`,
+          evidence: [{
+            snippet: `Missing non-critical: ${missingNonCritical.join(', ') || 'none'}`,
+            reason: 'non-critical keyword gap',
+          }],
+        };
+      },
     },
     {
       id: 'keyword_missing_critical',
       severity: 'warn',
       category: 'keywords',
       scoreDelta: -4,
-      evaluate: (ctx) => (ctx.keywordCoverage.missingByTier.critical.length > 0 ? {
-        title: 'Critical keywords missing',
-        message: 'Some high-priority role keywords are missing.',
-        why: 'Critical keywords are often used as first-pass ATS filters.',
-        fix: 'Include critical terms where they were used in real work.',
-        evidence: [{
-          snippet: `Missing critical: ${ctx.keywordCoverage.missingByTier.critical.slice(0, 8).join(', ')}`,
-          reason: 'critical keywords not found',
-        }],
-      } : null),
+      evaluate: (ctx) => {
+        const missingCritical = ctx.keywordCoverage.missingByTier.critical;
+        if (missingCritical.length === 0) return null;
+
+        const severeGap = missingCritical.length >= 3;
+        return {
+          scoreDelta: severeGap ? -6 : -4,
+          title: 'Critical keywords missing',
+          message: 'Some high-priority role keywords are missing.',
+          why: 'Critical keywords are often used as first-pass ATS filters.',
+          fix: 'Include critical terms where they were used in real work.',
+          evidence: [{
+            snippet: `Missing critical: ${missingCritical.slice(0, 8).join(', ')}`,
+            reason: 'critical keywords not found',
+          }],
+        };
+      },
     },
     {
       id: 'skills_only_keywords',

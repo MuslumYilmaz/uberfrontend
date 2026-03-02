@@ -336,7 +336,7 @@
         "missing_skills_section": false,
         "missing_summary_section": false,
         "no_outcome_language": false,
-        "keyword_missing": true,
+        "keyword_missing": false,
         "keyword_missing_critical": true
       }
     },
@@ -347,7 +347,7 @@
         "missing_skills_section": false,
         "missing_summary_section": false,
         "no_outcome_language": false,
-        "keyword_missing": true,
+        "keyword_missing": false,
         "keyword_missing_critical": true
       }
     },
@@ -358,7 +358,7 @@
         "missing_skills_section": false,
         "missing_summary_section": false,
         "no_outcome_language": false,
-        "keyword_missing": true,
+        "keyword_missing": false,
         "keyword_missing_critical": true
       }
     },
@@ -369,7 +369,7 @@
         "missing_skills_section": false,
         "missing_summary_section": false,
         "no_outcome_language": false,
-        "keyword_missing": true,
+        "keyword_missing": false,
         "keyword_missing_critical": true
       }
     },
@@ -380,7 +380,7 @@
         "missing_skills_section": false,
         "missing_summary_section": false,
         "no_outcome_language": false,
-        "keyword_missing": true,
+        "keyword_missing": false,
         "keyword_missing_critical": true
       }
     },
@@ -391,7 +391,7 @@
         "missing_skills_section": false,
         "missing_summary_section": false,
         "no_outcome_language": false,
-        "keyword_missing": true,
+        "keyword_missing": false,
         "keyword_missing_critical": true
       }
     }
