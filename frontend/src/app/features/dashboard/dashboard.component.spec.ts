@@ -182,6 +182,15 @@ describe('DashboardComponent', () => {
     expect(gamification.completeDailyChallenge).toHaveBeenCalledWith('react-counter');
   });
 
+  it('keeps daily completion feedback visible after refresh', () => {
+    const component = fixture.componentInstance;
+    component.markDailyChallengeComplete();
+    fixture.detectChanges();
+
+    expect(component.dailyCompleteMessage()).toBe('Daily challenge completed.');
+    expect(component.dailyCompleteError()).toBeNull();
+  });
+
   it('saves daily challenge tech preference with weekly settings payload', () => {
     const component = fixture.componentInstance;
     component.dailyChallengeTech.set('vue');

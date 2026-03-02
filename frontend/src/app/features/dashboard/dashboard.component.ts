@@ -726,10 +726,11 @@ export class DashboardComponent {
     return utcDate.toISOString().slice(0, 10);
   }
 
-  private loadGamification(force = false) {
+  private loadGamification(force = false, opts?: { preserveDailyCompleteFeedback?: boolean }) {
     if (!this.authService.isLoggedIn()) return;
     this.gamificationLoading.set(true);
     this.gamificationError.set(null);
+    const preserveDailyCompleteFeedback = opts?.preserveDailyCompleteFeedback === true;
 
     this.gamification
       .getDashboard({ force })
@@ -742,8 +743,10 @@ export class DashboardComponent {
           this.weeklyGoalTarget.set(payload?.weeklyGoal?.target || 10);
           this.showStreakWidget.set(payload?.settings?.showStreakWidget !== false);
           this.dailyChallengeTech.set((payload?.settings?.dailyChallengeTech as DailyChallengeTech) || 'auto');
-          this.dailyCompleteMessage.set(null);
-          this.dailyCompleteError.set(null);
+          if (!preserveDailyCompleteFeedback) {
+            this.dailyCompleteMessage.set(null);
+            this.dailyCompleteError.set(null);
+          }
 
           if (!this.dashboardTracked) {
             this.analytics.track('dashboard_viewed', {
@@ -813,7 +816,7 @@ export class DashboardComponent {
             });
           }
           if (res.levelUp) this.analytics.track('level_up', { source: 'daily_challenge' });
-          this.loadGamification(true);
+          this.loadGamification(true, { preserveDailyCompleteFeedback: true });
         },
         error: (err) => {
           this.dailyCompletePending.set(false);
