@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';
@@ -41,8 +41,9 @@ type VisibleEntry = {
       <!-- CENTER (Prepare trigger) -->
       <div class="fah-center">
         <button
+          #desktopStudyTrigger
           class="fah-navlink"
-          (click)="toggleMega()"
+          (click)="toggleMega($event)"
           aria-haspopup="menu"
           [attr.aria-expanded]="megaOpen()"
           aria-controls="prepare-mega">
@@ -108,9 +109,10 @@ type VisibleEntry = {
           </a>
           <button
             type="button"
+            #mobileStudyTrigger
             class="fah-iconbtn"
             data-testid="header-mobile-study-button"
-            (click)="toggleMega()"
+            (click)="toggleMega($event)"
             aria-haspopup="menu"
             [attr.aria-expanded]="megaOpen()"
             aria-controls="prepare-mega"
@@ -190,6 +192,7 @@ type VisibleEntry = {
       <div class="fah-backdrop" (click)="closeAll()"></div>
       <div id="prepare-mega" class="study-panel" (click)="$event.stopPropagation()" (keydown.escape)="closeAll()"
            (keydown.arrowdown)="moveActive(1)" (keydown.arrowup)="moveActive(-1)" (keydown.enter)="activateActive()"
+           [style.left.px]="megaAnchorX()"
            tabindex="-1" role="menu" aria-label="Study menu">
         <div class="study-search">
           <i class="pi pi-search"></i>
@@ -358,6 +361,9 @@ type VisibleEntry = {
   `
 })
 export class HeaderComponent implements OnInit {
+  @ViewChild('desktopStudyTrigger') desktopStudyTrigger?: ElementRef<HTMLButtonElement>;
+  @ViewChild('mobileStudyTrigger') mobileStudyTrigger?: ElementRef<HTMLButtonElement>;
+
   private doc = inject(DOCUMENT);
   private router = inject(Router);
 
@@ -377,6 +383,7 @@ export class HeaderComponent implements OnInit {
 
   // menus
   megaOpen = signal(false);
+  megaAnchorX = signal<number | null>(null);
   profileOpen = signal(false);
   mobileNavOpen = signal(false);
 
@@ -642,17 +649,32 @@ export class HeaderComponent implements OnInit {
     this.profileOpen.set(which === 'profile');
     this.mobileNavOpen.set(which === 'mobile');
     if (which === 'mega') {
+      this.syncMegaAnchor();
       this.activeIndex.set(-1);
       this.browseAllOpen.set(false);
       this.loadRecents();
+    } else {
+      this.megaAnchorX.set(null);
     }
   }
 
-  toggleMega() { this.openOnly(this.megaOpen() ? null : 'mega'); }
+  toggleMega(ev?: Event) {
+    if (this.megaOpen()) {
+      this.openOnly(null);
+      return;
+    }
+    this.syncMegaAnchor(ev);
+    this.openOnly('mega');
+  }
   toggleProfileMenu() { this.openOnly(this.profileOpen() ? null : 'profile'); }
   toggleMobileMenu() { this.openOnly(this.mobileNavOpen() ? null : 'mobile'); }
 
   closeAll() { this.openOnly(null); }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    if (this.megaOpen()) this.syncMegaAnchor();
+  }
 
   logout() {
     this.auth.logout().subscribe();
@@ -708,5 +730,56 @@ export class HeaderComponent implements OnInit {
     const next = [it, ...existing].slice(0, 5);
     this.recentItems.set(next);
     try { localStorage.setItem(this.recentKey, JSON.stringify(next.map(x => x.key))); } catch { }
+  }
+
+  private syncMegaAnchor(ev?: Event) {
+    const viewportWidth = this.doc.defaultView?.innerWidth ?? 1280;
+    const panelWidth = Math.min(viewportWidth * 0.92, 640);
+    const edgePadding = 12;
+    const minCenter = edgePadding + panelWidth / 2;
+    const maxCenter = viewportWidth - edgePadding - panelWidth / 2;
+
+    const desiredCenter =
+      this.readEventCenter(ev) ??
+      this.findVisibleStudyTriggerCenter() ??
+      viewportWidth / 2;
+
+    const clampedCenter = minCenter <= maxCenter
+      ? Math.min(maxCenter, Math.max(minCenter, desiredCenter))
+      : viewportWidth / 2;
+
+    this.megaAnchorX.set(Math.round(clampedCenter));
+  }
+
+  private readEventCenter(ev?: Event): number | null {
+    const target = ev?.currentTarget;
+    if (!(target instanceof HTMLElement)) return null;
+    const rect = target.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    return rect.left + rect.width / 2;
+  }
+
+  private findVisibleStudyTriggerCenter(): number | null {
+    const desktop = this.desktopStudyTrigger?.nativeElement;
+    if (desktop && this.isVisible(desktop)) {
+      const rect = desktop.getBoundingClientRect();
+      return rect.left + rect.width / 2;
+    }
+
+    const mobile = this.mobileStudyTrigger?.nativeElement;
+    if (mobile && this.isVisible(mobile)) {
+      const rect = mobile.getBoundingClientRect();
+      return rect.left + rect.width / 2;
+    }
+
+    return null;
+  }
+
+  private isVisible(el: HTMLElement): boolean {
+    const rect = el.getBoundingClientRect();
+    if (!rect.width || !rect.height) return false;
+    const style = this.doc.defaultView?.getComputedStyle(el);
+    if (!style) return true;
+    return style.display !== 'none' && style.visibility !== 'hidden';
   }
 }

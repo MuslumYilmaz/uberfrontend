@@ -173,7 +173,6 @@ type CtaMode = 'emit' | 'navigatePricing';
       <p class="tiny muted pr-footnote" *ngIf="checkoutNotice" data-testid="checkout-notice">
         {{ checkoutNotice }}
       </p>
-    </section>
 
       <ng-template #riskReversalBlock>
         <section class="risk-reversal">
@@ -224,6 +223,7 @@ type CtaMode = 'emit' | 'navigatePricing';
           View full changelog
         </a>
       </section>
+    </section>
 
       <app-login-required-dialog
         [(visible)]="loginRequiredOpen"

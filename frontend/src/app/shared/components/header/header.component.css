@@ -106,11 +106,16 @@
 
 .fah-menu{
   position:absolute; top:44px; left:0; min-width:220px;
+  max-width:min(280px, calc(100vw - 24px));
   background: var(--uf-surface);
   border:1px solid var(--fah-border); border-radius:12px;
   box-shadow: var(--uf-card-shadow-strong); padding:10px; z-index:60;
 }
-.fah-profile-right .fah-menu{ right:0; left:auto; }
+.fah-profile-right .fah-menu{
+  right:auto;
+  left:50%;
+  transform:translateX(-50%);
+}
 .fah-menu-section{ padding:8px 10px; font-size:12px; color:var(--fah-muted); }
 .fah-menu-item{
   width:100%; text-align:left; padding:8px 10px; font-size:13px; color:var(--uf-text-primary);
