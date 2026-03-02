@@ -18,6 +18,13 @@ const TRACK_FILTER_TEST = {
   title: 'Throttle Function',
 } as const;
 
+function resolveBaseUrl(): string {
+  if (process.env.PLAYWRIGHT_BASE_URL) return process.env.PLAYWRIGHT_BASE_URL;
+  const host = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
+  const port = process.env.PLAYWRIGHT_PORT || '4200';
+  return `http://${host}:${port}`;
+}
+
 function normalizeDifficulty(raw?: string): DifficultyFilter {
   const v = (raw || '').toLowerCase();
   if (v === 'easy') return 'easy';
@@ -37,7 +44,7 @@ async function resolveQuestionFilters(
   tech: string,
   id: string,
 ): Promise<{ difficulty: DifficultyFilter; importance: ImportanceTier }> {
-  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200';
+  const baseUrl = resolveBaseUrl();
   const response = await page.request.get(`${baseUrl}/assets/questions/${tech}/coding.json`);
   expect(response.ok()).toBeTruthy();
 
@@ -58,7 +65,7 @@ async function resolveQuestionFilters(
 }
 
 async function seedPremiumSession(page: Page) {
-  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200';
+  const baseUrl = resolveBaseUrl();
   const token = `e2e-token-premium-${Date.now()}`;
   const user = buildMockUser({
     _id: 'e2e-user-premium',
@@ -69,17 +76,16 @@ async function seedPremiumSession(page: Page) {
 
   await installAuthMock(page, { token, user });
 
-  await page.goto(baseUrl);
-  const parsedBase = new URL(baseUrl);
+  await page.goto('/');
   await page.context().addCookies([{
     name: 'access_token',
     value: encodeURIComponent(token),
-    domain: parsedBase.hostname,
-    path: '/',
+    url: baseUrl,
   }]);
   await page.evaluate(() => {
     localStorage.setItem('fa:auth:session', '1');
   });
+  await page.reload();
 }
 
 test('coding list filters sync to URL and persist on reload + back', async ({ page }) => {

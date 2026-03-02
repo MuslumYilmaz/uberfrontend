@@ -3,6 +3,13 @@ import { buildMockUser, installAuthMock } from './auth-mocks';
 
 type MockUser = ReturnType<typeof buildMockUser>;
 
+function resolveBaseUrl(): string {
+  if (process.env.PLAYWRIGHT_BASE_URL) return process.env.PLAYWRIGHT_BASE_URL;
+  const host = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
+  const port = process.env.PLAYWRIGHT_PORT || '4200';
+  return `http://${host}:${port}`;
+}
+
 async function login(page: any, user: MockUser, password = 'secret123', opts?: { navigate?: boolean }) {
   if (opts?.navigate !== false) {
     await page.goto('/auth/login');
@@ -15,7 +22,7 @@ async function login(page: any, user: MockUser, password = 'secret123', opts?: {
 }
 
 async function seedPremiumSession(page: any) {
-  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200';
+  const baseUrl = resolveBaseUrl();
   const token = `e2e-token-company-premium-${Date.now()}`;
   const user = buildMockUser({
     _id: 'e2e-company-premium-user',
@@ -30,17 +37,16 @@ async function seedPremiumSession(page: any) {
     validLogin: { emailOrUsername: user.email, password: 'secret123' },
   });
 
-  await page.goto(baseUrl);
-  const parsedBase = new URL(baseUrl);
+  await page.goto('/');
   await page.context().addCookies([{
     name: 'access_token',
     value: encodeURIComponent(token),
-    domain: parsedBase.hostname,
-    path: '/',
+    url: baseUrl,
   }]);
   await page.evaluate(() => {
     localStorage.setItem('fa:auth:session', '1');
   });
+  await page.reload();
 }
 
 test.describe('routing and access critical paths', () => {

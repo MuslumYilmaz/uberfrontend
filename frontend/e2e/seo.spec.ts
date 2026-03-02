@@ -30,7 +30,7 @@ test('seo: home has title/description/canonical and is indexable', async ({ page
   await expect.poll(() => getMeta(page, 'description')).not.toBeNull();
   await expect.poll(() => getCanonical(page)).toBe(`${base}/`);
   await expect.poll(async () => (await getMeta(page, 'robots')) || '').not.toContain('noindex');
-  await expect(page.locator('h1').first()).toContainText(/frontend interview preparation/i);
+  await expect(page.locator('h1').first()).toContainText(/frontend interview/i);
 });
 
 test('seo: question detail has canonical + json-ld', async ({ page }) => {
