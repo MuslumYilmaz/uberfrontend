@@ -1,7 +1,9 @@
 'use strict';
 
 const MIDLINE_BULLET_RE = /\S\s+[•●◦▪‣]\s+\S/g;
-const BULLET_TOKEN_RE = /(?:^|\s)([•●◦▪‣]|\d+[.)]|[-*])\s+/g;
+// Keep "-" out of mid-line tokenization to avoid false positives on date ranges
+// like "Jan 2021 - Present".
+const BULLET_TOKEN_RE = /(?:^|\s)([•●◦▪‣]|\d+[.)]|\*)\s+/g;
 
 const EXTRACTION_QUALITY_WEIGHTS = Object.freeze({
   midlineBulletToken: 0.12,

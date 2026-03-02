@@ -44,7 +44,7 @@
         [disabled]="analyzing"
         data-testid="cv-use-sample"
       >
-        Use sample CV
+        Use sample text
       </button>
     </div>
 
@@ -58,62 +58,135 @@
     >
       <option *ngFor="let role of roleOptions" [value]="role.id">{{ role.label }}</option>
     </select>
+    <p class="muted small role-impact-guidance" data-testid="cv-role-impact-guidance">
+      Target role mainly affects keyword scoring; structure and readability checks are mostly role-agnostic.
+    </p>
 
-    <div
-      class="dropzone"
-      [class.is-disabled]="analyzing"
-      [class.drag-active]="dragActive"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave($event)"
-      (drop)="onDrop($event)"
-      data-testid="cv-dropzone"
-    >
-      <p class="dropzone-title">Drag and drop your CV here</p>
-      <p class="muted small">Supported: PDF, DOCX (max 5MB)</p>
-
-      <input
-        #fileInput
-        type="file"
-        [attr.accept]="fileInputAccept"
-        (change)="onFileInputChange($event)"
-        [disabled]="analyzing"
-        hidden
-      />
-      <button type="button" class="secondary-btn" [disabled]="analyzing" (click)="fileInput.click()">Browse</button>
+    <div class="input-mode-switch" role="tablist" aria-label="CV input mode" data-testid="cv-input-mode-switch">
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="isInputMode('file')"
+        [attr.aria-selected]="isInputMode('file')"
+        (click)="setInputMode('file')"
+        data-testid="cv-mode-file"
+      >
+        Upload file
+      </button>
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="isInputMode('text')"
+        [attr.aria-selected]="isInputMode('text')"
+        (click)="setInputMode('text')"
+        data-testid="cv-mode-text"
+      >
+        Paste text
+      </button>
     </div>
+
+    <ng-container *ngIf="isInputMode('file'); else textModePanel">
+      <div
+        class="dropzone"
+        [class.is-disabled]="analyzing"
+        [class.drag-active]="dragActive"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+        data-testid="cv-dropzone"
+      >
+        <p class="dropzone-title">Drag and drop your CV here</p>
+        <p class="muted small">Supported: PDF, DOCX (max 5MB)</p>
+
+        <input
+          #fileInput
+          type="file"
+          [attr.accept]="fileInputAccept"
+          (change)="onFileInputChange($event)"
+          [disabled]="analyzing"
+          hidden
+        />
+        <button type="button" class="secondary-btn" [disabled]="analyzing" (click)="fileInput.click()">Browse</button>
+      </div>
+
+      <div class="file-pill" *ngIf="selectedFile">
+        <span data-testid="cv-selected-file">{{ selectedFile.name }} ({{ selectedFile.size }} bytes)</span>
+        <button type="button" class="link-btn" [disabled]="analyzing" (click)="clearSelectedFile()">Remove</button>
+      </div>
+
+      <div class="actions">
+        <button
+          type="button"
+          class="primary-btn"
+          (click)="analyzeCurrentInput()"
+          [disabled]="!canAnalyzeFile"
+          [attr.aria-label]="analyzeButtonLabel"
+          data-testid="cv-analyze-file"
+        >
+          <i *ngIf="analyzing" class="pi pi-spinner pi-spin" aria-hidden="true"></i>
+          {{ analyzeButtonLabel }}
+        </button>
+        <button
+          type="button"
+          class="secondary-btn"
+          *ngIf="showClearAfterAnalyze"
+          (click)="clearAnalysisState()"
+          [disabled]="analyzing"
+          data-testid="cv-clear-analysis"
+        >
+          Clear
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #textModePanel>
+      <section class="fallback-panel text-mode-panel" data-testid="cv-text-mode-panel">
+        <h3>Paste CV text</h3>
+        <p class="muted small">Use this when your PDF is image-based or when you want deterministic text-only analysis.</p>
+
+        <div *ngIf="showFallbackWarning" class="warning-box" data-testid="cv-fallback-card">
+          <p class="warning" data-testid="cv-fallback-warning">
+            This file appears scanned or image-based. Paste your CV text below for analysis.
+          </p>
+        </div>
+
+        <textarea
+          [(ngModel)]="pasteText"
+          rows="12"
+          placeholder="Paste CV text here..."
+          [disabled]="analyzing"
+          data-testid="cv-paste-text"
+        ></textarea>
+
+        <div class="actions">
+          <button
+            type="button"
+            class="primary-btn"
+            (click)="analyzeCurrentInput()"
+            [disabled]="!canAnalyzeText"
+            [attr.aria-label]="analyzing ? 'Analyzing pasted text' : 'Analyze pasted text'"
+            data-testid="cv-analyze-text"
+          >
+            <i *ngIf="analyzing" class="pi pi-spinner pi-spin" aria-hidden="true"></i>
+            {{ analyzing ? 'Analyzing...' : 'Analyze pasted text' }}
+          </button>
+          <button
+            type="button"
+            class="secondary-btn"
+            *ngIf="showClearAfterAnalyze"
+            (click)="clearAnalysisState()"
+            [disabled]="analyzing"
+            data-testid="cv-clear-analysis-text"
+          >
+            Clear
+          </button>
+        </div>
+      </section>
+    </ng-template>
 
     <p class="privacy-copy muted small" data-testid="cv-privacy-copy">
       We do not store your CV. It is processed to text and discarded.
     </p>
-
-    <div class="file-pill" *ngIf="selectedFile">
-      <span data-testid="cv-selected-file">{{ selectedFile.name }} ({{ selectedFile.size }} bytes)</span>
-      <button type="button" class="link-btn" [disabled]="analyzing" (click)="clearSelectedFile()">Remove</button>
-    </div>
-
-    <div class="actions">
-      <button
-        type="button"
-        class="primary-btn"
-        (click)="analyzeFile()"
-        [disabled]="!canAnalyzeFile"
-        [attr.aria-label]="analyzeButtonLabel"
-        data-testid="cv-analyze-file"
-      >
-        <i *ngIf="analyzing" class="pi pi-spinner pi-spin" aria-hidden="true"></i>
-        {{ analyzeButtonLabel }}
-      </button>
-      <button
-        type="button"
-        class="secondary-btn"
-        *ngIf="showClearAfterAnalyze"
-        (click)="clearAnalysisState()"
-        [disabled]="analyzing"
-        data-testid="cv-clear-analysis"
-      >
-        Clear
-      </button>
-    </div>
 
     <section class="scan-screen" *ngIf="analyzing" data-testid="cv-scan-screen" aria-live="polite">
       <div class="scan-head">
@@ -151,35 +224,6 @@
       <p class="progress" *ngIf="analyzing" data-testid="cv-progress">{{ scanStatus || progressLabel }}</p>
       <p class="error" *ngIf="errorMessage" data-testid="cv-error">{{ errorMessage }}</p>
     </div>
-
-    <section class="fallback-panel" *ngIf="showFallback" data-testid="cv-fallback-card">
-      <h3>Paste text instead</h3>
-      <p class="warning" data-testid="cv-fallback-warning">
-        This file appears scanned or image-based. Paste your CV text below for analysis.
-      </p>
-
-      <textarea
-        [(ngModel)]="pasteText"
-        rows="12"
-        placeholder="Paste CV text here..."
-        [disabled]="analyzing"
-        data-testid="cv-paste-text"
-      ></textarea>
-
-      <div class="actions">
-        <button
-          type="button"
-          class="primary-btn"
-          (click)="analyzePastedText()"
-          [disabled]="!canAnalyzeText"
-          [attr.aria-label]="analyzing ? 'Analyzing pasted text' : 'Analyze pasted text'"
-          data-testid="cv-analyze-text"
-        >
-          <i *ngIf="analyzing" class="pi pi-spinner pi-spin" aria-hidden="true"></i>
-          {{ analyzing ? 'Analyzing...' : 'Analyze pasted text' }}
-        </button>
-      </div>
-    </section>
   </section>
 
   <section class="card results-card" #resultsSection tabindex="-1" data-testid="cv-results-shell">
@@ -265,6 +309,16 @@
             <div class="meta-item">
               <span class="meta-label">Priority fixes</span>
               <strong>{{ severityCounts.critical + severityCounts.warn }}</strong>
+            </div>
+            <div class="meta-item analysis-confidence" data-testid="cv-analysis-confidence">
+              <span class="meta-label">Analysis confidence</span>
+              <strong data-testid="cv-analysis-confidence-level">
+                {{ (reportData.debug?.extractionQuality?.level || 'high') | titlecase }}
+                ({{ (reportData.debug?.extractionQuality?.score ?? 1) | number:'1.2-2' }})
+              </strong>
+              <p class="muted small" data-testid="cv-analysis-confidence-copy">
+                Parsing confidence affects bullet/keyword undercount risk; structure and readability checks remain deterministic.
+              </p>
             </div>
           </div>
 
@@ -402,10 +456,20 @@
                 </span>
                 <p><strong>Explanation:</strong> {{ issue.explanation }}</p>
                 <p><strong>Why it matters:</strong> {{ issue.why }}</p>
+                <p class="muted small issue-impact" [attr.data-testid]="'cv-issue-impact-' + issue.id">
+                  <strong>Score impact:</strong> {{ issueImpactLabel(issue) }}
+                </p>
                 <p>
                   <strong>Fix:</strong>
                   {{ issue.fix }}
                   <span *ngIf="isKeywordIssue(issue)"> Use the suggestions below to copy a starter phrase.</span>
+                </p>
+                <p
+                  class="muted small keyword-role-context"
+                  *ngIf="isKeywordIssue(issue)"
+                  [attr.data-testid]="'cv-keyword-role-context-' + issue.id"
+                >
+                  Target-role context: keyword checks here are scored for {{ keywordRoleContextLabel() }}.
                 </p>
 
                 <div class="issue-evidence" *ngIf="hasIssueEvidence(issue)" [attr.data-testid]="'cv-issue-evidence-' + issue.id">

@@ -95,6 +95,24 @@ Improved API response times by 20%. • Developed monitoring dashboards for rele
     expect(ids.has('merged_bullets_suspected')).toBe(true);
   });
 
+  test('date ranges with hyphen separators do not trigger merged bullet detection', () => {
+    const text = `
+Robin
+robin@example.com | linkedin.com/in/robin
+
+Experience
+Senior Engineer | Jan 2021 - Present
+Engineer | Mar 2019 - Dec 2020
+- Built dashboard modules and improved release stability by 21%.
+    `.trim();
+
+    const { context, report } = runReport(text);
+    const ids = issueIds(report);
+
+    expect(context.mergedBullets.suspected).toBe(false);
+    expect(ids.has('merged_bullets_suspected')).toBe(false);
+  });
+
   test('stack contradiction rule triggers without clarifier and skips with clarifier', () => {
     const contradictory = `
 Taylor

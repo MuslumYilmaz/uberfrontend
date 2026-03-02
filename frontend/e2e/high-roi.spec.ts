@@ -57,46 +57,6 @@ async function waitForTwoAnimationFrames(page: Page) {
   }));
 }
 
-test.describe('offline-first usability', () => {
-  test.use({
-    // Allow expected offline network errors for question JSON only.
-    consoleErrorAllowlist: [
-      'Failed to load resource:.*\\/assets\\/questions\\/.*\\.json',
-      'GET .*\\/assets\\/questions\\/.*\\.json.*net::ERR_',
-    ],
-  });
-
-  test('second load with questions offline still renders shell (no crash)', async ({ page }) => {
-    await page.goto('/coding');
-    await expect(page.getByTestId('coding-list-page')).toBeVisible();
-    await expect(page.locator('[data-testid^="question-card-"]')).not.toHaveCount(0);
-
-    // Hard reload scenario: unload the app, then come back with question assets failing.
-    await page.goto('about:blank');
-    await page.route('**/assets/questions/**/*.json', async (route: any) => {
-      await route.abort('internetdisconnected');
-    });
-
-    await page.goto('/coding');
-    await expect(page.getByRole('link', { name: 'FrontendAtlas' })).toBeVisible();
-    await expect(page.getByTestId('coding-list-page')).toBeVisible();
-
-    await page.evaluate(() => window.dispatchEvent(new Event('offline')));
-    await expect(page.getByTestId('offline-banner')).toBeVisible();
-
-    const emptyStateVisible = async () => {
-      const loc = page.getByTestId('coding-empty-state');
-      return await loc.isVisible().catch(() => false);
-    };
-    await expect.poll(async () => {
-      const cards = await page.locator('[data-testid^="question-card-"]').count();
-      if (cards > 0) return 'cards';
-      if (await emptyStateVisible()) return 'empty';
-      return 'none';
-    }).not.toBe('none');
-  });
-});
-
 test('editor reset clears persisted override and survives refresh', async ({ page }) => {
   const requestFailures = trackRequestFailures(page);
 

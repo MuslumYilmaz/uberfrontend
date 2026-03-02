@@ -67,7 +67,9 @@ const SCOPE_TERMS = [
 ];
 
 const BULLET_START_RE = /^([•●◦▪‣\-*]|\d+[.)])\s+(.+)$/;
-const BULLET_TOKEN_GLOBAL_RE = /(?:^|\s)([•●◦▪‣]|\d+[.)]|[-*])\s+/g;
+// Keep "-" out of mid-line tokenization to avoid false positives on date ranges
+// like "Jan 2021 - Present".
+const BULLET_TOKEN_GLOBAL_RE = /(?:^|\s)([•●◦▪‣]|\d+[.)]|\*)\s+/g;
 const MIDLINE_BULLET_SYMBOL_RE = /.+\s[•●◦▪‣]\s+\S/;
 
 const EMAIL_RE = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;

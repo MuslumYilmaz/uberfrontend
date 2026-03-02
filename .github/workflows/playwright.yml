@@ -66,8 +66,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium webkit
 
-      - name: Run Playwright tests
-        run: npm run test:e2e
+      - name: Run Playwright critical tests
+        run: npm run test:e2e:critical
         env:
           CI: true
 

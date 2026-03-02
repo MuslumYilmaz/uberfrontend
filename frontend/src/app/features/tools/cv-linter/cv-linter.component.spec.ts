@@ -95,6 +95,17 @@ describe('CvLinterComponent', () => {
     fixture.detectChanges();
   }
 
+  function runFileAnalysis(fixture: any, response: CvAnalyzeResponse = makeResponse()): void {
+    const component = fixture.componentInstance as CvLinterComponent;
+    setValidFile(component);
+    fixture.detectChanges();
+    component.analyzeFile();
+    const req = httpMock.expectOne('/api/tools/cv/analyze');
+    expect(req.request.method).toBe('POST');
+    req.flush(response);
+    fixture.detectChanges();
+  }
+
   it('shows Step 2 placeholder before any analysis', () => {
     const fixture = TestBed.createComponent(CvLinterComponent);
     fixture.detectChanges();
@@ -145,6 +156,22 @@ describe('CvLinterComponent', () => {
 
     req.flush(makeResponse());
     fixture.detectChanges();
+  });
+
+  it('allows switching to paste-text mode without sample/fallback', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const modeTextBtn = fixture.nativeElement.querySelector('[data-testid="cv-mode-text"]') as HTMLButtonElement;
+    expect(modeTextBtn).toBeTruthy();
+    modeTextBtn.click();
+    fixture.detectChanges();
+
+    const textarea = fixture.nativeElement.querySelector('[data-testid="cv-paste-text"]') as HTMLTextAreaElement;
+    const analyzeTextBtn = fixture.nativeElement.querySelector('[data-testid="cv-analyze-text"]') as HTMLButtonElement;
+    expect(textarea).toBeTruthy();
+    expect(analyzeTextBtn).toBeTruthy();
+    expect(analyzeTextBtn.disabled).toBeTrue();
   });
 
   it('shows Re-analyze and Clear after success', () => {
@@ -336,7 +363,7 @@ describe('CvLinterComponent', () => {
     const fixture = TestBed.createComponent(CvLinterComponent);
     fixture.detectChanges();
 
-    runTextAnalysis(
+    runFileAnalysis(
       fixture,
       makeResponse({
         meta: {
@@ -352,8 +379,10 @@ describe('CvLinterComponent', () => {
 
     const warning = fixture.nativeElement.querySelector('[data-testid="cv-fallback-warning"]');
     const textarea = fixture.nativeElement.querySelector('[data-testid="cv-paste-text"]');
+    const component = fixture.componentInstance as CvLinterComponent;
     expect(warning).toBeTruthy();
     expect(textarea).toBeTruthy();
+    expect(component.inputMode).toBe('text');
   });
 
   it('renders evidence row and expands additional evidence entries', () => {
@@ -496,5 +525,58 @@ describe('CvLinterComponent', () => {
     const lowConfidence = fixture.nativeElement.querySelectorAll('[data-testid="cv-low-confidence"]');
     expect(lowConfidence.length).toBeGreaterThan(0);
     expect((fixture.nativeElement.textContent || '')).toContain('Scores may be undercounted due to PDF parsing');
+  });
+
+  it('renders analysis confidence summary with extraction quality details', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    runTextAnalysis(
+      fixture,
+      makeResponse({
+        debug: {
+          extractionQuality: { level: 'low', score: 0.42 },
+        },
+      }),
+    );
+
+    const confidence = fixture.nativeElement.querySelector('[data-testid="cv-analysis-confidence-level"]');
+    const copy = fixture.nativeElement.querySelector('[data-testid="cv-analysis-confidence-copy"]');
+    expect((confidence?.textContent || '')).toContain('Low');
+    expect((confidence?.textContent || '')).toContain('0.42');
+    expect((copy?.textContent || '')).toContain('Parsing confidence affects');
+  });
+
+  it('shows adjusted penalty transparency when applied score differs from base score', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    runTextAnalysis(
+      fixture,
+      makeResponse({
+        issues: [
+          makeIssue({
+            id: 'keyword_missing',
+            category: 'keywords',
+            scoreDelta: -6,
+            appliedScoreDelta: -3.66,
+            scoreAdjustment: 0.61,
+          }),
+        ],
+      }),
+    );
+
+    const impact = fixture.nativeElement.querySelector('[data-testid="cv-issue-impact-keyword_missing"]');
+    expect((impact?.textContent || '')).toContain('-6 original');
+    expect((impact?.textContent || '')).toContain('-3.66');
+  });
+
+  it('shows explicit role-impact guidance near role selector', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const guidance = fixture.nativeElement.querySelector('[data-testid="cv-role-impact-guidance"]');
+    expect(guidance).toBeTruthy();
+    expect((guidance.textContent || '')).toContain('Target role mainly affects keyword scoring');
   });
 });

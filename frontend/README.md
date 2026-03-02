@@ -57,15 +57,23 @@ Install the Playwright browser (one-time):
 
 `npx playwright install chromium webkit`
 
-Run locally (headed by default):
+Run critical suite locally (headed by default):
 
 `npm run test:e2e`
 
-Enable WebKit locally (optional):
+Run full suite (critical + extended + optional specs):
+
+`npm run test:e2e:full`
+
+Run extended/non-blocking suite only:
+
+`npm run test:e2e:extended`
+
+Enable WebKit locally (optional, for whichever suite you run):
 
 `PLAYWRIGHT_ENABLE_WEBKIT=1 npm run test:e2e`
 
-Run in CI (headless, retries enabled):
+Run critical suite in CI mode (headless, retries enabled):
 
 `CI=true npm run test:e2e`
 
@@ -96,13 +104,13 @@ These tests validate SSR/prerender output (JS-disabled) versus hydrated DOM (JS-
 
 Run against a deployed SSR/prerender build:
 
-`PLAYWRIGHT_BASE_URL=https://frontendatlas.com npm run test:e2e -- seo-ssr`
+`PLAYWRIGHT_BASE_URL=https://frontendatlas.com npx playwright test e2e/seo-ssr.spec.ts`
 
 Or run locally with a prerendered build:
 
 1) `ng run frontendatlas:prerender`
 2) Serve `dist/frontendatlas/browser` with a static server (any tool you prefer).
-3) `PLAYWRIGHT_BASE_URL=http://localhost:4200 PLAYWRIGHT_SSR=1 npm run test:e2e -- seo-ssr`
+3) `PLAYWRIGHT_BASE_URL=http://localhost:4200 PLAYWRIGHT_SSR=1 npx playwright test e2e/seo-ssr.spec.ts`
 
 ## Draft versioning
 

@@ -117,6 +117,34 @@
   margin: 14px 0 6px;
 }
 
+.role-impact-guidance {
+  margin: 7px 0 0;
+}
+
+.input-mode-switch {
+  margin-top: 12px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mode-btn {
+  border-radius: 999px;
+  border: 1px solid var(--uf-border-subtle);
+  background: var(--uf-surface-alt);
+  color: var(--uf-text-secondary);
+  padding: 6px 11px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.84rem;
+}
+
+.mode-btn.active {
+  color: var(--uf-text-primary);
+  border-color: color-mix(in srgb, var(--uf-accent) 45%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface-alt));
+}
+
 select,
 textarea,
 input {
@@ -364,6 +392,15 @@ textarea {
   border-top: 1px solid var(--uf-border-subtle);
 }
 
+.text-mode-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.warning-box .warning {
+  margin-bottom: 0;
+}
+
 .fallback-panel h3 {
   margin: 0 0 10px;
   font-size: 1rem;
@@ -544,6 +581,10 @@ textarea {
   font-size: 0.92rem;
   display: block;
   word-break: break-word;
+}
+
+.analysis-confidence p {
+  margin: 6px 0 0;
 }
 
 .severity-row {
@@ -768,6 +809,11 @@ textarea {
 .issue-card p {
   margin: 5px 0;
   font-size: 0.93rem;
+}
+
+.issue-impact,
+.keyword-role-context {
+  font-size: 0.82rem;
 }
 
 .issue-evidence {

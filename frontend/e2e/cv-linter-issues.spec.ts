@@ -27,6 +27,8 @@ test('cv linter shows evidence, docx recovery CTA, and confidence-aware keyword 
             severity: 'warn',
             category: 'keywords',
             scoreDelta: -6,
+            appliedScoreDelta: -3.66,
+            scoreAdjustment: 0.61,
             title: 'Keyword coverage is low',
             message: 'Weighted keyword coverage is low.',
             explanation: 'Weighted keyword coverage is 42% (experience-weighted).',
@@ -123,17 +125,22 @@ test('cv linter shows evidence, docx recovery CTA, and confidence-aware keyword 
   await page.goto('/tools/cv');
   await expect(page.getByTestId('cv-upload-card')).toBeVisible();
 
-  await page.getByTestId('cv-use-sample').click();
+  await page.getByTestId('cv-mode-text').click();
+  await page.getByTestId('cv-paste-text').fill('Sample CV text with bullets and outcomes.');
   await page.getByTestId('cv-analyze-text').click();
 
   await expect(page.getByTestId('cv-results')).toBeVisible();
+  await expect(page.getByTestId('cv-analysis-confidence')).toBeVisible();
+  await expect(page.getByTestId('cv-analysis-confidence-copy')).toBeVisible();
   await expect(page.getByTestId('cv-undercounted-badge')).toBeVisible();
   await expect(page.getByTestId('cv-docx-cta')).toBeVisible();
   await expect(page.getByTestId('cv-low-confidence').first()).toBeVisible();
 
   await page.getByTestId('cv-tab-issues').click();
+  await expect(page.getByTestId('cv-issue-impact-keyword_missing')).toContainText('adjusted to -3.66');
   await expect(page.getByTestId('cv-issue-evidence-keyword_missing').getByText('Triggered by:')).toBeVisible();
   await expect(page.getByText(/\(line 12\)/)).toBeVisible();
+  await expect(page.getByTestId('cv-keyword-role-context-keyword_missing')).toContainText('Senior Frontend (Angular)');
 
   const fileChooserPromise = page.waitForEvent('filechooser');
   await page.getByTestId('cv-docx-cta-button').click();

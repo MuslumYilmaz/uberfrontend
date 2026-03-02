@@ -8,6 +8,8 @@ export interface CvIssue {
   severity: CvSeverity;
   category: CvCategory;
   scoreDelta: number;
+  appliedScoreDelta?: number;
+  scoreAdjustment?: number;
   confidence?: number;
   title: string;
   message: string;
@@ -84,6 +86,8 @@ export interface CvAnalyzeResponse {
       score: number;
       level: 'high' | 'medium' | 'low';
     };
+    penaltyWeights?: Record<string, number>;
+    keywordExperienceDependentShare?: number;
     missingKeywords?: {
       critical?: string[];
       strong?: string[];

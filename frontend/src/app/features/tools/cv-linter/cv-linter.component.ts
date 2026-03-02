@@ -14,6 +14,7 @@ import {
 } from './cv-linter-issues.util';
 
 type ProgressState = 'idle' | 'uploading' | 'extracting' | 'scoring' | 'done' | 'error';
+type AnalyzeInputMode = 'file' | 'text';
 
 type IssueGroups = {
   critical: CvIssue[];
@@ -82,6 +83,7 @@ export class CvLinterComponent implements OnDestroy {
   ];
 
   selectedRole: CvRole = 'senior_frontend_angular';
+  inputMode: AnalyzeInputMode = 'file';
   selectedFile: File | null = null;
   dragActive = false;
   analyzing = false;
@@ -159,6 +161,10 @@ export class CvLinterComponent implements OnDestroy {
   }
 
   get showFallback(): boolean {
+    return this.showFallbackWarning;
+  }
+
+  get showFallbackWarning(): boolean {
     const extractionStatus = this.report?.meta?.extractionStatus;
     return this.forcePasteMode || extractionStatus === 'failed' || extractionStatus === 'low_text';
   }
@@ -191,6 +197,10 @@ export class CvLinterComponent implements OnDestroy {
   get showBuilderNudge(): boolean {
     const issues = this.report?.issues || [];
     return issues.some((issue) => issue.id === 'low_numeric_density' || issue.id === 'weak_action_verbs');
+  }
+
+  get selectedRoleLabel(): string {
+    return this.roleOptions.find((role) => role.id === this.selectedRole)?.label || 'Selected role';
   }
 
   get canAnalyzeFile(): boolean {
@@ -284,6 +294,16 @@ export class CvLinterComponent implements OnDestroy {
     this.selectedFile = null;
   }
 
+  setInputMode(mode: AnalyzeInputMode): void {
+    if (this.analyzing) return;
+    this.inputMode = mode;
+    this.errorMessage = '';
+  }
+
+  isInputMode(mode: AnalyzeInputMode): boolean {
+    return this.inputMode === mode;
+  }
+
   setResultsTab(tab: ResultsTab): void {
     if (tab === 'preview' && !this.showPreviewTab) return;
     this.activeResultsTab = tab;
@@ -354,6 +374,7 @@ export class CvLinterComponent implements OnDestroy {
 
   tryDocxUpload(): void {
     this.emitAnalyticsEvent('cv_linter_docx_cta_click', { role: this.selectedRole });
+    this.inputMode = 'file';
     this.scrollToUploadStep(true);
   }
 
@@ -460,6 +481,40 @@ export class CvLinterComponent implements OnDestroy {
     return this.KEYWORD_ISSUE_IDS.has(String(issue?.id || '').trim());
   }
 
+  issueAppliedScoreDelta(issue: CvIssue): number {
+    const applied = Number(issue?.appliedScoreDelta);
+    if (Number.isFinite(applied)) return applied;
+    return Number(issue?.scoreDelta || 0);
+  }
+
+  hasAdjustedScoreDelta(issue: CvIssue): boolean {
+    const applied = Number(issue?.appliedScoreDelta);
+    const base = Number(issue?.scoreDelta || 0);
+    return Number.isFinite(applied) && Math.abs(applied - base) >= 0.01;
+  }
+
+  issueImpactLabel(issue: CvIssue): string {
+    const applied = this.issueAppliedScoreDelta(issue);
+    const base = Number(issue?.scoreDelta || 0);
+    if (this.hasAdjustedScoreDelta(issue)) {
+      return `${this.formatScoreDelta(base)} original, adjusted to ${this.formatScoreDelta(applied)} due to extraction confidence.`;
+    }
+    if (Math.abs(applied) < 0.01) return '0 (advisory only).';
+    return this.formatScoreDelta(applied);
+  }
+
+  keywordRoleContextLabel(): string {
+    return this.report?.keywordCoverage?.roleLabel || this.selectedRoleLabel;
+  }
+
+  analyzeCurrentInput(): void {
+    if (this.inputMode === 'text') {
+      this.analyzePastedText();
+      return;
+    }
+    this.analyzeFile();
+  }
+
   keywordSuggestionChips(issue: CvIssue): string[] {
     if (!this.report || !this.isKeywordIssue(issue)) return [];
 
@@ -493,6 +548,7 @@ export class CvLinterComponent implements OnDestroy {
 
   clearAnalysisState(): void {
     if (this.analyzing) return;
+    this.inputMode = 'file';
     this.selectedFile = null;
     this.report = null;
     this.hasAnalyzed = false;
@@ -516,6 +572,7 @@ export class CvLinterComponent implements OnDestroy {
 
   analyzeFile(): void {
     if (!this.selectedFile || this.analyzing) return;
+    this.inputMode = 'file';
 
     this.startAnalyze('file');
     this.cvLinterService.analyzeFile(this.selectedFile, this.selectedRole).subscribe({
@@ -527,6 +584,7 @@ export class CvLinterComponent implements OnDestroy {
   analyzePastedText(): void {
     const text = this.pasteText.trim();
     if (!text || this.analyzing) return;
+    this.inputMode = 'text';
 
     this.startAnalyze('text');
     this.cvLinterService.analyzeText(text, this.selectedRole).subscribe({
@@ -537,8 +595,9 @@ export class CvLinterComponent implements OnDestroy {
 
   useSampleCv(): void {
     if (this.analyzing) return;
+    this.inputMode = 'text';
     this.selectedFile = null;
-    this.forcePasteMode = true;
+    this.forcePasteMode = false;
     this.errorMessage = '';
     this.pasteText = `
 Alex Frontend
@@ -590,6 +649,7 @@ BSc Computer Science, 2017
     }
 
     this.errorMessage = '';
+    this.inputMode = 'file';
     this.selectedFile = file;
     this.docxPickerOnly = false;
     this.forcePasteMode = false;
@@ -665,6 +725,9 @@ BSc Computer Science, 2017
     this.issuesBySeverity = this.groupIssuesBySeverity(report.issues || []);
     this.quickWins = this.buildQuickWins(report.issues || []);
     this.forcePasteMode = report.meta.extractionStatus === 'failed' || report.meta.extractionStatus === 'low_text';
+    if (this.forcePasteMode) {
+      this.inputMode = 'text';
+    }
     this.activeResultsTab = this.shouldOpenIssuesByDefault ? 'issues' : 'overview';
     this.resultsAdvancedOpen = false;
     this.debugDetailsOpen = false;
@@ -686,6 +749,7 @@ BSc Computer Science, 2017
     this.errorMessage = apiMessage || 'Could not analyze the CV right now. Please try again.';
     if (mode === 'file') {
       this.forcePasteMode = true;
+      this.inputMode = 'text';
     }
   }
 
@@ -887,6 +951,14 @@ BSc Computer Science, 2017
   private shouldShowDocxCtaForReport(report: CvAnalyzeResponse | null): boolean {
     if (!report) return false;
     return shouldShowDocxBanner(report.issues || [], report.debug?.extractionQuality?.level);
+  }
+
+  private formatScoreDelta(value: number): string {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return '0';
+    const rounded = Math.round(numeric * 100) / 100;
+    if (Object.is(rounded, -0)) return '0';
+    return rounded > 0 ? `+${rounded}` : `${rounded}`;
   }
 
   private emitAnalyticsEvent(name: string, params?: Record<string, unknown>): void {
