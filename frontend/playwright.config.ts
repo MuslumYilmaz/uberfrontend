@@ -3,6 +3,15 @@ import { defineConfig, devices } from '@playwright/test';
 const isCI = !!process.env.CI;
 const useWebServer = process.env.PLAYWRIGHT_WEB_SERVER === '1';
 const includeWebkit = isCI || process.env.PLAYWRIGHT_ENABLE_WEBKIT === '1';
+const webHost = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
+const webPort = Number.parseInt(process.env.PLAYWRIGHT_PORT || '4200', 10);
+const baseURL = process.env.PLAYWRIGHT_BASE_URL || `http://${webHost}:${webPort}`;
+const reuseExistingServer =
+  process.env.PLAYWRIGHT_REUSE_SERVER === '1'
+    ? true
+    : process.env.PLAYWRIGHT_REUSE_SERVER === '0'
+      ? false
+      : !isCI;
 
 export default defineConfig({
   testDir: './e2e',
@@ -17,7 +26,7 @@ export default defineConfig({
     : [['list'], ['html', { open: 'on-failure' }]],
 
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200',
+    baseURL,
     headless: isCI,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
@@ -26,9 +35,9 @@ export default defineConfig({
 
   webServer: useWebServer
     ? {
-      command: 'npm run start:e2e',
-      url: 'http://localhost:4200',
-      reuseExistingServer: !isCI,
+      command: `npm run start:e2e -- --host ${webHost} --port ${webPort}`,
+      url: baseURL,
+      reuseExistingServer,
       timeout: 180_000,
     }
     : undefined,

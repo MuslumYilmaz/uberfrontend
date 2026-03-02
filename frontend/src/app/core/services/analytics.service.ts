@@ -20,7 +20,10 @@ export class AnalyticsService {
     if (!this.isBrowser) return;
     const gtag = this.getGtag();
     if (!gtag) return;
-    gtag('event', name, params || {});
+    gtag('event', name, {
+      ...(params || {}),
+      ...(this.measurementId ? { send_to: this.measurementId } : {}),
+    });
   }
 
   trackPageView(path?: string) {
@@ -36,6 +39,7 @@ export class AnalyticsService {
       page_path: pagePath,
       page_location: window.location.href,
       page_title: this.document.title || undefined,
+      ...(this.measurementId ? { send_to: this.measurementId } : {}),
     });
   }
 
@@ -61,8 +65,9 @@ export class AnalyticsService {
     if (!this.measurementId) return null;
 
     globalScope.dataLayer = globalScope.dataLayer || [];
-    globalScope.gtag = (...args: unknown[]) => {
-      globalScope.dataLayer!.push(args);
+    globalScope.gtag = function gtagShim(...args: unknown[]) {
+      // Match Google's recommended queue shape: dataLayer.push(arguments)
+      globalScope.dataLayer!.push(args.length ? arguments : args);
     };
     return globalScope.gtag;
   }

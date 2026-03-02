@@ -15,7 +15,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
 import { combineLatest, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { ExperimentService } from '../../core/services/experiment.service';
@@ -160,16 +160,16 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'High-signal feedback', tone: 'muted' },
   ];
 
-  heroHeadline = 'Frontend interview preparation roadmap';
-  heroLede = 'Use this frontend interview preparation roadmap to run real coding challenges, test UI behavior, and build interview-ready communication signals.';
+  heroHeadline = 'Practice frontend interviews in a real coding workflow';
+  heroLede = 'FrontendAtlas turns prep into repeatable loops: solve real prompts, run deterministic checks, inspect live UI behavior, and explain tradeoffs like a senior engineer.';
   heroPrimaryCtaLabel = 'Start free challenge';
   private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
   heroFlowSteps = [
-    { key: 'editor', title: 'Editor', subtitle: 'Solve UI tasks with real constraints', icon: 'pi pi-code', status: 'active' },
-    { key: 'tests', title: 'Tests', subtitle: 'Deterministic checks, fast iteration', icon: 'pi pi-check', status: 'idle' },
-    { key: 'preview', title: 'Preview', subtitle: 'See real UI output instantly', icon: 'pi pi-eye', status: 'idle' },
-    { key: 'review', title: 'Review', subtitle: 'Edge cases + review-ready signals', icon: 'pi pi-clone', status: 'idle' },
+    { key: 'editor', title: 'Editor', subtitle: 'Code in a real IDE with files, tabs, and split panes', icon: 'pi pi-code', status: 'active' },
+    { key: 'tests', title: 'Checks', subtitle: 'Run deterministic tests and fix exact failures fast', icon: 'pi pi-check', status: 'idle' },
+    { key: 'preview', title: 'Preview', subtitle: 'Validate real UI output and interaction behavior instantly', icon: 'pi pi-eye', status: 'idle' },
+    { key: 'review', title: 'Review', subtitle: 'Strengthen edge cases, tradeoffs, and interview explanations', icon: 'pi pi-clone', status: 'idle' },
   ];
 
   activeFlowIndex = 0;
@@ -423,6 +423,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   ];
 
   companyCounts$?: Observable<Record<string, { all: number; coding: number; trivia: number; system: number }>>;
+  totalQuestionCount$?: Observable<number>;
   private companyCountsLoaded = false;
 
   explanationVisible = false;
@@ -861,12 +862,33 @@ You can also reset any task back to the starter whenever you want to re-practice
   private enableCompanyCounts() {
     if (this.companyCountsLoaded) return;
     this.companyCountsLoaded = true;
-    this.companyCounts$ = combineLatest([
+    const questionSets$ = combineLatest([
       this.qs.loadAllQuestionSummaries('coding', { transferState: false }),
       this.qs.loadAllQuestionSummaries('trivia', { transferState: false }),
       this.qs.loadSystemDesign({ transferState: false }),
     ]).pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+
+    this.totalQuestionCount$ = questionSets$.pipe(
+      map(([coding, trivia, system]) => this.computeTotalQuestionCount({ coding, trivia, system }))
+    );
+    this.companyCounts$ = questionSets$.pipe(
       map(([coding, trivia, system]) => collectCompanyCounts({ coding, trivia, system }))
     );
+  }
+
+  private computeTotalQuestionCount(lists: { coding: any[]; trivia: any[]; system: any[] }): number {
+    const keys = new Set<string>();
+    const add = (kind: 'coding' | 'trivia' | 'system', items: any[]) => {
+      (items || []).forEach((q) => {
+        const id = String(q?.id || q?.slug || q?.title || '').trim();
+        if (id) keys.add(`${kind}:${id}`);
+      });
+    };
+    add('coding', lists.coding);
+    add('trivia', lists.trivia);
+    add('system', lists.system);
+    return keys.size;
   }
 }

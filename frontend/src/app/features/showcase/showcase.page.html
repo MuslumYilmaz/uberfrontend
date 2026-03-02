@@ -8,6 +8,18 @@
       <p class="lede">
         {{ heroLede }}
       </p>
+      <div class="hero-db-impact" *ngIf="totalQuestionCount$ | async as totalQuestions" aria-label="Question database size">
+        <div class="hero-db-impact__kicker">Question bank strength</div>
+        <div class="hero-db-impact__row">
+          <div class="hero-db-impact__metric">
+            <span class="hero-db-impact__value">{{ totalQuestions | number }}</span>
+            <span class="hero-db-impact__plus">+</span>
+          </div>
+          <p class="hero-db-impact__copy">
+            Interview questions across UI coding, trivia, and frontend system design.
+          </p>
+        </div>
+      </div>
       <div class="proof-row" aria-label="Platform proof points">
         <span class="proof-chip"><i class="pi pi-sitemap"></i>Real workflow</span>
         <span class="proof-chip"><i class="pi pi-eye"></i>UI-first problems</span>
@@ -37,7 +49,7 @@
           <div class="window-dots" aria-hidden="true">
             <span></span><span></span><span></span>
           </div>
-          <div class="live-pill neutral"><span class="dot"></span>Workflow</div>
+          <div class="live-pill neutral"><span class="dot"></span>Practice loop</div>
         </div>
 
         <div class="flow-panel" aria-label="Product workflow overview">
@@ -55,7 +67,7 @@
               <span class="indicator-dot"></span>
             </div>
           </div>
-          <p class="flow-caption">Interactive playground is below.</p>
+          <p class="flow-caption">Build, verify, explain. The full interactive playground is below.</p>
         </div>
       </div>
     </div>
@@ -253,6 +265,9 @@
         <h2 id="library-title">Explore the Atlas.</h2>
         <p class="muted">
           A few real prompts from the workspace. Solve in the tech you pick; each ships with starters and checks.
+          <ng-container *ngIf="totalQuestionCount$ | async as totalQuestions">
+            {{ totalQuestions | number }} total questions across coding, trivia, and system design.
+          </ng-container>
         </p>
       </div>
 
@@ -296,7 +311,9 @@
       <div>
         <p class="eyebrow">Company practice</p>
         <h2 id="company-title">Prep with company-flavored prompts.</h2>
-        <p class="muted">A few examples from company sets. UI, JS, and system slices shaped for each team’s flavor.</p>
+        <p class="muted">
+          A few examples from company sets. UI, JS, and system slices shaped for each team’s flavor.
+        </p>
       </div>
       <a class="sk-btn sk-btn-ghost" routerLink="/companies" aria-label="Browse company sets">
         Browse companies <i class="pi pi-arrow-right" aria-hidden="true"></i>
