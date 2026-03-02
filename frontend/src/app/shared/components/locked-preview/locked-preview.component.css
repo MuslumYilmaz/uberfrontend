@@ -6,24 +6,24 @@
 }
 
 .locked-preview-rich__section {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 80%, transparent);
   border-radius: 12px;
   padding: 12px 14px;
-  background: rgba(0, 0, 0, 0.18);
+  background: color-mix(in srgb, var(--uf-surface) 86%, transparent);
 }
 
 .locked-preview-rich__title {
   margin: 0 0 8px 0;
   font-size: 14px;
   font-weight: 600;
-  color: #f5f5f5;
+  color: var(--uf-text-primary);
 }
 
 .locked-preview-rich__text {
   margin: 0;
   font-size: 13px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.82);
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
   overflow-wrap: anywhere;
 }
 
@@ -34,7 +34,7 @@
   gap: 6px;
   font-size: 13px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
   overflow-wrap: anywhere;
 }
 
@@ -42,10 +42,10 @@
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.55);
+  background: color-mix(in srgb, var(--uf-bg) 72%, var(--uf-surface));
   font-size: 12px;
   line-height: 1.5;
-  color: #e5e7eb;
+  color: color-mix(in srgb, var(--uf-text-secondary) 92%, var(--uf-text-primary) 8%);
   overflow-x: auto;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -60,7 +60,7 @@
 }
 
 .locked-preview-rich__links a {
-  color: #93c5fd;
+  color: color-mix(in srgb, var(--uf-accent) 72%, var(--uf-text-primary) 28%);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -77,8 +77,8 @@
   justify-content: center;
   padding: 2px 6px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f8fafc;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 62%, var(--uf-text-secondary) 38%);
+  color: var(--uf-text-primary);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -86,6 +86,6 @@
 }
 
 .locked-preview-rich__pill--free {
-  border-color: rgba(74, 222, 128, 0.55);
-  color: #86efac;
+  border-color: color-mix(in srgb, var(--uf-accent) 56%, var(--uf-border-subtle));
+  color: color-mix(in srgb, var(--uf-accent) 74%, var(--uf-text-primary) 26%);
 }

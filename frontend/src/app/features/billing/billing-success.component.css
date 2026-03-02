@@ -4,24 +4,30 @@
   align-items: center;
   justify-content: center;
   padding: 48px 20px;
-  background: radial-gradient(circle at top, rgba(24, 32, 48, 0.4), rgba(10, 12, 16, 0.95));
-  color: #e6e8ee;
+  background:
+    radial-gradient(circle at top, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 48%),
+    color-mix(in srgb, var(--uf-bg) 94%, var(--uf-surface) 6%);
+  color: var(--uf-text-primary);
 }
 
 .billing-card {
   width: min(520px, 100%);
-  background: rgba(15, 20, 32, 0.92);
-  border: 1px solid rgba(120, 140, 180, 0.2);
-  border-radius: 20px;
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-surface)),
+    color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt))
+  );
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 62%, var(--uf-text-secondary) 38%);
+  border-radius: var(--uf-radius-16);
   padding: 32px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--uf-card-shadow-strong);
 }
 
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.2em;
   font-size: 11px;
-  color: rgba(230, 232, 238, 0.55);
+  color: color-mix(in srgb, var(--uf-text-tertiary) 72%, transparent);
   margin: 0 0 12px;
 }
 
@@ -36,35 +42,37 @@ h1 {
 }
 
 .muted {
-  color: rgba(230, 232, 238, 0.7);
+  color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
   font-size: 14px;
 }
 
 .timeout {
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid rgba(120, 140, 180, 0.2);
+  border-top: 1px solid color-mix(in srgb, var(--uf-border-subtle) 62%, var(--uf-text-secondary) 38%);
 }
 
 .btn {
   margin-top: 12px;
   padding: 10px 18px;
   border-radius: 10px;
-  border: none;
-  background: #3b82f6;
-  color: #fff;
-  font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 64%, var(--uf-border-subtle));
+  background: var(--uf-accent);
+  color: var(--uf-bg);
+  font-weight: 700;
   cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease;
 }
 
 .btn:hover {
-  background: #2563eb;
+  border-color: color-mix(in srgb, var(--uf-accent) 78%, var(--uf-border-subtle));
+  background: var(--uf-accent-strong);
 }
 
 .link {
   display: inline-block;
   margin-left: 12px;
-  color: #9ec3ff;
+  color: color-mix(in srgb, var(--uf-accent) 72%, var(--uf-text-primary) 28%);
   text-decoration: none;
   font-size: 14px;
 }

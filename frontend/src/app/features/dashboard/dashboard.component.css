@@ -61,12 +61,12 @@
 
 .hero-stat {
   padding: 12px;
-  min-height: 118px;
+  min-height: 98px;
   border-radius: 12px;
   border: 1px solid var(--fa-border-subtle);
   background: rgba(var(--fa-text-rgb), 0.04);
   display: grid;
-  grid-template-rows: minmax(30px, auto) auto minmax(32px, auto);
+  grid-template-rows: minmax(18px, auto) auto minmax(20px, auto);
   gap: 3px;
   align-content: start;
 }
@@ -77,11 +77,11 @@
   letter-spacing: 0.14em;
   color: var(--fa-text-muted);
   line-height: 1.35;
-  min-height: 30px;
+  min-height: 18px;
 }
 
 .hero-stat__value {
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 800;
   line-height: 1;
   color: var(--fa-text);
@@ -92,7 +92,11 @@
   font-size: 12px;
   color: var(--fa-text-muted);
   line-height: 1.35;
-  min-height: 32px;
+  min-height: 20px;
+}
+
+.progress-snapshot .hero-stat__value {
+  letter-spacing: -0.01em;
 }
 
 .block {
@@ -161,6 +165,14 @@
   flex-shrink: 0;
 }
 
+.progress-head-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .block-title {
   margin: 0;
 }
@@ -175,8 +187,16 @@
   gap: 12px;
 }
 
-.gamification-grid {
+.gamification-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
+}
+
+.progress-details-grid {
   display: grid;
+  width: 100%;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 12px;
 }
@@ -187,6 +207,18 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.widget--primary {
+  border-color: color-mix(in srgb, var(--fa-accent) 42%, var(--fa-border-subtle) 58%);
+  background:
+    linear-gradient(150deg, rgba(var(--fa-accent-rgb), 0.1), rgba(var(--fa-text-rgb), 0.02)),
+    var(--fa-card-bg);
+}
+
+.widget--detail {
+  padding: 12px;
+  gap: 8px;
 }
 
 .widget-kicker {
@@ -424,23 +456,111 @@
   height: 10px;
 }
 
+:host ::ng-deep .progress-manage-dialog.p-dialog {
+  width: min(680px, 94vw);
+}
+
+:host ::ng-deep .progress-manage-dialog .p-dialog-content {
+  padding: 0;
+}
+
+:host ::ng-deep .progress-manage-dialog .p-dialog-header {
+  display: none;
+}
+
+.progress-manage-panel {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.progress-manage-head {
+  display: grid;
+  gap: 6px;
+}
+
+.progress-manage-kicker {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fa-text-muted);
+}
+
+.progress-manage-title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.progress-manage-copy {
+  margin: 0;
+}
+
+.progress-manage-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 @media (min-width: 900px) {
   .section-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .widget--primary {
+    grid-column: span 12;
   }
 
   .widget--next-action {
     grid-column: span 6;
   }
 
-  .widget--daily,
   .widget--weekly,
-  .widget--xp {
+  .widget--xp,
+  .widget--progress {
     grid-column: span 6;
   }
+}
 
-  .widget--progress {
-    grid-column: span 12;
+@media (min-width: 900px) and (max-height: 860px) {
+  .progress-details-grid {
+    gap: 10px;
+  }
+
+  .widget--detail {
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .widget--detail .widget-kicker {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .widget--detail .widget-title {
+    font-size: 18px;
+    line-height: 1.15;
+  }
+
+  .widget--detail .widget-copy {
+    line-height: 1.35;
+  }
+
+  .widget--detail .mini-progress {
+    height: 7px;
+  }
+
+  .widget--detail .meta-chip,
+  .widget--detail .status-chip {
+    padding: 3px 7px;
+    font-size: 10px;
+  }
+
+  .widget--detail .fa-btn {
+    min-height: 36px;
+    padding-inline: 12px;
   }
 }
 
@@ -1146,6 +1266,10 @@
     align-items: stretch;
   }
 
+  .progress-head-actions {
+    justify-content: flex-start;
+  }
+
   .block-head__action {
     align-self: flex-start;
   }
@@ -1160,5 +1284,18 @@
 
   .focus-chip-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .progress-manage-panel {
+    padding: 16px;
+  }
+
+  .progress-manage-title {
+    font-size: 20px;
+  }
+
+  .progress-manage-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
   }
 }

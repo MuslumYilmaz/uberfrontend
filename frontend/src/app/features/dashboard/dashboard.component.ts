@@ -15,6 +15,7 @@ import { collectCompanyCounts } from '../../shared/company-counts.util';
 import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner';
 import { FaButtonComponent } from '../../shared/ui/button/fa-button.component';
 import { FaCardComponent } from '../../shared/ui/card/fa-card.component';
+import { FaDialogComponent } from '../../shared/ui/dialog/fa-dialog.component';
 import { TRACKS } from '../tracks/track.data';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
@@ -66,7 +67,7 @@ type Card = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent],
+  imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent, FaDialogComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -104,7 +105,8 @@ export class DashboardComponent {
   dailyCompletePending = signal(false);
   dailyCompleteMessage = signal<string | null>(null);
   dailyCompleteError = signal<string | null>(null);
-  isGamificationExpanded = signal(true);
+  isProgressDetailsExpanded = signal(this.getInitialDetailsExpandedState());
+  isManageProgressOpen = signal(false);
 
   weeklyGoalEnabled = signal(true);
   weeklyGoalTarget = signal(10);
@@ -143,6 +145,7 @@ export class DashboardComponent {
         this.weeklyGoalTarget.set(10);
         this.showStreakWidget.set(true);
         this.dailyChallengeTech.set('auto');
+        this.isManageProgressOpen.set(false);
         this.dashboardTracked = false;
         this.lastDailyChallengeTrackedKey = null;
         return;
@@ -854,6 +857,7 @@ export class DashboardComponent {
               target: res.weeklyGoal.target,
             });
           }
+          this.isManageProgressOpen.set(false);
           this.loadGamification(true);
         },
         error: () => {
@@ -894,8 +898,31 @@ export class DashboardComponent {
     });
   }
 
-  toggleGamificationSection() {
-    this.isGamificationExpanded.update((value) => !value);
+  trackDailyChallengeOpened(questionId?: string, dayKey?: string) {
+    this.analytics.track('daily_challenge_opened', {
+      question_id: questionId || 'unknown',
+      day_key: dayKey || 'unknown',
+    });
+  }
+
+  toggleProgressDetails() {
+    const expanded = !this.isProgressDetailsExpanded();
+    this.isProgressDetailsExpanded.set(expanded);
+    this.analytics.track('progress_details_toggled', { expanded });
+  }
+
+  openManageProgress() {
+    if (!this.authService.isLoggedIn()) return;
+    this.isManageProgressOpen.set(true);
+    this.analytics.track('progress_manage_opened', { source: 'dashboard' });
+  }
+
+  closeManageProgress() {
+    this.isManageProgressOpen.set(false);
+  }
+
+  onManageProgressVisibleChange(visible: boolean) {
+    this.isManageProgressOpen.set(Boolean(visible));
   }
 
   overallSolvedPercent(progress: DashboardProgress | null | undefined): number {
@@ -916,6 +943,13 @@ export class DashboardComponent {
     const rounded = Math.round(numeric * 100) / 100;
     if (Number.isInteger(rounded)) return `${rounded}%`;
     return `${rounded.toFixed(2).replace(/\.?0+$/, '')}%`;
+  }
+
+  private getInitialDetailsExpandedState(): boolean {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return true;
+    }
+    return !window.matchMedia('(max-width: 640px)').matches;
   }
 
 }

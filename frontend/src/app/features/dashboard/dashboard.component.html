@@ -17,21 +17,42 @@
           </p>
         </div>
 
-        <div class="command-center__stats" aria-live="polite">
-          <article class="hero-stat" *ngIf="!auth.isLoggedIn() || shouldShowStreak()">
+        <div class="command-center__stats progress-snapshot" aria-live="polite">
+          <article class="hero-stat snapshot-card">
             <div class="hero-stat__label">Streak</div>
-            <div class="hero-stat__value">{{ streakCurrent() }}</div>
-            <div class="hero-stat__sub">days active</div>
+            <div class="hero-stat__value" *ngIf="auth.isLoggedIn() && shouldShowStreak(); else streakSnapshotFallback">
+              {{ streakCurrent() }}d
+            </div>
+            <ng-template #streakSnapshotFallback>
+              <div class="hero-stat__value">{{ auth.isLoggedIn() ? 'Hidden' : '—' }}</div>
+            </ng-template>
+            <div class="hero-stat__sub">
+              {{ auth.isLoggedIn() ? (shouldShowStreak() ? 'Current run' : 'Hidden in settings') : 'Sign in to track' }}
+            </div>
           </article>
-          <article class="hero-stat">
-            <div class="hero-stat__label">Solved this week</div>
-            <div class="hero-stat__value">{{ weeklySolvedCount() }}</div>
-            <div class="hero-stat__sub">unique completions</div>
+
+          <article class="hero-stat snapshot-card">
+            <div class="hero-stat__label">Weekly goal</div>
+            <ng-container *ngIf="weeklyGoal() as weekly; else weeklySnapshotFallback">
+              <div class="hero-stat__value">{{ weekly.completed }}/{{ weekly.target }}</div>
+              <div class="hero-stat__sub">{{ formatPercentLabel(weekly.progress * 100) }} complete</div>
+            </ng-container>
+            <ng-template #weeklySnapshotFallback>
+              <div class="hero-stat__value">—</div>
+              <div class="hero-stat__sub">{{ auth.isLoggedIn() ? 'Unavailable' : 'Sign in to set goal' }}</div>
+            </ng-template>
           </article>
-          <article class="hero-stat">
-            <div class="hero-stat__label">Total solved</div>
-            <div class="hero-stat__value">{{ solvedTotal() }}</div>
-            <div class="hero-stat__sub">all-time questions</div>
+
+          <article class="hero-stat snapshot-card">
+            <div class="hero-stat__label">XP</div>
+            <ng-container *ngIf="xpLevel() as xp; else xpSnapshotFallback">
+              <div class="hero-stat__value">Lv {{ xp.level }}</div>
+              <div class="hero-stat__sub">{{ xp.nextLevelXp - xp.totalXp }} XP to next</div>
+            </ng-container>
+            <ng-template #xpSnapshotFallback>
+              <div class="hero-stat__value">—</div>
+              <div class="hero-stat__sub">{{ auth.isLoggedIn() ? 'Unavailable' : 'Sign in to level up' }}</div>
+            </ng-template>
           </article>
         </div>
       </div>
@@ -39,38 +60,43 @@
     </section>
 
     <section class="block block--gamification">
-      <div class="block-head block-head--collapsible">
+      <div class="block-head block-head--with-action">
         <div class="block-head__content">
-          <h2 class="block-title fa-section-title">Interview prep progress</h2>
-          <p class="block-subtitle fa-meta-text">Optional gamification widgets to keep momentum and clarity.</p>
+          <h2 class="block-title fa-section-title">Daily momentum</h2>
+          <p class="block-subtitle fa-meta-text">Keep one action in focus. Expand only when you need deeper progress details.</p>
         </div>
-        <button
-          faButton variant="ghost" class="block-toggle-btn"
-          type="button"
-          [attr.aria-expanded]="isGamificationExpanded()"
-          aria-controls="dashboard-gamification-content"
-          (click)="toggleGamificationSection()"
-        >
-          {{ isGamificationExpanded() ? 'Collapse' : 'Expand' }}
-        </button>
+        <div class="progress-head-actions">
+          <button
+            faButton variant="ghost" class="block-toggle-btn"
+            type="button"
+            [attr.aria-expanded]="isProgressDetailsExpanded()"
+            aria-controls="dashboard-progress-details"
+            (click)="toggleProgressDetails()"
+          >
+            {{ isProgressDetailsExpanded() ? 'Hide details' : 'See details' }}
+          </button>
+          <button
+            *ngIf="auth.isLoggedIn()"
+            faButton variant="ghost" class="block-toggle-btn"
+            type="button"
+            (click)="openManageProgress()"
+          >
+            Manage progress
+          </button>
+          <a
+            *ngIf="!auth.isLoggedIn()"
+            faButton variant="ghost"
+            class="block-toggle-btn"
+            [routerLink]="['/auth/login']"
+            [queryParams]="{ redirectTo: '/dashboard' }"
+          >
+            Sign in to personalize
+          </a>
+        </div>
       </div>
 
-      <ng-container *ngIf="isGamificationExpanded()">
-      <div class="gamification-grid" id="dashboard-gamification-content">
-        <article faCard interactive class="widget widget--next-action">
-          <div class="widget-kicker">Next best action</div>
-          <h3 class="widget-title">{{ nextBestAction().title }}</h3>
-          <p class="widget-copy fa-meta-text">{{ nextBestAction().description }}</p>
-          <a
-            faButton variant="primary"
-            [routerLink]="nextBestAction().route"
-            (click)="trackNextActionClick()"
-          >
-            {{ nextBestAction().cta }}
-          </a>
-        </article>
-
-        <article faCard class="widget widget--daily" *ngIf="dailyChallenge() as daily; else dailyChallengeFallback">
+      <div class="gamification-stack">
+        <article faCard class="widget widget--daily widget--primary" *ngIf="dailyChallenge() as daily; else dailyChallengeFallback">
           <div class="widget-kicker">Daily challenge</div>
           <h3 class="widget-title">{{ daily.title }}</h3>
           <div class="widget-meta-chips" *ngIf="daily.available !== false; else challengeUnavailable">
@@ -87,7 +113,14 @@
             <p class="widget-copy fa-meta-text">Could not load today’s challenge. You can still continue normal practice.</p>
           </ng-template>
           <div class="widget-actions widget-actions--challenge">
-            <a faButton variant="ghost" [routerLink]="daily.route">{{ daily.available === false ? 'Continue practice' : 'Open challenge' }}</a>
+            <a
+              faButton
+              variant="ghost"
+              [routerLink]="daily.route"
+              (click)="trackDailyChallengeOpened(daily.questionId, daily.dayKey)"
+            >
+              {{ daily.available === false ? 'Continue practice' : 'Open challenge' }}
+            </a>
             <button
               *ngIf="auth.isLoggedIn() && !daily.completed && daily.available !== false"
               faButton variant="primary"
@@ -105,7 +138,7 @@
         </article>
 
         <ng-template #dailyChallengeFallback>
-          <article faCard class="widget widget--daily" [class.widget--guest]="!auth.isLoggedIn()">
+          <article faCard class="widget widget--daily widget--primary" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">Daily challenge</div>
             <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Could not load daily challenge' : 'Sign in to get today’s challenge' }}</h3>
             <p class="widget-copy fa-meta-text">
@@ -137,162 +170,182 @@
           </article>
         </ng-template>
 
-        <article faCard class="widget widget--weekly" *ngIf="weeklyGoal() as weekly; else weeklyGoalFallback">
-          <div class="widget-kicker">Weekly goal</div>
-          <h3 class="widget-title">{{ weekly.completed }} / {{ weekly.target }} completed</h3>
-          <div class="mini-progress">
-            <span [style.width.%]="weekly.progress * 100"></span>
-          </div>
-          <p class="widget-copy fa-meta-text">
-            Week starts Monday (Europe/Istanbul). Bonus: +{{ weekly.bonusXp }} XP when completed.
-          </p>
-
-          <div class="settings-grid settings-grid--weekly">
-            <label class="settings-item settings-item--toggle settings-item--goal-toggle">
-              <input
-                class="settings-checkbox"
-                type="checkbox"
-                [checked]="weeklyGoalEnabled()"
-                (change)="onWeeklyGoalEnabledChange($event)"
-              />
-              <span class="settings-switch" aria-hidden="true"></span>
-              <span class="settings-toggle-label">Weekly goal enabled</span>
-            </label>
-            <label class="settings-item settings-item--field settings-item--target">
-              <span class="settings-label">Target</span>
-              <select [value]="weeklyGoalTarget()" (change)="onWeeklyGoalTargetChange($event)" aria-label="Weekly goal target">
-                <option [value]="5">5 / week</option>
-                <option [value]="10">10 / week</option>
-                <option [value]="15">15 / week</option>
-                <option [value]="20">20 / week</option>
-                <option [value]="30">30 / week</option>
-              </select>
-            </label>
-            <label class="settings-item settings-item--field settings-item--daily-tech">
-              <span class="settings-label">Daily challenge tech</span>
-              <select [value]="dailyChallengeTech()" (change)="onDailyChallengeTechChange($event)" aria-label="Daily challenge framework">
-                <option value="auto">Auto (based on progress)</option>
-                <option value="javascript">JavaScript</option>
-                <option value="react">React</option>
-                <option value="angular">Angular</option>
-                <option value="vue">Vue</option>
-                <option value="html">HTML</option>
-                <option value="css">CSS</option>
-              </select>
-            </label>
-            <label class="settings-item settings-item--toggle settings-item--streak-toggle">
-              <input
-                class="settings-checkbox"
-                type="checkbox"
-                [checked]="showStreakWidget()"
-                (change)="onShowStreakWidgetChange($event)"
-              />
-              <span class="settings-switch" aria-hidden="true"></span>
-              <span class="settings-toggle-label">Show streak widget</span>
-            </label>
-          </div>
-
-          <div class="widget-actions">
-            <button
-              faButton variant="ghost"
-              type="button"
-              [disabled]="settingsSaving()"
-              (click)="saveGamificationSettings()"
+        <div class="progress-details-grid" id="dashboard-progress-details" *ngIf="isProgressDetailsExpanded()">
+          <article faCard interactive class="widget widget--detail widget--next-action">
+            <div class="widget-kicker">Next best action</div>
+            <h3 class="widget-title">{{ nextBestAction().title }}</h3>
+            <p class="widget-copy fa-meta-text">{{ nextBestAction().description }}</p>
+            <a
+              faButton variant="primary"
+              [routerLink]="nextBestAction().route"
+              (click)="trackNextActionClick()"
             >
-              {{ settingsSaving() ? 'Saving…' : 'Save settings' }}
-            </button>
-            <span *ngIf="weekly.bonusGranted" class="status-chip status-chip--ok">Weekly bonus granted</span>
-          </div>
-        </article>
+              {{ nextBestAction().cta }}
+            </a>
+          </article>
 
-        <ng-template #weeklyGoalFallback>
-          <article faCard class="widget widget--weekly" [class.widget--guest]="!auth.isLoggedIn()">
+          <article faCard class="widget widget--detail widget--weekly" *ngIf="weeklyGoal() as weekly; else weeklyGoalFallback">
             <div class="widget-kicker">Weekly goal</div>
-            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Weekly goal unavailable' : 'Optional goal: 10 per week' }}</h3>
+            <h3 class="widget-title">{{ weekly.completed }} / {{ weekly.target }} completed</h3>
+            <div class="mini-progress">
+              <span [style.width.%]="weekly.progress * 100"></span>
+            </div>
             <p class="widget-copy fa-meta-text">
-              {{ auth.isLoggedIn()
-                ? 'We could not load your weekly goal settings right now. Continue solving and try again shortly.'
-                : 'Sign in to set your own weekly target and track completion.' }}
+              Week starts Monday (Europe/Istanbul). Bonus: +{{ weekly.bonusXp }} XP when completed.
             </p>
-            <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
-              <a
-                faButton variant="ghost"
-                [routerLink]="['/auth/login']"
-                [queryParams]="{ redirectTo: '/dashboard' }"
-              >
-                Sign in to personalize
-              </a>
+            <div class="widget-actions">
+              <span *ngIf="weekly.bonusGranted" class="status-chip status-chip--ok">Weekly bonus granted</span>
             </div>
           </article>
-        </ng-template>
 
-        <article faCard class="widget widget--xp" *ngIf="xpLevel() as xp; else xpFallback">
-          <div class="widget-kicker">XP + level</div>
-          <h3 class="widget-title">Level {{ xp.level }} · {{ xp.totalXp }} XP</h3>
-          <div class="mini-progress">
-            <span [style.width.%]="xp.progress * 100"></span>
-          </div>
-          <p class="widget-copy fa-meta-text">
-            {{ xp.currentLevelXp }}/{{ xp.levelStepXp }} XP to this level, {{ xp.nextLevelXp - xp.totalXp }} XP to next level.
-          </p>
-        </article>
+          <ng-template #weeklyGoalFallback>
+            <article faCard class="widget widget--detail widget--weekly" [class.widget--guest]="!auth.isLoggedIn()">
+              <div class="widget-kicker">Weekly goal</div>
+              <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Weekly goal unavailable' : 'Optional goal: 10 per week' }}</h3>
+              <p class="widget-copy fa-meta-text">
+                {{ auth.isLoggedIn()
+                  ? 'We could not load your weekly goal settings right now. Continue solving and try again shortly.'
+                  : 'Sign in to set your own weekly target and track completion.' }}
+              </p>
+            </article>
+          </ng-template>
 
-        <ng-template #xpFallback>
-          <article faCard class="widget widget--xp" [class.widget--guest]="!auth.isLoggedIn()">
+          <article faCard class="widget widget--detail widget--xp" *ngIf="xpLevel() as xp; else xpFallback">
             <div class="widget-kicker">XP + level</div>
-            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Leveling data unavailable' : 'Sign in to start leveling' }}</h3>
-            <p class="widget-copy fa-meta-text">
-              {{ auth.isLoggedIn()
-                ? 'We could not load your XP right now. Continue solving questions and try again shortly.'
-                : 'Earn XP from solved coding/trivia/debug questions and weekly completion bonuses.' }}
-            </p>
-            <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
-              <a
-                faButton variant="ghost"
-                [routerLink]="['/auth/login']"
-                [queryParams]="{ redirectTo: '/dashboard' }"
-              >
-                Sign in to track XP
-              </a>
+            <h3 class="widget-title">Level {{ xp.level }} · {{ xp.totalXp }} XP</h3>
+            <div class="mini-progress">
+              <span [style.width.%]="xp.progress * 100"></span>
             </div>
+            <p class="widget-copy fa-meta-text">
+              {{ xp.currentLevelXp }}/{{ xp.levelStepXp }} XP to this level, {{ xp.nextLevelXp - xp.totalXp }} XP to next level.
+            </p>
           </article>
-        </ng-template>
 
-        <article faCard class="widget widget--progress" *ngIf="progressSummary() as progress; else progressFallback">
-          <div class="widget-kicker">Progress</div>
-          <h3 class="widget-title">{{ formatPercentLabel(overallSolvedPercent(progress)) }} overall solved</h3>
-          <p class="widget-copy fa-meta-text">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
-          <div class="mini-progress mini-progress--overall">
-            <span [style.width.%]="overallSolvedPercent(progress)"></span>
-          </div>
-        </article>
+          <ng-template #xpFallback>
+            <article faCard class="widget widget--detail widget--xp" [class.widget--guest]="!auth.isLoggedIn()">
+              <div class="widget-kicker">XP + level</div>
+              <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Leveling data unavailable' : 'Sign in to start leveling' }}</h3>
+              <p class="widget-copy fa-meta-text">
+                {{ auth.isLoggedIn()
+                  ? 'We could not load your XP right now. Continue solving questions and try again shortly.'
+                  : 'Earn XP from solved coding/trivia/debug questions and weekly completion bonuses.' }}
+              </p>
+            </article>
+          </ng-template>
 
-        <ng-template #progressFallback>
-          <article faCard class="widget widget--progress" [class.widget--guest]="!auth.isLoggedIn()">
+          <article faCard class="widget widget--detail widget--progress" *ngIf="progressSummary() as progress; else progressFallback">
             <div class="widget-kicker">Progress</div>
-            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Progress insights unavailable' : 'Start solving to unlock progress insights' }}</h3>
-            <p class="widget-copy fa-meta-text">
-              {{ auth.isLoggedIn()
-                ? 'We could not load your solved coverage right now. Keep practicing and refresh shortly.'
-                : 'Your solved coverage appears here after a few solved questions.' }}
-            </p>
-            <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
-              <a
-                faButton variant="ghost"
-                [routerLink]="['/auth/login']"
-                [queryParams]="{ redirectTo: '/dashboard' }"
-              >
-                Sign in to save progress
-              </a>
+            <h3 class="widget-title">{{ formatPercentLabel(overallSolvedPercent(progress)) }} overall solved</h3>
+            <p class="widget-copy fa-meta-text">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
+            <div class="mini-progress mini-progress--overall">
+              <span [style.width.%]="overallSolvedPercent(progress)"></span>
             </div>
           </article>
-        </ng-template>
+
+          <ng-template #progressFallback>
+            <article faCard class="widget widget--detail widget--progress" [class.widget--guest]="!auth.isLoggedIn()">
+              <div class="widget-kicker">Progress</div>
+              <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Progress insights unavailable' : 'Start solving to unlock progress insights' }}</h3>
+              <p class="widget-copy fa-meta-text">
+                {{ auth.isLoggedIn()
+                  ? 'We could not load your solved coverage right now. Keep practicing and refresh shortly.'
+                  : 'Your solved coverage appears here after a few solved questions.' }}
+              </p>
+            </article>
+          </ng-template>
+        </div>
       </div>
 
-      <p *ngIf="gamificationLoading()" class="fa-meta-text widget-status">Refreshing gamification widgets…</p>
+      <p *ngIf="gamificationLoading()" class="fa-meta-text widget-status">Refreshing progress widgets…</p>
       <p *ngIf="gamificationError()" class="widget-feedback widget-feedback--warn">{{ gamificationError() }}</p>
-      </ng-container>
     </section>
+
+    <fa-dialog
+      [visible]="isManageProgressOpen()"
+      (visibleChange)="onManageProgressVisibleChange($event)"
+      [modal]="true"
+      [dismissableMask]="true"
+      [closable]="true"
+      [draggable]="false"
+      [resizable]="false"
+      [showHeader]="false"
+      styleClass="progress-manage-dialog"
+      [contentStyle]="{ padding: '0' }"
+    >
+      <div class="progress-manage-panel" role="dialog" aria-labelledby="progress-manage-title" aria-describedby="progress-manage-desc">
+        <div class="progress-manage-head">
+          <p class="progress-manage-kicker">Progress settings</p>
+          <h3 class="progress-manage-title" id="progress-manage-title">Manage progress widgets</h3>
+          <p class="progress-manage-copy fa-meta-text" id="progress-manage-desc">
+            Tune weekly goal, daily challenge tech, and streak visibility without expanding the dashboard.
+          </p>
+        </div>
+
+        <div class="settings-grid settings-grid--weekly">
+          <label class="settings-item settings-item--toggle settings-item--goal-toggle">
+            <input
+              class="settings-checkbox"
+              type="checkbox"
+              [checked]="weeklyGoalEnabled()"
+              (change)="onWeeklyGoalEnabledChange($event)"
+            />
+            <span class="settings-switch" aria-hidden="true"></span>
+            <span class="settings-toggle-label">Weekly goal enabled</span>
+          </label>
+          <label class="settings-item settings-item--field settings-item--target">
+            <span class="settings-label">Target</span>
+            <select [value]="weeklyGoalTarget()" (change)="onWeeklyGoalTargetChange($event)" aria-label="Weekly goal target">
+              <option [value]="5">5 / week</option>
+              <option [value]="10">10 / week</option>
+              <option [value]="15">15 / week</option>
+              <option [value]="20">20 / week</option>
+              <option [value]="30">30 / week</option>
+            </select>
+          </label>
+          <label class="settings-item settings-item--field settings-item--daily-tech">
+            <span class="settings-label">Daily challenge tech</span>
+            <select [value]="dailyChallengeTech()" (change)="onDailyChallengeTechChange($event)" aria-label="Daily challenge framework">
+              <option value="auto">Auto (based on progress)</option>
+              <option value="javascript">JavaScript</option>
+              <option value="react">React</option>
+              <option value="angular">Angular</option>
+              <option value="vue">Vue</option>
+              <option value="html">HTML</option>
+              <option value="css">CSS</option>
+            </select>
+          </label>
+          <label class="settings-item settings-item--toggle settings-item--streak-toggle">
+            <input
+              class="settings-checkbox"
+              type="checkbox"
+              [checked]="showStreakWidget()"
+              (change)="onShowStreakWidgetChange($event)"
+            />
+            <span class="settings-switch" aria-hidden="true"></span>
+            <span class="settings-toggle-label">Show streak widget</span>
+          </label>
+        </div>
+
+        <div class="progress-manage-actions">
+          <button
+            faButton variant="ghost"
+            type="button"
+            [disabled]="settingsSaving()"
+            (click)="closeManageProgress()"
+          >
+            Cancel
+          </button>
+          <button
+            faButton variant="primary"
+            type="button"
+            [disabled]="settingsSaving()"
+            (click)="saveGamificationSettings()"
+          >
+            {{ settingsSaving() ? 'Saving…' : 'Save settings' }}
+          </button>
+        </div>
+      </div>
+    </fa-dialog>
 
     <!-- Recommended -->
     <section class="block block--guides">

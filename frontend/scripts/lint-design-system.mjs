@@ -23,6 +23,15 @@ const PRIME_PATTERNS = [
 
 const VISUAL_CLASS_PATTERN = /\bfa-(btn|chip|card)\b/g;
 const NG_DEEP_PATTERN = /::ng-deep/g;
+const RAW_COLOR_LITERAL_PATTERN = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]+\)|hsla?\([^)]+\)/g;
+
+const RAW_COLOR_LITERAL_FILE_EXCLUDES = [
+  'src/assets/monaco/',
+];
+
+const APPROVED_COLOR_LITERAL_FILES = new Set([
+  'src/styles/tokens.scss',
+]);
 
 const APPROVED_NG_DEEP_FILES = new Set([
   'src/styles/prime-bridge.scss',
@@ -63,12 +72,14 @@ async function readAllowlist() {
       rawPrimeTemplates: new Set(parsed.rawPrimeTemplates || []),
       ngDeep: new Set(parsed.ngDeep || []),
       rawVisualClasses: new Set(parsed.rawVisualClasses || []),
+      rawColorLiterals: new Set(parsed.rawColorLiterals || []),
     };
   } catch {
     return {
       rawPrimeTemplates: new Set(),
       ngDeep: new Set(),
       rawVisualClasses: new Set(),
+      rawColorLiterals: new Set(),
     };
   }
 }
@@ -89,14 +100,20 @@ async function main() {
     path.join(srcRoot, 'app'),
     (f) => f.endsWith('.ts') || f.endsWith('.scss') || f.endsWith('.css'),
   );
+  const styleFiles = await walkFiles(
+    srcRoot,
+    (f) => f.endsWith('.scss') || f.endsWith('.css'),
+  );
 
   const rawPrimeFiles = [];
   const visualClassFiles = [];
   const ngDeepFiles = [];
+  const rawColorLiteralFiles = [];
 
   let rawPrimeCount = 0;
   let visualClassCount = 0;
   let ngDeepCount = 0;
+  let rawColorLiteralCount = 0;
 
   for (const file of featureHtmlFiles) {
     const rel = normalizeRel(file);
@@ -131,10 +148,28 @@ async function main() {
     }
   }
 
+  for (const file of styleFiles) {
+    const rel = normalizeRel(file);
+    if (RAW_COLOR_LITERAL_FILE_EXCLUDES.some((prefix) => rel.startsWith(prefix))) {
+      continue;
+    }
+    if (APPROVED_COLOR_LITERAL_FILES.has(rel)) {
+      continue;
+    }
+
+    const text = await fs.readFile(file, 'utf8');
+    const colorHits = countMatches(text, RAW_COLOR_LITERAL_PATTERN);
+    if (colorHits > 0) {
+      rawColorLiteralFiles.push(rel);
+      rawColorLiteralCount += colorHits;
+    }
+  }
+
   const current = {
     rawPrimeTemplates: uniqueSorted(rawPrimeFiles),
     ngDeep: uniqueSorted(ngDeepFiles),
     rawVisualClasses: uniqueSorted(visualClassFiles),
+    rawColorLiterals: uniqueSorted(rawColorLiteralFiles),
   };
 
   if (updateAllowlist) {
@@ -143,6 +178,7 @@ async function main() {
     console.log(`[lint:design-system] raw prime files: ${current.rawPrimeTemplates.length}`);
     console.log(`[lint:design-system] ng-deep files: ${current.ngDeep.length}`);
     console.log(`[lint:design-system] raw visual class files: ${current.rawVisualClasses.length}`);
+    console.log(`[lint:design-system] raw color literal files: ${current.rawColorLiterals.length}`);
     return;
   }
 
@@ -150,18 +186,21 @@ async function main() {
   const newPrime = diffNew(current.rawPrimeTemplates, allowlist.rawPrimeTemplates);
   const newNgDeep = diffNew(current.ngDeep, allowlist.ngDeep);
   const newVisual = diffNew(current.rawVisualClasses, allowlist.rawVisualClasses);
+  const newRawColor = diffNew(current.rawColorLiterals, allowlist.rawColorLiterals);
 
   console.log('[lint:design-system] summary');
   console.log(`  raw prime usage hits: ${rawPrimeCount} across ${current.rawPrimeTemplates.length} files`);
   console.log(`  ::ng-deep hits: ${ngDeepCount} across ${current.ngDeep.length} files`);
   console.log(`  raw visual class hits: ${visualClassCount} across ${current.rawVisualClasses.length} files`);
+  console.log(`  raw color literal hits: ${rawColorLiteralCount} across ${current.rawColorLiterals.length} files`);
   console.log(`  mode: ${strictMode ? 'strict' : 'warning'}`);
 
   printGroup('New raw Prime usage files (not allowlisted):', newPrime);
   printGroup('New ::ng-deep files (not allowlisted):', newNgDeep);
   printGroup('New raw visual class files (not allowlisted):', newVisual);
+  printGroup('New raw color literal style files (not allowlisted):', newRawColor);
 
-  const violationCount = newPrime.length + newNgDeep.length + newVisual.length;
+  const violationCount = newPrime.length + newNgDeep.length + newVisual.length + newRawColor.length;
   if (violationCount > 0 && strictMode) {
     console.error(`\n[lint:design-system] failed: ${violationCount} new design-system violations.`);
     process.exit(1);
