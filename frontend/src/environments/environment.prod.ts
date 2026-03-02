@@ -3,6 +3,7 @@ import { SENTRY_DSN, SENTRY_RELEASE, SENTRY_TRACES_SAMPLE_RATE } from './sentry.
 export const environment = {
     production: true,
     dataVersion: "2025-08-19a", // already there
+    gaMeasurementId: 'G-XJ9FBR8HBL',
     apiBase: "https://api.frontendatlas.com",
     frontendBase: "https://frontendatlas.com",
     cdnBaseUrl: '',

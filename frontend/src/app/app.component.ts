@@ -6,6 +6,7 @@ import { filter } from 'rxjs';
 import { BugReportService } from './core/services/bug-report.service';
 import { DailyService } from './core/services/daily.service';
 import { PremiumGateService } from './core/services/premium-gate.service';
+import { AnalyticsService } from './core/services/analytics.service';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
 import { BugReportDialogComponent } from './shared/components/bug-report-dialog/bug-report-dialog.component';
 import { PremiumRequiredDialogComponent } from './shared/components/premium-required-dialog/premium-required-dialog.component';
@@ -32,6 +33,7 @@ export class AppComponent implements OnInit, OnDestroy {
   bugReport = inject(BugReportService);
   premiumGate = inject(PremiumGateService);
   premiumGateState = this.premiumGate.dialogState;
+  private readonly analytics = inject(AnalyticsService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   // hide header on /auth/*
@@ -70,10 +72,15 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe((e: any) => this.currentUrl.set(e.urlAfterRedirects || e.url));
+      .subscribe((e: any) => {
+        const url = e.urlAfterRedirects || e.url;
+        this.currentUrl.set(url);
+        this.analytics.trackPageView(url);
+      });
 
     if (!this.isBrowser) return;
 
+    this.analytics.trackPageView(this.router.url || '/');
     this.daily.ensureTodaySet();
     this.scheduleToNextMidnight();
     document.addEventListener('visibilitychange', this.onVisibility);
