@@ -57,10 +57,10 @@ function schedulePostLoad(task: () => void): void {
     requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
   };
   if (typeof win.requestIdleCallback === 'function') {
-    win.requestIdleCallback(task, { timeout: 3000 });
+    win.requestIdleCallback(task, { timeout: 6500 });
     return;
   }
-  window.setTimeout(task, 1200);
+  window.setTimeout(task, 2600);
 }
 
 function initSentryLazily(): void {
@@ -68,7 +68,7 @@ function initSentryLazily(): void {
   if (!environment.sentryDsn) return;
 
   schedulePostLoad(() => {
-    import('@sentry/angular')
+    import('@sentry/browser')
       .then(({ browserTracingIntegration, init }) => {
         init({
           dsn: environment.sentryDsn,

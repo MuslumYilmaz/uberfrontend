@@ -1,5 +1,6 @@
 /* src/app/features/pricing/components/pricing-plans-section/pricing-plans-section.component.css */
 .pr-wrap{max-width:1100px;margin:48px auto;padding:0 20px;color:var(--uf-text-primary)}
+.pr-wrap--compact{max-width:none;margin:0;padding:0}
 .pr-hero h1{font-size:34px;line-height:1.2;margin:4px 0 10px;color:var(--uf-text-primary)}
 .pr-kicker{font-size:12px;letter-spacing:0.12em;text-transform:uppercase;font-weight:800;color:color-mix(in srgb,var(--uf-text-tertiary) 75%,transparent);margin:0 0 6px}
 .pr-early{margin:8px 0 0;font-size:13px;color:color-mix(in srgb,var(--uf-text-secondary) 80%,transparent);font-weight:700}

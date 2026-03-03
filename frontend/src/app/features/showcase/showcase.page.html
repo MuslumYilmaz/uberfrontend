@@ -1,4 +1,4 @@
-<section class="showcase-hero reveal" #observeSection aria-labelledby="showcase-hero-title">
+<section class="showcase-hero reveal" #observeSection aria-labelledby="showcase-hero-title" data-load="stats">
   <div class="ambient ambient-a"></div>
   <div class="ambient ambient-b"></div>
   <div class="shell hero-grid">
@@ -8,11 +8,16 @@
       <p class="lede">
         {{ heroLede }}
       </p>
-      <div class="hero-db-impact" *ngIf="totalQuestionCount$ | async as totalQuestions" aria-label="Question database size">
+      <div class="hero-db-impact" aria-label="Question database size">
         <div class="hero-db-impact__kicker">Question bank strength</div>
         <div class="hero-db-impact__row">
           <div class="hero-db-impact__metric">
-            <span class="hero-db-impact__value">{{ totalQuestions | number }}</span>
+            <ng-container *ngIf="totalQuestionCount$ | async as totalQuestions; else countPlaceholder">
+              <span class="hero-db-impact__value">{{ totalQuestions | number }}</span>
+            </ng-container>
+            <ng-template #countPlaceholder>
+              <span class="hero-db-impact__value hero-db-impact__value--placeholder">000</span>
+            </ng-template>
             <span class="hero-db-impact__plus">+</span>
           </div>
           <p class="hero-db-impact__copy">
@@ -264,10 +269,7 @@
         <p class="eyebrow">Question library</p>
         <h2 id="library-title">Explore the Atlas.</h2>
         <p class="muted">
-          A few real prompts from the workspace. Solve in the tech you pick; each ships with starters and checks.
-          <ng-container *ngIf="totalQuestionCount$ | async as totalQuestions">
-            {{ totalQuestions | number }} total questions across coding, trivia, and system design.
-          </ng-container>
+          A few real prompts from the workspace.
         </p>
       </div>
 
@@ -407,15 +409,15 @@
       </div>
       <p class="muted">All plans unlock the core practice loop — code, preview, test, and review.</p>
     </div>
-  </div>
 
-  <app-pricing-plans-section
-    variant="compact"
-    [paymentsEnabled]="paymentsEnabled"
-    [checkoutUrls]="checkoutUrls"
-    analyticsSource="showcase_pricing"
-    ctaMode="navigatePricing">
-  </app-pricing-plans-section>
+    <app-pricing-plans-section
+      variant="compact"
+      [paymentsEnabled]="paymentsEnabled"
+      [checkoutUrls]="checkoutUrls"
+      analyticsSource="showcase_pricing"
+      ctaMode="navigatePricing">
+    </app-pricing-plans-section>
+  </div>
 </section>
 
 <section class="section reveal" #observeSection aria-labelledby="faq-title" data-load="faq">
@@ -427,6 +429,7 @@
         title="Common questions, answered."
         subtitle="Short, direct answers. If you still have questions, you can link to /guides or /contact."
         [groups]="faqGroups"
+        [flush]="true"
         [singleOpen]="true">
       </app-faq-section>
     </ng-container>

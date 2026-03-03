@@ -14,14 +14,13 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
-import { combineLatest, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { ExperimentService } from '../../core/services/experiment.service';
-import { QuestionService } from '../../core/services/question.service';
+import { QuestionService, ShowcaseStatsPayload } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
-import { collectCompanyCounts } from '../../shared/company-counts.util';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { environment } from '../../../environments/environment';
@@ -422,7 +421,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     { name: 'Apple', slug: 'apple', icon: '', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
   ];
 
-  companyCounts$?: Observable<Record<string, { all: number; coding: number; trivia: number; system: number }>>;
+  companyCounts$?: Observable<ShowcaseStatsPayload['companyCounts']>;
   totalQuestionCount$?: Observable<number>;
   private companyCountsLoaded = false;
 
@@ -431,12 +430,12 @@ You can also reset any task back to the starter whenever you want to re-practice
   private readonly MOBILE_DEMO_GUARD_BREAKPOINT = 768;
   showMobileCodingGuard = false;
   sectionVisible = {
-    library: true,
-    company: true,
-    capabilities: true,
-    tracks: true,
-    faq: true,
-    contact: true,
+    library: false,
+    company: false,
+    capabilities: false,
+    tracks: false,
+    faq: false,
+    contact: false,
   };
 
   private readonly LP_SRC_PATTERN = /^[a-z0-9_-]{1,64}$/;
@@ -474,7 +473,7 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   ngAfterViewInit(): void {
     if (this.isBrowser) {
-      window.setTimeout(() => this.markAllVisible());
+      this.setupObserver();
     } else {
       this.markAllVisible();
     }
@@ -527,8 +526,11 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   private setupObserver() {
-    if (this.reduceMotion) return;
     if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') {
+      this.markAllVisible();
+      return;
+    }
+    if (!this.observeSections?.length) {
       this.markAllVisible();
       return;
     }
@@ -543,7 +545,7 @@ You can also reset any task back to the starter whenever you want to re-practice
           }
         });
       },
-      { threshold: 0.2 },
+      { threshold: 0.15, rootMargin: '140px 0px' },
     );
 
     this.observeSections?.forEach((section) => this.observer?.observe(section.nativeElement));
@@ -564,6 +566,10 @@ You can also reset any task back to the starter whenever you want to re-practice
     if (!key) return;
     if (key === 'demo') {
       this.activateDemo();
+      return;
+    }
+    if (key === 'stats') {
+      this.enableCompanyCounts();
       return;
     }
     if (key === 'trivia') {
@@ -862,33 +868,15 @@ You can also reset any task back to the starter whenever you want to re-practice
   private enableCompanyCounts() {
     if (this.companyCountsLoaded) return;
     this.companyCountsLoaded = true;
-    const questionSets$ = combineLatest([
-      this.qs.loadAllQuestionSummaries('coding', { transferState: false }),
-      this.qs.loadAllQuestionSummaries('trivia', { transferState: false }),
-      this.qs.loadSystemDesign({ transferState: false }),
-    ]).pipe(
+    const stats$ = this.qs.loadShowcaseStats({ transferState: false }).pipe(
       shareReplay({ bufferSize: 1, refCount: true }),
     );
 
-    this.totalQuestionCount$ = questionSets$.pipe(
-      map(([coding, trivia, system]) => this.computeTotalQuestionCount({ coding, trivia, system }))
+    this.totalQuestionCount$ = stats$.pipe(
+      map((stats) => stats.totalQuestions),
     );
-    this.companyCounts$ = questionSets$.pipe(
-      map(([coding, trivia, system]) => collectCompanyCounts({ coding, trivia, system }))
+    this.companyCounts$ = stats$.pipe(
+      map((stats) => stats.companyCounts),
     );
-  }
-
-  private computeTotalQuestionCount(lists: { coding: any[]; trivia: any[]; system: any[] }): number {
-    const keys = new Set<string>();
-    const add = (kind: 'coding' | 'trivia' | 'system', items: any[]) => {
-      (items || []).forEach((q) => {
-        const id = String(q?.id || q?.slug || q?.title || '').trim();
-        if (id) keys.add(`${kind}:${id}`);
-      });
-    };
-    add('coding', lists.coding);
-    add('trivia', lists.trivia);
-    add('system', lists.system);
-    return keys.size;
   }
 }

@@ -8,6 +8,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 const buildRoot = path.join(projectRoot, 'dist', 'frontendatlas', 'browser');
+const statsCandidates = [
+  path.join(projectRoot, 'dist', 'frontendatlas', 'stats.json'),
+  path.join(buildRoot, 'stats.json'),
+];
 const outputPath = path.join(projectRoot, 'reports', 'perf-contract.json');
 const strictMode = process.argv.includes('--strict');
 
@@ -16,6 +20,8 @@ const THRESHOLDS = {
   modulePreloadBytes: 600_000,
   codingHtmlBytes: 450_000,
   totalHtmlBytes: 70_000_000,
+  sentryLazyChunkBytes: 260_000,
+  showcaseLazyHeavyBytes: 620_000,
 };
 
 function normalizeRel(fullPath) {
@@ -102,6 +108,65 @@ async function walkFiles(dir, out = []) {
   return out;
 }
 
+async function readJson(filePath) {
+  try {
+    const raw = await fs.readFile(filePath, 'utf8');
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function collectBundleStats(stats) {
+  if (!stats || typeof stats !== 'object') return null;
+  const outputs = stats.outputs;
+  if (!outputs || typeof outputs !== 'object') return null;
+
+  const chunks = Object.entries(outputs)
+    .filter(([name, output]) => {
+      if (!name.endsWith('.js') || name.endsWith('.js.map')) return false;
+      return output && typeof output === 'object';
+    })
+    .map(([name, output]) => ({
+      file: name,
+      bytes: Number(output.bytes ?? 0) || 0,
+      inputs: Object.keys(output.inputs || {}),
+    }));
+
+  const sentryChunks = chunks
+    .filter((chunk) => chunk.inputs.some((input) => input.includes('/@sentry/')))
+    .sort((a, b) => b.bytes - a.bytes);
+  const sentryChunk = sentryChunks[0] ?? null;
+
+  const showcasePatterns = [
+    'showcase.page.ts',
+    'coding-detail.component.ts',
+    'trivia-detail.component.ts',
+    'system-design-detail.component.ts',
+  ];
+
+  const showcaseChunksMap = new Map();
+  for (const chunk of chunks) {
+    if (!chunk.inputs.some((input) => showcasePatterns.some((pattern) => input.includes(pattern)))) {
+      continue;
+    }
+    showcaseChunksMap.set(chunk.file, chunk);
+  }
+
+  const showcaseChunks = Array.from(showcaseChunksMap.values()).sort((a, b) => b.bytes - a.bytes);
+  const showcaseLazyHeavyBytes = showcaseChunks.reduce((sum, chunk) => sum + chunk.bytes, 0);
+
+  return {
+    sentryLazyChunkBytes: sentryChunk?.bytes ?? 0,
+    sentryLazyChunkFile: sentryChunk?.file ?? null,
+    showcaseLazyHeavyBytes,
+    showcaseLazyChunks: showcaseChunks.map((chunk) => ({
+      file: chunk.file,
+      bytes: chunk.bytes,
+    })),
+  };
+}
+
 function htmlRouteFromFile(root, fullPath) {
   const rel = path.relative(root, fullPath).replace(/\\/g, '/');
   if (rel === 'index.html') return '/';
@@ -158,6 +223,15 @@ async function main() {
   const stylesheetMetrics = await sumAssets(buildRoot, stylesheets);
   const scriptMetrics = await sumAssets(buildRoot, moduleScripts);
   const htmlMetrics = await collectHtmlMetrics(buildRoot);
+  let bundleStatsPath = null;
+  let bundleStats = null;
+  for (const candidate of statsCandidates) {
+    const parsed = await readJson(candidate);
+    if (!parsed) continue;
+    bundleStatsPath = normalizeRel(candidate);
+    bundleStats = collectBundleStats(parsed);
+    if (bundleStats) break;
+  }
 
   const initialBytes =
     preloadMetrics.total + stylesheetMetrics.total + scriptMetrics.total;
@@ -183,6 +257,16 @@ async function main() {
       `Total prerender HTML bytes ${htmlMetrics.totalHtmlBytes} exceed ${THRESHOLDS.totalHtmlBytes}`,
     );
   }
+  if (bundleStats?.sentryLazyChunkBytes > THRESHOLDS.sentryLazyChunkBytes) {
+    warnings.push(
+      `Sentry lazy chunk bytes ${bundleStats.sentryLazyChunkBytes} exceed ${THRESHOLDS.sentryLazyChunkBytes}`,
+    );
+  }
+  if (bundleStats?.showcaseLazyHeavyBytes > THRESHOLDS.showcaseLazyHeavyBytes) {
+    warnings.push(
+      `Showcase lazy-heavy bytes ${bundleStats.showcaseLazyHeavyBytes} exceed ${THRESHOLDS.showcaseLazyHeavyBytes}`,
+    );
+  }
 
   const payload = {
     generatedAt: new Date().toISOString(),
@@ -200,8 +284,14 @@ async function main() {
       totalHtmlBytes: htmlMetrics.totalHtmlBytes,
       htmlFileCount: htmlMetrics.htmlFileCount,
       codingHtmlBytes: htmlMetrics.codingRouteBytes,
+      sentryLazyChunkBytes: bundleStats?.sentryLazyChunkBytes ?? 0,
+      sentryLazyChunkFile: bundleStats?.sentryLazyChunkFile ?? null,
+      showcaseLazyHeavyBytes: bundleStats?.showcaseLazyHeavyBytes ?? 0,
+      showcaseLazyChunkCount: bundleStats?.showcaseLazyChunks?.length ?? 0,
     },
     largestHtmlRoutes: htmlMetrics.largestRoutes,
+    bundleStatsSource: bundleStatsPath,
+    showcaseLazyChunks: bundleStats?.showcaseLazyChunks ?? [],
     warnings,
   };
 
@@ -211,6 +301,14 @@ async function main() {
   console.log(`[perf-contract] wrote ${normalizeRel(outputPath)}`);
   console.log(`[perf-contract] initialBytes=${initialBytes} modulePreloadBytes=${preloadMetrics.total} modulePreloadCount=${preloadMetrics.resolved.length}`);
   console.log(`[perf-contract] codingHtmlBytes=${htmlMetrics.codingRouteBytes} totalHtmlBytes=${htmlMetrics.totalHtmlBytes}`);
+  if (bundleStats) {
+    console.log(
+      `[perf-contract] sentryLazyChunkBytes=${bundleStats.sentryLazyChunkBytes} ` +
+      `showcaseLazyHeavyBytes=${bundleStats.showcaseLazyHeavyBytes}`,
+    );
+  } else {
+    console.log('[perf-contract] bundle stats not found; skipping chunk-level checks');
+  }
   if (warnings.length) {
     for (const warning of warnings) {
       console.warn(`[perf-contract] warning: ${warning}`);

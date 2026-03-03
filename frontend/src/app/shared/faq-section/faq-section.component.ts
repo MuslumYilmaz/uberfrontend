@@ -21,6 +21,7 @@ export class FaqSectionComponent {
   @Input() groups: FaqGroup[] = [];
   @Input() initialOpenId?: string;
   @Input() singleOpen = true;
+  @Input() flush = false;
 
   openId: string | null = null;
   openSet = new Set<string>();

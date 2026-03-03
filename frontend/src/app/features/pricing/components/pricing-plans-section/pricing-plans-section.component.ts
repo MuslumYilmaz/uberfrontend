@@ -20,7 +20,7 @@ type CtaMode = 'emit' | 'navigatePricing';
   imports: [CommonModule, RouterModule, FaqSectionComponent, LoginRequiredDialogComponent],
   styleUrls: ['./pricing-plans-section.component.css'],
   template: `
-    <section class="pr-wrap">
+    <section class="pr-wrap" [class.pr-wrap--compact]="variant === 'compact'">
       <header class="pr-hero" *ngIf="variant === 'full'">
         <p class="pr-kicker">Pricing</p>
         <h1>Practice frontend the way interviews actually work</h1>

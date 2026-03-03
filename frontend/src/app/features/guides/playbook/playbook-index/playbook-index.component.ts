@@ -44,7 +44,7 @@ import { PrepSignalGridComponent, PrepSignalItem } from '../../../../shared/comp
       text-decoration: none;
       font-size: 12px;
       font-weight: 600;
-      transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+      transition: border-color 140ms ease, color 140ms ease;
     }
     .framework-links a:hover {
       border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
@@ -56,20 +56,36 @@ import { PrepSignalGridComponent, PrepSignalItem } from '../../../../shared/comp
     .sec-head { margin-bottom: 10px; color: var(--uf-text-primary); }
 
     .card {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      contain: paint;
       display:flex; align-items:center; gap:14px;
       padding:14px 14px; text-decoration:none; color:inherit;
       background: var(--uf-surface);
       border: 1px solid var(--uf-border-subtle);
       border-radius: var(--uf-card-radius);
       box-shadow: var(--uf-card-shadow);
-      transition: border-color 160ms ease, background-color 160ms ease, box-shadow 180ms ease, transform 120ms ease;
+      transition: border-color 140ms ease, transform 120ms ease;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-accent) 14%);
+      opacity: 0;
+      transition: opacity 140ms ease;
+    }
+    .card > * {
+      position: relative;
+      z-index: 1;
     }
     .card:hover {
-      background: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-accent) 14%);
       border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
-      box-shadow: var(--uf-card-shadow-strong);
       transform: translateY(-1px);
     }
+    .card:hover::before { opacity: 1; }
     .num { min-width:32px; height:32px; border-radius: var(--uf-radius-pill); display:grid; place-items:center; }
     .body { flex:1; min-width:0; }
     .title { margin:0; }
@@ -77,6 +93,13 @@ import { PrepSignalGridComponent, PrepSignalItem } from '../../../../shared/comp
     .mins { font-size:12px; color: color-mix(in srgb, var(--uf-text-tertiary) 75%, transparent); }
     .arrow { color: color-mix(in srgb, var(--uf-text-tertiary) 75%, transparent); transition: transform 160ms ease, opacity 160ms ease; }
     .card:hover .arrow { opacity:1; transform: translateX(4px); color: var(--uf-text-primary); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card { transition: border-color 0.01ms linear; transform: none !important; }
+      .card::before { transition: opacity 0.01ms linear; }
+      .arrow { transition: opacity 0.01ms linear; transform: none !important; }
+      .framework-links a { transition: border-color 0.01ms linear, color 0.01ms linear; }
+    }
   `],
   template: `
     <div class="wrap fa-body">

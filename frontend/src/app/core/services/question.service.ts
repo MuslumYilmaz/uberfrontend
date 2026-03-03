@@ -27,6 +27,10 @@ export type QuestionListItem = Pick<
   shortDescription?: string;
 };
 export type MixedQuestionListItem = QuestionListItem & { tech: Tech };
+export type ShowcaseStatsPayload = {
+  totalQuestions: number;
+  companyCounts: Record<string, { all: number; coding: number; trivia: number; system: number }>;
+};
 
 type DataVersion = { dataVersion?: string; version?: string };
 
@@ -167,6 +171,37 @@ export class QuestionService {
         ),
       ),
     ).pipe(map((buckets) => buckets.flat()));
+  }
+
+  loadShowcaseStats(
+    options: { transferState?: boolean } = {},
+  ): Observable<ShowcaseStatsPayload> {
+    const useTransferState = options.transferState !== false;
+    if (this.isServer) {
+      return this.loadShowcaseStatsFromFs(useTransferState);
+    }
+
+    const tsKey = this.showcaseStatsStateKey();
+    if (useTransferState && this.transferState.hasKey(tsKey)) {
+      const stats = this.transferState.get(tsKey, this.emptyShowcaseStats());
+      this.transferState.remove(tsKey);
+      return of(stats);
+    }
+
+    const { primary, fallback } = this.getAssetUrls('questions/showcase-stats.json');
+    const source$ = primary !== fallback
+      ? this.http
+        .get<ShowcaseStatsPayload>(primary)
+        .pipe(catchError(() => this.http.get<ShowcaseStatsPayload>(fallback)))
+      : this.http.get<ShowcaseStatsPayload>(fallback);
+
+    return source$.pipe(
+      map((raw) => this.normalizeShowcaseStats(raw)),
+      tap((stats) => {
+        if (useTransferState) this.transferState.set(tsKey, stats);
+      }),
+      catchError(() => of(this.emptyShowcaseStats())),
+    );
   }
 
   /** Convenience: fetch a single question by id. */
@@ -451,6 +486,10 @@ export class QuestionService {
     return makeStateKey<any[]>('system-design:index');
   }
 
+  private showcaseStatsStateKey() {
+    return makeStateKey<ShowcaseStatsPayload>('showcase:stats');
+  }
+
   private systemDesignQuestionStateKey(id: string) {
     return makeStateKey<any>(`system-design:${id}`);
   }
@@ -480,6 +519,18 @@ export class QuestionService {
         if (transferState) this.transferState.set(key, list);
       }),
       catchError(() => of([] as any[])),
+    );
+  }
+
+  private loadShowcaseStatsFromFs(transferState = true): Observable<ShowcaseStatsPayload> {
+    const rel = 'assets/questions/showcase-stats.json';
+    const key = this.showcaseStatsStateKey();
+    return this.assetReader.readJson(rel).pipe(
+      map((raw) => this.normalizeShowcaseStats(raw)),
+      tap((stats) => {
+        if (transferState) this.transferState.set(key, stats);
+      }),
+      catchError(() => of(this.emptyShowcaseStats())),
     );
   }
 
@@ -655,5 +706,46 @@ export class QuestionService {
 
   private safeParse(raw: string): any | null {
     try { return JSON.parse(raw); } catch { return null; }
+  }
+
+  private emptyShowcaseStats(): ShowcaseStatsPayload {
+    return { totalQuestions: 0, companyCounts: {} };
+  }
+
+  private normalizeShowcaseStats(raw: unknown): ShowcaseStatsPayload {
+    const source = raw && typeof raw === 'object' ? raw as Record<string, unknown> : {};
+    const totalQuestionsRaw = Number(source['totalQuestions']);
+    const totalQuestions = Number.isFinite(totalQuestionsRaw) && totalQuestionsRaw > 0
+      ? Math.floor(totalQuestionsRaw)
+      : 0;
+
+    const companyCountsRaw = source['companyCounts'];
+    const companyCountsSource =
+      companyCountsRaw && typeof companyCountsRaw === 'object'
+        ? companyCountsRaw as Record<string, unknown>
+        : {};
+
+    const companyCounts: ShowcaseStatsPayload['companyCounts'] = {};
+    for (const [slugRaw, bucketRaw] of Object.entries(companyCountsSource)) {
+      const slug = String(slugRaw || '').trim().toLowerCase();
+      if (!slug || !bucketRaw || typeof bucketRaw !== 'object') continue;
+
+      const bucket = bucketRaw as Record<string, unknown>;
+      const coding = this.safePositiveInt(bucket['coding']);
+      const trivia = this.safePositiveInt(bucket['trivia']);
+      const system = this.safePositiveInt(bucket['system']);
+      const allRaw = this.safePositiveInt(bucket['all']);
+      const all = allRaw || coding + trivia + system;
+
+      companyCounts[slug] = { all, coding, trivia, system };
+    }
+
+    return { totalQuestions, companyCounts };
+  }
+
+  private safePositiveInt(value: unknown): number {
+    const n = Number(value);
+    if (!Number.isFinite(n) || n <= 0) return 0;
+    return Math.floor(n);
   }
 }

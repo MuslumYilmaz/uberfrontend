@@ -43,12 +43,11 @@ type FrameworkPathCard = {
       border: 1px solid var(--uf-border-subtle);
       background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
       box-shadow: var(--uf-card-shadow);
-      transition: border-color 160ms ease, background-color 160ms ease, box-shadow 180ms ease;
+      transition: border-color 160ms ease, background-color 160ms ease;
     }
     .cluster-card:hover {
       border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
       background: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-accent) 14%);
-      box-shadow: var(--uf-card-shadow-strong);
     }
     .cluster-card__title { margin: 0; }
     .cluster-card__summary { margin: 0; color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent); }

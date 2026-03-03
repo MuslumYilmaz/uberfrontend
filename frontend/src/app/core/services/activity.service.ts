@@ -5,6 +5,7 @@ import { Tech } from '../models/user.model';
 import { AuthService } from './auth.service';
 import { apiUrl } from '../utils/api-base';
 import { AnalyticsService } from './analytics.service';
+import { GamificationService } from './gamification.service';
 
 export interface ActivityEvent {
   _id: string;
@@ -57,10 +58,16 @@ export class ActivityService {
   private recentCache = new Map<string, CachedObs<ActivityEvent[]>>();
   private heatmapCache = new Map<string, CachedObs<any>>();
 
-  constructor(private http: HttpClient, private auth: AuthService, private analytics: AnalyticsService) {
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService,
+    private analytics: AnalyticsService,
+    private gamification: GamificationService
+  ) {
     // Invalidate on completion (so widgets refresh immediately)
     this.activityCompleted$.subscribe(() => {
       this.invalidateAll();
+      this.gamification.invalidateDashboardCache();
     });
   }
 

@@ -36,12 +36,11 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
       border: 1px solid var(--uf-border-subtle);
       box-shadow: var(--uf-card-shadow);
       padding:14px 14px; text-decoration:none; color:inherit; border-radius: var(--uf-card-radius, 12px);
-      transition: border-color 160ms ease, background-color 160ms ease, box-shadow 180ms ease, transform 120ms ease;
+      transition: border-color 160ms ease, background-color 160ms ease, transform 120ms ease;
     }
     .card:hover {
       background: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-accent) 14%);
       border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
-      box-shadow: var(--uf-card-shadow-strong);
       transform: translateY(-1px);
     }
     .num { width:28px; height:28px; border-radius:999px; display:grid; place-items:center;

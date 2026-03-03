@@ -1,4 +1,4 @@
-<section class="faq-section">
+<section class="faq-section" [class.faq-section--flush]="flush">
   <div class="section-head" *ngIf="title || subtitle">
     <div>
       <p class="eyebrow" *ngIf="eyebrow">{{ eyebrow }}</p>
@@ -29,7 +29,9 @@
             [class.open]="isOpen(getId(item, i, getGroupKey(group, gi)))"
             [attr.id]="'faq-a-' + getId(item, i, getGroupKey(group, gi))"
             role="region">
-            <p [innerHTML]="item.a | safeHtml"></p>
+            <div class="faq-a-inner">
+              <p [innerHTML]="item.a | safeHtml"></p>
+            </div>
           </div>
         </div>
       </div>
@@ -52,7 +54,9 @@
           [class.open]="isOpen(getId(item, i))"
           [attr.id]="'faq-a-' + getId(item, i)"
           role="region">
-          <p [innerHTML]="item.a | safeHtml"></p>
+          <div class="faq-a-inner">
+            <p [innerHTML]="item.a | safeHtml"></p>
+          </div>
         </div>
       </div>
     </ng-template>
