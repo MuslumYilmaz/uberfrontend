@@ -4,11 +4,34 @@
         <div class="flex">
             <button class="px-4 py-2" [class.opacity-100]="topTab()==='code'" [class.opacity-60]="topTab()!=='code'"
                 (click)="topTab.set('code')">&lt;/&gt; Code</button>
-            <button class="px-4 py-2" [class.opacity-100]="topTab()==='tests'" [class.opacity-60]="topTab()!=='tests'"
+            <button *ngIf="!interviewModeEnabled()" class="px-4 py-2" [class.opacity-100]="topTab()==='tests'" [class.opacity-60]="topTab()!=='tests'"
                 (click)="topTab.set('tests')"><i class="pi pi-clipboard mr-2"></i> Test cases</button>
         </div>
 
-        <div class="ml-auto flex items-center gap-2">
+        <div class="ml-auto flex items-center gap-2 flex-wrap justify-end py-2">
+            <div *ngIf="assistInterviewEnabled()" class="interview-controls">
+                <ng-container *ngIf="!interviewModeEnabled(); else interviewRunningControls">
+                    <span class="text-xs opacity-70">Interview</span>
+                    <div class="lang-wrap">
+                        <select #interviewDuration class="lang-select" [value]="interviewDurationMin()"
+                            aria-label="Interview mode duration" (change)="onInterviewDurationChange(interviewDuration.value)">
+                            <option value="15">15 min</option>
+                            <option value="30">30 min</option>
+                            <option value="45">45 min</option>
+                        </select>
+                        <span class="select-caret" aria-hidden="true"></span>
+                    </div>
+                    <button class="interview-start-btn" type="button" data-testid="interview-mode-start" (click)="startInterviewMode()">
+                        Start
+                    </button>
+                </ng-container>
+                <ng-template #interviewRunningControls>
+                    <span class="interview-pill">{{ interviewRemainingLabel() }}</span>
+                    <button class="interview-end-btn" type="button" data-testid="interview-mode-end" (click)="endInterviewMode('manual')">
+                        End interview
+                    </button>
+                </ng-template>
+            </div>
             <span *ngIf="isViewingOlderVersion()" class="text-[11px] px-2 py-1 rounded bg-blue-500/20 text-blue-200 border border-blue-500/30"
                 data-testid="older-draft-label">
                 Older version
@@ -111,10 +134,11 @@
                     [disabled]="!(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>
                 <button class="fa-runner-tab-btn" [class.active]="subTab()==='tests'"
                     (click)="subTab.set('tests')">Results</button>
-                <button class="fa-runner-tab-btn" [class.active]="subTab()==='console'"
+                <button *ngIf="!interviewModeEnabled()" class="fa-runner-tab-btn" [class.active]="subTab()==='console'"
                     (click)="subTab.set('console')">Console</button>
                 <span class="fa-runner-summary" *ngIf="isRunningTests()">Running…</span>
                 <span class="fa-runner-summary" *ngIf="!isRunningTests() && hasRunTests()">{{ passedCount() }}/{{ totalCount() }} passed</span>
+                <span class="fa-runner-summary" *ngIf="interviewModeEnabled()">{{ interviewRemainingLabel() }}</span>
             </div>
 
             <div class="flex-1 min-h-0 overflow-hidden">
@@ -125,6 +149,62 @@
                     </div>
 
                     <div *ngIf="hasRunTests()" class="space-y-2">
+                        <div *ngIf="showStuckNudge()" class="assist-nudge" data-testid="assist-stuck-nudge">
+                            <div class="assist-nudge__head">
+                                <strong>{{ assistNudgeTitle() }}</strong>
+                                <button type="button" class="assist-nudge__dismiss" (click)="dismissStuckNudge()">
+                                    Dismiss 30m
+                                </button>
+                            </div>
+                            <p class="assist-nudge__body">{{ assistNudgeBody() }}</p>
+                        </div>
+
+                        <div *ngIf="showExplainCard()" class="assist-explain" data-testid="assist-explain-card">
+                            <div class="assist-explain__head">
+                                <strong>{{ explainHint()?.title }}</strong>
+                                <button type="button" class="assist-explain__toggle" (click)="toggleExplainExpanded()">
+                                    {{ explainExpanded() ? 'Hide details' : 'Explain this failure' }}
+                                </button>
+                            </div>
+                            <p class="assist-explain__why" *ngIf="explainExpanded()">{{ explainHint()?.why }}</p>
+                            <ul *ngIf="explainExpanded()" class="assist-explain__actions">
+                                <li *ngFor="let action of explainHint()?.actions">{{ action }}</li>
+                            </ul>
+                        </div>
+
+                        <div *ngIf="showDuckPanel()" class="assist-duck" data-testid="assist-rubber-duck">
+                            <div class="assist-duck__head">
+                                <strong>Rubber duck checklist</strong>
+                                <button type="button" class="assist-duck__toggle" (click)="toggleDuckPanel()">
+                                    {{ duckOpen() ? 'Collapse' : 'Expand' }}
+                                </button>
+                            </div>
+                            <div *ngIf="duckOpen()" class="assist-duck__body">
+                                <label *ngFor="let step of duckSteps(); index as i" class="assist-duck__step">
+                                    <input
+                                        type="checkbox"
+                                        [checked]="duckDoneStepIndexes().includes(i)"
+                                        (change)="onDuckStepToggle(i)"
+                                    />
+                                    <span>{{ step }}</span>
+                                </label>
+                                <label class="assist-duck__note-label">
+                                    Notes
+                                    <textarea
+                                        class="assist-duck__note"
+                                        [value]="duckNote()"
+                                        (input)="onDuckNoteInput($any($event.target).value)"
+                                        rows="3"
+                                    ></textarea>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div *ngIf="interviewSummary() as summary" class="interview-summary" data-testid="interview-summary">
+                            <strong>Interview mode summary</strong>
+                            <p>Runs: {{ summary.runs }} · Best pass: {{ summary.bestPassPct }}% · Elapsed: {{ summary.elapsedSec }}s</p>
+                        </div>
+
                         <div class="summary mb-2">
                             <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
                             <ng-container *ngIf="totalCount() > 0">
@@ -140,7 +220,7 @@
                                 <span class="sr-only" data-testid="test-status">{{ t.passed ? 'PASS' : 'FAIL' }}</span>
                                 <span>{{ t.name }}</span>
                             </div>
-                            <div *ngIf="t.error" class="test-error whitespace-pre-wrap break-words">
+                            <div *ngIf="t.error && !interviewModeEnabled()" class="test-error whitespace-pre-wrap break-words">
                                 {{ t.error }}
                             </div>
                         </div>

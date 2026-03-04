@@ -253,6 +253,35 @@
               </p>
             </article>
           </ng-template>
+
+          <article
+            *ngIf="showWeaknessRadar()"
+            faCard
+            class="widget widget--detail widget--weakness"
+            data-testid="dashboard-weakness-radar"
+          >
+            <div class="widget-kicker">Personal weakness radar</div>
+            <h3 class="widget-title">Patterns to improve next</h3>
+            <div class="weakness-list">
+              <a
+                *ngFor="let item of weaknesses(); trackBy: trackByWeakness"
+                class="weakness-item"
+                [routerLink]="['/coding']"
+                [queryParams]="weaknessQueryParams(item)"
+                (click)="trackWeaknessDrillClick(item)"
+              >
+                <div class="weakness-item__head">
+                  <span class="weakness-item__tag">{{ item.topicOrTag }}</span>
+                  <span class="weakness-item__count">{{ item.failCount }} fails</span>
+                </div>
+                <div class="weakness-item__meta">
+                  <span>{{ item.category }}</span>
+                  <span>{{ weaknessLastSeenLabel(item.lastSeenTs) }}</span>
+                </div>
+                <span class="weakness-item__cta">Practice now →</span>
+              </a>
+            </div>
+          </article>
         </div>
       </div>
 

@@ -232,4 +232,18 @@ describe('DashboardComponent', () => {
     expect(percent).toBeCloseTo(0.4796, 4);
     expect(component.formatPercentLabel(percent)).toBe('0.48%');
   });
+
+  it('parses weakness drill query params from drill url', () => {
+    const component = fixture.componentInstance;
+    const params = component.weaknessQueryParams({
+      topicOrTag: 'arrays',
+      category: 'off-by-one',
+      failCount: 3,
+      lastSeenTs: Date.now(),
+      drillUrl: '/coding?q=array%20index%20boundaries&reset=1',
+    });
+
+    expect(params['q']).toBe('array index boundaries');
+    expect(params['reset']).toBe('1');
+  });
 });

@@ -1,5 +1,6 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { ExperimentService } from '../../../../core/services/experiment.service';
 import type { ConsoleEntry, TestResult } from '../../console-logger/console-logger.component';
 import { CodingJsPanelComponent } from './coding-js-panel.component';
 
@@ -17,7 +18,10 @@ class RunnerStub {
 describe('CodingJsPanelComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+      providers: [
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: ExperimentService, useValue: null },
+      ],
     });
   });
 
@@ -113,5 +117,71 @@ describe('CodingJsPanelComponent', () => {
     expect(emittedConsole).not.toBeNull();
     expect(emittedResults ?? []).toEqual([]);
     expect(emittedConsole ?? []).toEqual([]);
+  });
+
+  it('shows stuck nudge only when level is at least 1 and not dismissed', () => {
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+
+    component.stuckState.set({
+      level: 1,
+      signature: 'sig',
+      consecutiveCount: 2,
+      firstSeenTs: Date.now() - 10_000,
+      lastSeenTs: Date.now(),
+    });
+    expect(component.showStuckNudge()).toBeTrue();
+
+    component.stuckState.set({
+      level: 0,
+      signature: 'sig',
+      consecutiveCount: 0,
+      firstSeenTs: Date.now(),
+      lastSeenTs: Date.now(),
+    });
+    expect(component.showStuckNudge()).toBeFalse();
+  });
+
+  it('requires level 2 when assist intervention timing variant is late_l2', () => {
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    (component as any).interventionTimingVariant = 'late_l2';
+
+    component.stuckState.set({
+      level: 1,
+      signature: 'sig',
+      consecutiveCount: 2,
+      firstSeenTs: Date.now() - 30_000,
+      lastSeenTs: Date.now(),
+    });
+    expect(component.showStuckNudge()).toBeFalse();
+
+    component.stuckState.set({
+      level: 2,
+      signature: 'sig',
+      consecutiveCount: 4,
+      firstSeenTs: Date.now() - 80_000,
+      lastSeenTs: Date.now(),
+    });
+    expect(component.showStuckNudge()).toBeTrue();
+  });
+
+  it('trims explain actions in compact hint density variant', () => {
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    (component as any).hintDensityVariant = 'compact';
+
+    const normalized = (component as any).applyHintDensityVariant({
+      ruleId: 'r',
+      title: 't',
+      why: 'w',
+      actions: ['a1', 'a2', 'a3'],
+      confidence: 0.9,
+    });
+
+    expect(normalized.actions).toEqual(['a1', 'a2']);
   });
 });

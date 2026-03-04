@@ -36,4 +36,13 @@ export const environment = {
     STRIPE_QUARTERLY_URL: '',
     STRIPE_ANNUAL_URL: '',
     STRIPE_MANAGE_URL: '',
+    assist: {
+        stuckDetector: true,
+        explainFailure: true,
+        interviewMode: true,
+        weaknessRadar: false,
+        rubberDuck: false,
+        syncTelemetry: true,
+        assistExperiments: true,
+    },
 };

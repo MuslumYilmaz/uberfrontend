@@ -239,6 +239,8 @@ app.use('/api/tools', require('./routes/tools'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/daily', require('./routes/daily'));
 app.use('/api/weekly-goal', require('./routes/weekly-goal'));
+// ---- Editor assist sync routes ----
+app.use('/api/editor-assist', require('./routes/editor-assist'));
 
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));

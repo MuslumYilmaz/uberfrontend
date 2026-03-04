@@ -161,6 +161,78 @@ test('js runner console output resets on re-run (no stale logs)', async ({ page 
   await expect(consoleOut).not.toContainText(marker1);
 });
 
+test('js assist surfaces stuck nudge + explain card, and interview mode suppresses them', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('fa:exp:assignment:assist_intervention_timing_v1', 'early_l1');
+    localStorage.setItem('fa:exp:assignment:assist_hint_density_v1', 'full');
+  });
+
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  const jsPanel = page.getByTestId('js-panel');
+  await expect(jsPanel).toBeVisible();
+
+  const buggyCode = [
+    'export default function clamp(value, lower, upper) {',
+    '  const bounded = Math.min(Math.max(value, lower), upper);',
+    '  // missing return on purpose',
+    '}',
+    '',
+  ].join('\n');
+
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  await setMonacoModelValue(page, codeModelKey, buggyCode);
+
+  await jsPanel.getByTestId('js-run-tests').click();
+  await expect(jsPanel.locator('[data-testid="test-result"]')).not.toHaveCount(0);
+
+  await jsPanel.getByTestId('js-run-tests').click();
+  await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeVisible();
+  await expect(jsPanel.getByTestId('assist-explain-card')).toBeVisible();
+
+  await jsPanel.getByTestId('interview-mode-start').click();
+  await jsPanel.getByTestId('js-run-tests').click();
+  await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeHidden();
+  await expect(jsPanel.getByTestId('assist-explain-card')).toBeHidden();
+
+  await jsPanel.getByTestId('interview-mode-end').click();
+  await expect(jsPanel.getByTestId('interview-summary')).toBeVisible();
+});
+
+test('assist experiments apply late_l2 nudge timing and compact explain density', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('fa:exp:assignment:assist_intervention_timing_v1', 'late_l2');
+    localStorage.setItem('fa:exp:assignment:assist_hint_density_v1', 'compact');
+  });
+
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  const jsPanel = page.getByTestId('js-panel');
+  await expect(jsPanel).toBeVisible();
+
+  const buggyCode = [
+    'export default function clamp(value, lower, upper) {',
+    '  const bounded = Math.min(Math.max(value, lower), upper);',
+    '  // missing return on purpose',
+    '}',
+    '',
+  ].join('\\n');
+
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  await setMonacoModelValue(page, codeModelKey, buggyCode);
+
+  await jsPanel.getByTestId('js-run-tests').click();
+  await jsPanel.getByTestId('js-run-tests').click();
+  await expect(jsPanel.getByTestId('assist-stuck-nudge')).toHaveCount(0);
+
+  await jsPanel.getByTestId('js-run-tests').click();
+  await jsPanel.getByTestId('js-run-tests').click();
+  await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeVisible();
+
+  const explain = jsPanel.getByTestId('assist-explain-card');
+  await expect(explain).toBeVisible();
+  await explain.getByRole('button', { name: 'Explain this failure' }).click();
+  await expect(explain.locator('li')).toHaveCount(2);
+});
+
 test('js console logger prints Promise objects (not {})', async ({ page }) => {
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
 

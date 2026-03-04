@@ -2,9 +2,12 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Params, RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
+import { WeaknessSummary } from '../../core/models/editor-assist.model';
 import { forkJoin, from, map, Observable, shareReplay, take } from 'rxjs';
 import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
+import { AttemptInsightsService } from '../../core/services/attempt-insights.service';
 import { AuthService } from '../../core/services/auth.service';
 import { DashboardGamificationResponse, DashboardProgress } from '../../core/models/gamification.model';
 import { GamificationService } from '../../core/services/gamification.service';
@@ -78,6 +81,7 @@ export class DashboardComponent {
   private readonly activity = inject(ActivityService);
   private readonly gamification = inject(GamificationService);
   private readonly analytics = inject(AnalyticsService);
+  private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
   private readonly destroyRef = inject(DestroyRef);
   private readonly focusIntensityCache = new WeakMap<Stats, Record<string, FocusIntensity>>();
   private readonly emptyTrackProgress: TrackProgress = { solved: 0, total: 0, pct: 0 };
@@ -107,6 +111,7 @@ export class DashboardComponent {
   dailyCompleteError = signal<string | null>(null);
   isProgressDetailsExpanded = signal(this.getInitialDetailsExpandedState());
   isManageProgressOpen = signal(false);
+  weaknesses = signal<WeaknessSummary[]>([]);
 
   weeklyGoalEnabled = signal(true);
   weeklyGoalTarget = signal(10);
@@ -130,6 +135,10 @@ export class DashboardComponent {
   xpLevel = computed(() => this.gamificationState()?.xpLevel ?? null);
   progressSummary = computed(() => this.gamificationState()?.progress ?? null);
   shouldShowStreak = computed(() => this.showStreakWidget());
+  showWeaknessRadar = computed(() => {
+    const flags = ((environment as any)?.assist || {}) as { weaknessRadar?: boolean };
+    return !!flags.weaknessRadar && this.weaknesses().length > 0;
+  });
 
   private solvedSet = computed(() => new Set(this.progress.solvedIds()));
 
@@ -153,6 +162,7 @@ export class DashboardComponent {
       this.activity.getSummary().pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe();
       this.refreshWeeklySolved(false);
       this.loadGamification(false);
+      this.refreshWeaknessRadar();
     }, { allowSignalWrites: true });
 
     this.activity.activityCompleted$
@@ -160,6 +170,7 @@ export class DashboardComponent {
       .subscribe(() => {
         this.refreshWeeklySolved(true);
         this.loadGamification(true);
+        this.refreshWeaknessRadar();
       });
   }
 
@@ -531,6 +542,7 @@ export class DashboardComponent {
 
   trackByTitle = (_: number, it: Card) => it.title;
   trackByTopicId = (_: number, it: TopicDefinition) => it.id;
+  trackByWeakness = (_: number, it: WeaknessSummary) => `${it.category}:${it.topicOrTag}`;
 
   recommendedBadgeForIndex(index: number): string {
     return index === 0 ? 'Best next step' : 'Interview-ready';
@@ -948,11 +960,52 @@ export class DashboardComponent {
     return `${rounded.toFixed(2).replace(/\.?0+$/, '')}%`;
   }
 
+  weaknessQueryParams(item: WeaknessSummary): Params {
+    const raw = String(item.drillUrl || '');
+    const queryIdx = raw.indexOf('?');
+    if (queryIdx < 0) return { reset: 1 };
+    const qs = raw.slice(queryIdx + 1);
+    const params = new URLSearchParams(qs);
+    const out: Params = {};
+    params.forEach((value, key) => {
+      out[key] = value;
+    });
+    return out;
+  }
+
+  weaknessLastSeenLabel(ts: number): string {
+    const ageMs = Math.max(0, Date.now() - Number(ts || 0));
+    const minutes = Math.floor(ageMs / 60_000);
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
+
+  trackWeaknessDrillClick(item: WeaknessSummary): void {
+    this.analytics.track('weakness_drill_clicked', {
+      category: item.category,
+      topic_or_tag: item.topicOrTag,
+      fail_count: item.failCount,
+    });
+  }
+
   private getInitialDetailsExpandedState(): boolean {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return true;
     }
     return !window.matchMedia('(max-width: 640px)').matches;
+  }
+
+  private refreshWeaknessRadar(): void {
+    const flags = ((environment as any)?.assist || {}) as { weaknessRadar?: boolean };
+    if (!flags.weaknessRadar || !this.attemptInsights) {
+      this.weaknesses.set([]);
+      return;
+    }
+    this.weaknesses.set(this.attemptInsights.getWeaknessSummaries(3));
   }
 
 }

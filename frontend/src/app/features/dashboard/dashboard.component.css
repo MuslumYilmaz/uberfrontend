@@ -221,6 +221,11 @@
   gap: 8px;
 }
 
+.widget--weakness {
+  border-color: color-mix(in srgb, #f6d568 40%, var(--fa-border-subtle) 60%);
+  background: linear-gradient(150deg, rgba(246, 213, 104, 0.09), rgba(var(--fa-text-rgb), 0.02));
+}
+
 .widget-kicker {
   font-size: 11px;
   text-transform: uppercase;
@@ -323,6 +328,53 @@
 .settings-grid {
   display: grid;
   gap: 8px;
+}
+
+.weakness-list {
+  display: grid;
+  gap: 8px;
+}
+
+.weakness-item {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--fa-border-subtle);
+  border-radius: 10px;
+  padding: 10px;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(var(--fa-text-rgb), 0.03);
+}
+
+.weakness-item__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.weakness-item__tag {
+  font-weight: 700;
+  color: var(--fa-text);
+}
+
+.weakness-item__count {
+  font-size: 12px;
+  color: var(--fa-text-muted);
+}
+
+.weakness-item__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--fa-text-muted);
+}
+
+.weakness-item__cta {
+  font-size: 12px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--fa-accent) 75%, var(--fa-text) 25%);
 }
 
 .settings-grid--weekly {
@@ -521,6 +573,10 @@
   .widget--xp,
   .widget--progress {
     grid-column: span 6;
+  }
+
+  .widget--weakness {
+    grid-column: span 12;
   }
 }
 

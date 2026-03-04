@@ -1,8 +1,18 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, PLATFORM_ID, SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
+import type { FailureCategory, FailureHint, InterviewModeSession, StuckLevel, StuckState } from '../../../../core/models/editor-assist.model';
+import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
+import { ExperimentService } from '../../../../core/services/experiment.service';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
+import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.util';
+import { buildFailureHint } from '../../../../core/utils/failure-explain-rules';
+import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
+import { buildRubberDuckPrompts } from '../../../../core/utils/rubber-duck-prompts.util';
+import { deriveStuckState, isStuckNudgeVisible, stuckLevelLabel } from '../../../../core/utils/stuck-detector.util';
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
 import {
   dismissUpdateBanner,
@@ -22,6 +32,25 @@ declare const monaco: any;
 export type JsLang = 'js' | 'ts';
 type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
 type Runner = { runWithTests(args: { userCode: string; testCode: string; timeoutMs?: number }): Promise<RunnerOutput> };
+type AssistFlags = {
+  stuckDetector: boolean;
+  explainFailure: boolean;
+  interviewMode: boolean;
+  weaknessRadar: boolean;
+  rubberDuck: boolean;
+  syncTelemetry: boolean;
+  assistExperiments: boolean;
+};
+
+const DEFAULT_ASSIST_FLAGS: AssistFlags = {
+  stuckDetector: true,
+  explainFailure: true,
+  interviewMode: true,
+  weaknessRadar: false,
+  rubberDuck: false,
+  syncTelemetry: false,
+  assistExperiments: false,
+};
 
 @Component({
   selector: 'app-coding-js-panel',
@@ -99,11 +128,57 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private pendingPersist: { key: string; lang: JsLang; code: string } | null = null;
   private resizeRaf: number | null = null;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly analytics = inject(AnalyticsService, { optional: true });
+  private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
+  private readonly experiment = inject(ExperimentService, { optional: true });
+  private readonly assistFlags = {
+    ...DEFAULT_ASSIST_FLAGS,
+    ...((environment as any)?.assist || {}),
+  } as AssistFlags;
+  private readonly interventionTimingVariant = this.resolveInterventionTimingVariant();
+  private readonly hintDensityVariant = this.resolveHintDensityVariant();
   useMonaco = signal(true);
   codeEditorReady = signal(false);
   testsEditorReady = signal(false);
   private runnerInstance?: Runner;
   private runnerPromise?: Promise<Runner>;
+  private interviewTicker: number | null = null;
+  private interviewSession: InterviewModeSession | null = null;
+  private lastTrackedStuckLevel: StuckLevel = 0;
+
+  stuckState = signal<StuckState | null>(null);
+  explainHint = signal<FailureHint | null>(null);
+  explainExpanded = signal(false);
+  failureCategory = signal<FailureCategory>('unknown');
+
+  duckOpen = signal(false);
+  duckSteps = signal<string[]>([]);
+  duckDoneStepIndexes = signal<number[]>([]);
+  duckNote = signal('');
+
+  interviewModeEnabled = signal(false);
+  interviewDurationMin = signal<15 | 30 | 45>(30);
+  interviewRemainingSec = signal(0);
+  interviewSummary = signal<{ runs: number; bestPassPct: number; elapsedSec: number } | null>(null);
+
+  showStuckNudge = computed(() => {
+    if (!this.assistFlags.stuckDetector) return false;
+    if (this.interviewModeEnabled()) return false;
+    const state = this.stuckState();
+    if (!state) return false;
+    if (state.level < this.stuckNudgeMinLevel()) return false;
+    return isStuckNudgeVisible(state);
+  });
+  showExplainCard = computed(() => {
+    if (!this.assistFlags.explainFailure) return false;
+    if (this.interviewModeEnabled()) return false;
+    return !!this.explainHint();
+  });
+  showDuckPanel = computed(() => {
+    if (!this.assistFlags.rubberDuck) return false;
+    if (this.interviewModeEnabled()) return false;
+    return this.duckSteps().length > 0;
+  });
 
   ngOnInit() {
     if (!this.isBrowser) return;
@@ -113,6 +188,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.flushPendingPersist();
+    this.stopInterviewTicker();
     if (this.isBrowser) {
       window.removeEventListener('beforeunload', this._persistLangOnUnload);
       if (this.resizeRaf != null) {
@@ -353,6 +429,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.hasRunTests.set(false);
       this.testResults.set([]);
       this.consoleEntries.set([]);
+      this.loadAssistStateForQuestion(q);
       queueMicrotask(() => window.dispatchEvent(new Event('resize')));
       requestAnimationFrame(() => requestAnimationFrame(() => { this._hydrating = false; }));
       return;
@@ -419,6 +496,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     this.restoredFromStorage.set(restored);
     this.restoreDismissed.set(false);
+    this.loadAssistStateForQuestion(q);
 
     // Nudge Monaco once the first frame is ready (prevents first-frame squiggles)
     queueMicrotask(() => window.dispatchEvent(new Event('resize')));   // NEW
@@ -433,9 +511,285 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.hasRunTests.set(false);
     this.testResults.set([]);
     this.consoleEntries.set([]);
+    this.stuckState.set(null);
+    this.explainHint.set(null);
+    this.explainExpanded.set(false);
+    this.failureCategory.set('unknown');
+    this.duckOpen.set(false);
+    this.duckSteps.set([]);
+    this.duckDoneStepIndexes.set([]);
+    this.duckNote.set('');
+    this.interviewSummary.set(null);
+    this.lastTrackedStuckLevel = 0;
+    this.interviewModeEnabled.set(false);
+    this.interviewRemainingSec.set(0);
+    this.interviewSession = null;
+    this.stopInterviewTicker();
     this.subTab.set('tests');
     this.testResultsChange.emit([]);
     this.consoleEntriesChange.emit([]);
+  }
+
+  assistInterviewEnabled(): boolean {
+    return !!this.assistFlags.interviewMode;
+  }
+
+  assistRubberDuckEnabled(): boolean {
+    return !!this.assistFlags.rubberDuck;
+  }
+
+  assistNudgeTitle(): string {
+    const state = this.stuckState();
+    if (!state || state.level < 1) return 'Keep going';
+    if (state.level >= 3) return 'You are likely deeply stuck';
+    if (state.level >= 2) return 'You are likely stuck on the same failure';
+    return 'Small nudge: same failure is repeating';
+  }
+
+  private resolveInterventionTimingVariant(): 'early_l1' | 'late_l2' {
+    if (!this.assistFlags.assistExperiments || !this.experiment) return 'early_l1';
+    return this.experiment.variant('assist_intervention_timing_v1', 'coding_js_panel');
+  }
+
+  private resolveHintDensityVariant(): 'full' | 'compact' {
+    if (!this.assistFlags.assistExperiments || !this.experiment) return 'full';
+    return this.experiment.variant('assist_hint_density_v1', 'coding_js_panel');
+  }
+
+  private stuckNudgeMinLevel(): 1 | 2 {
+    return this.interventionTimingVariant === 'late_l2' ? 2 : 1;
+  }
+
+  private applyHintDensityVariant(hint: FailureHint): FailureHint {
+    if (this.hintDensityVariant !== 'compact') return hint;
+    return {
+      ...hint,
+      actions: hint.actions.slice(0, 2),
+    };
+  }
+
+  assistNudgeBody(): string {
+    const state = this.stuckState();
+    if (!state || state.level < 1) return '';
+    const label = stuckLevelLabel(state.level).toLowerCase();
+    return `${label}: ${state.consecutiveCount} similar run${state.consecutiveCount === 1 ? '' : 's'} in a row. Focus on the first failed test only.`;
+  }
+
+  dismissStuckNudge(): void {
+    const q = this.question;
+    if (!q || !this.attemptInsights) return;
+    const until = this.attemptInsights.dismissStuckNudge(q.id, 30);
+    const state = this.stuckState();
+    if (state) {
+      this.stuckState.set({ ...state, dismissedUntilTs: until });
+    }
+    this.analytics?.track('assist_hint_dismissed', {
+      question_id: q.id,
+      reason: 'manual_dismiss_30m',
+    });
+  }
+
+  toggleExplainExpanded(): void {
+    const next = !this.explainExpanded();
+    this.explainExpanded.set(next);
+    if (next) {
+      const q = this.question;
+      this.analytics?.track('assist_explain_opened', {
+        question_id: q?.id || 'unknown',
+        category: this.failureCategory(),
+      });
+    }
+  }
+
+  toggleDuckPanel(): void {
+    this.duckOpen.set(!this.duckOpen());
+  }
+
+  onDuckStepToggle(stepIndex: number): void {
+    const current = new Set(this.duckDoneStepIndexes());
+    if (current.has(stepIndex)) current.delete(stepIndex);
+    else current.add(stepIndex);
+    const next = [...current].sort((a, b) => a - b);
+    this.duckDoneStepIndexes.set(next);
+    this.persistDuckState(this.stuckState()?.signature);
+  }
+
+  onDuckNoteInput(value: string): void {
+    this.duckNote.set(String(value || ''));
+    this.persistDuckState(this.stuckState()?.signature);
+  }
+
+  onInterviewDurationChange(value: string): void {
+    const normalized = Number(value);
+    if (normalized === 15 || normalized === 30 || normalized === 45) {
+      this.interviewDurationMin.set(normalized);
+    }
+  }
+
+  startInterviewMode(): void {
+    if (!this.assistFlags.interviewMode) return;
+    const q = this.question;
+    if (!q) return;
+
+    const now = Date.now();
+    this.interviewSummary.set(null);
+    this.interviewModeEnabled.set(true);
+    this.topTab.set('code');
+    this.subTab.set('tests');
+    this.explainExpanded.set(false);
+
+    this.interviewSession = {
+      questionId: q.id,
+      startedAt: now,
+      durationMin: this.interviewDurationMin(),
+      runs: 0,
+      bestPassPct: 0,
+      updatedAt: now,
+    };
+    this.attemptInsights?.saveInterviewSession(this.interviewSession);
+    this.syncInterviewRemaining();
+    this.startInterviewTicker();
+
+    this.analytics?.track('interview_mode_started', {
+      question_id: q.id,
+      duration_min: this.interviewDurationMin(),
+    });
+  }
+
+  endInterviewMode(reason: 'manual' | 'expired' = 'manual'): void {
+    if (!this.interviewModeEnabled()) return;
+    const q = this.question;
+    const session = this.interviewSession;
+    const now = Date.now();
+    const elapsedSec = session ? Math.max(0, Math.round((now - session.startedAt) / 1000)) : 0;
+    const bestPassPct = session ? Math.round(session.bestPassPct * 100) : 0;
+
+    this.interviewModeEnabled.set(false);
+    this.interviewRemainingSec.set(0);
+    this.stopInterviewTicker();
+    if (q) this.attemptInsights?.clearInterviewSession(q.id);
+
+    if (session) {
+      this.interviewSummary.set({
+        runs: session.runs,
+        bestPassPct,
+        elapsedSec,
+      });
+    }
+
+    this.analytics?.track('interview_mode_completed', {
+      question_id: q?.id || 'unknown',
+      reason,
+      runs: session?.runs ?? 0,
+      best_pass_pct: bestPassPct,
+      elapsed_sec: elapsedSec,
+    });
+
+    this.interviewSession = null;
+  }
+
+  interviewRemainingLabel(): string {
+    const total = Math.max(0, this.interviewRemainingSec());
+    const mins = Math.floor(total / 60);
+    const secs = total % 60;
+    return `${mins}:${String(secs).padStart(2, '0')} left`;
+  }
+
+  private loadAssistStateForQuestion(question: Question): void {
+    if (!this.attemptInsights) return;
+    const runs = this.attemptInsights.getRunsForQuestion(question.id);
+    const dismissedUntilTs = this.attemptInsights.getStuckDismissedUntil(question.id);
+    const state = deriveStuckState(runs, { dismissedUntilTs });
+    this.stuckState.set(state.level > 0 ? state : null);
+    this.lastTrackedStuckLevel = state.level;
+
+    this.restoreInterviewSession(question.id);
+  }
+
+  private restoreInterviewSession(questionId: string): void {
+    if (!this.assistFlags.interviewMode || !this.attemptInsights) return;
+    const session = this.attemptInsights.getInterviewSession(questionId);
+    if (!session) return;
+    const expiresAt = session.startedAt + session.durationMin * 60_000;
+    if (Date.now() >= expiresAt) {
+      this.attemptInsights.clearInterviewSession(questionId);
+      return;
+    }
+
+    this.interviewDurationMin.set(session.durationMin);
+    this.interviewModeEnabled.set(true);
+    this.interviewSession = session;
+    this.topTab.set('code');
+    this.syncInterviewRemaining();
+    this.startInterviewTicker();
+  }
+
+  private syncInterviewRemaining(): void {
+    if (!this.interviewSession) {
+      this.interviewRemainingSec.set(0);
+      return;
+    }
+    const expiresAt = this.interviewSession.startedAt + this.interviewSession.durationMin * 60_000;
+    const remainingMs = Math.max(0, expiresAt - Date.now());
+    this.interviewRemainingSec.set(Math.ceil(remainingMs / 1000));
+    if (remainingMs <= 0) {
+      this.endInterviewMode('expired');
+    }
+  }
+
+  private startInterviewTicker(): void {
+    this.stopInterviewTicker();
+    if (!this.isBrowser || !this.interviewModeEnabled()) return;
+    this.interviewTicker = window.setInterval(() => this.syncInterviewRemaining(), 1000);
+  }
+
+  private stopInterviewTicker(): void {
+    if (this.interviewTicker != null) {
+      clearInterval(this.interviewTicker);
+      this.interviewTicker = null;
+    }
+  }
+
+  private persistDuckState(signature?: string): void {
+    const q = this.question;
+    if (!q || !this.attemptInsights || !this.assistFlags.rubberDuck) return;
+    this.attemptInsights.saveRubberDuckState(q.id, {
+      note: this.duckNote(),
+      doneStepIndexes: this.duckDoneStepIndexes(),
+      signature,
+    });
+  }
+
+  private refreshDuckPrompts(input: { category: FailureCategory; errorLine: string; signature: string }): void {
+    if (!this.assistFlags.rubberDuck) {
+      this.duckSteps.set([]);
+      this.duckOpen.set(false);
+      return;
+    }
+    const q = this.question;
+    if (!q) return;
+
+    const steps = buildRubberDuckPrompts({
+      category: input.category,
+      questionTitle: q.title,
+      tags: q.tags,
+      errorLine: input.errorLine,
+    });
+    this.duckSteps.set(steps);
+
+    const persisted = this.attemptInsights?.getRubberDuckState(q.id);
+    if (persisted && persisted.signature === input.signature) {
+      this.duckDoneStepIndexes.set(persisted.doneStepIndexes || []);
+      this.duckNote.set(persisted.note || '');
+    } else {
+      this.duckDoneStepIndexes.set([]);
+      this.duckNote.set('');
+      this.persistDuckState(input.signature);
+    }
+
+    if ((this.stuckState()?.level || 0) >= 2) {
+      this.duckOpen.set(true);
+    }
   }
 
   dismissDraftUpdateBanner(): void {
@@ -693,6 +1047,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   // Run tests
   async runTests() {
     const q = this.question; if (!q) return;
+    let rawUserSnapshot = this.editorContent();
 
     const runId = ++this._runSeq;
     this.isRunningTests.set(true);
@@ -704,6 +1059,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     try {
       await this.flushEditorBuffer();
       const rawUser = this.codeEditor?.getValue?.() ?? this.editorContent();
+      rawUserSnapshot = rawUser;
       const rawTests = this.testsEditor?.getValue?.() ?? this.testCode();
       this.syncEditorBuffers(rawUser, rawTests);
       const userSrc = await this.ensureJs(rawUser, `${q.id}.ts`);
@@ -920,9 +1276,136 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.solvedChange.emit(passing);
       this.testResultsChange.emit(this.testResults());
       this.consoleEntriesChange.emit(this.consoleEntries());
+      this.processAssistAfterRun(q, rawUserSnapshot, this.testResults());
       this.subTab.set('tests');
     } finally {
       if (runId === this._runSeq) this.isRunningTests.set(false);
+    }
+  }
+
+  private processAssistAfterRun(question: Question, rawUserCode: string, results: TestResult[]): void {
+    if (!this.attemptInsights) return;
+
+    const totalCount = results.length;
+    if (totalCount <= 0) return;
+    const passCount = results.filter((item) => item.passed).length;
+    const firstFail = results.find((item) => !item.passed);
+    const failCount = Math.max(0, totalCount - passCount);
+    const normalizedError = normalizeErrorLine(firstFail?.error || '');
+    const signature = createFailureSignature({
+      firstFailName: firstFail?.name,
+      errorLine: normalizedError,
+      failCount,
+    });
+    const codeHash = stableHash(rawUserCode);
+    const existingRuns = this.attemptInsights.getRunsForQuestion(question.id);
+    const prevHash = existingRuns.length ? existingRuns[existingRuns.length - 1].codeHash : '';
+    const category = classifyFailureCategory(firstFail?.error || normalizedError);
+
+    const out = this.attemptInsights.recordRun({
+      questionId: question.id,
+      lang: this.jsLang(),
+      ts: Date.now(),
+      passCount,
+      totalCount,
+      firstFailName: String(firstFail?.name || ''),
+      errorLine: normalizedError,
+      signature,
+      codeHash,
+      codeChanged: prevHash ? prevHash !== codeHash : true,
+      interviewMode: this.interviewModeEnabled(),
+      errorCategory: category,
+      tags: question.tags || [],
+    });
+
+    if (Number.isFinite(out.runToPassMs) && (out.runToPassMs || 0) > 0) {
+      this.analytics?.track('run_to_pass_ms', {
+        question_id: question.id,
+        duration_ms: Math.round(out.runToPassMs!),
+        lang: this.jsLang(),
+        interview_mode: this.interviewModeEnabled(),
+      });
+    }
+
+    const dismissedUntilTs = this.attemptInsights.getStuckDismissedUntil(question.id);
+    const stuck = deriveStuckState(out.runsForQuestion, { dismissedUntilTs });
+    this.stuckState.set(stuck.level > 0 ? stuck : null);
+
+    if (
+      this.assistFlags.assistExperiments &&
+      this.experiment &&
+      !this.interviewModeEnabled() &&
+      stuck.level >= this.stuckNudgeMinLevel()
+    ) {
+      this.experiment.expose(
+        'assist_intervention_timing_v1',
+        this.interventionTimingVariant,
+        `${question.id}:${stuck.level}`,
+        'coding_js_panel',
+      );
+    }
+
+    if (!this.interviewModeEnabled() && stuck.level > this.lastTrackedStuckLevel && stuck.level > 0) {
+      this.analytics?.track('assist_stuck_level_reached', {
+        question_id: question.id,
+        level: stuck.level,
+        consecutive_count: stuck.consecutiveCount,
+      });
+    }
+    this.lastTrackedStuckLevel = stuck.level;
+
+    if (firstFail && this.assistFlags.explainFailure && !this.interviewModeEnabled()) {
+      const rawHint = buildFailureHint({
+        errorLine: normalizedError,
+        firstFailName: firstFail.name,
+        category,
+      });
+      const hint = this.applyHintDensityVariant(rawHint);
+      this.explainHint.set(hint);
+      this.failureCategory.set(category);
+      this.explainExpanded.set(false);
+      this.analytics?.track('assist_hint_shown', {
+        question_id: question.id,
+        rule_id: hint.ruleId,
+        category,
+      });
+      if (this.assistFlags.assistExperiments && this.experiment) {
+        this.experiment.expose(
+          'assist_hint_density_v1',
+          this.hintDensityVariant,
+          `${question.id}:${category}`,
+          'coding_js_panel',
+        );
+      }
+    } else {
+      this.explainHint.set(null);
+      this.failureCategory.set('unknown');
+      this.explainExpanded.set(false);
+    }
+
+    if (firstFail && !this.interviewModeEnabled()) {
+      this.refreshDuckPrompts({
+        category,
+        errorLine: normalizedError,
+        signature,
+      });
+    } else if (!firstFail) {
+      this.duckSteps.set([]);
+      this.duckOpen.set(false);
+      this.duckDoneStepIndexes.set([]);
+      this.duckNote.set('');
+    }
+
+    if (this.interviewModeEnabled() && this.interviewSession) {
+      const passPct = totalCount > 0 ? passCount / totalCount : 0;
+      this.interviewSession = {
+        ...this.interviewSession,
+        runs: this.interviewSession.runs + 1,
+        bestPassPct: Math.max(this.interviewSession.bestPassPct, passPct),
+        updatedAt: Date.now(),
+      };
+      this.attemptInsights.saveInterviewSession(this.interviewSession);
+      this.syncInterviewRemaining();
     }
   }
 

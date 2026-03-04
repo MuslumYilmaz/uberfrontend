@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Entitlements, Tech } from '../models/user.model';
@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { apiUrl, getApiBase, getFrontendBase } from '../utils/api-base';
 import { resolvePaymentsProvider } from '../utils/payments-provider.util';
 import { sanitizeRedirectTarget } from '../utils/redirect.util';
+import { AttemptInsightsService } from './attempt-insights.service';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
@@ -94,6 +95,7 @@ export class AuthService {
   private static readonly OAUTH_STATE_KEY = 'oauth:state';
   private static readonly OAUTH_REDIRECT_KEY = 'oauth:redirect';
   private static readonly OAUTH_MODE_KEY = 'oauth:mode';
+  private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
 
   /** Reactive user */
   user = signal<User | null>(null);
@@ -135,6 +137,7 @@ export class AuthService {
         tap((res) => {
           this.setSessionHint(true);
           if (res.user) this.user.set(this.cloneUser(res.user));
+          this.attemptInsights?.notifyAuthSessionStarted();
         }),
         switchMap(() => this.fetchMe()),
         shareReplay(1)
@@ -149,6 +152,7 @@ export class AuthService {
           this.setSessionHint(true);
           // optional: keep UI snappy if backend returns user
           if (res.user) this.user.set(this.cloneUser(res.user));
+          this.attemptInsights?.notifyAuthSessionStarted();
         }),
         // ✅ always hydrate full user (solvedQuestionIds, stats, billing, etc.)
         switchMap(() => this.fetchMe()),
@@ -178,6 +182,7 @@ export class AuthService {
           if (this.sessionSeq !== seq) return;
           this.setSessionHint(true);
           this.user.set(this.cloneUser(u));
+          this.attemptInsights?.notifyAuthSessionStarted();
         }),
         catchError((err) => {
           if (this.sessionSeq !== seq) return of(null);
@@ -202,6 +207,7 @@ export class AuthService {
           if (this.sessionSeq === seq && res.body) {
             this.setSessionHint(true);
             this.user.set(this.cloneUser(res.body));
+            this.attemptInsights?.notifyAuthSessionStarted();
           }
           return { user: res.body ?? null, status: res.status };
         }),
