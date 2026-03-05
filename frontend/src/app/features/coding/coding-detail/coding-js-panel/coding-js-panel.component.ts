@@ -1299,7 +1299,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     });
     const codeHash = stableHash(rawUserCode);
     const existingRuns = this.attemptInsights.getRunsForQuestion(question.id);
-    const prevHash = existingRuns.length ? existingRuns[existingRuns.length - 1].codeHash : '';
+    const previousRun = existingRuns.length ? existingRuns[existingRuns.length - 1] : null;
+    const prevHash = previousRun?.codeHash || '';
     const category = classifyFailureCategory(firstFail?.error || normalizedError);
 
     const out = this.attemptInsights.recordRun({
@@ -1356,9 +1357,24 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     if (firstFail && this.assistFlags.explainFailure && !this.interviewModeEnabled()) {
       const rawHint = buildFailureHint({
+        questionId: question.id,
         errorLine: normalizedError,
         firstFailName: firstFail.name,
         category,
+        passCount,
+        totalCount,
+        failCount,
+        failedTests: results
+          .filter((item) => !item.passed)
+          .map((item) => ({ name: item.name, errorLine: String(item.error || '') })),
+        previousRun: previousRun
+          ? {
+            passCount: previousRun.passCount,
+            totalCount: previousRun.totalCount,
+            firstFailName: previousRun.firstFailName,
+            signature: previousRun.signature,
+          }
+          : undefined,
       });
       const hint = this.applyHintDensityVariant(rawHint);
       this.explainHint.set(hint);

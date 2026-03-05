@@ -1,0 +1,183 @@
+{
+  "categoryHints": [
+    {
+      "category": "missing-return",
+      "hint": {
+        "ruleId": "missing-return",
+        "title": "Your function likely returns undefined",
+        "why": "The assertion expected a value but received undefined.",
+        "actions": [
+          "Add an explicit return statement in the main code path.",
+          "Verify loops or callbacks are not returning from the wrong scope.",
+          "Re-run and check if the first failed test now reports a value mismatch instead."
+        ],
+        "confidence": 0.95
+      }
+    },
+    {
+      "category": "undefined-access",
+      "hint": {
+        "ruleId": "undefined-access",
+        "title": "You are reading a property from an undefined value",
+        "why": "One variable is undefined before property access.",
+        "actions": [
+          "Log/inspect the variable right before the failing access.",
+          "Guard nullable values before dereferencing.",
+          "Check function arguments and default values on edge inputs."
+        ],
+        "confidence": 0.92
+      }
+    },
+    {
+      "category": "wrong-function-call",
+      "hint": {
+        "ruleId": "wrong-function-call",
+        "title": "A non-function value is being called",
+        "why": "A variable expected to be callable is not a function at runtime.",
+        "actions": [
+          "Verify import/export names and default vs named exports.",
+          "Check variable shadowing that may overwrite the function reference.",
+          "Confirm callback arguments are functions before invoking."
+        ],
+        "confidence": 0.88
+      }
+    },
+    {
+      "category": "type-mismatch",
+      "hint": {
+        "ruleId": "type-mismatch",
+        "title": "Data type mismatch is causing runtime failure",
+        "why": "The operation expects a different value type than what is passed in.",
+        "actions": [
+          "Print input shapes for failing test cases.",
+          "Normalize input types at function boundaries.",
+          "Add defensive checks for unexpected types."
+        ],
+        "confidence": 0.8
+      }
+    },
+    {
+      "category": "off-by-one",
+      "hint": {
+        "ruleId": "off-by-one",
+        "title": "Boundary condition is likely incorrect",
+        "why": "The mismatch suggests an index or loop bound issue.",
+        "actions": [
+          "Validate loop start/end conditions and inclusive vs exclusive bounds.",
+          "Test with smallest and largest valid indices.",
+          "Check whether you should use < or <= for this case."
+        ],
+        "confidence": 0.82
+      }
+    },
+    {
+      "category": "async-promise-mismatch",
+      "hint": {
+        "ruleId": "async-promise-mismatch",
+        "title": "Async flow likely does not match test expectation",
+        "why": "Promise handling or async return behavior appears inconsistent.",
+        "actions": [
+          "Ensure async functions return/await the expected Promise.",
+          "Handle rejection paths explicitly in your implementation.",
+          "Avoid mixing callbacks and async/await in one path."
+        ],
+        "confidence": 0.85
+      }
+    },
+    {
+      "category": "reference-error",
+      "hint": {
+        "ruleId": "reference-error",
+        "title": "A variable is used before being defined",
+        "why": "Runtime cannot find a referenced identifier.",
+        "actions": [
+          "Check spelling and casing of variable/function names.",
+          "Move declarations above first use where needed.",
+          "Ensure all branches initialize required values."
+        ],
+        "confidence": 0.9
+      }
+    },
+    {
+      "category": "assertion-mismatch",
+      "hint": {
+        "ruleId": "assertion-mismatch",
+        "title": "Output shape/value differs from expectation",
+        "why": "Your function runs, but produced a different result than expected.",
+        "actions": [
+          "Compare expected vs actual on the first failing test only.",
+          "Trace intermediate values that feed the final output.",
+          "Confirm mutation order when building arrays/objects."
+        ],
+        "confidence": 0.78
+      }
+    },
+    {
+      "category": "syntax-error",
+      "hint": {
+        "ruleId": "syntax-error",
+        "title": "Code has a parse/compile issue",
+        "why": "The runner cannot execute due to syntax problems.",
+        "actions": [
+          "Check for missing brackets, commas, or stray characters.",
+          "Temporarily simplify recent edits to isolate the bad line.",
+          "Run once after formatting to catch unbalanced blocks."
+        ],
+        "confidence": 0.96
+      }
+    },
+    {
+      "category": "timeout",
+      "hint": {
+        "ruleId": "timeout",
+        "title": "Execution likely exceeds allowed runtime",
+        "why": "A loop/recursion path may not terminate quickly enough.",
+        "actions": [
+          "Inspect loops/recursion for missing exit conditions.",
+          "Avoid repeated expensive work inside tight loops.",
+          "Start by passing the smallest cases, then optimize."
+        ],
+        "confidence": 0.84
+      }
+    },
+    {
+      "category": "mutability-side-effect",
+      "hint": {
+        "ruleId": "mutability-side-effect",
+        "title": "State mutation may leak across operations",
+        "why": "The test likely assumes immutable behavior, but shared state was changed.",
+        "actions": [
+          "Clone input arrays/objects before mutating when required.",
+          "Check reused references across iterations.",
+          "Verify helper functions do not mutate external state."
+        ],
+        "confidence": 0.76
+      }
+    },
+    {
+      "category": "edge-case",
+      "hint": {
+        "ruleId": "edge-case",
+        "title": "Edge input handling seems incomplete",
+        "why": "The failing case likely involves empty, null, or unusual boundary values.",
+        "actions": [
+          "Test empty input, single-item, and extreme values.",
+          "Add explicit guards for null/undefined branches.",
+          "Ensure output contract is consistent on edge inputs."
+        ],
+        "confidence": 0.72
+      }
+    }
+  ],
+  "fallbackHint": {
+    "ruleId": "generic-debug",
+    "title": "Start with the first failing test",
+    "why": "The run produced a failure pattern that is not yet mapped to a specific rule.",
+    "actions": [
+      "Read the first failing test name and expected value carefully.",
+      "Log intermediate variables right before the failing assertion.",
+      "Fix one failure at a time and re-run quickly."
+    ],
+    "confidence": 0.55
+  }
+}
