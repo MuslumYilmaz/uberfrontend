@@ -8,42 +8,59 @@
                 (click)="topTab.set('tests')"><i class="pi pi-clipboard mr-2"></i> Test cases</button>
         </div>
 
-        <div class="ml-auto flex items-center gap-2 flex-wrap justify-end py-2">
-            <div *ngIf="assistInterviewEnabled()" class="interview-controls">
-                <ng-container *ngIf="!interviewModeEnabled(); else interviewRunningControls">
-                    <span class="text-xs opacity-70">Interview</span>
-                    <div class="lang-wrap">
-                        <select #interviewDuration class="lang-select" [value]="interviewDurationMin()"
-                            aria-label="Interview mode duration" (change)="onInterviewDurationChange(interviewDuration.value)">
-                            <option value="15">15 min</option>
-                            <option value="30">30 min</option>
-                            <option value="45">45 min</option>
-                        </select>
-                        <span class="select-caret" aria-hidden="true"></span>
-                    </div>
-                    <button class="interview-start-btn" type="button" data-testid="interview-mode-start" (click)="startInterviewMode()">
-                        Start
-                    </button>
-                </ng-container>
-                <ng-template #interviewRunningControls>
-                    <span class="interview-pill">{{ interviewRemainingLabel() }}</span>
-                    <button class="interview-end-btn" type="button" data-testid="interview-mode-end" (click)="endInterviewMode('manual')">
-                        End interview
-                    </button>
-                </ng-template>
-            </div>
+        <div class="ml-auto panel-header-actions py-2">
             <span *ngIf="isViewingOlderVersion()" class="text-[11px] px-2 py-1 rounded bg-blue-500/20 text-blue-200 border border-blue-500/30"
                 data-testid="older-draft-label">
                 Older version
             </span>
-            <span class="text-xs opacity-70">Language</span>
-            <div class="lang-wrap">
-                <select #langSel class="lang-select" data-testid="js-language-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
-                    aria-label="Editor language">
-                    <option value="js">JavaScript</option>
-                    <option value="ts">TypeScript</option>
-                </select>
-                <span class="select-caret" aria-hidden="true"></span>
+
+            <div *ngIf="assistInterviewEnabled() && !interviewModeEnabled()" class="interview-setup">
+                <button
+                    type="button"
+                    class="compact-control-btn"
+                    data-testid="interview-mode-setup-toggle"
+                    [attr.aria-expanded]="interviewSetupOpen()"
+                    (click)="toggleInterviewSetupPanel()"
+                >
+                    <i class="pi pi-clock" aria-hidden="true"></i>
+                    <span>Interview {{ interviewDurationMin() }}m</span>
+                </button>
+                <div *ngIf="interviewSetupOpen()" class="interview-setup__panel" data-testid="interview-mode-setup-panel">
+                    <div class="interview-setup__row">
+                        <span class="interview-setup__title">Interview mode</span>
+                        <button type="button" class="assist-chip__dismiss" (click)="closeInterviewSetupPanel()">Close</button>
+                    </div>
+                    <div class="interview-setup__controls">
+                        <div class="lang-wrap">
+                            <select #interviewDuration class="lang-select" [value]="interviewDurationMin()"
+                                aria-label="Interview mode duration" (change)="onInterviewDurationChange(interviewDuration.value)">
+                                <option value="15">15 min</option>
+                                <option value="30">30 min</option>
+                                <option value="45">45 min</option>
+                            </select>
+                            <span class="select-caret" aria-hidden="true"></span>
+                        </div>
+                        <button class="interview-start-btn" type="button" data-testid="interview-mode-start" (click)="startInterviewMode()">
+                            Start
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <span *ngIf="assistInterviewEnabled() && interviewModeEnabled()" class="interview-status-badge">
+                Interview active
+            </span>
+
+            <div class="lang-compact">
+                <i class="pi pi-code lang-compact__icon" aria-hidden="true"></i>
+                <div class="lang-wrap">
+                    <select #langSel class="lang-select" data-testid="js-language-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
+                        aria-label="Editor language">
+                        <option value="js">JavaScript</option>
+                        <option value="ts">TypeScript</option>
+                    </select>
+                    <span class="select-caret" aria-hidden="true"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -190,7 +207,12 @@
                     (click)="subTab.set('console')">Console</button>
                 <span class="fa-runner-summary" *ngIf="isRunningTests()">Running…</span>
                 <span class="fa-runner-summary" *ngIf="!isRunningTests() && hasRunTests()">{{ passedCount() }}/{{ totalCount() }} passed</span>
-                <span class="fa-runner-summary" *ngIf="interviewModeEnabled()">{{ interviewRemainingLabel() }}</span>
+                <div class="fa-runner-interview-controls" *ngIf="interviewModeEnabled()">
+                    <span class="interview-pill">{{ interviewRemainingLabel() }}</span>
+                    <button class="interview-end-btn" type="button" data-testid="interview-mode-end" (click)="endInterviewMode('manual')">
+                        End
+                    </button>
+                </div>
             </div>
 
             <div class="flex-1 min-h-0 overflow-hidden">

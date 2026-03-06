@@ -162,6 +162,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   interviewDurationMin = signal<15 | 30 | 45>(30);
   interviewRemainingSec = signal(0);
   interviewSummary = signal<{ runs: number; bestPassPct: number; elapsedSec: number } | null>(null);
+  interviewSetupOpen = signal(false);
 
   showStuckNudge = computed(() => {
     if (!this.assistFlags.stuckDetector) return false;
@@ -528,6 +529,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.lastTrackedStuckLevel = 0;
     this.interviewModeEnabled.set(false);
     this.interviewRemainingSec.set(0);
+    this.interviewSetupOpen.set(false);
     this.interviewSession = null;
     this.stopInterviewTicker();
     this.subTab.set('tests');
@@ -655,6 +657,15 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
+  toggleInterviewSetupPanel(): void {
+    if (this.interviewModeEnabled()) return;
+    this.interviewSetupOpen.set(!this.interviewSetupOpen());
+  }
+
+  closeInterviewSetupPanel(): void {
+    this.interviewSetupOpen.set(false);
+  }
+
   startInterviewMode(): void {
     if (!this.assistFlags.interviewMode) return;
     const q = this.question;
@@ -668,6 +679,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.hintExpanded.set(false);
     this.explainExpanded.set(false);
     this.explainDismissed.set(false);
+    this.interviewSetupOpen.set(false);
 
     this.interviewSession = {
       questionId: q.id,

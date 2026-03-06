@@ -150,6 +150,35 @@ describe('CodingJsPanelComponent', () => {
     expect(component.showStuckNudge()).toBeFalse();
   });
 
+  it('toggles interview setup panel only when interview mode is inactive', () => {
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+
+    expect(component.interviewSetupOpen()).toBeFalse();
+    component.toggleInterviewSetupPanel();
+    expect(component.interviewSetupOpen()).toBeTrue();
+    component.toggleInterviewSetupPanel();
+    expect(component.interviewSetupOpen()).toBeFalse();
+
+    component.interviewModeEnabled.set(true);
+    component.toggleInterviewSetupPanel();
+    expect(component.interviewSetupOpen()).toBeFalse();
+  });
+
+  it('closes interview setup panel when interview mode starts', () => {
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    component.question = { id: 'interview-start' } as any;
+    component.interviewSetupOpen.set(true);
+
+    component.startInterviewMode();
+
+    expect(component.interviewModeEnabled()).toBeTrue();
+    expect(component.interviewSetupOpen()).toBeFalse();
+  });
+
   it('requires level 2 when assist intervention timing variant is late_l2', () => {
     const component = TestBed.runInInjectionContext(
       () => new CodingJsPanelComponent({} as any),

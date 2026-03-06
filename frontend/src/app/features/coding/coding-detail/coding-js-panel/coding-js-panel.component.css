@@ -106,10 +106,90 @@ app-monaco-editor {
   pointer-events:none;
 }
 
-.interview-controls{
+.panel-header-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:.5rem;
+  flex-wrap:wrap;
+}
+
+.lang-compact{
   display:inline-flex;
   align-items:center;
+  gap:.35rem;
+}
+
+.lang-compact__icon{
+  font-size:.78rem;
+  color:rgba(255,255,255,.62);
+}
+
+.compact-control-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:999px;
+  background:rgba(255,255,255,.05);
+  color:#e5e7eb;
+  font-size:.72rem;
+  line-height:1rem;
+  padding:.3rem .62rem;
+}
+
+.compact-control-btn:hover{
+  background:rgba(255,255,255,.1);
+}
+
+.interview-setup{
+  position:relative;
+  display:inline-flex;
+}
+
+.interview-setup__panel{
+  position:absolute;
+  top:calc(100% + 8px);
+  right:0;
+  z-index:7;
+  min-width:220px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:10px;
+  background:rgba(10,20,36,.96);
+  box-shadow:0 12px 28px rgba(0,0,0,.35);
+  padding:.55rem;
+}
+
+.interview-setup__row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   gap:.45rem;
+}
+
+.interview-setup__title{
+  font-size:.72rem;
+  letter-spacing:.01em;
+  color:rgba(255,255,255,.86);
+}
+
+.interview-setup__controls{
+  margin-top:.45rem;
+  display:flex;
+  align-items:center;
+  gap:.45rem;
+}
+
+.interview-status-badge{
+  display:inline-flex;
+  align-items:center;
+  border:1px solid rgba(59,130,246,.35);
+  border-radius:999px;
+  background:rgba(59,130,246,.14);
+  color:#bfdbfe;
+  font-size:.7rem;
+  line-height:1rem;
+  padding:.2rem .52rem;
 }
 
 .interview-start-btn,
@@ -138,6 +218,30 @@ app-monaco-editor {
   font-size:.72rem;
   line-height:1rem;
   padding:.2rem .55rem;
+}
+
+.fa-runner-interview-controls{
+  margin-left:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+}
+
+@media (max-width: 800px){
+  .compact-control-btn span{
+    display:none;
+  }
+
+  .interview-setup__panel{
+    right:0;
+    min-width:200px;
+  }
+
+  .fa-runner-interview-controls{
+    width:100%;
+    margin-left:0;
+    justify-content:flex-end;
+  }
 }
 
 .editor-assist-dock{
