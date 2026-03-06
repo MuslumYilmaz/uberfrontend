@@ -83,6 +83,31 @@ export const test = baseTest.extend<{
       });
     });
 
+    // Keep E2E deterministic in frontend-only runs: avoid backend/proxy dependency
+    // for assist sync while preserving request shape/flow on the client.
+    await page.route(/\/api\/editor-assist\/sync(?:\?.*)?$/, async (route) => {
+      const req = route.request();
+      if (req.method() === 'OPTIONS') {
+        await route.fulfill({ status: 204 });
+        return;
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json; charset=utf-8',
+        body: JSON.stringify({
+          runs: [],
+          cursorTs: Date.now(),
+          stats: {
+            received: 0,
+            upserted: 0,
+            deduped: 0,
+            returned: 0,
+          },
+        }),
+      });
+    });
+
     page.on('console', (msg) => {
       if (msg.type() !== 'error') return;
       issues.push({ type: 'console.error', message: formatConsoleMessage(msg) });

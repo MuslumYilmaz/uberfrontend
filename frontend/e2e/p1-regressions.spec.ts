@@ -189,6 +189,8 @@ test('js assist surfaces stuck nudge + explain card, and interview mode suppress
   await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeVisible();
   await expect(jsPanel.getByTestId('assist-explain-card')).toBeVisible();
 
+  await jsPanel.getByTestId('interview-mode-setup-toggle').click();
+  await expect(jsPanel.getByTestId('interview-mode-setup-panel')).toBeVisible();
   await jsPanel.getByTestId('interview-mode-start').click();
   await jsPanel.getByTestId('js-run-tests').click();
   await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeHidden();
@@ -229,7 +231,7 @@ test('assist experiments apply late_l2 nudge timing and compact explain density'
 
   const explain = jsPanel.getByTestId('assist-explain-card');
   await expect(explain).toBeVisible();
-  await explain.getByRole('button', { name: 'Explain this failure' }).click();
+  await explain.locator('.assist-chip__trigger').click();
   await expect(explain.locator('li')).toHaveCount(2);
 });
 
