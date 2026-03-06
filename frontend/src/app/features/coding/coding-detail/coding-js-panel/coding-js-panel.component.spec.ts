@@ -15,6 +15,13 @@ class RunnerStub {
   });
 }
 
+class EmptyRunnerStub {
+  runWithTests = jasmine.createSpy('runWithTests').and.resolveTo({
+    entries: [],
+    results: [],
+  } as { entries: ConsoleEntry[]; results: TestResult[] });
+}
+
 describe('CodingJsPanelComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -183,5 +190,54 @@ describe('CodingJsPanelComponent', () => {
     });
 
     expect(normalized.actions).toEqual(['a1', 'a2']);
+  });
+
+  it('dismisses explain chip until next assist hint refresh', () => {
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+
+    component.explainHint.set({
+      ruleId: 'r',
+      title: 't',
+      why: 'w',
+      actions: ['a'],
+      confidence: 0.8,
+    });
+    component.explainDismissed.set(false);
+    expect(component.showExplainCard()).toBeTrue();
+
+    component.dismissExplainPanel();
+
+    expect(component.explainDismissed()).toBeTrue();
+    expect(component.showExplainCard()).toBeFalse();
+  });
+
+  it('local fallback handles rejects/resolves tests without local runner error', async () => {
+    const runner = new EmptyRunnerStub();
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    (component as any).loadRunner = async () => runner;
+    component.question = { id: 'fallback-async-matchers' } as any;
+    component.disablePersistence = true;
+
+    component.editorContent.set('export default function addTwoPromises(p1, p2) { return Promise.all([p1, p2]).then(([a, b]) => a + b); }');
+    component.testCode.set(`describe('fallback async matcher support', () => {
+  test('supports rejects.toThrow', async () => {
+    const p1 = Promise.resolve(1);
+    const p2 = Promise.reject(new Error('boom'));
+    await expect(addTwoPromises(p1, p2)).rejects.toThrow('boom');
+  });
+});
+`);
+
+    await component.runTests();
+
+    expect(component.hasRunTests()).toBeTrue();
+    expect(component.testResults().length).toBe(1);
+    expect(component.testResults()[0].name).toBe('supports rejects.toThrow');
+    expect(component.testResults()[0].passed).toBeTrue();
+    expect(component.testResults().some((r) => r.name === 'Local runner error')).toBeFalse();
   });
 });

@@ -121,6 +121,58 @@
                         (input)="onTestsChange($any($event.target).value)"></textarea>
                 </ng-template>
             </div>
+
+            <div
+                *ngIf="topTab()==='code' && !interviewModeEnabled() && (showStuckNudge() || showExplainCard())"
+                class="editor-assist-dock"
+                data-testid="editor-assist-dock"
+            >
+                <div *ngIf="showStuckNudge()" class="assist-chip assist-chip--hint" [class.expanded]="hintExpanded()" data-testid="assist-stuck-nudge">
+                    <button
+                        type="button"
+                        class="assist-chip__trigger"
+                        [class.active]="hintExpanded()"
+                        [attr.aria-expanded]="hintExpanded()"
+                        (click)="toggleHintExpanded()"
+                    >
+                        <i class="pi pi-info-circle" aria-hidden="true"></i>
+                        <span>Hint</span>
+                    </button>
+                    <div class="assist-chip__panel">
+                        <div class="assist-chip__panel-head">
+                            <strong>{{ assistNudgeTitle() }}</strong>
+                            <div class="assist-chip__panel-actions">
+                                <button type="button" class="assist-chip__dismiss" (click)="dismissHintPanel()">Dismiss 30m</button>
+                                <button type="button" class="assist-chip__dismiss" (click)="collapseHintPanel()">Close</button>
+                            </div>
+                        </div>
+                        <p class="assist-chip__panel-body">{{ assistNudgeBody() }}</p>
+                    </div>
+                </div>
+
+                <div *ngIf="showExplainCard()" class="assist-chip assist-chip--explain" [class.expanded]="explainExpanded()" data-testid="assist-explain-card">
+                    <button
+                        type="button"
+                        class="assist-chip__trigger"
+                        [class.active]="explainExpanded()"
+                        [attr.aria-expanded]="explainExpanded()"
+                        (click)="toggleExplainExpanded()"
+                    >
+                        <i class="pi pi-search" aria-hidden="true"></i>
+                        <span>Explain failure</span>
+                    </button>
+                    <div class="assist-chip__panel">
+                        <div class="assist-chip__panel-head">
+                            <strong>{{ explainHint()?.title }}</strong>
+                            <button type="button" class="assist-chip__dismiss" (click)="dismissExplainPanel()">Dismiss</button>
+                        </div>
+                        <p class="assist-chip__panel-body">{{ explainHint()?.why }}</p>
+                        <ul class="assist-chip__actions">
+                            <li *ngFor="let action of explainHint()?.actions">{{ action }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- SPLITTER between editors and results -->
@@ -149,29 +201,6 @@
                     </div>
 
                     <div *ngIf="hasRunTests()" class="space-y-2">
-                        <div *ngIf="showStuckNudge()" class="assist-nudge" data-testid="assist-stuck-nudge">
-                            <div class="assist-nudge__head">
-                                <strong>{{ assistNudgeTitle() }}</strong>
-                                <button type="button" class="assist-nudge__dismiss" (click)="dismissStuckNudge()">
-                                    Dismiss 30m
-                                </button>
-                            </div>
-                            <p class="assist-nudge__body">{{ assistNudgeBody() }}</p>
-                        </div>
-
-                        <div *ngIf="showExplainCard()" class="assist-explain" data-testid="assist-explain-card">
-                            <div class="assist-explain__head">
-                                <strong>{{ explainHint()?.title }}</strong>
-                                <button type="button" class="assist-explain__toggle" (click)="toggleExplainExpanded()">
-                                    {{ explainExpanded() ? 'Hide details' : 'Explain this failure' }}
-                                </button>
-                            </div>
-                            <p class="assist-explain__why" *ngIf="explainExpanded()">{{ explainHint()?.why }}</p>
-                            <ul *ngIf="explainExpanded()" class="assist-explain__actions">
-                                <li *ngFor="let action of explainHint()?.actions">{{ action }}</li>
-                            </ul>
-                        </div>
-
                         <div *ngIf="showDuckPanel()" class="assist-duck" data-testid="assist-rubber-duck">
                             <div class="assist-duck__head">
                                 <strong>Rubber duck checklist</strong>

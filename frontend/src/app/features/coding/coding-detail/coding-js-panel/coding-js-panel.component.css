@@ -140,6 +140,119 @@ app-monaco-editor {
   padding:.2rem .55rem;
 }
 
+.editor-assist-dock{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  z-index:4;
+  pointer-events:none;
+}
+
+.assist-chip{
+  pointer-events:auto;
+  max-width:min(540px, 100%);
+}
+
+.assist-chip__trigger{
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;
+  background:rgba(6,15,30,.92);
+  color:#e5e7eb;
+  font-size:.73rem;
+  line-height:1rem;
+  padding:.34rem .72rem;
+  box-shadow:0 10px 24px rgba(2,6,23,.35);
+}
+
+.assist-chip__trigger.active{
+  background:rgba(12,28,52,.96);
+}
+
+.assist-chip--hint .assist-chip__trigger{
+  border-color:rgba(251,191,36,.45);
+  color:#fde68a;
+}
+
+.assist-chip--explain .assist-chip__trigger{
+  border-color:rgba(108,194,255,.45);
+  color:#bfdbfe;
+}
+
+.assist-chip__panel{
+  margin-top:6px;
+  overflow:hidden;
+  max-height:0;
+  opacity:0;
+  transform:translateY(4px);
+  transition:max-height .22s ease, opacity .22s ease, transform .22s ease;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:rgba(8,17,32,.96);
+  padding:0 10px;
+}
+
+.assist-chip.expanded .assist-chip__panel{
+  max-height:250px;
+  opacity:1;
+  transform:translateY(0);
+  padding:10px;
+}
+
+.assist-chip--hint.expanded .assist-chip__panel{
+  border-color:rgba(251,191,36,.35);
+  background:rgba(37,28,10,.96);
+}
+
+.assist-chip--explain.expanded .assist-chip__panel{
+  border-color:rgba(108,194,255,.32);
+  background:rgba(8,27,46,.96);
+}
+
+.assist-chip__panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.assist-chip__panel-actions{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.assist-chip__dismiss{
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;
+  background:transparent;
+  color:#e5e7eb;
+  font-size:.68rem;
+  line-height:.9rem;
+  padding:.18rem .55rem;
+}
+
+.assist-chip__panel-body{
+  margin:.42rem 0 0;
+  font-size:var(--fa-runner-font-sm);
+  line-height:1.42;
+  color:rgba(255,255,255,.88);
+}
+
+.assist-chip__actions{
+  margin:.42rem 0 0;
+  padding-left:1rem;
+  display:grid;
+  gap:.25rem;
+  font-size:var(--fa-runner-font-sm);
+}
+
 .assist-nudge,
 .assist-explain,
 .assist-duck,

@@ -149,6 +149,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   stuckState = signal<StuckState | null>(null);
   explainHint = signal<FailureHint | null>(null);
   explainExpanded = signal(false);
+  explainDismissed = signal(false);
+  hintExpanded = signal(false);
   failureCategory = signal<FailureCategory>('unknown');
 
   duckOpen = signal(false);
@@ -172,6 +174,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   showExplainCard = computed(() => {
     if (!this.assistFlags.explainFailure) return false;
     if (this.interviewModeEnabled()) return false;
+    if (this.explainDismissed()) return false;
     return !!this.explainHint();
   });
   showDuckPanel = computed(() => {
@@ -514,6 +517,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.stuckState.set(null);
     this.explainHint.set(null);
     this.explainExpanded.set(false);
+    this.explainDismissed.set(false);
+    this.hintExpanded.set(false);
     this.failureCategory.set('unknown');
     this.duckOpen.set(false);
     this.duckSteps.set([]);
@@ -575,6 +580,19 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     return `${label}: ${state.consecutiveCount} similar run${state.consecutiveCount === 1 ? '' : 's'} in a row. Focus on the first failed test only.`;
   }
 
+  toggleHintExpanded(): void {
+    this.hintExpanded.set(!this.hintExpanded());
+  }
+
+  collapseHintPanel(): void {
+    this.hintExpanded.set(false);
+  }
+
+  dismissHintPanel(): void {
+    this.dismissStuckNudge();
+    this.hintExpanded.set(false);
+  }
+
   dismissStuckNudge(): void {
     const q = this.question;
     if (!q || !this.attemptInsights) return;
@@ -599,6 +617,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
         category: this.failureCategory(),
       });
     }
+  }
+
+  dismissExplainPanel(): void {
+    this.explainExpanded.set(false);
+    this.explainDismissed.set(true);
+    const q = this.question;
+    this.analytics?.track('assist_hint_dismissed', {
+      question_id: q?.id || 'unknown',
+      reason: 'manual_explain_dismiss',
+      category: this.failureCategory(),
+    });
   }
 
   toggleDuckPanel(): void {
@@ -636,7 +665,9 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.interviewModeEnabled.set(true);
     this.topTab.set('code');
     this.subTab.set('tests');
+    this.hintExpanded.set(false);
     this.explainExpanded.set(false);
+    this.explainDismissed.set(false);
 
     this.interviewSession = {
       questionId: q.id,
@@ -701,6 +732,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     const dismissedUntilTs = this.attemptInsights.getStuckDismissedUntil(question.id);
     const state = deriveStuckState(runs, { dismissedUntilTs });
     this.stuckState.set(state.level > 0 ? state : null);
+    this.hintExpanded.set(false);
+    this.explainDismissed.set(false);
     this.lastTrackedStuckLevel = state.level;
 
     this.restoreInterviewSession(question.id);
@@ -1236,28 +1269,176 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
             }
             return false;
           };
-          const expect = (received: any) => ({
-            toBe: (exp: any) => { if (!Object.is(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to be ${JSON.stringify(exp)}`); },
-            toEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to equal ${JSON.stringify(exp)}`); },
-            toStrictEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to strictly equal ${JSON.stringify(exp)}`); },
-          });
+          const matchesPartial = (actual: any, expected: any): boolean => {
+            if (expected === null || expected === undefined) return Object.is(actual, expected);
+            if (Array.isArray(expected)) {
+              if (!Array.isArray(actual) || actual.length < expected.length) return false;
+              return expected.every((item, i) => matchesPartial(actual[i], item));
+            }
+            if (typeof expected === 'object') {
+              if (!isObj(actual)) return false;
+              return Object.keys(expected).every((k) => matchesPartial(actual?.[k], expected[k]));
+            }
+            return Object.is(actual, expected);
+          };
+          const asMsg = (v: any) => String(v?.message ?? v);
+          const assertErrorLike = (err: any, expected?: any) => {
+            if (expected === undefined) return;
+            const msg = asMsg(err);
+            if (typeof expected === 'string') {
+              if (!msg.includes(expected)) throw new Error(`Expected error message to include ${expected}, received ${msg}`);
+              return;
+            }
+            if (expected instanceof RegExp) {
+              if (!expected.test(msg)) throw new Error(`Expected error message to match ${expected}, received ${msg}`);
+              return;
+            }
+            if (typeof expected === 'function') {
+              const ctorName = expected?.name || '';
+              const actualName = err?.name || '';
+              if (!(err instanceof expected) && (!ctorName || actualName !== ctorName)) {
+                throw new Error(`Expected error type ${ctorName || 'Error'}`);
+              }
+            }
+          };
+          const expect = (received: any) => {
+            const base = {
+              toBe: (exp: any) => {
+                if (!Object.is(received, exp)) throw new Error(`Expected ${safeStringify(received)} to be ${safeStringify(exp)}`);
+              },
+              toEqual: (exp: any) => {
+                if (!deepEqual(received, exp)) throw new Error(`Expected ${safeStringify(received)} to equal ${safeStringify(exp)}`);
+              },
+              toStrictEqual: (exp: any) => {
+                if (!deepEqual(received, exp)) throw new Error(`Expected ${safeStringify(received)} to strictly equal ${safeStringify(exp)}`);
+              },
+              toBeTruthy: () => {
+                if (!received) throw new Error(`Expected value to be truthy, received ${safeStringify(received)}`);
+              },
+              toMatchObject: (exp: any) => {
+                if (!matchesPartial(received, exp)) throw new Error(`Expected ${safeStringify(received)} to match object ${safeStringify(exp)}`);
+              },
+              toThrow: (expected?: any) => {
+                if (typeof received !== 'function') throw new Error('toThrow matcher expects a function');
+                let thrown: any;
+                try {
+                  received();
+                } catch (err: any) {
+                  thrown = err;
+                }
+                if (!thrown) throw new Error('Expected function to throw');
+                assertErrorLike(thrown, expected);
+              },
+            };
+            return {
+              ...base,
+              resolves: {
+                toBe: async (exp: any) => {
+                  const value = await Promise.resolve(received);
+                  if (!Object.is(value, exp)) throw new Error(`Expected ${safeStringify(value)} to be ${safeStringify(exp)}`);
+                },
+                toEqual: async (exp: any) => {
+                  const value = await Promise.resolve(received);
+                  if (!deepEqual(value, exp)) throw new Error(`Expected ${safeStringify(value)} to equal ${safeStringify(exp)}`);
+                },
+                toMatchObject: async (exp: any) => {
+                  const value = await Promise.resolve(received);
+                  if (!matchesPartial(value, exp)) throw new Error(`Expected ${safeStringify(value)} to match object ${safeStringify(exp)}`);
+                },
+              },
+              rejects: {
+                toThrow: async (expected?: any) => {
+                  let resolved = false;
+                  try {
+                    await Promise.resolve(received);
+                    resolved = true;
+                  } catch (err: any) {
+                    assertErrorLike(err, expected);
+                    return;
+                  }
+                  if (resolved) throw new Error('Expected promise to reject');
+                },
+                toMatchObject: async (exp: any) => {
+                  let resolved = false;
+                  try {
+                    await Promise.resolve(received);
+                    resolved = true;
+                  } catch (err: any) {
+                    if (!matchesPartial(err, exp)) throw new Error(`Expected ${safeStringify(err)} to match object ${safeStringify(exp)}`);
+                    return;
+                  }
+                  if (resolved) throw new Error('Expected promise to reject');
+                },
+              },
+            };
+          };
 
-          const it = async (name: string, fn: () => any | Promise<any>) => {
-            try { await fn(); results.push({ name, passed: true }); }
-            catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
+          const scheduled: Promise<void>[] = [];
+          const runCase = async (name: string, fn: (...args: any[]) => any | Promise<any>) => {
+            try {
+              if (typeof fn !== 'function') throw new Error('Test case is not callable');
+              if (fn.length >= 1) {
+                await new Promise<void>((resolve, reject) => {
+                  const done = (err?: any) => (err ? reject(err) : resolve());
+                  try {
+                    fn(done);
+                  } catch (e) {
+                    reject(e);
+                  }
+                });
+              } else {
+                await fn();
+              }
+              results.push({ name, passed: true });
+            } catch (e: any) {
+              results.push({ name, passed: false, error: String(e?.message ?? e) });
+            }
+          };
+          const it = (name: string, fn: (...args: any[]) => any | Promise<any>) => {
+            const task = runCase(name, fn);
+            scheduled.push(task);
+            return task;
           };
           const test = it;
-          const describe = (_: string, fn: () => void) => { try { fn(); } catch { } };
+          const describe = (name: string, fn: () => void) => {
+            try {
+              fn();
+            } catch (e: any) {
+              results.push({ name: name || 'describe block', passed: false, error: String(e?.message ?? e) });
+            }
+          };
 
           const prevConsole = (globalThis as any).console;
+          const unhandledRejections: string[] = [];
+          const onUnhandledRejection = (event: any) => {
+            try { event?.preventDefault?.(); } catch { }
+            const reason = event?.reason;
+            unhandledRejections.push(String(reason?.message ?? reason ?? 'Unhandled promise rejection'));
+          };
+          if (this.isBrowser && typeof window !== 'undefined') {
+            window.addEventListener('unhandledrejection', onUnhandledRejection as any);
+          }
           (globalThis as any).console = consoleProxy;
           try {
             new Function(wrapped)(); // define user default on global
             await new Function('describe', 'test', 'it', 'expect', 'console', prepared)(
               describe as any, test as any, it as any, expect as any, consoleProxy as any
             );
+            await Promise.allSettled(scheduled);
           } finally {
+            if (this.isBrowser && typeof window !== 'undefined') {
+              window.removeEventListener('unhandledrejection', onUnhandledRejection as any);
+            }
             (globalThis as any).console = prevConsole;
+          }
+          if (unhandledRejections.length) {
+            const seen = new Set<string>();
+            for (const msg of unhandledRejections) {
+              const normalized = String(msg || '').trim() || 'Unhandled promise rejection';
+              if (seen.has(normalized)) continue;
+              seen.add(normalized);
+              results.push({ name: 'Unhandled async rejection', passed: false, error: normalized });
+            }
           }
 
           if (runId !== this._runSeq) return;
@@ -1331,6 +1512,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     const dismissedUntilTs = this.attemptInsights.getStuckDismissedUntil(question.id);
     const stuck = deriveStuckState(out.runsForQuestion, { dismissedUntilTs });
     this.stuckState.set(stuck.level > 0 ? stuck : null);
+    this.hintExpanded.set(false);
 
     if (
       this.assistFlags.assistExperiments &&
@@ -1380,6 +1562,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.explainHint.set(hint);
       this.failureCategory.set(category);
       this.explainExpanded.set(false);
+      this.explainDismissed.set(false);
       this.analytics?.track('assist_hint_shown', {
         question_id: question.id,
         rule_id: hint.ruleId,
@@ -1397,6 +1580,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.explainHint.set(null);
       this.failureCategory.set('unknown');
       this.explainExpanded.set(false);
+      this.explainDismissed.set(false);
     }
 
     if (firstFail && !this.interviewModeEnabled()) {
@@ -1566,7 +1750,18 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
         : bindings.trim();
       return `const ${first} = globalThis.__FA_USER_DEFAULT__;`;
     });
+    // Common TS->JS output patterns when module transform yields CJS helpers.
+    out = out.replace(
+      /\b(?:var|const|let)\s+([A-Za-z0-9_$]+)\s*=\s*__importDefault\(require\(['"]\.\/[^'"]+['"]\)\);?/g,
+      'const $1 = { default: globalThis.__FA_USER_DEFAULT__ };',
+    );
+    out = out.replace(
+      /\b(?:var|const|let)\s+([A-Za-z0-9_$]+)\s*=\s*require\(['"]\.\/[^'"]+['"]\);?/g,
+      'const $1 = globalThis.__FA_USER_DEFAULT__;',
+    );
     out = out.replace(/^\s*import\s+[^;]+from\s+['"](jest|vitest)['"];\s*$/mg, '');
+    out = out.replace(/^\s*export\s*\{\s*\};?\s*$/mg, '');
+    out = out.replace(/^\s*Object\.defineProperty\(exports,\s*['"]__esModule['"],\s*\{[^}]*\}\);\s*$/mg, '');
     return out;
   }
 
