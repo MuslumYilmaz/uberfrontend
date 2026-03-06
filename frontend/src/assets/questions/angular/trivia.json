@@ -633,12 +633,37 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "With standalone, AppModule is no longer the central “assembly point”. Template scope moves from NgModule declarations/imports to each standalone component’s imports, and app-wide configuration moves to bootstrapApplication(...) (or an ApplicationConfig) and route-level providers. AppModule often disappears in greenfield apps, but NgModules still exist for legacy code and module-shaped libraries. The trade-off is simpler bootstrapping versus managing provider scope per component; test DI boundaries when migrating.",
+    "description": "This question is about AppModule migration mechanics in standalone Angular. Explain exactly what moved to bootstrapApplication/ApplicationConfig, component imports, and route-level providers, then show how to migrate provider scope safely without regressions. Keep the focus on execution (bootstrapping, DI scope, route wiring), not on whether NgModules still matter for compatibility.",
     "answer": {
       "blocks": [
         {
           "type": "text",
           "text": "<strong>Core idea</strong><br><br>Standalone changes Angular’s composition model:<br><br><strong>Before</strong>: AppModule declared what exists and what templates can use.<br><strong>Now</strong>: standalone components declare their own template dependencies (<code>imports</code>), and app-wide wiring happens in <code>bootstrapApplication</code> (or <code>ApplicationConfig</code>) + route providers."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Question intent",
+            "What to emphasize",
+            "What to de-emphasize"
+          ],
+          "rows": [
+            [
+              "This page: AppModule migration map",
+              "Where each AppModule responsibility moves: bootstrap, global providers, component imports, route-level providers, and DI scope checks.",
+              "Long debates about whether NgModules should exist conceptually."
+            ],
+            [
+              "Related page: NgModules vs standalone boundaries",
+              "Compatibility cases: legacy declarables, <code>forRoot/forChild</code> module-shaped libs, packaging/export boundaries.",
+              "Step-by-step migration runbook from AppModule to standalone wiring."
+            ]
+          ],
+          "caption": "Use this question to prove migration execution depth, not just theory."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Scope guard</strong><br><br>If the interviewer asks <em>“Do NgModules still have value?”</em>, that is the companion question: <a href=\"/angular/trivia/angular-ngmodules-vs-standalone\">What problems do NgModules solve that standalone components don’t?</a>.<br><br>This page answers a different prompt: <strong>“I have an AppModule app; what exactly do I move, to where, and how do I avoid provider-scope regressions?”</strong>"
         },
         {
           "type": "list",
@@ -776,7 +801,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Standalone doesn’t delete NgModules, but it removes the need for an AppModule as the app’s “wiring center”. Template scope moves to standalone component <code>imports</code>. App-wide wiring moves to <code>bootstrapApplication</code> (or <code>ApplicationConfig</code>) and can be further scoped via route-level providers. AppModule becomes optional: common to remove in new apps, common to keep temporarily during migrations."
+          "text": "<strong>Summary</strong><br><br>Standalone doesn’t delete NgModules, but it does remove AppModule as the required wiring center. The senior answer here is operational: map each AppModule responsibility to its standalone destination, migrate providers deliberately, and verify DI scope at route/feature boundaries. Keep this answer migration-focused; keep compatibility/packaging trade-offs in the separate NgModules-vs-standalone discussion."
         },
         {
           "type": "text",
@@ -2074,12 +2099,16 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "In Angular, a “service” is just a class that becomes useful when it’s provided through Angular’s dependency injection (DI). Services are used to centralize reusable logic and side effects (HTTP, caching, orchestration, shared state) so components stay focused on UI + event wiring. Service scope is controlled by where you provide it (root/module/component), which determines lifetime and instance sharing.",
+    "description": "This question is about service responsibilities and boundary design in Angular apps: what belongs in services, why teams split logic out of components, and how provider scope changes behavior. Reference DI only as much as needed to explain lifetime/sharing. Keep DI internals and token/provider mechanics in the dedicated dependency-injection question.",
     "answer": {
       "blocks": [
         {
           "type": "text",
           "text": "<strong>Core idea</strong><br><br>An Angular <strong>service</strong> is typically a plain TypeScript class that you register with Angular’s <strong>dependency injection</strong> system. DI creates the instance and injects it where needed. The value is not the class itself — it’s the <strong>lifetime + sharing + testability</strong> you get from DI and a clean separation from UI code."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Scope guard</strong><br><br>This page answers <em>\"When and why should logic live in a service?\"</em>.<br><br>If you need DI internals (tokens, injector tree, provider shapes), go to <a href=\"/angular/trivia/angular-dependency-injection\">What is dependency injection in Angular?</a>.<br>If you need ownership split examples, go to <a href=\"/angular/trivia/angular-component-vs-service-responsibilities\">Angular component vs service responsibilities</a>."
         },
         {
           "type": "list",
@@ -2219,7 +2248,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Angular services are DI-provided classes used to centralize reusable logic and side effects. The key interview points are: <strong>(1)</strong> services are “just classes” + DI providers, <strong>(2)</strong> scope/lifetime depends on where you provide them (root vs component), and <strong>(3)</strong> services keep components focused on UI, improving reuse and testability."
+          "text": "<strong>Summary</strong><br><br>Angular services are where reusable logic and side effects should live so components stay UI-focused. Strong answers show clear boundaries, sensible provider scope (root vs component), and testability benefits. Keep deep DI mechanics and token-level provider patterns in the dedicated DI discussion."
         }
       ]
     },

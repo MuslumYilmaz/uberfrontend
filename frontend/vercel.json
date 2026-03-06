@@ -40,6 +40,7 @@
     { "source": "/companies/:slug/all", "destination": "/index.html" },
     { "source": "/companies/:slug/coding", "destination": "/index.html" },
     { "source": "/companies/:slug/trivia", "destination": "/index.html" },
-    { "source": "/companies/:slug/system", "destination": "/index.html" }
+    { "source": "/companies/:slug/system", "destination": "/index.html" },
+    { "source": "/:path*", "destination": "/404", "statusCode": 404 }
   ]
 }

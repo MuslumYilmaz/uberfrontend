@@ -39,6 +39,16 @@ export function techMatcher(segments: UrlSegment[]): UrlMatchResult | null {
   return null;
 }
 
+const NOT_FOUND_ROUTE_DATA = {
+  title: 'Page not found',
+  seo: {
+    title: 'Page not found',
+    description: 'The page you are looking for could not be found.',
+    robots: 'noindex,nofollow',
+    canonical: '/404',
+  },
+} as const;
+
 export const routes: Routes = [
   // Landing
   {
@@ -343,7 +353,7 @@ export const routes: Routes = [
               import('./shared/components/not-found/not-found.component').then(
                 (m) => m.NotFoundComponent,
               ),
-            data: { title: 'Page not found' },
+            data: NOT_FOUND_ROUTE_DATA,
           },
         ],
       },
@@ -484,7 +494,7 @@ export const routes: Routes = [
           import('./shared/components/not-found/not-found.component').then(
             (m) => m.NotFoundComponent,
           ),
-        data: { title: 'Page not found' },
+        data: NOT_FOUND_ROUTE_DATA,
       },
     ],
   },
@@ -552,7 +562,7 @@ export const routes: Routes = [
           import('./shared/components/not-found/not-found.component').then(
             (m) => m.NotFoundComponent,
           ),
-        data: { title: 'Page not found' },
+        data: NOT_FOUND_ROUTE_DATA,
       },
     ],
   },
@@ -813,7 +823,7 @@ export const routes: Routes = [
           import('./shared/components/not-found/not-found.component').then(
             (m) => m.NotFoundComponent,
           ),
-        data: { title: 'Page not found' },
+        data: NOT_FOUND_ROUTE_DATA,
       },
     ],
   },
@@ -924,7 +934,7 @@ export const routes: Routes = [
           import('./shared/components/not-found/not-found.component').then(
             (m) => m.NotFoundComponent,
           ),
-        data: { title: 'Page not found' },
+        data: NOT_FOUND_ROUTE_DATA,
       },
     ],
   },
@@ -934,14 +944,7 @@ export const routes: Routes = [
     path: '404',
     loadComponent: () =>
       import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
-    data: {
-      title: 'Page not found',
-      seo: {
-        title: 'Page not found',
-        description: 'The page you are looking for could not be found.',
-        robots: 'noindex,nofollow',
-      },
-    },
+    data: NOT_FOUND_ROUTE_DATA,
   },
 
   // NEW: Global Coding page — lists all coding questions; pills filter client-side
@@ -1046,6 +1049,23 @@ export const routes: Routes = [
         keyword: 'angular interview questions',
         title: 'Angular Interview Questions for Frontend Interviews',
         techs: ['angular'],
+        featuredLinks: [
+          {
+            label: 'AppModule migration map (standalone)',
+            route: ['/angular/trivia/angular-appmodule-standalone-changes'],
+            path: '/angular/trivia/angular-appmodule-standalone-changes',
+          },
+          {
+            label: 'NgModules vs standalone boundaries',
+            route: ['/angular/trivia/angular-ngmodules-vs-standalone'],
+            path: '/angular/trivia/angular-ngmodules-vs-standalone',
+          },
+          {
+            label: 'Service boundaries and DI scope',
+            route: ['/angular/trivia/angular-services'],
+            path: '/angular/trivia/angular-services',
+          },
+        ],
       },
       seo: {
         title: 'Angular Interview Questions for Frontend Interviews',
@@ -1068,6 +1088,18 @@ export const routes: Routes = [
         keyword: 'vue interview questions',
         title: 'Vue Interview Questions for Frontend Interviews',
         techs: ['vue'],
+        featuredLinks: [
+          {
+            label: 'Lifecycle hooks timing map',
+            route: ['/vue/trivia/vue-lifecycle-hooks'],
+            path: '/vue/trivia/vue-lifecycle-hooks',
+          },
+          {
+            label: 'Composition API fundamentals',
+            route: ['/vue/trivia/vue-composition-api'],
+            path: '/vue/trivia/vue-composition-api',
+          },
+        ],
       },
       seo: {
         title: 'Vue Interview Questions for Frontend Interviews',
@@ -1133,6 +1165,18 @@ export const routes: Routes = [
         keyword: 'css interview questions',
         title: 'CSS Interview Questions for Frontend Interviews',
         techs: ['css'],
+        featuredLinks: [
+          {
+            label: 'CSS specificity hierarchy',
+            route: ['/css/trivia/css-specificity-hierarchy'],
+            path: '/css/trivia/css-specificity-hierarchy',
+          },
+          {
+            label: 'Cascade order and origin rules',
+            route: ['/css/trivia/css-cascade-order'],
+            path: '/css/trivia/css-cascade-order',
+          },
+        ],
       },
       seo: {
         title: 'CSS Interview Questions for Frontend Interviews',
@@ -1213,14 +1257,7 @@ export const routes: Routes = [
           import('./shared/components/not-found/not-found.component').then(
             (m) => m.NotFoundComponent,
           ),
-        data: {
-          title: 'Page not found',
-          seo: {
-            title: 'Page not found',
-            description: 'The page you are looking for could not be found.',
-            robots: 'noindex,nofollow',
-          },
-        },
+        data: NOT_FOUND_ROUTE_DATA,
       },
     ],
   },
@@ -1230,14 +1267,7 @@ export const routes: Routes = [
     path: '**',
     loadComponent: () =>
       import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
-    data: {
-      title: 'Page not found',
-      seo: {
-        title: 'Page not found',
-        description: 'The page you are looking for could not be found.',
-        robots: 'noindex,nofollow',
-      },
-    },
+    data: NOT_FOUND_ROUTE_DATA,
   },
 ];
 

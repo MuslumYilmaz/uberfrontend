@@ -23,6 +23,26 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         answer becomes defensible, measurable, and production-aware.
       </p>
 
+      <h2>Scope Guard: What This Page Covers</h2>
+      <p>
+        This page is intentionally focused on <strong>system boundaries and rendering strategy</strong>:
+        browser/edge/BFF/API boundaries, per-route rendering mode, and resilience guardrails.
+      </p>
+      <ul>
+        <li>
+          For entity shapes, state ownership tables, and invalidation contracts, continue with
+          <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">D - Data model deep dive</a>.
+        </li>
+        <li>
+          For interaction flows and UX state behavior, continue with
+          <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">I - Interface deep dive</a>.
+        </li>
+        <li>
+          For budgets and tuning tactics, continue with
+          <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">O - Optimizations deep dive</a>.
+        </li>
+      </ul>
+
       <h2>What Architecture Must Produce</h2>
       <p>
         Your architecture section should end with concrete artifacts, not vague claims.

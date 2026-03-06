@@ -1714,12 +1714,16 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component’s lifecycle — from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+    "description": "This question is about lifecycle timing and side-effect placement in Vue components. Focus on which hooks run before/after mount, update, and unmount, plus what logic is safe in each stage. Keep Composition API fundamentals (setup/ref/reactive design) in the dedicated Composition API question.",
     "answer": {
       "blocks": [
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>Every Vue component goes through a series of lifecycle stages — creation, mounting, updating, and unmounting. Vue provides lifecycle hooks, which are special functions you can define to run code automatically at these stages."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Scope guard</strong><br><br>If the interviewer asks <em>\"Why did Vue introduce setup(), ref(), and reactive()?\"</em>, switch to <a href=\"/vue/trivia/vue-composition-api\">What are Vue Composition APIs (setup(), ref, reactive) and why were they introduced?</a>.<br><br>This page is narrower: <strong>when hooks fire and where side effects belong.</strong>"
         },
         {
           "type": "code",
@@ -1808,7 +1812,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Lifecycle hooks run at specific stages of a component’s creation, update, and destruction.</li><li>Commonly used hooks include <code>created()</code>, <code>mounted()</code>, and <code>updated()</code>.</li><li>They’re essential for handling initialization, DOM access, and cleanup logic.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li>Lifecycle hooks are timing checkpoints across create, mount, update, and teardown.</li><li>Use them to place side effects safely: setup/init, DOM work, and cleanup at the right stage.</li><li>The strongest interview signal is explaining <em>why</em> a task belongs in one hook and not another.</li></ul>"
         }
       ]
     },

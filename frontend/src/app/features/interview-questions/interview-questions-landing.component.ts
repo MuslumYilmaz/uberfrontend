@@ -13,6 +13,7 @@ type InterviewQuestionsLandingConfig = {
   title: string;
   techs: Tech[];
   isMasterHub: boolean;
+  featuredLinks: HubLink[];
 };
 
 type Kind = 'coding' | 'trivia';
@@ -36,6 +37,7 @@ const DEFAULT_CONFIG: InterviewQuestionsLandingConfig = {
   title: 'JavaScript Interview Questions',
   techs: ['javascript'],
   isMasterHub: false,
+  featuredLinks: [],
 };
 
 const INTERVIEW_HUB_LINKS: HubLink[] = [
@@ -113,6 +115,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   codingQuestions: QuestionSummaryRow[] = [];
   triviaQuestions: QuestionSummaryRow[] = [];
   relatedHubLinks: HubLink[] = [];
+  featuredLinks: HubLink[] = [];
 
   ngOnInit(): void {
     const incoming = this.route.snapshot.data['interviewQuestions'] as Partial<InterviewQuestionsLandingConfig> | undefined;
@@ -121,14 +124,17 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         ['javascript', 'react', 'angular', 'vue', 'html', 'css'].includes(String(tech)),
       )
       : [];
+    const featuredLinks = this.normalizeHubLinks((incoming as { featuredLinks?: unknown } | undefined)?.featuredLinks);
 
     this.config = {
       keyword: String(incoming?.keyword || DEFAULT_CONFIG.keyword),
       title: String(incoming?.title || DEFAULT_CONFIG.title),
       techs: techs.length ? techs : DEFAULT_CONFIG.techs,
       isMasterHub: Boolean(incoming?.isMasterHub),
+      featuredLinks,
     };
 
+    this.featuredLinks = featuredLinks;
     this.relatedHubLinks = this.buildRelatedHubLinks();
     const resolved = this.route.snapshot.data['interviewQuestionsList'] as InterviewQuestionsHubResolved | undefined;
     if (resolved && this.hasResolvedRows(resolved)) {
@@ -456,6 +462,29 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   private buildRelatedHubLinks(): HubLink[] {
     const currentPath = this.currentHubPath();
     return INTERVIEW_HUB_LINKS.filter((hub) => hub.path !== currentPath);
+  }
+
+  private normalizeHubLinks(raw: unknown): HubLink[] {
+    if (!Array.isArray(raw)) return [];
+    const seen = new Set<string>();
+    const out: HubLink[] = [];
+
+    for (const item of raw) {
+      if (!item || typeof item !== 'object') continue;
+      const candidate = item as { label?: unknown; path?: unknown; route?: unknown };
+      const path = String(candidate.path || '').trim();
+      const label = String(candidate.label || '').trim();
+      if (!path.startsWith('/') || !label) continue;
+      if (seen.has(path)) continue;
+      seen.add(path);
+
+      const route = Array.isArray(candidate.route)
+        ? candidate.route.filter((part) => typeof part === 'string' || typeof part === 'number')
+        : [path];
+      out.push({ label, path, route });
+    }
+
+    return out;
   }
 
   private currentHubPath(): string {

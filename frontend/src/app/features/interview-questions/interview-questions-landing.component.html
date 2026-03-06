@@ -45,6 +45,12 @@
       <a [routerLink]="['/coding']">Open coding hub</a>
       <a [routerLink]="['/guides']">Open guides hub</a>
     </div>
+    <div class="iq-hub-links" *ngIf="!isMasterHub() && featuredLinks.length">
+      <p class="iq-hub-links__label">Recommended deep-dive leaves</p>
+      <div class="iq-links iq-links--hubs">
+        <a *ngFor="let link of featuredLinks" [routerLink]="link.route">{{ link.label }}</a>
+      </div>
+    </div>
     <div class="iq-hub-links" *ngIf="isMasterHub()">
       <p class="iq-hub-links__label">Technology interview question hubs</p>
       <div class="iq-links iq-links--hubs">

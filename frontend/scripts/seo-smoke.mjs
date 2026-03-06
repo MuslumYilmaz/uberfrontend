@@ -85,15 +85,21 @@ try {
   const unknownStatus = await curlStatus(unknownUrl);
   const unknownBody = await curlBody(unknownUrl);
   const unknownCanonical = extractCanonical(unknownBody);
+  const unknownRobots = extractRobots(unknownBody);
   checks.push({
     name: 'unknown route returns 404',
     ok: unknownStatus === 404,
     detail: `${unknownStatus} ${unknownPath}`,
   });
   checks.push({
-    name: 'unknown route is not canonicalized to homepage',
-    ok: !/https:\/\/frontendatlas\.com\/?$/.test(unknownCanonical),
+    name: 'unknown route canonical is /404',
+    ok: /https:\/\/frontendatlas\.com\/404\/?$/.test(unknownCanonical),
     detail: `canonical=${unknownCanonical || '(missing)'}`,
+  });
+  checks.push({
+    name: 'unknown route robots is noindex',
+    ok: unknownRobots.includes('noindex'),
+    detail: `robots=${unknownRobots || '(missing)'}`,
   });
 
   const notFoundPath = '/404';

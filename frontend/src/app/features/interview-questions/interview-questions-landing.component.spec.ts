@@ -27,6 +27,13 @@ describe('InterviewQuestionsLandingComponent', () => {
             keyword: 'react interview questions',
             title: 'React Interview Questions',
             techs: ['react'],
+            featuredLinks: [
+              {
+                label: 'React hooks deep dive',
+                route: ['/react/trivia/react-hooks-rules'],
+                path: '/react/trivia/react-hooks-rules',
+              },
+            ],
           },
           interviewQuestionsList: {
             techs: ['react'],
@@ -99,8 +106,10 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     const codingLink = fixture.nativeElement.querySelector('a[href="/react/coding/react-counter"]') as HTMLAnchorElement | null;
     const triviaLink = fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-purpose"]') as HTMLAnchorElement | null;
+    const featuredLink = fixture.nativeElement.querySelector('a[href="/react/trivia/react-hooks-rules"]') as HTMLAnchorElement | null;
     expect(codingLink).toBeTruthy();
     expect(triviaLink).toBeTruthy();
+    expect(featuredLink).toBeTruthy();
 
     const loadingState = fixture.nativeElement.querySelector('.iq-loading');
     expect(loadingState).toBeNull();
