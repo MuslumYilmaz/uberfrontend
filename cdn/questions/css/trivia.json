@@ -2185,12 +2185,16 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Specificity determines which CSS rule takes precedence when multiple rules target the same element. Each selector type contributes a different weight, and higher specificity overrides lower ones regardless of source order (except when !important is used).",
+    "description": "This question is specifically about selector scoring (specificity points), not the full cascade algorithm. Explain how selector weights are computed and compared, then mention tie-breakers briefly. Keep the deep dive on origin/importance/order for the dedicated cascade question.",
     "answer": {
       "blocks": [
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>When multiple CSS rules apply to the same element, the browser resolves conflicts using <em>specificity</em>. Specificity is calculated based on the selector’s type — IDs, classes, attributes, and element names each contribute differently to its weight."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Scope guard</strong><br><br>This page answers <em>“How are selectors scored?”</em> If the interviewer asks about full conflict resolution order (origin, <code>!important</code>, layers, then source order), jump to <a href=\"/css/trivia/css-cascade-order\">How does the CSS cascade determine which styles are applied?</a>."
         },
         {
           "type": "list",
@@ -2259,7 +2263,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Specificity determines which CSS rule is applied when conflicts occur.</li><li>Calculated based on selector type weights.</li><li>Higher values override lower ones.</li><li>Use classes over IDs for maintainable and modular codebases.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Specificity is the selector scoring step inside the cascade.</li><li>Selector type weights decide which matching selector wins.</li><li>If specificity ties, later source order wins (unless higher-priority cascade rules apply).</li><li>Keep selectors simple and class-driven to avoid specificity wars.</li></ul>"
         }
       ]
     },
