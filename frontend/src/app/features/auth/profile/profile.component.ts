@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal, DestroyRef, Injector } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
+import { DashboardGamificationResponse, DashboardProgress } from '../../../core/models/gamification.model';
 import { AuthService, User } from '../../../core/services/auth.service';
+import { GamificationService } from '../../../core/services/gamification.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { SolvedQuestion, SolvedQuestionsService } from '../../../core/services/solved-questions.service';
 import { take } from 'rxjs';
@@ -11,6 +13,8 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../environments/environment';
 import { PaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
+
+type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
 
 @Component({
   selector: 'app-profile',
@@ -50,6 +54,73 @@ import { isProActive } from '../../../core/utils/entitlements.util';
 
         <!-- Activity (solved questions) -->
         <section *ngIf="tab() === 'activity'" class="panel">
+          <div class="section">
+            <div class="section-head section-head--stack">
+              <h3>Progress details</h3>
+              <p class="muted">Detailed dashboard activity widgets are available here.</p>
+            </div>
+
+            <div class="activity-details-grid">
+              <article class="activity-detail-card">
+                <p class="detail-kicker">Next best action</p>
+                <h4>{{ nextBestAction().title }}</h4>
+                <p class="muted">{{ nextBestAction().description }}</p>
+                <a class="detail-link" [routerLink]="nextBestAction().route">{{ nextBestAction().cta }} →</a>
+              </article>
+
+              <article class="activity-detail-card" *ngIf="weeklyGoal() as weekly; else weeklyDetailFallback">
+                <p class="detail-kicker">Weekly goal</p>
+                <h4>{{ weekly.completed }} / {{ weekly.target }} completed</h4>
+                <div class="detail-bar" role="presentation">
+                  <span [style.width.%]="weekly.progress * 100"></span>
+                </div>
+                <p class="muted">Bonus: +{{ weekly.bonusXp }} XP when completed.</p>
+              </article>
+              <ng-template #weeklyDetailFallback>
+                <article class="activity-detail-card">
+                  <p class="detail-kicker">Weekly goal</p>
+                  <h4>Unavailable</h4>
+                  <p class="muted">We could not load your weekly goal right now.</p>
+                </article>
+              </ng-template>
+
+              <article class="activity-detail-card" *ngIf="xpLevel() as xp; else xpDetailFallback">
+                <p class="detail-kicker">XP + level</p>
+                <h4>Level {{ xp.level }} · {{ xp.totalXp }} XP</h4>
+                <div class="detail-bar" role="presentation">
+                  <span [style.width.%]="xp.progress * 100"></span>
+                </div>
+                <p class="muted">{{ xp.nextLevelXp - xp.totalXp }} XP to next level.</p>
+              </article>
+              <ng-template #xpDetailFallback>
+                <article class="activity-detail-card">
+                  <p class="detail-kicker">XP + level</p>
+                  <h4>Unavailable</h4>
+                  <p class="muted">We could not load your XP details right now.</p>
+                </article>
+              </ng-template>
+
+              <article class="activity-detail-card" *ngIf="progressSummary() as progress; else progressDetailFallback">
+                <p class="detail-kicker">Overall solved</p>
+                <h4>{{ formatPercentLabel(overallSolvedPercent(progress)) }}</h4>
+                <div class="detail-bar" role="presentation">
+                  <span [style.width.%]="overallSolvedPercent(progress)"></span>
+                </div>
+                <p class="muted">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
+              </article>
+              <ng-template #progressDetailFallback>
+                <article class="activity-detail-card">
+                  <p class="detail-kicker">Overall solved</p>
+                  <h4>Unavailable</h4>
+                  <p class="muted">We could not load solved coverage right now.</p>
+                </article>
+              </ng-template>
+            </div>
+
+            <p class="muted" *ngIf="activityDetailsLoading()">Refreshing progress details…</p>
+            <p class="error" *ngIf="activityDetailsError()">{{ activityDetailsError() }}</p>
+          </div>
+
           <div class="section">
             <div class="section-head">
               <h3>Solved questions</h3>
@@ -242,7 +313,8 @@ import { isProActive } from '../../../core/utils/entitlements.util';
   `
 })
 export class ProfileComponent implements OnInit {
-  tab = signal<'activity' | 'account' | 'billing' | 'security' | 'coupons'>('activity');
+  tab = signal<ProfileTab>('activity');
+  private readonly availableTabs: readonly ProfileTab[] = ['activity', 'account', 'billing', 'security', 'coupons'];
 
   user = computed(() => this.auth.user());
   billing = computed(() => this.auth.user()?.billing);
@@ -250,6 +322,24 @@ export class ProfileComponent implements OnInit {
   manageLoading = signal(false);
   manageError = signal<string | null>(null);
   manageProviderLabel = this.providerLabel(this.paymentsProvider);
+  activityDetails = signal<DashboardGamificationResponse | null>(null);
+  activityDetailsLoading = signal(false);
+  activityDetailsError = signal<string | null>(null);
+  nextBestAction = computed(() => {
+    const payload = this.activityDetails();
+    return (
+      payload?.nextBestAction ?? {
+        id: 'fallback_continue',
+        title: 'Keep your preparation momentum',
+        description: 'Continue with one focused coding question and build consistency.',
+        route: '/coding',
+        cta: 'Continue practice',
+      }
+    );
+  });
+  weeklyGoal = computed(() => this.activityDetails()?.weeklyGoal ?? null);
+  xpLevel = computed(() => this.activityDetails()?.xpLevel ?? null);
+  progressSummary = computed(() => this.activityDetails()?.progress ?? null);
 
   // Form state (editable subset)
   form: { username: string; email: string } = {
@@ -274,19 +364,31 @@ export class ProfileComponent implements OnInit {
     private auth: AuthService,
     private solvedSvc: SolvedQuestionsService,
     private progress: UserProgressService,
+    private route: ActivatedRoute,
+    private gamification: GamificationService,
     private destroyRef: DestroyRef,
     private injector: Injector
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const tab = params.get('tab');
+        if (this.isProfileTab(tab)) this.tab.set(tab);
+      });
+
     toObservable(this.progress.solvedIds, { injector: this.injector })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((ids) => this.refreshSolved(ids));
+
+    this.loadActivityDetails(false);
 
     // Load profile
     this.auth.fetchMe().pipe(take(1)).subscribe((u) => {
       if (u) this.resetForm(u);
       this.refreshSolved(Array.isArray(u?.solvedQuestionIds) ? u!.solvedQuestionIds : undefined);
+      this.loadActivityDetails(true);
     });
   }
 
@@ -319,6 +421,26 @@ export class ProfileComponent implements OnInit {
     const status = (this.user() as any)?.entitlements?.pro?.status;
     if (status === 'cancelled' || status === 'canceled') return 'Access until';
     return 'Renews on';
+  }
+
+  overallSolvedPercent(progress: DashboardProgress | null | undefined): number {
+    const solvedCount = Number(progress?.solvedCount ?? 0);
+    const totalCount = Number(progress?.totalCount ?? 0);
+    if (Number.isFinite(totalCount) && totalCount > 0 && Number.isFinite(solvedCount) && solvedCount >= 0) {
+      const precise = (solvedCount / totalCount) * 100;
+      return Math.max(0, Math.min(100, precise));
+    }
+    const fallback = Number(progress?.solvedPercent ?? 0);
+    if (!Number.isFinite(fallback)) return 0;
+    return Math.max(0, Math.min(100, fallback));
+  }
+
+  formatPercentLabel(value: number | null | undefined): string {
+    const numeric = Number(value ?? 0);
+    if (!Number.isFinite(numeric) || numeric <= 0) return '0%';
+    const rounded = Math.round(numeric * 100) / 100;
+    if (Number.isInteger(rounded)) return `${rounded}%`;
+    return `${rounded.toFixed(2).replace(/\.?0+$/, '')}%`;
   }
 
   openChangePassword(): void {
@@ -419,6 +541,38 @@ export class ProfileComponent implements OnInit {
         }
       },
     });
+  }
+
+  private isProfileTab(value: string | null): value is ProfileTab {
+    if (!value) return false;
+    return (this.availableTabs as readonly string[]).includes(value);
+  }
+
+  private loadActivityDetails(force = false): void {
+    if (!this.auth.isLoggedIn()) {
+      this.activityDetails.set(null);
+      this.activityDetailsLoading.set(false);
+      this.activityDetailsError.set(null);
+      return;
+    }
+
+    this.activityDetailsLoading.set(true);
+    this.activityDetailsError.set(null);
+
+    this.gamification
+      .getDashboard({ force })
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (payload) => {
+          this.activityDetails.set(payload);
+          this.activityDetailsLoading.set(false);
+        },
+        error: () => {
+          this.activityDetails.set(null);
+          this.activityDetailsLoading.set(false);
+          this.activityDetailsError.set('Unable to load activity details right now.');
+        },
+      });
   }
 
   private providerLabel(provider: PaymentsProvider): string {

@@ -63,18 +63,18 @@
       <div class="block-head block-head--with-action">
         <div class="block-head__content">
           <h2 class="block-title fa-section-title">Daily momentum</h2>
-          <p class="block-subtitle fa-meta-text">Keep one action in focus. Expand only when you need deeper progress details.</p>
+          <p class="block-subtitle fa-meta-text">Keep one action in focus. Full activity details now live in your profile.</p>
         </div>
         <div class="progress-head-actions">
-          <button
+          <a
+            *ngIf="auth.isLoggedIn()"
             faButton variant="ghost" class="block-toggle-btn"
-            type="button"
-            [attr.aria-expanded]="isProgressDetailsExpanded()"
-            aria-controls="dashboard-progress-details"
-            (click)="toggleProgressDetails()"
+            [routerLink]="['/profile']"
+            [queryParams]="{ tab: 'activity' }"
+            (click)="trackProfileDetailsClick()"
           >
-            {{ isProgressDetailsExpanded() ? 'Hide details' : 'See details' }}
-          </button>
+            Show details
+          </a>
           <button
             *ngIf="auth.isLoggedIn()"
             faButton variant="ghost" class="block-toggle-btn"
@@ -170,118 +170,70 @@
           </article>
         </ng-template>
 
-        <div class="progress-details-grid" id="dashboard-progress-details" *ngIf="isProgressDetailsExpanded()">
-          <article faCard interactive class="widget widget--detail widget--next-action">
+        <div class="progress-mini-grid">
+          <article faCard class="widget widget--mini">
             <div class="widget-kicker">Next best action</div>
-            <h3 class="widget-title">{{ nextBestAction().title }}</h3>
-            <p class="widget-copy fa-meta-text">{{ nextBestAction().description }}</p>
+            <h3 class="widget-title widget-title--mini">{{ nextBestAction().title }}</h3>
+            <p class="widget-copy widget-copy--mini fa-meta-text">{{ nextBestAction().description }}</p>
             <a
-              faButton variant="primary"
+              class="widget-inline-link"
               [routerLink]="nextBestAction().route"
               (click)="trackNextActionClick()"
             >
-              {{ nextBestAction().cta }}
+              {{ nextBestAction().cta }} →
             </a>
           </article>
 
-          <article faCard class="widget widget--detail widget--weekly" *ngIf="weeklyGoal() as weekly; else weeklyGoalFallback">
-            <div class="widget-kicker">Weekly goal</div>
-            <h3 class="widget-title">{{ weekly.completed }} / {{ weekly.target }} completed</h3>
-            <div class="mini-progress">
-              <span [style.width.%]="weekly.progress * 100"></span>
-            </div>
-            <p class="widget-copy fa-meta-text">
-              Week starts Monday (Europe/Istanbul). Bonus: +{{ weekly.bonusXp }} XP when completed.
-            </p>
-            <div class="widget-actions">
-              <span *ngIf="weekly.bonusGranted" class="status-chip status-chip--ok">Weekly bonus granted</span>
-            </div>
+          <article faCard class="widget widget--mini" *ngIf="progressSummary() as progress; else progressMiniFallback">
+            <div class="widget-kicker">Progress snapshot</div>
+            <h3 class="widget-title widget-title--mini">{{ formatPercentLabel(overallSolvedPercent(progress)) }} overall solved</h3>
+            <p class="widget-copy widget-copy--mini fa-meta-text">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
           </article>
 
-          <ng-template #weeklyGoalFallback>
-            <article faCard class="widget widget--detail widget--weekly" [class.widget--guest]="!auth.isLoggedIn()">
-              <div class="widget-kicker">Weekly goal</div>
-              <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Weekly goal unavailable' : 'Optional goal: 10 per week' }}</h3>
-              <p class="widget-copy fa-meta-text">
+          <ng-template #progressMiniFallback>
+            <article faCard class="widget widget--mini" [class.widget--guest]="!auth.isLoggedIn()">
+              <div class="widget-kicker">Progress snapshot</div>
+              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Progress snapshot unavailable' : 'Sign in to unlock progress snapshot' }}</h3>
+              <p class="widget-copy widget-copy--mini fa-meta-text">
                 {{ auth.isLoggedIn()
-                  ? 'We could not load your weekly goal settings right now. Continue solving and try again shortly.'
-                  : 'Sign in to set your own weekly target and track completion.' }}
+                  ? 'Your solved coverage is temporarily unavailable. Check profile again shortly.'
+                  : 'Your solved coverage appears after a few completed questions.' }}
               </p>
             </article>
           </ng-template>
 
-          <article faCard class="widget widget--detail widget--xp" *ngIf="xpLevel() as xp; else xpFallback">
-            <div class="widget-kicker">XP + level</div>
-            <h3 class="widget-title">Level {{ xp.level }} · {{ xp.totalXp }} XP</h3>
-            <div class="mini-progress">
-              <span [style.width.%]="xp.progress * 100"></span>
-            </div>
-            <p class="widget-copy fa-meta-text">
-              {{ xp.currentLevelXp }}/{{ xp.levelStepXp }} XP to this level, {{ xp.nextLevelXp - xp.totalXp }} XP to next level.
-            </p>
-          </article>
-
-          <ng-template #xpFallback>
-            <article faCard class="widget widget--detail widget--xp" [class.widget--guest]="!auth.isLoggedIn()">
-              <div class="widget-kicker">XP + level</div>
-              <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Leveling data unavailable' : 'Sign in to start leveling' }}</h3>
-              <p class="widget-copy fa-meta-text">
-                {{ auth.isLoggedIn()
-                  ? 'We could not load your XP right now. Continue solving questions and try again shortly.'
-                  : 'Earn XP from solved coding/trivia/debug questions and weekly completion bonuses.' }}
-              </p>
-            </article>
-          </ng-template>
-
-          <article faCard class="widget widget--detail widget--progress" *ngIf="progressSummary() as progress; else progressFallback">
-            <div class="widget-kicker">Progress</div>
-            <h3 class="widget-title">{{ formatPercentLabel(overallSolvedPercent(progress)) }} overall solved</h3>
-            <p class="widget-copy fa-meta-text">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
-            <div class="mini-progress mini-progress--overall">
-              <span [style.width.%]="overallSolvedPercent(progress)"></span>
-            </div>
-          </article>
-
-          <ng-template #progressFallback>
-            <article faCard class="widget widget--detail widget--progress" [class.widget--guest]="!auth.isLoggedIn()">
-              <div class="widget-kicker">Progress</div>
-              <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Progress insights unavailable' : 'Start solving to unlock progress insights' }}</h3>
-              <p class="widget-copy fa-meta-text">
-                {{ auth.isLoggedIn()
-                  ? 'We could not load your solved coverage right now. Keep practicing and refresh shortly.'
-                  : 'Your solved coverage appears here after a few solved questions.' }}
-              </p>
-            </article>
-          </ng-template>
-
-          <article
-            *ngIf="showWeaknessRadar()"
-            faCard
-            class="widget widget--detail widget--weakness"
+          <a
+            *ngIf="showWeaknessRadar() && topWeakness() as weakness"
+            faCard interactive
+            class="widget widget--mini"
             data-testid="dashboard-weakness-radar"
+            [routerLink]="['/coding']"
+            [queryParams]="weaknessQueryParams(weakness)"
+            (click)="trackWeaknessDrillClick(weakness)"
           >
-            <div class="widget-kicker">Personal weakness radar</div>
-            <h3 class="widget-title">Patterns to improve next</h3>
-            <div class="weakness-list">
-              <a
-                *ngFor="let item of weaknesses(); trackBy: trackByWeakness"
-                class="weakness-item"
-                [routerLink]="['/coding']"
-                [queryParams]="weaknessQueryParams(item)"
-                (click)="trackWeaknessDrillClick(item)"
-              >
-                <div class="weakness-item__head">
-                  <span class="weakness-item__tag">{{ item.topicOrTag }}</span>
-                  <span class="weakness-item__count">{{ item.failCount }} fails</span>
-                </div>
-                <div class="weakness-item__meta">
-                  <span>{{ item.category }}</span>
-                  <span>{{ weaknessLastSeenLabel(item.lastSeenTs) }}</span>
-                </div>
-                <span class="weakness-item__cta">Practice now →</span>
-              </a>
-            </div>
-          </article>
+            <div class="widget-kicker">Weakness spotlight</div>
+            <h3 class="widget-title widget-title--mini">{{ weakness.topicOrTag }}</h3>
+            <p class="widget-copy widget-copy--mini fa-meta-text">
+              {{ weakness.failCount }} recent fails · {{ weakness.category }} · {{ weaknessLastSeenLabel(weakness.lastSeenTs) }}
+            </p>
+            <span class="widget-inline-link">Practice now →</span>
+          </a>
+
+          <a
+            faCard interactive
+            class="widget widget--mini widget--profile-cta"
+            [routerLink]="auth.isLoggedIn() ? ['/profile'] : ['/auth/login']"
+            [queryParams]="auth.isLoggedIn() ? { tab: 'activity' } : { redirectTo: '/profile' }"
+            (click)="trackProfileDetailsClick()"
+          >
+            <div class="widget-kicker">{{ auth.isLoggedIn() ? 'Profile activity' : 'Sign in for full details' }}</div>
+            <h3 class="widget-title widget-title--mini widget-cta-title">
+              {{ auth.isLoggedIn()
+                ? 'Weekly goal, XP, and full progress details moved here.'
+                : 'Create an account to track weekly goal, XP, and solved coverage.' }}
+            </h3>
+            <span class="widget-cta-link">{{ auth.isLoggedIn() ? 'Show full details →' : 'Sign in →' }}</span>
+          </a>
         </div>
       </div>
 

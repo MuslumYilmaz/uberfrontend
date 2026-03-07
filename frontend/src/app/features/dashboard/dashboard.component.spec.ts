@@ -143,13 +143,13 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('renders key gamification widgets', () => {
+  it('renders compact momentum widgets with profile details CTA', () => {
     const pageText = fixture.nativeElement.textContent || '';
     expect(pageText).toContain('Next best action');
     expect(pageText).toContain('Daily challenge');
-    expect(pageText).toContain('Weekly goal');
-    expect(pageText).toContain('XP + level');
-    expect(pageText).toContain('Progress');
+    expect(pageText).toContain('Progress snapshot');
+    expect(pageText).toContain('Profile activity');
+    expect(pageText).toContain('Show full details');
   });
 
   it('renders focus areas browse action linking to /focus-areas', () => {

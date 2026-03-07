@@ -109,9 +109,9 @@ export class DashboardComponent {
   dailyCompletePending = signal(false);
   dailyCompleteMessage = signal<string | null>(null);
   dailyCompleteError = signal<string | null>(null);
-  isProgressDetailsExpanded = signal(this.getInitialDetailsExpandedState());
   isManageProgressOpen = signal(false);
   weaknesses = signal<WeaknessSummary[]>([]);
+  topWeakness = computed(() => this.weaknesses()[0] ?? null);
 
   weeklyGoalEnabled = signal(true);
   weeklyGoalTarget = signal(10);
@@ -542,7 +542,6 @@ export class DashboardComponent {
 
   trackByTitle = (_: number, it: Card) => it.title;
   trackByTopicId = (_: number, it: TopicDefinition) => it.id;
-  trackByWeakness = (_: number, it: WeaknessSummary) => `${it.category}:${it.topicOrTag}`;
 
   recommendedBadgeForIndex(index: number): string {
     return index === 0 ? 'Best next step' : 'Interview-ready';
@@ -920,10 +919,8 @@ export class DashboardComponent {
     });
   }
 
-  toggleProgressDetails() {
-    const expanded = !this.isProgressDetailsExpanded();
-    this.isProgressDetailsExpanded.set(expanded);
-    this.analytics.track('progress_details_toggled', { expanded });
+  trackProfileDetailsClick() {
+    this.analytics.track('progress_details_redirected', { destination: 'profile' });
   }
 
   openManageProgress() {
@@ -990,13 +987,6 @@ export class DashboardComponent {
       topic_or_tag: item.topicOrTag,
       fail_count: item.failCount,
     });
-  }
-
-  private getInitialDetailsExpandedState(): boolean {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-      return true;
-    }
-    return !window.matchMedia('(max-width: 640px)').matches;
   }
 
   private refreshWeaknessRadar(): void {
