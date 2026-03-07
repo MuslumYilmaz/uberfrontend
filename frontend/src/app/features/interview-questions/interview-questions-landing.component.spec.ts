@@ -8,6 +8,7 @@ import { SeoService } from '../../core/services/seo.service';
 
 describe('InterviewQuestionsLandingComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
+  let routeStub: any;
 
   beforeEach(async () => {
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
@@ -20,7 +21,7 @@ describe('InterviewQuestionsLandingComponent', () => {
         : `https://frontendatlas.com/${raw}`;
     });
 
-    const routeStub = {
+    routeStub = {
       snapshot: {
         data: {
           interviewQuestions: {
@@ -111,6 +112,12 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(triviaLink).toBeTruthy();
     expect(featuredLink).toBeTruthy();
 
+    const mustKnowStat = fixture.nativeElement.textContent || '';
+    expect(mustKnowStat).toContain('Must know');
+
+    const priorityChip = fixture.nativeElement.querySelector('.iq-item__chip--priority[data-priority="must_know"]') as HTMLElement | null;
+    expect(priorityChip?.textContent || '').toContain('Must know');
+
     const loadingState = fixture.nativeElement.querySelector('.iq-loading');
     expect(loadingState).toBeNull();
   });
@@ -132,5 +139,90 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(collection?.mainEntity?.['@type']).toBe('ItemList');
     expect(Array.isArray(collection?.mainEntity?.itemListElement)).toBeTrue();
     expect(breadcrumb).toBeTruthy();
+  });
+
+  it('uses javascript-only crucial lists on master hub', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'frontend interview questions',
+      title: 'Frontend Interview Questions for Quick Prep',
+      techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
+      isMasterHub: true,
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
+      coding: [
+        {
+          id: 'js-array-flatten',
+          title: 'Flatten nested arrays',
+          type: 'coding',
+          technology: 'javascript',
+          difficulty: 'easy',
+          access: 'free',
+          tags: [],
+          importance: 5,
+          companies: [],
+          description: 'Flatten nested arrays without libraries.',
+          tech: 'javascript',
+        },
+        {
+          id: 'react-context-selector',
+          title: 'Context selector optimization',
+          type: 'coding',
+          technology: 'react',
+          difficulty: 'hard',
+          access: 'free',
+          tags: [],
+          importance: 5,
+          companies: [],
+          description: 'Optimize context updates in React.',
+          tech: 'react',
+        },
+      ],
+      trivia: [
+        {
+          id: 'js-event-loop',
+          title: 'Event loop ordering',
+          type: 'trivia',
+          technology: 'javascript',
+          difficulty: 'easy',
+          access: 'free',
+          tags: [],
+          importance: 5,
+          companies: [],
+          description: 'Explain microtask vs macrotask order.',
+          tech: 'javascript',
+        },
+        {
+          id: 'react-usememo',
+          title: 'useMemo trade-offs',
+          type: 'trivia',
+          technology: 'react',
+          difficulty: 'intermediate',
+          access: 'free',
+          tags: [],
+          importance: 5,
+          companies: [],
+          description: 'Explain useMemo trade-offs.',
+          tech: 'react',
+        },
+      ],
+    };
+    routeStub.snapshot.url = [{ path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const jsCoding = fixture.nativeElement.querySelector('a[href="/javascript/coding/js-array-flatten"]');
+    const reactCoding = fixture.nativeElement.querySelector('a[href="/react/coding/react-context-selector"]');
+    const jsTrivia = fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-event-loop"]');
+    const reactTrivia = fixture.nativeElement.querySelector('a[href="/react/trivia/react-usememo"]');
+
+    expect(jsCoding).toBeTruthy();
+    expect(jsTrivia).toBeTruthy();
+    expect(reactCoding).toBeNull();
+    expect(reactTrivia).toBeNull();
   });
 });

@@ -56,7 +56,7 @@ type VisibleEntry = {
         <div class="fah-desktop-actions">
           <a class="fah-btn" routerLink="/dashboard">Dashboard</a>
           <a class="fah-btn fah-btn--hub" routerLink="/interview-questions" data-testid="header-interview-hub">
-            Interview Qs
+            Interview Warm-up
           </a>
           <a *ngIf="!isPro()" class="fah-btn" routerLink="/pricing">Pricing</a>
 
@@ -104,7 +104,7 @@ type VisibleEntry = {
             class="fah-iconbtn fah-iconbtn--hub"
             routerLink="/interview-questions"
             data-testid="header-mobile-interview-hub"
-            aria-label="Open interview question hubs">
+            aria-label="Open interview warm-up hub">
             <i class="pi pi-list"></i>
           </a>
           <button
@@ -149,7 +149,7 @@ type VisibleEntry = {
           (click)="closeAll()"
           data-testid="header-mobile-interview-hub-row">
           <i class="pi pi-list"></i>
-          <span>Interview questions</span>
+          <span>Interview warm-up</span>
         </a>
         <a *ngIf="!isPro()" class="fah-mobile-item" routerLink="/pricing" (click)="closeAll()" data-testid="header-mobile-pricing">
           <i class="pi pi-tag"></i>

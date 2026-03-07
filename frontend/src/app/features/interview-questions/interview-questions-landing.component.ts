@@ -17,6 +17,7 @@ type InterviewQuestionsLandingConfig = {
 };
 
 type Kind = 'coding' | 'trivia';
+type PrepPriority = 'must_know' | 'high_leverage' | 'core_reinforcement';
 type HubLink = { label: string; route: any[]; path: string };
 
 type QuestionSummaryRow = {
@@ -25,6 +26,8 @@ type QuestionSummaryRow = {
   tech: Tech;
   kind: Kind;
   difficulty: string;
+  importance: number;
+  priority: PrepPriority;
   description: string;
   link: any[];
 };
@@ -153,18 +156,18 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   introLead(): string {
     if (this.isMasterHub()) {
-      return 'Use this frontend interview questions library to pick a technology hub, open coding and trivia leaves, and keep weekly prep consistent.';
+      return 'Quick frontend interview prep with the most crucial JavaScript coding and trivia questions first. Use the full interview question hubs when you need broader framework coverage.';
     }
 
-    return `Use this ${this.keywordSentenceCase()} hub to practice coding and trivia leaves, then return to the master library and interview practice platform.`;
+    return `Quick prep with this ${this.keywordSentenceCase()} hub: tackle the most crucial coding and trivia questions first, then expand into full interview platform flows.`;
   }
 
   listIntentItems(): string[] {
     if (this.isMasterHub()) {
       return [
-        'Choose a technology hub based on your current interview pipeline.',
-        'Mix coding implementation drills with trivia explanation checks.',
-        'Move from question libraries to structured interview practice tracks.',
+        'Start with curated JavaScript essentials to warm up interview execution speed.',
+        'Mix coding implementation drills with trivia explanation checks in one short loop.',
+        'Expand to framework hubs, guides, and tracks once your baseline is stable.',
       ];
     }
 
@@ -176,12 +179,71 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     ];
   }
 
+  codingSectionTitle(): string {
+    if (this.isMasterHub()) return 'Most crucial JavaScript coding interview questions';
+    return `Most crucial ${this.currentHubTechDisplay()} coding interview questions`;
+  }
+
+  codingSectionSubtitle(): string {
+    if (this.isMasterHub()) {
+      return 'Curated by importance for fast onboarding. Start here, then open full libraries and tracks.';
+    }
+    return 'Ranked by interview importance so you can start with the highest-signal implementation drills.';
+  }
+
+  triviaSectionTitle(): string {
+    if (this.isMasterHub()) return 'Most crucial JavaScript trivia interview questions';
+    return `Most crucial ${this.currentHubTechDisplay()} trivia interview questions`;
+  }
+
+  triviaSectionSubtitle(): string {
+    if (this.isMasterHub()) {
+      return 'Use these high-importance explanation checks to tighten your fundamentals before deeper rounds.';
+    }
+    return 'Ranked by interview importance to strengthen your explanation speed where it matters most.';
+  }
+
   masterTechHubLinks(): HubLink[] {
     return INTERVIEW_HUB_LINKS.filter((hub) => PRIMARY_TECH_HUB_PATHS.has(hub.path));
   }
 
   supportsMultipleTechs(): boolean {
     return this.config.techs.length > 1;
+  }
+
+  mustKnowCount(): number {
+    return [...this.codingQuestions, ...this.triviaQuestions]
+      .filter((row) => row.priority === 'must_know')
+      .length;
+  }
+
+  priorityLabel(row: QuestionSummaryRow): string {
+    switch (row.priority) {
+      case 'must_know':
+        return 'Must know';
+      case 'high_leverage':
+        return 'High leverage';
+      default:
+        return 'Core';
+    }
+  }
+
+  priorityReason(row: QuestionSummaryRow): string {
+    if (row.priority === 'must_know') {
+      return row.kind === 'coding'
+        ? 'Critical for coding rounds and edge-case discussion.'
+        : 'Frequently tested in explanation-heavy rounds.';
+    }
+
+    if (row.priority === 'high_leverage') {
+      return row.kind === 'coding'
+        ? 'High interview value and common implementation surface.'
+        : 'High-signal concept for concise interview explanations.';
+    }
+
+    return row.kind === 'coding'
+      ? 'Solid reinforcement to stabilize your baseline execution.'
+      : 'Useful reinforcement to keep recall fluent under pressure.';
   }
 
   isMasterHub(): boolean {
@@ -209,10 +271,11 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   private loadLists(): void {
     this.loading = true;
+    const crucialTechs = this.crucialTechsForCurrentHub();
 
     forkJoin({
-      coding: this.loadKindRows('coding'),
-      trivia: this.loadKindRows('trivia'),
+      coding: this.loadKindRows('coding', crucialTechs),
+      trivia: this.loadKindRows('trivia', crucialTechs),
     }).subscribe({
       next: ({ coding, trivia }) => {
         this.codingQuestions = coding
@@ -233,9 +296,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     });
   }
 
-  private loadKindRows(kind: Kind) {
+  private loadKindRows(kind: Kind, techs: Tech[]) {
     return forkJoin(
-      this.config.techs.map((tech) =>
+      techs.map((tech) =>
         this.questionService.loadQuestionSummaries(tech, kind, { transferState: false }).pipe(
           map((rows) => rows.map((row) => ({ ...row, tech } as RawQuestionSummaryRow))),
           catchError(() => of([] as RawQuestionSummaryRow[])),
@@ -245,7 +308,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       map((buckets) => buckets.flat()),
       map((rows) =>
         rows
-          .filter((row) => !!row.id && !!row.title && this.config.techs.includes(row.tech))
+          .filter((row) => !!row.id && !!row.title && techs.includes(row.tech))
           .sort((a, b) => this.compareRows(a, b)),
       ),
     );
@@ -256,8 +319,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   private applyResolvedRows(resolved: InterviewQuestionsHubResolved): void {
-    const codingRows = this.filterRowsForCurrentHub(resolved.coding);
-    const triviaRows = this.filterRowsForCurrentHub(resolved.trivia);
+    const crucialTechs = this.crucialTechsForCurrentHub();
+    const codingRows = this.filterRowsForCurrentHub(resolved.coding, crucialTechs);
+    const triviaRows = this.filterRowsForCurrentHub(resolved.trivia, crucialTechs);
 
     this.codingQuestions = codingRows
       .map((row) => this.toRow(row, 'coding'))
@@ -267,10 +331,14 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       .slice(0, 12);
   }
 
-  private filterRowsForCurrentHub(rows: RawQuestionSummaryRow[]): RawQuestionSummaryRow[] {
+  private filterRowsForCurrentHub(rows: RawQuestionSummaryRow[], techs: Tech[] = this.config.techs): RawQuestionSummaryRow[] {
     return rows
-      .filter((row) => !!row.id && !!row.title && this.config.techs.includes(row.tech))
+      .filter((row) => !!row.id && !!row.title && techs.includes(row.tech))
       .sort((a, b) => this.compareRows(a, b));
+  }
+
+  private crucialTechsForCurrentHub(): Tech[] {
+    return this.isMasterHub() ? ['javascript'] : this.config.techs;
   }
 
   private compareRows(a: RawQuestionSummaryRow, b: RawQuestionSummaryRow): number {
@@ -286,15 +354,24 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   private toRow(row: RawQuestionSummaryRow, kind: Kind): QuestionSummaryRow {
+    const importance = Math.max(0, Number(row.importance || 0));
     return {
       id: String(row.id || ''),
       title: String(row.title || ''),
       tech: row.tech,
       kind,
       difficulty: String(row.difficulty || 'intermediate'),
+      importance,
+      priority: this.priorityFromImportance(importance),
       description: this.toShortDescription(row),
       link: ['/', row.tech, kind, row.id],
     };
+  }
+
+  private priorityFromImportance(importance: number): PrepPriority {
+    if (importance >= 4) return 'must_know';
+    if (importance >= 2) return 'high_leverage';
+    return 'core_reinforcement';
   }
 
   private toShortDescription(row: QuestionListItem): string {
@@ -513,5 +590,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   private currentHubTechLabel(): string {
     if (!this.config.techs.length) return 'frontend';
     return this.techLabel(this.config.techs[0]).toLowerCase();
+  }
+
+  private currentHubTechDisplay(): string {
+    if (!this.config.techs.length) return 'frontend';
+    return this.techLabel(this.config.techs[0]);
   }
 }

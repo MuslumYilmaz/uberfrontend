@@ -8,7 +8,7 @@ import { SeoService } from '../../../core/services/seo.service';
 
 const TRACKS_PLATFORM_TITLE = 'Frontend Interview Prep Platform and Tracks';
 const TRACKS_PLATFORM_DESCRIPTION =
-  'Use the frontend interview prep platform to run guided practice tracks, then connect each track with frontend interview question hubs by technology.';
+  'Use the frontend interview prep platform to run guided practice tracks, then connect each track with frontend interview warm-up hubs by technology.';
 
 type MasteryTrackCard = {
   slug: string;
@@ -83,7 +83,7 @@ export class TrackListComponent implements OnInit {
   allTrackCardsCount = this.tracks.length + this.masteryCards.length;
   interviewHubQuickLinks: HubQuickLink[] = [
     {
-      label: 'Frontend interview questions hub',
+      label: 'Frontend interview warm-up hub',
       route: ['/interview-questions'],
       toneClass: 'hero-link--iq-master',
     },
@@ -136,7 +136,7 @@ export class TrackListComponent implements OnInit {
 
   trackPrepSequence: PrepSignalItem[] = [
     { text: 'Interview blueprint', route: ['/guides/interview-blueprint'] },
-    { text: 'Interview question hubs', route: ['/interview-questions'] },
+    { text: 'Interview warm-up hub', route: ['/interview-questions'] },
     { text: 'Framework prep path', route: ['/guides/framework-prep'] },
     { text: 'Guided tracks', route: ['/tracks'] },
     { text: 'Company question sets', route: ['/companies'] },
@@ -144,11 +144,11 @@ export class TrackListComponent implements OnInit {
   platformSteps: PlatformStep[] = [
     {
       kicker: 'Step 1',
-      title: 'Choose your interview question hub',
+      title: 'Choose your interview warm-up hub',
       description:
-        'Start from the frontend interview questions library, then narrow to the stack you are interviewing for this month.',
+        'Start from the frontend interview warm-up hub, then narrow to the stack you are interviewing for this month.',
       route: ['/interview-questions'],
-      ctaLabel: 'Open question library',
+      ctaLabel: 'Open warm-up hub',
     },
     {
       kicker: 'Step 2',
@@ -203,9 +203,9 @@ export class TrackListComponent implements OnInit {
   ];
   faqEntries: TrackFaqEntry[] = [
     {
-      question: 'Should I use tracks before or after the interview questions library?',
+      question: 'Should I use tracks before or after the interview warm-up hub?',
       answer:
-        'Start with the interview questions library to identify your weak areas, then use tracks to execute a fixed sequence that removes random practice. Most candidates get better outcomes when tracks are used as the weekly execution layer.',
+        'Start with the interview warm-up hub to identify your weak areas, then use tracks to execute a fixed sequence that removes random practice. Most candidates get better outcomes when tracks are used as the weekly execution layer.',
     },
     {
       question: 'How many tracks should I run at the same time?',

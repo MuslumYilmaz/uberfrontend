@@ -47,7 +47,7 @@ describe('TrackListComponent', () => {
     expect(htmlCssHub).toBeTruthy();
   });
 
-  it('keeps interview question hubs in prep sequence ordering', () => {
+  it('keeps interview warm-up hub in prep sequence ordering', () => {
     const fixture = TestBed.createComponent(TrackListComponent);
     fixture.detectChanges();
 
@@ -57,7 +57,7 @@ describe('TrackListComponent', () => {
     ) as { text?: string } | undefined;
 
     expect(hubStep).toBeTruthy();
-    expect(hubStep?.text).toContain('Interview question hubs');
+    expect(hubStep?.text).toContain('Interview warm-up hub');
   });
 
   it('publishes tracks CollectionPage schema with breadcrumb', () => {

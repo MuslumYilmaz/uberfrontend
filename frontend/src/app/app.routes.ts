@@ -980,14 +980,14 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'frontend interview questions',
-        title: 'Frontend Interview Questions Library',
+        title: 'Frontend Interview Questions for Quick Prep',
         techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
         isMasterHub: true,
       },
       seo: {
-        title: 'Frontend Interview Questions Library',
+        title: 'Frontend Interview Questions for Quick Prep',
         description:
-          'Frontend interview questions library for JavaScript, React, Angular, Vue, HTML, and CSS, with coding and trivia hubs linked to the interview practice platform.',
+          'Quick frontend interview prep with most crucial JavaScript coding and trivia questions first, plus interview question hubs for React, Angular, Vue, HTML, CSS, and full platform tracks.',
       },
     },
   },

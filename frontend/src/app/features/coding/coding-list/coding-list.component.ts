@@ -606,7 +606,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   ];
 
   interviewHubLinks: InterviewHubLink[] = [
-    { label: 'Frontend interview questions', route: ['/interview-questions'] },
+    { label: 'Frontend interview warm-up hub', route: ['/interview-questions'] },
     { label: 'JavaScript interview questions', route: ['/javascript/interview-questions'] },
     { label: 'React interview questions', route: ['/react/interview-questions'] },
     { label: 'Angular interview questions', route: ['/angular/interview-questions'] },
