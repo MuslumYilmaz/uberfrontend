@@ -126,7 +126,7 @@ describe('CodingJsPanelComponent', () => {
     expect(emittedConsole ?? []).toEqual([]);
   });
 
-  it('shows stuck nudge only when level is at least 1 and not dismissed', () => {
+  it('shows stuck nudge only after current-session test run and when level is at least 1', () => {
     const component = TestBed.runInInjectionContext(
       () => new CodingJsPanelComponent({} as any),
     );
@@ -138,6 +138,9 @@ describe('CodingJsPanelComponent', () => {
       firstSeenTs: Date.now() - 10_000,
       lastSeenTs: Date.now(),
     });
+    expect(component.showStuckNudge()).toBeFalse();
+
+    component.hasRunTests.set(true);
     expect(component.showStuckNudge()).toBeTrue();
 
     component.stuckState.set({
@@ -184,6 +187,7 @@ describe('CodingJsPanelComponent', () => {
       () => new CodingJsPanelComponent({} as any),
     );
     (component as any).interventionTimingVariant = 'late_l2';
+    component.hasRunTests.set(true);
 
     component.stuckState.set({
       level: 1,

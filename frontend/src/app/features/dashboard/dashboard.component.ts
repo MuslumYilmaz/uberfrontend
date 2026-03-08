@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Params, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { WeaknessSummary } from '../../core/models/editor-assist.model';
+import { isQuestionLockedForTier } from '../../core/models/question.model';
 import { firstValueFrom, forkJoin, from, fromEvent, map, merge, Observable, shareReplay, take } from 'rxjs';
 import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
@@ -180,7 +181,7 @@ export class DashboardComponent {
         fromEvent(this.document, 'keydown'),
       )
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.onPrepUserActivity());
+        .subscribe((event) => this.onPrepUserActivity(event));
 
       this.destroyRef.onDestroy(() => {
         this.clearPrepLauncherIdleTimer();
@@ -364,40 +365,60 @@ export class DashboardComponent {
   }
 
   private async resolveQuickWinQuestion(): Promise<QuickWinQuestion | null> {
-    if (this.quickWinCache?.length) return this.quickWinCache[0];
+    if (!this.quickWinCache?.length) {
+      const list = await firstValueFrom(
+        this.questions.loadQuestionSummaries('javascript', 'coding', { transferState: false }),
+      );
+      const user = this.authService.user();
 
-    const list = await firstValueFrom(
-      this.questions.loadQuestionSummaries('javascript', 'coding', { transferState: false }),
-    );
+      const candidates = (list || [])
+        .filter((item) => !isQuestionLockedForTier({ access: item.access ?? 'free' }, user))
+        .map((item) => ({
+          id: String(item.id || '').trim(),
+          importance: Number(item.importance || 0),
+          difficulty: String(item.difficulty || 'intermediate').toLowerCase(),
+        }))
+        .filter((item) => !!item.id)
+        .sort((a, b) => {
+          if (a.importance !== b.importance) return b.importance - a.importance;
+          const aRank = this.quickWinDifficultyRank[a.difficulty] ?? 99;
+          const bRank = this.quickWinDifficultyRank[b.difficulty] ?? 99;
+          if (aRank !== bRank) return aRank - bRank;
+          return a.id.localeCompare(b.id);
+        });
 
-    const candidates = (list || [])
-      .map((item) => ({
-        id: String(item.id || '').trim(),
-        importance: Number(item.importance || 0),
-        difficulty: String(item.difficulty || 'intermediate').toLowerCase(),
-      }))
-      .filter((item) => !!item.id)
-      .sort((a, b) => {
-        if (a.importance !== b.importance) return b.importance - a.importance;
-        const aRank = this.quickWinDifficultyRank[a.difficulty] ?? 99;
-        const bRank = this.quickWinDifficultyRank[b.difficulty] ?? 99;
-        if (aRank !== bRank) return aRank - bRank;
-        return a.id.localeCompare(b.id);
-      });
+      this.quickWinCache = candidates;
+    }
 
-    this.quickWinCache = candidates;
-    return candidates[0] ?? null;
+    const candidates = this.quickWinCache ?? [];
+    if (!candidates.length) return null;
+
+    const solvedIds = this.solvedSet();
+    const firstUnsolved = candidates.find((item) => !solvedIds.has(item.id));
+    if (firstUnsolved) return firstUnsolved;
+
+    const randomIndex = Math.floor(Math.random() * candidates.length);
+    return candidates[randomIndex] ?? candidates[0] ?? null;
   }
 
   private hydratePrepLauncherState(): void {
     this.prepLauncherDismissed.set(this.readPrepLauncherDismissed());
   }
 
-  private onPrepUserActivity(): void {
+  private onPrepUserActivity(event?: Event): void {
+    if (this.isPrepLauncherBubbleEvent(event)) {
+      return;
+    }
     if (this.prepLauncherBubbleVisible()) {
       this.prepLauncherBubbleVisible.set(false);
     }
     this.armPrepLauncherIdleTimer();
+  }
+
+  private isPrepLauncherBubbleEvent(event?: Event): boolean {
+    const target = event?.target;
+    if (!(target instanceof Element)) return false;
+    return Boolean(target.closest('.prep-launcher__bubble'));
   }
 
   private armPrepLauncherIdleTimer(): void {

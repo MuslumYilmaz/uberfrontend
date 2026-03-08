@@ -10,6 +10,7 @@ import { CodeStorageService } from '../../../core/services/code-storage.service'
 import { DailyService } from '../../../core/services/daily.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { CodingDetailComponent } from './coding-detail.component';
 
@@ -18,12 +19,15 @@ describe('CodingDetailComponent', () => {
   let dailyService: jasmine.SpyObj<DailyService>;
   let bugReport: jasmine.SpyObj<BugReportService>;
   let seo: jasmine.SpyObj<SeoService>;
+  let analytics: jasmine.SpyObj<AnalyticsService>;
 
   beforeEach(async () => {
+    sessionStorage.clear();
     questionService = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadQuestions']);
     dailyService = jasmine.createSpyObj<DailyService>('DailyService', ['ensureTodaySet']);
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
+    analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     seo.buildCanonicalUrl.and.callFake((value: string) => `https://frontendatlas.com${value}`);
 
     await TestBed.configureTestingModule({
@@ -33,6 +37,7 @@ describe('CodingDetailComponent', () => {
         { provide: DailyService, useValue: dailyService },
         { provide: ActivityService, useValue: {} },
         { provide: SeoService, useValue: seo },
+        { provide: AnalyticsService, useValue: analytics },
         {
           provide: CodeStorageService,
           useValue: { migrateAllJsToIndexedDbOnce: () => Promise.resolve() },
@@ -68,6 +73,48 @@ describe('CodingDetailComponent', () => {
     expect(runSpy).toHaveBeenCalled();
     expect(component.subTab()).toBe('tests');
     expect(component.consoleEntries().length).toBe(0);
+  });
+
+  it('shows compact quick-win strip first, then expands next-step card after first run/check action', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'javascript';
+    component.question.set({ id: 'q1', access: 'free' } as any);
+    component.quickWinActive.set(true);
+    component.subTab.set('console');
+
+    const runSpy = jasmine.createSpy('runTests').and.resolveTo();
+    component.jsPanel = { runTests: runSpy } as any;
+
+    expect(component.quickWinShowCompact()).toBeTrue();
+    expect(component.quickWinShowExpanded()).toBeFalse();
+
+    await component.runTests();
+
+    expect(component.quickWinShowCompact()).toBeFalse();
+    expect(component.quickWinShowExpanded()).toBeTrue();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'quick_win_progressed',
+      jasmine.objectContaining({
+        surface: 'coding_detail',
+        via: 'run_tests',
+      }),
+    );
+  });
+
+  it('dismisses expanded quick-win next-step card for current session', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.quickWinActive.set(true);
+    component.quickWinEngaged.set(true);
+    expect(component.quickWinShowExpanded()).toBeTrue();
+
+    component.dismissQuickWinNextStep();
+
+    expect(component.quickWinShowExpanded()).toBeFalse();
+    expect(sessionStorage.getItem('fa:coding:quick-win-next-dismissed:v1')).toBe('1');
   });
 
   it('does not run JS tests for web questions', async () => {

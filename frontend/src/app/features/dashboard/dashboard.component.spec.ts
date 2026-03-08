@@ -83,8 +83,9 @@ describe('DashboardComponent', () => {
       }),
       loadSystemDesign: jasmine.createSpy('loadSystemDesign').and.returnValue(of([])),
       loadQuestionSummaries: jasmine.createSpy('loadQuestionSummaries').and.returnValue(of([
-        { id: 'js-array-map', importance: 3, difficulty: 'easy' },
-        { id: 'js-closure-scope', importance: 5, difficulty: 'intermediate' },
+        { id: 'js-event-loop', importance: 5, difficulty: 'intermediate', access: 'premium' },
+        { id: 'js-closure-scope', importance: 4, difficulty: 'intermediate', access: 'free' },
+        { id: 'js-array-map', importance: 3, difficulty: 'easy', access: 'free' },
       ])),
     };
 
@@ -288,7 +289,26 @@ describe('DashboardComponent', () => {
     );
   });
 
-  it('routes solve_now intent to highest-importance javascript coding question', async () => {
+  it('does not auto-hide launcher bubble when activity happens inside bubble content', () => {
+    const component = fixture.componentInstance;
+    component.prepLauncherBubbleVisible.set(true);
+    fixture.detectChanges();
+
+    const bubbleHost = document.createElement('div');
+    bubbleHost.className = 'prep-launcher__bubble';
+    const bubbleAction = document.createElement('button');
+    bubbleHost.appendChild(bubbleAction);
+    document.body.appendChild(bubbleHost);
+
+    bubbleAction.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    fixture.detectChanges();
+
+    expect(component.prepLauncherBubbleVisible()).toBeTrue();
+
+    document.body.removeChild(bubbleHost);
+  });
+
+  it('routes solve_now intent to highest-importance unlocked javascript coding question for non-premium users', async () => {
     const component = fixture.componentInstance;
     const router = TestBed.inject(Router);
     const navSpy = spyOn(router, 'navigate').and.resolveTo(true);
@@ -308,6 +328,74 @@ describe('DashboardComponent', () => {
       'launcher_option_selected',
       jasmine.objectContaining({
         selected_intent: 'solve_now',
+      }),
+    );
+  });
+
+  it('routes solve_now intent to the next unlocked unsolved javascript question when top one is already solved', async () => {
+    const progressService = TestBed.inject(UserProgressService) as any;
+    progressService.solvedIds.and.returnValue(['js-closure-scope']);
+    const localFixture = TestBed.createComponent(DashboardComponent);
+    localFixture.detectChanges();
+    const component = localFixture.componentInstance;
+    const router = TestBed.inject(Router);
+    const navSpy = spyOn(router, 'navigate').and.resolveTo(true);
+
+    await component.selectPrepIntent('solve_now');
+
+    expect(navSpy).toHaveBeenCalledWith(
+      ['/', 'javascript', 'coding', 'js-array-map'],
+      jasmine.objectContaining({
+        queryParams: jasmine.objectContaining({
+          entry: 'dashboard_launcher',
+          quick_win: 1,
+        }),
+      }),
+    );
+  });
+
+  it('routes solve_now intent to a random unlocked javascript question when all unlocked ones are solved', async () => {
+    const progressService = TestBed.inject(UserProgressService) as any;
+    progressService.solvedIds.and.returnValue(['js-closure-scope', 'js-array-map']);
+    spyOn(Math, 'random').and.returnValue(0.99);
+    const localFixture = TestBed.createComponent(DashboardComponent);
+    localFixture.detectChanges();
+    const component = localFixture.componentInstance;
+    const router = TestBed.inject(Router);
+    const navSpy = spyOn(router, 'navigate').and.resolveTo(true);
+
+    await component.selectPrepIntent('solve_now');
+
+    expect(navSpy).toHaveBeenCalledWith(
+      ['/', 'javascript', 'coding', 'js-array-map'],
+      jasmine.objectContaining({
+        queryParams: jasmine.objectContaining({
+          entry: 'dashboard_launcher',
+          quick_win: 1,
+        }),
+      }),
+    );
+  });
+
+  it('routes solve_now intent to highest-importance javascript coding question for premium users', async () => {
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router);
+    const navSpy = spyOn(router, 'navigate').and.resolveTo(true);
+    const authService = TestBed.inject(AuthService) as any;
+    authService.user.and.returnValue({
+      accessTier: 'premium',
+      stats: { streak: { current: 2 } },
+    });
+
+    await component.selectPrepIntent('solve_now');
+
+    expect(navSpy).toHaveBeenCalledWith(
+      ['/', 'javascript', 'coding', 'js-event-loop'],
+      jasmine.objectContaining({
+        queryParams: jasmine.objectContaining({
+          entry: 'dashboard_launcher',
+          quick_win: 1,
+        }),
       }),
     );
   });

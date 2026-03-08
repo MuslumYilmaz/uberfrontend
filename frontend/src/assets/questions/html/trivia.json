@@ -107,7 +107,7 @@
   {
     "id": "html-tags",
     "title": "What are HTML tags?",
-    "description": "HTML tags are the basic building blocks of an HTML document. They define the structure, content, and meaning of a web page by marking elements like headings, paragraphs, images, and links.",
+    "description": "HTML tags are labels that define structure and meaning in a page: headings, paragraphs, links, buttons, sections, forms, and more. Browsers parse tags into a DOM tree, which CSS styles and JavaScript manipulates.",
     "seo": {
       "title": "What are HTML tags and how do they work?",
       "description": "HTML tags are markup keywords enclosed in angle brackets that define elements and structure on a web page."
@@ -128,96 +128,78 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nHTML (HyperText Markup Language) is built using <strong>tags</strong> that tell the browser how to structure and display content. Each tag has a specific role, such as defining a paragraph, a heading, or an image.\n\nWhen a browser reads an HTML document, it processes tags from top to bottom and builds the page layout through the <strong>Document Object Model (DOM)</strong> — a structured tree of elements."
+          "text": "<strong>Core idea</strong><br><br>HTML tags are the building blocks of a web page. Each tag tells the browser what something <em>is</em> (heading, paragraph, link, image, section), not just how it should look."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <title>My Web Page</title>\n  </head>\n  <body>\n    <h1>Welcome!</h1>\n    <p>This is a simple example.</p>\n  </body>\n</html>"
-        },
-        {
-          "type": "text",
-          "text": "In this example:\n- The <code>&lt;html&gt;</code> tag defines the root of the document.\n- The <code>&lt;head&gt;</code> tag contains metadata, scripts, and styles.\n- The <code>&lt;body&gt;</code> tag holds the visible page content.\n- The <code>&lt;h1&gt;</code> tag defines a heading.\n- The <code>&lt;p&gt;</code> tag defines a paragraph of text."
+          "code": "<!doctype html>\n<html>\n  <head>\n    <title>Profile</title>\n  </head>\n  <body>\n    <h1>Muslum</h1>\n    <p>Frontend developer</p>\n    <a href=\"/projects\">View projects</a>\n  </body>\n</html>"
         },
         {
           "type": "list",
           "columns": [
             "Tag",
-            "Purpose",
-            "Example"
+            "Meaning",
+            "When you use it"
           ],
           "rows": [
             [
-              "<h1>…</h1>",
-              "Defines a heading (from h1 to h6).",
-              "<h1>Main Title</h1>"
+              "<code>&lt;h1&gt;...&lt;/h1&gt;</code>",
+              "Main heading",
+              "Page or section title."
             ],
             [
-              "<p>…</p>",
-              "Defines a paragraph of text.",
-              "<p>This is a paragraph.</p>"
+              "<code>&lt;p&gt;...&lt;/p&gt;</code>",
+              "Paragraph text",
+              "Normal reading content."
             ],
             [
-              "<a>…</a>",
-              "Creates a hyperlink to another page or resource.",
-              "<a href='https://example.com'>Visit Site</a>"
+              "<code>&lt;a&gt;...&lt;/a&gt;</code>",
+              "Navigation link",
+              "Move to another page/section/resource."
             ],
             [
-              "<img>",
-              "Embeds an image.",
-              "<img src='image.jpg' alt='Description'>"
+              "<code>&lt;button&gt;...&lt;/button&gt;</code>",
+              "Action trigger",
+              "Submit, open modal, start action."
             ],
             [
-              "<ul>, <ol>, <li>",
-              "Defines unordered and ordered lists.",
-              "<ul><li>Item</li></ul>"
-            ],
-            [
-              "<table>",
-              "Creates tabular data.",
-              "<table><tr><td>Cell</td></tr></table>"
-            ],
-            [
-              "<form>",
-              "Captures user input via fields and buttons.",
-              "<form><input type='text'></form>"
-            ],
-            [
-              "<div> and <span>",
-              "Generic containers for grouping and styling.",
-              "<div class='box'>Content</div>"
+              "<code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;nav&gt;</code>",
+              "Semantic structure",
+              "Readable, accessible page layout."
             ]
           ],
-          "caption": "Commonly used HTML tags and their purposes."
+          "caption": "Tags communicate intent, not just markup syntax."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Attributes</strong>\n\nTags can include <strong>attributes</strong> that modify their behavior or provide additional information.\n\nExample:\n\n``<code>html\n&lt;a href=\"https://example.com\" target=\"_blank\"&gt;Open Example&lt;/a&gt;\n</code>``\n\nHere:\n- `href` defines the link destination.\n- `target='_blank'` opens it in a new browser tab."
+          "text": "<strong>Paired vs void tags</strong><br><br>Most tags have opening + closing forms (<code>&lt;p&gt;...&lt;/p&gt;</code>). Some are void/self-contained like <code>&lt;img&gt;</code> and <code>&lt;br&gt;</code>."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<p>Hello world</p>\n<img src=\"avatar.jpg\" alt=\"Profile photo\">\n<br>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Tag Types</strong>\n\n- **Paired Tags** — Have both an opening and closing tag (e.g., <code>&lt;p&gt;&lt;/p&gt;</code>, <code>&lt;div&gt;&lt;/div&gt;</code>).  \n- **Self-closing Tags** — Do not require a closing tag (e.g., <code>&lt;img&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;hr&gt;</code>).  \n\nExample:\n``<code>html\n&lt;p&gt;This is a paragraph.&lt;/p&gt;\n&lt;img src='photo.jpg' alt='Example Image'&gt;\n</code>``"
+          "text": "<strong>Common mistakes</strong><br><ul><li>Using <code>&lt;div&gt;</code> for everything instead of semantic tags.</li><li>Breaking heading hierarchy (jumping from <code>&lt;h1&gt;</code> to <code>&lt;h4&gt;</code> randomly).</li><li>Missing important attributes like image <code>alt</code> or link <code>href</code>.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistakes with Tags</strong>\n\n- Forgetting to close tags properly, e.g., <code>&lt;p&gt;</code> without <code>&lt;/p&gt;</code>.  \n- Nesting tags incorrectly, like placing a <code>&lt;p&gt;</code> tag inside another <code>&lt;p&gt;</code>.  \n- Using generic tags (like <code>&lt;div&gt;</code>) instead of semantic ones (like <code>&lt;header&gt;</code> or <code>&lt;footer&gt;</code>).  \n- Missing inline vs. block element distinctions, which can affect layout and styling."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of tags as labels on folders. If every folder is named <code>div</code>, your team and assistive tech cannot quickly understand what is inside."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-sitemap'></i> <strong>How Tags Relate to the DOM</strong>\n\nWhen a browser parses HTML, it turns tags into DOM nodes. For example:\n``<code>html\n&lt;body&gt;\n  &lt;h1&gt;Hello&lt;/h1&gt;\n  &lt;p&gt;World&lt;/p&gt;\n&lt;/body&gt;\n</code>``\n…becomes a tree:\n```\nDocument\n └── body\n      ├── h1 → 'Hello'\n      └── p → 'World'\n```\nEach HTML tag corresponds to a node that can be accessed and modified via JavaScript."
+          "text": "<strong>Summary</strong><br><ul><li>Tags define structure and meaning.</li><li>Browsers convert tags into the DOM tree.</li><li>Semantic tags improve accessibility, SEO, and maintainability.</li><li>Good HTML makes CSS/JS simpler and more reliable.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of HTML tags as <strong>labels</strong> on boxes — each box tells the browser what’s inside and how to display it. For example, <code>&lt;h1&gt;</code> is a big label (a title box), <code>&lt;p&gt;</code> is a small text box, and <code>&lt;img&gt;</code> is a picture frame. Together, these labeled boxes form your web page layout."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- HTML tags define the structure and meaning of webpage content.  \n- Each tag can have attributes that modify its behavior.  \n- Tags work together to form the DOM, which browsers use to render pages.  \n- Proper use of semantic tags improves accessibility and SEO.  \n- Common tags include <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;div&gt;</code>, and <code>&lt;img&gt;</code>."
+          "text": "<strong>Practical scenario</strong><br>You build a blog card with <code>&lt;article&gt;</code>, <code>&lt;h2&gt;</code>, <code>&lt;p&gt;</code>, and <code>&lt;a&gt;</code> so users, crawlers, and screen readers all understand content roles immediately.<br><br><strong>Trade-off or test tip</strong><br>Semantic HTML may feel slower at first than dropping <code>&lt;div&gt;</code> everywhere, but it reduces accessibility and maintenance debt long-term."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-03-08"
   },
   {
     "id": "html-head-tag",
@@ -436,7 +418,7 @@
   {
     "id": "html-title-tag",
     "title": "What does the <title> tag do?",
-    "description": "The &lt;title&gt; tag defines the title of an HTML document. It appears in the browser’s title bar or tab and is used by search engines and social networks to identify and display the page. Though not visible within the webpage itself, it plays a crucial role in SEO, accessibility, and user experience.",
+    "description": "The <title> tag sets a page title used in the browser tab, bookmarks, and often search result headlines. It is one of the highest-impact HTML tags for discoverability and user orientation.",
     "seo": {
       "title": "What does the HTML title tag do?",
       "description": "The <title> tag sets the page title shown in browser tabs and often used as the clickable headline in search results."
@@ -457,82 +439,86 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <code>&lt;title&gt;</code> tag is one of the most important elements inside the <code>&lt;head&gt;</code> section of an HTML document. It defines the **title of the web page**, which appears in the **browser tab**, **search engine results**, and **bookmarks**. Even though it doesn’t display on the webpage itself, it plays a vital role in both user navigation and search engine optimization (SEO)."
+          "text": "<strong>Direct answer</strong><br><br>The <code>&lt;title&gt;</code> tag defines the document title shown in the browser tab and commonly reused by search engines as the result headline."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <title>Learn HTML Basics</title>\n  </head>\n  <body>\n    <h1>Welcome to HTML Learning!</h1>\n  </body>\n</html>"
-        },
-        {
-          "type": "text",
-          "text": "In this example, the browser tab will display the text **“Learn HTML Basics”**, while the heading inside the <code>&lt;body&gt;</code> (<code>&lt;h1&gt;</code>) shows content visible to the user."
+          "code": "<head>\n  <title>React Interview Questions | Frontend Atlas</title>\n</head>"
         },
         {
           "type": "list",
           "columns": [
-            "Use Case",
-            "Effect",
+            "Where it appears",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Browser tab",
+              "Helps users quickly identify the page among many open tabs."
+            ],
+            [
+              "Bookmarks/history",
+              "Becomes the saved label users scan later."
+            ],
+            [
+              "Search results (often)",
+              "Influences click-through and search relevance signals."
+            ]
+          ],
+          "caption": "Small tag, big UX + SEO impact."
+        },
+        {
+          "type": "text",
+          "text": "<strong>How to write a strong title</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Rule",
             "Example"
           ],
           "rows": [
             [
-              "Browser Tabs",
-              "The title appears on the browser tab or window header.",
-              "<title>My Portfolio</title>"
+              "Be specific to page intent",
+              "<code>Debounce vs Throttle in JavaScript</code>"
             ],
             [
-              "Search Results",
-              "Search engines display the title as the clickable headline of a result.",
-              "<title>Best Travel Destinations 2025</title>"
+              "Keep it concise (roughly 50-60 chars as a practical target)",
+              "<code>System Design Checklist for Frontend Interviews</code>"
             ],
             [
-              "Bookmarks",
-              "When a page is saved, the title becomes the bookmark label.",
-              "<title>Recipe Collection</title>"
-            ],
-            [
-              "Social Sharing",
-              "Used as the default text when sharing links on social media.",
-              "<title>JavaScript Fundamentals Explained</title>"
+              "Include brand when helpful",
+              "<code>Frontend Resume Guide | Frontend Atlas</code>"
             ]
           ],
-          "caption": "How the <title> tag is used across browsers, SEO, and sharing contexts."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-magnifying-glass'></i> <strong>SEO and Accessibility Benefits</strong>\n\nThe <code>&lt;title&gt;</code> tag directly influences a webpage’s ranking and accessibility:\n\n- **Search Engine Optimization (SEO):** Search engines like Google use the <code>&lt;title&gt;</code> as the main heading for a search result. A clear, keyword-rich title helps users and crawlers understand the page’s content.\n- **Accessibility Tools:** Screen readers announce the title when users switch between tabs or open a new page, making it essential for visually impaired users.\n- **Browser Usability:** Users often rely on tab titles to navigate between multiple open pages, so short and descriptive titles enhance usability."
+          "caption": "A practical pattern: topic first, brand second."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<title>HTML Tutorial for Beginners | Learn HTML Step by Step</title>"
+          "code": "<!-- Weak -->\n<title>Home</title>\n\n<!-- Stronger -->\n<title>Home Workout Planner | FitTrack</title>"
         },
         {
           "type": "text",
-          "text": "A well-written title is concise (50–60 characters), descriptive, and relevant to the page content. Avoid keyword stuffing or using the same title across multiple pages."
+          "text": "<strong>Common mistakes</strong><br><ul><li>Same title reused on many pages.</li><li>Generic titles like Home, Page, Untitled.</li><li>Overly long keyword-stuffed titles.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistakes</strong>\n\n- **Omitting the <code>&lt;title&gt;</code> tag:** Causes accessibility issues and results in poor search engine visibility.  \n- **Too long or too short titles:** Search engines may truncate or ignore them.  \n- **Using generic text:** Titles like “Home” or “Page 1” provide no context.  \n- **Duplicating titles across pages:** Confuses users and search engines about content relevance."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Bad example -->\n<title>Home</title>\n\n<!-- Good example -->\n<title>Home | Sarah’s Interior Design Studio</title>"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>&lt;title&gt;</code> as the label on a folder tab. If every folder says \"Home\", nobody can find the right one quickly."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the <code>&lt;title&gt;</code> tag as the **nameplate of your webpage** — it doesn’t appear inside the house (the visible page), but it’s what people see from the outside: on the browser tab, in Google search, or in their bookmarks. A clear and descriptive nameplate makes your page stand out and easy to find."
+          "text": "<strong>Summary</strong><br><ul><li><code>&lt;title&gt;</code> belongs in <code>&lt;head&gt;</code>.</li><li>It drives tab clarity, bookmark clarity, and often SEO clickability.</li><li>Make each page title unique, clear, and intent-focused.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The <code>&lt;title&gt;</code> tag defines the document’s title shown in the browser, search results, and bookmarks.  \n- It belongs inside the <code>&lt;head&gt;</code> section of the HTML document.  \n- Plays a critical role in SEO, accessibility, and user navigation.  \n- Keep titles concise (50–60 characters), descriptive, and unique for every page.  \n- Avoid generic or duplicated titles for better visibility and usability."
+          "text": "<strong>Practical scenario</strong><br>You ship 40 guide pages. Distinct titles let users reopen the right tab instantly and increase the chance of relevant search clicks.<br><br><strong>Trade-off or test tip</strong><br>Brand-first titles are consistent but can hide intent; intent-first titles usually perform better for users scanning tabs and search pages."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-03-08"
   },
   {
     "id": "html-img-alt-attribute",
@@ -920,7 +906,7 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The &lt;a&gt; (anchor) tag in HTML is used to create hyperlinks that allow users to navigate from one page or resource to another. It is one of the most essential tags for connecting documents and enabling web navigation.",
+    "description": "The <a> (anchor) tag creates hyperlinks so users can navigate to pages, sections, files, email addresses, or phone links. It is the core navigation primitive of the web.",
     "seo": {
       "title": "What is the a tag used for in HTML?",
       "description": "The <a> tag creates hyperlinks that navigate to URLs, page sections, files, or other destinations."
@@ -929,71 +915,71 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;a&gt;</code> tag, also known as the **anchor element**, is used to define hyperlinks — clickable links that connect one web page, document, or section to another. It can link to external websites, internal pages, specific sections within the same page, email addresses, files for download, or even trigger scripts.\n\nWithout <code>&lt;a&gt;</code> tags, the web would be a collection of isolated documents without any way to navigate between them."
+          "text": "<strong>Direct answer</strong><br><br>Use <code>&lt;a&gt;</code> to create a clickable link. The critical attribute is <code>href</code>, which tells the browser where to go."
         },
         {
-          "type": "text",
-          "text": "<strong>Basic Syntax</strong>\n\n``<code>html\n&lt;a href=\"https://www.example.com\"&gt;Visit Example&lt;/a&gt;\n</code>``\n\n- **`href`** (Hypertext Reference): The most important attribute, defining the URL or target destination of the link.\n- **Link Text:** The visible text between the opening <code>&lt;a&gt;</code> and closing <code>&lt;/a&gt;</code> tags becomes the clickable portion."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Common Attributes</strong>\n\nThe <code>&lt;a&gt;</code> tag supports several attributes to control link behavior:\n\n- **`href`** – Specifies the destination URL or path (can be absolute or relative).\n- **`target`** – Determines how to open the link (e.g., `_blank` for a new tab, `_self` for the same tab).\n- **`title`** – Provides additional information shown as a tooltip on hover.\n- **`download`** – Prompts a download instead of navigation.\n- **`rel`** – Defines the relationship between the current document and the linked resource (e.g., `noopener`, `nofollow`, `external`)."
+          "type": "code",
+          "language": "html",
+          "code": "<a href=\"/pricing\">See pricing</a>"
         },
         {
           "type": "list",
           "columns": [
-            "Attribute",
-            "Description",
+            "Use case",
             "Example"
           ],
           "rows": [
             [
-              "`href`",
-              "Specifies the link destination",
-              "`<a href='https://example.com'>`"
+              "Internal page",
+              "<code>&lt;a href=\"/about\"&gt;About&lt;/a&gt;</code>"
             ],
             [
-              "`target`",
-              "Controls where to open the link",
-              "`<a target='_blank'>` opens in a new tab"
+              "External site",
+              "<code>&lt;a href=\"https://developer.mozilla.org\"&gt;MDN&lt;/a&gt;</code>"
             ],
             [
-              "`title`",
-              "Displays tooltip text on hover",
-              "`<a title='Learn more'>`"
+              "Same-page section",
+              "<code>&lt;a href=\"#faq\"&gt;Jump to FAQ&lt;/a&gt;</code>"
             ],
             [
-              "`download`",
-              "Forces file download instead of opening",
-              "`<a href='file.pdf' download>`"
+              "Email link",
+              "<code>&lt;a href=\"mailto:team@example.com\"&gt;Email us&lt;/a&gt;</code>"
             ],
             [
-              "`rel`",
-              "Defines link relationship (security, SEO)",
-              "`<a rel='noopener noreferrer'>`"
+              "Phone link",
+              "<code>&lt;a href=\"tel:+15551234567\"&gt;Call support&lt;/a&gt;</code>"
+            ],
+            [
+              "Download",
+              "<code>&lt;a href=\"/docs/guide.pdf\" download&gt;Download guide&lt;/a&gt;</code>"
             ]
           ],
-          "caption": "Common attributes of the `<a>` tag and their uses."
+          "caption": "One tag, many navigation patterns."
         },
         {
           "type": "text",
-          "text": "<strong>Examples of Usage</strong>\n\n**External link:**\n``<code>html\n&lt;a href=\"https://developer.mozilla.org/\"&gt;MDN Web Docs&lt;/a&gt;\n</code>``\n\n**Internal link:**\n``<code>html\n&lt;a href=\"/about.html\"&gt;About Us&lt;/a&gt;\n</code>``\n\n**Anchor link (within same page):**\n``<code>html\n&lt;a href=\"#contact\"&gt;Go to Contact Section&lt;/a&gt;\n</code>``\n\n**Email link:**\n``<code>html\n&lt;a href=\"mailto:info@example.com\"&gt;Send us an email&lt;/a&gt;\n</code>``\n\n**File download:**\n``<code>html\n&lt;a href=\"/files/report.pdf\" download&gt;Download Report&lt;/a&gt;\n</code>``"
+          "text": "<strong>Security and accessibility essentials</strong>"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<a href=\"https://example.com\" target=\"_blank\" rel=\"noopener noreferrer\">\n  Open docs in new tab\n</a>"
         },
         {
           "type": "text",
-          "text": "<strong>Accessibility and Best Practices</strong>\n\n- Always use **descriptive link text** (e.g., 'Read our Privacy Policy' instead of 'Click here').\n- Avoid nesting block-level elements inside <code>&lt;a&gt;</code> unless necessary (HTML5 allows limited use for accessibility).\n- Use the `rel` attribute (like `noopener noreferrer`) when opening links in new tabs to prevent security risks.\n- For navigation menus, combine <code>&lt;a&gt;</code> with semantic containers like <code>&lt;nav&gt;</code> for better structure and screen reader support."
+          "text": "<ul><li>Use descriptive text like <code>Read pricing details</code>, not <code>Click here</code>.</li><li>When using <code>target=\"_blank\"</code>, add <code>rel=\"noopener noreferrer\"</code>.</li><li>Use <code>&lt;a&gt;</code> for navigation and <code>&lt;button&gt;</code> for in-page actions.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Visual Behavior</strong>\n\nBy default, browsers style hyperlinks as **blue and underlined** when unvisited, **purple** when visited, and **red** when active. These colors can be customized using CSS (e.g., `a { color: #007bff; text-decoration: none; }`)."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>&lt;a&gt;</code> is a route sign. <code>href</code> is the destination address. No address means no navigation."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>&lt;a&gt;</code> as a **bridge** between destinations. The `href` attribute is the address of where that bridge leads. Without it, the link is just text — but with it, it becomes a doorway to another page, file, or even a specific section of the same document."
+          "text": "<strong>Summary</strong><br><ul><li><code>&lt;a&gt;</code> is for navigation.</li><li><code>href</code> defines destination.</li><li>Good link text and secure new-tab usage make links professional and accessible.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nThe <code>&lt;a&gt;</code> tag defines hyperlinks that enable navigation across the web. It is one of the core building blocks of HTML that transforms static pages into a connected web of resources. Using attributes like `href`, `target`, and `rel`, developers can control how and where users navigate while maintaining accessibility, security, and usability."
+          "text": "<strong>Practical scenario</strong><br>In a dashboard sidebar, each menu item should be an anchor to support navigation semantics, open-in-new-tab behavior, and browser history correctly.<br><br><strong>Common pitfalls</strong><br><ul><li>Using fake links (<code>href=\"#\"</code>) for button-like actions.</li><li>Missing <code>rel</code> with <code>target=\"_blank\"</code>.</li><li>Non-descriptive labels that hurt screen reader users.</li></ul>"
         }
       ]
     },
@@ -1006,7 +992,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-03-08"
   },
   {
     "id": "html-href-attribute",

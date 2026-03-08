@@ -167,6 +167,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   showStuckNudge = computed(() => {
     if (!this.assistFlags.stuckDetector) return false;
     if (this.interviewModeEnabled()) return false;
+    if (!this.hasRunTests()) return false;
     const state = this.stuckState();
     if (!state) return false;
     if (state.level < this.stuckNudgeMinLevel()) return false;

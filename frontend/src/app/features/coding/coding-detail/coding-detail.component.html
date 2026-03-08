@@ -65,10 +65,24 @@
               <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
 
-            <section class="quick-win-next" *ngIf="quickWinActive()" data-testid="quick-win-next-step">
-              <p class="quick-win-next__kicker">Quick-win path</p>
+            <section class="quick-win-strip" *ngIf="quickWinShowCompact()" data-testid="quick-win-step-strip">
+              <p class="quick-win-strip__kicker">Quick-win mode</p>
+              <p class="quick-win-strip__title">Step 1 of 2: solve this question first.</p>
+            </section>
+
+            <section class="quick-win-next" *ngIf="quickWinShowExpanded()" data-testid="quick-win-next-step">
+              <div class="quick-win-next__head">
+                <p class="quick-win-next__kicker">Quick-win path</p>
+                <button
+                  type="button"
+                  class="quick-win-next__dismiss"
+                  aria-label="Dismiss quick-win next steps for this session"
+                  (click)="dismissQuickWinNextStep($event)">
+                  <i class="pi pi-times" aria-hidden="true"></i>
+                </button>
+              </div>
               <p class="quick-win-next__title">
-                {{ quickWinCompleted() ? 'Great start. Keep the momentum.' : 'Good start. Next: one explanation check.' }}
+                {{ quickWinCompleted() ? 'Great start. Next: one explanation check.' : 'Nice progress. Pick your next move.' }}
               </p>
               <p class="quick-win-next__copy">
                 Move to one high-importance trivia prompt, or switch to a guided multi-day track.
@@ -233,17 +247,17 @@
                 <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
                   [routerLink]="['/guides/interview-blueprint/coding-interviews']">
                   <span class="truncate">Shipping Code Under Pressure</span>
-                  <span class="text-yellow-300 text-sm ml-4">Playbook</span>
+                  <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
                 </a>
                 <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
                   [routerLink]="['/guides/interview-blueprint/javascript-interviews']">
                   <span class="truncate">JavaScript Problems That Actually Show Up</span>
-                  <span class="text-yellow-300 text-sm ml-4">Playbook</span>
+                  <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
                 </a>
                 <a class="flex items-center justify-between px-4 py-3 hover:bg-white/5"
                   [routerLink]="['/guides/interview-blueprint/ui-interviews']">
                   <span class="truncate">Build Great UI in 60 Minutes</span>
-                  <span class="text-yellow-300 text-sm ml-4">Playbook</span>
+                  <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
                 </a>
               </div>
             </section>

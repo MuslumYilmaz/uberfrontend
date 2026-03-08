@@ -270,12 +270,19 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private ahaFirstTestRunTracked = false;
   private ahaFirstPassTracked = false;
   quickWinActive = signal(false);
+  quickWinEngaged = signal(false);
   quickWinCompleted = signal(false);
+  quickWinShowCompact = computed(() => this.quickWinActive() && !this.quickWinEngaged());
+  quickWinShowExpanded = computed(
+    () => this.quickWinActive() && this.quickWinEngaged() && !this.quickWinNextDismissed(),
+  );
   private quickWinStartedTracked = false;
   private quickWinCompletedTracked = false;
   private quickWinQuestionId: string | null = null;
+  quickWinNextDismissed = signal(false);
   private prepAnalyticsSessionId = 'ssr';
   private readonly prepAnalyticsSessionKey = 'fa:prep:session-id:v1';
+  private readonly quickWinNextDismissedKey = 'fa:coding:quick-win-next-dismissed:v1';
 
   // Practice session
   private practice: PracticeSession = null;
@@ -705,6 +712,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // ---------- init ----------
   ngOnInit() {
     this.prepAnalyticsSessionId = this.resolvePrepAnalyticsSessionId();
+    this.quickWinNextDismissed.set(this.readQuickWinNextDismissed());
     this.route.queryParamMap
       .pipe(takeUntil(this.destroy$), filter(() => !this.questionId))
       .subscribe(() => this.syncQuickWinContextFromRoute());
@@ -1262,6 +1270,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.loadState.set('loaded');
     this.challengeSource = this.readChallengeSource();
     this.syncQuickWinContextFromRoute();
+    if (this.quickWinActive() && this.quickWinQuestionId !== q.id) {
+      this.quickWinStartedTracked = false;
+      this.quickWinCompletedTracked = false;
+      this.quickWinEngaged.set(false);
+      this.quickWinCompleted.set(false);
+      this.quickWinQuestionId = null;
+    }
     this.trackQuickWinStarted(q.id);
     this.ahaFirstTestRunTracked = false;
     this.ahaFirstPassTracked = false;
@@ -1507,6 +1522,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!q) return;
 
     if (this.isFrameworkTech() || this.isWebTech()) return;
+    this.markQuickWinEngaged('run_tests');
 
     // Plain JS/TS -> delegate to child panel
     this.subTab.set('console');
@@ -1550,6 +1566,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     const q = this.question();
     if (!q) return;
+    this.markQuickWinEngaged('submit');
 
     // Toggle off if already completed
     if (this.solved()) {
@@ -1671,11 +1688,34 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     this.quickWinActive.set(active);
     if (!active) {
+      this.quickWinEngaged.set(false);
       this.quickWinCompleted.set(false);
       this.quickWinStartedTracked = false;
       this.quickWinCompletedTracked = false;
       this.quickWinQuestionId = null;
     }
+  }
+
+  dismissQuickWinNextStep(event?: Event): void {
+    event?.stopPropagation();
+    this.quickWinNextDismissed.set(true);
+    this.persistQuickWinNextDismissed(true);
+  }
+
+  private markQuickWinEngaged(via: 'run_tests' | 'submit' | 'reveal_solution'): void {
+    if (!this.quickWinActive() || this.quickWinEngaged()) return;
+    this.quickWinEngaged.set(true);
+    this.analytics.track('quick_win_progressed', {
+      surface: 'coding_detail',
+      selected_intent: 'solve_now',
+      is_logged_in: this.auth.isLoggedIn(),
+      entry_route: '/dashboard',
+      session_id: this.prepAnalyticsSessionId,
+      question_id: this.quickWinQuestionId,
+      via,
+      tech: this.tech,
+      kind: this.kind,
+    });
   }
 
   private trackQuickWinStarted(questionId: string): void {
@@ -1759,6 +1799,25 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return next;
     } catch {
       return 'browser';
+    }
+  }
+
+  private readQuickWinNextDismissed(): boolean {
+    if (!this.isBrowser) return false;
+    try {
+      return sessionStorage.getItem(this.quickWinNextDismissedKey) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  private persistQuickWinNextDismissed(value: boolean): void {
+    if (!this.isBrowser) return;
+    try {
+      if (value) sessionStorage.setItem(this.quickWinNextDismissedKey, '1');
+      else sessionStorage.removeItem(this.quickWinNextDismissedKey);
+    } catch {
+      // ignore storage failures
     }
   }
 
@@ -2659,6 +2718,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.showSolutionWarning.set(true);
     } else {
       this.showSolutionWarning.set(false);
+      this.markQuickWinEngaged('reveal_solution');
     }
   }
 
@@ -2666,6 +2726,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   confirmSolutionReveal() {
     this.showSolutionWarning.set(false);
     this.activePanel.set(1); // shows read-only solution panel
+    this.markQuickWinEngaged('reveal_solution');
   }
 
   // Keep a dedicated overwrite action

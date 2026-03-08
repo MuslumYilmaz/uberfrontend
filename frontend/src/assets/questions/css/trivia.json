@@ -5,7 +5,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 2,
-    "description": "CSS stands for Cascading Style Sheets. It controls the visual presentation of HTML, including layout, spacing, colors, typography, and responsive behavior across devices and screen sizes. In practice, CSS decisions affect accessibility and performance, so test layout and contrast across breakpoints.",
+    "description": "CSS stands for Cascading Style Sheets. HTML gives structure; CSS controls presentation like layout, spacing, color, and typography. The cascading part decides which rule wins when multiple rules target the same element (specificity, source order, and importance).",
     "seo": {
       "title": "What Does CSS Stand For? Cascading Style Sheets Explained",
       "description": "Learn what CSS stands for, why the cascade matters, and how style sheets control layout, colors, typography, and responsive behavior across web pages."
@@ -14,58 +14,58 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>CSS stands for <strong>Cascading Style Sheets</strong>. It defines how HTML elements are displayed on screen, paper, or other media. The term 'cascading' refers to the priority order in which multiple styles are applied — meaning styles can override one another based on specificity and source order."
+          "text": "<strong>Short answer</strong><br><br>CSS means <strong>Cascading Style Sheets</strong>. Think of HTML as the structure and content, and CSS as the visual system that makes it readable, branded, and responsive."
         },
         {
           "type": "list",
           "columns": [
-            "Keyword",
-            "Meaning"
+            "Word",
+            "What it means in practice"
           ],
           "rows": [
             [
               "<strong>Cascading</strong>",
-              "Styles follow a hierarchy where later or more specific rules override earlier ones."
+              "If two rules conflict, the browser picks the winner using specificity + source order (+ !important when present)."
             ],
             [
               "<strong>Style</strong>",
-              "Defines how content appears — including color, font, spacing, and layout."
+              "Defines appearance: color, spacing, typography, layout, animation."
             ],
             [
               "<strong>Sheets</strong>",
-              "Refers to the documents (files or blocks) containing these styling rules."
+              "Rules usually live in reusable .css files, not inline everywhere."
             ]
           ],
-          "caption": "Understanding each word in 'Cascading Style Sheets'"
+          "caption": "Why the full name matters, not just the acronym."
         },
         {
           "type": "text",
-          "text": "<strong>Example: Applying CSS to a Page</strong>"
+          "text": "<strong>Example: what cascade actually means</strong>"
         },
         {
           "type": "code",
           "language": "css",
-          "code": "body {\n  background-color: #f0f0f0;\n  font-family: Arial, sans-serif;\n}\nh1 {\n  color: darkblue;\n  text-align: center;\n}"
+          "code": "p { color: #444; }\n.article p { color: #1d4ed8; }\np { color: #111; }\n\n/* <p> inside .article will be blue (#1d4ed8)\n   because .article p is more specific. */"
         },
         {
           "type": "text",
-          "text": "In this example, CSS styles define the background color, text font, and heading color and alignment — changing the presentation without altering HTML content."
+          "text": "This is why CSS is not just paint. Good CSS is about predictable rule systems, not random overrides."
         },
         {
           "type": "text",
-          "text": "<strong>Why CSS Matters</strong><br><ul><li>Separates content (HTML) from design, improving maintainability.</li><li>Enables consistent styling across multiple pages.</li><li>Supports responsive designs for different devices and screen sizes.</li><li>Allows animations, transitions, and visual effects.</li></ul>"
+          "text": "<strong>Why this matters for interviews and real work</strong><br><ul><li>You can debug style bugs quickly by reasoning about selector specificity.</li><li>You can scale styles by using tokens/classes instead of one-off inline rules.</li><li>You can ship consistent UI across pages and breakpoints.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of CSS as the <em>fashion designer</em> of your webpage — HTML is the structure, and CSS dresses it up beautifully."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Imagine your UI has multiple stylists giving instructions. CSS cascade is the rulebook deciding whose instruction the browser follows."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>CSS = Cascading Style Sheets.</li><li>Controls the presentation and layout of web pages.</li><li>Uses rules made of selectors and declarations.</li><li>Provides flexibility, consistency, and separation between content and design.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>CSS = Cascading Style Sheets.</li><li>It controls presentation, not content structure.</li><li>The cascade is the key mental model for debugging and maintainability.</li><li>If you can explain why a rule wins, you understand CSS at a practical level.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Designing a marketing landing page, you use CSS to separate content (HTML) from presentation, add responsive layout rules, and keep typography consistent across sections.<br><br><strong>Common pitfalls</strong><br><ul><li>Sprinkling inline styles everywhere, which makes maintenance and reuse harder.</li><li>Letting specificity conflicts creep in (later overrides that are hard to trace).</li><li>Forgetting box sizing or base styles, causing inconsistent spacing.</li></ul><strong>Trade-off or test tip</strong><br>External stylesheets improve caching and reuse, but can cause FOUC if loaded late. Test with throttled network and check computed styles in DevTools."
+          "text": "<strong>Practical scenario</strong><br>You receive a bug: button color is wrong only in cards. You inspect selectors and find a more specific card rule overriding your base button class.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>!important</code> as a first reaction.</li><li>Stacking deeply nested selectors that are hard to reason about.</li><li>Mixing inline styles with class-based systems.</li></ul><strong>Trade-off or test tip</strong><br>Prefer predictable class + token systems. In DevTools, check the Styles panel to see exactly which rule wins and why."
         }
       ]
     },
@@ -78,7 +78,7 @@
       "styles",
       "html"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-03-08"
   },
   {
     "id": "css-link-html",
@@ -86,7 +86,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Link an external CSS file with &lt;link rel=\"stylesheet\" href=\"...\"&gt; inside the HTML &lt;head&gt;. This loads the stylesheet and applies styles globally across the page. Loading CSS early avoids FOUC and improves perceived performance. Test with throttled network and verify caching.",
+    "description": "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content and gives the browser CSS before first paint.",
     "seo": {
       "title": "How to Link CSS to HTML: link rel=\"stylesheet\" Guide",
       "description": "See the correct way to attach an external CSS file in the HTML head, avoid common path mistakes, and improve first render by loading stylesheets early."
@@ -95,66 +95,59 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The most common way to apply CSS to a webpage is by linking an external stylesheet using the &lt;link&gt; tag. This tag connects your HTML document to a .css file, allowing the browser to load styles before rendering the page."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Syntax</strong><br><br>The &lt;link&gt; tag must be placed inside the &lt;head&gt; section and typically includes three attributes: <code>rel</code>, <code>href</code>, and <code>type</code>."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Attribute",
-            "Purpose",
-            "Example"
-          ],
-          "rows": [
-            [
-              "<code>rel</code>",
-              "Specifies the relationship — usually 'stylesheet'.",
-              "<code>rel=\"stylesheet\"</code>"
-            ],
-            [
-              "<code>href</code>",
-              "Specifies the path or URL to the CSS file.",
-              "<code>href=\"styles.css\"</code>"
-            ],
-            [
-              "<code>type</code>",
-              "Specifies the file type — optional in HTML5.",
-              "<code>type=\"text/css\"</code>"
-            ]
-          ],
-          "caption": "Attributes used in the <link> tag"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example</strong>"
+          "text": "<strong>Direct answer</strong><br><br>Use a <code>&lt;link&gt;</code> tag in the <code>&lt;head&gt;</code> of your HTML file:"
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <title>My Styled Page</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n  </head>\n  <body>\n    <h1>Welcome!</h1>\n  </body>\n</html>"
+          "code": "<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <link rel=\"stylesheet\" href=\"styles.css\">\n</head>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Part",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "<code>rel=\"stylesheet\"</code>",
+              "Tells the browser this file is CSS."
+            ],
+            [
+              "<code>href=\"styles.css\"</code>",
+              "Path to your stylesheet (relative or absolute)."
+            ],
+            [
+              "Placed in <code>&lt;head&gt;</code>",
+              "Lets styles load before visible content paints."
+            ]
+          ],
+          "caption": "Three things that must be correct."
         },
         {
           "type": "text",
-          "text": "Here, <code>styles.css</code> is an external file that defines how elements like &lt;h1&gt; should appear."
+          "text": "<strong>Path examples</strong>"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- same folder -->\n<link rel=\"stylesheet\" href=\"styles.css\">\n\n<!-- inside /assets/css -->\n<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n\n<!-- root-relative -->\n<link rel=\"stylesheet\" href=\"/css/main.css\">"
         },
         {
           "type": "text",
-          "text": "<strong>Advantages of External CSS</strong><br><ul><li>Improves maintainability by separating design from structure.</li><li>Reduces file size and increases loading efficiency through caching.</li><li>Allows global changes across multiple HTML files with one edit.</li><li>Supports reusability and scalability in large projects.</li></ul>"
+          "text": "<strong>Fast debugging checklist</strong><br><ul><li>Open DevTools Network tab and confirm the CSS file returns 200 (not 404).</li><li>Verify the path is correct for the current HTML location.</li><li>Hard refresh if caching hides a recent change.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the &lt;link&gt; tag as giving your HTML a <em>fashion consultant</em> — it points to a file that tells the page how to dress up."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>The <code>&lt;link&gt;</code> tag is your page's style import line. Without it, HTML renders with browser defaults."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use &lt;link rel=\"stylesheet\" href=\"file.css\"&gt; inside &lt;head&gt;.</li><li>The browser downloads and applies the stylesheet automatically.</li><li>External CSS promotes modular and clean code.</li><li>Always ensure the correct path to the CSS file.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Use <code>&lt;link rel=\"stylesheet\" href=\"...\"&gt;</code> in <code>&lt;head&gt;</code>.</li><li>Correct path + early loading are the two big correctness factors.</li><li>External stylesheets improve reuse and caching across pages.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>You move styles into a shared stylesheet so multiple pages share the same design and cache benefits.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting <code>rel=\"stylesheet\"</code> so the file is ignored.</li><li>Using the wrong path and silently failing to load.</li><li>Placing the link too late, causing a flash of unstyled content.</li></ul><strong>Trade-off or test tip</strong><br>External CSS helps caching, but can delay first paint. Test with network throttling and confirm the stylesheet is loaded early."
+          "text": "<strong>Practical scenario</strong><br>You split a prototype into multiple pages and move shared styles into one stylesheet so all screens stay consistent.<br><br><strong>Common pitfalls</strong><br><ul><li>Wrong relative path after moving files.</li><li>Forgetting <code>rel=\"stylesheet\"</code>.</li><li>Linking CSS too late and causing FOUC.</li></ul><strong>Trade-off or test tip</strong><br>One large CSS file is simpler but heavier upfront; route-level CSS can improve first paint but adds build complexity."
         }
       ]
     },
@@ -167,7 +160,7 @@
       "external-stylesheet",
       "head"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-03-08"
   },
   {
     "id": "css-inline-internal-external",
@@ -394,7 +387,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 2,
-    "description": "The color property in CSS controls the color of text content. It affects inline text and can be defined using various color formats such as names, hexadecimal, RGB, RGBA, or HSL. It is one of the most widely used CSS properties for visual styling. Text color must meet contrast ratios and theming needs. Test with different backgrounds and user zoom.",
+    "description": "Use the CSS color property to set text (foreground) color. It supports named colors, hex, rgb/rgba, hsl/hsla, and currentColor. In practice, the key is readable contrast against the background.",
     "seo": {
       "title": "CSS Text Color Property: How to Use color Correctly",
       "description": "Understand how the CSS color property changes text color, which formats to use, and how to maintain accessible contrast across themes and backgrounds."
@@ -403,85 +396,68 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>color</code> property determines the text color for an element. It applies to all textual content inside that element, including paragraphs, headings, and links. You can define the color in several ways, using keywords or numeric color models for precision."
+          "text": "<strong>Direct answer</strong><br><br>The property is <code>color</code>."
+        },
+        {
+          "type": "code",
+          "language": "css",
+          "code": "h1 {\n  color: #1d4ed8;\n}\n\np {\n  color: rgb(31, 41, 55);\n}"
         },
         {
           "type": "list",
           "columns": [
             "Format",
             "Example",
-            "Description"
+            "When teams usually use it"
           ],
           "rows": [
             [
-              "Named Colors",
-              "color: red;",
-              "Uses predefined names such as 'black', 'gray', 'coral', or 'gold'."
+              "Hex",
+              "<code>color: #0f172a;</code>",
+              "Design tokens and handoff specs."
             ],
             [
-              "Hexadecimal",
-              "color: #00ff7f;",
-              "Specifies red, green, and blue in hexadecimal notation."
+              "RGB/RGBA",
+              "<code>color: rgba(15, 23, 42, 0.85);</code>",
+              "When opacity control is needed."
             ],
             [
-              "RGB",
-              "color: rgb(255, 165, 0);",
-              "Defines red, green, and blue values between 0–255."
+              "HSL/HSLA",
+              "<code>color: hsl(222 47% 11%);</code>",
+              "Theme tuning with hue/lightness."
             ],
             [
-              "RGBA",
-              "color: rgba(255, 0, 0, 0.7);",
-              "Adds transparency through an alpha channel."
-            ],
-            [
-              "HSL",
-              "color: hsl(0, 100%, 50%);",
-              "Specifies hue, saturation, and lightness for more intuitive color control."
+              "currentColor",
+              "<code>border-color: currentColor;</code>",
+              "Keep icon/border aligned with text color."
             ]
           ],
-          "caption": "Different color formats supported by the color property"
+          "caption": "Same property, different value styles."
         },
         {
           "type": "text",
-          "text": "<strong>Example: Setting the Text Color Globally</strong>"
+          "text": "<strong>Accessibility-first example</strong>"
         },
         {
           "type": "code",
           "language": "css",
-          "code": "body {\n  color: #333333;\n  background-color: #f8f8f8;\n}"
+          "code": ":root {\n  --text-primary: #111827;\n  --surface: #ffffff;\n}\n\n.card {\n  background: var(--surface);\n  color: var(--text-primary);\n}"
         },
         {
           "type": "text",
-          "text": "This sets all text on the page to a dark gray tone, improving contrast and readability on a light background."
+          "text": "Pick colors as a pair (text + background), not in isolation. Good contrast is part of correctness, not polish."
         },
         {
           "type": "text",
-          "text": "<strong>Example: Styling Specific Elements</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "h1 {\n  color: royalblue;\n}\np.note {\n  color: rgba(120, 0, 0, 0.8);\n  font-style: italic;\n}"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>If HTML is the content, <code>color</code> is the ink the user reads. Wrong ink/background pairing makes even correct content unusable."
         },
         {
           "type": "text",
-          "text": "Here, the heading appears in royal blue, while paragraphs with class 'note' appear as semi-transparent dark red."
+          "text": "<strong>Summary</strong><br><ul><li>Use <code>color</code> for text/foreground color.</li><li>It supports multiple color formats and inherits down the tree.</li><li>Always validate contrast on real backgrounds and themes.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Maintain proper contrast between text and background colors for accessibility.</li><li>Avoid using pure black (#000) on pure white backgrounds to reduce eye strain.</li><li>Prefer RGBA or HSL for smoother color transitions and modern design systems.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the <code>color</code> property as the <em>ink</em> of your digital page — it decides what shade your text is printed in."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>The <code>color</code> property defines text color for an element.</li><li>Accepts multiple formats: named colors, HEX, RGB(A), and HSL.</li><li>Influences readability, accessibility, and visual hierarchy.</li><li>Should complement background colors for contrast and clarity.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Use color to show error messages and success states in forms.<br><br><strong>Common pitfalls</strong><br><ul><li>Failing contrast ratios for accessibility.</li><li>Forgetting inherited colors in nested elements.</li><li>Using color alone to convey meaning.</li></ul><strong>Trade-off or test tip</strong><br>Use icons or text labels alongside color. Test with contrast tools and color-blind simulators.</strong>"
+          "text": "<strong>Practical scenario</strong><br>You are building form states: default text, helper text, error text, success text. You define semantic token colors and reuse them consistently.<br><br><strong>Common pitfalls</strong><br><ul><li>Using color alone for status (no icon/text label).</li><li>Passing contrast in light mode but failing in dark mode.</li><li>Hard-coding random hex values across components.</li></ul><strong>Trade-off or test tip</strong><br>Design tokens require setup, but they pay off in consistency and theme support."
         }
       ]
     },
@@ -494,7 +470,7 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-03-08"
   },
   {
     "id": "css-center-text",
@@ -1432,81 +1408,64 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 2,
-    "description": "The color property sets the foreground text color of an element (not the background). It accepts named colors, hex, rgb/rgba, hsl/hsla, and currentColor. Color choices must meet accessibility contrast and be tested across themes and backgrounds.",
+    "description": "The purpose of color is to define an element foreground color and the currentColor reference used by related properties. It affects text and other foreground-dependent styles, not the background fill.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>color</code> property controls the text color of an element. It applies to inline content (like text and icons) and can be set using named colors, hexadecimal, RGB, RGBA, HSL, or HSLA values."
+          "text": "<strong>Purpose in one line</strong><br><br><code>color</code> sets foreground color (mainly text) and provides a shared value via <code>currentColor</code>."
         },
         {
           "type": "list",
           "columns": [
-            "Format",
-            "Example",
-            "Description"
+            "Affects",
+            "Does not affect"
           ],
           "rows": [
             [
-              "Named Color",
-              "color: red;",
-              "Human-readable and predefined by CSS (e.g., blue, green, black)."
+              "Text color, inherited foreground styling, <code>currentColor</code> consumers",
+              "Background paint (use <code>background-color</code>)"
             ],
             [
-              "Hexadecimal",
-              "color: #1e3a8a;",
-              "Compact hex codes representing RGB values."
-            ],
-            [
-              "RGB",
-              "color: rgb(30, 58, 138);",
-              "Red, Green, Blue channel definition."
-            ],
-            [
-              "RGBA",
-              "color: rgba(30, 58, 138, 0.8);",
-              "Same as RGB, but with transparency (alpha channel)."
-            ],
-            [
-              "HSL / HSLA",
-              "color: hsl(220, 50%, 40%);",
-              "Hue, Saturation, and Lightness for intuitive color control."
+              "Borders/icons when explicitly set to <code>currentColor</code>",
+              "Layout properties like margin, padding, width"
             ]
           ],
-          "caption": "Common color formats supported by CSS"
+          "caption": "What color controls vs what it does not."
         },
         {
           "type": "text",
-          "text": "<strong>Example: Basic Text Coloring</strong>"
+          "text": "<strong>Example: one source of truth with currentColor</strong>"
         },
         {
           "type": "code",
           "language": "css",
-          "code": "h1 {\n  color: #0ea5e9;\n}\n\np.note {\n  color: rgba(0, 0, 0, 0.7);\n}"
+          "code": ".chip {\n  color: #334155;\n  border: 1px solid currentColor;\n}\n\n.chip svg {\n  fill: currentColor;\n}"
         },
         {
           "type": "text",
-          "text": "This example gives headings a vivid blue color and paragraphs a slightly transparent black tone for softer contrast."
+          "text": "Now text, border, and icon all stay in sync when you change one property (color). This is the practical power of the property."
+        },
+        {
+          "type": "code",
+          "language": "css",
+          "code": ".article { color: #1f2937; }\n.article p {\n  /* inherits #1f2937 automatically */\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Accessibility Considerations</strong><br><ul><li>Ensure sufficient contrast between text color and background for readability.</li><li>Use tools like WCAG contrast checkers to maintain accessibility standards.</li><li>Never rely on color alone to convey meaning (e.g., for errors, also use icons or text).</li></ul>"
+          "text": "Many UI bugs come from mixing foreground and background concerns. If you separate color and background-color cleanly, theming and accessibility become easier."
         },
         {
           "type": "text",
-          "text": "<strong>Advanced Use</strong><br>You can define custom color variables with CSS custom properties:<br><code>:root { --brand-color: #0ea5e9; }</code><br><code>h1 { color: var(--brand-color); }</code><br>This allows centralized theme management across large projects."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>color</code> as your component foreground theme knob. Turn it once, and every part using <code>currentColor</code> follows."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>The <code>color</code> property is simply your text’s paintbrush — pick any hue, opacity, or tone to match your design’s mood."
+          "text": "<strong>Summary</strong><br><ul><li><code>color</code> is for foreground/text, not background.</li><li>It inherits, which reduces repetitive CSS.</li><li><code>currentColor</code> lets borders/icons stay aligned with text.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>color</code> changes text color and inline content color.</li><li>Supports various color models (Hex, RGB, HSL, etc.).</li><li>Vital for design consistency and accessibility.</li><li>Combine with <code>background-color</code> for complete visual control.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Display success/error messages where text color conveys status and must remain readable on different backgrounds.<br><br><strong>Common pitfalls</strong><br><ul><li>Low contrast ratios that fail accessibility guidelines.</li><li>Forgetting inherited color can affect nested elements unexpectedly.</li><li>Hard-coding colors instead of using design tokens.</li></ul><strong>Trade-off or test tip</strong><br>Semantic colors aid UX but must pass contrast checks. Test with a contrast checker and in dark mode themes."
+          "text": "<strong>Practical scenario</strong><br>You build a button system where icon and label must always match in all states (default/hover/disabled). Using <code>currentColor</code> avoids duplicated color declarations.<br><br><strong>Common pitfalls</strong><br><ul><li>Changing text color but forgetting icon/border colors.</li><li>Using very low-contrast foreground colors on tinted backgrounds.</li><li>Treating <code>color</code> and <code>background-color</code> as interchangeable.</li></ul><strong>Trade-off or test tip</strong><br><code>currentColor</code> simplifies maintenance, but only if your team consistently uses it in component CSS."
         }
       ]
     },
@@ -1519,7 +1478,7 @@
       "text",
       "values"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "CSS color Property: Text Color Values and Best Practices",
       "description": "See what the color property controls, which value formats are valid, and how to choose accessible text colors that work across themes and backgrounds."

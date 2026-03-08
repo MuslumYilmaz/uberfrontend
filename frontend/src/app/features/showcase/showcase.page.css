@@ -713,10 +713,6 @@
   height: auto;
 }
 
-:host ::ng-deep .system-frame .sdl-right {
-  display: none !important;
-}
-
 :host ::ng-deep .system-frame .sdl-center {
   margin: 0;
   height: 100%;
@@ -730,7 +726,8 @@
 
 :host ::ng-deep .system-frame .sdl-center,
 :host ::ng-deep .system-frame .sdl-main,
-:host ::ng-deep .system-frame .sdl-left {
+:host ::ng-deep .system-frame .sdl-left,
+:host ::ng-deep .system-frame .sdl-right {
   overflow: hidden !important;
 }
 

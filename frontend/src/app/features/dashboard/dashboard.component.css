@@ -1235,7 +1235,7 @@
   border: 1px solid color-mix(in srgb, var(--fa-accent) 42%, var(--fa-border-subtle));
   background: color-mix(in srgb, var(--fa-surface) 95%, var(--fa-surface-alt));
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34);
-  padding: 12px 12px 11px;
+  padding: 12px 40px 11px 12px;
   display: grid;
   gap: 7px;
 }
@@ -1268,15 +1268,32 @@
 
 .prep-launcher__bubble-close {
   position: absolute;
-  margin-left: auto;
-  justify-self: end;
-  margin-top: -2px;
-  border: 0;
-  background: transparent;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(var(--fa-text-rgb), 0.08);
   color: var(--fa-text-muted);
-  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
   line-height: 1;
   cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+
+.prep-launcher__bubble-close:hover {
+  color: var(--fa-text);
+  border-color: color-mix(in srgb, var(--fa-accent) 45%, var(--fa-border-subtle));
+  background: color-mix(in srgb, var(--fa-accent) 14%, var(--fa-surface));
+}
+
+.prep-launcher__bubble-close:focus-visible {
+  outline: none;
+  box-shadow: var(--fa-focus-ring);
 }
 
 .prep-launcher-modal {

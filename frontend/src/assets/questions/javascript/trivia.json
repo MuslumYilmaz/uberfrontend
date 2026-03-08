@@ -337,7 +337,7 @@
   {
     "id": "js-hoisting-tdz",
     "title": "Explain Hoisting and the Temporal Dead Zone (TDZ)",
-    "description": "During the creation phase, JavaScript moves declarations to the top of their scope (hoisting). However, variables declared with `let` and `const` exist in a 'temporal dead zone' until their declaration is reached, making them inaccessible before initialization.",
+    "description": "Hoisting means declarations are processed before execution. TDZ means let/const exist but cannot be accessed before their declaration line, which throws ReferenceError.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -353,87 +353,68 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore JavaScript executes any code, it first scans your script to find all variable and function declarations. It sets up memory for them in a process called <strong>hoisting</strong>. But — not all declarations behave the same way."
+          "text": "<strong>Core idea</strong><br><br>JavaScript has a setup phase before running lines of code. In that phase, declarations are registered (hoisting). For <code>let</code>/<code>const</code>, access is blocked until declaration is reached. That blocked window is the <strong>Temporal Dead Zone (TDZ)</strong>."
         },
         {
           "type": "list",
           "columns": [
-            "Declaration Type",
-            "Hoisted?",
-            "Initialized Before Declaration?",
-            "Example"
+            "Declaration",
+            "Before declaration read",
+            "Why"
           ],
           "rows": [
             [
-              "<code>var</code>",
-              "Yes",
-              "✅ Initialized to <code>undefined</code>",
-              "<code>console.log(a); var a = 5;</code> → undefined"
+              "<code>var a</code>",
+              "<code>undefined</code>",
+              "Hoisted and initialized with undefined."
             ],
             [
-              "<code>let</code>",
-              "Yes",
-              "❌ In TDZ (no access before declaration)",
-              "<code>console.log(b); let b = 5;</code> → ReferenceError"
+              "<code>let b</code>",
+              "ReferenceError",
+              "Hoisted but uninitialized (TDZ)."
             ],
             [
-              "<code>const</code>",
-              "Yes",
-              "❌ In TDZ (must be initialized immediately)",
-              "<code>const c = 10;</code>"
-            ],
-            [
-              "<code>function</code>",
-              "Yes (fully hoisted)",
-              "✅ Can be called before definition",
-              "<code>foo(); function foo() {}</code>"
+              "<code>const c</code>",
+              "ReferenceError",
+              "Same TDZ rule; also must be initialized at declaration."
             ]
           ],
-          "caption": "How different declarations behave during hoisting."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-up-long'></i> <strong>What is Hoisting?</strong>\n\nHoisting means declarations are <strong>moved to the top of their scope</strong> before code runs. This doesn’t mean your code is literally moved — it’s just how JavaScript’s memory setup works during the 'creation phase' of execution."
+          "caption": "Behavior difference that causes most interview bugs."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example 1: var is hoisted\nconsole.log(name); // undefined\nvar name = 'Alice';\n// JS internally treats it like:\n// var name;\n// console.log(name);\n// name = 'Alice';"
+          "code": "console.log(a); // undefined\nvar a = 1;\n\nconsole.log(b); // ReferenceError\nlet b = 2;"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The Temporal Dead Zone (TDZ)</strong>\n\nFor <code>let</code> and <code>const</code>, the variable exists but is not initialized yet. The time between the start of the scope and the actual declaration line is called the <strong>temporal dead zone</strong>. Accessing the variable in this zone causes a <code>ReferenceError</code>."
+          "text": "<strong>Function nuance</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example 2: let and TDZ\nconsole.log(age); // ❌ ReferenceError\nlet age = 25;\n\n// In memory:\n// TDZ starts → variable exists but not initialized\n// Declaration reached → initialized to 25"
+          "code": "sayHi(); // works\nfunction sayHi() { console.log('hi'); }\n\nsayBye(); // ReferenceError (TDZ, because const)\nconst sayBye = () => console.log('bye');"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Functions vs Variables</strong>\n\nFunction declarations are hoisted <strong>with their full definition</strong>, so you can call them before they appear. But <strong>function expressions</strong> (especially with <code>let</code> or <code>const</code>) behave like normal variables."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// Example 3: function vs expression\nsayHi(); // ✅ Works\nfunction sayHi() { console.log('Hi!'); }\n\nsayHello(); // ❌ ReferenceError\nconst sayHello = function() { console.log('Hello!'); };"
+          "text": "<strong>Debugging rule of thumb</strong><br>If you see <code>ReferenceError: Cannot access X before initialization</code>, think TDZ first, not typo first."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Thinking <code>let</code> or <code>const</code> aren’t hoisted (they are — just uninitialized).  \n- Forgetting that accessing them early throws an error, not <code>undefined</code>.  \n- Mixing function declarations and expressions in confusing ways."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Hoisting books a variable in advance. TDZ is the \"do not enter yet\" sign until execution reaches that line."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript hoists all declarations before execution.  \n- <code>var</code> → initialized as <code>undefined</code>.  \n- <code>let</code> / <code>const</code> → uninitialized, causing a TDZ.  \n- <code>function</code> declarations → fully hoisted and callable early.  \n- Avoid referencing variables before their declaration line."
+          "text": "<strong>Summary</strong><br><ul><li>Hoisting happens before execution.</li><li><code>var</code> reads as undefined before assignment.</li><li><code>let</code>/<code>const</code> throw before declaration because of TDZ.</li><li>Function declarations are callable early; function expressions follow variable rules.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a classroom roll call 📋. The teacher knows all students’ names at the start (hoisting), but only after they say 'here' (initialization) can they answer questions. Until then, they’re in the **temporal dead zone**!"
+          "text": "<strong>Interview tip</strong><br>A high-signal answer is: \"All are hoisted, but initialization differs. TDZ is why let/const fail before declaration.\""
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "What is hoisting and TDZ in JavaScript?",
       "description": "Hoisting moves declarations to the top of scope conceptually, while the TDZ blocks access to let and const before initialization."
@@ -442,7 +423,7 @@
   {
     "id": "js-var-let-const-hoisting",
     "title": "Explain the difference in hoisting between `var`, `let`, and `const`",
-    "description": "All variable declarations are hoisted, but only `var` is initialized with `undefined`. Variables declared with `let` and `const` exist in the temporal dead zone until execution reaches their declaration, making them inaccessible beforehand.",
+    "description": "var, let, and const are all hoisted, but they differ in initialization and access-before-declaration behavior. var initializes to undefined; let/const stay in TDZ until declaration executes.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -462,76 +443,76 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAll variable declarations are **hoisted** — meaning they’re recognized by JavaScript before execution. However, only <code>var</code> is **initialized** immediately with <code>undefined</code>. <code>let</code> and <code>const</code> are hoisted too, but they stay in the **temporal dead zone (TDZ)** until the actual declaration line."
+          "text": "<strong>Comparison answer</strong><br><br>All three are hoisted. The real difference is what happens before declaration is reached."
         },
         {
           "type": "list",
           "columns": [
             "Keyword",
-            "Hoisted?",
-            "Initialized Before Declaration?",
-            "Accessible Before Declaration?",
-            "Reassignable?",
-            "Redeclarable?"
+            "Before declaration access",
+            "Scope",
+            "Redeclare same scope?",
+            "Reassign?"
           ],
           "rows": [
             [
               "<code>var</code>",
-              "✅ Yes",
-              "✅ Initialized to <code>undefined</code>",
-              "✅ Yes (but value = undefined)",
-              "✅ Yes",
-              "✅ Yes"
+              "<code>undefined</code>",
+              "Function/global",
+              "Yes",
+              "Yes"
             ],
             [
               "<code>let</code>",
-              "✅ Yes",
-              "❌ Not initialized (TDZ)",
-              "❌ No — ReferenceError",
-              "✅ Yes",
-              "❌ No"
+              "ReferenceError (TDZ)",
+              "Block",
+              "No",
+              "Yes"
             ],
             [
               "<code>const</code>",
-              "✅ Yes",
-              "❌ Not initialized (TDZ)",
-              "❌ No — ReferenceError",
-              "❌ No (must initialize immediately)",
-              "❌ No"
+              "ReferenceError (TDZ)",
+              "Block",
+              "No",
+              "No"
             ]
           ],
-          "caption": "Hoisting and accessibility differences between var, let, and const."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-up-long'></i> <strong>How It Works Under the Hood</strong>\n\nWhen the JavaScript engine creates an execution context, it allocates memory for all declared variables:\n- <code>var</code> is assigned <code>undefined</code> immediately.\n- <code>let</code> and <code>const</code> are known but remain uninitialized until their declaration line is reached."
+          "caption": "Cheat sheet interviewers expect you to know cold."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example 1: var\nconsole.log(a); // undefined\nvar a = 10;\n\n// Example 2: let\nconsole.log(b); // ❌ ReferenceError (TDZ)\nlet b = 10;\n\n// Example 3: const\nconsole.log(c); // ❌ ReferenceError (TDZ)\nconst c = 10;"
+          "code": "console.log(x); // undefined\nvar x = 10;\n\nconsole.log(y); // ReferenceError\nlet y = 10;\n\nconsole.log(z); // ReferenceError\nconst z = 10;"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The Temporal Dead Zone (TDZ)</strong>\n\nThe TDZ is the time between entering a scope and the moment a <code>let</code> or <code>const</code> variable is declared. Accessing it during this period throws a <code>ReferenceError</code>. It helps prevent using variables before they're safely initialized."
+          "text": "<strong>Why this matters in production code</strong>"
+        },
+        {
+          "type": "text",
+          "text": "<ul><li><code>let</code>/<code>const</code> reduce accidental early-use bugs.</li><li>Block scope makes loops/conditionals safer.</li><li><code>const</code> communicates intent (binding should not change).</li></ul>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "{\n  // TDZ starts\n  console.log(x); // ❌ ReferenceError\n  let x = 5; // TDZ ends here\n  console.log(x); // ✅ 5\n}"
+          "code": "for (let i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}\n// 0 1 2 (expected)\n\nfor (var j = 0; j < 3; j++) {\n  setTimeout(() => console.log(j), 0);\n}\n// 3 3 3 (common var trap)"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>All declarations are hoisted</strong>, but initialization differs.\n- <code>var</code> → hoisted + initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> → hoisted but uninitialized (TDZ).\n- Accessing <code>let</code> or <code>const</code> before declaration → <code>ReferenceError</code>.\n- <code>const</code> also requires immediate initialization."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>var</code> gives you a key immediately (value may be empty). <code>let</code>/<code>const</code> reserve the room but keep it locked until you arrive at that line."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re checking into a hotel 🏨. Rooms (<code>var</code>, <code>let</code>, <code>const</code>) are reserved at check-in (hoisting), but only <code>var</code> gets its key immediately. <code>let</code> and <code>const</code> exist but you can’t enter until the receptionist actually hands over the key — that’s the **temporal dead zone**!"
+          "text": "<strong>Summary</strong><br><ul><li>Hoisting is common to all three.</li><li>Initialization behavior is the key difference.</li><li>Modern default: <code>const</code> first, <code>let</code> when reassignment is needed, avoid <code>var</code> in new code.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview-ready one-liner</strong><br>\"They are all hoisted, but only var is initialized early; let/const stay in TDZ and throw on access before declaration.\""
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "var vs let vs const hoisting: what is the difference?",
       "description": "var is hoisted and initialized to undefined, while let and const are hoisted but stay uninitialized in the temporal dead zone."
@@ -669,7 +650,7 @@
   {
     "id": "js-promises-async-await",
     "title": "Promises and async/await",
-    "description": "Promises represent a value that may be available now, later, or never. `async/await` is syntax sugar over Promises that makes asynchronous code look synchronous, while preserving microtask scheduling and error propagation via rejections.",
+    "description": "Promises and async/await solve the same async problem with different syntax. Use them to model async flow, handle errors predictably, and avoid accidental sequential bottlenecks when work can run in parallel.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -688,128 +669,96 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>Promise</strong> is a container for an eventual result: <code>pending → fulfilled</code> (resolved) or <code>pending → rejected</code>. <code>async/await</code> makes working with Promises easier: <code>await</code> pauses within an <code>async</code> function until the Promise settles, then returns the value or throws the rejection."
+          "text": "<strong>Short version</strong><br><br>A Promise represents a future result. <code>async/await</code> is a cleaner way to <em>consume</em> Promises. Same engine behavior, different readability style."
         },
         {
           "type": "list",
           "columns": [
-            "Concept",
-            "What it means",
-            "Example"
+            "Question",
+            "Answer"
           ],
           "rows": [
             [
-              "<strong>Promise states</strong>",
-              "pending → fulfilled / rejected",
-              "<code>new Promise((res, rej) => ...)</code>"
+              "Do async functions return Promises?",
+              "Yes, always."
             ],
             [
-              "<strong>Thenables</strong>",
-              "Anything with <code>.then</code> behaves like a Promise",
-              "Libraries often return thenables"
+              "Does await block the whole app?",
+              "No. It pauses only that async function."
             ],
             [
-              "<strong>Microtasks</strong>",
-              "Promise callbacks (<code>.then/.catch/.finally</code>) run as <em>microtasks</em>",
-              "Run after current stack, before timers"
-            ],
-            [
-              "<strong>async</strong>",
-              "Marks a function that <em>always returns a Promise</em>",
-              "<code>async function f(){ return 1 }</code>"
-            ],
-            [
-              "<strong>await</strong>",
-              "Pauses inside <code>async</code> until the Promise settles",
-              "<code>const data = await fetch(...)</code>"
+              "Does await change event-loop priority?",
+              "No. Promise continuation still resumes as microtasks."
             ]
           ],
-          "caption": "Promises and async/await at a glance."
+          "caption": "Three interview checks people often confuse."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Basic Promise\nfunction getUser(id) {\n  return new Promise((resolve, reject) => {\n    setTimeout(() => resolve({ id, name: 'John' }), 200);\n  });\n}\n\ngetUser(1)\n  .then(u => u.name)\n  .then(name => console.log(name))\n  .catch(err => console.error('Error:', err))\n  .finally(() => console.log('done'));"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// Equivalent with async/await\nasync function main() {\n  try {\n    const u = await getUser(1); // waits for fulfillment\n    console.log(u.name);\n  } catch (err) {\n    console.error('Error:', err); // rejections become throw\n  } finally {\n    console.log('done');\n  }\n}\nmain();"
+          "code": "function fetchUser(id) {\n  return Promise.resolve({ id, name: 'Ada' });\n}\n\n// Promise style\nfetchUser(1)\n  .then(user => user.name)\n  .then(name => console.log(name))\n  .catch(console.error);\n\n// async/await style\nasync function run() {\n  try {\n    const user = await fetchUser(1);\n    console.log(user.name);\n  } catch (err) {\n    console.error(err);\n  }\n}\nrun();"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-people-arrows'></i> <strong>Sequential vs Parallel</strong>\n\nUsing <code>await</code> inside a loop can serialize work unintentionally. Create Promises first, then <code>await Promise.all</code> for parallelism."
+          "text": "<strong>Most important practical rule: avoid accidental serialization</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ❌ Sequential (slow)\nfor (const url of urls) {\n  const res = await fetch(url);\n  results.push(await res.json());\n}\n\n// ✅ Parallel (fast)\nconst promises = urls.map(url => fetch(url).then(r => r.json()));\nconst results = await Promise.all(promises);"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Promise combinators</strong>"
+          "code": "// ❌ Sequential (slow if independent)\nconst a = await fetch('/a').then(r => r.json());\nconst b = await fetch('/b').then(r => r.json());\n\n// ✅ Parallel (faster)\nconst [a2, b2] = await Promise.all([\n  fetch('/a').then(r => r.json()),\n  fetch('/b').then(r => r.json())\n]);"
         },
         {
           "type": "list",
           "columns": [
-            "API",
-            "Settles When",
-            "Behavior"
+            "Need",
+            "Preferred API",
+            "Why"
           ],
           "rows": [
             [
-              "<code>Promise.all([...])</code>",
-              "All fulfill or one rejects",
-              "Fast-fail; rejects on first rejection"
+              "All must succeed",
+              "<code>Promise.all</code>",
+              "Fast-fails on first rejection."
             ],
             [
-              "<code>Promise.allSettled([...])</code>",
-              "All settle",
-              "Never rejects; returns statuses"
+              "Need every outcome",
+              "<code>Promise.allSettled</code>",
+              "Get success+failure results together."
             ],
             [
-              "<code>Promise.race([...])</code>",
-              "First settles",
-              "Adopts winner's state/value"
+              "First success wins",
+              "<code>Promise.any</code>",
+              "Useful for fallback mirrors/CDNs."
             ],
             [
-              "<code>Promise.any([...])</code>",
-              "First fulfillment",
-              "Rejects only if <em>all</em> reject (AggregateError)"
+              "First settled wins",
+              "<code>Promise.race</code>",
+              "Timeout or first-responder patterns."
             ]
           ],
-          "caption": "Choosing the right combinator."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Error handling</strong>\n\nWith Promises, use <code>.catch</code> or the second arg of <code>.then</code>. With <code>async/await</code>, use <code>try/catch</code>. Unhandled rejections can crash Node.js (depending on version) or show as console warnings in browsers."
+          "caption": "Choose combinator by business behavior, not habit."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Handling errors: async/await\nasync function load() {\n  try {\n    const data = await fetch('/api').then(r => {\n      if (!r.ok) throw new Error('HTTP ' + r.status);\n      return r.json();\n    });\n    return data;\n  } catch (e) {\n    // handle or rethrow\n    throw e;\n  }\n}"
+          "code": "// Cancellation pattern with fetch\nconst controller = new AbortController();\n\nconst req = fetch('/search?q=react', { signal: controller.signal });\ncontroller.abort(); // cancel stale request\n\nreq.catch(err => {\n  if (err.name === 'AbortError') return;\n  throw err;\n});"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common pitfalls</strong>\n\n- Forgetting to <code>return</code> inside <code>.then</code> chains → next <code>.then</code> gets <code>undefined</code>.\n- Using <code>await</code> in <code>Array.prototype.forEach</code> (it won’t await). Prefer <code>for...of</code> or <code>Promise.all</code>.\n- Assuming <code>async</code> functions throw synchronously — they return a rejected Promise instead.\n- No built-in cancellation for Promises (use <code>AbortController</code> with <code>fetch</code> or libraries that support cancel)."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// from callback to Promise\nfunction readFileP(path) {\n  const fs = require?.('fs'); // works in Node\n  return new Promise((resolve, reject) => {\n    fs.readFile(path, 'utf8', (err, data) => {\n      if (err) reject(err); else resolve(data);\n    });\n  });\n}"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Promise is the contract for future data. <code>await</code> is just cleaner punctuation when reading that contract."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Promises model eventual results and schedule callbacks as <strong>microtasks</strong>.\n- <code>async/await</code> is Promise syntax sugar: clearer flow, same semantics.\n- Prefer parallel with <code>Promise.all</code>; avoid accidental serialization.\n- Use <code>try/catch</code> (or <code>.catch</code>) and pick the right combinator for your needs."
+          "text": "<strong>Summary</strong><br><ul><li>Promises and async/await are the same async model.</li><li>Use try/catch (or .catch) consistently.</li><li>Parallelize independent work with <code>Promise.all</code>.</li><li>Use cancellation for stale UI requests.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a Promise as an order ticket 🧾: you place the order (create Promise), you’ll be notified when it’s ready (microtask). With <code>await</code>, you stand by the counter for <em>just that ticket</em> without blocking other customers — when it’s ready, you pick it up and continue."
+          "text": "<strong>Practical scenario</strong><br>Autocomplete requests fire on each keystroke. You debounce input, cancel stale requests, and only render the latest resolved result to avoid flicker and race bugs.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>await</code> inside loops when calls are independent.</li><li>Forgetting terminal error handling.</li><li>Assuming Promise cancellation exists automatically.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "What is the difference between promises and async await?",
       "description": "Promises represent future values, and async/await is syntax built on promises that makes asynchronous code read like synchronous flow."
@@ -818,7 +767,7 @@
   {
     "id": "js-promise-fundamental-understanding",
     "title": "Promise - Fundamental Understanding",
-    "description": "A Promise represents the eventual result of an async operation and moves from pending to fulfilled or rejected exactly once. Learn core Promise mechanics: executor timing, then/catch/finally chaining, microtask scheduling, and reliable error propagation.",
+    "description": "Promise fundamentals are about mechanics: executor timing, single-settlement state transitions, chain propagation, and microtask ordering. Mastering these explains most async bugs better than memorizing APIs.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -840,122 +789,91 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nA Promise is a wrapper around a future result. It starts as <code>pending</code>, then settles exactly once as either <code>fulfilled</code> (success value) or <code>rejected</code> (error reason).\n\nStrong interview answers emphasize that Promises are about <strong>state + composition</strong>: they make async flow chainable and predictable instead of nesting callbacks."
+          "text": "<strong>Core mental model</strong><br><br>A Promise is a one-way state machine: <code>pending -> fulfilled</code> or <code>pending -> rejected</code>. It settles once, and every chain step returns a <em>new</em> Promise."
         },
         {
           "type": "list",
           "columns": [
-            "Concept",
-            "Meaning",
-            "Why it matters"
+            "Mechanic",
+            "Reality"
           ],
           "rows": [
             [
-              "<strong>pending</strong>",
-              "Operation still in progress",
-              "No final value yet; handlers wait."
+              "Executor timing",
+              "Runs immediately when Promise is created."
             ],
             [
-              "<strong>fulfilled</strong>",
-              "Completed successfully with a value",
-              "<code>.then(onFulfilled)</code> path runs."
+              "then/catch timing",
+              "Callbacks run later as microtasks."
             ],
             [
-              "<strong>rejected</strong>",
-              "Completed with failure reason",
-              "<code>.catch</code> or rejection handler runs."
+              "Settlement",
+              "First resolve/reject wins; later calls ignored."
             ],
             [
-              "<strong>settled</strong>",
-              "Either fulfilled or rejected",
-              "State is final and cannot change again."
+              "Chaining",
+              "Each then returns a fresh Promise."
             ]
           ],
-          "caption": "A Promise can settle once; it never goes back to pending."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-clock'></i> <strong>Timing rule most people miss</strong>\n\nThe Promise <strong>executor</strong> runs synchronously at creation time, but <code>.then/.catch/.finally</code> callbacks run asynchronously in the microtask queue."
+          "caption": "These four rules explain most Promise behavior."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log('A');\n\nconst p = new Promise((resolve) => {\n  console.log('B (executor runs immediately)');\n  resolve('done');\n});\n\np.then((v) => console.log('C (then microtask):', v));\n\nconsole.log('D');\n\n// Output:\n// A\n// B (executor runs immediately)\n// D\n// C (then microtask): done"
+          "code": "console.log('A');\n\nconst p = new Promise((resolve) => {\n  console.log('B executor');\n  resolve(1);\n  resolve(2); // ignored\n});\n\np.then(v => console.log('C then:', v));\nconsole.log('D');\n\n// Output: A, B executor, D, C then: 1"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-link'></i> <strong>Chaining mechanics (fundamental)</strong>\n\nEach <code>.then()</code> returns a <strong>new Promise</strong>. What you return determines the next step:\n- return plain value -> next handler gets that value\n- return Promise/thenable -> chain waits for it\n- throw error -> chain becomes rejected"
+          "text": "<strong>Chain propagation rules (must know)</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "Promise.resolve(2)\n  .then((n) => n * 3)                 // returns 6\n  .then((n) => Promise.resolve(n + 1)) // waits -> 7\n  .then(() => {\n    throw new Error('boom');\n  })\n  .catch((err) => {\n    console.log(err.message); // boom\n    return 42;\n  })\n  .then((n) => console.log(n)); // 42"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Error propagation and <code>finally</code></strong>\n\nErrors bubble down the chain until handled by <code>.catch</code>. <code>finally</code> runs on both success and failure, but it does not receive the chain value directly and should not be used for value transformation."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "Promise.resolve('ok')\n  .finally(() => console.log('cleanup'))\n  .then((v) => console.log(v)); // ok\n\nPromise.reject(new Error('fail'))\n  .finally(() => console.log('cleanup on error'))\n  .catch((e) => console.log(e.message)); // fail"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-diagram-project'></i> <strong>Thenable assimilation (advanced but useful)</strong>\n\nPromises adopt thenables (objects with a <code>then</code> method). This is why many library async results interoperate with native Promise chains."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "const thenable = {\n  then(resolve) {\n    setTimeout(() => resolve('from thenable'), 50);\n  }\n};\n\nPromise.resolve(thenable).then(console.log);\n// from thenable"
+          "code": "Promise.resolve(10)\n  .then(v => v + 1)                 // next gets 11\n  .then(v => Promise.resolve(v * 2)) // waits, next gets 22\n  .then(() => { throw new Error('boom'); })\n  .catch(err => {\n    console.log(err.message); // boom\n    return 7;                 // recovery value\n  })\n  .then(v => console.log(v)); // 7"
         },
         {
           "type": "list",
           "columns": [
-            "Common pitfall",
-            "Why it breaks",
-            "Safer pattern"
+            "If handler returns...",
+            "Next link receives..."
           ],
           "rows": [
             [
-              "Forgetting <code>return</code> in <code>.then</code>",
-              "Next step gets <code>undefined</code>",
-              "Always return value/Promise explicitly."
+              "Plain value",
+              "Fulfilled Promise with that value."
             ],
             [
-              "Using <code>new Promise(async ...)</code>",
-              "Extra wrapping and confusing error paths",
-              "Use plain <code>async function</code> or plain <code>new Promise</code>, not both together."
+              "Promise/thenable",
+              "Resolved/rejected result of that Promise."
             ],
             [
-              "Missing terminal <code>.catch</code>",
-              "Unhandled rejection warnings/crashes",
-              "End chains with <code>.catch</code> or handle in <code>await</code> with try/catch."
-            ],
-            [
-              "Assuming Promise cancellation is built-in",
-              "Settled result cannot be cancelled retroactively",
-              "Use cancel-aware APIs like <code>AbortController</code>."
+              "Thrown error",
+              "Rejected Promise with that error."
             ]
           ],
-          "caption": "Most Promise bugs are chain-shape and error-flow issues."
+          "caption": "Promise chain behavior is deterministic, not magic."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Common bug: missing return\nfetch('/user')\n  .then(r => {\n    r.json(); // missing return\n  })\n  .then(data => {\n    console.log(data); // undefined\n  });"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview one-liner</strong>\n\nA Promise is a one-time state machine for async results; chaining with <code>then/catch/finally</code> gives deterministic value and error propagation without callback nesting."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>A Promise chain is like a relay race: each runner must pass the baton (return). If one runner drops it, the next runner gets nothing."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a Promise like a tracked delivery: pending while in transit, fulfilled when delivered, rejected if delivery failed. You can attach steps that run after delivery, and each step can transform or fail the next one."
+          "text": "<strong>Summary</strong><br><ul><li>Executor is synchronous; handlers are microtasks.</li><li>Promise settles once.</li><li>Each chain step returns a new Promise.</li><li>Return/throw control value and error propagation.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A checkout flow loads profile, shipping quote, and fraud score. Promise chains coordinate dependent steps while keeping errors centralized for user-friendly fallback messaging.<br><br><strong>Common pitfalls</strong><br><ul><li>Mixing nested callbacks inside Promise chains, recreating callback hell.</li><li>Swallowing errors in broad catches without logging context.</li><li>Running dependent operations in parallel accidentally.</li></ul><strong>Trade-off or test tip</strong><br>Test both success and rejection paths for each link in the chain, including fallback behavior and cleanup actions in <code>finally</code>.</strong>"
+          "text": "<strong>Practical scenario</strong><br>Checkout flow depends on profile -> shipping -> payment intent. Promise chain rules ensure each step receives the right input and failures route to one catch path.<br><br><strong>Common pitfalls</strong><br><ul><li>Missing return in then handlers.</li><li>Mixing callback nesting inside chain and losing error propagation.</li><li>Using broad catch that hides root cause.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "Promise Fundamentals in JavaScript: States, Chaining, Errors",
       "description": "Learn Promise fundamentals in JavaScript: states, executor timing, then/catch/finally chaining, microtask order, and key pitfalls."
@@ -1199,7 +1117,7 @@
   {
     "id": "js-null-undefined-undeclared",
     "title": "What is the difference between a variable that is: null, undefined or undeclared?",
-    "description": "In JavaScript, `undefined` means a variable has been declared but not assigned a value, `null` means an intentional empty value, and `undeclared` means the variable has never been defined in the current scope.",
+    "description": "undefined means declared but currently no value, null means intentionally empty, and undeclared means the identifier does not exist in scope. Treat them differently in logic and debugging.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -1218,86 +1136,73 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, we have three different 'empty' states for variables — <code>undefined</code>, <code>null</code>, and <code>undeclared</code>. Each one tells a different story about the variable’s existence and purpose."
+          "text": "<strong>Direct distinction</strong><br><br><code>undefined</code>: declared, no assigned value yet.<br><code>null</code>: explicitly set to no value.<br><em>undeclared</em>: name does not exist in current scope."
         },
         {
           "type": "list",
           "columns": [
-            "Type",
-            "Meaning",
+            "State",
             "Example",
-            "typeof Result"
+            "Read result"
           ],
           "rows": [
             [
-              "<code>undefined</code>",
-              "Variable declared but not assigned a value.",
-              "<code>let a;</code><br><code>console.log(a); // undefined</code>",
-              "<code>'undefined'</code>"
+              "undefined",
+              "<code>let x; console.log(x)</code>",
+              "<code>undefined</code>"
             ],
             [
-              "<code>null</code>",
-              "Intentional absence of value.",
-              "<code>let b = null;</code><br><code>console.log(b); // null</code>",
-              "<code>'object'</code> (historical bug)"
+              "null",
+              "<code>let user = null; console.log(user)</code>",
+              "<code>null</code>"
             ],
             [
-              "<code>undeclared</code>",
-              "Variable not declared at all in current scope.",
-              "<code>console.log(c); // ❌ ReferenceError</code>",
-              "—"
+              "undeclared",
+              "<code>console.log(missingVar)</code>",
+              "ReferenceError"
             ]
           ],
-          "caption": "Quick comparison of undefined, null, and undeclared."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>undefined</strong>\n\n- A variable automatically becomes <code>undefined</code> when it is declared but not initialized.\n- It also appears when accessing missing object properties or parameters that were not passed."
+          "caption": "Same \"empty-ish\" feeling, very different runtime meaning."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "let name;\nconsole.log(name); // undefined\n\nconst user = {};\nconsole.log(user.age); // undefined\n\nfunction greet(message) {\n  console.log(message); // undefined if no argument\n}\ngreet();"
+          "code": "let a;\nconsole.log(a); // undefined\n\nlet b = null;\nconsole.log(b); // null\n\n// console.log(c); // ReferenceError: c is not defined"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>null</strong>\n\n- <code>null</code> is something you assign deliberately to indicate that a variable should be empty.\n- It’s a developer’s way of saying, “I know this exists, but it currently has no value.”"
+          "text": "<strong>Where undefined appears naturally</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "let selectedUser = null; // intentionally empty\nif (!selectedUser) {\n  console.log('No user selected');\n}"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>undeclared</strong>\n\n- A variable that has never been declared in the current scope.\n- Trying to read it results in a <code>ReferenceError</code>.\n- Accidentally assigning to it (without <code>let</code>, <code>const</code>, or <code>var</code>) creates a global variable in non-strict mode — which is almost always a mistake."
+          "code": "const obj = {};\nconsole.log(obj.age); // undefined (missing property)\n\nfunction greet(name) {\n  console.log(name); // undefined when omitted\n}\ngreet();"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log(x); // ❌ ReferenceError: x is not defined\n\nfunction test() {\n  y = 10; // creates global variable in non-strict mode\n}\ntest();\nconsole.log(window.y); // 10"
+          "code": "console.log(undefined == null);  // true\nconsole.log(undefined === null); // false\nconsole.log(typeof null);        // 'object' (historical JS quirk)"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Confusions</strong>\n\n- <code>typeof null</code> returns <code>'object'</code> — this is a long-standing bug in JavaScript.\n- <code>undefined == null</code> is <strong>true</strong> because both mean 'no value'.\n- <code>undefined === null</code> is <strong>false</strong> because they are different types."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "console.log(undefined == null);  // true\nconsole.log(undefined === null); // false"
+          "text": "<strong>Practical rule</strong><br>Use <code>null</code> when you intentionally clear/reset a value. Treat <code>undefined</code> as \"not provided yet\". Treat undeclared as a bug (scope/typo/load-order)."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>undefined</strong>: Variable exists but has no value yet — default initial state used by JavaScript.\n- <strong>null</strong>: Deliberate empty value — use when you want to reset or clear a variable explicitly.\n- <strong>undeclared</strong>: Variable not defined in the current scope — avoid entirely; it signals a missing declaration or typo."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>undefined</code> = empty box that exists. <code>null</code> = box intentionally marked \"empty\". undeclared = no box at all."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you ordered coffee ☕:\n- <strong>undefined</strong> → The cup exists, but it’s still empty because no one poured coffee yet.\n- <strong>null</strong> → You got an empty cup on purpose (you asked for none).\n- <strong>undeclared</strong> → There’s no cup at all — you never placed an order."
+          "text": "<strong>Summary</strong><br><ul><li>undefined is a value.</li><li>null is an intentional value choice.</li><li>undeclared is usually a coding error.</li><li>Use strict equality when comparing these states.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common pitfalls</strong><br><ul><li>Using truthy checks and accidentally treating 0/false/'' as missing.</li><li>Assuming <code>typeof null</code> should be 'null'.</li><li>Catching undeclared errors instead of fixing declaration/scope.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "null vs undefined vs undeclared in JavaScript?",
       "description": "null is an intentional empty value, undefined means not assigned, and undeclared means the variable was never defined."
@@ -1306,7 +1211,7 @@
   {
     "id": "js-undefined-vs-not-defined",
     "title": "undefined vs not defined in JavaScript",
-    "description": "In JavaScript, undefined is a valid value for declared variables, while not defined usually means a ReferenceError caused by using an undeclared or out-of-scope identifier. Strong answers explain typeof behavior, TDZ edge cases, and debugging patterns for scope mistakes.",
+    "description": "undefined is a real value on an existing identifier; not defined indicates identifier resolution failed (ReferenceError). Distinguishing value-state from scope-resolution is key to fast JS debugging.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1328,121 +1233,86 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThese two terms are not the same:\n- <strong>undefined</strong>: variable exists, value is not assigned yet (or missing in a lookup).\n- <strong>not defined</strong>: identifier cannot be resolved in current scope, usually a <code>ReferenceError</code>.\n\nA good mental model: <strong>undefined is a value</strong>, <strong>not defined is a lookup failure</strong>."
+          "text": "<strong>One-liner</strong><br><br><code>undefined</code> means \"found variable, value missing\". \"not defined\" means \"variable name could not be found\"."
         },
         {
           "type": "list",
           "columns": [
             "Case",
-            "Variable declared?",
-            "Can you read it safely?",
-            "Typical result"
+            "Declared?",
+            "Outcome"
           ],
           "rows": [
             [
-              "<strong>undefined variable value</strong>",
-              "Yes",
+              "<code>let x; console.log(x)</code>",
               "Yes",
               "<code>undefined</code>"
             ],
             [
-              "<strong>not defined identifier</strong>",
-              "No (or out of scope)",
+              "<code>console.log(nope)</code>",
               "No",
-              "<code>ReferenceError</code>"
+              "ReferenceError: nope is not defined"
             ],
             [
-              "<strong>TDZ access (<code>let</code>/<code>const</code>)</strong>",
-              "Yes (hoisted, uninitialized)",
-              "No before declaration line",
-              "<code>ReferenceError</code>"
+              "TDZ access (<code>let/const</code> before line)",
+              "Yes (uninitialized)",
+              "ReferenceError"
             ]
           ],
-          "caption": "Error behavior depends on declaration state and scope visibility."
+          "caption": "\"Not defined\" and TDZ both throw, but for different reasons."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "let a;\nconsole.log(a); // undefined (declared, unassigned)\n\nconst user = {};\nconsole.log(user.age); // undefined (missing property)\n\nfunction greet(message) {\n  console.log(message); // undefined if argument is omitted\n}\ngreet();"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// console.log(total);\n// ReferenceError: total is not defined\n\nfunction demo() {\n  const scoped = 10;\n}\n// console.log(scoped);\n// ReferenceError: scoped is not defined (out of scope)"
+          "code": "let a;\nconsole.log(a); // undefined\n\n// console.log(b); // ReferenceError: b is not defined\n\n{\n  // console.log(c); // ReferenceError (TDZ, not \"undeclared\")\n  let c = 1;\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-code-compare'></i> <strong><code>typeof</code> nuance most people miss</strong>\n\n- <code>typeof notDeclared</code> returns <code>'undefined'</code> (legacy-safe check).\n- But for <code>let</code>/<code>const</code> variables in TDZ, even <code>typeof</code> throws <code>ReferenceError</code>."
+          "text": "<strong>typeof nuance</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log(typeof maybeMissing); // 'undefined'\n\n{\n  // console.log(typeof inTdz);\n  // ReferenceError\n  let inTdz = 1;\n  console.log(typeof inTdz); // 'number'\n}"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common root causes of 'not defined'</strong>\n\n1. Typo in variable/function name.\n2. Using a variable outside its block/function scope.\n3. Script load order issue (using symbol before file loads).\n4. Module/global mismatch (assuming <code>window.x</code> exists in module code)."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// Block scope mistake\nif (true) {\n  const token = 'abc';\n}\n// console.log(token); // ReferenceError\n\n// Script order mistake (conceptual)\n// app.js calls initWidget() before widget.js defines it"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Strict mode and accidental globals</strong>\n\nIn sloppy mode, assigning to an undeclared name may create a global accidentally. In strict mode, this throws immediately, which is safer."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "'use strict';\n\nfunction run() {\n  // count = 1;\n  // ReferenceError in strict mode\n}\nrun();"
+          "code": "console.log(typeof maybeMissing); // 'undefined' (safe for undeclared names)\n\n{\n  // console.log(typeof inTdz); // ReferenceError\n  let inTdz = 1;\n}"
         },
         {
           "type": "list",
           "columns": [
-            "Goal",
-            "Safer pattern",
-            "Why"
+            "Symptom",
+            "Likely cause"
           ],
           "rows": [
             [
-              "Default missing values",
-              "<code>??</code> and explicit checks",
-              "Avoids masking valid falsy values."
+              "is not defined",
+              "Typo, wrong scope, or script/module load-order issue."
             ],
             [
-              "Detect absent globals safely",
-              "<code>typeof x !== \"undefined\"</code>",
-              "Prevents immediate ReferenceError for undeclared names."
+              "Cannot access X before initialization",
+              "TDZ with let/const/class."
             ],
             [
-              "Prevent scope bugs",
-              "Use <code>const</code>/<code>let</code> + linters",
-              "Catches errors earlier and avoids implicit globals."
+              "Value is undefined unexpectedly",
+              "Missing assignment/data path/property."
             ]
           ],
-          "caption": "Treat undefined as data, and \"not defined\" as a control-flow/scope bug."
+          "caption": "Use error text to jump directly to root cause."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview one-liner</strong>\n\n<code>undefined</code> means the variable exists but has no assigned value; <em>not defined</em> means the identifier itself cannot be resolved in scope and throws <code>ReferenceError</code>."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>undefined</code> is an empty seat with a seat number. \"not defined\" means there is no seat with that number in this hall."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nWhen debugging, ask two questions in order: (1) Is the identifier declared and in scope? (2) If yes, what value does it currently hold? This cleanly separates 'not defined' errors from legitimate <code>undefined</code> states."
+          "text": "<strong>Summary</strong><br><ul><li>undefined is data state.</li><li>not defined is scope lookup failure.</li><li>TDZ is a third case: declared but temporarily inaccessible.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>undefined</code> as an empty seat in a named row, while 'not defined' means the row itself does not exist on the seating chart."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A feature flag value is read from multiple sources. In one environment the key exists but is unset (<code>undefined</code>); in another the variable name is misspelled and the app crashes with <code>is not defined</code>.<br><br><strong>Common pitfalls</strong><br><ul><li>Treating both states as equivalent in error handling.</li><li>Using broad try/catch instead of fixing scope and naming issues.</li><li>Checking truthiness instead of explicit null/undefined conditions.</li></ul><strong>Trade-off or test tip</strong><br>Add tests that distinguish declared-but-undefined data from missing identifiers and out-of-scope references to avoid masking real runtime failures.</strong>"
+          "text": "<strong>Practical scenario</strong><br>A feature flag name is misspelled in one module and unset in another. One path throws \"not defined\", another returns undefined. Distinguishing these quickly saves debugging time."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "undefined vs not defined in JavaScript (ReferenceError Guide)",
       "description": "Understand undefined vs not defined in JavaScript, including scope lookup failures, typeof behavior, TDZ edge cases, and practical debugging fixes."
@@ -2087,7 +1957,7 @@
   {
     "id": "js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
     "title": "Truthy/falsy, pass-by-value vs reference, and strict equality: practical use case",
-    "description": "A practical JavaScript debugging pattern that combines truthy/falsy behavior, strict equality (===), and pass-by-value vs object-reference semantics. Learn why defaults break on 0/false, how object mutation leaks across function boundaries, and how to write safer checks.",
+    "description": "This is a high-frequency bug pattern: defaults that overwrite valid falsy values, loose equality coercion surprises, and accidental shared-object mutation. Robust code uses ??, ===, and controlled immutability.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -2110,117 +1980,74 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Why these three topics are tested together</strong>\n\nInterviewers combine truthy/falsy, strict equality, and reference behavior because many real bugs involve all three at once:\n- A valid <code>0</code> or <code>false</code> gets overwritten by a fallback.\n- Loose checks allow unintended type coercion.\n- A helper function mutates shared object state.\n\nThis is less about memorizing definitions and more about writing bug-resistant code."
+          "text": "<strong>Why interviewers combine these topics</strong><br><br>Because real frontend bugs usually combine them: a fallback breaks <code>0</code>/<code>false</code>, a loose comparison silently passes, and a helper mutates shared state."
         },
         {
           "type": "list",
           "columns": [
-            "Concept",
-            "Core rule",
-            "Typical production bug"
+            "Topic",
+            "Bad habit",
+            "Safer habit"
           ],
           "rows": [
             [
-              "<strong>Truthy/Falsy</strong>",
-              "Conditionals coerce values to boolean.",
-              "<code>0</code>, <code>\"\"</code>, <code>false</code> treated as missing unintentionally."
+              "Truthy/falsy defaults",
+              "<code>value || fallback</code>",
+              "<code>value ?? fallback</code>"
             ],
             [
-              "<strong>Strict equality (<code>===</code>)</strong>",
-              "Compares type + value without coercion.",
-              "Using <code>==</code> accepts mixed types and hides bad input."
+              "Equality checks",
+              "<code>==</code> on unknown input",
+              "Parse first, compare with <code>===</code>"
             ],
             [
-              "<strong>Pass-by-value/reference behavior</strong>",
-              "JS passes values; object values are references.",
-              "Function mutates caller object unexpectedly."
+              "Object handling",
+              "Mutate input object",
+              "Clone/return new object unless mutation is intentional"
             ]
           ],
-          "caption": "One bug can involve all three rules simultaneously."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Quick truthy/falsy refresher</strong>\n\nFalsy values in JavaScript are: <code>false</code>, <code>0</code>, <code>-0</code>, <code>0n</code>, <code>''</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code>. Everything else is truthy."
+          "caption": "Three rails that prevent many production bugs."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "const retries = 0;\nconst isEnabled = false;\n\nconsole.log(retries || 3);    // 3   ❌ loses valid 0\nconsole.log(isEnabled || true); // true ❌ loses valid false\n\nconsole.log(retries ?? 3);      // 0   ✅\nconsole.log(isEnabled ?? true); // false ✅"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-code-compare'></i> <strong>Strict equality in validation paths</strong>\n\nUse <code>===</code> for predictable checks after explicit parsing. Loose equality can make invalid data look valid."
+          "code": "const retries = 0;\nconst enabled = false;\n\nconsole.log(retries || 3);   // 3   ❌ loses valid 0\nconsole.log(enabled || true); // true ❌ loses valid false\n\nconsole.log(retries ?? 3);    // 0   ✅\nconsole.log(enabled ?? true); // false ✅"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log('0' == 0);   // true  (coercion)\nconsole.log('0' === 0);  // false\n\nconst qty = Number('0');\nif (qty === 0) {\n  console.log('exact numeric zero');\n}"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-arrows-spin'></i> <strong>Pass-by-value vs reference in this context</strong>\n\nJavaScript is pass-by-value. For objects, the copied value is a reference to the same underlying object. If you mutate that object inside a function, the caller sees the change."
+          "code": "console.log('0' == 0);  // true  (coercion)\nconsole.log('0' === 0); // false\n\nconst qty = Number('0');\nconsole.log(qty === 0);  // true ✅ explicit conversion first"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "function applyDefaults(cfg) {\n  // mutation of shared object\n  cfg.label = cfg.label ?? 'Untitled';\n  return cfg;\n}\n\nconst original = { label: '' };\nconst result = applyDefaults(original);\n\nconsole.log(result === original); // true (same object reference)\nconsole.log(original.label);      // '' (kept by ??, but still same object)"
+          "code": "function normalize(input) {\n  const cfg = { ...input }; // avoid mutating caller\n  cfg.retry = cfg.retry ?? 3;\n  if (cfg.total === 0) cfg.status = 'empty';\n  return cfg;\n}\n\nconst original = { retry: 0, total: 0 };\nconst out = normalize(original);\n\nconsole.log(original); // unchanged\nconsole.log(out);      // normalized safely"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Integrated bug example (real-world)</strong>\n\nA cart helper has three issues:\n1. Uses <code>||</code> for defaults, overwriting valid <code>0</code>/<code>false</code>.\n2. Uses <code>==</code> for checks, allowing mixed-type surprises.\n3. Mutates the incoming object, leaking state across callers."
+          "text": "<strong>Integrated real-world bug (before/after)</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ❌ Buggy version\nfunction normalizeCart(cart) {\n  cart.retryCount = cart.retryCount || 3;\n  cart.discountEnabled = cart.discountEnabled || true;\n\n  if (cart.total == '0') {\n    cart.status = 'empty';\n  }\n\n  return cart;\n}\n\nconst cart = { retryCount: 0, discountEnabled: false, total: 0 };\nconst out = normalizeCart(cart);\n\nconsole.log(out);\n// { retryCount: 3, discountEnabled: true, total: 0, status: 'empty' }\n// All three behaviors are wrong for this business logic"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// ✅ Safer version\nfunction normalizeCart(input) {\n  const cart = { ...input }; // avoid mutating caller object\n\n  cart.retryCount = cart.retryCount ?? 3;\n  cart.discountEnabled = cart.discountEnabled ?? true;\n\n  if (cart.total === 0) {\n    cart.status = 'empty';\n  }\n\n  return cart;\n}\n\nconst original = { retryCount: 0, discountEnabled: false, total: 0 };\nconst normalized = normalizeCart(original);\n\nconsole.log(original);   // unchanged\nconsole.log(normalized); // correct defaults + strict check"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Goal",
-            "Preferred pattern",
-            "Why"
-          ],
-          "rows": [
-            [
-              "Fallback only for missing values",
-              "<code>??</code>",
-              "Keeps legitimate falsy data (<code>0</code>, <code>false</code>, <code>\"\"</code>)."
-            ],
-            [
-              "Type-safe comparisons",
-              "<code>===</code> after explicit conversion",
-              "Avoids coercion surprises in critical logic."
-            ],
-            [
-              "Prevent side effects",
-              "Copy input, return new object",
-              "Stops shared-reference mutation bugs."
-            ]
-          ],
-          "caption": "This trio forms a reliable baseline for frontend business logic."
+          "code": "// ❌ buggy\nfunction prepare(cart) {\n  cart.retry = cart.retry || 3;\n  if (cart.total == '0') cart.status = 'empty';\n  return cart;\n}\n\n// ✅ safer\nfunction prepareSafe(input) {\n  const cart = { ...input };\n  cart.retry = cart.retry ?? 3;\n  if (cart.total === 0) cart.status = 'empty';\n  return cart;\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview-ready summary sentence</strong>\n\nIn production JavaScript, preserve valid falsy values with <code>??</code>, compare with <code>===</code> after parsing, and avoid mutating shared object references unless mutation is explicitly intended."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of this as three guardrails: default correctly, compare strictly, and protect shared state."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of this as three safety rails: one for defaults, one for comparisons, and one for state ownership. Most hard-to-debug UI bugs happen when one of those rails is missing."
+          "text": "<strong>Summary</strong><br><ul><li>Use <code>??</code> when 0/false/'' are valid.</li><li>Use <code>===</code> after explicit parsing.</li><li>Avoid mutating caller-owned objects by default.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A feature flag dashboard stores <code>false</code> intentionally, receives numeric values as strings from query params, and reuses a shared config object across widgets. A naive helper causes silent flag flips and cross-widget state bleed.<br><br><strong>Common pitfalls</strong><br><ul><li>Defaulting with <code>||</code> in config normalization.</li><li>Using <code>==</code> before parsing input types.</li><li>Mutating shared params/state objects in utility functions.</li></ul><strong>Trade-off or test tip</strong><br>Create tests that assert behavior for <code>0</code>, <code>false</code>, <code>''</code>, string-number inputs, and object immutability (original input should remain unchanged).</strong>"
+          "text": "<strong>Test checklist</strong><br>Always include cases for <code>0</code>, <code>false</code>, empty string, string-number input, and \"original object unchanged\" assertions."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "Truthy/Falsy, Strict Equality, and Reference Bugs in JavaScript",
       "description": "Learn a real JavaScript use case combining truthy/falsy defaults, strict equality checks, and pass-by-value vs reference behavior."
@@ -2229,7 +2056,7 @@
   {
     "id": "js-hoisting",
     "title": "Explain 'hoisting' in JavaScript",
-    "description": "Hoisting is JavaScript’s default behavior of moving declarations to the top of their scope before code execution. In practice, it means you can use certain variables and functions before declaring them — but only partially.",
+    "description": "Hoisting is JavaScript declaration processing before execution. Declarations are known earlier than the line they appear on, but initialization timing differs by construct.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -2248,105 +2075,85 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore your code runs, JavaScript’s engine scans the scope and moves **declarations** (not initializations) to the top. This is called <strong>hoisting</strong>.\n\nIt applies to <code>var</code> variables, function declarations, and class declarations — but with different effects."
+          "text": "<strong>Big-picture definition</strong><br><br>Hoisting is not code movement. It is how the engine prepares scope before running the script, registering declarations first."
         },
         {
           "type": "list",
           "columns": [
-            "Type",
-            "Is Hoisted?",
-            "Initialized Before Use?",
-            "Notes"
+            "Construct",
+            "Hoisted behavior"
           ],
           "rows": [
             [
               "<code>var</code>",
-              "Yes",
-              "No (initialized as <code>undefined</code>)",
-              "Accessible before declaration, but value is <code>undefined</code>."
+              "Declaration hoisted, value starts as undefined."
             ],
             [
-              "<code>let</code> & <code>const</code>",
-              "Yes (declared, but in TDZ)",
-              "No (ReferenceError if accessed early)",
-              "They exist in memory but cannot be accessed before declaration due to the Temporal Dead Zone."
+              "<code>let</code>/<code>const</code>",
+              "Declaration hoisted but inaccessible until declaration line (TDZ)."
             ],
             [
-              "Function declarations",
-              "Yes",
-              "Yes",
-              "Fully hoisted — can be called before defined."
+              "Function declaration",
+              "Fully available before its line."
             ],
             [
-              "Function expressions / arrow functions",
-              "No (unless assigned to <code>var</code>, then value is <code>undefined</code>)",
-              "No",
-              "They behave like normal variables; not callable before definition."
+              "Function expression / arrow assigned to variable",
+              "Follows variable rules; not callable early in safe way."
+            ],
+            [
+              "Class declaration",
+              "Hoisted but in TDZ like let/const."
             ]
           ],
-          "caption": "Summary of hoisting behavior for different declarations."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: var Hoisting</strong>\n\nA variable declared with <code>var</code> is hoisted to the top of its scope, but only its declaration — not its assignment."
+          "caption": "Hoisting is one concept with different outcomes by syntax type."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log(a); // undefined\nvar a = 5;\nconsole.log(a); // 5"
+          "code": "run(); // works\nfunction run() {}\n\nconsole.log(a); // undefined\nvar a = 1;\n\nconsole.log(b); // ReferenceError\nlet b = 2;"
         },
         {
           "type": "text",
-          "text": "Under the hood, the code above is interpreted like this:"
+          "text": "<strong>Practical debugging signal</strong>"
         },
         {
-          "type": "code",
-          "language": "javascript",
-          "code": "var a;\nconsole.log(a); // undefined\na = 5;\nconsole.log(a); // 5"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: let and const Hoisting</strong>\n\nAlthough <code>let</code> and <code>const</code> are hoisted, they live in a special phase called the **Temporal Dead Zone (TDZ)**. You can’t access them until the line where they are declared."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "console.log(x); // ❌ ReferenceError\nlet x = 10;\nconsole.log(x); // ✅ 10"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: Function Hoisting</strong>\n\nFunction declarations are fully hoisted, meaning you can call them before they appear in the code."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "sayHello(); // ✅ Works fine\n\nfunction sayHello() {\n  console.log('Hello!');\n}"
-        },
-        {
-          "type": "text",
-          "text": "However, function expressions or arrow functions are <strong>not hoisted</strong> the same way:"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "greet(); // ❌ TypeError: greet is not a function\n\nvar greet = function() {\n  console.log('Hi there!');\n};"
+          "type": "list",
+          "columns": [
+            "Error/behavior",
+            "Likely cause"
+          ],
+          "rows": [
+            [
+              "Reads as undefined before declaration",
+              "<code>var</code> hoisting + assignment not executed yet."
+            ],
+            [
+              "ReferenceError before declaration",
+              "TDZ with <code>let</code>/<code>const</code>/<code>class</code>."
+            ],
+            [
+              "TypeError: fn is not a function before declaration",
+              "Function expression assigned later; variable exists but callable value not ready."
+            ]
+          ],
+          "caption": "Map symptom to hoisting category quickly."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Misunderstanding</strong>\n\nHoisting doesn’t move code literally — it’s about how JavaScript’s memory is allocated before execution.\n\nVariables and functions are known to the engine before code runs, which is why you can sometimes access them early."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Before the show starts, the stage crew places props (declarations). Some props are usable immediately, others are covered until the right scene (execution line)."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>Declarations</strong> (not assignments) are hoisted.\n- <code>var</code> → hoisted and initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> → hoisted but in TDZ (can’t access early).\n- Function declarations → fully hoisted.\n- Function expressions → treated as variables, not hoisted safely."
+          "text": "<strong>Summary</strong><br><ul><li>Hoisting is declaration setup before execution.</li><li>It affects variables, functions, and classes differently.</li><li>Understanding initialization timing is what prevents subtle bugs.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of hoisting like setting the stage before a play:\n- <code>var</code> = the actor is on stage but asleep (exists, but undefined).\n- <code>let</code>/<code>const</code> = actor is behind the curtain (exists, but unreachable).\n- Function declaration = actor is fully ready, already rehearsed.\n- Function expression = actor hasn’t arrived yet — script will fail if you try to cue them early."
+          "text": "<strong>Interview tip</strong><br>Lead with: \"Hoisting registers declarations early; the key difference is what is initialized and when.\" Then show one var + one let example."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-03-08",
     "seo": {
       "title": "What is hoisting in JavaScript?",
       "description": "Hoisting is JavaScript's behavior where declarations are processed before code execution in their scope."
