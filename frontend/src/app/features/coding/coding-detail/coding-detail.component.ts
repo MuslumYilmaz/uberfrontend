@@ -2652,16 +2652,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       };
     }
 
-    const techSlug = String((q as any)?.technology || this.tech || '').trim().toLowerCase();
-    if (!techSlug) {
-      return {
-        asset: null,
-        key: explicitKey || null,
-      };
-    }
-
     return {
-      asset: `assets/questions/${techSlug}/decision-graphs/${q.id}-approach${approachIndex + 1}.v1.json`,
+      asset: null,
       key: explicitKey || null,
     };
   }

@@ -105,7 +105,7 @@ describe('CodingDetailComponent', () => {
     );
   });
 
-  it('infers approach-specific decision graph asset when explicit asset is missing', () => {
+  it('does not infer decision graph asset when metadata is missing', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
 
@@ -125,7 +125,7 @@ describe('CodingDetailComponent', () => {
     expect(applySolution).toHaveBeenCalledWith(
       'export default function debounce() {}',
       {
-        decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-debounce-approach3.v1.json',
+        decisionGraphAsset: null,
         decisionGraphKey: null,
       },
     );

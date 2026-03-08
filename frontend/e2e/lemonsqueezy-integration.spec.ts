@@ -35,6 +35,16 @@ const liveUrls = new Set(
 );
 
 test.describe('lemonsqueezy integration (local)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route(/\/api\/dashboard(\?|$)/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: 'null',
+      });
+    });
+  });
+
   test('pricing CTA opens lemonsqueezy checkout in new tab without navigation', async ({ page }) => {
     let lsRequests = 0;
     await page.route(/lemonsqueezy\.com/, (route) => {

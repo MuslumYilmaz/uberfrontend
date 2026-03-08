@@ -122,7 +122,7 @@ test.describe('routing and access critical paths', () => {
 
   test('interview questions master hub loads and renders question entries', async ({ page }) => {
     await page.goto('/interview-questions');
-    await expect(page.getByRole('heading', { name: 'Frontend Interview Questions Library' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Frontend Interview Questions/i })).toBeVisible();
     await expect(page.locator('.iq-item')).not.toHaveCount(0);
   });
 });

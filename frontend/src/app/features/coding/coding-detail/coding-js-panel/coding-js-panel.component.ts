@@ -802,14 +802,6 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
         };
       }
 
-      const questionId = String((question as any)?.id || '').trim();
-      const techSlug = String((question as any)?.technology || '').trim().toLowerCase();
-      if (questionId && techSlug) {
-        return {
-          asset: `assets/questions/${techSlug}/decision-graphs/${questionId}-approach${index + 1}.v1.json`,
-          key: explicitKey || null,
-        };
-      }
       return {
         asset: null,
         key: explicitKey || null,
