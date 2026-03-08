@@ -40,4 +40,7 @@ export const environment = {
         syncTelemetry: false,
         assistExperiments: false,
     },
+    content: {
+        decisionGraph: true,
+    },
 };

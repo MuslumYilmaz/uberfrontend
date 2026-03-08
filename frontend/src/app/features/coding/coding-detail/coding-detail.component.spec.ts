@@ -40,9 +40,12 @@ describe('CodingDetailComponent', () => {
         { provide: AnalyticsService, useValue: analytics },
         {
           provide: CodeStorageService,
-          useValue: { migrateAllJsToIndexedDbOnce: () => Promise.resolve() },
+          useValue: {
+            migrateAllJsToIndexedDbOnce: () => Promise.resolve(),
+            getJsAsync: () => Promise.resolve(null),
+          },
         },
-        { provide: UserProgressService, useValue: { solvedIds: () => [] } },
+        { provide: UserProgressService, useValue: { solvedIds: () => [], isSolved: () => false } },
         {
           provide: AuthService,
           useValue: { user: () => null, isLoggedIn: () => false, ensureMe: () => of(null), headers: () => ({}) },
@@ -73,6 +76,85 @@ describe('CodingDetailComponent', () => {
     expect(runSpy).toHaveBeenCalled();
     expect(component.subTab()).toBe('tests');
     expect(component.consoleEntries().length).toBe(0);
+  });
+
+  it('loads JS approach with its own decision graph asset override', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'javascript';
+    component.question.set({ id: 'js-debounce', technology: 'javascript' } as any);
+    component.currentJsLang.set('js');
+
+    const applySolution = jasmine.createSpy('applySolution');
+    component.jsPanel = { applySolution } as any;
+
+    const approach = {
+      codeJs: 'export default function debounce() {}',
+      decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-debounce-approach2.v1.json',
+    } as any;
+
+    component.loadApproach(approach, 1);
+
+    expect(applySolution).toHaveBeenCalledWith(
+      'export default function debounce() {}',
+      {
+        decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-debounce-approach2.v1.json',
+        decisionGraphKey: null,
+      },
+    );
+  });
+
+  it('infers approach-specific decision graph asset when explicit asset is missing', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'javascript';
+    component.question.set({ id: 'js-debounce', technology: 'javascript' } as any);
+    component.currentJsLang.set('js');
+
+    const applySolution = jasmine.createSpy('applySolution');
+    component.jsPanel = { applySolution } as any;
+
+    const approach = {
+      codeJs: 'export default function debounce() {}',
+    } as any;
+
+    component.loadApproach(approach, 2);
+
+    expect(applySolution).toHaveBeenCalledWith(
+      'export default function debounce() {}',
+      {
+        decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-debounce-approach3.v1.json',
+        decisionGraphKey: null,
+      },
+    );
+  });
+
+  it('uses shared question sidecar with inferred decision graph key when approach asset is omitted', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'javascript';
+    component.question.set({
+      id: 'js-debounce',
+      technology: 'javascript',
+      decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-debounce.v1.json',
+    } as any);
+    component.currentJsLang.set('js');
+
+    const applySolution = jasmine.createSpy('applySolution');
+    component.jsPanel = { applySolution } as any;
+
+    component.loadApproach({ codeJs: 'export default function debounce() {}' } as any, 1);
+
+    expect(applySolution).toHaveBeenCalledWith(
+      'export default function debounce() {}',
+      {
+        decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-debounce.v1.json',
+        decisionGraphKey: 'approach2',
+      },
+    );
   });
 
   it('shows compact quick-win strip first, then expands next-step card after first run/check action', async () => {

@@ -45,4 +45,7 @@ export const environment = {
         syncTelemetry: true,
         assistExperiments: true,
     },
+    content: {
+        decisionGraph: true,
+    },
 };

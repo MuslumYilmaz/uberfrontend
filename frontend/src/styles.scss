@@ -21,3 +21,55 @@
 @import './styles/utilities';
 @import './styles/primitives';
 @import './styles/prime-bridge';
+
+/* Monaco decision-graph decorations (global so they apply regardless of component encapsulation) */
+.monaco-editor .fa-dg-line {
+  background: rgba(245, 158, 11, 0.16) !important;
+  border-left: 2px solid rgba(245, 158, 11, 0.75) !important;
+}
+
+.monaco-editor .fa-dg-line-active {
+  background: rgba(245, 158, 11, 0.28) !important;
+  border-left: 3px solid rgba(252, 211, 77, 0.95) !important;
+  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.35) !important;
+}
+
+.monaco-editor .fa-dg-line-number,
+.monaco-editor .fa-dg-line-number-active {
+  color: #fcd34d !important;
+  font-weight: 700 !important;
+}
+
+.monaco-editor .fa-dg-line-number-active {
+  color: #fde68a !important;
+}
+
+.monaco-editor .fa-dg-margin,
+.monaco-editor .fa-dg-margin-active {
+  background: rgba(245, 158, 11, 0.16) !important;
+}
+
+.monaco-editor .fa-dg-margin-active {
+  background: rgba(245, 158, 11, 0.24) !important;
+}
+
+.monaco-editor .fa-dg-gutter::before,
+.monaco-editor .fa-dg-gutter-active::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
+  margin-left: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 158, 11, 0.55);
+  background: rgba(245, 158, 11, 0.24);
+  opacity: 0.75;
+}
+
+.monaco-editor .fa-dg-gutter-active::before {
+  border-color: rgba(252, 211, 77, 0.95);
+  background: rgba(245, 158, 11, 0.44);
+  box-shadow: 0 0 0 2px rgba(252, 211, 77, 0.15);
+  opacity: 1;
+}

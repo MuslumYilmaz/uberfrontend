@@ -1,9 +1,12 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, PLATFORM_ID, SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, PLATFORM_ID, SimpleChanges, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
+import { firstValueFrom } from 'rxjs';
+import type { DecisionGraphBranch, DecisionGraphDocument, DecisionGraphNode } from '../../../../core/models/decision-graph.model';
 import type { FailureCategory, FailureHint, InterviewModeSession, StuckLevel, StuckState } from '../../../../core/models/editor-assist.model';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
+import { DecisionGraphService } from '../../../../core/services/decision-graph.service';
 import { ExperimentService } from '../../../../core/services/experiment.service';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
@@ -22,7 +25,7 @@ import {
   type DraftIndexEntry,
   upsertDraftIndexVersion,
 } from '../../../../core/utils/versioned-drafts.util';
-import { MonacoEditorComponent } from '../../../../monaco-editor.component';
+import { MonacoEditorComponent, type MonacoLineClickEvent } from '../../../../monaco-editor.component';
 import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
@@ -32,6 +35,17 @@ declare const monaco: any;
 export type JsLang = 'js' | 'ts';
 type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
 type Runner = { runWithTests(args: { userCode: string; testCode: string; timeoutMs?: number }): Promise<RunnerOutput> };
+type ApplySolutionOptions = {
+  decisionGraphAsset?: string | null;
+  decisionGraphKey?: string | null;
+};
+type ResolvedDecisionNode = {
+  node: DecisionGraphNode;
+  index: number;
+  start: number;
+  end: number;
+  resolved: boolean;
+};
 type AssistFlags = {
   stuckDetector: boolean;
   explainFailure: boolean;
@@ -62,6 +76,7 @@ const DEFAULT_ASSIST_FLAGS: AssistFlags = {
 export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @ViewChild('codeEditor') codeEditor?: MonacoEditorComponent;
   @ViewChild('testsEditor') testsEditor?: MonacoEditorComponent;
+  @ViewChild('codeEditorShell') codeEditorShell?: ElementRef<HTMLElement>;
   /* ---------- Inputs ---------- */
   @Input() question: Question | null = null;   // <- allow null until bound
   @Input() tech: Tech = 'javascript';         // for future-proofing
@@ -70,6 +85,16 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Input() hideRestoreBanner = false;
   @Input() disablePersistence = false;
   @Input() liteMode = false;
+  private _solutionPanelOpen = false;
+  @Input() set solutionPanelOpen(value: boolean) {
+    this._solutionPanelOpen = !!value;
+    if (this._solutionPanelOpen) {
+      this.interviewSetupOpen.set(false);
+    }
+  }
+  get solutionPanelOpen(): boolean {
+    return this._solutionPanelOpen;
+  }
 
   // optional UI options (pass from parent to keep look consistent)
   @Input() editorOptions: any = {
@@ -130,6 +155,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly analytics = inject(AnalyticsService, { optional: true });
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
+  private readonly decisionGraphService = inject(DecisionGraphService, { optional: true });
   private readonly experiment = inject(ExperimentService, { optional: true });
   private readonly assistFlags = {
     ...DEFAULT_ASSIST_FLAGS,
@@ -270,12 +296,95 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   viewingSolution = signal(false);
+  decisionGraphEnabled = !!((environment as any)?.content?.decisionGraph);
+  decisionGraphDoc = signal<DecisionGraphDocument | null>(null);
+  decisionGraphLoading = signal(false);
+  decisionGraphNodeId = signal<string | null>(null);
+  decisionGraphExpanded = signal<Record<string, DecisionGraphBranch[]>>({});
+  private decisionGraphSeenBranchesByNode = new Map<string, Set<DecisionGraphBranch>>();
+  private decisionGraphLoadToken = 0;
+  private applySolutionToken = 0;
+  decisionGraphUserEnabled = signal(true);
+  decisionGraphPopupOpen = signal(false);
+  decisionGraphPopupSide = signal<'left' | 'right'>('right');
+  decisionGraphPopupTop = signal(16);
+
+  decisionGraphVisible = computed(() => {
+    if (!this.decisionGraphEnabled) return false;
+    if (!this.decisionGraphUserEnabled()) return false;
+    if (this.topTab() !== 'code') return false;
+    const doc = this.decisionGraphDoc();
+    if (!doc) return false;
+    if (doc.language === 'javascript' && this.jsLang() !== 'js') return false;
+    if (doc.language === 'typescript' && this.jsLang() !== 'ts') return false;
+    if (this.viewingSolution()) return true;
+    return this.isDecisionGraphCodeAligned(doc);
+  });
+
+  decisionGraphLanguageMismatch = computed(() => {
+    if (!this.decisionGraphEnabled) return false;
+    if (!this.decisionGraphUserEnabled()) return false;
+    if (this.topTab() !== 'code') return false;
+    const doc = this.decisionGraphDoc();
+    if (!doc || !doc.language) return false;
+    const unlocked = this.viewingSolution() || this.isDecisionGraphCodeAligned(doc);
+    if (!unlocked) return false;
+    if (doc.language === 'javascript' && this.jsLang() === 'ts') return true;
+    if (doc.language === 'typescript' && this.jsLang() === 'js') return true;
+    return false;
+  });
+
+  decisionGraphShellVisible = computed(() => {
+    if (this.topTab() !== 'code') return false;
+    if (!this.decisionGraphEnabled) return false;
+    if (this.decisionGraphLoading()) return true;
+    const doc = this.decisionGraphDoc();
+    if (!doc) return false;
+    const unlocked = this.viewingSolution() || this.isDecisionGraphCodeAligned(doc);
+    if (!unlocked) return false;
+    if (!this.decisionGraphUserEnabled()) return true;
+    if (this.decisionGraphLanguageMismatch()) return true;
+    return this.decisionGraphVisible();
+  });
+
+  decisionGraphHintVisible = computed(() => {
+    if (!this.decisionGraphShellVisible()) return false;
+    if (this.decisionGraphLoading()) return false;
+    if (this.decisionGraphLanguageMismatch()) return false;
+    return !this.decisionGraphPopupOpen();
+  });
+
+  decisionGraphPopupVisible = computed(() => {
+    if (!this.decisionGraphVisible()) return false;
+    if (!this.decisionGraphPopupOpen()) return false;
+    return !!this.activeDecisionNode();
+  });
+
+  decisionGraphNodes = computed<ResolvedDecisionNode[]>(() => {
+    const doc = this.decisionGraphDoc();
+    if (!doc) return [];
+    const code = this.editorContent();
+    return this.resolveDecisionNodes(doc.nodes, code);
+  });
+
+  activeDecisionNode = computed<ResolvedDecisionNode | null>(() => {
+    const nodes = this.decisionGraphNodes();
+    if (!nodes.length) return null;
+    const selected = this.decisionGraphNodeId();
+    if (!selected) return nodes[0];
+    return nodes.find((item) => item.node.id === selected) || nodes[0];
+  });
 
   // --- restore banner state ---
   restoredFromStorage = signal(false);
   restoreDismissed = signal(false);
 
   dismissRestoreBanner() { this.restoreDismissed.set(true); }
+
+  private exitSolutionMode(): void {
+    this.viewingSolution.set(false);
+    this.decisionGraphPopupOpen.set(false);
+  }
 
   async resetToDefault(): Promise<void> {
     const q = this.question;
@@ -290,7 +399,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.testCode.set(this.pickTests(q as any, lang));
       this.restoredFromStorage.set(false);
       this.restoreDismissed.set(true);
-      this.viewingSolution.set(false);
+      this.exitSolutionMode();
       this.hasRunTests.set(false);
       this.testResults.set([]);
       this.consoleEntries.set([]);
@@ -317,6 +426,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     // 4) Banner & UI state
     this.restoredFromStorage.set(false); // no user divergence after a clean reset
     this.restoreDismissed.set(true);     // hide the banner immediately
+    this.exitSolutionMode();
 
     // 5) Notify parent listeners
     this.codeChange.emit({ lang, code: currentStarter });
@@ -359,9 +469,388 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     window.addEventListener('pointerup', onUp);
   }
 
+  private syncDecisionGraphDecorations(
+    visible: boolean,
+    nodes: ResolvedDecisionNode[],
+    active: ResolvedDecisionNode | null,
+    _ready: boolean,
+  ): void {
+    if (!this.isBrowser) return;
+    const editor = this.codeEditor;
+    if (!editor || !visible || !nodes.length) {
+      editor?.clearLineHighlights?.();
+      return;
+    }
+
+    const mappedNodes = nodes.filter((item) => item.resolved);
+    if (!mappedNodes.length) {
+      editor.clearLineHighlights?.();
+      return;
+    }
+
+    editor.setLineHighlights?.(
+      mappedNodes.map((item) => ({
+        start: item.start,
+        end: item.end,
+        active: !!active && item.node.id === active.node.id,
+        hoverLabel: `Decision ${item.index + 1}: ${item.node.title}`,
+      })),
+    );
+  }
+
+  private resolveDecisionNodes(nodes: DecisionGraphNode[], code: string): ResolvedDecisionNode[] {
+    const codeLines = String(code || '').replace(/\r\n/g, '\n').split('\n');
+    const lineCount = Math.max(1, codeLines.length);
+    const normalizedLines = codeLines.map((line) => this.normalizeDecisionText(line));
+
+    return nodes.map((node, index) => {
+      const anchorStart = Math.max(1, Math.floor(node.anchor.lineStart || 1));
+      const anchorEndRaw = Math.max(anchorStart, Math.floor(node.anchor.lineEnd ?? node.anchor.lineStart ?? anchorStart));
+      const anchorLength = Math.max(0, anchorEndRaw - anchorStart);
+      const snippetNorm = this.normalizeDecisionText(node.anchor.snippet || '');
+
+      let resolvedStart: number | null = null;
+      if (snippetNorm) {
+        const snippetIdx = normalizedLines.findIndex((line) => line.includes(snippetNorm));
+        if (snippetIdx >= 0) {
+          resolvedStart = snippetIdx + 1;
+        }
+      }
+
+      if (resolvedStart == null && anchorStart <= lineCount) {
+        resolvedStart = anchorStart;
+      }
+
+      if (resolvedStart == null) {
+        return {
+          node,
+          index,
+          start: anchorStart,
+          end: anchorEndRaw,
+          resolved: false,
+        };
+      }
+
+      const end = Math.min(lineCount, resolvedStart + anchorLength);
+      return {
+        node,
+        index,
+        start: resolvedStart,
+        end,
+        resolved: true,
+      };
+    });
+  }
+
+  private normalizeDecisionText(value: string): string {
+    return String(value || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  }
+
+  private normalizeDecisionCode(value: string): string {
+    return String(value || '')
+      .replace(/\r\n/g, '\n')
+      .split('\n')
+      .map((line) => line.replace(/\s+$/g, ''))
+      .join('\n')
+      .trim();
+  }
+
+  private syncViewingSolutionFromDecisionGraph(doc: DecisionGraphDocument | null): void {
+    if (!doc) return;
+    if (!this.isDecisionGraphCodeAligned(doc)) return;
+
+    this.viewingSolution.set(true);
+  }
+
+  private isDecisionGraphCodeAligned(doc: DecisionGraphDocument | null): boolean {
+    if (!doc) return false;
+    if (doc.language === 'javascript' && this.jsLang() !== 'js') return false;
+    if (doc.language === 'typescript' && this.jsLang() !== 'ts') return false;
+
+    const current = this.normalizeDecisionCode(this.editorContent());
+    const canonical = this.normalizeDecisionCode(doc.code);
+    if (!current || !canonical) return false;
+    return current === canonical;
+  }
+
+  decisionNodeBadge(node: ResolvedDecisionNode): string {
+    return `D${node.index + 1}`;
+  }
+
+  selectDecisionNode(node: ResolvedDecisionNode, track = true): void {
+    this.decisionGraphNodeId.set(node.node.id);
+    if (node.resolved) {
+      this.codeEditor?.revealLine?.(node.start);
+    }
+
+    if (!track) return;
+    const q = this.question;
+    if (!q) return;
+    this.analytics?.track('decision_graph_node_opened', {
+      question_id: q.id,
+      node_id: node.node.id,
+      node_index: node.index + 1,
+      line_start: node.start,
+      line_end: node.end,
+      lang: this.jsLang(),
+    });
+  }
+
+  onDecisionNodeSpace(event: Event, node: ResolvedDecisionNode): void {
+    event.preventDefault();
+    this.selectDecisionNode(node);
+  }
+
+  onCodeEditorLineClick(event: MonacoLineClickEvent): void {
+    if (!this.decisionGraphVisible()) return;
+    const line = Math.max(1, Math.floor(Number(event?.lineNumber) || 0));
+    if (!line) return;
+
+    const target = this.decisionGraphNodes().find((node) =>
+      node.resolved && line >= node.start && line <= node.end,
+    );
+
+    if (!target) {
+      this.decisionGraphPopupOpen.set(false);
+      return;
+    }
+
+    this.selectDecisionNode(target);
+    this.setDecisionDefaultBranch(target.node.id);
+    this.positionDecisionPopup(event);
+    this.decisionGraphPopupOpen.set(true);
+  }
+
+  closeDecisionPopup(): void {
+    this.decisionGraphPopupOpen.set(false);
+  }
+
+  private positionDecisionPopup(event: MonacoLineClickEvent): void {
+    const shell = this.codeEditorShell?.nativeElement;
+    if (!shell) {
+      this.decisionGraphPopupSide.set('right');
+      this.decisionGraphPopupTop.set(16);
+      return;
+    }
+
+    const rect = shell.getBoundingClientRect();
+    const clickX = Number(event?.clientX) || rect.left;
+    const clickY = Number(event?.clientY) || rect.top;
+    const side: 'left' | 'right' = clickX < rect.left + rect.width / 2 ? 'right' : 'left';
+    const maxTop = Math.max(12, rect.height - 320);
+    const nextTop = Math.max(12, Math.min(maxTop, clickY - rect.top - 110));
+
+    this.decisionGraphPopupSide.set(side);
+    this.decisionGraphPopupTop.set(nextTop);
+  }
+
+  isDecisionBranchExpanded(branch: DecisionGraphBranch): boolean {
+    const active = this.activeDecisionNode();
+    if (!active) return false;
+    return (this.decisionGraphExpanded()[active.node.id] || []).includes(branch);
+  }
+
+  toggleDecisionBranch(branch: DecisionGraphBranch): void {
+    const active = this.activeDecisionNode();
+    if (!active) return;
+
+    const nodeId = active.node.id;
+    const state = { ...this.decisionGraphExpanded() };
+    const current = new Set<DecisionGraphBranch>(state[nodeId] || []);
+    const expanding = !current.has(branch);
+    if (expanding) current.add(branch);
+    else current.delete(branch);
+    state[nodeId] = [...current];
+    this.decisionGraphExpanded.set(state);
+
+    if (!expanding) return;
+
+    let seen = this.decisionGraphSeenBranchesByNode.get(nodeId);
+    if (!seen) {
+      seen = new Set<DecisionGraphBranch>();
+      this.decisionGraphSeenBranchesByNode.set(nodeId, seen);
+    }
+    if (seen.has(branch)) return;
+
+    seen.add(branch);
+    const q = this.question;
+    if (!q) return;
+    this.analytics?.track('decision_graph_branch_viewed', {
+      question_id: q.id,
+      node_id: nodeId,
+      branch,
+      lang: this.jsLang(),
+    });
+  }
+
+  onDecisionBranchSpace(event: Event, branch: DecisionGraphBranch): void {
+    event.preventDefault();
+    this.toggleDecisionBranch(branch);
+  }
+
+  private setDecisionDefaultBranch(nodeId: string): void {
+    if (!nodeId) return;
+    const state = { ...this.decisionGraphExpanded() };
+    state[nodeId] = ['why'];
+    this.decisionGraphExpanded.set(state);
+  }
+
+  toggleDecisionGraphUserEnabled(event?: Event): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+    const next = !this.decisionGraphUserEnabled();
+    this.setDecisionGraphUserEnabled(next);
+  }
+
+  private setDecisionGraphUserEnabled(enabled: boolean): void {
+    this.decisionGraphUserEnabled.set(!!enabled);
+    if (!enabled) this.decisionGraphPopupOpen.set(false);
+    this.refreshDecisionGraphDecorations();
+  }
+
+  private clearDecisionGraphState(clearDoc = true): void {
+    this.decisionGraphLoadToken += 1;
+    this.decisionGraphLoading.set(false);
+    if (clearDoc) this.decisionGraphDoc.set(null);
+    this.decisionGraphNodeId.set(null);
+    this.decisionGraphExpanded.set({});
+    this.decisionGraphSeenBranchesByNode.clear();
+    this.decisionGraphPopupOpen.set(false);
+    this.codeEditor?.clearLineHighlights?.();
+  }
+
+  private async loadDecisionGraphForQuestion(
+    question: Question,
+    assetPathOverride?: string | null,
+    allowQuestionFallback = true,
+    decisionGraphKeyOverride?: string | null,
+  ): Promise<void> {
+    this.clearDecisionGraphState();
+
+    if (!this.decisionGraphEnabled || !this.isBrowser || !this.decisionGraphService) return;
+    const override =
+      assetPathOverride === undefined ? '' : String(assetPathOverride || '').trim();
+    const questionAsset = String((question as any)?.decisionGraphAsset || '').trim();
+    const assetPath = override || (allowQuestionFallback ? questionAsset : '');
+    const normalizedKeyRaw =
+      decisionGraphKeyOverride == null ? '' : String(decisionGraphKeyOverride).trim();
+    const normalizedKey = normalizedKeyRaw || undefined;
+    if (!assetPath) return;
+
+    const token = ++this.decisionGraphLoadToken;
+    this.decisionGraphLoading.set(true);
+    try {
+      const doc = await firstValueFrom(
+        normalizedKey === undefined
+          ? this.decisionGraphService.load(assetPath)
+          : this.decisionGraphService.load(assetPath, normalizedKey || null),
+      );
+      if (token !== this.decisionGraphLoadToken) return;
+      if (!doc || (doc.questionId && doc.questionId !== question.id)) {
+        this.decisionGraphDoc.set(null);
+        return;
+      }
+      this.decisionGraphDoc.set(doc);
+      this.decisionGraphNodeId.set(doc.nodes[0]?.id ?? null);
+      this.syncViewingSolutionFromDecisionGraph(doc);
+    } catch {
+      if (token !== this.decisionGraphLoadToken) return;
+      this.decisionGraphDoc.set(null);
+    } finally {
+      if (token === this.decisionGraphLoadToken) {
+        this.decisionGraphLoading.set(false);
+      }
+    }
+  }
+
+  private resolveApproachDecisionGraphSelectionForCode(
+    question: Question,
+    lang: JsLang,
+    code: string,
+  ): { asset: string | null; key: string | null } | undefined {
+    const normalizedCode = this.normalizeDecisionCode(code);
+    if (!normalizedCode) return undefined;
+
+    const approaches = Array.isArray((question as any)?.solutionBlock?.approaches)
+      ? ((question as any).solutionBlock.approaches as Array<Record<string, unknown>>)
+      : [];
+    if (!approaches.length) return undefined;
+
+    const codeKey = lang === 'ts' ? 'codeTs' : 'codeJs';
+    for (let index = 0; index < approaches.length; index += 1) {
+      const approach = approaches[index] || {};
+      const approachCode = this.normalizeDecisionCode(String(approach[codeKey] || ''));
+      if (!approachCode || approachCode !== normalizedCode) continue;
+
+      const explicitKey = String(approach['decisionGraphKey'] || '').trim();
+      const explicitAsset = String(approach['decisionGraphAsset'] || '').trim();
+      if (explicitAsset) {
+        return {
+          asset: explicitAsset,
+          key: explicitKey || null,
+        };
+      }
+
+      const questionAsset = String((question as any)?.decisionGraphAsset || '').trim();
+      if (questionAsset) {
+        return {
+          asset: questionAsset,
+          key: explicitKey || `approach${index + 1}`,
+        };
+      }
+
+      const questionId = String((question as any)?.id || '').trim();
+      const techSlug = String((question as any)?.technology || '').trim().toLowerCase();
+      if (questionId && techSlug) {
+        return {
+          asset: `assets/questions/${techSlug}/decision-graphs/${questionId}-approach${index + 1}.v1.json`,
+          key: explicitKey || null,
+        };
+      }
+      return {
+        asset: null,
+        key: explicitKey || null,
+      };
+    }
+
+    return undefined;
+  }
+
+  private async loadDecisionGraphForCurrentCode(
+    question: Question,
+    lang: JsLang,
+    code: string,
+  ): Promise<void> {
+    if (!this.decisionGraphEnabled || !this.isBrowser || !this.decisionGraphService) return;
+
+    const selection = this.resolveApproachDecisionGraphSelectionForCode(question, lang, code);
+    const hasAssetOverride = selection !== undefined;
+    await this.loadDecisionGraphForQuestion(
+      question,
+      selection?.asset,
+      !hasAssetOverride,
+      selection?.key,
+    );
+    this.refreshDecisionGraphDecorations();
+  }
+
   constructor(
     public codeStore: CodeStorageService,
-  ) { }
+  ) {
+    effect(() => {
+      const visible = this.decisionGraphVisible();
+      const nodes = this.decisionGraphNodes();
+      const active = this.activeDecisionNode();
+      const ready = this.codeEditorReady();
+      this.syncDecisionGraphDecorations(visible, nodes, active, ready);
+      if (!visible && this.decisionGraphPopupOpen()) {
+        this.decisionGraphPopupOpen.set(false);
+      }
+    }, { allowSignalWrites: true });
+  }
 
   ngOnChanges(ch: SimpleChanges) {
     if (ch['question'] && this.question) {
@@ -384,6 +873,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   onCodeEditorReady() {
     this.codeEditorReady.set(true);
+    this.refreshDecisionGraphDecorations();
   }
 
   onTestsEditorReady() {
@@ -417,6 +907,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.hasRunTests.set(false);
       this.testResults.set([]);
       this.consoleEntries.set([]);
+      this.syncViewingSolutionFromDecisionGraph(this.decisionGraphDoc());
       this._hydrating = false;
       return;
     }
@@ -435,6 +926,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.testResults.set([]);
       this.consoleEntries.set([]);
       this.loadAssistStateForQuestion(q);
+      await this.loadDecisionGraphForCurrentCode(q, preferred, sJs);
       queueMicrotask(() => window.dispatchEvent(new Event('resize')));
       requestAnimationFrame(() => requestAnimationFrame(() => { this._hydrating = false; }));
       return;
@@ -502,6 +994,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.restoredFromStorage.set(restored);
     this.restoreDismissed.set(false);
     this.loadAssistStateForQuestion(q);
+    await this.loadDecisionGraphForCurrentCode(q, preferred, initial);
 
     // Nudge Monaco once the first frame is ready (prevents first-frame squiggles)
     queueMicrotask(() => window.dispatchEvent(new Event('resize')));   // NEW
@@ -512,6 +1005,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   private resetRunnerStateForQuestionChange(): void {
     this._runSeq += 1; // invalidate any in-flight run for the previous question
+    this.clearDecisionGraphState();
     this.isRunningTests.set(false);
     this.hasRunTests.set(false);
     this.testResults.set([]);
@@ -540,6 +1034,12 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   assistInterviewEnabled(): boolean {
     return !!this.assistFlags.interviewMode;
+  }
+
+  showInterviewSetup(): boolean {
+    if (!this.assistInterviewEnabled()) return false;
+    if (this.interviewModeEnabled()) return false;
+    return !this.solutionPanelOpen;
   }
 
   assistRubberDuckEnabled(): boolean {
@@ -1847,20 +2347,65 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     return { js, ts };
   }
 
-  public async applySolution(raw: string) {
+  public async applySolution(raw: string, options?: ApplySolutionOptions) {
+    const runToken = ++this.applySolutionToken;
+    this.topTab.set('code');
+
+    const q = this.question;
+    if (this.decisionGraphEnabled && q) {
+      const hasAssetOverride = !!options && Object.prototype.hasOwnProperty.call(options, 'decisionGraphAsset');
+      const hasKeyOverride = !!options && Object.prototype.hasOwnProperty.call(options, 'decisionGraphKey');
+      const graphAssetOverride = hasAssetOverride ? (options?.decisionGraphAsset ?? null) : undefined;
+      const graphKeyOverride = hasKeyOverride ? (options?.decisionGraphKey ?? null) : undefined;
+      await this.loadDecisionGraphForQuestion(
+        q,
+        graphAssetOverride,
+        !hasAssetOverride,
+        graphKeyOverride,
+      );
+      if (runToken !== this.applySolutionToken) return;
+    }
+
     let code = raw ?? '';
     if (this.jsLang() === 'js') {
       // convert if it looks like TS (ensureJs already handles detection + fallbacks)
       code = await this.ensureJs(code, 'solution.ts');
+      if (runToken !== this.applySolutionToken) return;
     }
 
     // Set the code and persist immediately
     await this.setCode(code);
+    if (runToken !== this.applySolutionToken) return;
 
     // Mark the solution banner visible
     this.viewingSolution.set(true);
     this.restoredFromStorage.set(true);
     this.restoreDismissed.set(false);
+    this.refreshDecisionGraphDecorations();
+
+    queueMicrotask(() => {
+      if (runToken !== this.applySolutionToken) return;
+      const first = this.decisionGraphNodes()[0];
+      if (!first) return;
+      this.selectDecisionNode(first, false);
+      this.refreshDecisionGraphDecorations();
+    });
+
+    if (this.isBrowser) {
+      requestAnimationFrame(() => {
+        if (runToken !== this.applySolutionToken) return;
+        this.refreshDecisionGraphDecorations();
+      });
+    }
+  }
+
+  private refreshDecisionGraphDecorations(): void {
+    this.syncDecisionGraphDecorations(
+      this.decisionGraphVisible(),
+      this.decisionGraphNodes(),
+      this.activeDecisionNode(),
+      this.codeEditorReady(),
+    );
   }
 
   private storageKeyFor(q: Question | null): string | null {

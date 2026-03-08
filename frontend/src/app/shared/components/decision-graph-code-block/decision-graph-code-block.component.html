@@ -1,0 +1,90 @@
+<section class="dg-shell" [class.dg-mobile]="isMobile()" data-testid="decision-graph-code-block">
+  <header class="dg-shell__head">
+    <div>
+      <p class="dg-shell__kicker">{{ title }}</p>
+      <h3 class="dg-shell__title">Code reasoning map</h3>
+    </div>
+    <p class="dg-shell__meta">{{ activeLanguageLabel() }}</p>
+  </header>
+
+  <div class="dg-shell__body">
+    <section class="dg-code" role="region" aria-label="Decision graph code">
+      <div class="dg-line-row" *ngFor="let line of lines(); let idx = index; trackBy: trackByIndex">
+        <ng-container *ngIf="nodeForLine(idx + 1) as node; else plainLine">
+          <button
+            type="button"
+            class="dg-line dg-line--interactive"
+            [class.dg-line--active]="isSelectedLine(idx + 1)"
+            [attr.aria-label]="'Open decision for line ' + (idx + 1)"
+            (click)="selectNode(node)"
+            (keydown.space)="onLineSpace($event, node)">
+            <span class="dg-gutter">{{ idx + 1 }}</span>
+            <code class="dg-code-text">{{ line || ' ' }}</code>
+            <span class="dg-chip">{{ lineDecisionLabel(idx + 1) }}</span>
+          </button>
+        </ng-container>
+
+        <ng-template #plainLine>
+          <div class="dg-line" [class.dg-line--active]="isSelectedLine(idx + 1)">
+            <span class="dg-gutter">{{ idx + 1 }}</span>
+            <code class="dg-code-text">{{ line || ' ' }}</code>
+          </div>
+        </ng-template>
+      </div>
+    </section>
+
+    <section class="dg-graph" role="region" aria-label="Decision graph details">
+      <ng-container *ngIf="selectedNode() as node; else emptyState">
+        <article class="dg-root">
+          <p class="dg-root__kicker">
+            Decision {{ selectedNodeIndex() + 1 }} · Lines {{ node.anchor.lineStart }}<ng-container *ngIf="node.anchor.lineEnd && node.anchor.lineEnd !== node.anchor.lineStart">-{{ node.anchor.lineEnd }}</ng-container>
+          </p>
+          <h4 class="dg-root__title">{{ node.title }}</h4>
+          <p class="dg-root__progress">{{ selectedNodeViewedCount() }}/3 branches explored</p>
+        </article>
+
+        <div class="dg-branches">
+          <article class="dg-branch dg-branch--why" [class.dg-branch--expanded]="isBranchExpanded('why')">
+            <button
+              type="button"
+              class="dg-branch__toggle"
+              [attr.aria-expanded]="isBranchExpanded('why')"
+              (click)="toggleBranch('why')"
+              (keydown.space)="onBranchSpace($event, 'why')">
+              Why this choice?
+            </button>
+            <p class="dg-branch__copy" *ngIf="isBranchExpanded('why')">{{ node.why }}</p>
+          </article>
+
+          <article class="dg-branch dg-branch--alternative" [class.dg-branch--expanded]="isBranchExpanded('alternative')">
+            <button
+              type="button"
+              class="dg-branch__toggle"
+              [attr.aria-expanded]="isBranchExpanded('alternative')"
+              (click)="toggleBranch('alternative')"
+              (keydown.space)="onBranchSpace($event, 'alternative')">
+              Alternative
+            </button>
+            <p class="dg-branch__copy" *ngIf="isBranchExpanded('alternative')">{{ node.alternative }}</p>
+          </article>
+
+          <article class="dg-branch dg-branch--tradeoff" [class.dg-branch--expanded]="isBranchExpanded('tradeoff')">
+            <button
+              type="button"
+              class="dg-branch__toggle"
+              [attr.aria-expanded]="isBranchExpanded('tradeoff')"
+              (click)="toggleBranch('tradeoff')"
+              (keydown.space)="onBranchSpace($event, 'tradeoff')">
+              Tradeoff
+            </button>
+            <p class="dg-branch__copy" *ngIf="isBranchExpanded('tradeoff')">{{ node.tradeoff }}</p>
+          </article>
+        </div>
+      </ng-container>
+
+      <ng-template #emptyState>
+        <div class="dg-empty">No decisions are mapped for this solution.</div>
+      </ng-template>
+    </section>
+  </div>
+</section>

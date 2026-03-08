@@ -321,7 +321,7 @@
                   <div class="ap-actions">
                     <button faButton [attr.data-testid]="'solution-load-approach-' + i"
                       *ngIf="(isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs))"
-                      (click)="loadApproach(ap)" title="Load into editor">
+                      (click)="loadApproach(ap, i)" title="Load into editor">
                       Load into editor
                     </button>
                   </div>
@@ -527,6 +527,7 @@
       <ng-template #jsBlock>
         <app-coding-js-panel #jsPanel class="flex-1 min-h-0 flex" [question]="question()!" [tech]="tech" [kind]="kind"
           [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
+          [solutionPanelOpen]="activePanel()===1"
           [hideRestoreBanner]="demoMode || hideRestoreBanner" [disablePersistence]="disablePersistence || demoMode"
           (langChange)="onChildLang($event)"
           (testResultsChange)="testResults.set($event)" (consoleEntriesChange)="consoleEntries.set($event)"

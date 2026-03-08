@@ -14,7 +14,7 @@
                 Older version
             </span>
 
-            <div *ngIf="assistInterviewEnabled() && !interviewModeEnabled()" class="interview-setup">
+            <div *ngIf="showInterviewSetup()" class="interview-setup">
                 <button
                     type="button"
                     class="compact-control-btn"
@@ -87,11 +87,12 @@
         <!-- TOP: code/tests editor area with adjustable height -->
         <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
             <!-- CODE editor -->
-            <div class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'" data-testid="js-code-editor">
+            <div #codeEditorShell class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'" data-testid="js-code-editor">
                 <ng-container *ngIf="useMonaco(); else liteCodeEditor">
                     <app-monaco-editor #codeEditor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
                         [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
-                        [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()">
+                        [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()"
+                        (lineClick)="onCodeEditorLineClick($event)">
                     </app-monaco-editor>
                     <textarea
                         *ngIf="!codeEditorReady()"
@@ -140,7 +141,108 @@
             </div>
 
             <div
-                *ngIf="topTab()==='code' && !interviewModeEnabled() && (showStuckNudge() || showExplainCard())"
+                *ngIf="decisionGraphShellVisible()"
+                class="editor-decision-dock"
+                data-testid="editor-decision-dock"
+            >
+                <div *ngIf="decisionGraphLoading()" class="editor-decision-card editor-decision-card--state">
+                    <strong>Code walkthrough</strong>
+                    <p>Preparing quick line notes…</p>
+                </div>
+
+                <div
+                    *ngIf="!decisionGraphLoading() && decisionGraphLanguageMismatch()"
+                    class="editor-decision-card editor-decision-card--state"
+                >
+                    <strong>Code walkthrough</strong>
+                    <p>
+                        These notes are authored for
+                        {{ decisionGraphDoc()?.language === 'typescript' ? 'TypeScript' : 'JavaScript' }}.
+                        Switch editor language to inspect it.
+                    </p>
+                </div>
+
+                <button
+                    *ngIf="decisionGraphHintVisible()"
+                    type="button"
+                    class="editor-decision-toggle editor-decision-toggle--floating"
+                    [attr.aria-pressed]="decisionGraphUserEnabled()"
+                    (click)="toggleDecisionGraphUserEnabled($event)"
+                >
+                    {{ decisionGraphUserEnabled() ? 'Hide line notes' : 'Show line notes' }}
+                </button>
+
+                <ng-container *ngIf="decisionGraphPopupVisible() && activeDecisionNode() as active">
+                    <section
+                        class="editor-decision-popup"
+                        [class.editor-decision-popup--left]="decisionGraphPopupSide() === 'left'"
+                        [class.editor-decision-popup--right]="decisionGraphPopupSide() === 'right'"
+                        [style.top.px]="decisionGraphPopupTop()"
+                    >
+                        <header class="editor-decision-card__head">
+                            <p class="editor-decision-card__eyebrow">Decision {{ decisionNodeBadge(active) }} · Lines {{ active.start }}<ng-container *ngIf="active.end !== active.start">-{{ active.end }}</ng-container></p>
+                            <button type="button" class="editor-decision-close" (click)="closeDecisionPopup()" aria-label="Close decision details">Close</button>
+                        </header>
+
+                        <article class="editor-decision-focus">
+                            <h4 class="editor-decision-focus__title">{{ active.node.title }}</h4>
+                            <p *ngIf="!active.resolved" class="editor-decision-focus__hint">
+                                This anchor is not present in the currently loaded solution variant.
+                            </p>
+                        </article>
+
+                        <section class="editor-decision-branches" aria-label="Decision branches">
+                            <article class="editor-branch" [class.expanded]="isDecisionBranchExpanded('why')">
+                                <button
+                                    type="button"
+                                    class="editor-branch__toggle"
+                                    [attr.aria-expanded]="isDecisionBranchExpanded('why')"
+                                    (click)="toggleDecisionBranch('why')"
+                                    (keydown.enter)="onDecisionBranchSpace($event, 'why')"
+                                    (keydown.space)="onDecisionBranchSpace($event, 'why')"
+                                >
+                                    <span>Why this choice?</span>
+                                    <i class="pi pi-chevron-down editor-branch__caret" aria-hidden="true"></i>
+                                </button>
+                                <p *ngIf="isDecisionBranchExpanded('why')" class="editor-branch__copy">{{ active.node.why }}</p>
+                            </article>
+
+                            <article class="editor-branch" [class.expanded]="isDecisionBranchExpanded('alternative')">
+                                <button
+                                    type="button"
+                                    class="editor-branch__toggle"
+                                    [attr.aria-expanded]="isDecisionBranchExpanded('alternative')"
+                                    (click)="toggleDecisionBranch('alternative')"
+                                    (keydown.enter)="onDecisionBranchSpace($event, 'alternative')"
+                                    (keydown.space)="onDecisionBranchSpace($event, 'alternative')"
+                                >
+                                    <span>Alternative</span>
+                                    <i class="pi pi-chevron-down editor-branch__caret" aria-hidden="true"></i>
+                                </button>
+                                <p *ngIf="isDecisionBranchExpanded('alternative')" class="editor-branch__copy">{{ active.node.alternative }}</p>
+                            </article>
+
+                            <article class="editor-branch" [class.expanded]="isDecisionBranchExpanded('tradeoff')">
+                                <button
+                                    type="button"
+                                    class="editor-branch__toggle"
+                                    [attr.aria-expanded]="isDecisionBranchExpanded('tradeoff')"
+                                    (click)="toggleDecisionBranch('tradeoff')"
+                                    (keydown.enter)="onDecisionBranchSpace($event, 'tradeoff')"
+                                    (keydown.space)="onDecisionBranchSpace($event, 'tradeoff')"
+                                >
+                                    <span>Tradeoff</span>
+                                    <i class="pi pi-chevron-down editor-branch__caret" aria-hidden="true"></i>
+                                </button>
+                                <p *ngIf="isDecisionBranchExpanded('tradeoff')" class="editor-branch__copy">{{ active.node.tradeoff }}</p>
+                            </article>
+                        </section>
+                    </section>
+                </ng-container>
+            </div>
+
+            <div
+                *ngIf="topTab()==='code' && !interviewModeEnabled() && !solutionPanelOpen && (showStuckNudge() || showExplainCard())"
                 class="editor-assist-dock"
                 data-testid="editor-assist-dock"
             >

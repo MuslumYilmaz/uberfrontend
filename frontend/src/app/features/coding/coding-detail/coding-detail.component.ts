@@ -86,6 +86,8 @@ type FAApproach = {
   codeTs?: string;
   codeHtml?: string;
   codeCss?: string;
+  decisionGraphAsset?: string;
+  decisionGraphKey?: string;
 };
 
 type FAFollowUpRef = string | { id: string };
@@ -1398,7 +1400,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
   }
 
-
   private getActiveJsLang(): 'js' | 'ts' {
     const fromChild = this.jsPanel?.['jsLang']?.();
     return (fromChild === 'ts' || fromChild === 'js') ? fromChild : this.currentJsLang();
@@ -2261,7 +2262,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     if (!value?.trim()) return;
 
-    this.jsPanel?.applySolution(value);
+    const firstDecisionGraph = this.resolveApproachDecisionGraphSelection(first || null, 0);
+    this.jsPanel?.applySolution(value, {
+      decisionGraphAsset: firstDecisionGraph.asset,
+      decisionGraphKey: firstDecisionGraph.key,
+    });
     this.topTab.set('code');
   }
 
@@ -2611,8 +2616,58 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       : (ap.codeJs ?? '');
   }
 
+  private resolveApproachDecisionGraphSelection(
+    ap: FAApproach | null | undefined,
+    approachIndex: number,
+  ): { asset: string | null; key: string | null } {
+    const explicitAsset = String(ap?.decisionGraphAsset || '').trim();
+    const explicitKey = String(ap?.decisionGraphKey || '').trim();
+
+    const q = this.question();
+    if (!q) {
+      return {
+        asset: explicitAsset || null,
+        key: explicitKey || null,
+      };
+    }
+    if (!Number.isFinite(approachIndex) || approachIndex < 0) {
+      return {
+        asset: explicitAsset || String((q as any)?.decisionGraphAsset || '').trim() || null,
+        key: explicitKey || null,
+      };
+    }
+
+    const questionAsset = String((q as any)?.decisionGraphAsset || '').trim();
+    if (explicitAsset) {
+      return {
+        asset: explicitAsset,
+        key: explicitKey || null,
+      };
+    }
+
+    if (questionAsset) {
+      return {
+        asset: questionAsset,
+        key: explicitKey || `approach${approachIndex + 1}`,
+      };
+    }
+
+    const techSlug = String((q as any)?.technology || this.tech || '').trim().toLowerCase();
+    if (!techSlug) {
+      return {
+        asset: null,
+        key: explicitKey || null,
+      };
+    }
+
+    return {
+      asset: `assets/questions/${techSlug}/decision-graphs/${q.id}-approach${approachIndex + 1}.v1.json`,
+      key: explicitKey || null,
+    };
+  }
+
   // Load one approach directly into the appropriate editor
-  loadApproach(ap: FAApproach) {
+  loadApproach(ap: FAApproach, approachIndex: number) {
     // 1) HTML/CSS questions → delegate to web panel
     if (this.isWebTech()) {
       const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
@@ -2658,7 +2713,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     if (!code.trim()) return;
 
-    this.jsPanel?.applySolution(code);
+    const selection = this.resolveApproachDecisionGraphSelection(ap, approachIndex);
+    this.jsPanel?.applySolution(code, {
+      decisionGraphAsset: selection.asset,
+      decisionGraphKey: selection.key,
+    });
     this.topTab.set('code');
   }
 

@@ -59,6 +59,8 @@ export interface Question {
   tests?: string;
   examples?: string[]; // fallback if structured description lacks examples
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
+  decisionGraphAsset?: string;
+  decisionGraphKey?: string;
 }
 
 export const isQuestionLockedForTier = (

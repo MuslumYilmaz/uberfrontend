@@ -9,6 +9,12 @@ declare global {
   interface Window { require: any; monaco: any; }
 }
 
+export type MonacoLineClickEvent = {
+  lineNumber: number;
+  clientX: number;
+  clientY: number;
+};
+
 @Component({
   selector: 'app-monaco-editor',
   standalone: true,
@@ -43,11 +49,13 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   @Output() codeChange = new EventEmitter<string>();
   @Output() ready = new EventEmitter<void>();
+  @Output() lineClick = new EventEmitter<MonacoLineClickEvent>();
   @Input() modelKey?: string; // stable key from parent, e.g., "q-42-code"
 
   // ADD
   private editor!: any;
   private model?: any;                  // NEW: keep a handle to the model
+  private decorationIds: string[] = [];
   private suppressNextModelUpdate = false;
   private disposed = false;
   private readyEmitted = false;
@@ -142,6 +150,17 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       if (this.autoHeight) this.fit();
     });
 
+    this.editor.onMouseDown?.((event: any) => {
+      const lineNumber = Number(event?.target?.position?.lineNumber || 0);
+      const browserEvent = event?.event?.browserEvent as MouseEvent | undefined;
+      if (!lineNumber || !browserEvent) return;
+      this.lineClick.emit({
+        lineNumber,
+        clientX: browserEvent.clientX,
+        clientY: browserEvent.clientY,
+      });
+    });
+
     // Auto-height handling
     if (this.autoHeight) {
       this.editor.updateOptions({
@@ -226,6 +245,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   ngOnDestroy() {
     if (!this.isBrowser) return;
     this.disposed = true;
+    this.clearLineHighlights();
     try { this.resizeObs?.disconnect(); } catch { }
     try { this.editor?.dispose?.(); } catch { }
     try { this.model?.dispose?.(); } catch { }  // keep this
@@ -233,6 +253,45 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   getValue(): string {
     return this.model?.getValue?.() ?? this.editor?.getValue?.() ?? this.code ?? '';
+  }
+
+  setLineHighlights(lines: Array<{ start: number; end?: number; active?: boolean; hoverLabel?: string }>): void {
+    if (!this.editor || !window.monaco) return;
+    const specs = Array.isArray(lines) ? lines : [];
+    const toPositive = (value: number) => Math.max(1, Math.floor(Number(value) || 1));
+    const model = this.editor.getModel?.();
+    const lineCount = Math.max(1, Math.floor(Number(model?.getLineCount?.() || 1)));
+
+    const decorations = specs.map((spec) => {
+      const start = Math.min(lineCount, toPositive(spec.start));
+      const end = Math.min(lineCount, Math.max(start, toPositive(spec.end ?? spec.start)));
+      const hoverLabel = String(spec.hoverLabel || '').trim();
+      const endColumn = Math.max(1, Math.floor(Number(model?.getLineMaxColumn?.(end) || 1)));
+      return {
+        range: new window.monaco.Range(start, 1, end, endColumn),
+        options: {
+          isWholeLine: true,
+          className: spec.active ? 'fa-dg-line-active' : 'fa-dg-line',
+          lineNumberClassName: spec.active ? 'fa-dg-line-number-active' : 'fa-dg-line-number',
+          marginClassName: spec.active ? 'fa-dg-margin-active' : 'fa-dg-margin',
+          linesDecorationsClassName: spec.active ? 'fa-dg-gutter-active' : 'fa-dg-gutter',
+          hoverMessage: hoverLabel ? [{ value: hoverLabel }] : undefined,
+        },
+      };
+    });
+
+    this.decorationIds = this.editor.deltaDecorations(this.decorationIds, decorations);
+  }
+
+  clearLineHighlights(): void {
+    if (!this.editor) return;
+    this.decorationIds = this.editor.deltaDecorations(this.decorationIds, []);
+  }
+
+  revealLine(line: number): void {
+    if (!this.editor) return;
+    const normalized = Math.max(1, Math.floor(Number(line) || 1));
+    this.editor.revealLineInCenter?.(normalized);
   }
 
   // ---------- helpers ----------

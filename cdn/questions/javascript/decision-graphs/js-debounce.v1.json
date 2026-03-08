@@ -1,0 +1,133 @@
+{
+  "questionId": "js-debounce",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function debounce(fn, delay) {\n  let timeoutId;\n  return function (...args) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn.apply(this, args), delay);\n  };\n}\n",
+      "nodes": [
+        {
+          "id": "d1-reset-pending-timer",
+          "title": "Reset pending timer before scheduling",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "clearTimeout(timeoutId);"
+          },
+          "why": "When events come in quickly (like typing), we only want the latest one to win. Clearing the old timer prevents stale calls from running.",
+          "alternative": "Start a timer only once and ignore the rest until it fires (that behaves more like throttle).",
+          "tradeoff": "This gives true trailing debounce behavior, but if input never pauses, execution keeps getting pushed back."
+        },
+        {
+          "id": "d2-schedule-latest-call",
+          "title": "Schedule latest call with current context",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "timeoutId = setTimeout(() => fn.apply(this, args), delay);"
+          },
+          "why": "After the user stops, we run exactly one call using the latest arguments and the correct `this` context.",
+          "alternative": "Store `lastArgs` and `lastThis` explicitly, then invoke them in the timeout callback.",
+          "tradeoff": "Inline `apply` is compact and easy to read, while explicit state is easier to extend for richer APIs."
+        },
+        {
+          "id": "d3-closure-timer-state",
+          "title": "Keep timer state in closure",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "let timeoutId;"
+          },
+          "why": "The timer id has to survive between calls. A closure is the simplest way to keep that shared state.",
+          "alternative": "Store timers in an external map keyed by function or component id.",
+          "tradeoff": "Closure state keeps the implementation small and local, but external stores can be easier to inspect globally."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function debounce(fn, delay) {\n  let timeoutId, lastArgs, lastThis;\n  function debounced(...args) {\n    lastArgs = args;\n    lastThis = this;\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => {\n      timeoutId = undefined;\n      fn.apply(lastThis, lastArgs);\n    }, delay);\n  }\n  debounced.cancel = () => {\n    if (timeoutId !== undefined) {\n      clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n  };\n  debounced.flush = () => {\n    if (timeoutId !== undefined) {\n      clearTimeout(timeoutId);\n      timeoutId = undefined;\n      fn.apply(lastThis, lastArgs);\n    }\n  };\n  return debounced;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-track-latest-call",
+          "title": "Track latest args/context for delayed execution",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 5,
+            "snippet": "lastArgs = args;"
+          },
+          "why": "`flush()` and the delayed callback should run with the most recent input, not an older one from earlier in the burst.",
+          "alternative": "Run immediately with current args and avoid storing any \"last\" state.",
+          "tradeoff": "Remembering last args/context unlocks better control APIs, but it does add more mutable state to manage."
+        },
+        {
+          "id": "d2-cancel-api",
+          "title": "Expose cancel to drop pending work",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 17,
+            "snippet": "debounced.cancel = () => {"
+          },
+          "why": "In real apps, users navigate away or components unmount. `cancel()` gives a safe way to stop pending work.",
+          "alternative": "Return only a plain debounced function and force callers to manage cancellation themselves.",
+          "tradeoff": "Built-in cancel is ergonomic and safer, but the returned value is no longer a plain function."
+        },
+        {
+          "id": "d3-flush-api",
+          "title": "Expose flush for immediate execution",
+          "anchor": {
+            "lineStart": 18,
+            "lineEnd": 24,
+            "snippet": "debounced.flush = () => {"
+          },
+          "why": "`flush()` is useful when you want pending work to run right now (for example, right before submit).",
+          "alternative": "Wait for the timer to finish naturally, or call the original function outside debounce.",
+          "tradeoff": "It gives precise control to callers, but adds one more behavior they need to understand."
+        }
+      ]
+    },
+    "approach3": {
+      "language": "javascript",
+      "code": "export default function debounce(fn, delay, { leading = false } = {}) {\n  let timeoutId;\n  let lastArgs;\n  let lastThis;\n\n  return function (...args) {\n    lastArgs = args;\n    lastThis = this;\n    const shouldCallNow = leading && !timeoutId;\n\n    if (timeoutId) clearTimeout(timeoutId);\n\n    timeoutId = setTimeout(() => {\n      timeoutId = undefined;\n      if (!leading) fn.apply(lastThis, lastArgs);\n    }, delay);\n\n    if (shouldCallNow) fn.apply(lastThis, lastArgs);\n  };\n}\n",
+      "nodes": [
+        {
+          "id": "d1-leading-gate",
+          "title": "Gate immediate execution for leading mode",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "const shouldCallNow = leading && !timeoutId"
+          },
+          "why": "In leading mode, we want the first call to run immediately, then stay quiet until the cooldown ends. This guard enforces that.",
+          "alternative": "Use timestamp math to decide whether enough time has passed since the last run.",
+          "tradeoff": "Timer-based gating is easier to read; timestamp logic can be more flexible for edge timing rules."
+        },
+        {
+          "id": "d2-reset-window",
+          "title": "Reset debounce window on every call",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "if (timeoutId) clearTimeout(timeoutId)"
+          },
+          "why": "Every new event extends the quiet window. Clearing and rescheduling ensures we react to the latest user intent.",
+          "alternative": "Keep the original timer and ignore newer events until it fires.",
+          "tradeoff": "Better UX for typing/search, but nonstop activity can postpone execution for a long time."
+        },
+        {
+          "id": "d3-trailing-call",
+          "title": "Invoke trailing call only when not in leading mode",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 15,
+            "snippet": "if (!leading) fn.apply(lastThis, lastArgs)"
+          },
+          "why": "If we already fired on the leading edge, firing again on the trailing edge would duplicate work for the same burst.",
+          "alternative": "Expose a `trailing` flag and allow both leading and trailing calls when desired.",
+          "tradeoff": "This keeps behavior simple and predictable, but it is less configurable than a full leading+trailing API."
+        }
+      ]
+    }
+  }
+}
