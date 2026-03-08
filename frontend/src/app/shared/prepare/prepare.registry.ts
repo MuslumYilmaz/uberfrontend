@@ -8,7 +8,7 @@ export type PrepareGroupKey =
     | 'courses'
     | 'resources';
 
-export type TargetName = 'practice' | 'system' | 'companies' | 'courses' | 'guides';
+export type TargetName = 'practice' | 'system' | 'companies' | 'courses' | 'guides' | 'tracks' | 'warmup';
 
 export interface PrepareTarget {
     name: TargetName;
@@ -69,9 +69,33 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
         title: 'Practice',
         items: [
             {
+                key: 'practice-coding',
+                title: 'Coding drills now',
+                subtitle: 'Solve individual interview questions',
+                pi: 'pi pi-bolt',
+                intent: 'route',
+                target: { name: 'practice' },
+            },
+            {
+                key: 'practice-tracks',
+                title: 'Guided prep tracks',
+                subtitle: 'Run a structured multi-day sequence',
+                pi: 'pi pi-directions',
+                intent: 'route',
+                target: { name: 'tracks' },
+            },
+            {
+                key: 'practice-warmup',
+                title: 'Interview warm-up hub',
+                subtitle: 'Warm-up index and discovery surface',
+                pi: 'pi pi-list',
+                intent: 'route',
+                target: { name: 'warmup' },
+            },
+            {
                 key: 'practice-js',
                 title: 'JavaScript',
-                subtitle: 'Coding, Trivia & Debug practice',
+                subtitle: 'Targeted JavaScript coding and trivia',
                 pi: 'pi-code',
                 intent: 'route',
                 target: { name: 'practice', params: { tech: 'javascript' } },
@@ -79,7 +103,7 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
             {
                 key: 'practice-angular',
                 title: 'Angular',
-                subtitle: 'Coding, Trivia & Debug practice',
+                subtitle: 'Targeted Angular coding and trivia',
                 pi: 'pi-code',
                 intent: 'route',
                 target: { name: 'practice', params: { tech: 'angular' } },

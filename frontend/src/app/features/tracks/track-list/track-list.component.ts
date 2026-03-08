@@ -8,7 +8,7 @@ import { SeoService } from '../../../core/services/seo.service';
 
 const TRACKS_PLATFORM_TITLE = 'Frontend Interview Prep Platform and Tracks';
 const TRACKS_PLATFORM_DESCRIPTION =
-  'Use the frontend interview prep platform to run guided practice tracks, then connect each track with frontend interview warm-up hubs by technology.';
+  'Use the frontend interview prep platform to run a structured multi-day interview sequence, then connect each track with frontend interview warm-up hubs by technology.';
 
 type MasteryTrackCard = {
   slug: string;
@@ -81,6 +81,16 @@ export class TrackListComponent implements OnInit {
     },
   ];
   allTrackCardsCount = this.tracks.length + this.masteryCards.length;
+  routeRolePrimary = {
+    label: 'Start guided plan now',
+    route: ['/tracks', 'javascript-prep-path', 'mastery'] as any[],
+    queryParams: { entry: 'tracks_role_contract' } as Record<string, string>,
+  };
+  routeRoleSecondary = {
+    label: 'Open warm-up hub',
+    route: ['/interview-questions'] as any[],
+    queryParams: { entry: 'tracks_role_contract' } as Record<string, string>,
+  };
   interviewHubQuickLinks: HubQuickLink[] = [
     {
       label: 'Frontend interview warm-up hub',

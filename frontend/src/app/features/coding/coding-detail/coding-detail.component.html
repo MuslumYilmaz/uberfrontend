@@ -65,6 +65,24 @@
               <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
 
+            <section class="quick-win-next" *ngIf="quickWinActive()" data-testid="quick-win-next-step">
+              <p class="quick-win-next__kicker">Quick-win path</p>
+              <p class="quick-win-next__title">
+                {{ quickWinCompleted() ? 'Great start. Keep the momentum.' : 'Good start. Next: one explanation check.' }}
+              </p>
+              <p class="quick-win-next__copy">
+                Move to one high-importance trivia prompt, or switch to a guided multi-day track.
+              </p>
+              <div class="quick-win-next__actions">
+                <button type="button" faButton variant="primary" (click)="continueQuickWinWithTrivia()">
+                  Open 1 trivia check
+                </button>
+                <button type="button" faButton variant="ghost" (click)="continueQuickWinWithTrack()">
+                  Switch to guided track
+                </button>
+              </div>
+            </section>
+
             <!-- Özet / prose -->
             <div *ngIf="(descSummary() || descriptionText()) as prose" class="whitespace-pre-wrap opacity-90 mt-3">
               {{ displayText(prose) }}

@@ -20,7 +20,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
-import { filter, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, filter, takeUntil } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
@@ -269,6 +269,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private lastTrackedChallengeOpenKey: string | null = null;
   private ahaFirstTestRunTracked = false;
   private ahaFirstPassTracked = false;
+  quickWinActive = signal(false);
+  quickWinCompleted = signal(false);
+  private quickWinStartedTracked = false;
+  private quickWinCompletedTracked = false;
+  private quickWinQuestionId: string | null = null;
+  private prepAnalyticsSessionId = 'ssr';
+  private readonly prepAnalyticsSessionKey = 'fa:prep:session-id:v1';
 
   // Practice session
   private practice: PracticeSession = null;
@@ -697,6 +704,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ---------- init ----------
   ngOnInit() {
+    this.prepAnalyticsSessionId = this.resolvePrepAnalyticsSessionId();
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destroy$), filter(() => !this.questionId))
+      .subscribe(() => this.syncQuickWinContextFromRoute());
+    this.syncQuickWinContextFromRoute();
+
     this.signupPromptVariant = this.experiments.variant('signup_prompt_copy_v1', 'coding_detail');
     this.premiumGateVariant = this.experiments.variant('premium_gate_copy_v1', 'coding_detail');
     this.applySignupPromptCopy();
@@ -1248,6 +1261,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.question.set(q);
     this.loadState.set('loaded');
     this.challengeSource = this.readChallengeSource();
+    this.syncQuickWinContextFromRoute();
+    this.trackQuickWinStarted(q.id);
     this.ahaFirstTestRunTracked = false;
     this.ahaFirstPassTracked = false;
     this.trackChallengeOpened(q.id);
@@ -1520,6 +1535,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         src: this.challengeSource,
         elapsed_sec: Math.max(0, Math.round((Date.now() - this.sessionStart) / 1000)),
       });
+      this.trackQuickWinCompleted(q.id, 'first_pass');
       this.maybePromptOnboarding('first_pass', q.id);
     }
 
@@ -1546,6 +1562,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.isFrameworkTech() || this.isWebTech()) {
       await this.progress.markSolved(q.id);
       this.solved.set(true);
+      this.trackQuickWinCompleted(q.id, 'submit');
       this.maybePromptLifecycle('coding_submit', q.id);
       this.creditDaily();
       this.recordCompletion('submit');
@@ -1564,6 +1581,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
 
     await this.progress.markSolved(q.id);
+    this.trackQuickWinCompleted(q.id, 'submit');
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     this.recordCompletion('submit');
@@ -1643,6 +1661,105 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!raw) return 'direct';
     if (!/^[a-z0-9_-]{1,64}$/.test(raw)) return 'direct';
     return raw;
+  }
+
+  private syncQuickWinContextFromRoute(): void {
+    const qp = this.route.snapshot.queryParamMap;
+    const entry = String(qp.get('entry') || '').trim().toLowerCase();
+    const quickWinFlag = qp.get('quick_win');
+    const active = entry === 'dashboard_launcher' && quickWinFlag === '1';
+
+    this.quickWinActive.set(active);
+    if (!active) {
+      this.quickWinCompleted.set(false);
+      this.quickWinStartedTracked = false;
+      this.quickWinCompletedTracked = false;
+      this.quickWinQuestionId = null;
+    }
+  }
+
+  private trackQuickWinStarted(questionId: string): void {
+    if (!this.quickWinActive() || this.quickWinStartedTracked) return;
+    this.quickWinQuestionId = questionId;
+    this.quickWinStartedTracked = true;
+    this.analytics.track('quick_win_started', {
+      surface: 'coding_detail',
+      selected_intent: 'solve_now',
+      is_logged_in: this.auth.isLoggedIn(),
+      entry_route: '/dashboard',
+      session_id: this.prepAnalyticsSessionId,
+      question_id: questionId,
+      tech: this.tech,
+      kind: this.kind,
+    });
+  }
+
+  private trackQuickWinCompleted(questionId: string, via: 'first_pass' | 'submit'): void {
+    if (!this.quickWinActive() || this.quickWinCompletedTracked) return;
+    if (this.quickWinQuestionId && this.quickWinQuestionId !== questionId) return;
+    this.quickWinCompletedTracked = true;
+    this.quickWinCompleted.set(true);
+    this.analytics.track('quick_win_completed', {
+      surface: 'coding_detail',
+      selected_intent: 'solve_now',
+      is_logged_in: this.auth.isLoggedIn(),
+      entry_route: '/dashboard',
+      session_id: this.prepAnalyticsSessionId,
+      question_id: questionId,
+      via,
+      tech: this.tech,
+      kind: this.kind,
+    });
+  }
+
+  continueQuickWinWithTrivia(): void {
+    this.analytics.track('next_step_clicked', {
+      surface: 'coding_detail',
+      selected_intent: 'solve_now',
+      is_logged_in: this.auth.isLoggedIn(),
+      entry_route: '/dashboard',
+      session_id: this.prepAnalyticsSessionId,
+      action: 'trivia_explanation',
+      question_id: this.quickWinQuestionId,
+    });
+    this.router.navigate(['/coding'], {
+      queryParams: {
+        tech: 'javascript',
+        kind: 'trivia',
+        imp: 'high',
+        reset: 1,
+        entry: 'dashboard_launcher',
+        src: 'dashboard_launcher',
+      },
+    });
+  }
+
+  continueQuickWinWithTrack(): void {
+    this.analytics.track('next_step_clicked', {
+      surface: 'coding_detail',
+      selected_intent: 'solve_now',
+      is_logged_in: this.auth.isLoggedIn(),
+      entry_route: '/dashboard',
+      session_id: this.prepAnalyticsSessionId,
+      action: 'guided_plan',
+      question_id: this.quickWinQuestionId,
+    });
+    this.router.navigate(['/tracks'], {
+      queryParams: { entry: 'dashboard_launcher' },
+    });
+  }
+
+  private resolvePrepAnalyticsSessionId(): string {
+    if (!this.isBrowser) return 'ssr';
+    try {
+      const existing = sessionStorage.getItem(this.prepAnalyticsSessionKey);
+      if (existing) return existing;
+      const next = `prep_${Math.random().toString(36).slice(2, 10)}`;
+      sessionStorage.setItem(this.prepAnalyticsSessionKey, next);
+      return next;
+    } catch {
+      return 'browser';
+    }
   }
 
   private trackChallengeOpened(questionId: string) {

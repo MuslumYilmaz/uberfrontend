@@ -561,7 +561,7 @@ export class HeaderComponent implements OnInit {
       case 'resources':
         return ['/guides'];
       case 'practice':
-        return ['/', this.resolveTech()];
+        return ['/coding'];
       case 'system':
         return ['/system-design'];
       case 'companies':
@@ -602,6 +602,10 @@ export class HeaderComponent implements OnInit {
       }
       case 'courses':
         return ['/courses'];
+      case 'tracks':
+        return ['/tracks'];
+      case 'warmup':
+        return ['/interview-questions'];
       case 'guides': {
         const section = (t.params?.['section'] as string | undefined) ?? '';
         if (section === 'playbook' || section === 'interview-blueprint') return (['/guides', 'interview-blueprint']);

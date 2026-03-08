@@ -5,54 +5,64 @@
         <p class="eyebrow">Tracks</p>
         <h1>Frontend Interview Prep Platform and Tracks</h1>
         <p class="lede">
-          Use this interview prep platform when you need a guided sequence instead of random practice tabs. Each track combines coding, trivia, and system design in one flow.
+          Run a structured multi-day prep sequence. Each track combines coding, trivia, and system design in one focused flow.
         </p>
-        <p class="lede lede-sub">
-          Start from the interview warm-up hub, then run these tracks to keep weekly prep focused on one target stack and timeline.
-        </p>
-        <p class="lede lede-sub">
-          Track pages are previewable so you can evaluate scope first, then unlock full guided flows when you are ready.
-        </p>
-        <p class="chip-group-title chip-group-title--links">Interview warm-up hub</p>
-        <div class="hero-links" aria-label="Interview warm-up hubs">
+        <div class="hero-role-actions">
           <a
-            *ngFor="let hub of interviewHubQuickLinks"
-            class="hero-link"
-            [ngClass]="hub.toneClass"
-            [routerLink]="hub.route">
-            {{ hub.label }}
+            class="hero-role-cta hero-role-cta--primary"
+            [routerLink]="routeRolePrimary.route"
+            [queryParams]="routeRolePrimary.queryParams">
+            {{ routeRolePrimary.label }}
+          </a>
+          <a
+            class="hero-role-cta hero-role-cta--secondary"
+            [routerLink]="routeRoleSecondary.route"
+            [queryParams]="routeRoleSecondary.queryParams">
+            {{ routeRoleSecondary.label }}
           </a>
         </div>
-        <p class="chip-group-title">Coverage areas</p>
-        <div class="badges" aria-label="Coverage areas">
-          <span class="badge badge--system">UI + System Design</span>
-          <span class="badge badge--framework">React / Angular / Vue</span>
-          <span class="badge badge--foundation">HTML • CSS • JS</span>
-        </div>
-        <p class="chip-group-title chip-group-title--links">Quick links</p>
-        <div class="hero-links" aria-label="Quick links">
-          <a class="hero-link hero-link--hub" [routerLink]="['/']">Prep roadmap homepage</a>
-          <a class="hero-link hero-link--hub" [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
-          <a class="hero-link hero-link--js" [routerLink]="['/guides/framework-prep/javascript-prep-path']">JavaScript path</a>
-          <a class="hero-link hero-link--mastery" [routerLink]="['/tracks/javascript-prep-path/mastery']">JavaScript mastery</a>
-          <a class="hero-link hero-link--react" [routerLink]="['/guides/framework-prep/react-prep-path']">React path</a>
-          <a class="hero-link hero-link--angular" [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular path</a>
-          <a class="hero-link hero-link--vue" [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue path</a>
-          <a class="hero-link hero-link--system" [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
-          <a class="hero-link hero-link--focus" [routerLink]="['/focus-areas']">All focus areas</a>
-        </div>
-        <app-prep-signal-grid
-          class="prep-path-panel"
-          [outcomes]="trackPrepOutcomes"
-          [mistakes]="trackPrepMistakes"
-          [sequence]="trackPrepSequence">
-        </app-prep-signal-grid>
+        <details class="hero-more-routes">
+          <summary>More routes and prep links</summary>
+          <p class="chip-group-title chip-group-title--links">Interview warm-up hub</p>
+          <div class="hero-links" aria-label="Interview warm-up hubs">
+            <a
+              *ngFor="let hub of interviewHubQuickLinks"
+              class="hero-link"
+              [ngClass]="hub.toneClass"
+              [routerLink]="hub.route">
+              {{ hub.label }}
+            </a>
+          </div>
+          <p class="chip-group-title">Coverage areas</p>
+          <div class="badges" aria-label="Coverage areas">
+            <span class="badge badge--system">UI + System Design</span>
+            <span class="badge badge--framework">React / Angular / Vue</span>
+            <span class="badge badge--foundation">HTML • CSS • JS</span>
+          </div>
+          <p class="chip-group-title chip-group-title--links">Quick links</p>
+          <div class="hero-links" aria-label="Quick links">
+            <a class="hero-link hero-link--hub" [routerLink]="['/']">Prep roadmap homepage</a>
+            <a class="hero-link hero-link--hub" [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
+            <a class="hero-link hero-link--js" [routerLink]="['/guides/framework-prep/javascript-prep-path']">JavaScript path</a>
+            <a class="hero-link hero-link--mastery" [routerLink]="['/tracks/javascript-prep-path/mastery']">JavaScript mastery</a>
+            <a class="hero-link hero-link--react" [routerLink]="['/guides/framework-prep/react-prep-path']">React path</a>
+            <a class="hero-link hero-link--angular" [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular path</a>
+            <a class="hero-link hero-link--vue" [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue path</a>
+            <a class="hero-link hero-link--system" [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
+            <a class="hero-link hero-link--focus" [routerLink]="['/focus-areas']">All focus areas</a>
+          </div>
+          <app-prep-signal-grid
+            class="prep-path-panel"
+            [outcomes]="trackPrepOutcomes"
+            [mistakes]="trackPrepMistakes"
+            [sequence]="trackPrepSequence">
+          </app-prep-signal-grid>
+        </details>
       </div>
       <div class="hero-callout">
         <div class="hero-num">{{ allTrackCardsCount }}</div>
         <div class="hero-text">Tracks to jump-start prep</div>
-        <div class="hero-note">Pick one, then dive into the questions.</div>
-        <a class="hero-cta" [routerLink]="['/pricing']">Unlock full interview prep</a>
+        <div class="hero-note">Pick one path and finish it before switching stacks.</div>
       </div>
     </div>
   </div>

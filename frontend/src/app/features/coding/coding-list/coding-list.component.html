@@ -1,25 +1,38 @@
 <div class="coding-shell mx-auto max-w-7xl px-4 py-6" data-testid="coding-list-page">
   <header class="fa-page-header">
-    <p class="fa-page-kicker">Practice library</p>
+    <p class="fa-page-kicker">Coding route</p>
     <h1 class="fa-page-title">Frontend coding challenges</h1>
-    <p class="fa-page-subtitle fa-body">Use these frontend coding challenges as part of your interview roadmap: filter by framework, difficulty, and focus area to prepare with intent.</p>
+    <p class="fa-page-subtitle fa-body">Solve individual interview questions now: filter by framework, difficulty, and focus area, then start one prompt immediately.</p>
   </header>
+
+  <section class="fa-role-contract" *ngIf="source === 'global-coding'" aria-label="Coding route purpose">
+    <p class="fa-role-contract__kicker">Route purpose</p>
+    <h2 class="fa-role-contract__title">Solve individual interview questions now</h2>
+    <p class="fa-role-contract__copy">
+      Pick one high-impact coding prompt and start immediately. Use tracks when you need a structured multi-day sequence.
+    </p>
+    <div class="fa-role-contract__actions">
+      <a
+        faButton
+        variant="primary"
+        [routerLink]="rolePrimaryRoute"
+        [queryParams]="rolePrimaryQueryParams">
+        Start high-impact JS coding
+      </a>
+      <a
+        faButton
+        variant="ghost"
+        [routerLink]="roleSecondaryRoute"
+        [queryParams]="roleSecondaryQueryParams">
+        Open guided tracks
+      </a>
+    </div>
+  </section>
 
   <section class="fa-access-note" *ngIf="source === 'global-coding'" aria-label="Access and pricing">
     <p class="fa-meta-text">
-      Most challenges and solutions are free to start. Premium gives access to additional question sets, explained on the
-      <a [routerLink]="['/pricing']">pricing page</a>.
+      Most challenges and solutions are free to start. Premium unlocks additional question sets and full solution depth.
     </p>
-  </section>
-
-  <section class="fa-hub-cluster" *ngIf="source === 'global-coding'" aria-label="Interview question hubs">
-    <h2 class="fa-section-title">Interview question hubs</h2>
-    <p class="fa-meta-text">
-      Use these hubs when you want focused framework lists before moving into drills and tracks.
-    </p>
-    <div class="fa-hub-cluster__links">
-      <a *ngFor="let hub of interviewHubLinks" [routerLink]="hub.route">{{ hub.label }}</a>
-    </div>
   </section>
 
   <app-coding-tech-kind-tabs *ngIf="source!=='company'" [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
@@ -30,60 +43,74 @@
     (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
 
-  <section faCard class="fa-prep-cluster" *ngIf="source === 'global-coding'" aria-label="Framework prep path guidance">
-    <div class="fa-prep-cluster__header">
-      <div class="fa-prep-cluster__heading">
-        <h2 class="fa-section-title">Framework prep path</h2>
-        <p class="fa-prep-cluster__intro fa-meta-text">
-          Not sure where to start? Use the prep hub for the full roadmap, or jump directly into the guide for your selected framework tab.
-        </p>
-      </div>
-      <div class="fa-prep-cluster__actions">
-        <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep']">
-          Not sure where to start?
-        </a>
-        <ng-container *ngIf="currentFrameworkPrep() as prep; else defaultFrameworkPrepCta">
-          <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep', prep.slug]">
-            Open {{ prep.label }} interview prep guide
-          </a>
-        </ng-container>
-        <ng-template #defaultFrameworkPrepCta>
-          <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep/javascript-prep-path']">
-            Start with JavaScript prep guide
-          </a>
-        </ng-template>
-      </div>
-    </div>
+  <details class="fa-more-routes" *ngIf="source === 'global-coding'">
+    <summary>More routes and prep hubs</summary>
 
-    <ng-container *ngIf="currentFrameworkPrep() as prep; else prepSelectState">
-      <div class="fa-prep-cluster__active">
-        <div class="fa-prep-cluster__active-copy">
-          <span class="fa-chip fa-chip--label">{{ prep.label }}</span>
-          <p class="fa-meta-text">{{ prep.summary }}</p>
+    <section class="fa-hub-cluster" aria-label="Interview question hubs">
+      <h2 class="fa-section-title">Interview question hubs</h2>
+      <p class="fa-meta-text">
+        Use these hubs when you want focused framework lists before moving into drills and tracks.
+      </p>
+      <div class="fa-hub-cluster__links">
+        <a *ngFor="let hub of interviewHubLinks" [routerLink]="hub.route">{{ hub.label }}</a>
+      </div>
+    </section>
+
+    <section faCard class="fa-prep-cluster" aria-label="Framework prep path guidance">
+      <div class="fa-prep-cluster__header">
+        <div class="fa-prep-cluster__heading">
+          <h2 class="fa-section-title">Framework prep path</h2>
+          <p class="fa-prep-cluster__intro fa-meta-text">
+            Not sure where to start? Use the prep hub for the full roadmap, or jump directly into the guide for your selected framework tab.
+          </p>
+        </div>
+        <div class="fa-prep-cluster__actions">
+          <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep']">
+            Not sure where to start?
+          </a>
+          <ng-container *ngIf="currentFrameworkPrep() as prep; else defaultFrameworkPrepCta">
+            <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep', prep.slug]">
+              Open {{ prep.label }} interview prep guide
+            </a>
+          </ng-container>
+          <ng-template #defaultFrameworkPrepCta>
+            <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep/javascript-prep-path']">
+              Start with JavaScript prep guide
+            </a>
+          </ng-template>
         </div>
       </div>
 
-      <app-prep-signal-grid
-        [outcomes]="prep.outcomes"
-        [mistakes]="prep.mistakes"
-        [sequence]="prepSequenceItems(prep)">
-      </app-prep-signal-grid>
-    </ng-container>
+      <ng-container *ngIf="currentFrameworkPrep() as prep; else prepSelectState">
+        <div class="fa-prep-cluster__active">
+          <div class="fa-prep-cluster__active-copy">
+            <span class="fa-chip fa-chip--label">{{ prep.label }}</span>
+            <p class="fa-meta-text">{{ prep.summary }}</p>
+          </div>
+        </div>
 
-    <ng-template #prepSelectState>
-      <div class="fa-prep-cluster__empty">
-        <p class="fa-meta-text" *ngIf="isUnsupportedPrepTechSelected(); else selectTechHint">
-          {{ selectedPrepTechLabel() }} prep path is not published yet. Use a framework path first, then come back to
-          {{ selectedPrepTechLabel() }} implementation drills.
-        </p>
-        <ng-template #selectTechHint>
-          <p class="fa-meta-text">
-            Select JavaScript, React, Angular, or Vue from the tech tabs to load the related prep path.
+        <app-prep-signal-grid
+          [outcomes]="prep.outcomes"
+          [mistakes]="prep.mistakes"
+          [sequence]="prepSequenceItems(prep)">
+        </app-prep-signal-grid>
+      </ng-container>
+
+      <ng-template #prepSelectState>
+        <div class="fa-prep-cluster__empty">
+          <p class="fa-meta-text" *ngIf="isUnsupportedPrepTechSelected(); else selectTechHint">
+            {{ selectedPrepTechLabel() }} prep path is not published yet. Use a framework path first, then come back to
+            {{ selectedPrepTechLabel() }} implementation drills.
           </p>
-        </ng-template>
-      </div>
-    </ng-template>
-  </section>
+          <ng-template #selectTechHint>
+            <p class="fa-meta-text">
+              Select JavaScript, React, Angular, or Vue from the tech tabs to load the related prep path.
+            </p>
+          </ng-template>
+        </div>
+      </ng-template>
+    </section>
+  </details>
 
   <div class="fa-questions-layout">
     <aside class="fa-filter-panel" aria-label="Filters">

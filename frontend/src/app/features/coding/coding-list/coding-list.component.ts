@@ -616,6 +616,19 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { label: 'HTML CSS interview questions', route: ['/html-css/interview-questions'] },
   ];
 
+  rolePrimaryRoute: any[] = ['/coding'];
+  rolePrimaryQueryParams: Record<string, string | number> = {
+    tech: 'javascript',
+    kind: 'coding',
+    imp: 'high',
+    entry: 'coding_role_contract',
+    reset: 1,
+  };
+  roleSecondaryRoute: any[] = ['/tracks'];
+  roleSecondaryQueryParams: Record<string, string> = {
+    entry: 'coding_role_contract',
+  };
+
   categoryTabs: Array<{ key: CategoryKey; label: string }> = [
     { key: 'ui', label: 'User interface' },
     { key: 'js-fn', label: 'JavaScript functions' },

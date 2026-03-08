@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 import { firstValueFrom, of, Subject } from 'rxjs';
 import { DashboardGamificationResponse } from '../../core/models/gamification.model';
 import { ActivityService } from '../../core/services/activity.service';
@@ -68,6 +68,8 @@ describe('DashboardComponent', () => {
   };
 
   beforeEach(async () => {
+    sessionStorage.clear();
+
     const questionServiceStub = {
       loadAllQuestionSummaries: jasmine.createSpy('loadAllQuestionSummaries').and.callFake((kind: string) => {
         if (kind === 'coding') {
@@ -80,6 +82,10 @@ describe('DashboardComponent', () => {
         ] as any[]);
       }),
       loadSystemDesign: jasmine.createSpy('loadSystemDesign').and.returnValue(of([])),
+      loadQuestionSummaries: jasmine.createSpy('loadQuestionSummaries').and.returnValue(of([
+        { id: 'js-array-map', importance: 3, difficulty: 'easy' },
+        { id: 'js-closure-scope', importance: 5, difficulty: 'intermediate' },
+      ])),
     };
 
     const authServiceStub = {
@@ -245,5 +251,77 @@ describe('DashboardComponent', () => {
 
     expect(params['q']).toBe('array index boundaries');
     expect(params['reset']).toBe('1');
+  });
+
+  it('shows prep launcher bubble after 12 seconds without click', fakeAsync(() => {
+    const component = fixture.componentInstance;
+    (component as any).isBrowser = true;
+    (component as any).armPrepLauncherIdleTimer();
+    component.prepLauncherBubbleVisible.set(false);
+
+    tick(12000);
+    fixture.detectChanges();
+
+    expect(component.prepLauncherBubbleVisible()).toBeTrue();
+  }));
+
+  it('dismisses prep launcher for current session and keeps compact trigger', () => {
+    const component = fixture.componentInstance;
+    component.dismissPrepLauncher();
+    fixture.detectChanges();
+
+    expect(component.prepLauncherDismissed()).toBeTrue();
+    expect(sessionStorage.getItem('fa:dashboard:prep-launcher-dismissed:v1')).toBe('1');
+  });
+
+  it('opens launcher modal and tracks launcher_opened event', () => {
+    const component = fixture.componentInstance;
+    component.openPrepLauncher('chip');
+
+    expect(component.prepLauncherOpen()).toBeTrue();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'launcher_opened',
+      jasmine.objectContaining({
+        surface: 'dashboard',
+        source: 'chip',
+      }),
+    );
+  });
+
+  it('routes solve_now intent to highest-importance javascript coding question', async () => {
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router);
+    const navSpy = spyOn(router, 'navigate').and.resolveTo(true);
+
+    await component.selectPrepIntent('solve_now');
+
+    expect(navSpy).toHaveBeenCalledWith(
+      ['/', 'javascript', 'coding', 'js-closure-scope'],
+      jasmine.objectContaining({
+        queryParams: jasmine.objectContaining({
+          entry: 'dashboard_launcher',
+          quick_win: 1,
+        }),
+      }),
+    );
+    expect(analytics.track).toHaveBeenCalledWith(
+      'launcher_option_selected',
+      jasmine.objectContaining({
+        selected_intent: 'solve_now',
+      }),
+    );
+  });
+
+  it('routes guided_plan intent to /tracks', async () => {
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router);
+    const navSpy = spyOn(router, 'navigate').and.resolveTo(true);
+
+    await component.selectPrepIntent('guided_plan');
+
+    expect(navSpy).toHaveBeenCalledWith(
+      ['/tracks'],
+      jasmine.objectContaining({ queryParams: { entry: 'dashboard_launcher' } }),
+    );
   });
 });

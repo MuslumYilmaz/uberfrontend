@@ -156,10 +156,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   introLead(): string {
     if (this.isMasterHub()) {
-      return 'Quick frontend interview prep with the most crucial JavaScript coding and trivia questions first. Use the full interview question hubs when you need broader framework coverage.';
+      return 'Warm-up index for fast frontend interview prep: start with the most crucial JavaScript coding and trivia prompts, then branch into full technology hubs for broader coverage.';
     }
 
-    return `Quick prep with this ${this.keywordSentenceCase()} hub: tackle the most crucial coding and trivia questions first, then expand into full interview platform flows.`;
+    return `Technology warm-up index for ${this.keywordSentenceCase()}: tackle the most crucial coding and trivia questions first, then expand into full interview platform flows.`;
   }
 
   listIntentItems(): string[] {

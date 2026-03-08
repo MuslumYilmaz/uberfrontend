@@ -129,6 +129,45 @@
   color: var(--uf-text-primary);
 }
 
+.quick-win-next {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 54%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+  display: grid;
+  gap: 8px;
+}
+
+.quick-win-next__kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent);
+}
+
+.quick-win-next__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--uf-text-primary);
+}
+
+.quick-win-next__copy {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+}
+
+.quick-win-next__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 /* ---------- Monaco: never overflow horizontally ---------- */
 :host ::ng-deep .monaco-editor,
 :host ::ng-deep .monaco-editor .overflow-guard { max-width: 100% !important; width: 100% !important; }

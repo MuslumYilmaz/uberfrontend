@@ -79,6 +79,66 @@
   color: color-mix(in srgb, #8fbfff 72%, var(--uf-text-tertiary));
 }
 
+.hero-role-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.hero-role-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: var(--uf-radius-pill);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.hero-role-cta--primary {
+  background: color-mix(in srgb, var(--uf-accent) 82%, var(--uf-text-primary) 18%);
+  color: var(--uf-surface);
+}
+
+.hero-role-cta--secondary {
+  border-color: var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt));
+  color: var(--uf-text-primary);
+}
+
+.hero-more-routes {
+  margin-top: 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 82%, transparent);
+  background: color-mix(in srgb, var(--uf-surface) 95%, var(--uf-surface-alt));
+  padding: 8px 10px;
+}
+
+.hero-more-routes > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+}
+
+.hero-more-routes > summary::-webkit-details-marker {
+  display: none;
+}
+
+.hero-more-routes > summary::before {
+  content: '+ ';
+  color: color-mix(in srgb, var(--uf-accent) 78%, var(--uf-text-primary));
+}
+
+.hero-more-routes[open] > summary::before {
+  content: '- ';
+}
+
 .badges {
   display: flex;
   gap: 8px;

@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Params, RouterModule } from '@angular/router';
+import { Params, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { WeaknessSummary } from '../../core/models/editor-assist.model';
-import { forkJoin, from, map, Observable, shareReplay, take } from 'rxjs';
+import { firstValueFrom, forkJoin, from, fromEvent, map, merge, Observable, shareReplay, take } from 'rxjs';
 import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AttemptInsightsService } from '../../core/services/attempt-insights.service';
@@ -12,6 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { DashboardGamificationResponse, DashboardProgress } from '../../core/models/gamification.model';
 import { GamificationService } from '../../core/services/gamification.service';
 import { MixedQuestion, QuestionService } from '../../core/services/question.service';
+import { PrepIntent, PrepLauncherEventPayload } from '../../core/models/prep-intent.model';
 import { UserProgressService } from '../../core/services/user-progress.service';
 import { deriveTopicIdsFromTags, loadTopics, TopicDefinition } from '../../core/utils/topics.util';
 import { collectCompanyCounts } from '../../shared/company-counts.util';
@@ -67,6 +68,12 @@ type Card = {
   kindKey?: 'coding' | 'trivia' | 'system-design' | 'behavioral';
 };
 
+type QuickWinQuestion = {
+  id: string;
+  importance: number;
+  difficulty: string;
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -76,6 +83,9 @@ type Card = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
+  private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly authService = inject(AuthService);
   private readonly progress = inject(UserProgressService);
   private readonly activity = inject(ActivityService);
@@ -85,6 +95,17 @@ export class DashboardComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly focusIntensityCache = new WeakMap<Stats, Record<string, FocusIntensity>>();
   private readonly emptyTrackProgress: TrackProgress = { solved: 0, total: 0, pct: 0 };
+  private readonly prepLauncherDismissedKey = 'fa:dashboard:prep-launcher-dismissed:v1';
+  private readonly prepAnalyticsSessionKey = 'fa:prep:session-id:v1';
+  private prepIdleTimer: ReturnType<typeof setTimeout> | null = null;
+  private quickWinSelectionPending = false;
+  private quickWinCache: QuickWinQuestion[] | null = null;
+  private readonly quickWinDifficultyRank: Record<string, number> = {
+    easy: 0,
+    intermediate: 1,
+    hard: 2,
+  };
+  private prepSessionId = 'ssr';
   private dashboardTracked = false;
   private lastDailyChallengeTrackedKey: string | null = null;
 
@@ -117,6 +138,10 @@ export class DashboardComponent {
   weeklyGoalTarget = signal(10);
   showStreakWidget = signal(true);
   dailyChallengeTech = signal<DailyChallengeTech>('auto');
+  prepLauncherOpen = signal(false);
+  prepLauncherBubbleVisible = signal(false);
+  prepLauncherDismissed = signal(false);
+  prepLauncherBusy = signal(false);
 
   nextBestAction = computed(() => {
     const payload = this.gamificationState();
@@ -139,10 +164,29 @@ export class DashboardComponent {
     const flags = ((environment as any)?.assist || {}) as { weaknessRadar?: boolean };
     return !!flags.weaknessRadar && this.weaknesses().length > 0;
   });
+  prepLauncherLabel = computed(() => (
+    this.prepLauncherDismissed() ? 'Start' : 'Not sure where to start?'
+  ));
 
   private solvedSet = computed(() => new Set(this.progress.solvedIds()));
 
   constructor(private questions: QuestionService) {
+    this.prepSessionId = this.resolvePrepSessionId();
+    if (this.isBrowser) {
+      this.hydratePrepLauncherState();
+      this.armPrepLauncherIdleTimer();
+      merge(
+        fromEvent(this.document, 'pointerdown'),
+        fromEvent(this.document, 'keydown'),
+      )
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => this.onPrepUserActivity());
+
+      this.destroyRef.onDestroy(() => {
+        this.clearPrepLauncherIdleTimer();
+      });
+    }
+
     effect(() => {
       const isLoggedIn = this.authService.isLoggedIn();
       if (!isLoggedIn) {
@@ -219,6 +263,203 @@ export class DashboardComponent {
   piIcon(key?: IconKey) {
     const name = key ? this.ICON_MAP[key] ?? 'question' : 'window';
     return ['pi', `pi-${name}`];
+  }
+
+  openPrepLauncher(source: 'chip' | 'bubble' | 'reopen' = 'chip'): void {
+    this.prepLauncherOpen.set(true);
+    this.prepLauncherBubbleVisible.set(false);
+    this.trackPrepEvent('launcher_opened', {
+      ...this.basePrepPayload(),
+      source,
+    });
+    this.armPrepLauncherIdleTimer();
+  }
+
+  closePrepLauncher(): void {
+    this.prepLauncherOpen.set(false);
+    this.armPrepLauncherIdleTimer();
+  }
+
+  onPrepLauncherVisibleChange(visible: boolean): void {
+    this.prepLauncherOpen.set(Boolean(visible));
+    if (visible) this.prepLauncherBubbleVisible.set(false);
+    this.armPrepLauncherIdleTimer();
+  }
+
+  dismissPrepLauncher(event?: Event): void {
+    event?.stopPropagation();
+    this.prepLauncherDismissed.set(true);
+    this.prepLauncherBubbleVisible.set(false);
+    this.persistPrepLauncherDismissed(true);
+    this.trackPrepEvent('launcher_dismissed', {
+      ...this.basePrepPayload(),
+      source: 'chip',
+    });
+    this.clearPrepLauncherIdleTimer();
+  }
+
+  async selectPrepIntent(intent: PrepIntent): Promise<void> {
+    this.trackPrepEvent('launcher_option_selected', {
+      ...this.basePrepPayload(intent),
+      source: 'dashboard_launcher',
+    });
+
+    this.prepLauncherOpen.set(false);
+    this.prepLauncherBubbleVisible.set(false);
+
+    if (intent === 'solve_now') {
+      if (this.quickWinSelectionPending) return;
+      this.quickWinSelectionPending = true;
+      this.prepLauncherBusy.set(true);
+      try {
+        const quickWin = await this.resolveQuickWinQuestion();
+        if (quickWin?.id) {
+          await this.router.navigate(
+            ['/', 'javascript', 'coding', quickWin.id],
+            {
+              queryParams: {
+                entry: 'dashboard_launcher',
+                quick_win: 1,
+                src: 'dashboard_launcher',
+              },
+            },
+          );
+          return;
+        }
+
+        await this.router.navigate(['/coding'], {
+          queryParams: {
+            tech: 'javascript',
+            kind: 'coding',
+            imp: 'high',
+            entry: 'dashboard_launcher',
+            quick_win: 1,
+            reset: 1,
+          },
+        });
+      } finally {
+        this.quickWinSelectionPending = false;
+        this.prepLauncherBusy.set(false);
+      }
+      return;
+    }
+
+    if (intent === 'guided_plan') {
+      await this.router.navigate(['/tracks'], {
+        queryParams: { entry: 'dashboard_launcher' },
+      });
+      return;
+    }
+
+    if (intent === 'company_target') {
+      await this.router.navigate(['/companies'], {
+        queryParams: { entry: 'dashboard_launcher' },
+      });
+      return;
+    }
+
+    await this.router.navigate(['/interview-questions'], {
+      queryParams: { entry: 'dashboard_launcher' },
+    });
+  }
+
+  private async resolveQuickWinQuestion(): Promise<QuickWinQuestion | null> {
+    if (this.quickWinCache?.length) return this.quickWinCache[0];
+
+    const list = await firstValueFrom(
+      this.questions.loadQuestionSummaries('javascript', 'coding', { transferState: false }),
+    );
+
+    const candidates = (list || [])
+      .map((item) => ({
+        id: String(item.id || '').trim(),
+        importance: Number(item.importance || 0),
+        difficulty: String(item.difficulty || 'intermediate').toLowerCase(),
+      }))
+      .filter((item) => !!item.id)
+      .sort((a, b) => {
+        if (a.importance !== b.importance) return b.importance - a.importance;
+        const aRank = this.quickWinDifficultyRank[a.difficulty] ?? 99;
+        const bRank = this.quickWinDifficultyRank[b.difficulty] ?? 99;
+        if (aRank !== bRank) return aRank - bRank;
+        return a.id.localeCompare(b.id);
+      });
+
+    this.quickWinCache = candidates;
+    return candidates[0] ?? null;
+  }
+
+  private hydratePrepLauncherState(): void {
+    this.prepLauncherDismissed.set(this.readPrepLauncherDismissed());
+  }
+
+  private onPrepUserActivity(): void {
+    if (this.prepLauncherBubbleVisible()) {
+      this.prepLauncherBubbleVisible.set(false);
+    }
+    this.armPrepLauncherIdleTimer();
+  }
+
+  private armPrepLauncherIdleTimer(): void {
+    this.clearPrepLauncherIdleTimer();
+    if (!this.isBrowser || this.prepLauncherDismissed()) return;
+    this.prepIdleTimer = setTimeout(() => {
+      if (this.prepLauncherOpen() || this.prepLauncherDismissed()) return;
+      this.prepLauncherBubbleVisible.set(true);
+    }, 12_000);
+  }
+
+  private clearPrepLauncherIdleTimer(): void {
+    if (!this.prepIdleTimer) return;
+    clearTimeout(this.prepIdleTimer);
+    this.prepIdleTimer = null;
+  }
+
+  private basePrepPayload(intent?: PrepIntent): PrepLauncherEventPayload {
+    const payload: PrepLauncherEventPayload = {
+      surface: 'dashboard',
+      is_logged_in: this.authService.isLoggedIn(),
+      entry_route: '/dashboard',
+      session_id: this.prepSessionId,
+    };
+    if (intent) payload.selected_intent = intent;
+    return payload;
+  }
+
+  private trackPrepEvent(name: string, payload: PrepLauncherEventPayload & Record<string, unknown>): void {
+    this.analytics.track(name, payload);
+  }
+
+  private readPrepLauncherDismissed(): boolean {
+    if (!this.isBrowser) return false;
+    try {
+      return sessionStorage.getItem(this.prepLauncherDismissedKey) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  private persistPrepLauncherDismissed(dismissed: boolean): void {
+    if (!this.isBrowser) return;
+    try {
+      if (dismissed) sessionStorage.setItem(this.prepLauncherDismissedKey, '1');
+      else sessionStorage.removeItem(this.prepLauncherDismissedKey);
+    } catch {
+      // Ignore storage write failures.
+    }
+  }
+
+  private resolvePrepSessionId(): string {
+    if (!this.isBrowser) return 'ssr';
+    try {
+      const existing = sessionStorage.getItem(this.prepAnalyticsSessionKey);
+      if (existing) return existing;
+      const next = `prep_${Math.random().toString(36).slice(2, 10)}`;
+      sessionStorage.setItem(this.prepAnalyticsSessionKey, next);
+      return next;
+    } catch {
+      return 'browser';
+    }
   }
 
   // ---- STATS: company + framework + formats + topic counts ----

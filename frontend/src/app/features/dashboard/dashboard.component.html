@@ -585,5 +585,95 @@
       </ng-container>
     </section>
   </div>
+
+  <div class="prep-launcher" data-testid="dashboard-prep-launcher">
+    <div
+      class="prep-launcher__bubble"
+      *ngIf="prepLauncherBubbleVisible() && !prepLauncherDismissed() && !prepLauncherOpen()"
+      data-testid="dashboard-prep-launcher-bubble">
+      <button
+        type="button"
+        class="prep-launcher__bubble-close"
+        (click)="dismissPrepLauncher($event)"
+        aria-label="Dismiss launcher for this session">
+        ×
+      </button>
+      <p class="prep-launcher__bubble-title">Need a clear start now?</p>
+      <p class="prep-launcher__bubble-copy">Pick one interview path in 10 seconds.</p>
+      <button
+        type="button"
+        class="prep-launcher__bubble-action"
+        (click)="openPrepLauncher('bubble')">
+        Show options
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="prep-launcher__chip"
+      [class.prep-launcher__chip--compact]="prepLauncherDismissed()"
+      (click)="openPrepLauncher(prepLauncherDismissed() ? 'reopen' : 'chip')"
+      data-testid="dashboard-prep-launcher-chip">
+      <i class="pi pi-compass" aria-hidden="true"></i>
+      <span>{{ prepLauncherLabel() }}</span>
+    </button>
+  </div>
+
+  <fa-dialog
+    [visible]="prepLauncherOpen()"
+    (visibleChange)="onPrepLauncherVisibleChange($event)"
+    [modal]="true"
+    [dismissableMask]="true"
+    [closable]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [showHeader]="false"
+    styleClass="prep-launcher-dialog"
+    [contentStyle]="{ padding: '0' }">
+    <div class="prep-launcher-modal" role="dialog" aria-labelledby="prep-launcher-title" aria-describedby="prep-launcher-desc">
+      <p class="prep-launcher-modal__kicker">Start here</p>
+      <h3 class="prep-launcher-modal__title" id="prep-launcher-title">Pick one prep direction</h3>
+      <p class="prep-launcher-modal__desc" id="prep-launcher-desc">
+        One decision now. You can switch paths later without losing progress.
+      </p>
+
+      <div class="prep-launcher-modal__actions">
+        <button
+          type="button"
+          faButton
+          variant="primary"
+          [disabled]="prepLauncherBusy()"
+          (click)="selectPrepIntent('solve_now')"
+          data-testid="dashboard-prep-intent-solve-now">
+          {{ prepLauncherBusy() ? 'Opening…' : 'Solve now' }}
+        </button>
+        <button
+          type="button"
+          faButton
+          variant="ghost"
+          (click)="selectPrepIntent('guided_plan')"
+          data-testid="dashboard-prep-intent-guided">
+          Follow a guided plan
+        </button>
+        <button
+          type="button"
+          faButton
+          variant="ghost"
+          (click)="selectPrepIntent('company_target')"
+          data-testid="dashboard-prep-intent-company">
+          Target a company
+        </button>
+        <button
+          type="button"
+          faButton
+          variant="ghost"
+          (click)="selectPrepIntent('warmup_index')"
+          data-testid="dashboard-prep-intent-warmup">
+          Browse warm-up hub
+        </button>
+      </div>
+    </div>
+  </fa-dialog>
+
   <app-offline-banner></app-offline-banner>
 </div>
