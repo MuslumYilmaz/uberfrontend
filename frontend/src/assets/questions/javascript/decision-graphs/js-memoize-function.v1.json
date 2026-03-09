@@ -1,0 +1,91 @@
+{
+  "questionId": "js-memoize-function",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function memoize(fn) {\n  const cache = new Map();\n  return function(...args) {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) return cache.get(key);\n    const result = fn(...args);\n    cache.set(key, result);\n    return result;\n  };\n}\n",
+      "nodes": [
+        {
+          "id": "d1-serialize-args-key",
+          "title": "Build a cache key from arguments",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "const key = JSON.stringify(args);"
+          },
+          "why": "We need one stable key per argument list so repeated calls can find the same cached result.",
+          "alternative": "Use only the first argument as the key.",
+          "tradeoff": "JSON keys are easy, but they are limited for circular or non-serializable values."
+        },
+        {
+          "id": "d2-return-on-cache-hit",
+          "title": "Return fast when value is already cached",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "if (cache.has(key)) return cache.get(key);"
+          },
+          "why": "This is the core speedup: skip recomputation and reuse the previous result.",
+          "alternative": "Always recompute and update cache every time.",
+          "tradeoff": "Very fast on repeats, but cache can keep growing if inputs keep changing."
+        },
+        {
+          "id": "d3-store-after-compute",
+          "title": "Save computed result for next call",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "cache.set(key, result);"
+          },
+          "why": "After the first calculation, future calls with the same key can return instantly.",
+          "alternative": "Store only selected keys with a custom policy.",
+          "tradeoff": "Simple and effective, but you may eventually want eviction for long-lived usage."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function memoize(fn) {\n  const root = new Map();\n  return function memoized(...args) {\n    let map = root;\n    for (const arg of args) {\n      if (!map.has(arg)) map.set(arg, new Map());\n      map = map.get(arg);\n    }\n    if (map.has('result')) return map.get('result');\n    const result = fn(...args);\n    map.set('result', result);\n    return result;\n  };\n}\n",
+      "nodes": [
+        {
+          "id": "d1-walk-argument-path",
+          "title": "Walk one map level per argument",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 7,
+            "snippet": "for (const arg of args) {"
+          },
+          "why": "Each argument moves you deeper into a path, so argument tuples get separate cache branches.",
+          "alternative": "Flatten arguments into one JSON string key.",
+          "tradeoff": "Works with object identity well, but the structure is more complex than a flat map."
+        },
+        {
+          "id": "d2-sentinel-cache-hit",
+          "title": "Check terminal sentinel for cached result",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "if (map.has('result')) return map.get('result');"
+          },
+          "why": "`'result'` marks the final value at that argument path, so we can return immediately on hits.",
+          "alternative": "Store a small object like `{ value, hasValue }` at each node.",
+          "tradeoff": "Sentinel is lightweight, but it relies on a reserved key convention."
+        },
+        {
+          "id": "d3-write-result-at-leaf",
+          "title": "Write computed value at the leaf node",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "map.set('result', result);"
+          },
+          "why": "This stores the result exactly where that argument chain ends, ready for future lookups.",
+          "alternative": "Keep a separate map from path ids to results.",
+          "tradeoff": "Direct leaf storage is straightforward, but map trees can use more memory for many unique paths."
+        }
+      ]
+    }
+  }
+}

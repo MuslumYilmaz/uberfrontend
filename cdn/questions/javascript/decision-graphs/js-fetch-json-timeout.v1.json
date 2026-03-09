@@ -1,0 +1,61 @@
+{
+  "questionId": "js-fetch-json-timeout",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default async function fetchJson(url, options = {}) {\n  const { timeoutMs, signal, fetchFn, ...init } = options;\n  const fetcher = fetchFn || (typeof fetch === 'function' ? fetch : null);\n  if (!fetcher) throw new Error('fetchFn is required');\n\n  const controller = new AbortController();\n  let timeoutId;\n\n  const onAbort = () => {\n    controller.abort(toAbortError(signal && signal.reason));\n  };\n\n  if (signal) {\n    if (signal.aborted) {\n      controller.abort(toAbortError(signal.reason));\n    } else {\n      signal.addEventListener('abort', onAbort, { once: true });\n    }\n  }\n\n  if (typeof timeoutMs === 'number' && timeoutMs >= 0) {\n    timeoutId = setTimeout(() => {\n      controller.abort(toAbortError(null, 'Timeout'));\n    }, timeoutMs);\n  }\n\n  try {\n    if (controller.signal.aborted) {\n      throw toAbortError(controller.signal.reason);\n    }\n\n    const res = await fetcher(url, { ...init, signal: controller.signal });\n    if (!res || !res.ok) {\n      const status = res && typeof res.status === 'number' ? res.status : 0;\n      throw new Error(`HTTP ${status}`);\n    }\n    return await res.json();\n  } finally {\n    if (timeoutId) clearTimeout(timeoutId);\n    if (signal) signal.removeEventListener('abort', onAbort);\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-forward-external-abort",
+          "title": "Forward external abort signal to internal controller",
+          "anchor": {
+            "lineStart": 20,
+            "lineEnd": 25,
+            "snippet": "if (signal) {"
+          },
+          "why": "If callers cancel the request, this utility should stop immediately too.",
+          "alternative": "Ignore external signal and only support timeout-based abort.",
+          "tradeoff": "More robust and flexible, but adds listener setup/cleanup work."
+        },
+        {
+          "id": "d2-timeout-abort",
+          "title": "Abort automatically when timeout is reached",
+          "anchor": {
+            "lineStart": 28,
+            "lineEnd": 31,
+            "snippet": "timeoutId = setTimeout(() => {"
+          },
+          "why": "Timeout prevents requests from hanging forever and gives predictable failure behavior.",
+          "alternative": "Leave timeout handling to caller code.",
+          "tradeoff": "Built-in timeout is convenient, but one more path to test."
+        },
+        {
+          "id": "d3-http-status-guard",
+          "title": "Throw on non-OK HTTP responses",
+          "anchor": {
+            "lineStart": 40,
+            "lineEnd": 42,
+            "snippet": "if (!res || !res.ok) {"
+          },
+          "why": "Callers usually expect this helper to fail fast on HTTP errors, not silently return bad responses.",
+          "alternative": "Always return response JSON and let caller inspect status.",
+          "tradeoff": "Cleaner call sites, but less flexibility for custom status handling."
+        },
+        {
+          "id": "d4-finally-cleanup",
+          "title": "Always clear timer and listeners in finally",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 47,
+            "snippet": "} finally {"
+          },
+          "why": "Cleanup in `finally` runs on success and failure, preventing leaks and stale handlers.",
+          "alternative": "Duplicate cleanup in each resolve/reject branch.",
+          "tradeoff": "Centralized cleanup is safer, though it requires careful variable scope."
+        }
+      ]
+    }
+  }
+}

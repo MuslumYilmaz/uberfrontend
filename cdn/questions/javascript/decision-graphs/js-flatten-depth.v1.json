@@ -1,0 +1,133 @@
+{
+  "questionId": "js-flatten-depth",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function flatten(arr, depth = 1) {\n  if (depth === 0) return arr.slice();\n  const result = [];\n  for (const el of arr) {\n    if (Array.isArray(el) && depth > 0) {\n      result.push(...flatten(el, depth - 1));\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-base-depth-copy",
+          "title": "Return a shallow copy at depth 0",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (depth === 0) return arr.slice();"
+          },
+          "why": "Depth 0 means no flattening, but we still return a new array to avoid mutating the original.",
+          "alternative": "Return `arr` directly when depth is 0.",
+          "tradeoff": "Copying is safer, but creates one extra array allocation."
+        },
+        {
+          "id": "d2-recursive-step",
+          "title": "Flatten nested arrays by reducing depth",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 6,
+            "snippet": "result.push(...flatten(el, depth - 1));"
+          },
+          "why": "Each recursive call removes one nesting level until depth reaches 0.",
+          "alternative": "Use an iterative stack instead of recursion.",
+          "tradeoff": "Recursion is easy to read, but very deep inputs can hit call-stack limits."
+        },
+        {
+          "id": "d3-preserve-primitives",
+          "title": "Keep non-array values as they are",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "result.push(el);"
+          },
+          "why": "Only arrays should be flattened. Primitives and objects should keep their position.",
+          "alternative": "Treat all iterable values as flattenable.",
+          "tradeoff": "Strict array-only behavior is predictable, but less generic for custom iterable rules."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function flatten(arr, depth = 1) {\n  if (depth === 0) return arr.slice();\n  return arr.reduce((acc, el) => {\n    return acc.concat(Array.isArray(el) ? flatten(el, depth - 1) : el);\n  }, []);\n}\n",
+      "nodes": [
+        {
+          "id": "d1-depth-zero-copy",
+          "title": "Stop early when no flattening is needed",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (depth === 0) return arr.slice();"
+          },
+          "why": "This keeps depth semantics clear and avoids unnecessary reduce work.",
+          "alternative": "Let reduce run even when depth is 0.",
+          "tradeoff": "Early return is faster and clearer, with minimal extra branching."
+        },
+        {
+          "id": "d2-reduce-accumulator",
+          "title": "Use reduce to build the output array",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 5,
+            "snippet": "return arr.reduce((acc, el) => {"
+          },
+          "why": "Reduce gives a compact one-pass way to accumulate flattened values.",
+          "alternative": "Use a `for...of` loop with `push`.",
+          "tradeoff": "Shorter code, but some developers find loops easier to debug."
+        },
+        {
+          "id": "d3-conditional-concat",
+          "title": "Concat either recursive flatten or raw element",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "return acc.concat(Array.isArray(el) ? flatten(el, depth - 1) : el);"
+          },
+          "why": "This line handles both cases in one expression: nested arrays recurse, others append directly.",
+          "alternative": "Split into an `if/else` block for readability.",
+          "tradeoff": "Compact expression is concise, but longer ternaries can be harder to scan."
+        }
+      ]
+    },
+    "approach3": {
+      "language": "javascript",
+      "code": "export default function flatten(arr, depth = 1) {\n  if (depth === 0) return arr.slice();\n  const result = [];\n  const stack = [];\n  // Seed stack right-to-left so popping processes left-to-right\n  for (let i = arr.length - 1; i >= 0; i--) {\n    stack.push([arr[i], depth]);\n  }\n  while (stack.length) {\n    const [curr, d] = stack.pop();\n    if (Array.isArray(curr) && d > 0) {\n      for (let i = curr.length - 1; i >= 0; i--) {\n        stack.push([curr[i], d - 1]);\n      }\n    } else {\n      result.push(curr);\n    }\n  }\n  return result;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-seed-stack-order",
+          "title": "Seed stack in reverse to preserve output order",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 7,
+            "snippet": "for (let i = arr.length - 1; i >= 0; i--) {"
+          },
+          "why": "Stack is LIFO, so reversing at push time keeps final processing left-to-right.",
+          "alternative": "Push left-to-right, then reverse final result at the end.",
+          "tradeoff": "Order stays correct without a final reverse, but the push logic is less intuitive at first glance."
+        },
+        {
+          "id": "d2-iterative-depth-control",
+          "title": "Use `[value, depth]` pairs to control flatten level",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 13,
+            "snippet": "if (Array.isArray(curr) && d > 0) {"
+          },
+          "why": "Tracking depth per stack item lets the loop mimic recursion safely.",
+          "alternative": "Use true recursion and pass `depth - 1` in function calls.",
+          "tradeoff": "Iterative approach avoids call-stack overflow, but needs extra bookkeeping."
+        },
+        {
+          "id": "d3-collect-final-values",
+          "title": "Append terminal values into result",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 16,
+            "snippet": "result.push(curr);"
+          },
+          "why": "When value is not flattenable at current depth, it belongs in final output.",
+          "alternative": "Buffer per-level outputs and merge later.",
+          "tradeoff": "Direct append is simple and fast, but requires careful ordering logic earlier."
+        }
+      ]
+    }
+  }
+}

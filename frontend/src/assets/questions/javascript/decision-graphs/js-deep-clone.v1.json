@@ -1,0 +1,91 @@
+{
+  "questionId": "js-deep-clone",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function deepClone(value) {\n  if (value === null || typeof value !== 'object') return value;\n\n  if (value instanceof Date) return new Date(value.getTime());\n\n  if (value instanceof RegExp) {\n    const re = new RegExp(value.source, value.flags);\n    re.lastIndex = value.lastIndex;\n    return re;\n  }\n\n  if (Array.isArray(value)) {\n    return value.map(item => deepClone(item));\n  }\n\n  const clonedObj = {};\n  for (const key in value) {\n    if (Object.prototype.hasOwnProperty.call(value, key)) {\n      clonedObj[key] = deepClone(value[key]);\n    }\n  }\n  return clonedObj;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-base-return",
+          "title": "Return non-objects as-is",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (value === null || typeof value !== 'object') return value;"
+          },
+          "why": "Primitives and null do not need deep cloning. Returning early keeps the function fast.",
+          "alternative": "Try to process every value through object cloning logic.",
+          "tradeoff": "Early exit is simple and efficient, but relies on correct type checks."
+        },
+        {
+          "id": "d2-date-regexp-branch",
+          "title": "Handle Date and RegExp explicitly",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 9,
+            "snippet": "if (value instanceof Date) return new Date(value.getTime());"
+          },
+          "why": "These types carry internal state that plain object copying would not preserve correctly.",
+          "alternative": "Skip special handling and treat them like plain objects.",
+          "tradeoff": "More branches, but much more correct behavior for common special objects."
+        },
+        {
+          "id": "d3-deep-recursive-copy",
+          "title": "Recursively clone nested arrays and objects",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 21,
+            "snippet": "if (Array.isArray(value)) {"
+          },
+          "why": "Recursion ensures nested references are copied deeply, not shared.",
+          "alternative": "Use shallow copy helpers like spread or Object.assign.",
+          "tradeoff": "Deep copy correctness is better, but recursion can be costly on very large inputs."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function deepClone(value, seen = new WeakMap()) {\n  if (value === null || typeof value !== 'object') return value;\n\n  if (seen.has(value)) return seen.get(value);\n\n  if (value instanceof Date) return new Date(value.getTime());\n\n  if (value instanceof RegExp) {\n    const re = new RegExp(value.source, value.flags);\n    re.lastIndex = value.lastIndex;\n    return re;\n  }\n\n  const clone = Array.isArray(value) ? [] : {};\n  seen.set(value, clone);\n\n  for (const key in value) {\n    if (Object.prototype.hasOwnProperty.call(value, key)) {\n      clone[key] = deepClone(value[key], seen);\n    }\n  }\n  return clone;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-cycle-detection",
+          "title": "Short-circuit already seen objects",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "if (seen.has(value)) return seen.get(value);"
+          },
+          "why": "This prevents infinite recursion when data contains circular references.",
+          "alternative": "Assume input is acyclic and skip tracking.",
+          "tradeoff": "Safer for real-world graphs, but adds WeakMap overhead."
+        },
+        {
+          "id": "d2-register-before-recursing",
+          "title": "Register clone before cloning children",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 14,
+            "snippet": "const clone = Array.isArray(value) ? [] : {};"
+          },
+          "why": "Saving the container early lets recursive calls resolve cycles back to the same clone.",
+          "alternative": "Set in WeakMap after child recursion finishes.",
+          "tradeoff": "Early registration is required for cycles, though it can feel less intuitive initially."
+        },
+        {
+          "id": "d3-pass-shared-seen-map",
+          "title": "Pass shared WeakMap through recursion",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 19,
+            "snippet": "clone[key] = deepClone(value[key], seen);"
+          },
+          "why": "All nested calls must share the same map to correctly detect repeated references.",
+          "alternative": "Create a new WeakMap in each recursive call.",
+          "tradeoff": "Shared state gives correct graph cloning; per-call maps would break cycle handling."
+        }
+      ]
+    }
+  }
+}

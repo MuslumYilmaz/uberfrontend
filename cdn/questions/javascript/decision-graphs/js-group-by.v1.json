@@ -1,0 +1,133 @@
+{
+  "questionId": "js-group-by",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function groupBy(arr, keyFn) {\n  const result = {};\n  for (const item of arr) {\n    const key = keyFn(item);\n    if (!Object.prototype.hasOwnProperty.call(result, key)) {\n      result[key] = [];\n    }\n    result[key].push(item);\n  }\n  return result;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-own-property-check",
+          "title": "Check only own keys before creating bucket",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "if (!Object.prototype.hasOwnProperty.call(result, key)) {"
+          },
+          "why": "This avoids collisions with inherited object properties and keeps grouping safe for edge keys.",
+          "alternative": "Use a shorter check like `if (!result[key])`.",
+          "tradeoff": "More verbose, but safer and more explicit."
+        },
+        {
+          "id": "d2-lazy-bucket-init",
+          "title": "Create bucket only when key appears",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "result[key] = [];"
+          },
+          "why": "We allocate arrays only for keys that actually exist in the input.",
+          "alternative": "Pre-build all possible keys before looping.",
+          "tradeoff": "Lazy init is efficient and simple, but requires one existence check per item."
+        },
+        {
+          "id": "d3-preserve-order-with-push",
+          "title": "Push items to preserve input order",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "result[key].push(item);"
+          },
+          "why": "Items stay in the same order they appeared in the original array.",
+          "alternative": "Insert at the front or sort each bucket later.",
+          "tradeoff": "Push is fastest and clear, but it does not apply custom ordering."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function groupBy(arr, keyFn) {\n  return arr.reduce((acc, item) => {\n    const key = keyFn(item);\n    (acc[key] ||= []).push(item);\n    return acc;\n  }, {});\n}\n",
+      "nodes": [
+        {
+          "id": "d1-reduce-accumulator",
+          "title": "Use reduce as single-pass accumulator",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "return arr.reduce((acc, item) => {"
+          },
+          "why": "`reduce` keeps the whole grouping flow in one expression while still doing one pass.",
+          "alternative": "Use a `for...of` loop with a mutable result object.",
+          "tradeoff": "Concise style, but some readers find loop-based code easier to scan."
+        },
+        {
+          "id": "d2-inline-bucket-init",
+          "title": "Initialize and push in one line",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "(acc[key] ||= []).push(item);"
+          },
+          "why": "This line creates the bucket when needed and appends the item immediately.",
+          "alternative": "Split into `if` + `push` statements.",
+          "tradeoff": "Very compact, but relies on newer syntax some users may not know well."
+        },
+        {
+          "id": "d3-return-acc-each-step",
+          "title": "Return accumulator from reducer",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "return acc;"
+          },
+          "why": "Reduce needs the accumulator returned each iteration to keep building the grouped result.",
+          "alternative": "Mutate an external object outside reduce.",
+          "tradeoff": "Functional pattern is neat, but forgetting this return breaks the logic."
+        }
+      ]
+    },
+    "approach3": {
+      "language": "javascript",
+      "code": "export default function groupBy(arr, keyFn) {\n  const map = new Map();\n  for (const item of arr) {\n    const key = keyFn(item);\n    if (!map.has(key)) map.set(key, []);\n    map.get(key).push(item);\n  }\n  // Convert to plain object with string keys\n  return Object.fromEntries(Array.from(map.entries(), ([k, v]) => [String(k), v]));\n}\n",
+      "nodes": [
+        {
+          "id": "d1-map-storage",
+          "title": "Use Map for grouping state",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "const map = new Map();"
+          },
+          "why": "Map avoids prototype-key pitfalls and handles key lookup cleanly.",
+          "alternative": "Use a plain object from the start.",
+          "tradeoff": "Safer key handling, but requires conversion at the end."
+        },
+        {
+          "id": "d2-map-bucket-init",
+          "title": "Create map bucket on first key hit",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 6,
+            "snippet": "if (!map.has(key)) map.set(key, []);"
+          },
+          "why": "Each key needs an array before we can push items into it.",
+          "alternative": "Read with `map.get(key) ?? []` and set back every time.",
+          "tradeoff": "Two-step check is straightforward, though slightly more verbose."
+        },
+        {
+          "id": "d3-convert-map-to-object",
+          "title": "Convert Map back to plain object",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "return Object.fromEntries(Array.from(map.entries(), ([k, v]) => [String(k), v]));"
+          },
+          "why": "The exercise expects an object result, so we convert map entries at the end.",
+          "alternative": "Return the map directly and let callers consume map APIs.",
+          "tradeoff": "Matches expected output, but key identity is stringified in the final object."
+        }
+      ]
+    }
+  }
+}
