@@ -5,9 +5,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.js';
-import { Subscription, combineLatest, map, of, switchMap, tap } from 'rxjs';
+import { Subscription, combineLatest, firstValueFrom, map, of, switchMap, tap } from 'rxjs';
 import { PrismHighlightDirective } from '../../../core/directives/prism-highlight.directive';
-import { Question, isQuestionLockedForTier } from '../../../core/models/question.model';
+import {
+  Question,
+  TriviaIncidentOption,
+  isQuestionLockedForTier,
+} from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
 import { QuestionService } from '../../../core/services/question.service';
@@ -22,6 +26,10 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import { ExperimentService } from '../../../core/services/experiment.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
+import {
+  TriviaIncidentPrompt,
+  TriviaIncidentService,
+} from '../../../core/services/trivia-incident.service';
 import { LifecycleMilestoneId, LifecyclePromptService } from '../../../core/services/lifecycle-prompt.service';
 import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
@@ -63,6 +71,11 @@ type PracticeItem = { tech: Tech; kind: 'trivia' | 'coding'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
 type SimilarItem = { question: Question; difficulty: string };
 type TagMatcher = { tag: string; re: RegExp };
+type IncidentCardModel = {
+  title: string;
+  scenario: string;
+  options: TriviaIncidentOption[];
+};
 type LockedPath = {
   id: string;
   label: string;
@@ -141,6 +154,15 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   lockedPaths: LockedPath[] = [];
   similarOpen = signal(true);
   qnavOpen = signal(false);
+  incidentPromptOpen = false;
+  incidentSubmitBusy = false;
+  incidentSelectedOptionId = signal<string | null>(null);
+  incidentOutcome = signal<'correct' | 'wrong' | null>(null);
+  incidentPromptMessage = signal<string>('');
+  incidentCard = signal<IncidentCardModel | null>(null);
+  private incidentPromptLoading = false;
+  private incidentPromptCache = new Map<string, IncidentCardModel | null>();
+  private incidentPromptQuestionId: string | null = null;
 
   private sub?: Subscription;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
@@ -216,6 +238,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   trackByCellValue = (index: number, cell: string): string => `${index}:${cell}`;
   trackBySimilarQuestion = (_: number, item: SimilarItem): string => item.question.id;
   trackByLockedPath = (_: number, path: LockedPath): string => path.id;
+  trackByIncidentOption = (_: number, option: TriviaIncidentOption): string => option.id;
 
   /** ============== Derived UI helpers ============== */
 
@@ -329,6 +352,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     private bugReport: BugReportService,
     private experiments: ExperimentService,
     private onboarding: OnboardingService,
+    private triviaIncident: TriviaIncidentService,
     private lifecyclePrompts: LifecyclePromptService,
   ) { }
 
@@ -452,6 +476,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   private selectQuestion(id: string) {
     const found = this.questionsList.find((q) => q.id === id) ?? null;
     this.question.set(found);
+    this.resetIncidentPrompt();
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
     this.refreshLockedPersonalization();
     this.setLoadState(found);
@@ -833,6 +858,187 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   async markComplete() {
     const q = this.question();
     if (!q) return;
+    if (!this.solved()) {
+      const opened = await this.tryOpenIncidentPrompt(q);
+      if (opened) return;
+    }
+    await this.applyCompletionState(q);
+  }
+
+  submitLabel(): string {
+    return this.solved() ? 'Mark as incomplete' : 'Mark as complete';
+  }
+
+  incidentPromptTitle(): string {
+    return this.incidentCard()?.title || 'Root Cause Check';
+  }
+
+  incidentPromptQuestion(): string {
+    return this.incidentCard()?.scenario || '';
+  }
+
+  incidentPromptHint(): string {
+    const msg = this.incidentPromptMessage();
+    if (msg) return msg;
+    return 'Not quite. Re-read the content and try one more time.';
+  }
+
+  incidentCanSubmit(): boolean {
+    return !this.incidentSubmitBusy && !!this.incidentSelectedOptionId();
+  }
+
+  selectIncidentOption(optionId: string) {
+    this.incidentSelectedOptionId.set(optionId);
+    this.incidentOutcome.set(null);
+    this.incidentPromptMessage.set('');
+  }
+
+  async submitIncidentChoice() {
+    const q = this.question();
+    const card = this.incidentCard();
+    const selected = this.incidentSelectedOptionId();
+    if (!q || !card || !selected) return;
+    if (this.incidentPromptQuestionId !== q.id) return;
+
+    this.incidentSubmitBusy = true;
+    try {
+      const result = await firstValueFrom(this.triviaIncident.answerIncident(this.tech, q.id, selected));
+      const isCorrect = !!result?.correct;
+      const feedback = String(result?.feedback || '').trim();
+
+      this.analytics.track('trivia_incident_answered', {
+        question_id: q.id,
+        tech: this.tech,
+        selected_option_id: selected,
+        correct: isCorrect,
+      });
+
+      this.incidentOutcome.set(isCorrect ? 'correct' : 'wrong');
+      this.incidentPromptMessage.set(feedback || (isCorrect
+        ? 'Correct root cause. Marking this question as completed.'
+        : 'Not quite. Re-read the content and try one more time.'));
+
+      if (!isCorrect) return;
+
+      this.incidentPromptOpen = false;
+      await this.applyCompletionState(q);
+      this.resetIncidentPrompt();
+    } catch {
+      this.analytics.track('trivia_incident_answer_failed', {
+        question_id: q.id,
+        tech: this.tech,
+      });
+      this.incidentOutcome.set('wrong');
+      this.incidentPromptMessage.set('Could not validate answer right now. Please try again.');
+    } finally {
+      this.incidentSubmitBusy = false;
+    }
+  }
+
+  rereadFromIncidentPrompt() {
+    const q = this.question();
+    this.analytics.track('trivia_incident_reread_clicked', {
+      question_id: q?.id ?? null,
+      tech: this.tech,
+    });
+    this.incidentPromptOpen = false;
+    this.resetIncidentPrompt();
+    this.scrollMainToTop();
+  }
+
+  closeIncidentPrompt() {
+    this.incidentPromptOpen = false;
+    this.resetIncidentPrompt();
+  }
+
+  private async tryOpenIncidentPrompt(q: Question): Promise<boolean> {
+    const cached = this.readIncidentCache(q.id);
+    if (cached !== undefined) {
+      if (!cached) return false;
+      this.incidentCard.set(cached);
+      this.openIncidentPrompt(q.id, cached.options.length);
+      return true;
+    }
+
+    if (this.incidentPromptLoading) return true;
+    this.incidentPromptLoading = true;
+    try {
+      const loaded = await firstValueFrom(this.triviaIncident.getIncident(this.tech, q.id));
+      const prompt = this.mapIncidentPrompt(loaded);
+      this.incidentPromptCache.set(this.incidentCacheKey(q.id), prompt);
+      if (!prompt) return false;
+
+      this.incidentCard.set(prompt);
+      this.openIncidentPrompt(q.id, prompt.options.length);
+      return true;
+    } catch {
+      this.analytics.track('trivia_incident_load_failed', {
+        question_id: q.id,
+        tech: this.tech,
+      });
+      return false;
+    } finally {
+      this.incidentPromptLoading = false;
+    }
+  }
+
+  private openIncidentPrompt(questionId: string, optionCount: number) {
+    this.incidentPromptQuestionId = questionId;
+    this.incidentSelectedOptionId.set(null);
+    this.incidentOutcome.set(null);
+    this.incidentPromptMessage.set('');
+    this.incidentSubmitBusy = false;
+    this.incidentPromptOpen = true;
+
+    this.analytics.track('trivia_incident_shown', {
+      question_id: questionId,
+      tech: this.tech,
+      option_count: optionCount,
+    });
+  }
+
+  private resetIncidentPrompt() {
+    this.incidentPromptQuestionId = null;
+    this.incidentSelectedOptionId.set(null);
+    this.incidentOutcome.set(null);
+    this.incidentPromptMessage.set('');
+    this.incidentCard.set(null);
+    this.incidentSubmitBusy = false;
+  }
+
+  private mapIncidentPrompt(raw: TriviaIncidentPrompt | null): IncidentCardModel | null {
+    if (!raw || typeof raw !== 'object') return null;
+    const scenario = String(raw.scenario || '').trim();
+    if (!scenario) return null;
+
+    const options = Array.isArray(raw.options)
+      ? raw.options
+        .map((entry) => ({
+          id: String(entry?.id || '').trim(),
+          label: String(entry?.label || '').trim(),
+        }))
+        .filter((entry) => entry.id && entry.label)
+      : [];
+
+    if (options.length < 2 || options.length > 4) return null;
+    return {
+      title: String(raw.title || '').trim() || 'Root Cause Check',
+      scenario,
+      options,
+    };
+  }
+
+  private incidentCacheKey(questionId: string): string {
+    return `${this.tech || 'unknown'}:${questionId}`;
+  }
+
+  private readIncidentCache(questionId: string): IncidentCardModel | null | undefined {
+    const key = this.incidentCacheKey(questionId);
+    if (!this.incidentPromptCache.has(key)) return undefined;
+    return this.incidentPromptCache.get(key) ?? null;
+  }
+
+  private async applyCompletionState(q: Question) {
     if (!this.auth.isLoggedIn()) {
       this.experiments.expose(
         'signup_prompt_copy_v1',
@@ -850,30 +1056,28 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       this.loginPromptOpen = true;
       return;
     }
+
     const wasSolved = this.solved();
     if (wasSolved) {
       await this.progress.unmarkSolved(q.id);
       this.solved.set(false);
-    } else {
-      await this.progress.markSolved(q.id);
-      this.solved.set(true);
-      this.maybePromptLifecycle('trivia_mark_complete', q.id);
-      this.activity.complete({
-        kind: 'trivia',
-        tech: this.tech,
-        itemId: q.id,
-        source: 'tech',
-        durationMin: 3,
-        difficulty: q.difficulty,
-      }).subscribe({
-        next: () => { },
-        error: () => { },
-      });
+      return;
     }
-  }
 
-  submitLabel(): string {
-    return this.solved() ? 'Mark as incomplete' : 'Mark as complete';
+    await this.progress.markSolved(q.id);
+    this.solved.set(true);
+    this.maybePromptLifecycle('trivia_mark_complete', q.id);
+    this.activity.complete({
+      kind: 'trivia',
+      tech: this.tech,
+      itemId: q.id,
+      source: 'tech',
+      durationMin: 3,
+      difficulty: q.difficulty,
+    }).subscribe({
+      next: () => { },
+      error: () => { },
+    });
   }
 
   goToLogin() {

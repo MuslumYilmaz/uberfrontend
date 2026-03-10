@@ -12,6 +12,7 @@ import { LifecyclePromptService } from '../../../core/services/lifecycle-prompt.
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { TriviaIncidentService } from '../../../core/services/trivia-incident.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { TriviaDetailComponent } from './trivia-detail.component';
 
@@ -19,8 +20,14 @@ describe('TriviaDetailComponent', () => {
   let routeData$: ReplaySubject<any>;
   let bugReport: jasmine.SpyObj<BugReportService>;
   let seo: jasmine.SpyObj<SeoService>;
+  let progress: jasmine.SpyObj<UserProgressService>;
+  let auth: jasmine.SpyObj<AuthService>;
+  let activity: jasmine.SpyObj<ActivityService>;
+  let analytics: jasmine.SpyObj<AnalyticsService>;
+  let onboarding: jasmine.SpyObj<OnboardingService>;
+  let triviaIncident: jasmine.SpyObj<TriviaIncidentService>;
 
-  const makeResolved = (access: 'free' | 'premium') => ({
+  const makeResolved = (access: 'free' | 'premium', extras: Record<string, any> = {}) => ({
     tech: 'javascript',
     id: 'q1',
     list: [{
@@ -32,6 +39,7 @@ describe('TriviaDetailComponent', () => {
       difficulty: 'easy',
       technology: 'javascript',
       access,
+      ...extras,
     }],
   });
 
@@ -39,6 +47,29 @@ describe('TriviaDetailComponent', () => {
     routeData$ = new ReplaySubject<any>(1);
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
+    progress = jasmine.createSpyObj<UserProgressService>('UserProgressService', ['isSolved', 'markSolved', 'unmarkSolved', 'solvedIds']);
+    auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'headers']);
+    activity = jasmine.createSpyObj<ActivityService>('ActivityService', ['complete']);
+    analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
+    onboarding = jasmine.createSpyObj<OnboardingService>('OnboardingService', ['getProfile', 'markPending']);
+    triviaIncident = jasmine.createSpyObj<TriviaIncidentService>('TriviaIncidentService', ['getIncident', 'answerIncident']);
+
+    progress.isSolved.and.returnValue(false);
+    progress.solvedIds.and.returnValue([]);
+    progress.markSolved.and.resolveTo();
+    progress.unmarkSolved.and.resolveTo();
+    auth.user.and.returnValue(null);
+    auth.isLoggedIn.and.returnValue(false);
+    activity.complete.and.returnValue(of(null));
+    onboarding.getProfile.and.returnValue(null);
+    triviaIncident.getIncident.and.returnValue(of(null));
+    triviaIncident.answerIncident.and.returnValue(of({
+      questionId: 'q1',
+      tech: 'javascript' as any,
+      correct: false,
+      feedback: 'Not quite.',
+      rereadRecommended: true,
+    }));
     seo.buildCanonicalUrl.and.callFake((value: string) => {
       const raw = String(value || '').trim();
       if (!raw) return 'https://frontendatlas.com/';
@@ -61,13 +92,14 @@ describe('TriviaDetailComponent', () => {
         },
         { provide: QuestionService, useValue: { loadQuestions: () => of([]) } },
         { provide: SeoService, useValue: seo },
-        { provide: UserProgressService, useValue: { isSolved: () => false, solvedIds: () => [] } },
-        { provide: AuthService, useValue: { user: () => null, isLoggedIn: () => false } },
-        { provide: ActivityService, useValue: { complete: () => of(null) } },
-        { provide: AnalyticsService, useValue: { track: () => { } } },
+        { provide: UserProgressService, useValue: progress },
+        { provide: AuthService, useValue: auth },
+        { provide: ActivityService, useValue: activity },
+        { provide: AnalyticsService, useValue: analytics },
         { provide: BugReportService, useValue: bugReport },
         { provide: ExperimentService, useValue: { variant: () => 'control', expose: () => { } } },
-        { provide: OnboardingService, useValue: { getProfile: () => null, markPending: () => { } } },
+        { provide: OnboardingService, useValue: onboarding },
+        { provide: TriviaIncidentService, useValue: triviaIncident },
         {
           provide: LifecyclePromptService,
           useValue: {
@@ -188,5 +220,89 @@ describe('TriviaDetailComponent', () => {
       questionId: 'q1',
       questionTitle: 'What is closure?',
     }));
+  });
+
+  it('opens incident prompt before completion when incident card exists', async () => {
+    triviaIncident.getIncident.and.returnValue(of({
+      questionId: 'q1',
+      tech: 'javascript' as any,
+      title: 'Root Cause Check',
+      scenario: 'Users report UI freezes after a release.',
+      options: [
+        { id: 'a', label: 'Large image dimensions' },
+        { id: 'b', label: 'Recursive microtask chain never yielding to render' },
+        { id: 'c', label: 'Slow DNS lookup' },
+      ],
+    }));
+    routeData$.next({
+      questionDetail: makeResolved('free'),
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    await fixture.componentInstance.markComplete();
+
+    expect(fixture.componentInstance.incidentPromptOpen).toBeTrue();
+    expect(triviaIncident.getIncident).toHaveBeenCalledWith('javascript', 'q1');
+    expect(progress.markSolved).not.toHaveBeenCalled();
+  });
+
+  it('requires correct incident answer before marking as complete', async () => {
+    auth.isLoggedIn.and.returnValue(true);
+    triviaIncident.getIncident.and.returnValue(of({
+      questionId: 'q1',
+      tech: 'javascript' as any,
+      title: 'Root Cause Check',
+      scenario: 'Users report UI freezes after a release.',
+      options: [
+        { id: 'a', label: 'Large image dimensions' },
+        { id: 'b', label: 'Recursive microtask chain never yielding to render' },
+        { id: 'c', label: 'Slow DNS lookup' },
+      ],
+    }));
+    triviaIncident.answerIncident.and.callFake((_tech: any, _id: any, optionId: string) => {
+      if (optionId === 'b') {
+        return of({
+          questionId: 'q1',
+          tech: 'javascript' as any,
+          correct: true,
+          feedback: 'Correct root cause. You can mark this question as completed.',
+          rereadRecommended: false,
+        });
+      }
+      return of({
+        questionId: 'q1',
+        tech: 'javascript' as any,
+        correct: false,
+        feedback: 'Not quite. Re-read and try again.',
+        rereadRecommended: true,
+      });
+    });
+    routeData$.next({
+      questionDetail: makeResolved('free'),
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    await fixture.componentInstance.markComplete();
+    fixture.componentInstance.selectIncidentOption('a');
+    await fixture.componentInstance.submitIncidentChoice();
+    expect(fixture.componentInstance.incidentOutcome()).toBe('wrong');
+    expect(triviaIncident.answerIncident).toHaveBeenCalledWith('javascript', 'q1', 'a');
+    expect(progress.markSolved).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.solved()).toBeFalse();
+
+    fixture.componentInstance.selectIncidentOption('b');
+    await fixture.componentInstance.submitIncidentChoice();
+    expect(triviaIncident.answerIncident).toHaveBeenCalledWith('javascript', 'q1', 'b');
+    expect(progress.markSolved).toHaveBeenCalledWith('q1');
+    expect(activity.complete).toHaveBeenCalled();
+    expect(fixture.componentInstance.solved()).toBeTrue();
   });
 });

@@ -127,6 +127,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Root Cause Check",
+      "scenario": "After a new release, users report the page freezes before timer callbacks run. Which root cause is most likely?",
+      "options": [
+        {
+          "id": "dom-heavy",
+          "label": "A large DOM update always blocks macrotasks permanently."
+        },
+        {
+          "id": "microtask-loop",
+          "label": "A recursive Promise microtask chain keeps the event loop from yielding to rendering/timers."
+        },
+        {
+          "id": "cache-miss",
+          "label": "Cold browser cache delays JS execution long enough to skip timers."
+        }
+      ],
+      "correctOptionId": "microtask-loop",
+      "rereadPrompt": "Not quite. Re-read the event loop section and compare microtask drain behavior vs macrotasks."
+    },
     "access": "free",
     "updatedAt": "2026-02-01",
     "seo": {

@@ -674,6 +674,97 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   margin-top: 6px;
 }
 
+.incident-card{
+  display: grid;
+  gap: 14px;
+  width: min(640px, 100%);
+}
+
+.incident-card__title{
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--uf-text-primary);
+}
+
+.incident-card__question{
+  margin: 0;
+  font-size: .95rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+}
+
+.incident-card__options{
+  display: grid;
+  gap: 10px;
+}
+
+.incident-card__option{
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: color-mix(in srgb, var(--uf-surface) 95%, var(--uf-text-primary) 5%);
+  color: var(--uf-text-primary);
+  cursor: pointer;
+  transition: border-color .14s ease, transform .08s ease, background .14s ease;
+}
+
+.incident-card__option:hover{
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
+}
+
+.incident-card__option:active{
+  transform: translateY(1px);
+}
+
+.incident-card__option.is-selected{
+  border-color: color-mix(in srgb, var(--uf-accent) 62%, var(--uf-border-subtle) 38%);
+  background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
+}
+
+.incident-card__dot{
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 65%, var(--uf-accent) 35%);
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+
+.incident-card__option.is-selected .incident-card__dot{
+  background: var(--uf-accent);
+  border-color: var(--uf-accent);
+}
+
+.incident-card__label{
+  font-size: .92rem;
+  line-height: 1.5;
+}
+
+.incident-card__feedback{
+  margin: 0;
+  font-size: .88rem;
+  line-height: 1.45;
+}
+
+.incident-card__feedback--wrong{
+  color: #fca5a5;
+}
+
+.incident-card__feedback--ok{
+  color: #86efac;
+}
+
+.incident-card__actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 @media (max-width: 1200px) {
   .mobile-qnav { display: block; }
   .mobile-qnav__backdrop { display: block; }

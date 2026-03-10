@@ -37,6 +37,19 @@ export type QuestionSeo = {
   description?: string;
 };
 
+export type TriviaIncidentOption = {
+  id: string;
+  label: string;
+};
+
+export type TriviaIncidentCard = {
+  title?: string;
+  scenario: string;
+  options: TriviaIncidentOption[];
+  correctOptionId: string;
+  rereadPrompt?: string;
+};
+
 export interface Question {
   id: string;
   title: string;
@@ -61,6 +74,7 @@ export interface Question {
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
   decisionGraphAsset?: string;
   decisionGraphKey?: string;
+  incidentCard?: TriviaIncidentCard;
 }
 
 export const isQuestionLockedForTier = (

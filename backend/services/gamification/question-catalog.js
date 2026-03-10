@@ -18,6 +18,7 @@ function normalizeQuestion(raw, tech, kind) {
     ? raw.tags.map((tag) => String(tag || '').trim().toLowerCase()).filter(Boolean)
     : [];
   const access = String(raw?.access || '').trim().toLowerCase();
+  const incidentCard = kind === 'trivia' ? normalizeIncidentCard(raw?.incidentCard) : null;
   return {
     id,
     title: String(raw?.title || id),
@@ -27,6 +28,42 @@ function normalizeQuestion(raw, tech, kind) {
     access: access || 'free',
     route: `/${tech}/${kind}/${id}`,
     tags,
+    incidentCard,
+  };
+}
+
+function normalizeIncidentCard(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const scenario = String(raw?.scenario || '').trim();
+  if (!scenario) return null;
+
+  const optionsRaw = Array.isArray(raw?.options) ? raw.options : [];
+  const options = [];
+  const seen = new Set();
+  for (let i = 0; i < optionsRaw.length; i += 1) {
+    const entry = optionsRaw[i];
+    const id = String(entry?.id || '').trim();
+    const label = String(entry?.label || '').trim();
+    if (!id || !label || seen.has(id)) continue;
+    seen.add(id);
+    options.push({ id, label });
+  }
+
+  if (options.length < 2 || options.length > 4) return null;
+
+  const correctOptionId = String(raw?.correctOptionId || '').trim();
+  if (!correctOptionId || !seen.has(correctOptionId)) return null;
+
+  const title = String(raw?.title || '').trim() || 'Root Cause Check';
+  const rereadPrompt = String(raw?.rereadPrompt || '').trim()
+    || 'Not quite. Re-read the question content and try again.';
+
+  return {
+    title,
+    scenario,
+    options,
+    correctOptionId,
+    rereadPrompt,
   };
 }
 
@@ -35,6 +72,7 @@ function loadQuestionCatalog({ force = false } = {}) {
 
   const all = [];
   const byKey = new Map();
+  const byTechKindKey = new Map();
   const byId = new Map();
 
   const baseDir = path.resolve(__dirname, '../../../cdn/questions');
@@ -49,6 +87,7 @@ function loadQuestionCatalog({ force = false } = {}) {
         if (!normalized) continue;
         all.push(normalized);
         byKey.set(`${kind}:${normalized.id}`, normalized);
+        byTechKindKey.set(`${kind}:${tech}:${normalized.id}`, normalized);
         if (!byId.has(normalized.id)) byId.set(normalized.id, normalized);
       }
     }
@@ -65,6 +104,7 @@ function loadQuestionCatalog({ force = false } = {}) {
   cache = {
     all,
     byKey,
+    byTechKindKey,
     byId,
     freeCodingPool,
   };
@@ -72,17 +112,43 @@ function loadQuestionCatalog({ force = false } = {}) {
   return cache;
 }
 
-function getQuestionMeta({ kind, itemId }) {
+function getQuestionMeta({ kind, itemId, tech }) {
   if (!itemId) return null;
   const catalog = loadQuestionCatalog();
-  if (kind) {
-    const byKind = catalog.byKey.get(`${kind}:${itemId}`);
+  const safeKind = typeof kind === 'string' ? kind.trim().toLowerCase() : '';
+  const safeTech = typeof tech === 'string'
+    ? tech.trim().toLowerCase()
+    : '';
+  if (safeKind && safeTech) {
+    const byKindAndTech = catalog.byTechKindKey.get(`${safeKind}:${safeTech}:${itemId}`);
+    if (byKindAndTech) return byKindAndTech;
+  }
+  if (safeKind) {
+    const byKind = catalog.byKey.get(`${safeKind}:${itemId}`);
     if (byKind) return byKind;
   }
   return catalog.byId.get(itemId) || null;
 }
 
+function getTriviaIncidentMeta({ tech, itemId }) {
+  if (!itemId) return null;
+  const safeTech = typeof tech === 'string' ? tech.trim().toLowerCase() : '';
+  const catalog = loadQuestionCatalog();
+  const question = safeTech
+    ? catalog.byTechKindKey.get(`trivia:${safeTech}:${itemId}`)
+    : catalog.byKey.get(`trivia:${itemId}`);
+  if (!question || question.kind !== 'trivia') return null;
+  if (!question.incidentCard) return null;
+  return {
+    questionId: question.id,
+    tech: question.tech,
+    title: question.title,
+    incidentCard: question.incidentCard,
+  };
+}
+
 module.exports = {
   loadQuestionCatalog,
   getQuestionMeta,
+  getTriviaIncidentMeta,
 };

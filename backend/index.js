@@ -75,7 +75,7 @@ app.use(cookieParser());
 const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/bug-report', '/api/health']);
 app.use(async (req, res, next) => {
     try {
-        if (SKIP_DB_PATHS.has(req.path) || req.path.startsWith('/api/tools/')) return next();
+        if (SKIP_DB_PATHS.has(req.path) || req.path.startsWith('/api/tools/') || req.path.startsWith('/api/trivia/')) return next();
         await connectToMongo(MONGO_URL);
         return next();
     } catch (err) {
@@ -241,6 +241,8 @@ app.use('/api/daily', require('./routes/daily'));
 app.use('/api/weekly-goal', require('./routes/weekly-goal'));
 // ---- Editor assist sync routes ----
 app.use('/api/editor-assist', require('./routes/editor-assist'));
+// ---- Trivia incident routes ----
+app.use('/api/trivia', require('./routes/trivia-incident'));
 
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));

@@ -324,6 +324,54 @@
 </app-login-required-dialog>
 
 <p-dialog
+    [(visible)]="incidentPromptOpen"
+    [modal]="true"
+    [dismissableMask]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="false"
+    [showHeader]="false"
+    styleClass="fa-modal">
+    <div class="fa-modal__panel incident-card" *ngIf="incidentCard() as card">
+        <h3 class="incident-card__title">{{ incidentPromptTitle() }}</h3>
+        <p class="incident-card__question">{{ incidentPromptQuestion() }}</p>
+
+        <div class="incident-card__options" role="radiogroup" aria-label="Select the likely root cause">
+            <button
+                type="button"
+                class="incident-card__option"
+                *ngFor="let option of card.options; trackBy: trackByIncidentOption"
+                [class.is-selected]="incidentSelectedOptionId() === option.id"
+                [attr.aria-checked]="incidentSelectedOptionId() === option.id"
+                [attr.role]="'radio'"
+                (click)="selectIncidentOption(option.id)">
+                <span class="incident-card__dot" aria-hidden="true"></span>
+                <span class="incident-card__label">{{ option.label }}</span>
+            </button>
+        </div>
+
+        <p class="incident-card__feedback incident-card__feedback--wrong" *ngIf="incidentOutcome() === 'wrong'">
+            {{ incidentPromptHint() }}
+        </p>
+        <p class="incident-card__feedback incident-card__feedback--ok" *ngIf="incidentOutcome() === 'correct'">
+            {{ incidentPromptHint() }}
+        </p>
+
+        <div class="incident-card__actions">
+            <button class="fa-btn fa-btn--primary" type="button" [disabled]="!incidentCanSubmit()" (click)="submitIncidentChoice()">
+                Check answer
+            </button>
+            <button class="fa-btn fa-btn--ghost" type="button" *ngIf="incidentOutcome() === 'wrong'" (click)="rereadFromIncidentPrompt()">
+                Re-read content
+            </button>
+            <button class="fa-btn fa-btn--ghost" type="button" (click)="closeIncidentPrompt()">
+                Later
+            </button>
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog
     [(visible)]="lifecyclePromptOpen"
     [modal]="true"
     [dismissableMask]="true"
