@@ -678,6 +678,7 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   display: grid;
   gap: 14px;
   width: min(640px, 100%);
+  padding-top: 10px;
 }
 
 .incident-card__title{

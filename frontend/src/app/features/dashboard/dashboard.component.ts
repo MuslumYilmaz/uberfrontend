@@ -61,6 +61,7 @@ type Card = {
   metaRight?: string;
   companyKey?: string;
   companyGlyph?: string;
+  companyIconClass?: string;
   companyColor?: string;
   companyFg?: string;
   companyNote?: string;
@@ -665,7 +666,8 @@ export class DashboardComponent {
       title: 'Apple',
       route: ['/companies', 'apple'],
       companyKey: 'apple',
-      companyGlyph: '',
+      companyGlyph: 'A',
+      companyIconClass: 'fa-brands fa-apple',
       companyColor: '#0A0A0A',
       companyFg: '#F5F5F5',
       companyNote: 'UI polish, accessibility',

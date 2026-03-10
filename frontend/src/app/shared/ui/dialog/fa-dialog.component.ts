@@ -16,6 +16,7 @@ type FaDialogStyle = {
       [visible]="visible"
       (visibleChange)="visibleChange.emit($event)"
       [modal]="modal"
+      [maskStyleClass]="maskStyleClass"
       [closable]="closable"
       [dismissableMask]="dismissableMask"
       [draggable]="draggable"
@@ -63,6 +64,7 @@ export class FaDialogComponent {
   @Input() width = '';
   @Input() maxWidth = '';
   @Input() styleClass = '';
+  @Input() maskStyleClass = '';
   @Input() appendTo: any = 'body';
   @Input() contentStyle: Record<string, string> | null = null;
   @Input() actionsAlign: 'start' | 'end' | 'between' = 'end';

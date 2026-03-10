@@ -128,7 +128,7 @@
       ]
     },
     "incidentCard": {
-      "title": "Root Cause Check",
+      "title": "Event Loop Root Cause Check",
       "scenario": "After a new release, users report the page freezes before timer callbacks run. Which root cause is most likely?",
       "options": [
         {

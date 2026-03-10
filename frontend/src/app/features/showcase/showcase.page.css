@@ -1885,6 +1885,14 @@
   box-shadow: 0 10px 24px rgba(0,0,0,.2);
   font-size: 18px;
 }
+.company-logo__icon,
+.company-logo__glyph{
+  line-height: 1;
+}
+.company-logo__icon{
+  font-size: 18px;
+  font-weight: 400;
+}
 .company-meta {
   display: grid;
   gap: 4px;

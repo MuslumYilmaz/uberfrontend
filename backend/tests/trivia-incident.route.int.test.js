@@ -19,7 +19,7 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-event-loop',
       tech: 'javascript',
-      title: 'Root Cause Check',
+      title: 'Event Loop Root Cause Check',
       scenario: expect.any(String),
       options: expect.any(Array),
     }));

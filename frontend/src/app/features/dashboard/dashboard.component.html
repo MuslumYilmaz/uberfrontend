@@ -464,7 +464,8 @@
               [style.background]="card.companyColor || '#1f2937'"
               [style.color]="card.companyFg || '#ffffff'"
             >
-              <span aria-hidden="true">{{ card.companyGlyph || card.title[0] }}</span>
+              <i *ngIf="card.companyIconClass" [class]="'company-showcase__icon ' + card.companyIconClass" aria-hidden="true"></i>
+              <span *ngIf="!card.companyIconClass" class="company-showcase__glyph" aria-hidden="true">{{ card.companyGlyph || card.title[0] }}</span>
               <span class="sr-only">{{ card.title }}</span>
             </div>
             <div class="company-showcase__meta">

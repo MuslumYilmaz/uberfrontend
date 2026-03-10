@@ -33,6 +33,15 @@ import {
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
 type LibraryLane = 'skills' | 'tech' | 'format';
+type CompanyQuestionCard = {
+  name: string;
+  slug: string;
+  icon: string;
+  iconClass?: string;
+  color: string;
+  note: string;
+  link: any[];
+};
 
 @Component({
   standalone: true,
@@ -414,11 +423,11 @@ You can also reset any task back to the starter whenever you want to re-practice
     { no: 'Q-240', title: 'Infinite Scroll List', desc: 'Cache, pagination, and perf budgets.', tags: ['System design', 'Performance'], meta: { difficulty: 'Medium', minutes: 45 }, link: ['/system-design', 'infinite-scroll-list'] },
   ];
 
-  companyQuestions = [
+  companyQuestions: CompanyQuestionCard[] = [
     { name: 'Google', slug: 'google', icon: 'G', color: '#4285F4', note: 'UI, JS, systems', link: ['/companies', 'google', 'preview'] },
     { name: 'Amazon', slug: 'amazon', icon: 'A', color: '#232F3E', note: 'Scaling lists, auth, UX', link: ['/companies', 'amazon', 'preview'] },
     { name: 'Netflix', slug: 'netflix', icon: 'N', color: '#E50914', note: 'UI architecture, state', link: ['/companies', 'netflix', 'preview'] },
-    { name: 'Apple', slug: 'apple', icon: '', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
+    { name: 'Apple', slug: 'apple', icon: 'A', iconClass: 'fa-brands fa-apple', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
   ];
 
   companyCounts$?: Observable<ShowcaseStatsPayload['companyCounts']>;
