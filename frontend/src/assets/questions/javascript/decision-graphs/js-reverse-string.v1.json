@@ -1,0 +1,91 @@
+{
+  "questionId": "js-reverse-string",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function reverseString(str) {\n  let out = '';\n  for (let i = str.length - 1; i >= 0; i--) {\n    out += str[i];\n  }\n  return out;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-start-empty-output",
+          "title": "Start with an empty output string",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "let out = '';"
+          },
+          "why": "Strings are immutable, so we build a new one instead of editing in place.",
+          "alternative": "Push characters into an array and join at the end.",
+          "tradeoff": "Very readable, but repeated concatenation can be slower on huge strings."
+        },
+        {
+          "id": "d2-loop-backwards",
+          "title": "Iterate from the end to the beginning",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "for (let i = str.length - 1; i >= 0; i--) {"
+          },
+          "why": "Reading characters in reverse order naturally produces the reversed result.",
+          "alternative": "Two-pointer swap on an array copy.",
+          "tradeoff": "Simple control flow, but requires careful index boundaries."
+        },
+        {
+          "id": "d3-append-current-char",
+          "title": "Append the current character each step",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "out += str[i];"
+          },
+          "why": "Each iteration adds one character, gradually building the final reversed string.",
+          "alternative": "Prepend instead of append while looping forward.",
+          "tradeoff": "Append is easy to reason about with a backward loop."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function reverseString(str) {\n  return str.split('').reverse().join('');\n}\n",
+      "nodes": [
+        {
+          "id": "d1-split-to-array",
+          "title": "Split string into characters",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "str.split('')"
+          },
+          "why": "`reverse()` works on arrays, so we first convert the string into a character list.",
+          "alternative": "Keep everything in string form and use a manual loop.",
+          "tradeoff": "Convenient API chain, but adds conversion overhead."
+        },
+        {
+          "id": "d2-reverse-array",
+          "title": "Reverse the array in place",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": ".reverse()"
+          },
+          "why": "This reorders elements to mirror the string from back to front.",
+          "alternative": "Custom loop without `reverse()`.",
+          "tradeoff": "Short and idiomatic, but disallowed as a primary method in some interviews."
+        },
+        {
+          "id": "d3-join-back-to-string",
+          "title": "Join characters back into a string",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": ".join('')"
+          },
+          "why": "After reversing the array, we convert it back to the final string output.",
+          "alternative": "Return the array and let caller join.",
+          "tradeoff": "Cleaner function contract, at the cost of an extra conversion step."
+        }
+      ]
+    }
+  }
+}

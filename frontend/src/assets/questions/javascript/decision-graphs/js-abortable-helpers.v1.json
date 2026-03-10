@@ -1,0 +1,73 @@
+{
+  "questionId": "js-abortable-helpers",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "function abortableHelpers() {}\n\nabortableHelpers.sleep = (ms) => new Promise(r => setTimeout(r, ms));\n\nabortableHelpers.withTimeout = function withTimeout(p, ms, reason) {\n  return new Promise((resolve, reject) => {\n    let settled = false;\n    const id = setTimeout(() => {\n      if (settled) return;\n      settled = true;\n      reject(reason ?? new Error('Timeout'));\n    }, ms);\n\n    Promise.resolve(p).then(\n      v => { if (!settled) { settled = true; clearTimeout(id); resolve(v); } },\n      e => { if (!settled) { settled = true; clearTimeout(id); reject(e); } }\n    );\n  });\n};\n\nabortableHelpers.withAbort = function withAbort(factory, signal) {\n  return new Promise((resolve, reject) => {\n    if (signal?.aborted) { reject(signal.reason ?? new Error('Aborted')); return; }\n\n    let finished = false;\n    const onAbort = () => {\n      if (finished) return;\n      finished = true;\n      reject(signal.reason ?? new Error('Aborted'));\n    };\n\n    signal?.addEventListener('abort', onAbort, { once: true });\n\n    Promise.resolve()\n      .then(() => factory(signal))\n      .then(v => { if (!finished) { finished = true; signal?.removeEventListener('abort', onAbort); resolve(v); } })\n      .catch(e => { if (!finished) { finished = true; signal?.removeEventListener('abort', onAbort); reject(e); } });\n  });\n};\n\nabortableHelpers.composeAbort = function composeAbort(...signals) {\n  const ac = new AbortController();\n  if (!signals || signals.length === 0) return ac.signal;\n\n  const already = signals.find(s => s?.aborted);\n  if (already) { ac.abort(already.reason); return ac.signal; }\n\n  const listeners = [];\n  const abortOnce = (reason) => {\n    if (!ac.signal.aborted) ac.abort(reason);\n    for (const { s, fn } of listeners) s.removeEventListener('abort', fn);\n    listeners.length = 0;\n  };\n\n  for (const s of signals) {\n    if (!s) continue;\n    const fn = () => abortOnce(s.reason);\n    s.addEventListener('abort', fn, { once: true });\n    listeners.push({ s, fn });\n  }\n\n  return ac.signal;\n};\n\nexport default abortableHelpers;\n",
+      "nodes": [
+        {
+          "id": "d1-timeout-guarded-settle",
+          "title": "Timeout rejects only if work did not finish yet",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 12,
+            "snippet": "const id = setTimeout(() => {"
+          },
+          "why": "The settled check avoids rejecting after the promise already resolved.",
+          "alternative": "Use Promise.race without explicit settled tracking.",
+          "tradeoff": "A bit more code, but cleanup and winner logic stay explicit."
+        },
+        {
+          "id": "d2-clear-timeout-on-completion",
+          "title": "Clear timer when promise settles first",
+          "anchor": {
+            "lineStart": 14,
+            "lineEnd": 17,
+            "snippet": "Promise.resolve(p).then("
+          },
+          "why": "Clearing the timer prevents a late timeout callback from running unnecessarily.",
+          "alternative": "Leave timeout running and rely only on settled flag.",
+          "tradeoff": "One extra cleanup step, but less wasted work and clearer intent."
+        },
+        {
+          "id": "d3-fast-fail-aborted-signal",
+          "title": "Fail fast if signal is already aborted",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "if (signal?.aborted) { reject(signal.reason ?? new Error('Aborted')); return; }"
+          },
+          "why": "If cancellation already happened, we should reject immediately and skip extra setup.",
+          "alternative": "Always attach listeners first and let abort event flow later.",
+          "tradeoff": "Slightly more branching, but faster and cleaner in aborted cases."
+        },
+        {
+          "id": "d4-once-listener-with-manual-cleanup",
+          "title": "Attach abort listener once and remove on settle",
+          "anchor": {
+            "lineStart": 32,
+            "lineEnd": 37,
+            "snippet": "signal?.addEventListener('abort', onAbort, { once: true });"
+          },
+          "why": "This keeps abort wiring leak-free for both success and error paths.",
+          "alternative": "Keep listener attached until garbage collection.",
+          "tradeoff": "Needs explicit removeEventListener calls, but avoids stale listeners."
+        },
+        {
+          "id": "d5-compose-abort-and-detach",
+          "title": "Abort combined signal once, then detach all listeners",
+          "anchor": {
+            "lineStart": 49,
+            "lineEnd": 52,
+            "snippet": "const abortOnce = (reason) => {"
+          },
+          "why": "One shared abort path keeps behavior consistent and cleans all source listeners.",
+          "alternative": "Handle cleanup separately in each signal listener.",
+          "tradeoff": "Central helper adds structure, but makes composed cancellation easier to reason about."
+        }
+      ]
+    }
+  }
+}

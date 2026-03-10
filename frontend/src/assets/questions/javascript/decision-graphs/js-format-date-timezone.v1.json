@@ -1,0 +1,85 @@
+{
+  "questionId": "js-format-date-timezone",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function formatDateInTimeZone(date, timeZone) {\n  const d = date instanceof Date ? date : new Date(date);\n  if (Number.isNaN(d.getTime())) throw new TypeError('Invalid date');\n\n  const parts = new Intl.DateTimeFormat('en-US', {\n    timeZone,\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit'\n  }).formatToParts(d);\n\n  const map = {};\n  for (const p of parts) {\n    if (p.type !== 'literal') map[p.type] = p.value;\n  }\n\n  return `${map.year}-${map.month}-${map.day}`;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-normalize-input-date",
+          "title": "Normalize input into a Date object",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "date instanceof Date ? date : new Date(date)"
+          },
+          "why": "This supports both Date instances and timestamps in one code path.",
+          "alternative": "Only accept Date objects.",
+          "tradeoff": "More flexible API, but still relies on runtime date parsing rules."
+        },
+        {
+          "id": "d2-invalid-date-guard",
+          "title": "Fail fast for invalid dates",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "Number.isNaN(d.getTime())"
+          },
+          "why": "Invalid inputs should produce a clear error instead of broken output.",
+          "alternative": "Return an empty string on invalid input.",
+          "tradeoff": "Throwing is strict and explicit, but callers must handle exceptions."
+        },
+        {
+          "id": "d3-intl-with-timezone",
+          "title": "Use Intl with explicit time zone",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 10,
+            "snippet": "new Intl.DateTimeFormat('en-US', { timeZone"
+          },
+          "why": "Intl handles DST and zone rules correctly, which manual math usually gets wrong.",
+          "alternative": "Apply a fixed offset manually.",
+          "tradeoff": "Intl is reliable and readable, but depends on runtime Intl support."
+        },
+        {
+          "id": "d4-format-to-parts",
+          "title": "Extract stable parts instead of parsing a formatted string",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": ".formatToParts(d)"
+          },
+          "why": "`formatToParts` gives structured pieces, so output is not locale-string fragile.",
+          "alternative": "Use `format()` and split the resulting string.",
+          "tradeoff": "Slightly more code, but far more robust across locales."
+        },
+        {
+          "id": "d5-ignore-literals",
+          "title": "Ignore literal separators",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 15,
+            "snippet": "if (p.type !== 'literal')"
+          },
+          "why": "Only year/month/day values matter for the final YYYY-MM-DD output.",
+          "alternative": "Keep all parts including literals.",
+          "tradeoff": "Filtering keeps map clean, but assumes required part keys exist."
+        },
+        {
+          "id": "d6-build-iso-like-date",
+          "title": "Build deterministic YYYY-MM-DD output",
+          "anchor": {
+            "lineStart": 17,
+            "lineEnd": 17,
+            "snippet": "`${map.year}-${map.month}-${map.day}`"
+          },
+          "why": "Explicit assembly gives a consistent date string independent of locale order.",
+          "alternative": "Return locale-formatted date directly.",
+          "tradeoff": "Custom assembly is predictable, but tied to available part names."
+        }
+      ]
+    }
+  }
+}

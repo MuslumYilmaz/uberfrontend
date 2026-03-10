@@ -1,0 +1,97 @@
+{
+  "questionId": "js-resolve-package-exports",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function resolvePackageEntry(pkg, options = {}) {\n  if (!pkg || typeof pkg !== 'object') throw new TypeError('pkg must be an object');\n\n  const kind = options && options.kind === 'require' ? 'require' : 'import';\n  const extra = Array.isArray(options && options.conditions)\n    ? options.conditions.filter((c) => typeof c === 'string' && c.length)\n    : [];\n\n  const candidates = Array.from(new Set([...extra, kind, 'default']));\n\n  const resolveTarget = (target) => {\n    if (typeof target === 'string') return target;\n    if (!target || typeof target !== 'object') return null;\n\n    for (const cond of candidates) {\n      if (Object.prototype.hasOwnProperty.call(target, cond)) {\n        const out = resolveTarget(target[cond]);\n        if (typeof out === 'string' && out.length) return out;\n      }\n    }\n    return null;\n  };\n\n  let resolved = null;\n\n  if (typeof pkg.exports === 'string') {\n    resolved = pkg.exports;\n  } else if (pkg.exports && typeof pkg.exports === 'object') {\n    const root = Object.prototype.hasOwnProperty.call(pkg.exports, '.')\n      ? pkg.exports['.']\n      : pkg.exports;\n    resolved = resolveTarget(root);\n  }\n\n  if (resolved) return resolved;\n\n  if (kind === 'import' && typeof pkg.module === 'string' && pkg.module) return pkg.module;\n  if (typeof pkg.main === 'string' && pkg.main) return pkg.main;\n\n  throw new Error('Unable to resolve package entry');\n}\n",
+      "nodes": [
+        {
+          "id": "d1-validate-pkg-input",
+          "title": "Validate package input first",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (!pkg || typeof pkg !== 'object')"
+          },
+          "why": "A clear early error is easier to debug than weird behavior later.",
+          "alternative": "Try to keep going with invalid input.",
+          "tradeoff": "Strict validation is safer, but callers must pass valid data."
+        },
+        {
+          "id": "d2-pick-resolution-kind",
+          "title": "Choose import vs require mode",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "options.kind === 'require' ? 'require' : 'import'"
+          },
+          "why": "Packages often expose different entry files for ESM and CommonJS.",
+          "alternative": "Always treat everything as `import`.",
+          "tradeoff": "More accurate resolution, with a tiny bit more branching."
+        },
+        {
+          "id": "d3-build-candidate-order",
+          "title": "Build a deterministic condition priority list",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "new Set([...extra, kind, 'default'])"
+          },
+          "why": "This keeps resolution predictable and removes duplicate conditions.",
+          "alternative": "Check conditions in ad-hoc order.",
+          "tradeoff": "Stable results, but behavior now depends on this explicit priority."
+        },
+        {
+          "id": "d4-recursive-target-walk",
+          "title": "Recursively walk conditional exports",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 21,
+            "snippet": "const resolveTarget = (target) =>"
+          },
+          "why": "Real package exports can be nested, so one-level checks are not enough.",
+          "alternative": "Only read top-level keys.",
+          "tradeoff": "Handles more real-world cases, with slightly more logic."
+        },
+        {
+          "id": "d5-handle-root-dot-subpath",
+          "title": "Support exports root at `.`",
+          "anchor": {
+            "lineStart": 29,
+            "lineEnd": 32,
+            "snippet": "Object.prototype.hasOwnProperty.call(pkg.exports, '.')"
+          },
+          "why": "Many packages define the main entry under `exports['.']`.",
+          "alternative": "Assume the whole exports object is already the root target.",
+          "tradeoff": "Better compatibility with package conventions, with one extra check."
+        },
+        {
+          "id": "d6-fallback-module-main",
+          "title": "Use module/main fallback when exports fails",
+          "anchor": {
+            "lineStart": 37,
+            "lineEnd": 38,
+            "snippet": "if (kind === 'import' && typeof pkg.module === 'string'"
+          },
+          "why": "This keeps behavior useful for older or simpler package metadata.",
+          "alternative": "Throw immediately when exports is missing or unmatched.",
+          "tradeoff": "More forgiving behavior, but fallback can hide incomplete metadata."
+        },
+        {
+          "id": "d7-throw-on-unresolvable",
+          "title": "Throw if nothing resolves",
+          "anchor": {
+            "lineStart": 40,
+            "lineEnd": 40,
+            "snippet": "Unable to resolve package entry"
+          },
+          "why": "Failing loudly prevents silent bundling with the wrong file.",
+          "alternative": "Return `null` or empty string.",
+          "tradeoff": "Stronger safety signal, but callers must handle the exception."
+        }
+      ]
+    }
+  }
+}

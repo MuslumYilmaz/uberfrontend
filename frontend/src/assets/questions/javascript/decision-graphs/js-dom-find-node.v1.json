@@ -1,0 +1,73 @@
+{
+  "questionId": "js-dom-find-node",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function findNode(root, predicate) {\n  if (!root) return null;\n  if (predicate(root)) return root;\n  for (const child of root.children) {\n    const found = findNode(child, predicate);\n    if (found) return found;\n  }\n  return null;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-null-root-guard",
+          "title": "Handle empty root up front",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (!root) return null;"
+          },
+          "why": "This avoids crashes and gives a clear result when traversal starts with no node.",
+          "alternative": "Let the function fail when root is missing.",
+          "tradeoff": "One extra check, but safer behavior and cleaner caller experience."
+        },
+        {
+          "id": "d2-check-current-node-first",
+          "title": "Test current node before going deeper",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "if (predicate(root)) return root;"
+          },
+          "why": "If the current node matches, we can return immediately and skip all children.",
+          "alternative": "Always search children first, then test current node.",
+          "tradeoff": "Current-first keeps DFS simple and usually faster for high-level matches."
+        },
+        {
+          "id": "d3-dfs-child-iteration",
+          "title": "Traverse children with DFS",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 5,
+            "snippet": "const found = findNode(child, predicate);"
+          },
+          "why": "Recursion lets each child subtree use the same logic without duplicate code.",
+          "alternative": "Use a queue-based BFS loop.",
+          "tradeoff": "DFS recursion is concise, but very deep trees can increase call stack depth."
+        },
+        {
+          "id": "d4-early-return-on-first-hit",
+          "title": "Stop at the first found match",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "if (found) return found;"
+          },
+          "why": "The problem asks for the first match, so there is no reason to keep searching after success.",
+          "alternative": "Collect all matches and return a list.",
+          "tradeoff": "Early return is faster, but it only gives one match."
+        },
+        {
+          "id": "d5-fallback-null",
+          "title": "Return null when nothing matches",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "return null;"
+          },
+          "why": "A clear no-result value makes calling code simple to handle.",
+          "alternative": "Throw an error when not found.",
+          "tradeoff": "`null` is easier for flow control, but callers must still remember to check it."
+        }
+      ]
+    }
+  }
+}

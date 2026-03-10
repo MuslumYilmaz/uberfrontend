@@ -1,0 +1,73 @@
+{
+  "questionId": "js-timer-manager",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "function timerManager() {}\n\nlet _nextId = 1;\nconst _timers = new Map();\n\ntimerManager.mySetTimeout = function mySetTimeout(fn, delay) {\n  const id = _nextId++;\n  const handle = setTimeout(() => {\n    _timers.delete(id);\n    fn();\n  }, delay);\n  _timers.set(id, handle);\n  return id;\n};\n\ntimerManager.myClearTimeout = function myClearTimeout(id) {\n  const handle = _timers.get(id);\n  if (handle != null) {\n    clearTimeout(handle);\n    _timers.delete(id);\n  }\n};\n\ntimerManager.myClearAllTimeouts = function myClearAllTimeouts() {\n  for (const handle of _timers.values()) {\n    clearTimeout(handle);\n  }\n  _timers.clear();\n};\n\nexport default timerManager;\n",
+      "nodes": [
+        {
+          "id": "d1-create-own-id",
+          "title": "Generate your own timer ID",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "const id = _nextId++;"
+          },
+          "why": "We return a custom numeric id so callers never depend on browser-specific timeout handles.",
+          "alternative": "Return the native handle directly from setTimeout.",
+          "tradeoff": "Custom ids make the API stable, but you need a registry map to translate id -> handle."
+        },
+        {
+          "id": "d2-cleanup-when-fired",
+          "title": "Delete timer before running callback",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 10,
+            "snippet": "_timers.delete(id);"
+          },
+          "why": "As soon as the timer fires, it is no longer active. Removing it keeps the registry accurate.",
+          "alternative": "Only remove entries when clear is called.",
+          "tradeoff": "Immediate cleanup avoids memory leaks and stale ids, with one extra map operation."
+        },
+        {
+          "id": "d3-store-handle-map",
+          "title": "Store id to handle mapping",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "_timers.set(id, handle);"
+          },
+          "why": "This is what allows myClearTimeout(id) to find and cancel the right native timer.",
+          "alternative": "Keep handles in an array and search linearly.",
+          "tradeoff": "Map gives O(1) lookup and delete, at the cost of a little extra memory."
+        },
+        {
+          "id": "d4-guarded-single-clear",
+          "title": "Clear only if timer exists",
+          "anchor": {
+            "lineStart": 17,
+            "lineEnd": 21,
+            "snippet": "if (handle != null)"
+          },
+          "why": "Unknown ids should be safe no-ops, not runtime errors.",
+          "alternative": "Throw when id is not found.",
+          "tradeoff": "No-op behavior is friendlier for callers, but it can hide mistakes if ids are wrong."
+        },
+        {
+          "id": "d5-bulk-clear-then-reset",
+          "title": "Cancel every handle, then clear the map",
+          "anchor": {
+            "lineStart": 25,
+            "lineEnd": 28,
+            "snippet": "for (const handle of _timers.values())"
+          },
+          "why": "clearAll should guarantee no scheduled callbacks remain and no stale entries stay in memory.",
+          "alternative": "Replace the map with a new one without clearing old handles.",
+          "tradeoff": "Explicitly clearing each handle is slightly more work, but behavior is correct and predictable."
+        }
+      ]
+    }
+  }
+}

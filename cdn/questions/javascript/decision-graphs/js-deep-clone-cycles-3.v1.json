@@ -1,0 +1,85 @@
+{
+  "questionId": "js-deep-clone-cycles-3",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function deepClone(value) {\n  const seen = new Map();\n\n  function cloneRec(v) {\n    if (v === null || typeof v !== 'object') return v;\n\n    if (seen.has(v)) return seen.get(v);\n\n    const out = Array.isArray(v) ? [] : {};\n    seen.set(v, out);\n\n    for (const key in v) {\n      out[key] = cloneRec(v[key]);\n    }\n\n    return out;\n  }\n\n  return cloneRec(value);\n}\n",
+      "nodes": [
+        {
+          "id": "d1-create-seen-map",
+          "title": "Track already-cloned objects in a map",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "const seen = new Map();"
+          },
+          "why": "This is the key to handling cycles and shared references correctly.",
+          "alternative": "Clone recursively without any memoization.",
+          "tradeoff": "Uses extra memory, but avoids infinite loops and wrong identity."
+        },
+        {
+          "id": "d2-return-primitives-as-is",
+          "title": "Return primitives immediately",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "if (v === null || typeof v !== 'object') return v;"
+          },
+          "why": "Primitives are immutable, so they do not need deep cloning.",
+          "alternative": "Try to process every value the same way.",
+          "tradeoff": "Simple fast path that keeps recursion focused on objects/arrays."
+        },
+        {
+          "id": "d3-reuse-cached-clone",
+          "title": "Reuse clone when object was seen before",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "if (seen.has(v)) return seen.get(v);"
+          },
+          "why": "If the same source object appears again, we return the same cloned object, preserving structure.",
+          "alternative": "Always create a new clone each time.",
+          "tradeoff": "One map lookup per object, but correct shared-reference behavior."
+        },
+        {
+          "id": "d4-create-matching-container",
+          "title": "Create array or object based on source type",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "const out = Array.isArray(v) ? [] : {};"
+          },
+          "why": "The clone must keep the same container shape as the original.",
+          "alternative": "Always clone into plain objects.",
+          "tradeoff": "Tiny type check, but accurate output type."
+        },
+        {
+          "id": "d5-cache-before-recursing",
+          "title": "Store clone in map before cloning children",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "seen.set(v, out);"
+          },
+          "why": "This prevents infinite recursion for self-references like obj.self = obj.",
+          "alternative": "Set cache after child cloning finishes.",
+          "tradeoff": "Order is subtle, but this is the safe way for cyclic graphs."
+        },
+        {
+          "id": "d6-recursive-property-copy",
+          "title": "Clone each property recursively",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 14,
+            "snippet": "for (const key in v) {"
+          },
+          "why": "Each nested value is cloned with the same rules, so deep structures are handled consistently.",
+          "alternative": "Only do a shallow copy and stop at one level.",
+          "tradeoff": "More recursion work, but true deep clone behavior."
+        }
+      ]
+    }
+  }
+}

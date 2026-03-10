@@ -1,0 +1,73 @@
+{
+  "questionId": "js-palindrome-check",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function isPalindrome(str) {\n  const s = str.toLowerCase().replace(/[^a-z0-9]/g, '');\n  let i = 0;\n  let j = s.length - 1;\n  while (i < j) {\n    if (s[i] !== s[j]) return false;\n    i++;\n    j--;\n  }\n  return true;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-normalize-input",
+          "title": "Normalize case and remove noise",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "str.toLowerCase().replace(/[^a-z0-9]/g, '')"
+          },
+          "why": "This makes comparisons fair by ignoring case and punctuation.",
+          "alternative": "Compare the raw string as-is.",
+          "tradeoff": "Normalization uses extra memory, but gives the expected behavior for real inputs."
+        },
+        {
+          "id": "d2-two-pointers",
+          "title": "Use pointers from both ends",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 4,
+            "snippet": "let i = 0;"
+          },
+          "why": "Palindromes are symmetric, so checking mirrored positions is direct and efficient.",
+          "alternative": "Reverse the string and compare it with the original.",
+          "tradeoff": "Two pointers avoid building another full string for comparison logic."
+        },
+        {
+          "id": "d3-stop-at-middle",
+          "title": "Scan only until pointers cross",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "while (i < j)"
+          },
+          "why": "Once pointers meet, all mirrored pairs have been checked.",
+          "alternative": "Loop through the entire string.",
+          "tradeoff": "Middle-stop is faster and clearer than scanning unnecessary positions."
+        },
+        {
+          "id": "d4-fail-fast-mismatch",
+          "title": "Return false on first mismatch",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "if (s[i] !== s[j]) return false;"
+          },
+          "why": "One mismatch is enough to prove the string is not a palindrome.",
+          "alternative": "Track a flag and finish the whole loop.",
+          "tradeoff": "Fail-fast is simpler and usually faster on non-palindromes."
+        },
+        {
+          "id": "d5-confirm-success",
+          "title": "Return true after full symmetric check",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "return true;"
+          },
+          "why": "If no mismatches were found, the normalized string is a palindrome.",
+          "alternative": "Return a counter-based condition.",
+          "tradeoff": "Explicit `true` keeps the success path easy to read."
+        }
+      ]
+    }
+  }
+}

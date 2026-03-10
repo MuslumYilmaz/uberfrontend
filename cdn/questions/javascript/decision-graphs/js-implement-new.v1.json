@@ -1,0 +1,49 @@
+{
+  "questionId": "js-implement-new",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function myNew(Constructor, ...args) {\n  if (typeof Constructor !== 'function') {\n    throw new TypeError('myNew: Constructor must be a function');\n  }\n\n  const instance = Object.create(Constructor.prototype);\n  const result = Constructor.apply(instance, args);\n\n  const isObject = result !== null && (typeof result === 'object' || typeof result === 'function');\n  return isObject ? result : instance;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-validate-constructor",
+          "title": "Validate constructor input first",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 3,
+            "snippet": "if (typeof Constructor !== 'function') {"
+          },
+          "why": "`new`-style construction only works with callable constructors, so this fails early with a clear message.",
+          "alternative": "Skip the guard and let `apply` throw later.",
+          "tradeoff": "Slightly more code, but much clearer failure behavior."
+        },
+        {
+          "id": "d2-create-and-call",
+          "title": "Create prototype-linked instance, then call constructor",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 7,
+            "snippet": "const instance = Object.create(Constructor.prototype);"
+          },
+          "why": "This mirrors how native `new` works: set prototype first, then run the constructor with that object as `this`.",
+          "alternative": "Create `{}` and assign fields manually.",
+          "tradeoff": "Correct `instanceof` and prototype behavior with minimal extra complexity."
+        },
+        {
+          "id": "d3-return-override-rule",
+          "title": "Respect constructor return override rule",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 10,
+            "snippet": "const isObject = result !== null && (typeof result === 'object' || typeof result === 'function');"
+          },
+          "why": "If constructor returns an object/function, native `new` returns that; otherwise it returns the created instance.",
+          "alternative": "Always return the created instance.",
+          "tradeoff": "More accurate native behavior, at the cost of one explicit type check."
+        }
+      ]
+    }
+  }
+}

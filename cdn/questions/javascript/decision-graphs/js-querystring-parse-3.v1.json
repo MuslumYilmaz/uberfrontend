@@ -1,0 +1,97 @@
+{
+  "questionId": "js-querystring-parse-3",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "function safeDecode(s) {\n  try {\n    return decodeURIComponent(s);\n  } catch {\n    return s;\n  }\n}\n\nfunction parseKeyPath(key) {\n  // Examples:\n  // \"a\" -> [\"a\"]\n  // \"a[b][c]\" -> [\"a\",\"b\",\"c\"]\n  // \"filters[tag][]\" -> [\"filters\",\"tag\",\"\"]\n  const parts = [];\n  const re = /([^\\[\\]]+)|\\[(.*?)\\]/g;\n  let m;\n\n  while ((m = re.exec(key)) !== null) {\n    const part = m[1] !== undefined ? m[1] : (m[2] !== undefined ? m[2] : '');\n    parts.push(part);\n  }\n\n  if (parts.length > 0 && parts[0] === '') parts.shift();\n  return parts;\n}\n\nfunction assignPath(obj, path, value) {\n  let cur = obj;\n\n  for (let i = 0; i < path.length; i++) {\n    const key = path[i];\n    const isLast = i === path.length - 1;\n\n    if (key === '') {\n      // array push\n      if (!Array.isArray(cur)) {\n        // convert to array if needed\n        cur = [];\n      }\n      if (isLast) {\n        cur.push(value);\n        return;\n      } else {\n        if (cur.length === 0 || typeof cur[cur.length - 1] !== 'object') {\n          cur.push({});\n        }\n        cur = cur[cur.length - 1];\n        continue;\n      }\n    }\n\n    if (isLast) {\n      if (cur[key] === undefined) {\n        cur[key] = value;\n      } else if (Array.isArray(cur[key])) {\n        cur[key].push(value);\n      } else {\n        cur[key] = [cur[key], value];\n      }\n    } else {\n      if (cur[key] === undefined || typeof cur[key] !== 'object') {\n        // decide next container: array if next is '', else object\n        cur[key] = path[i + 1] === '' ? [] : {};\n      }\n      cur = cur[key];\n    }\n  }\n}\n\nexport default function parseQueryStringAdvanced(qs) {\n  if (typeof qs !== 'string') return {};\n\n  const raw = qs.startsWith('?') ? qs.slice(1) : qs;\n  if (!raw) return {};\n\n  const out = {};\n\n  for (const part of raw.split('&')) {\n    if (!part) continue;\n\n    const eq = part.indexOf('=');\n    const kRaw = eq === -1 ? part : part.slice(0, eq);\n    const vRaw = eq === -1 ? '' : part.slice(eq + 1);\n\n    const key = safeDecode(kRaw.replace(/\\+/g, ' '));\n    if (!key) continue;\n\n    const val = safeDecode(vRaw.replace(/\\+/g, ' '));\n\n    const path = parseKeyPath(key);\n    if (path.length === 0) continue;\n\n    assignPath(out, path, val);\n  }\n\n  return out;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-tokenize-bracket-paths",
+          "title": "Tokenize bracket keys into a clean path",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 20,
+            "snippet": "const re = /([^\\[\\]]+)|\\[(.*?)\\]/g;"
+          },
+          "why": "Bracket syntax like user[name] and filters[tag][] needs a consistent path shape before assignment.",
+          "alternative": "Use manual string splitting by [ and ] for each key.",
+          "tradeoff": "Regex is compact and reliable, but slightly harder to read at first glance."
+        },
+        {
+          "id": "d2-array-push-segment",
+          "title": "Treat empty segment as array push",
+          "anchor": {
+            "lineStart": 34,
+            "lineEnd": 42,
+            "snippet": "if (key === '') {"
+          },
+          "why": "An empty segment ([]) means append to array, not assign to a named object key.",
+          "alternative": "Reject [] syntax and only support repeated plain keys.",
+          "tradeoff": "More logic in assignment, but it supports common querystring patterns."
+        },
+        {
+          "id": "d3-preserve-duplicate-values",
+          "title": "Preserve repeated keys by promoting to arrays",
+          "anchor": {
+            "lineStart": 53,
+            "lineEnd": 58,
+            "snippet": "cur[key] = [cur[key], value];"
+          },
+          "why": "When a key appears again, we keep both values instead of losing earlier data.",
+          "alternative": "Last value wins and earlier values are overwritten.",
+          "tradeoff": "Output shape can become string-or-array, but no user input is dropped."
+        },
+        {
+          "id": "d4-materialize-next-container",
+          "title": "Create object or array based on next token",
+          "anchor": {
+            "lineStart": 61,
+            "lineEnd": 64,
+            "snippet": "cur[key] = path[i + 1] === '' ? [] : {};"
+          },
+          "why": "Looking ahead one segment prevents building the wrong container type at nested levels.",
+          "alternative": "Always create objects and fix shape later.",
+          "tradeoff": "Small look-ahead complexity, but cleaner and fewer post-fixes."
+        },
+        {
+          "id": "d5-split-on-first-equals",
+          "title": "Split each pair on the first = only",
+          "anchor": {
+            "lineStart": 81,
+            "lineEnd": 83,
+            "snippet": "const eq = part.indexOf('=');"
+          },
+          "why": "Values may contain =, so splitting once keeps the full value intact.",
+          "alternative": "Use part.split('=') and join the rest back.",
+          "tradeoff": "Slicing is a bit manual, but behavior is predictable."
+        },
+        {
+          "id": "d6-decode-plus-space",
+          "title": "Normalize + and decode percent-encoding",
+          "anchor": {
+            "lineStart": 85,
+            "lineEnd": 88,
+            "snippet": "const key = safeDecode(kRaw.replace(/\\+/g, ' '));"
+          },
+          "why": "Many querystrings use + for spaces, so normalization keeps user text readable.",
+          "alternative": "Decode percent-encoding only and keep + as a literal plus sign.",
+          "tradeoff": "Opinionated parsing choice, but aligns with common form behavior."
+        },
+        {
+          "id": "d7-centralized-path-assignment",
+          "title": "Keep write logic in one assign function",
+          "anchor": {
+            "lineStart": 93,
+            "lineEnd": 93,
+            "snippet": "assignPath(out, path, val);"
+          },
+          "why": "All structure decisions happen in one place, so behavior stays consistent for every pair.",
+          "alternative": "Inline assignment logic inside the parse loop.",
+          "tradeoff": "One extra function call, but much easier to maintain and test."
+        }
+      ]
+    }
+  }
+}

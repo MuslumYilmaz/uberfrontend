@@ -1,0 +1,85 @@
+{
+  "questionId": "js-merge-sorted-arrays",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function mergeSortedArrays(a, b) {\n  const out = [];\n  let i = 0;\n  let j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      out.push(a[i++]);\n    } else {\n      out.push(b[j++]);\n    }\n  }\n  while (i < a.length) out.push(a[i++]);\n  while (j < b.length) out.push(b[j++]);\n  return out;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-two-pointer-start",
+          "title": "Start both pointers at index 0",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 4,
+            "snippet": "let i = 0;"
+          },
+          "why": "Each pointer tracks the current smallest unseen value from its array.",
+          "alternative": "Copy arrays and shift from the front each step.",
+          "tradeoff": "Pointer math is faster; shift-based code is shorter but slower."
+        },
+        {
+          "id": "d2-main-merge-loop",
+          "title": "Merge while both arrays still have values",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "while (i < a.length && j < b.length) {"
+          },
+          "why": "As long as both sides have candidates, compare and take the smaller one.",
+          "alternative": "Concatenate and sort the full result.",
+          "tradeoff": "This keeps O(n + m) time instead of O((n + m) log(n + m))."
+        },
+        {
+          "id": "d3-choose-smaller-next",
+          "title": "Push the smaller current value",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 10,
+            "snippet": "if (a[i] <= b[j]) {"
+          },
+          "why": "Picking the smaller head keeps output sorted at every step.",
+          "alternative": "Push one side blindly and repair order later.",
+          "tradeoff": "One comparison per step, but no post-fix sorting needed."
+        },
+        {
+          "id": "d4-drain-leftover-a",
+          "title": "Append remaining values from a",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "while (i < a.length) out.push(a[i++]);"
+          },
+          "why": "When b is exhausted, a already remains in sorted order.",
+          "alternative": "Keep using the main loop with extra boundary checks.",
+          "tradeoff": "Tiny extra loop, clearer control flow."
+        },
+        {
+          "id": "d5-drain-leftover-b",
+          "title": "Append remaining values from b",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 13,
+            "snippet": "while (j < b.length) out.push(b[j++]);"
+          },
+          "why": "Symmetric cleanup for the case where a finishes first.",
+          "alternative": "Duplicate logic in condition branches above.",
+          "tradeoff": "Keeps the merge logic simple and balanced."
+        },
+        {
+          "id": "d6-return-merged-array",
+          "title": "Return merged output once",
+          "anchor": {
+            "lineStart": 14,
+            "lineEnd": 14,
+            "snippet": "return out;"
+          },
+          "why": "All ordering work is done incrementally, so final return is immediate.",
+          "alternative": "Build output in-place in one input array.",
+          "tradeoff": "Uses extra output array, but safer and easier to reason about."
+        }
+      ]
+    }
+  }
+}

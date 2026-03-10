@@ -1,0 +1,91 @@
+{
+  "questionId": "js-max-char",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function maxChar(str) {\n  if (!str) return '';\n  const charCount = {};\n  let max = 0;\n  let maxChar = '';\n\n  for (const ch of str) {\n    charCount[ch] = (charCount[ch] || 0) + 1;\n    if (charCount[ch] > max) {\n      max = charCount[ch];\n      maxChar = ch;\n    }\n  }\n\n  return maxChar;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-handle-empty-input-early",
+          "title": "Return early for empty input",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (!str) return '';"
+          },
+          "why": "If there are no characters, there is nothing to count, so we return an empty result right away.",
+          "alternative": "Let the loop run and rely on default values.",
+          "tradeoff": "Clear edge-case handling with one extra line."
+        },
+        {
+          "id": "d2-count-characters-with-map",
+          "title": "Track frequency in an object map",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "charCount[ch] = (charCount[ch] || 0) + 1;"
+          },
+          "why": "This increments each character count in O(1) average time per step.",
+          "alternative": "Use a `Map` instead of a plain object.",
+          "tradeoff": "Simple and fast for this case, but object keys are always strings."
+        },
+        {
+          "id": "d3-update-best-while-counting",
+          "title": "Update current best during traversal",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 12,
+            "snippet": "if (charCount[ch] > max) {"
+          },
+          "why": "We keep `max` and `maxChar` up to date as we go, so no second pass is needed.",
+          "alternative": "First build counts, then loop again to find the maximum.",
+          "tradeoff": "More efficient in one pass, with slightly more logic inside the main loop."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function maxChar(str) {\n  if (!str) return '';\n  const freq = [...str].reduce((acc, ch) => {\n    acc[ch] = (acc[ch] || 0) + 1;\n    return acc;\n  }, {});\n\n  let maxChar = '';\n  let max = 0;\n  for (const [ch, count] of Object.entries(freq)) {\n    if (count > max) {\n      max = count;\n      maxChar = ch;\n    }\n  }\n  return maxChar;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-build-frequency-with-reduce",
+          "title": "Use `reduce` to build frequency table",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 6,
+            "snippet": "const freq = [...str].reduce((acc, ch) => {"
+          },
+          "why": "`reduce` collects all counts into one object in a concise functional style.",
+          "alternative": "Use a regular `for...of` loop to build the same map.",
+          "tradeoff": "Compact expression, but less explicit for beginners."
+        },
+        {
+          "id": "d2-iterate-over-frequency-entries",
+          "title": "Scan frequency entries to find max",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "for (const [ch, count] of Object.entries(freq)) {"
+          },
+          "why": "Each `[character, count]` pair is compared to keep track of the most frequent one.",
+          "alternative": "Sort entries by count and take the first element.",
+          "tradeoff": "Linear scan is efficient and simple, while sorting costs extra work."
+        },
+        {
+          "id": "d3-store-winning-character",
+          "title": "Update winner when count is higher",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 14,
+            "snippet": "if (count > max) {"
+          },
+          "why": "When a larger count appears, we immediately store both the new max and its character.",
+          "alternative": "Track only max count, then search again for matching character.",
+          "tradeoff": "Single pass over entries, with small mutable state variables."
+        }
+      ]
+    }
+  }
+}

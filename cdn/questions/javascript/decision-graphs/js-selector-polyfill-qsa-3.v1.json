@@ -1,0 +1,85 @@
+{
+  "questionId": "js-selector-polyfill-qsa-3",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "function isElement(n) {\n  return !!n && n.nodeType === 1;\n}\n\nfunction classList(node) {\n  return String(node.className || '').split(/\\s+/).filter(Boolean);\n}\n\nfunction hasClass(node, cls) {\n  return classList(node).includes(cls);\n}\n\nfunction parseStep(step) {\n  const s = step.trim();\n  if (!s) return null;\n\n  if (s.startsWith('#')) return { kind: 'id', id: s.slice(1) };\n  if (s.startsWith('.')) return { kind: 'class', cls: s.slice(1) };\n\n  const parts = s.split('.');\n  const tag = parts[0];\n  const cls = parts[1];\n\n  if (!tag) return null;\n  if (cls) return { kind: 'tagClass', tag, cls };\n  return { kind: 'tag', tag: s };\n}\n\nfunction matchesStep(node, stepObj) {\n  if (!isElement(node)) return false;\n\n  switch (stepObj.kind) {\n    case 'id':\n      return String(node.id || '') === stepObj.id;\n    case 'class':\n      return hasClass(node, stepObj.cls);\n    case 'tag':\n      return String(node.tagName || '').toLowerCase() === String(stepObj.tag).toLowerCase();\n    case 'tagClass':\n      return (\n        String(node.tagName || '').toLowerCase() === String(stepObj.tag).toLowerCase() &&\n        hasClass(node, stepObj.cls)\n      );\n    default:\n      return false;\n  }\n}\n\nfunction validateSelector(selector) {\n  // keep easy + predictable: reject common unsupported syntax\n  // (you can expand later)\n  if (/[>+~,:\\[\\]]/.test(selector)) {\n    throw new TypeError('queryAllSimple: unsupported selector syntax');\n  }\n}\n\nfunction parseSelector(selector) {\n  const parts = String(selector).trim().split(/\\s+/).filter(Boolean);\n  const steps = parts.map(parseStep);\n  if (steps.some((x) => !x)) throw new TypeError('queryAllSimple: invalid selector');\n\n  // reject empty id/class\n  for (const st of steps) {\n    if (st.kind === 'id' && !st.id) throw new TypeError('queryAllSimple: invalid selector');\n    if (st.kind === 'class' && !st.cls) throw new TypeError('queryAllSimple: invalid selector');\n    if (st.kind === 'tagClass' && !st.cls) throw new TypeError('queryAllSimple: invalid selector');\n  }\n\n  return steps;\n}\n\nfunction matchesChain(node, ancestors, steps) {\n  // ancestors excludes node itself; order: root..parent\n  const lastIdx = steps.length - 1;\n  if (!matchesStep(node, steps[lastIdx])) return false;\n\n  // satisfy earlier steps by scanning ancestors backwards\n  let need = lastIdx - 1;\n  let i = ancestors.length - 1;\n\n  while (need >= 0) {\n    let found = false;\n    while (i >= 0) {\n      if (matchesStep(ancestors[i], steps[need])) {\n        found = true;\n        i -= 1;\n        break;\n      }\n      i -= 1;\n    }\n    if (!found) return false;\n    need -= 1;\n  }\n\n  return true;\n}\n\nfunction dfs(node, ancestors, visit) {\n  if (!node) return;\n\n  if (isElement(node)) {\n    visit(node, ancestors);\n    ancestors.push(node);\n  }\n\n  const children = Array.isArray(node.childNodes) ? node.childNodes : [];\n  for (const child of children) {\n    dfs(child, ancestors, visit);\n  }\n\n  if (isElement(node)) {\n    ancestors.pop();\n  }\n}\n\nexport default function queryAllSimple(root, selector) {\n  if (!isElement(root)) {\n    throw new TypeError('queryAllSimple: root must be an element node');\n  }\n  if (typeof selector !== 'string' || selector.trim() === '') {\n    throw new TypeError('queryAllSimple: selector must be a non-empty string');\n  }\n\n  validateSelector(selector);\n  const steps = parseSelector(selector);\n\n  const out = [];\n  const ancestors = [];\n\n  dfs(root, ancestors, (node, anc) => {\n    // anc is the current ancestors stack BEFORE pushing `node`\n    if (matchesChain(node, anc, steps)) out.push(node);\n  });\n\n  return out;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-reject-unsupported-syntax",
+          "title": "Reject unsupported selector syntax early",
+          "anchor": {
+            "lineStart": 52,
+            "lineEnd": 53,
+            "snippet": "if (/[>+~,:\\[\\]]/.test(selector)) {"
+          },
+          "why": "This keeps behavior predictable. If a selector uses syntax we do not support yet, we fail fast instead of returning confusing results.",
+          "alternative": "Try to partially parse everything and ignore unsupported pieces.",
+          "tradeoff": "Stricter input handling, but much easier to debug and reason about."
+        },
+        {
+          "id": "d2-normalize-selector-steps",
+          "title": "Normalize selector text into clean steps",
+          "anchor": {
+            "lineStart": 58,
+            "lineEnd": 60,
+            "snippet": "const parts = String(selector).trim().split(/\\s+/).filter(Boolean);"
+          },
+          "why": "It collapses extra spaces and gives us a clean chain like [\"#main\", \"button.primary\"] every time.",
+          "alternative": "Split on a single space and keep raw segments.",
+          "tradeoff": "A tiny preprocessing step, in exchange for fewer edge-case bugs."
+        },
+        {
+          "id": "d3-check-current-node-first",
+          "title": "Check current node against the last selector step first",
+          "anchor": {
+            "lineStart": 74,
+            "lineEnd": 75,
+            "snippet": "if (!matchesStep(node, steps[lastIdx])) return false;"
+          },
+          "why": "For a chain like A B C, the current node must be C first. If that fails, we can skip ancestor work immediately.",
+          "alternative": "Scan ancestors first and validate current node later.",
+          "tradeoff": "Simple early exit that saves work on most non-matching nodes."
+        },
+        {
+          "id": "d4-scan-ancestors-backward",
+          "title": "Match previous steps by scanning ancestors backward",
+          "anchor": {
+            "lineStart": 81,
+            "lineEnd": 90,
+            "snippet": "while (need >= 0) {"
+          },
+          "why": "This directly models descendant matching: find the nearest valid parent for each required step while walking up the tree.",
+          "alternative": "Generate all ancestor combinations recursively.",
+          "tradeoff": "Iterative code is a bit denser, but it is fast and avoids extra allocations."
+        },
+        {
+          "id": "d5-track-ancestors-in-dfs",
+          "title": "Use DFS with an ancestor stack",
+          "anchor": {
+            "lineStart": 101,
+            "lineEnd": 103,
+            "snippet": "visit(node, ancestors);"
+          },
+          "why": "The stack gives us parent context without needing parent pointers on each node.",
+          "alternative": "Add parentNode links everywhere before traversal.",
+          "tradeoff": "Slight stack bookkeeping, but it stays DOM-less and interview friendly."
+        },
+        {
+          "id": "d6-push-results-in-visit",
+          "title": "Collect matches during traversal in document order",
+          "anchor": {
+            "lineStart": 130,
+            "lineEnd": 132,
+            "snippet": "if (matchesChain(node, anc, steps)) out.push(node);"
+          },
+          "why": "Because DFS visits nodes left-to-right, pushing during visit naturally preserves document order.",
+          "alternative": "Store unsorted matches and sort later.",
+          "tradeoff": "No extra sort step, but correctness depends on traversal order staying consistent."
+        }
+      ]
+    }
+  }
+}

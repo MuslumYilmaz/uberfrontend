@@ -1,0 +1,85 @@
+{
+  "questionId": "js-selector-polyfill-closest-2",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "function hasClass(node, cls) {\n  const list = String(node.className || '').split(/\\s+/).filter(Boolean);\n  return list.includes(cls);\n}\n\nfunction matchesSimple(node, selector) {\n  if (!node || typeof selector !== 'string') return false;\n  const s = selector.trim();\n  if (!s) return false;\n\n  if (s.startsWith('#')) {\n    const id = s.slice(1);\n    if (!id) return false;\n    return String(node.id || '') === id;\n  }\n\n  if (s.startsWith('.')) {\n    const cls = s.slice(1);\n    if (!cls) return false;\n    return hasClass(node, cls);\n  }\n\n  const parts = s.split('.');\n  const tag = parts[0];\n  const cls = parts[1];\n  if (!tag) return false;\n\n  if (String(node.tagName || '').toLowerCase() !== tag.toLowerCase()) return false;\n  if (cls) return hasClass(node, cls);\n  return true;\n}\n\nexport default function closestSimple(node, selector) {\n  if (!node || typeof selector !== 'string' || selector.trim() === '') return null;\n\n  let cur = node;\n  while (cur) {\n    if (matchesSimple(cur, selector)) return cur;\n    cur = cur.parentNode || null;\n  }\n  return null;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-class-tokenization",
+          "title": "Tokenize class names before matching",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 3,
+            "snippet": "const list = String(node.className || '').split(/\\s+/).filter(Boolean);"
+          },
+          "why": "Splitting className avoids partial-text bugs and handles multiple classes safely.",
+          "alternative": "Use className.includes(cls) directly.",
+          "tradeoff": "Tiny parsing cost, but more reliable class checks."
+        },
+        {
+          "id": "d2-defensive-matcher-guard",
+          "title": "Guard matcher inputs up front",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 9,
+            "snippet": "if (!node || typeof selector !== 'string') return false;"
+          },
+          "why": "Invalid nodes or selectors should return false instead of throwing.",
+          "alternative": "Let downstream string operations fail.",
+          "tradeoff": "One early check for more predictable behavior."
+        },
+        {
+          "id": "d3-id-and-class-branches",
+          "title": "Handle #id and .class selectors with direct branches",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 21,
+            "snippet": "if (s.startsWith('#')) {"
+          },
+          "why": "These are common selectors, so direct branches keep logic simple.",
+          "alternative": "Force every selector through one generic parser.",
+          "tradeoff": "More branches, but easier to read and debug."
+        },
+        {
+          "id": "d4-case-insensitive-tag",
+          "title": "Compare tags case-insensitively",
+          "anchor": {
+            "lineStart": 28,
+            "lineEnd": 30,
+            "snippet": "if (String(node.tagName || '').toLowerCase() !== tag.toLowerCase()) return false;"
+          },
+          "why": "DOM-like tag casing can vary, so normalization prevents false negatives.",
+          "alternative": "Require exact-case tag matches.",
+          "tradeoff": "Extra lowercase conversion, but robust matching."
+        },
+        {
+          "id": "d5-null-safe-entry",
+          "title": "Return null early for invalid closest() inputs",
+          "anchor": {
+            "lineStart": 34,
+            "lineEnd": 34,
+            "snippet": "if (!node || typeof selector !== 'string' || selector.trim() === '') return null;"
+          },
+          "why": "closestSimple should fail softly and never throw on bad inputs.",
+          "alternative": "Throw TypeError on invalid selector/node.",
+          "tradeoff": "Softer API behavior, but less strict error signaling."
+        },
+        {
+          "id": "d6-self-then-ancestors",
+          "title": "Check self first, then walk ancestors",
+          "anchor": {
+            "lineStart": 38,
+            "lineEnd": 39,
+            "snippet": "if (matchesSimple(cur, selector)) return cur;"
+          },
+          "why": "This mirrors native closest semantics: include the starting node if it matches.",
+          "alternative": "Start from parentNode and skip self.",
+          "tradeoff": "One extra match check, but correct expected behavior."
+        }
+      ]
+    }
+  }
+}

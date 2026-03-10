@@ -1,0 +1,91 @@
+{
+  "questionId": "js-flatten-once",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function flattenOnce(arr) {\n  const result = [];\n  for (const el of arr) {\n    if (Array.isArray(el)) {\n      result.push(...el);\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-accumulate-in-new-array",
+          "title": "Build a fresh result array",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "const result = [];"
+          },
+          "why": "Using a new array keeps the input unchanged and makes the function behavior predictable.",
+          "alternative": "Mutate the original array in place.",
+          "tradeoff": "Safer and easier to reason about, with extra memory for the copied output."
+        },
+        {
+          "id": "d2-check-if-element-is-array",
+          "title": "Flatten only when the current item is an array",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "if (Array.isArray(el)) {"
+          },
+          "why": "This enforces one-level flattening: arrays are opened once, non-arrays are kept as-is.",
+          "alternative": "Use recursion to flatten deeply.",
+          "tradeoff": "Matches the problem exactly, but won’t flatten nested arrays beyond one level."
+        },
+        {
+          "id": "d3-spread-array-elements-into-result",
+          "title": "Spread array elements into the result",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "result.push(...el);"
+          },
+          "why": "Spread inserts each child element directly, so one nesting layer disappears.",
+          "alternative": "Loop through `el` and push each item manually.",
+          "tradeoff": "Compact and readable, though explicit loops can be clearer to some readers."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function flattenOnce(arr) {\n  return arr.flat(1);\n}\n",
+      "nodes": [
+        {
+          "id": "d1-use-flat-with-depth-one",
+          "title": "Use built-in `flat` with depth 1",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "arr.flat(1)"
+          },
+          "why": "Depth `1` tells JavaScript to flatten only one layer, which matches this task.",
+          "alternative": "Write a manual loop with `Array.isArray` checks.",
+          "tradeoff": "Very concise, but depends on built-in behavior and interview constraints may vary."
+        },
+        {
+          "id": "d2-return-directly",
+          "title": "Return the flattened result directly",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "return arr.flat(1);"
+          },
+          "why": "No extra state is needed since `flat` already returns the final array.",
+          "alternative": "Store in a variable first, then return.",
+          "tradeoff": "Shorter code, but less room for inline debugging statements."
+        },
+        {
+          "id": "d3-preserve-non-array-values",
+          "title": "Keep non-array values unchanged",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "flat(1)"
+          },
+          "why": "`flat(1)` only unwraps array children and leaves regular elements untouched.",
+          "alternative": "Filter or transform values during flattening.",
+          "tradeoff": "Predictable flatten behavior, but no built-in customization per element."
+        }
+      ]
+    }
+  }
+}

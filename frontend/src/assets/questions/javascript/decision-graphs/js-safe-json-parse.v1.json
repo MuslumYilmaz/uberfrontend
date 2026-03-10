@@ -1,0 +1,73 @@
+{
+  "questionId": "js-safe-json-parse",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function safeJsonParse(text, fallback = null) {\n  if (typeof text !== 'string') return fallback;\n  try {\n    return JSON.parse(text);\n  } catch {\n    return fallback;\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-default-fallback",
+          "title": "Default fallback keeps behavior predictable",
+          "anchor": {
+            "lineStart": 1,
+            "lineEnd": 1,
+            "snippet": "fallback = null"
+          },
+          "why": "If callers do not pass a fallback, `null` is a clear and consistent miss value.",
+          "alternative": "Default to `undefined` or throw on parse failure.",
+          "tradeoff": "`null` is explicit, but callers still need to handle null checks."
+        },
+        {
+          "id": "d2-type-guard-before-parse",
+          "title": "Guard non-string input first",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "typeof text !== 'string'"
+          },
+          "why": "This avoids unexpected behavior when input is not JSON text.",
+          "alternative": "Call JSON.parse on everything and rely on exceptions.",
+          "tradeoff": "One extra check, but clearer and safer behavior for mixed inputs."
+        },
+        {
+          "id": "d3-parse-happy-path",
+          "title": "Use native JSON.parse on valid strings",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "return JSON.parse(text);"
+          },
+          "why": "Built-in parsing is fast and standards-compliant for valid JSON.",
+          "alternative": "Write custom parsing logic.",
+          "tradeoff": "Native parser is reliable, but throws on malformed JSON, so we need catch handling."
+        },
+        {
+          "id": "d4-catch-parse-errors",
+          "title": "Catch malformed JSON safely",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "catch"
+          },
+          "why": "Invalid JSON should not crash callers using this helper.",
+          "alternative": "Let parse errors bubble up.",
+          "tradeoff": "Swallowing errors is convenient, but hides exact parse failure details."
+        },
+        {
+          "id": "d5-single-fallback-path",
+          "title": "Return the same fallback for all failure cases",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "return fallback;"
+          },
+          "why": "A unified fallback path makes caller logic and tests straightforward.",
+          "alternative": "Return different values for type mismatch vs parse failure.",
+          "tradeoff": "Simple API, but less granular error information."
+        }
+      ]
+    }
+  }
+}

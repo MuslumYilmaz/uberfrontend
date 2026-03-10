@@ -1,0 +1,85 @@
+{
+  "questionId": "js-querystring-stringify-2",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "function isPlainObject(x) {\n  return x !== null && typeof x === 'object' && !Array.isArray(x);\n}\n\nfunction encode(s) {\n  return encodeURIComponent(s);\n}\n\nfunction toValueString(v) {\n  if (v === null) return '';\n  return String(v);\n}\n\nexport default function stringifyQueryString(params) {\n  if (!isPlainObject(params)) {\n    throw new TypeError('stringifyQueryString: params must be a plain object');\n  }\n\n  const keys = Object.keys(params).sort();\n  const pairs = [];\n\n  for (const key of keys) {\n    const value = params[key];\n    if (value === undefined) continue;\n\n    const k = encode(String(key));\n\n    if (Array.isArray(value)) {\n      for (const item of value) {\n        // item: string|number|boolean (per spec)\n        const v = encode(toValueString(item));\n        pairs.push(`${k}=${v}`);\n      }\n      continue;\n    }\n\n    const v = encode(toValueString(value));\n    pairs.push(`${k}=${v}`);\n  }\n\n  return pairs.join('&');\n}\n",
+      "nodes": [
+        {
+          "id": "d1-require-plain-object",
+          "title": "Require a plain object input",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 17,
+            "snippet": "if (!isPlainObject(params)) {"
+          },
+          "why": "This keeps the helper strict and predictable by rejecting invalid shapes early.",
+          "alternative": "Silently return an empty string for invalid inputs.",
+          "tradeoff": "Stricter API, but easier to debug incorrect calls."
+        },
+        {
+          "id": "d2-sort-keys-for-stable-output",
+          "title": "Sort keys for stable query order",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 19,
+            "snippet": "const keys = Object.keys(params).sort();"
+          },
+          "why": "Stable ordering makes output deterministic, which helps tests and caching.",
+          "alternative": "Use object insertion order directly.",
+          "tradeoff": "Small sort cost, but consistent output every time."
+        },
+        {
+          "id": "d3-skip-undefined-values",
+          "title": "Skip undefined values completely",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 24,
+            "snippet": "if (value === undefined) continue;"
+          },
+          "why": "Undefined usually means “do not include this key” in query strings.",
+          "alternative": "Serialize undefined as an empty value.",
+          "tradeoff": "Cleaner URLs, but undefined cannot be represented explicitly."
+        },
+        {
+          "id": "d4-null-becomes-empty-string",
+          "title": "Convert null into an empty value",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 11,
+            "snippet": "if (v === null) return '';"
+          },
+          "why": "This supports the rule that null should serialize as key=. ",
+          "alternative": "Turn null into the literal string \"null\".",
+          "tradeoff": "Matches common URL behavior, but loses distinction between null and empty string."
+        },
+        {
+          "id": "d5-repeat-key-for-arrays",
+          "title": "Serialize arrays as repeated key pairs",
+          "anchor": {
+            "lineStart": 28,
+            "lineEnd": 33,
+            "snippet": "if (Array.isArray(value)) {"
+          },
+          "why": "Repeating the same key is a widely used format for array query params.",
+          "alternative": "Serialize arrays as a comma-separated single value.",
+          "tradeoff": "Longer query strings, but better compatibility with common parsers."
+        },
+        {
+          "id": "d6-build-pairs-then-join",
+          "title": "Build pairs first, then join with &",
+          "anchor": {
+            "lineStart": 41,
+            "lineEnd": 41,
+            "snippet": "return pairs.join('&');"
+          },
+          "why": "Collecting pairs avoids tricky leading/trailing & logic and keeps code easy to follow.",
+          "alternative": "Append directly to one string while looping.",
+          "tradeoff": "Uses a temporary array, but simpler and less error-prone."
+        }
+      ]
+    }
+  }
+}

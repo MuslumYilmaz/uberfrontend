@@ -1,0 +1,85 @@
+{
+  "questionId": "js-stack-queue-implementation",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "function Stack() { this.items = []; }\nStack.prototype.push = function (v) { this.items.push(v); };\nStack.prototype.pop = function () { return this.items.pop(); };\nStack.prototype.peek = function () { return this.items[this.items.length - 1]; };\nStack.prototype.size = function () { return this.items.length; };\n\nfunction Queue() { this.items = []; this.head = 0; }\nQueue.prototype.enqueue = function (v) { this.items.push(v); };\nQueue.prototype.dequeue = function () {\n  if (this.head >= this.items.length) return undefined;\n  const val = this.items[this.head++];\n  if (this.head > 50) { this.items = this.items.slice(this.head); this.head = 0; }\n  return val;\n};\nQueue.prototype.peek = function () { return this.items[this.head]; };\nQueue.prototype.size = function () { return this.items.length - this.head; };\n\nconst stackQueue = { Stack, Queue };\nexport default stackQueue;\n",
+      "nodes": [
+        {
+          "id": "d1-stack-array-storage",
+          "title": "Back stack with an array",
+          "anchor": {
+            "lineStart": 1,
+            "lineEnd": 1,
+            "snippet": "this.items = [];"
+          },
+          "why": "A stack only needs add/remove at one end, and arrays handle that well.",
+          "alternative": "Build a linked-list stack.",
+          "tradeoff": "Array code is simpler; linked lists avoid occasional array resizing but add complexity."
+        },
+        {
+          "id": "d2-stack-lifo-ops",
+          "title": "Use push/pop for LIFO behavior",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 3,
+            "snippet": "this.items.push(v)"
+          },
+          "why": "`push` and `pop` naturally model stack behavior: last in, first out.",
+          "alternative": "Insert/remove at index 0.",
+          "tradeoff": "End-based operations are O(1) amortized; front operations are slower."
+        },
+        {
+          "id": "d3-queue-head-index",
+          "title": "Track queue front with a head pointer",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "this.head = 0"
+          },
+          "why": "This avoids `shift()` and keeps dequeue fast even for large queues.",
+          "alternative": "Use `Array.shift()` for dequeue.",
+          "tradeoff": "Head pointer is a bit more state, but avoids O(n) reindexing each dequeue."
+        },
+        {
+          "id": "d4-empty-dequeue-guard",
+          "title": "Return undefined when queue is empty",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "if (this.head >= this.items.length) return undefined;"
+          },
+          "why": "Empty dequeue should be safe and predictable, not an error.",
+          "alternative": "Throw an exception on empty dequeue.",
+          "tradeoff": "`undefined` is easy for callers, but they must remember to check for it."
+        },
+        {
+          "id": "d5-dequeue-via-head-increment",
+          "title": "Read then advance head",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "const val = this.items[this.head++];"
+          },
+          "why": "This keeps dequeue O(1) because no elements are moved.",
+          "alternative": "Remove the first item with `shift()`.",
+          "tradeoff": "Much faster for long queues, but old consumed items stay in memory until compaction."
+        },
+        {
+          "id": "d6-periodic-compaction",
+          "title": "Compact storage after many dequeues",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "if (this.head > 50)"
+          },
+          "why": "Compaction drops consumed items so the internal array does not grow forever.",
+          "alternative": "Never compact and rely on occasional full resets.",
+          "tradeoff": "Compaction does occasional O(n) work, but keeps memory usage bounded."
+        }
+      ]
+    }
+  }
+}

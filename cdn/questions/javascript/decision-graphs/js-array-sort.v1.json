@@ -1,0 +1,91 @@
+{
+  "questionId": "js-array-sort",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function sortNumbers(arr, ascending = true) {\n  // Clone to avoid mutating the original\n  const copy = [...arr];\n\n  copy.sort((a, b) => {\n    if (ascending) {\n      return a - b; // negative if a < b, positive if a > b\n    }\n    return b - a;   // flipped for descending\n  });\n\n  return copy;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-clone-before-sort",
+          "title": "Clone first to keep input unchanged",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "const copy = [...arr];"
+          },
+          "why": "`sort()` mutates arrays in place, so cloning prevents side effects on the original input.",
+          "alternative": "Sort `arr` directly and return it.",
+          "tradeoff": "Safer function behavior with a small extra memory cost."
+        },
+        {
+          "id": "d2-use-numeric-comparator",
+          "title": "Use numeric comparator for correct ordering",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 7,
+            "snippet": "copy.sort((a, b) => {"
+          },
+          "why": "Without a comparator, JavaScript sorts values as strings, which breaks numeric order.",
+          "alternative": "Call `copy.sort()` with no compare function.",
+          "tradeoff": "Correct numeric results, with slightly more code."
+        },
+        {
+          "id": "d3-switch-direction-by-flag",
+          "title": "Switch asc/desc based on the flag",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 10,
+            "snippet": "if (ascending) {"
+          },
+          "why": "The flag controls sort direction in one comparator, keeping the API simple.",
+          "alternative": "Always sort one way and transform afterward.",
+          "tradeoff": "Flexible and explicit, but comparator logic is a bit longer."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function sortNumbers(arr, ascending = true) {\n  const copy = [...arr];\n  copy.sort((a, b) => a - b); // numeric ascending\n  if (!ascending) {\n    copy.reverse();\n  }\n  return copy;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-sort-ascending-first",
+          "title": "Always sort ascending first",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "copy.sort((a, b) => a - b);"
+          },
+          "why": "A single comparator handles numeric ordering clearly and consistently.",
+          "alternative": "Branch inside comparator for ascending/descending.",
+          "tradeoff": "Cleaner comparator, but requires an extra step for descending."
+        },
+        {
+          "id": "d2-reverse-for-descending",
+          "title": "Reverse only when descending is requested",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 6,
+            "snippet": "if (!ascending) {"
+          },
+          "why": "After ascending sort, reversing gives descending order with very little logic.",
+          "alternative": "Use `b - a` comparator for descending directly.",
+          "tradeoff": "Simple to read, but adds an extra O(n) reverse pass."
+        },
+        {
+          "id": "d3-return-sorted-copy",
+          "title": "Return the sorted copy",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "return copy;"
+          },
+          "why": "Returning the cloned array keeps the function pure from the caller’s perspective.",
+          "alternative": "Mutate and return the original array.",
+          "tradeoff": "Predictable API behavior, with one array copy overhead."
+        }
+      ]
+    }
+  }
+}

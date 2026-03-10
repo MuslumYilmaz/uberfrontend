@@ -1,0 +1,73 @@
+{
+  "questionId": "js-lodash-get",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function get(obj, path, defaultValue) {\n  if (path == null || path === '') return obj;\n  const parts = Array.isArray(path)\n    ? path\n    : String(path).match(/[^.[\\]]+/g) || [];\n\n  let cur = obj;\n  for (const key of parts) {\n    if (cur == null || !(key in Object(cur))) return defaultValue;\n    cur = cur[key];\n  }\n\n  return cur === undefined ? defaultValue : cur;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-empty-path-returns-object",
+          "title": "Return original object for empty path",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (path == null || path === '') return obj;"
+          },
+          "why": "If there is no path to walk, the most natural result is the object itself.",
+          "alternative": "Return `defaultValue` for empty path input.",
+          "tradeoff": "More lodash-like behavior, but callers must know this edge case."
+        },
+        {
+          "id": "d2-support-array-or-string-path",
+          "title": "Accept both array and string paths",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 5,
+            "snippet": "const parts = Array.isArray(path)"
+          },
+          "why": "Some callers already have path segments, others pass dot/bracket strings.",
+          "alternative": "Only support string paths.",
+          "tradeoff": "Slightly more branching, but more flexible API."
+        },
+        {
+          "id": "d3-regex-tokenization",
+          "title": "Tokenize string paths with one regex",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "String(path).match(/[^.[\\]]+/g) || []"
+          },
+          "why": "This captures keys from `a.b` and `a[0].b` without manual parsing code.",
+          "alternative": "Split with multiple replace/split operations.",
+          "tradeoff": "Regex is compact and practical, but less self-explanatory at first glance."
+        },
+        {
+          "id": "d4-safe-walk-with-early-exit",
+          "title": "Walk safely and stop when path breaks",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 10,
+            "snippet": "if (cur == null || !(key in Object(cur))) return defaultValue;"
+          },
+          "why": "Avoids runtime errors and returns fallback as soon as a segment is missing.",
+          "alternative": "Use try/catch around direct nested property access.",
+          "tradeoff": "Clear control flow, with a tiny check cost per segment."
+        },
+        {
+          "id": "d5-undefined-falls-back-default",
+          "title": "Treat final undefined as missing",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 13,
+            "snippet": "return cur === undefined ? defaultValue : cur;"
+          },
+          "why": "If resolved value is truly `undefined`, callers usually expect the provided fallback.",
+          "alternative": "Return `undefined` exactly when property exists but value is undefined.",
+          "tradeoff": "More convenient defaults, but it does not distinguish missing vs explicitly undefined."
+        }
+      ]
+    }
+  }
+}

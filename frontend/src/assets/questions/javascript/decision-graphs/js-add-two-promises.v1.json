@@ -1,0 +1,49 @@
+{
+  "questionId": "js-add-two-promises",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default async function addTwoPromises(promise1, promise2) {\n  const [a, b] = await Promise.all([promise1, promise2]);\n  return a + b;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-async-entry-point",
+          "title": "Use an async function as the entry point",
+          "anchor": {
+            "lineStart": 1,
+            "lineEnd": 1,
+            "snippet": "export default async function addTwoPromises(promise1, promise2) {"
+          },
+          "why": "`async` lets us use `await` directly, so the flow reads top-to-bottom.",
+          "alternative": "Return `Promise.all(...).then(...)` without `async`.",
+          "tradeoff": "Cleaner to read, while still returning a Promise to the caller."
+        },
+        {
+          "id": "d2-await-both-at-once",
+          "title": "Wait for both promises concurrently",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "const [a, b] = await Promise.all([promise1, promise2]);"
+          },
+          "why": "`Promise.all` starts both operations and waits once, which is faster than awaiting one-by-one.",
+          "alternative": "Await `promise1` and `promise2` in two separate lines.",
+          "tradeoff": "Better latency and simple code, but it fails fast if either promise rejects."
+        },
+        {
+          "id": "d3-return-sum",
+          "title": "Return the resolved sum",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "return a + b;"
+          },
+          "why": "Once both numbers are resolved, the function returns the exact combined result.",
+          "alternative": "Coerce values manually before adding.",
+          "tradeoff": "Direct and readable, assuming both promises resolve to numbers as expected."
+        }
+      ]
+    }
+  }
+}

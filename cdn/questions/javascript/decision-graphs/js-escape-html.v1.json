@@ -1,0 +1,91 @@
+{
+  "questionId": "js-escape-html",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function escapeHtml(text) {\n  const map = {\n    '&': '&amp;',\n    '<': '&lt;',\n    '>': '&gt;',\n    '\"': '&quot;',\n    \"'\": '&#39;'\n  };\n  return String(text).replace(/[&<>\"']/g, (ch) => map[ch]);\n}\n",
+      "nodes": [
+        {
+          "id": "d1-central-entity-map",
+          "title": "Keep escape rules in one map",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 8,
+            "snippet": "const map = {"
+          },
+          "why": "A single lookup object makes it easy to see and update all escape mappings.",
+          "alternative": "Write separate `replace` calls for each character.",
+          "tradeoff": "Cleaner maintenance, with a little extra setup code."
+        },
+        {
+          "id": "d2-normalize-input-to-string",
+          "title": "Convert input to string first",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "String(text)"
+          },
+          "why": "This safely handles non-string inputs like numbers or `null` without crashing.",
+          "alternative": "Require callers to always pass strings.",
+          "tradeoff": "More robust function behavior, but it may hide input type issues upstream."
+        },
+        {
+          "id": "d3-one-regex-pass-with-callback",
+          "title": "Escape all target characters in one pass",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": ".replace(/[&<>\"']/g, (ch) => map[ch])"
+          },
+          "why": "One regex plus callback keeps replacement logic compact and consistent.",
+          "alternative": "Chain multiple `.replace()` calls.",
+          "tradeoff": "Efficient and centralized, though regex syntax can feel less familiar to beginners."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function escapeHtml(text) {\n  return String(text)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#39;');\n}\n",
+      "nodes": [
+        {
+          "id": "d1-start-with-string-conversion",
+          "title": "Start by coercing input to string",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "String(text)"
+          },
+          "why": "It guarantees the replace chain works even when input is not already a string.",
+          "alternative": "Throw an error when input is not a string.",
+          "tradeoff": "More forgiving behavior, but less strict input validation."
+        },
+        {
+          "id": "d2-replace-ampersand-first",
+          "title": "Replace `&` before other characters",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": ".replace(/&/g, '&amp;')"
+          },
+          "why": "Escaping ampersands first prevents double-escaping entities created later.",
+          "alternative": "Escape `<` and `>` first, then `&`.",
+          "tradeoff": "Correct output ordering, but this sequence requirement is easy to forget."
+        },
+        {
+          "id": "d3-chain-simple-replacements",
+          "title": "Use a readable replacement chain",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 7,
+            "snippet": ".replace(/</g, '&lt;')"
+          },
+          "why": "Each line documents one escape rule clearly, which is easy to scan quickly.",
+          "alternative": "Use a map + callback regex approach.",
+          "tradeoff": "Straightforward to read, but longer and slightly repetitive."
+        }
+      ]
+    }
+  }
+}

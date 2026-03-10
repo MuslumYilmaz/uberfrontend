@@ -1,0 +1,49 @@
+{
+  "questionId": "js-update-at-index",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function updateAt(arr, index, value) {\n  if (!Array.isArray(arr)) throw new TypeError('Expected array');\n  const copy = arr.slice();\n  if (index < 0 || index >= copy.length) return copy;\n  copy[index] = value;\n  return copy;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-validate-array-input",
+          "title": "Validate input is an array",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (!Array.isArray(arr)) throw new TypeError('Expected array');"
+          },
+          "why": "This prevents invalid inputs from silently producing confusing results.",
+          "alternative": "Return an empty array for non-array inputs.",
+          "tradeoff": "Stricter behavior, but easier to debug when input is wrong."
+        },
+        {
+          "id": "d2-clone-before-update",
+          "title": "Clone before writing to keep it immutable",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "const copy = arr.slice();"
+          },
+          "why": "The original array stays untouched, which is important for state updates and predictable behavior.",
+          "alternative": "Update `arr[index]` directly in place.",
+          "tradeoff": "Safer immutable updates, with the cost of allocating a new array."
+        },
+        {
+          "id": "d3-guard-out-of-range-index",
+          "title": "Return unchanged copy for out-of-range indexes",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 5,
+            "snippet": "if (index < 0 || index >= copy.length) return copy;"
+          },
+          "why": "Invalid indexes should not mutate data, so returning the copy keeps behavior stable and explicit.",
+          "alternative": "Throw an error when index is out of range.",
+          "tradeoff": "More forgiving API, but callers must check if an update actually happened."
+        }
+      ]
+    }
+  }
+}

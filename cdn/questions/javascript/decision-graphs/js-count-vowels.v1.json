@@ -1,0 +1,91 @@
+{
+  "questionId": "js-count-vowels",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function countVowels(str) {\n  const vowels = 'aeiou';\n  let count = 0;\n  for (const ch of str.toLowerCase()) {\n    if (vowels.includes(ch)) count++;\n  }\n  return count;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-normalize-case-before-check",
+          "title": "Normalize text to lowercase once",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "for (const ch of str.toLowerCase()) {"
+          },
+          "why": "Lowercasing once keeps each check simple, so we only compare against lowercase vowels.",
+          "alternative": "Keep the original string and compare against both uppercase and lowercase vowels.",
+          "tradeoff": "Cleaner loop logic, but creates a lowercase copy of the string."
+        },
+        {
+          "id": "d2-membership-check-with-includes",
+          "title": "Use `includes` to test vowel membership",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "if (vowels.includes(ch)) count++;"
+          },
+          "why": "It reads naturally: if this character is in the vowel list, increment the counter.",
+          "alternative": "Use a `Set` and `set.has(ch)` for membership.",
+          "tradeoff": "Very readable for small fixed lists, though `Set` can be faster for larger lookup sets."
+        },
+        {
+          "id": "d3-return-accumulated-count",
+          "title": "Return the final counter",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "return count;"
+          },
+          "why": "The loop already collected the total, so returning `count` gives the answer directly.",
+          "alternative": "Use `reduce` and return the accumulator from the callback flow.",
+          "tradeoff": "Straightforward and easy to debug, with a bit more code than a one-liner style."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function countVowels(str) {\n  return (str.match(/[aeiou]/gi) || []).length;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-match-all-vowels-with-regex",
+          "title": "Match all vowels using one regex",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "str.match(/[aeiou]/gi)"
+          },
+          "why": "`match` returns every vowel hit in one step, so counting becomes very compact.",
+          "alternative": "Loop over characters and count manually.",
+          "tradeoff": "Short and expressive, but regex can feel less transparent to beginners."
+        },
+        {
+          "id": "d2-fallback-to-empty-array",
+          "title": "Fallback safely when there are no matches",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "|| []"
+          },
+          "why": "When no vowels exist, `match` returns `null`; the fallback keeps the return path safe.",
+          "alternative": "Store the result in a variable and handle `null` in an `if` block.",
+          "tradeoff": "Concise inline safety, though it is slightly denser to read at first glance."
+        },
+        {
+          "id": "d3-count-using-array-length",
+          "title": "Use array length as the final count",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": ".length"
+          },
+          "why": "Each regex match represents one vowel, so array length is exactly the total.",
+          "alternative": "Count with a loop over the matched array.",
+          "tradeoff": "Minimal code and clear output, but depends on understanding the previous regex step."
+        }
+      ]
+    }
+  }
+}

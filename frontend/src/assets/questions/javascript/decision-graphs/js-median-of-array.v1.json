@@ -1,0 +1,73 @@
+{
+  "questionId": "js-median-of-array",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function median(nums) {\n  const arr = nums.slice().sort((a, b) => a - b);\n  const n = arr.length;\n  if (n === 0) return NaN;\n  const mid = Math.floor(n / 2);\n  if (n % 2 === 1) return arr[mid];\n  return (arr[mid - 1] + arr[mid]) / 2;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-sort-copy-not-source",
+          "title": "Sort a copy so input stays unchanged",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "const arr = nums.slice().sort((a, b) => a - b);"
+          },
+          "why": "Median needs sorted order, and using `slice()` avoids mutating the original array.",
+          "alternative": "Sort `nums` directly in place.",
+          "tradeoff": "Uses extra memory, but safer for callers that reuse the input."
+        },
+        {
+          "id": "d2-empty-array-guard",
+          "title": "Handle empty input explicitly",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "if (n === 0) return NaN;"
+          },
+          "why": "There is no valid median for an empty list, so returning NaN makes that clear.",
+          "alternative": "Throw an error for empty input.",
+          "tradeoff": "NaN is non-throwing and predictable, but callers must check for it."
+        },
+        {
+          "id": "d3-compute-middle-index",
+          "title": "Compute center index once",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "const mid = Math.floor(n / 2);"
+          },
+          "why": "Both odd and even branches rely on the middle position.",
+          "alternative": "Compute middle math separately in each branch.",
+          "tradeoff": "One shared value keeps the code shorter and easier to read."
+        },
+        {
+          "id": "d4-odd-length-middle-value",
+          "title": "Odd length: return the exact middle value",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "if (n % 2 === 1) return arr[mid];"
+          },
+          "why": "With odd count, one value sits exactly in the center of sorted data.",
+          "alternative": "Use a generic average formula for all cases.",
+          "tradeoff": "Explicit branch is simpler and avoids unnecessary arithmetic."
+        },
+        {
+          "id": "d5-even-length-average-two-centers",
+          "title": "Even length: average the two center values",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "return (arr[mid - 1] + arr[mid]) / 2;"
+          },
+          "why": "Even-sized arrays have two middle numbers, so median is their mean.",
+          "alternative": "Pick lower or upper middle only.",
+          "tradeoff": "Average gives the statistical median, which may be non-integer."
+        }
+      ]
+    }
+  }
+}

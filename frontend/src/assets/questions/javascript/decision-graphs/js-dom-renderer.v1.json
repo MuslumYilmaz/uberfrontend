@@ -1,0 +1,97 @@
+{
+  "questionId": "js-dom-renderer",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function render(node) {\n  if (node == null) return document.createTextNode('');\n  if (typeof node === 'string' || typeof node === 'number') {\n    return document.createTextNode(String(node));\n  }\n  const el = document.createElement(node.type);\n  const props = node.props || {};\n  for (const [key, value] of Object.entries(props)) {\n    if (value == null) continue;\n    if (key === 'className') el.setAttribute('class', String(value));\n    else el.setAttribute(key, String(value));\n  }\n  const children = node.children;\n  if (Array.isArray(children)) {\n    children.forEach((child) => el.appendChild(render(child)));\n  } else if (children != null) {\n    el.appendChild(render(children));\n  }\n  return el;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-null-becomes-empty-text",
+          "title": "Handle null/undefined as empty text",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (node == null) return document.createTextNode('');"
+          },
+          "why": "This keeps rendering stable even when optional children are missing.",
+          "alternative": "Throw an error when node is null/undefined.",
+          "tradeoff": "More forgiving API, but silently treats empty nodes as blank text."
+        },
+        {
+          "id": "d2-primitives-to-text-node",
+          "title": "Render strings/numbers as text nodes",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 4,
+            "snippet": "return document.createTextNode(String(node));"
+          },
+          "why": "Primitive children should appear as visible text in the DOM tree.",
+          "alternative": "Only allow object nodes and ignore primitives.",
+          "tradeoff": "Supports real-world mixed children, with one extra type branch."
+        },
+        {
+          "id": "d3-create-element-from-type",
+          "title": "Create element from node.type",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 7,
+            "snippet": "const el = document.createElement(node.type);"
+          },
+          "why": "This is the core step that turns the JSON-like node into a real DOM element.",
+          "alternative": "Build HTML strings and parse them later.",
+          "tradeoff": "DOM API is safer and explicit, but slightly more verbose."
+        },
+        {
+          "id": "d4-safe-prop-application",
+          "title": "Skip null props and map className to class",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 11,
+            "snippet": "if (key === 'className') el.setAttribute('class', String(value));"
+          },
+          "why": "Matches common frontend prop shape and avoids writing empty attributes.",
+          "alternative": "Apply props directly without key mapping.",
+          "tradeoff": "Small mapping logic, better compatibility with UI data."
+        },
+        {
+          "id": "d5-array-children-recursive-append",
+          "title": "Render child arrays recursively in order",
+          "anchor": {
+            "lineStart": 14,
+            "lineEnd": 15,
+            "snippet": "children.forEach((child) => el.appendChild(render(child)));"
+          },
+          "why": "Depth-first recursion preserves the exact child order from input.",
+          "alternative": "Flatten children first, then append.",
+          "tradeoff": "Recursion is simple and readable, but adds stack depth for deep trees."
+        },
+        {
+          "id": "d6-single-child-path",
+          "title": "Support a single non-array child too",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 17,
+            "snippet": "el.appendChild(render(children));"
+          },
+          "why": "Input can contain one child directly, not always an array.",
+          "alternative": "Require every node to use array children.",
+          "tradeoff": "More flexible parser with one extra conditional branch."
+        },
+        {
+          "id": "d7-return-built-element",
+          "title": "Return the completed element",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 19,
+            "snippet": "return el;"
+          },
+          "why": "Each recursive call returns a node ready to be appended by its parent.",
+          "alternative": "Mutate external root state and return nothing.",
+          "tradeoff": "Return-based recursion is easy to compose and test."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "questionId": "js-array-foreach",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function arrayForEach(arr, callbackFn, thisArg) {\n  if (!Array.isArray(arr)) throw new TypeError('arr must be an array');\n  if (typeof callbackFn !== 'function') throw new TypeError('callbackFn must be a function');\n\n  const len = arr.length; // snapshot once\n  const hasOwn = Object.prototype.hasOwnProperty;\n\n  for (let i = 0; i < len; i++) {\n    if (hasOwn.call(arr, i)) {\n      callbackFn.call(thisArg, arr[i], i, arr);\n    }\n  }\n\n  return undefined;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-validate-inputs",
+          "title": "Validate inputs before iterating",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 3,
+            "snippet": "if (!Array.isArray(arr)) throw new TypeError('arr must be an array');"
+          },
+          "why": "Failing early gives clear errors and avoids confusing behavior later in the loop.",
+          "alternative": "Skip checks and let runtime errors happen naturally.",
+          "tradeoff": "Safer API with better error messages, at the cost of two quick guard checks."
+        },
+        {
+          "id": "d2-snapshot-and-hole-check",
+          "title": "Snapshot length and skip missing slots",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 9,
+            "snippet": "const len = arr.length; // snapshot once"
+          },
+          "why": "Length snapshot avoids visiting newly pushed items, and `hasOwn` skips holes or deleted entries.",
+          "alternative": "Loop with `i < arr.length` and call the callback on every index.",
+          "tradeoff": "Closer to native `forEach` behavior, but the loop logic is a bit more detailed."
+        },
+        {
+          "id": "d3-bind-context-on-callback",
+          "title": "Use .call to preserve callback context",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "callbackFn.call(thisArg, arr[i], i, arr);"
+          },
+          "why": "This keeps `thisArg` behavior consistent with native `forEach` and passes the expected callback arguments.",
+          "alternative": "Invoke as `callbackFn(arr[i], i, arr)` without binding context.",
+          "tradeoff": "More compatible semantics, with a tiny per-iteration function-call overhead."
+        }
+      ]
+    }
+  }
+}

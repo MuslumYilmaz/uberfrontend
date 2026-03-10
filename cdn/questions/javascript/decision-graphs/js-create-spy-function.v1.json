@@ -1,0 +1,85 @@
+{
+  "questionId": "js-create-spy-function",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function createSpy(impl) {\n  function spy(...args) {\n    spy.calls.push(args);\n    spy.thisValues.push(this);\n    if (typeof impl === 'function') {\n      return impl.apply(this, args);\n    }\n    return undefined;\n  }\n\n  spy.calls = [];\n  spy.thisValues = [];\n  spy.callCount = () => spy.calls.length;\n  spy.lastCall = () => (spy.calls.length ? spy.calls[spy.calls.length - 1] : null);\n  spy.reset = () => {\n    spy.calls.length = 0;\n    spy.thisValues.length = 0;\n  };\n\n  return spy;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-record-args",
+          "title": "Record each call's arguments",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "spy.calls.push(args)"
+          },
+          "why": "Tests often need to verify exactly what was passed in each call.",
+          "alternative": "Track only the latest call arguments.",
+          "tradeoff": "Full history is more useful for debugging, but it uses more memory."
+        },
+        {
+          "id": "d2-record-this-value",
+          "title": "Record the receiver (`this`) too",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "spy.thisValues.push(this)"
+          },
+          "why": "When used as an object method, this tells you which object triggered the call.",
+          "alternative": "Do not track `this` at all.",
+          "tradeoff": "You get better insight for method calls, with a small state cost."
+        },
+        {
+          "id": "d3-optional-impl-branch",
+          "title": "Make implementation optional",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 8,
+            "snippet": "if (typeof impl === 'function')"
+          },
+          "why": "The spy works in two modes: recorder-only, or recorder + passthrough implementation.",
+          "alternative": "Require `impl` and throw if it is missing.",
+          "tradeoff": "More flexible API, at the cost of one runtime type check."
+        },
+        {
+          "id": "d4-apply-preserves-context",
+          "title": "Use `apply` to preserve call context",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "impl.apply(this, args)"
+          },
+          "why": "This keeps behavior correct when the spy is called as a method with a meaningful `this`.",
+          "alternative": "Call `impl(...args)` directly.",
+          "tradeoff": "Slightly more verbose, but avoids subtle context bugs."
+        },
+        {
+          "id": "d5-test-friendly-helpers",
+          "title": "Expose small helper methods",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 14,
+            "snippet": "spy.callCount = () => spy.calls.length"
+          },
+          "why": "Helpers keep test assertions short and easier to read.",
+          "alternative": "Have tests inspect `calls` arrays directly every time.",
+          "tradeoff": "A slightly wider API, but much cleaner test code."
+        },
+        {
+          "id": "d6-reset-state",
+          "title": "Provide a reset method",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 17,
+            "snippet": "spy.reset = () =>"
+          },
+          "why": "Resetting avoids leaked state between test cases.",
+          "alternative": "Create a brand new spy for each test.",
+          "tradeoff": "Convenient reuse, but teams must remember to call `reset` when needed."
+        }
+      ]
+    }
+  }
+}

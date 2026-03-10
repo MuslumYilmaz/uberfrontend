@@ -1,0 +1,85 @@
+{
+  "questionId": "js-valid-anagram",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function isAnagram(s, t) {\n  if (s.length !== t.length) return false;\n  const freq = Object.create(null);\n  for (const ch of s) freq[ch] = (freq[ch] || 0) + 1;\n  for (const ch of t) {\n    if (!freq[ch]) return false;\n    freq[ch] -= 1;\n  }\n  return true;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-length-fast-fail",
+          "title": "Fail fast on length mismatch",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (s.length !== t.length) return false;"
+          },
+          "why": "Anagrams must have exactly the same number of characters.",
+          "alternative": "Skip this check and rely on frequency map only.",
+          "tradeoff": "One quick check saves unnecessary work for obvious non-matches."
+        },
+        {
+          "id": "d2-clean-frequency-map",
+          "title": "Use a clean object for character counts",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "const freq = Object.create(null);"
+          },
+          "why": "A plain dictionary with no prototype keys avoids accidental collisions.",
+          "alternative": "Use a normal object literal `{}`.",
+          "tradeoff": "Slightly less familiar syntax, but safer key handling."
+        },
+        {
+          "id": "d3-count-from-first-string",
+          "title": "Count each character from s",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "for (const ch of s) freq[ch] = (freq[ch] || 0) + 1;"
+          },
+          "why": "This builds the target frequency profile in one pass.",
+          "alternative": "Sort both strings and compare directly.",
+          "tradeoff": "O(n) counting is faster than O(n log n) sorting."
+        },
+        {
+          "id": "d4-early-exit-on-missing-char",
+          "title": "Stop immediately if a char is missing",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 6,
+            "snippet": "if (!freq[ch]) return false;"
+          },
+          "why": "If t asks for a char that s does not have enough of, it cannot be an anagram.",
+          "alternative": "Finish loop and validate map at the end.",
+          "tradeoff": "Early return keeps code efficient and easy to reason about."
+        },
+        {
+          "id": "d5-decrement-for-second-string",
+          "title": "Subtract counts while reading t",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "freq[ch] -= 1;"
+          },
+          "why": "Each matching character cancels one counted character from s.",
+          "alternative": "Create a second frequency map and compare maps.",
+          "tradeoff": "Single map uses less memory and less code."
+        },
+        {
+          "id": "d6-all-checks-passed",
+          "title": "Return true if no mismatch happened",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "return true;"
+          },
+          "why": "At this point lengths matched and every character from t was validated.",
+          "alternative": "Run an extra loop to verify all counts are zero.",
+          "tradeoff": "Given prior checks, extra verification is redundant here."
+        }
+      ]
+    }
+  }
+}
