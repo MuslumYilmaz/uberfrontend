@@ -33,8 +33,9 @@ fi
 ZERO_SHA="0000000000000000000000000000000000000000"
 HAVE_REFS=0
 CHANGED_FILES="$(mktemp)"
+PUSH_COMMITS="$(mktemp)"
 SYNC_DIFF="$(mktemp)"
-trap 'rm -f "$CHANGED_FILES" "$SYNC_DIFF"' EXIT
+trap 'rm -f "$CHANGED_FILES" "$PUSH_COMMITS" "$SYNC_DIFF"' EXIT
 
 # Collect file paths included in refs being pushed.
 while read -r local_ref local_sha remote_ref remote_sha; do
@@ -46,21 +47,43 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     continue
   fi
 
+  commits=()
   if [ "$remote_sha" = "$ZERO_SHA" ]; then
     # New branch/tag push: include commits not already present on remotes.
-    mapfile -t commits < <(git rev-list "$local_sha" --not --remotes 2>/dev/null || true)
+    while IFS= read -r commit; do
+      [ -z "${commit:-}" ] && continue
+      commits+=("$commit")
+    done < <(git rev-list "$local_sha" --not --remotes 2>/dev/null || true)
     if [ "${#commits[@]}" -eq 0 ]; then
       commits=("$local_sha")
     fi
-    for commit in "${commits[@]}"; do
-      git diff-tree --no-commit-id --name-only -r "$commit" >> "$CHANGED_FILES" || true
-    done
   else
-    git diff --name-only "$remote_sha" "$local_sha" >> "$CHANGED_FILES" || true
+    # Existing ref update: include all commits reachable in remote..local.
+    while IFS= read -r commit; do
+      [ -z "${commit:-}" ] && continue
+      commits+=("$commit")
+    done < <(git rev-list "$remote_sha..$local_sha" 2>/dev/null || true)
+    if [ "${#commits[@]}" -eq 0 ]; then
+      continue
+    fi
   fi
+
+  for commit in "${commits[@]}"; do
+    [ -z "${commit:-}" ] && continue
+    echo "$commit" >> "$PUSH_COMMITS"
+    git diff-tree --root --no-commit-id --name-only -r "$commit" >> "$CHANGED_FILES" || true
+  done
 done
 
+sort -u -o "$PUSH_COMMITS" "$PUSH_COMMITS"
 sort -u -o "$CHANGED_FILES" "$CHANGED_FILES"
+
+echo "[pre-push] Validating coding assist artifact sync (hint/explain/decision-graph)..."
+if ! node frontend/scripts/validate-coding-assist-sync.mjs --changed-files "$CHANGED_FILES" --commits-file "$PUSH_COMMITS"; then
+  echo "[pre-push] ERROR: Coding assist artifact validation failed. Push aborted." >&2
+  exit 1
+fi
+echo "[pre-push] OK: Coding assist artifact sync check passed."
 
 # When Git provides refs (normal push), skip expensive frontend checks unless
 # pushed commits include frontend or mirrored CDN question data changes.
