@@ -1279,6 +1279,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "useState Root Cause Check",
+      "scenario": "A counter should increment by 2 on one click, but it only increments by 1. Which root cause is most likely?",
+      "options": [
+        {
+          "id": "batched-drop",
+          "label": "React batching drops the second update automatically, so only one increment can apply."
+        },
+        {
+          "id": "stale-snapshot",
+          "label": "Both calls use setCount(count + 1), so each update reads the same stale render snapshot."
+        },
+        {
+          "id": "jsx-cancel",
+          "label": "JSX click handlers run after render and cancel the first queued state update."
+        }
+      ],
+      "correctOptionId": "stale-snapshot",
+      "rereadPrompt": "Not quite. Re-read the functional update section and compare setCount(count + 1) with setCount(c => c + 1)."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -1388,6 +1408,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Event Delegation Root Cause Check",
+      "scenario": "A large list becomes sluggish after each filter change because click handlers are rebound for every item render. Which root cause is most likely?",
+      "options": [
+        {
+          "id": "listener-churn",
+          "label": "Per-item native listeners are repeatedly attached/removed instead of relying on delegated root handling."
+        },
+        {
+          "id": "bubbling-disabled",
+          "label": "React disables bubbling by default, so every click must be captured manually on each element."
+        },
+        {
+          "id": "portal-repaint",
+          "label": "Portals force full-document repaint after each click, causing unavoidable lag."
+        }
+      ],
+      "correctOptionId": "listener-churn",
+      "rereadPrompt": "Not quite. Re-read how React uses root-level delegation and why per-node listener churn hurts dynamic trees."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -1478,6 +1518,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "List Keys Root Cause Check",
+      "scenario": "You reorder a todo list and now checked rows and input focus jump to the wrong items. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "index-key-shift",
+          "label": "The list uses index as key, so item identity shifts when order changes."
+        },
+        {
+          "id": "strictmode-focus",
+          "label": "StrictMode always moves focus after re-render, even when keys are stable."
+        },
+        {
+          "id": "virtualdom-random",
+          "label": "React's virtual DOM randomly reassigns item state on every render."
+        }
+      ],
+      "correctOptionId": "index-key-shift",
+      "rereadPrompt": "Close, but not yet. Re-read the sections on stable identity and why index keys break when items reorder."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -1553,6 +1613,26 @@
           "text": "<strong>Practical scenario</strong><br>A login form needs validation and error messages, so inputs are controlled by React state.<br><br><strong>Common pitfalls</strong><br><ul><li>Mixing controlled and uncontrolled inputs in the same field.</li><li>Forgetting defaultValue when using uncontrolled inputs.</li><li>Causing re-render lag on large forms.</li></ul><strong>Trade-off or test tip</strong><br>Controlled inputs are testable but verbose. Test form reset and validation flows.</strong>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Form State Root Cause Check",
+      "scenario": "A signup field starts fine, then React warns: \"A component is changing an uncontrolled input to be controlled,\" and submitted values drift from what users see. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "switching-modes",
+          "label": "The same input flips between DOM-managed and state-managed (for example, value is undefined first, then later set from state)."
+        },
+        {
+          "id": "controlled-impossible",
+          "label": "Controlled inputs cannot work with validation because onChange always breaks synchronization."
+        },
+        {
+          "id": "refs-required",
+          "label": "Every input in React must use ref + defaultValue; value/onChange is only for special cases."
+        }
+      ],
+      "correctOptionId": "switching-modes",
+      "rereadPrompt": "Almost. Re-read controlled vs uncontrolled rules and why a single field should not switch ownership modes."
     },
     "access": "free",
     "type": "trivia",
@@ -1680,6 +1760,26 @@
           "text": "<strong>Practical scenario</strong><br>You import a component from a shared UI library and see \"Element type is invalid\" at runtime due to export mismatch.<br><br><strong>Common pitfalls</strong><br><ul><li>Mixing default and named exports in barrel files.</li><li>Refactoring exports without updating all imports.</li><li>Circular imports hiding the real error.</li></ul><strong>Trade-off or test tip</strong><br>Named exports improve clarity but require consistent usage. Test with type checks and component render tests.</strong>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Import Crash Root Cause Check",
+      "scenario": "After a refactor, your app boots but crashes on one route with \"Element type is invalid... got: undefined\" when rendering <Button />. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "default-named-mismatch",
+          "label": "The component export/import styles are mismatched (default vs named), so Button resolves to undefined at runtime."
+        },
+        {
+          "id": "jsx-runtime-off",
+          "label": "The JSX runtime is disabled, so React cannot parse component tags without React in scope."
+        },
+        {
+          "id": "css-module-break",
+          "label": "A CSS module failed to load, so React falls back to rendering undefined components."
+        }
+      ],
+      "correctOptionId": "default-named-mismatch",
+      "rereadPrompt": "Close. Re-read the default vs named examples and check what value your import actually resolves to."
     },
     "access": "free",
     "type": "trivia",
@@ -1850,6 +1950,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Conditional UI Root Cause Check",
+      "scenario": "You toggle a filter form with {open && <FilterForm />}. Every time users close and reopen it, their typed draft is gone. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "unmount-resets-state",
+          "label": "When open becomes false, FilterForm unmounts, so its local state resets on the next mount."
+        },
+        {
+          "id": "boolean-clears-inputs",
+          "label": "Any boolean state change in a parent automatically clears child input state in React."
+        },
+        {
+          "id": "and-always-loses-state",
+          "label": "Using && always loses state, while ternary always preserves it, regardless of mount behavior."
+        }
+      ],
+      "correctOptionId": "unmount-resets-state",
+      "rereadPrompt": "Almost there. Re-read the mount/unmount section and how local state is preserved versus reset."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -2014,6 +2134,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "useEffect Race Root Cause Check",
+      "scenario": "A profile panel fetches by userId in useEffect. When users switch people quickly, the UI sometimes shows the previous person's data. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "stale-request-overwrite",
+          "label": "Older requests are not cancelled/guarded, so a late stale response overwrites state after userId changes."
+        },
+        {
+          "id": "effect-runs-once",
+          "label": "useEffect always runs only once, so it cannot re-sync when userId changes."
+        },
+        {
+          "id": "batching-random-order",
+          "label": "React state batching randomly reorders network payloads across renders."
+        }
+      ],
+      "correctOptionId": "stale-request-overwrite",
+      "rereadPrompt": "Good try. Re-read the data-fetching section and how cleanup/AbortController prevents stale results from winning."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -2154,6 +2294,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Fragment Identity Root Cause Check",
+      "scenario": "You map glossary rows as <> <dt>{term}</dt><dd>{desc}</dd> </> and reorder the list. React warns about keys and some term/description pairs look mismatched after updates. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "missing-keyed-fragment",
+          "label": "The shorthand fragment cannot take a key, so each pair has unstable identity; use <React.Fragment key={id}> for each mapped group."
+        },
+        {
+          "id": "fragments-ignore-reconciliation",
+          "label": "Fragments skip reconciliation, so React always remounts all children no matter what keys you provide."
+        },
+        {
+          "id": "dl-not-diffable",
+          "label": "React cannot diff children inside <dl>, so reordering definition lists always produces mismatches."
+        }
+      ],
+      "correctOptionId": "missing-keyed-fragment",
+      "rereadPrompt": "Not quite. Re-read the keyed fragment section and why grouped siblings still need stable identity in lists."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -2283,6 +2443,26 @@
           "text": "<strong>Interview-quality summary</strong><br><br>In React, “Virtual DOM” refers to the in-memory UI tree (React elements/fibers). On updates, React re-renders to produce a new tree, then runs reconciliation (diffing + keys + heuristics) to compute what changed, and finally commits only the necessary DOM mutations. A re-render is just recomputing UI — it does not automatically mean the browser DOM changed."
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Render vs DOM Root Cause Check",
+      "scenario": "A teammate says \"every re-render rewrites the whole DOM.\" But in profiling, a component re-renders while its DOM subtree stays unchanged. What is the most likely explanation?",
+      "options": [
+        {
+          "id": "render-not-commit",
+          "label": "React recomputed the next tree, but reconciliation found no DOM differences to commit for that subtree."
+        },
+        {
+          "id": "vdom-off-prod",
+          "label": "Virtual DOM diffing is disabled in production builds, so DOM writes are skipped by default."
+        },
+        {
+          "id": "rerender-means-mutate",
+          "label": "A re-render always mutates DOM nodes, but browser devtools cannot detect most React updates."
+        }
+      ],
+      "correctOptionId": "render-not-commit",
+      "rereadPrompt": "Close. Re-read render vs reconciliation vs commit. Re-render computes UI; DOM updates happen only when commit has real diffs."
     },
     "access": "free",
     "type": "trivia",
@@ -2458,6 +2638,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Re-render Root Cause Check",
+      "scenario": "You wrapped a heavy child with React.memo, but it still re-renders on every parent update. Parent passes onSave={() => ...} and options={{ mode: 'fast' }} inline. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "unstable-prop-identity",
+          "label": "Inline function/object props create new references each render, so shallow prop comparison sees them as changed."
+        },
+        {
+          "id": "memo-forces-rerender",
+          "label": "React.memo intentionally re-renders children whenever parent state changes, regardless of props."
+        },
+        {
+          "id": "commit-always-reruns-child",
+          "label": "Any DOM commit in a parent subtree forces all memoized children to re-render by design."
+        }
+      ],
+      "correctOptionId": "unstable-prop-identity",
+      "rereadPrompt": "Almost. Re-read the stable identity section (useCallback/useMemo) and how React.memo compares props."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -2583,6 +2783,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Ownership Drift Root Cause Check",
+      "scenario": "A child input gets value as a prop, but also copies that prop into local state and edits locally. After parent refetches, the field sometimes reverts or shows stale text. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "double-source-truth",
+          "label": "The same value is owned by both parent props and child state, so updates drift and overwrite each other."
+        },
+        {
+          "id": "prop-readonly-bug",
+          "label": "React blocks prop updates after first render, so children must copy props into state to stay current."
+        },
+        {
+          "id": "state-never-syncs",
+          "label": "React state cannot be synced from parent-driven values, so reversion is expected behavior."
+        }
+      ],
+      "correctOptionId": "double-source-truth",
+      "rereadPrompt": "Close. Re-read the single-source-of-truth section and decide who should own that value."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -2673,6 +2893,26 @@
     "seo": {
       "title": "How do you lift state up in React?",
       "description": "Lift state up by moving shared state to the nearest common parent and passing values and update handlers down as props."
+    },
+    "incidentCard": {
+      "title": "Shared State Sync Root Cause Check",
+      "scenario": "A slider and a numeric input should always show the same value. Each sibling keeps its own local state, so typing in one does not reliably update the other. What should you change first?",
+      "options": [
+        {
+          "id": "lift-to-parent",
+          "label": "Move the shared value to their closest common parent and pass value/onChange down to both siblings."
+        },
+        {
+          "id": "dual-local-with-effects",
+          "label": "Keep separate local state in both siblings and sync them with useEffect in each component."
+        },
+        {
+          "id": "force-rerender-loop",
+          "label": "Call setState in a loop when either input changes so both re-render until they match."
+        }
+      ],
+      "correctOptionId": "lift-to-parent",
+      "rereadPrompt": "Close. Re-read the lifting-state-up example and focus on keeping one source of truth for shared data."
     }
   },
   {

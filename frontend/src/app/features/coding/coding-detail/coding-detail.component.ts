@@ -20,7 +20,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
-import { Subject, Subscription, filter, takeUntil } from 'rxjs';
+import { Subject, Subscription, filter, firstValueFrom, takeUntil } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
@@ -1578,12 +1578,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // Angular/framework preview submissions are manual-complete.
     if (this.isFrameworkTech() || this.isWebTech()) {
-      await this.progress.markSolved(q.id);
+      const completed = await this.recordCompletion('submit');
+      if (!completed) {
+        this.solved.set(false);
+        return;
+      }
       this.solved.set(true);
       this.trackQuickWinCompleted(q.id, 'submit');
       this.maybePromptLifecycle('coding_submit', q.id);
       this.creditDaily();
-      this.recordCompletion('submit');
       await this.celebrate('submit');
       return;
     }
@@ -1598,11 +1601,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return;
     }
 
-    await this.progress.markSolved(q.id);
+    const completed = await this.recordCompletion('submit');
+    if (!completed) {
+      this.solved.set(false);
+      return;
+    }
+    this.solved.set(true);
     this.trackQuickWinCompleted(q.id, 'submit');
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
-    this.recordCompletion('submit');
     await this.celebrate('submit');
   }
 
@@ -2315,26 +2322,38 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private xpFor(q: Question): number {
     return Number((q as any).xp ?? 20);
   }
-  private recordCompletion(_reason: 'tests' | 'submit') {
+  private async recordCompletion(_reason: 'tests' | 'submit'): Promise<boolean> {
     const q = this.question();
-    if (!q) return;
-    if (this.recorded) return;
+    if (!q) return false;
+    if (this.recorded) return true;
 
     const minutes = Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000));
-    this.activity.complete({
-      kind: this.kind,
-      tech: this.tech,
-      itemId: q.id,
-      source: 'tech',
-      durationMin: minutes,
-      xp: this.xpFor(q),
-      difficulty: q.difficulty,
-    }).subscribe({
-      next: (_res: any) => {
-        this.recorded = true;
-      },
-      error: () => { },
-    });
+    try {
+      const res: any = await firstValueFrom(this.activity.complete({
+        kind: this.kind,
+        tech: this.tech,
+        itemId: q.id,
+        source: 'tech',
+        durationMin: minutes,
+        xp: this.xpFor(q),
+        difficulty: q.difficulty,
+      }));
+
+      if (res?.credited === false && !res?.stats) {
+        return false;
+      }
+
+      if (Array.isArray(res?.solvedQuestionIds)) {
+        this.progress.setSolvedIds(res.solvedQuestionIds);
+      } else {
+        this.progress.markSolvedLocal(q.id);
+      }
+
+      this.recorded = true;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   langFromPath(p: string): 'typescript' | 'javascript' | 'html' | 'css' | 'json' | 'plaintext' {

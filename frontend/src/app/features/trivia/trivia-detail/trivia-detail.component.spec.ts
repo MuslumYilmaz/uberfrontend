@@ -47,7 +47,14 @@ describe('TriviaDetailComponent', () => {
     routeData$ = new ReplaySubject<any>(1);
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
-    progress = jasmine.createSpyObj<UserProgressService>('UserProgressService', ['isSolved', 'markSolved', 'unmarkSolved', 'solvedIds']);
+    progress = jasmine.createSpyObj<UserProgressService>('UserProgressService', [
+      'isSolved',
+      'markSolved',
+      'markSolvedLocal',
+      'setSolvedIds',
+      'unmarkSolved',
+      'solvedIds',
+    ]);
     auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'headers']);
     activity = jasmine.createSpyObj<ActivityService>('ActivityService', ['complete']);
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
@@ -57,10 +64,12 @@ describe('TriviaDetailComponent', () => {
     progress.isSolved.and.returnValue(false);
     progress.solvedIds.and.returnValue([]);
     progress.markSolved.and.resolveTo();
+    progress.markSolvedLocal.and.stub();
+    progress.setSolvedIds.and.stub();
     progress.unmarkSolved.and.resolveTo();
     auth.user.and.returnValue(null);
     auth.isLoggedIn.and.returnValue(false);
-    activity.complete.and.returnValue(of(null));
+    activity.complete.and.returnValue(of({ solvedQuestionIds: ['q1'], stats: {} } as any));
     onboarding.getProfile.and.returnValue(null);
     triviaIncident.getIncident.and.returnValue(of(null));
     triviaIncident.answerIncident.and.returnValue(of({
@@ -301,7 +310,7 @@ describe('TriviaDetailComponent', () => {
     fixture.componentInstance.selectIncidentOption('b');
     await fixture.componentInstance.submitIncidentChoice();
     expect(triviaIncident.answerIncident).toHaveBeenCalledWith('javascript', 'q1', 'b');
-    expect(progress.markSolved).toHaveBeenCalledWith('q1');
+    expect(progress.setSolvedIds).toHaveBeenCalledWith(['q1']);
     expect(activity.complete).toHaveBeenCalled();
     expect(fixture.componentInstance.solved()).toBeTrue();
   });

@@ -155,11 +155,14 @@ router.post('/complete', requireAuth, async (req, res) => {
                     'stats.streak.lastActiveUTCDate': dayUTC,
                 },
             };
+            if (itemIdText) {
+                aggregateUpdate.$addToSet = { solvedQuestionIds: itemIdText };
+            }
             const aggregateUpdateQuery = User.updateOne({ _id: user._id }, aggregateUpdate);
             if (session) aggregateUpdateQuery.session(session);
             await aggregateUpdateQuery;
 
-            const updatedUserQuery = User.findById(user._id).select('stats');
+            const updatedUserQuery = User.findById(user._id).select('stats solvedQuestionIds');
             if (session) updatedUserQuery.session(session);
             const updatedUser = await updatedUserQuery;
             if (!updatedUser) throw createHttpError(404, 'User not found');
@@ -173,6 +176,7 @@ router.post('/complete', requireAuth, async (req, res) => {
 
             return {
                 stats: updatedUser.stats,
+                solvedQuestionIds: Array.isArray(updatedUser.solvedQuestionIds) ? updatedUser.solvedQuestionIds : [],
                 event,
                 recent,
                 xpAwarded: totalXpIncrement,

@@ -82,6 +82,7 @@ describe('POST /api/activity/complete', () => {
         const reloaded = await User.findById(user._id).lean();
         expect(reloaded?.stats?.xpTotal).toBe(20);
         expect(reloaded?.stats?.completedTotal).toBe(2);
+        expect(reloaded?.solvedQuestionIds || []).toContain('same-item-id');
 
         const [eventCount, firstCompletionCount] = await Promise.all([
             ActivityEvent.countDocuments({ userId: user._id, kind: 'coding', itemId: 'same-item-id' }),

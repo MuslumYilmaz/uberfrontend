@@ -1064,20 +1064,28 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    await this.progress.markSolved(q.id);
-    this.solved.set(true);
-    this.maybePromptLifecycle('trivia_mark_complete', q.id);
-    this.activity.complete({
-      kind: 'trivia',
-      tech: this.tech,
-      itemId: q.id,
-      source: 'tech',
-      durationMin: 3,
-      difficulty: q.difficulty,
-    }).subscribe({
-      next: () => { },
-      error: () => { },
-    });
+    try {
+      const res: any = await firstValueFrom(this.activity.complete({
+        kind: 'trivia',
+        tech: this.tech,
+        itemId: q.id,
+        source: 'tech',
+        durationMin: 3,
+        difficulty: q.difficulty,
+      }));
+      if (res?.credited === false && !res?.stats) {
+        return;
+      }
+      if (Array.isArray(res?.solvedQuestionIds)) {
+        this.progress.setSolvedIds(res.solvedQuestionIds);
+      } else {
+        this.progress.markSolvedLocal(q.id);
+      }
+      this.solved.set(true);
+      this.maybePromptLifecycle('trivia_mark_complete', q.id);
+    } catch {
+      return;
+    }
   }
 
   goToLogin() {

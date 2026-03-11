@@ -27,6 +27,186 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
+  test('returns public incident card for configured react trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-usestate-purpose/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-usestate-purpose',
+      tech: 'react',
+      title: 'useState Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for another configured react trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-why-event-delegation/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-why-event-delegation',
+      tech: 'react',
+      title: 'Event Delegation Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react keys trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-keys-in-lists/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-keys-in-lists',
+      tech: 'react',
+      title: 'List Keys Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react controlled vs uncontrolled trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-controlled-vs-uncontrolled/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-controlled-vs-uncontrolled',
+      tech: 'react',
+      title: 'Form State Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react default vs named exports trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-default-vs-named-exports-runtime-break/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-default-vs-named-exports-runtime-break',
+      tech: 'react',
+      title: 'Import Crash Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react conditional rendering trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-conditional-rendering/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-conditional-rendering',
+      tech: 'react',
+      title: 'Conditional UI Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react useeffect trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-useeffect-purpose/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-useeffect-purpose',
+      tech: 'react',
+      title: 'useEffect Race Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react fragments trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-fragments-dom-and-reconciliation/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-fragments-dom-and-reconciliation',
+      tech: 'react',
+      title: 'Fragment Identity Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react virtual dom trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-virtual-dom/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-virtual-dom',
+      tech: 'react',
+      title: 'Render vs DOM Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react component rerendering trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-component-rerendering/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-component-rerendering',
+      tech: 'react',
+      title: 'Re-render Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react state and props ownership trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-mixing-state-and-props-responsibilities/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-mixing-state-and-props-responsibilities',
+      tech: 'react',
+      title: 'Ownership Drift Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for react lifting state up trivia question', async () => {
+    const res = await request(app).get('/api/trivia/react/react-lifting-state-up/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'react-lifting-state-up',
+      tech: 'react',
+      title: 'Shared State Sync Root Cause Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
   test('returns 404 when incident card is not configured for a trivia question', async () => {
     const res = await request(app).get('/api/trivia/javascript/js-closures/incident');
     expect(res.status).toBe(404);

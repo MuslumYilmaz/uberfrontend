@@ -3,12 +3,29 @@ const path = require('path');
 
 const TECHS = ['javascript', 'react', 'angular', 'vue', 'html', 'css'];
 const KINDS = ['coding', 'trivia'];
+const CATALOG_BASE_DIR = path.resolve(__dirname, '../../../cdn/questions');
 
 let cache = null;
 
 function readJsonFile(filePath) {
   const raw = fs.readFileSync(filePath, 'utf8');
   return JSON.parse(raw);
+}
+
+function buildCatalogSignature(baseDir) {
+  const parts = [];
+  for (const tech of TECHS) {
+    for (const kind of KINDS) {
+      const filePath = path.join(baseDir, tech, `${kind}.json`);
+      if (!fs.existsSync(filePath)) {
+        parts.push(`${tech}:${kind}:missing`);
+        continue;
+      }
+      const stats = fs.statSync(filePath);
+      parts.push(`${tech}:${kind}:${stats.size}:${stats.mtimeMs}`);
+    }
+  }
+  return parts.join('|');
 }
 
 function normalizeQuestion(raw, tech, kind) {
@@ -68,17 +85,17 @@ function normalizeIncidentCard(raw) {
 }
 
 function loadQuestionCatalog({ force = false } = {}) {
-  if (cache && !force) return cache;
+  const signature = buildCatalogSignature(CATALOG_BASE_DIR);
+  if (cache && !force && cache.signature === signature) return cache;
 
   const all = [];
   const byKey = new Map();
   const byTechKindKey = new Map();
   const byId = new Map();
 
-  const baseDir = path.resolve(__dirname, '../../../cdn/questions');
   for (const tech of TECHS) {
     for (const kind of KINDS) {
-      const filePath = path.join(baseDir, tech, `${kind}.json`);
+      const filePath = path.join(CATALOG_BASE_DIR, tech, `${kind}.json`);
       if (!fs.existsSync(filePath)) continue;
       const parsed = readJsonFile(filePath);
       const rows = Array.isArray(parsed) ? parsed : [];
@@ -102,6 +119,7 @@ function loadQuestionCatalog({ force = false } = {}) {
   const freeCodingPool = all.filter((question) => question.kind === 'coding' && question.access !== 'premium');
 
   cache = {
+    signature,
     all,
     byKey,
     byTechKindKey,

@@ -39,6 +39,22 @@ export class UserProgressService {
     return this.solved().has(id);
   }
 
+  /** Replace local solved cache with backend truth. */
+  setSolvedIds(ids: string[]): void {
+    const next = Array.isArray(ids)
+      ? ids.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+      : [];
+    this.solved.set(new Set(next));
+  }
+
+  /** Update solved cache without network writes. */
+  markSolvedLocal(id: string): void {
+    if (!id) return;
+    const next = new Set(this.solved());
+    next.add(id);
+    this.solved.set(next);
+  }
+
   /** Optimistic mark. Falls back to localStorage when logged out. */
   async markSolved(id: string): Promise<void> {
     if (!id) return;
