@@ -606,6 +606,10 @@ export class HeaderComponent implements OnInit {
         return ['/tracks'];
       case 'warmup':
         return ['/interview-questions'];
+      case 'tools': {
+        const tool = String(t.params?.['tool'] ?? 'cv').trim();
+        return ['/tools', tool || 'cv'];
+      }
       case 'guides': {
         const section = (t.params?.['section'] as string | undefined) ?? '';
         if (section === 'playbook' || section === 'interview-blueprint') return (['/guides', 'interview-blueprint']);

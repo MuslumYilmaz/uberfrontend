@@ -401,6 +401,78 @@
   </div>
 </section>
 
+<section class="section reveal" #observeSection aria-labelledby="cv-linter-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Career tools</p>
+        <h2 id="cv-linter-title">See your CV through an ATS-style scan.</h2>
+      </div>
+      <p class="muted">Visual report first: score, blockers, and what to fix next.</p>
+    </div>
+
+    <article class="cv-linter-showcase glass" role="region" aria-label="CV Linter scan preview">
+      <div class="cv-linter-showcase__copy">
+        <span class="pill">CV Linter preview</span>
+        <h3>Know what ATS and recruiters will flag in one glance.</h3>
+        <p class="muted">You upload once and immediately get score, blockers, and prioritized fixes.</p>
+        <div class="cv-scan-stats" aria-label="Scan outputs">
+          <span class="cv-scan-stat"><strong>78</strong><em>ATS score</em></span>
+          <span class="cv-scan-stat"><strong>3 critical</strong><em>Fix now</em></span>
+          <span class="cv-scan-stat"><strong>8 quick wins</strong><em>Queued fixes</em></span>
+        </div>
+      </div>
+
+      <div class="cv-linter-showcase__panel" aria-hidden="true">
+        <div class="cv-mock-window">
+          <div class="cv-mock-window__top">
+            <div class="window-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="cv-live-pill">Scan result</span>
+          </div>
+
+          <div class="cv-mock-window__body">
+            <div class="cv-sheet">
+              <div class="cv-sheet__line cv-sheet__line--xl"></div>
+              <div class="cv-sheet__line cv-sheet__line--m"></div>
+              <div class="cv-sheet__line cv-sheet__line--l"></div>
+              <div class="cv-sheet__line cv-sheet__line--s"></div>
+              <div class="cv-sheet__divider"></div>
+              <div class="cv-sheet__line cv-sheet__line--m"></div>
+              <div class="cv-sheet__line cv-sheet__line--xl"></div>
+              <div class="cv-sheet__line cv-sheet__line--l"></div>
+              <div class="cv-sheet__line cv-sheet__line--m"></div>
+              <div class="cv-sheet__line cv-sheet__line--s"></div>
+              <span class="cv-sheet__flag cv-sheet__flag--critical">Missing keywords</span>
+              <span class="cv-sheet__flag cv-sheet__flag--warn">Weak impact</span>
+            </div>
+
+            <div class="cv-scan-summary">
+              <div class="cv-score-ring">
+                <span>78</span>
+                <small>ATS score</small>
+              </div>
+              <div class="cv-severity-stack">
+                <span class="cv-severity cv-severity--critical">3 critical</span>
+                <span class="cv-severity cv-severity--warn">5 warnings</span>
+                <span class="cv-severity cv-severity--info">4 info</span>
+              </div>
+              <p class="cv-summary-note">Top fixes: add role keywords, strengthen two bullets, tighten summary.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <a class="demo-banner" routerLink="/tools/cv" role="button" aria-label="Open the CV Linter tool">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="text">Scan your CV in the full tool →</span>
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+</section>
+
 <section class="section reveal" #observeSection aria-labelledby="pricing-title">
   <div class="shell">
     <div class="section-head">

@@ -205,8 +205,9 @@ function compileTS(src, filename){
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https: http:; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
   <title>Angular Preview</title>
   <style>
-    html,body,#root{height:100%}
-    body{margin:16px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+    html,body,app-root{height:100%}
+    body{margin:0;background:#0c0f16;color:#e5e7eb;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+    app-root{display:block;min-height:100%}
     #_fa_overlay{position:fixed;inset:0;background:#1a1a1a;color:#ffd6d6;padding:16px;display:none;overflow:auto;z-index:999999;border-top:4px solid #ff5555}
     #_fa_overlay h1{margin:0 0 8px 0;font-size:16px;color:#fff}
     #_fa_overlay pre{white-space:pre-wrap;margin:0}

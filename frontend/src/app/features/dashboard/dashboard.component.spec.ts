@@ -166,6 +166,14 @@ describe('DashboardComponent', () => {
     expect(link?.getAttribute('href') || '').toContain('/focus-areas');
   });
 
+  it('includes CV Linter in recommended preparation cards', () => {
+    const component = fixture.componentInstance;
+    const cvCard = component.recommended.find((card) => card.title === 'CV Linter');
+
+    expect(cvCard).toBeTruthy();
+    expect(cvCard?.route).toEqual(['/tools', 'cv']);
+  });
+
   it('shows solved trivia progress in question formats', async () => {
     const progressService = TestBed.inject(UserProgressService) as any;
     progressService.solvedIds.and.returnValue(['react-closures']);

@@ -8,7 +8,7 @@ export type PrepareGroupKey =
     | 'courses'
     | 'resources';
 
-export type TargetName = 'practice' | 'system' | 'companies' | 'courses' | 'guides' | 'tracks' | 'warmup';
+export type TargetName = 'practice' | 'system' | 'companies' | 'courses' | 'guides' | 'tracks' | 'warmup' | 'tools';
 
 export interface PrepareTarget {
     name: TargetName;
@@ -61,6 +61,14 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
                 pi: 'pi pi-comments',
                 intent: 'route',
                 target: { name: 'guides', params: { section: 'behavioral' } }
+            },
+            {
+                key: 'cv-linter',
+                title: 'CV Linter',
+                subtitle: 'ATS-style resume scan with fix suggestions',
+                pi: 'pi pi-check-circle',
+                intent: 'route',
+                target: { name: 'tools', params: { tool: 'cv' } }
             }
         ]
     },

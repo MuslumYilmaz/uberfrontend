@@ -595,6 +595,12 @@ export class DashboardComponent {
       route: ['/guides', 'interview-blueprint'],
     },
     {
+      title: 'CV Linter',
+      subtitle: 'ATS-style resume scan with severity-based fixes.',
+      icon: 'list',
+      route: ['/tools', 'cv'],
+    },
+    {
       title: 'Frontend System Design Blueprint',
       subtitle: 'Core techniques and deep dives (guide).',
       icon: 'grid',
