@@ -5,30 +5,6 @@
     <p class="fa-page-subtitle fa-body">Solve individual interview questions now: filter by framework, difficulty, and focus area, then start one prompt immediately.</p>
   </header>
 
-  <section class="fa-role-contract" *ngIf="source === 'global-coding'" aria-label="Coding route purpose">
-    <p class="fa-role-contract__kicker">Route purpose</p>
-    <h2 class="fa-role-contract__title">Solve individual interview questions now</h2>
-    <p class="fa-role-contract__copy">
-      Pick one high-impact coding prompt and start immediately. Use tracks when you need a structured multi-day sequence.
-    </p>
-    <div class="fa-role-contract__actions">
-      <a
-        faButton
-        variant="primary"
-        [routerLink]="rolePrimaryRoute"
-        [queryParams]="rolePrimaryQueryParams">
-        Start high-impact JS coding
-      </a>
-      <a
-        faButton
-        variant="ghost"
-        [routerLink]="roleSecondaryRoute"
-        [queryParams]="roleSecondaryQueryParams">
-        Open guided tracks
-      </a>
-    </div>
-  </section>
-
   <section class="fa-access-note" *ngIf="source === 'global-coding'" aria-label="Access and pricing">
     <p class="fa-meta-text">
       Most challenges and solutions are free to start. Premium unlocks additional question sets and full solution depth.

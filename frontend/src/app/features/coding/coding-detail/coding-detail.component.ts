@@ -2046,7 +2046,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   dismissOnboardingPrompt() {
     this.onboardingPromptOpen = false;
-    this.onboarding.markPending(this.onboardingPromptReason);
   }
 
   openOnboardingQuickStart() {

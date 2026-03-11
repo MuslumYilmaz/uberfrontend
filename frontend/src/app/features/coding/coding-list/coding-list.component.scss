@@ -62,47 +62,6 @@ app-coding-tech-kind-tabs {
   text-decoration: underline;
 }
 
-.fa-role-contract {
-  margin: 0 0 16px;
-  padding: 16px;
-  border-radius: var(--fa-radius-16);
-  border: 1px solid color-mix(in srgb, var(--border) 70%, rgba(var(--fa-accent-rgb), 0.4));
-  background:
-    linear-gradient(155deg, rgba(var(--fa-accent-rgb), 0.1), rgba(var(--fa-text-rgb), 0.02)),
-    color-mix(in srgb, var(--surface-2) 92%, var(--surface-1));
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.34);
-  display: grid;
-  gap: 8px;
-}
-
-.fa-role-contract__kicker {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-}
-
-.fa-role-contract__title {
-  margin: 0;
-  font-size: clamp(20px, 2.2vw, 28px);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.fa-role-contract__copy {
-  margin: 0;
-  max-width: 65ch;
-}
-
-.fa-role-contract__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
-}
-
 .fa-more-routes {
   margin: 0 0 18px;
   border-radius: 12px;
