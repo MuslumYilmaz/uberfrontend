@@ -96,6 +96,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Lifecycle Hook Check",
+      "scenario": "A teammate tries to focus an input from `constructor()` and gets `undefined` from `@ViewChild`. They suggest moving the code into `ngOnInit()` because 'that is when Angular starts the component.' Another teammate says DOM and default `ViewChild` access usually belongs in `ngAfterViewInit()`, unless the query is explicitly `static: true` and the element is always present. Which explanation is better?",
+      "options": [
+        {
+          "id": "use-after-view-init-for-dom-by-default",
+          "label": "Use `ngAfterViewInit()` by default for DOM or `ViewChild` work, because that is when Angular has finished creating the component view. `constructor()` is for DI and simple setup, and `ngOnInit()` is mainly for input-dependent initialization unless a `ViewChild` is explicitly `static: true`."
+        },
+        {
+          "id": "constructor-is-fine-for-viewchild-access",
+          "label": "Keep the focus logic in `constructor()` because the class already exists there. If Angular has created the component instance, the DOM reference should be available too, so lifecycle hooks are mostly optional here."
+        },
+        {
+          "id": "always-use-oninit-for-dom-access",
+          "label": "Move all DOM work to `ngOnInit()` because that is Angular's general initialization hook. Using `ngAfterViewInit()` is unnecessary extra ceremony unless you are working with projected content."
+        }
+      ],
+      "correctOptionId": "use-after-view-init-for-dom-by-default",
+      "rereadPrompt": "Not quite. The view is not ready in the constructor, and default `@ViewChild` queries are typically resolved only after the view has been initialized. `ngOnInit()` is for setup that depends on inputs and services; `ngAfterViewInit()` is the usual place for DOM, focus, measurements, and default `ViewChild` access."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -242,6 +262,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Rewrite vs Upgrade Check",
+      "scenario": "A team has a large AngularJS 1.x app and assumes moving to Angular will be a normal version upgrade. One teammate says, 'Same framework, same concepts, we just need some syntax changes.' Another teammate says Angular and AngularJS share a name but not the same architecture, so migration usually means rewriting controllers and `$scope` patterns into components, services, modern routing, and newer async patterns. Which explanation is better?",
+      "options": [
+        {
+          "id": "angular-is-a-rewrite-not-a-simple-upgrade",
+          "label": "Angular is a rewrite, not a drop-in upgrade from AngularJS. The core architecture changed from controllers and `$scope` with digest watchers to a component model with TypeScript-first tooling, modern DI, and different async and routing patterns."
+        },
+        {
+          "id": "mostly-a-syntax-upgrade",
+          "label": "AngularJS and Angular are basically the same framework with newer syntax. If the app already works in AngularJS, migration is mostly about renaming APIs and updating templates rather than changing architecture."
+        },
+        {
+          "id": "only-rxjs-makes-them-different",
+          "label": "The real difference is mostly RxJS. Outside of observables, Angular and AngularJS are similar enough that teams can treat migration as a tooling refresh rather than a framework rewrite."
+        }
+      ],
+      "correctOptionId": "angular-is-a-rewrite-not-a-simple-upgrade",
+      "rereadPrompt": "Not quite. AngularJS 1.x and Angular 2+ are not backward-compatible versions of the same architecture. The major shift is from controllers, `$scope`, and the digest cycle to a component-based TypeScript-first framework with different change detection, tooling, and app structure."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -370,6 +410,26 @@
           "text": "<strong>Summary</strong><br><br>Keep components focused on UI + event wiring + lightweight view-model shaping. Put reusable logic, side effects, data access, and business rules into services (or facades). This separation improves testability, reuse, and long-term maintainability."
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Boundary Choice Check",
+      "scenario": "A dashboard component now handles template state, `HttpClient` calls, caching, permission checks, and DTO-to-view-model mapping all in one file. One teammate says that is fine because the component is the screen, so everything related to the screen should live there. Another says the component should stay focused on rendering and UI events, while reusable business rules, data access, and side effects move into services or facades. Which explanation is better?",
+      "options": [
+        {
+          "id": "keep-components-thin-and-move-reusable-logic-to-services",
+          "label": "Keep the component focused on template state, user interactions, and light view-model shaping. Move HTTP calls, caching, permission logic, and reusable business rules into services so the code is easier to test, reuse, and maintain."
+        },
+        {
+          "id": "screen-components-should-own-everything",
+          "label": "Let the component own all logic related to the page. Since the component already knows the screen requirements, keeping data access and business rules there reduces indirection and makes the feature easier to trace."
+        },
+        {
+          "id": "services-should-also-handle-dom-concerns",
+          "label": "Move almost everything into services, including DOM and template concerns. Services are the most reusable Angular building block, so they should manage rendering decisions as well as business rules."
+        }
+      ],
+      "correctOptionId": "keep-components-thin-and-move-reusable-logic-to-services",
+      "rereadPrompt": "Not quite. Components should mostly handle rendering, local UI state, and event wiring. Services are a better home for reusable logic, data fetching, caching, and side effects. That boundary keeps components thinner and makes both the UI and the logic easier to test."
     },
     "access": "free",
     "type": "trivia",
@@ -500,6 +560,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Decorator Contract Check",
+      "scenario": "A teammate strips a component down to a plain class and says, \"Angular can figure out the rest from the file name and the HTML anyway. The `@Component` decorator is basically just a label.\" What is the better explanation?",
+      "options": [
+        {
+          "id": "metadata-is-the-contract-angular-uses-to-render-and-run-the-component",
+          "label": "`@Component` metadata is how Angular knows this class is a UI component and how it should behave. It tells Angular what selector to match, what template and styles to compile, what imports and providers are in scope, and what runtime rules apply like change detection and encapsulation."
+        },
+        {
+          "id": "angular-can-infer-most-component-behavior-from-the-class-and-file-structure",
+          "label": "Angular mostly infers component behavior from the class shape, file names, and nearby template files. The decorator mainly helps tooling and readability, but the framework does not rely on it for core rendering decisions."
+        },
+        {
+          "id": "component-metadata-is-mainly-for-styles-while-angular-handles-rendering-automatically",
+          "label": "`@Component` metadata is mostly there for selector and style setup. Template compilation, dependency scope, and runtime behavior are handled automatically by Angular once it sees the class is exported."
+        }
+      ],
+      "correctOptionId": "metadata-is-the-contract-angular-uses-to-render-and-run-the-component",
+      "rereadPrompt": "Not quite. `@Component` is not just a label. Angular uses that metadata as the contract for compiling the template, matching the selector, scoping dependencies, creating providers, and applying runtime behavior like change detection and encapsulation."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -611,6 +691,26 @@
           "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Standalone Migration Check",
+      "scenario": "A team is moving an Angular app to standalone components. One teammate says, \"We still need to keep creating new NgModules for every feature because standalone components do not really replace them in real apps.\" Another says, \"For most new app code, standalone components handle composition, routing, and provider setup just fine. NgModules mostly still matter when you need legacy non-standalone declarations or module-shaped library APIs like `forRoot`.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "standalone-covers-most-new-app-work-ngmodules-mainly-remain-for-legacy-and-module-shaped-apis",
+          "label": "Use standalone by default for new app code. It covers most composition, routing, and DI setup. NgModules still have a role mainly for legacy non-standalone declarations, module-based third-party libraries, and some explicit import-export packaging conventions."
+        },
+        {
+          "id": "every-feature-still-needs-a-ngmodule-boundary",
+          "label": "Keep creating a new NgModule for each feature because Angular still needs module export scopes for normal template composition. Standalone components are useful only for tiny demos or isolated leaf screens."
+        },
+        {
+          "id": "standalone-means-ngmodules-should-never-appear-again",
+          "label": "Remove NgModules completely in every case. If a library or legacy directive still depends on them, the right fix is to avoid that code entirely because standalone Angular cannot interoperate with module-based patterns."
+        }
+      ],
+      "correctOptionId": "standalone-covers-most-new-app-work-ngmodules-mainly-remain-for-legacy-and-module-shaped-apis",
+      "rereadPrompt": "Not quite. Standalone components replace most everyday NgModule usage in modern Angular apps, but NgModules still matter for legacy non-standalone declarations and module-shaped library APIs. The right mental model is not \"modules everywhere\" or \"modules never,\" but knowing where they still solve real compatibility and packaging needs."
     },
     "access": "free",
     "type": "trivia",
@@ -808,6 +908,26 @@
           "text": "<strong>Practical scenario</strong><br>Migrating a legacy Angular app to standalone components, you move imports and providers from AppModule into each feature component.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting to add required imports to a standalone component.</li><li>Provider scope changes causing unexpected singleton behavior.</li><li>Mixing module-based libraries without clear boundaries.</li></ul><strong>Trade-off or test tip</strong><br>Standalone simplifies bootstrapping but shifts responsibility to each component. Test DI scopes and route-level providers after migration.</strong>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Standalone Migration Wiring Check",
+      "scenario": "A team removes `AppModule` and then dumps everything into the root component: router setup, HTTP providers, animations, and a huge pile of imports. A teammate says, \"That is basically the standalone migration. Just move whatever was in `AppModule` into `AppComponent`.\" Another says, \"Not exactly. Bootstrapping and app-wide providers move to `bootstrapApplication` or `ApplicationConfig`, template dependencies move to each standalone component's `imports`, and feature-specific providers can move to route-level `providers`.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "appmodule-responsibilities-move-to-bootstrap-component-imports-and-route-providers",
+          "label": "The second explanation is better. In standalone Angular, bootstrapping and global providers move to `bootstrapApplication` or `ApplicationConfig`, template dependencies move into each standalone component's `imports`, and feature-scoped services can move to route-level `providers`."
+        },
+        {
+          "id": "everything-from-appmodule-should-live-in-the-root-component",
+          "label": "The first explanation is better. Once `AppModule` is gone, the root component becomes the natural home for routing, provider configuration, and template dependency wiring because it replaces the module completely."
+        },
+        {
+          "id": "provider-and-template-wiring-should-stay-in-ngmodules-even-in-standalone-apps",
+          "label": "Keep provider configuration and template wiring in NgModules even during standalone migration. Standalone components are mostly for view classes, while the real app composition model should stay module-based to avoid scope problems."
+        }
+      ],
+      "correctOptionId": "appmodule-responsibilities-move-to-bootstrap-component-imports-and-route-providers",
+      "rereadPrompt": "Not quite. Standalone migration is not \"move AppModule into AppComponent.\" The key is splitting responsibilities correctly: global bootstrapping and providers go to `bootstrapApplication` or `ApplicationConfig`, template dependencies belong in component `imports`, and feature-scoped providers can live on routes."
     },
     "access": "free",
     "type": "trivia",
@@ -1024,6 +1144,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Binding Update Check",
+      "scenario": "A teammate sees a counter update in the UI and says, \"Angular probably just re-renders the whole template string from scratch every click.\" Another says, \"Not exactly. Angular compiles the template into create and update instructions. On change detection, it re-runs the update part, reads current component state, and patches only the relevant bindings.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "angular-re-runs-compiled-update-instructions-against-component-state",
+          "label": "The second explanation is better. Angular compiles the template into runtime instructions, then change detection re-executes the update phase, re-reads values from the component instance, and updates only the bindings or DOM properties that changed."
+        },
+        {
+          "id": "angular-rebuilds-the-full-template-string-on-every-state-change",
+          "label": "The first explanation is better. Angular treats templates mostly like string templates, so after each state change it rebuilds the whole HTML output and replaces the existing DOM with the fresh result."
+        },
+        {
+          "id": "bindings-are-fully-resolved-at-compile-time-and-dom-does-the-rest",
+          "label": "Bindings are mostly decided at compile time, so once Angular generates the template code, the DOM keeps itself in sync automatically unless you manually trigger a full component refresh."
+        }
+      ],
+      "correctOptionId": "angular-re-runs-compiled-update-instructions-against-component-state",
+      "rereadPrompt": "Not quite. Angular templates are compiled ahead of time into instructions. At runtime, change detection re-runs the update phase, reads current values from the component instance, and patches the relevant DOM bindings instead of rebuilding the whole template string each time."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -1203,6 +1343,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Binding Direction Check",
+      "scenario": "A teammate says Angular data binding is basically one thing: \"The template just stays synced somehow, and two-way binding is the default mental model for everything.\" Another teammate says, \"Most Angular binding is one-way in one direction at a time: interpolation and property-style bindings push component state into the view, events push user actions back into the component, and two-way binding is just sugar that combines both.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "angular-binding-is-mostly-one-way-and-two-way-is-just-combined-sugar",
+          "label": "The second explanation is better. Angular mainly uses one-way bindings in specific directions: component to view for interpolation/property/attr/class/style bindings, and view to component for events. Two-way binding is just shorthand for combining an input-like binding with a paired change event."
+        },
+        {
+          "id": "all-angular-bindings-are-basically-two-way-under-the-hood",
+          "label": "The first explanation is better. Angular treats most template bindings as two-way by default, so interpolation, property binding, and event binding are really just different syntax for the same fully synced mechanism."
+        },
+        {
+          "id": "event-binding-is-separate-from-data-binding-and-two-way-is-the-real-binding-model",
+          "label": "Event binding should be thought of as separate from data binding. The real Angular binding model is two-way binding, and the other forms are mostly simplified syntax for cases where you only need part of it."
+        }
+      ],
+      "correctOptionId": "angular-binding-is-mostly-one-way-and-two-way-is-just-combined-sugar",
+      "rereadPrompt": "Not quite. Angular’s mental model is mostly one-way bindings in explicit directions. Interpolation and property-like bindings push data into the view, events send information back to the component, and two-way binding is just a convenience layer on top of those two pieces."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -1339,6 +1499,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "DOM State Binding Check",
+      "scenario": "A teammate writes `<button disabled=\"{{ isSaving }}\">Save</button>` and says that should be fine because interpolation updates the DOM too. Another teammate says, \"That is risky for element state. Interpolation turns values into strings, but `[disabled]` sets the real DOM property boolean, which is what you actually want for runtime behavior.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "use-property-binding-for-real-element-state-like-disabled",
+          "label": "The second explanation is better. Interpolation is fine for display text, but for real element state like `disabled`, `checked`, `value`, or `src`, property binding is the safer and correct choice because it updates the actual DOM property with the right type."
+        },
+        {
+          "id": "interpolation-and-property-binding-behave-the-same-for-disabled",
+          "label": "The first explanation is better. Since Angular updates both forms during change detection, interpolation inside `disabled` behaves the same as `[disabled]`, so choosing between them is mostly a style preference."
+        },
+        {
+          "id": "attribute-binding-is-always-better-than-property-binding-for-runtime-state",
+          "label": "Use string or attribute-style binding for all DOM state because HTML attributes are the source of truth. Property binding is mostly useful for custom components, not built-in browser elements."
+        }
+      ],
+      "correctOptionId": "use-property-binding-for-real-element-state-like-disabled",
+      "rereadPrompt": "Not quite. Interpolation produces strings, which can cause subtle bugs on boolean-ish attributes. For real runtime element state, Angular property binding is the right mental model because it updates the DOM property with the correct type."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -1464,6 +1644,26 @@
           "text": "<strong>Practical scenario</strong><br>A parent listens to a child component's <code>@Output</code> and a native button click in the same template.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting to pass or use <code>$event</code>.</li><li>Misnaming outputs and silently missing events.</li><li>Expensive handlers causing performance issues under rapid input.</li></ul><strong>Trade-off or test tip</strong><br>Events trigger change detection. Test with rapid clicks and consider OnPush for performance.</strong>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Event Source Check",
+      "scenario": "A teammate says Angular treats `(click)` on a native button and `(saved)` from a child component exactly the same because both are just DOM events under the hood. Another teammate says, \"They use the same template syntax, but `$event` is different: native events give you a browser event object, while `@Output()` gives you whatever payload the child emitted. In normal Angular setups, both can still trigger change detection.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "same-template-syntax-but-dom-events-and-output-payloads-are-different",
+          "label": "The second explanation is better. Angular uses the same `(event)` syntax for both cases, but native DOM events and child `@Output()` events carry different `$event` payloads. DOM events give you event objects, while `@Output()` gives you the emitted data from the child component."
+        },
+        {
+          "id": "all-angular-events-are-just-dom-events-so-event-payloads-work-the-same",
+          "label": "The first explanation is better. Since Angular listens to everything through the DOM event system, custom outputs and native events are basically identical and should be handled with the same assumptions about `$event`."
+        },
+        {
+          "id": "output-events-do-not-affect-change-detection-only-dom-events-do",
+          "label": "`@Output()` events are only for parent-child messaging and do not participate in Angular view updates. If you need the UI to refresh, only native DOM events like `(click)` or `(input)` will trigger change detection."
+        }
+      ],
+      "correctOptionId": "same-template-syntax-but-dom-events-and-output-payloads-are-different",
+      "rereadPrompt": "Not quite. Angular intentionally uses the same template event syntax for native DOM events and child outputs, but the payloads are not the same. A DOM event gives you a browser event object, while an `@Output()` gives you the emitted value from the child component."
     },
     "access": "free",
     "type": "trivia",
@@ -1635,6 +1835,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Directive Type Check",
+      "scenario": "A teammate says `*ngIf` is basically the same as toggling CSS display because the element is still there, just hidden by Angular. Another teammate says, \"No. `*ngIf` is a structural directive, so Angular rewrites it to an `ng-template` and creates or destroys an embedded view. An attribute directive changes the existing host element without changing the template tree.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "structural-directives-change-the-rendered-tree-attribute-directives-modify-the-host",
+          "label": "The second explanation is better. Structural directives like `*ngIf` and `*ngFor` change whether a block of template exists at all by creating or destroying embedded views, while attribute directives keep the same element and only change its behavior, classes, styles, or attributes."
+        },
+        {
+          "id": "ngif-mostly-works-like-hidden-and-leaves-the-same-instance-alive",
+          "label": "The first explanation is better. `*ngIf` mainly works like `[hidden]` with Angular syntax sugar, so the DOM node and component instance stay around and Angular just toggles visibility more efficiently."
+        },
+        {
+          "id": "the-star-only-marks-a-directive-as-special-but-does-not-change-template-shape",
+          "label": "The `*` is mostly a readability marker. It tells Angular the directive has higher priority, but the framework still applies it directly to the same host element rather than rewriting anything to `ng-template`."
+        }
+      ],
+      "correctOptionId": "structural-directives-change-the-rendered-tree-attribute-directives-modify-the-host",
+      "rereadPrompt": "Not quite. Structural directives are not just styling helpers. The `*` syntax desugars to an `ng-template`, and Angular creates or destroys embedded views from that template. Attribute directives do not change the tree; they only affect the existing host element."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -1761,6 +1981,26 @@
           "text": "<strong>Practical scenario</strong><br>Use <code>*ngIf</code> to conditionally render a panel and <code>[ngClass]</code> to style it.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming structural directives only hide elements (they remove them).</li><li>Losing component state when DOM nodes are destroyed.</li><li>Overusing <code>*ngIf</code> for show/hide instead of <code>[hidden]</code>.</li></ul><strong>Trade-off or test tip</strong><br>Structural directives save work but reset state. Test with toggling and lifecycle hooks.</strong>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Tree Change Check",
+      "scenario": "A teammate says `*ngIf` and `[ngClass]` are both just directive syntax on an element, so they are basically the same kind of tool. Another teammate says, \"No. `*ngIf` is structural, so it can create or destroy a template block. `[ngClass]` is an attribute directive pattern, so it keeps the element and only changes classes or behavior on the host.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "structural-directives-change-template-existence-attribute-directives-modify-the-host",
+          "label": "The second explanation is better. Structural directives affect whether a chunk of template exists at all by creating or destroying embedded views, while attribute directives keep the same host element and only change its classes, styles, attributes, or behavior."
+        },
+        {
+          "id": "ngif-and-ngclass-are-effectively-the-same-kind-of-directive",
+          "label": "The first explanation is better. Both directives just update the current element during change detection, so the difference is mostly style and naming rather than what they actually do to the DOM."
+        },
+        {
+          "id": "attribute-directives-can-also-rewrite-the-template-tree-when-needed",
+          "label": "Attribute directives can do the same structural work when necessary. The `*` syntax is optional sugar, but Angular can still treat regular attribute directives as tree-changing directives behind the scenes."
+        }
+      ],
+      "correctOptionId": "structural-directives-change-template-existence-attribute-directives-modify-the-host",
+      "rereadPrompt": "Not quite. Structural and attribute directives are different tools. Structural directives change the rendered tree by creating or destroying embedded views, while attribute directives keep the element in place and modify the existing host."
     },
     "access": "free",
     "type": "trivia",
@@ -1928,6 +2168,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "View Teardown Check",
+      "scenario": "A teammate hides a settings panel with `*ngIf` and is surprised that the form resets and the child component runs `ngOnInit()` again when the panel comes back. They say, \"That is weird. `*ngIf` should behave like `display: none`, so the same instance ought to still be there.\" Another teammate says, \"`*ngIf` actually destroys and recreates the view. If you need to keep the same instance and preserve local state, use `[hidden]` or another CSS-based approach instead.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "ngif-destroys-and-recreates-the-view-while-hidden-keeps-it-alive",
+          "label": "The second explanation is better. `*ngIf` removes the view from the DOM and destroys the component/directive instances inside it, so local state resets and lifecycle hooks run again on the next show. `[hidden]` or CSS hiding keeps the instance alive."
+        },
+        {
+          "id": "ngif-mainly-toggles-visibility-and-should-preserve-the-same-instance",
+          "label": "The first explanation is better. `*ngIf` is mostly a template-friendly visibility toggle, so Angular should keep the same component instance around and only skip painting it while the condition is false."
+        },
+        {
+          "id": "ngif-destroys-dom-nodes-but-preserves-component-state-in-memory",
+          "label": "`*ngIf` removes the DOM nodes, but Angular keeps the component instance cached behind the scenes. That is why it can come back quickly without losing subscriptions or local form state."
+        }
+      ],
+      "correctOptionId": "ngif-destroys-and-recreates-the-view-while-hidden-keeps-it-alive",
+      "rereadPrompt": "Not quite. `*ngIf` does real teardown. When the condition becomes false, Angular destroys the embedded view and everything inside it. When it becomes true again, Angular creates a fresh view and fresh component instances."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -2077,6 +2337,26 @@
           "text": "<strong>Practical scenario</strong><br>A table with editable rows should preserve input focus when new data arrives from the server.<br><br><strong>Common pitfalls</strong><br><ul><li>Using index as trackBy, which breaks on reorders.</li><li>Returning non-unique ids, causing UI glitches.</li><li>Skipping trackBy and forcing full DOM re-creation.</li></ul><strong>Trade-off or test tip</strong><br>TrackBy improves performance but requires stable ids. Test by reordering and verifying focus retention.</strong>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "List Identity Check",
+      "scenario": "A table has inline inputs, and every time fresh data comes back from the server the caret jumps and edited rows lose local UI state. One teammate says, \"That is normal. We created a new array, so Angular has to rebuild the list.\" Another says, \"If the logical items are the same, give Angular a stable `trackBy` key like `user.id` so it can reuse DOM nodes and child components instead of destroying and recreating rows.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "stable-trackby-identity-lets-angular-reuse-existing-rows",
+          "label": "The second explanation is better. `trackBy` gives Angular a stable identity for each logical item, so when fresh objects arrive with the same ids Angular can move or update existing rows instead of tearing them down, which helps preserve focus and child state."
+        },
+        {
+          "id": "new-array-means-angular-must-recreate-the-entire-list",
+          "label": "The first explanation is better. Once the array reference changes, Angular has no useful way to match old rows to new rows, so rebuilding the whole list is expected and `trackBy` does not meaningfully change that."
+        },
+        {
+          "id": "index-is-the-best-trackby-for-most-dynamic-lists",
+          "label": "Use the row index as `trackBy` for most cases because Angular mainly needs a position hint. As long as the list looks similar, index-based identity is the safest default even when rows are inserted or reordered."
+        }
+      ],
+      "correctOptionId": "stable-trackby-identity-lets-angular-reuse-existing-rows",
+      "rereadPrompt": "Not quite. `trackBy` is about stable logical identity, not array reference. If the same item comes back with the same id, Angular can reuse the existing row. Using no `trackBy` or using index in dynamic lists often leads to focus loss, reset child state, and unnecessary DOM churn."
     },
     "access": "free",
     "type": "trivia",
@@ -2251,6 +2531,26 @@
           "text": "<strong>Summary</strong><br><br>Angular services are where reusable logic and side effects should live so components stay UI-focused. Strong answers show clear boundaries, sensible provider scope (root vs component), and testability benefits. Keep deep DI mechanics and token-level provider patterns in the dedicated DI discussion."
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Service Ownership Check",
+      "scenario": "A team has copied the same user-loading, retry, and cache-reset logic into three Angular components. They also have a checkout wizard whose state should reset when the user leaves the page. One teammate says, \"That is fine. Components should just own the data logic directly, and services mostly add indirection.\" Another says, \"Shared data access and side effects belong in a service. Use a root-provided service for app-wide logic, and if some state should reset per screen, provide that service at the component level instead.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "shared-logic-belongs-in-services-and-scope-depends-on-provider-location",
+          "label": "The second explanation is better. Services are a clean place for reusable logic and side effects, and Angular DI controls instance lifetime based on where the provider is registered. Root scope works for shared app-wide logic, while component providers are useful when state should reset with that screen."
+        },
+        {
+          "id": "components-should-own-data-logic-because-services-do-not-help-with-sharing",
+          "label": "The first explanation is better. Since Angular creates a new service instance every time a class injects it, moving HTTP and cache logic into a service would not actually improve reuse or consistency across components."
+        },
+        {
+          "id": "all-state-should-live-in-a-single-root-service-to-avoid-provider-complexity",
+          "label": "Put both concerns into one root service. Angular services are mainly meant to act as global state buckets, so per-screen reset behavior is usually unnecessary complexity."
+        }
+      ],
+      "correctOptionId": "shared-logic-belongs-in-services-and-scope-depends-on-provider-location",
+      "rereadPrompt": "Not quite. The point of a service is not ceremony. Services help keep components focused on UI while shared logic, HTTP, caching, and orchestration live in one testable place. DI scope matters too: root providers share one instance across the app, while component providers create state that resets with that component subtree."
     },
     "access": "free",
     "type": "trivia",

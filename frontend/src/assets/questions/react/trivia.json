@@ -120,6 +120,26 @@
     "seo": {
       "title": "What problem does React solve and what does it not solve?",
       "description": "React solves state-driven UI rendering and reconciliation, but it does not include built-in routing, data fetching, or global state by default."
+    },
+    "incidentCard": {
+      "title": "React Scope Decision Check",
+      "scenario": "You are kicking off a React dashboard, and a teammate says, \"No need to decide routing or data-fetching strategy, React already gives us all of that.\" What is the best response?",
+      "options": [
+        {
+          "id": "react-ui-core-add-ecosystem",
+          "label": "React owns UI rendering and component composition; we still need to choose routing, server-state/data-fetching, and state architecture."
+        },
+        {
+          "id": "react-includes-full-app-stack",
+          "label": "That is correct. React includes built-in router, caching, and global store once we enable the modern root API."
+        },
+        {
+          "id": "skip-architecture-and-use-dom",
+          "label": "Best move is to skip ecosystem choices and handle navigation/data manually with direct DOM APIs."
+        }
+      ],
+      "correctOptionId": "react-ui-core-add-ecosystem",
+      "rereadPrompt": "Close. Re-read React's core scope: it solves state-driven UI rendering, while routing/data/state architecture are deliberate stack choices."
     }
   },
   {
@@ -238,7 +258,27 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Render Purity Reality Check",
+      "scenario": "In development with StrictMode, a profile page sends duplicate analytics pings. You discover the event call is inside the component body during render. What is the best fix?",
+      "options": [
+        {
+          "id": "move-effect-out-of-render",
+          "label": "Keep render pure and move analytics to useEffect (or an explicit event handler), with cleanup if needed."
+        },
+        {
+          "id": "disable-strictmode-and-keep-render-side-effect",
+          "label": "Disable StrictMode so render runs once, then keep analytics in the component body."
+        },
+        {
+          "id": "memo-component-to-hide-side-effect",
+          "label": "Wrap the component with React.memo so side effects in render happen less often."
+        }
+      ],
+      "correctOptionId": "move-effect-out-of-render",
+      "rereadPrompt": "Close. Render should be a pure calculation; side effects belong in effects or user event handlers."
+    }
   },
   {
     "id": "react-functional-vs-class-components",
@@ -400,6 +440,26 @@
     "seo": {
       "title": "Functional vs class components in React: what is the difference?",
       "description": "Functional components use hooks and are the modern default, while class components use lifecycle methods and class syntax."
+    },
+    "incidentCard": {
+      "title": "Hooks vs Class Migration Check",
+      "scenario": "In a code review, someone says: \"We should rewrite every class this sprint because function components are always faster.\" What is the best response?",
+      "options": [
+        {
+          "id": "incremental-hooks-migration",
+          "label": "Use hooks as the default for new work, migrate classes incrementally, and evaluate performance from render patterns, not component type alone."
+        },
+        {
+          "id": "rewrite-all-classes-now",
+          "label": "Rewrite all class components immediately because classes are unsupported and guaranteed slower."
+        },
+        {
+          "id": "avoid-hooks-for-lifecycle",
+          "label": "Avoid hooks and keep classes only, since hooks cannot model lifecycle or cleanup behavior."
+        }
+      ],
+      "correctOptionId": "incremental-hooks-migration",
+      "rereadPrompt": "Close. React favors function components with hooks, but class components are still supported and performance is workload-dependent."
     }
   },
   {
@@ -523,6 +583,26 @@
     "seo": {
       "title": "How is JSX transformed in React and do you need it?",
       "description": "JSX compiles to JavaScript function calls, and React does not require JSX because you can write elements with plain JavaScript APIs."
+    },
+    "incidentCard": {
+      "title": "JSX Runtime Config Check",
+      "scenario": "After removing `import React` from JSX files, one package in your monorepo fails in CI with `React is not defined`. What is the best first move?",
+      "options": [
+        {
+          "id": "verify-jsx-runtime-config",
+          "label": "Check that package's Babel/TypeScript JSX runtime setting; use automatic runtime there or keep the React import when it is still on classic transform."
+        },
+        {
+          "id": "replace-jsx-with-template-strings",
+          "label": "Replace JSX with HTML template strings so the compiler does not need any JSX runtime configuration."
+        },
+        {
+          "id": "inject-react-global",
+          "label": "Attach React to `window` globally so JSX can resolve it at runtime without build configuration."
+        }
+      ],
+      "correctOptionId": "verify-jsx-runtime-config",
+      "rereadPrompt": "Almost. JSX is compile-time syntax sugar; whether `import React` is needed depends on classic vs automatic JSX transform config."
     }
   },
   {
@@ -652,6 +732,26 @@
     "seo": {
       "title": "What makes a function a React component?",
       "description": "A function is treated as a React component when used as a JSX tag, follows component naming conventions, and returns renderable React output."
+    },
+    "incidentCard": {
+      "title": "Component Invocation Rules Check",
+      "scenario": "A teammate replaces `<UserCard />` with `UserCard()` to \"simplify\" rendering, and that component uses hooks. You now get Hook-related runtime errors. What is the best fix?",
+      "options": [
+        {
+          "id": "render-as-component-type",
+          "label": "Render it as `<UserCard />` (or `createElement(UserCard)`) with an uppercase component name so React controls invocation and Hook ordering."
+        },
+        {
+          "id": "use-lowercase-custom-tag",
+          "label": "Rename it to `<userCard />` so React treats it as a DOM-like tag and stops enforcing component rules."
+        },
+        {
+          "id": "call-hooks-conditionally",
+          "label": "Keep calling `UserCard()` directly, but move hooks into conditionals to avoid running them every render."
+        }
+      ],
+      "correctOptionId": "render-as-component-type",
+      "rereadPrompt": "Close. Components that use Hooks must be invoked by React as component types (`<Comp />`), not called like regular functions."
     }
   },
   {
@@ -791,6 +891,26 @@
     "seo": {
       "title": "How does React know when to re-render a component?",
       "description": "React re-renders a component when its state, props, or consumed context changes, then render computes the next UI tree."
+    },
+    "incidentCard": {
+      "title": "Render vs Commit Reality Check",
+      "scenario": "A parent component updates on each keystroke, and a child logs \"render\" every time. A teammate says this proves React rewrites the DOM on every keypress. What is the best response?",
+      "options": [
+        {
+          "id": "render-compute-commit-diff",
+          "label": "A render is recomputing the element tree; DOM changes happen only in commit if the diff changed. Optimize with memoization/stable props only where it prevents real work."
+        },
+        {
+          "id": "every-render-means-full-dom-write",
+          "label": "That is correct: every render call always forces a full DOM rewrite, so the only fix is reducing all state updates."
+        },
+        {
+          "id": "forceupdate-to-skip-renders",
+          "label": "Use forceUpdate so React can skip render calculations and jump straight to a minimal DOM update."
+        }
+      ],
+      "correctOptionId": "render-compute-commit-diff",
+      "rereadPrompt": "Close. Re-read render vs commit: render computes next UI, commit mutates the DOM only when there are actual differences."
     }
   },
   {
@@ -929,6 +1049,26 @@
     "seo": {
       "title": "What happens when a React component returns null?",
       "description": "Returning null or false tells React to render nothing for that component, while fragments render children without adding extra DOM nodes."
+    },
+    "incidentCard": {
+      "title": "Render Nothing Edge Case Check",
+      "scenario": "A badge should disappear when count is 0, but users see a literal \"0\" on screen. In another component, someone wrote `return;` to hide content and now gets \"Nothing was returned from render\". What is the best fix?",
+      "options": [
+        {
+          "id": "use-null-and-explicit-conditions",
+          "label": "Return `null` when you want no UI, and use explicit conditions like `count > 0 ? <Badge /> : null` to avoid numeric `&&` gotchas."
+        },
+        {
+          "id": "return-empty-object",
+          "label": "Return `{}` when you want React to render nothing, and keep `count && <Badge />` because React ignores all falsy values."
+        },
+        {
+          "id": "return-undefined-intentionally",
+          "label": "Use `return;` intentionally for hidden states because `undefined` and `null` are treated the same in React renders."
+        }
+      ],
+      "correctOptionId": "use-null-and-explicit-conditions",
+      "rereadPrompt": "Close. `null`/`false` intentionally render nothing, but `undefined` is an error for component returns, and numeric `&&` can leak `0` into the UI."
     }
   },
   {
@@ -1047,6 +1187,26 @@
     "seo": {
       "title": "Why does React use one-way data flow?",
       "description": "React uses one-way data flow to keep updates predictable: data moves down through props and updates move up through events or callbacks."
+    },
+    "incidentCard": {
+      "title": "One-Way Data Flow Ownership Check",
+      "scenario": "Two sibling components show the same `user.name`. One child mutates `props.user.name` directly, and now the other sibling updates inconsistently. What is the best fix?",
+      "options": [
+        {
+          "id": "single-owner-callback-updates",
+          "label": "Keep user state in the parent as the single source of truth, pass data down via props, and send changes up with callbacks using immutable updates."
+        },
+        {
+          "id": "local-copies-in-each-child",
+          "label": "Give each child its own local copy of `user` and sync them manually so both can write to the data."
+        },
+        {
+          "id": "shared-mutable-ref",
+          "label": "Store `user` in a shared mutable ref and let children mutate it directly to avoid parent re-renders."
+        }
+      ],
+      "correctOptionId": "single-owner-callback-updates",
+      "rereadPrompt": "Close. One-way flow means one owner for state: data down through props, updates up through explicit callbacks."
     }
   },
   {
@@ -1178,7 +1338,27 @@
       "data-flow",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Props Immutability Bug Check",
+      "scenario": "A memoized `UserCard` receives `user` as a prop. Inside the child, someone mutates `user.name` directly and now updates are inconsistent across siblings. What is the best fix?",
+      "options": [
+        {
+          "id": "parent-owned-immutable-update",
+          "label": "Keep props read-only, send an update callback from parent, and create a new user object in parent state (`setUser(prev => ({ ...prev, name }))`)."
+        },
+        {
+          "id": "mutate-and-forceupdate",
+          "label": "Keep mutating the prop object in the child and call forceUpdate whenever the UI looks stale."
+        },
+        {
+          "id": "store-prop-object-in-ref-and-mutate",
+          "label": "Copy the prop object into a ref in the child and mutate the ref so React memoization does not block updates."
+        }
+      ],
+      "correctOptionId": "parent-owned-immutable-update",
+      "rereadPrompt": "Close. Props are read-only inputs; updates should come from the parent via immutable state changes and explicit callbacks."
+    }
   },
   {
     "id": "react-usestate-purpose",
@@ -3090,6 +3270,26 @@
     "seo": {
       "title": "What is a higher-order component in React?",
       "description": "A higher-order component is a function that takes a component and returns an enhanced component with added behavior."
+    },
+    "incidentCard": {
+      "title": "HOC Composition Root Cause Check",
+      "scenario": "A team wraps a component with withAuth() inside a parent render function. Every parent update makes the wrapped form lose local input state. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "hoc-created-in-render",
+          "label": "Creating the HOC during render makes a new component type each time, so React remounts and resets local state."
+        },
+        {
+          "id": "hoc-disables-memo",
+          "label": "Any HOC automatically disables React.memo, so child state is always cleared after updates."
+        },
+        {
+          "id": "displayname-required-state",
+          "label": "Missing displayName makes React drop component state because DevTools cannot track wrapper identity."
+        }
+      ],
+      "correctOptionId": "hoc-created-in-render",
+      "rereadPrompt": "Close. Re-read the HOC gotcha about creating wrappers in render; define them once so identity stays stable."
     }
   },
   {
@@ -3174,7 +3374,27 @@
       "performance",
       "hooks"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Memo Hook Choice Root Cause Check",
+      "scenario": "You wrapped SearchResults with React.memo. The filtered list is memoized with useMemo, but SearchResults still re-renders on every parent keystroke. Parent also passes onSelect={(id) => selectItem(id)} inline. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "unstable-callback-reference",
+          "label": "The inline callback creates a new function reference every render, so React.memo sees changed props unless you stabilize it with useCallback."
+        },
+        {
+          "id": "usememo-forces-rerender",
+          "label": "useMemo forces memoized children to re-render whenever parent state changes, even if memoized values are unchanged."
+        },
+        {
+          "id": "reactmemo-class-only",
+          "label": "React.memo only works with class components, so function children always re-render."
+        }
+      ],
+      "correctOptionId": "unstable-callback-reference",
+      "rereadPrompt": "Close. Re-read useMemo vs useCallback: one stabilizes computed values, the other stabilizes function references passed as props."
+    }
   },
   {
     "id": "react-prevent-unnecessary-rerenders",
@@ -3269,6 +3489,26 @@
     "seo": {
       "title": "How do you prevent unnecessary re-renders in React?",
       "description": "Prevent unnecessary React re-renders by stabilizing props, splitting state, and using memoization tools like React.memo, useMemo, and useCallback."
+    },
+    "incidentCard": {
+      "title": "Rerender Scope Root Cause Check",
+      "scenario": "You store both theme and a rapidly changing searchTerm in one Context value object. Components that only read theme still rerender on every keystroke. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "broad-context-churn",
+          "label": "The shared context value changes whenever searchTerm updates, so all consumers rerender; split context or memoize/scope state."
+        },
+        {
+          "id": "reactmemo-blocks-context",
+          "label": "React.memo blocks context updates, so React rerenders the whole subtree to keep values accurate."
+        },
+        {
+          "id": "keys-control-context",
+          "label": "Missing list keys in child components causes provider-level rerenders for every context change."
+        }
+      ],
+      "correctOptionId": "broad-context-churn",
+      "rereadPrompt": "Almost. Re-read the sections on context optimization and state scoping to reduce rerender blast radius."
     }
   },
   {
@@ -3355,6 +3595,26 @@
     "seo": {
       "title": "What is React.StrictMode used for?",
       "description": "React.StrictMode enables extra development checks to surface unsafe patterns and side effects before production."
+    },
+    "incidentCard": {
+      "title": "StrictMode Dev Signal Root Cause Check",
+      "scenario": "In development, an analytics effect sends two pageview requests on first mount, but production sends one. A teammate says StrictMode is broken and should be removed. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "non-idempotent-effect",
+          "label": "The effect is not idempotent or lacks proper cleanup/guarding, and StrictMode is intentionally exposing that in development."
+        },
+        {
+          "id": "strictmode-prod-duplicate",
+          "label": "StrictMode duplicates production effects by design, so removing it is the only correct fix."
+        },
+        {
+          "id": "jsx-double-render-network",
+          "label": "JSX elements trigger duplicate network calls whenever React renders fragments."
+        }
+      ],
+      "correctOptionId": "non-idempotent-effect",
+      "rereadPrompt": "Close. Re-read the StrictMode section: double invocation is a dev-only safety check, and effects should be resilient to reruns."
     }
   },
   {
@@ -3444,6 +3704,26 @@
     "seo": {
       "title": "What is reconciliation in React?",
       "description": "Reconciliation is React's process of comparing previous and next element trees to decide the minimal UI updates."
+    },
+    "incidentCard": {
+      "title": "Reconciliation Reset Root Cause Check",
+      "scenario": "A checkout form keeps losing typed input when a layout toggle changes the wrapper from <section> to <div>. The child component and props stay the same. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "element-type-changed-remount",
+          "label": "Changing the parent element type makes React treat it as a different subtree, so children remount and local state resets."
+        },
+        {
+          "id": "props-always-reset-state",
+          "label": "Any prop update automatically clears child local state, even when component identity is stable."
+        },
+        {
+          "id": "reconciliation-skipped-on-toggle",
+          "label": "React skips reconciliation for layout toggles, so it fully rebuilds the tree on every toggle by default."
+        }
+      ],
+      "correctOptionId": "element-type-changed-remount",
+      "rereadPrompt": "Close. Re-read the reconciliation rules about element type changes and when React preserves vs remounts state."
     }
   },
   {
@@ -3533,6 +3813,26 @@
     "seo": {
       "title": "How does React's diffing algorithm work?",
       "description": "React diffing compares old and new trees with heuristics based on element type and keys to update only changed nodes."
+    },
+    "incidentCard": {
+      "title": "Diffing Identity Root Cause Check",
+      "scenario": "A todo list now prepends new items at the top. After each insert, checkbox state appears on the wrong rows. The team uses index as key and says diffing is random. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "index-key-identity-shift",
+          "label": "Index keys shift when list order changes, so React matches the wrong previous items and state appears to move."
+        },
+        {
+          "id": "diffing-random-order",
+          "label": "React intentionally randomizes list matching in diffing to improve performance on large arrays."
+        },
+        {
+          "id": "virtual-dom-loses-state",
+          "label": "Virtual DOM cannot preserve list item state, so all dynamic lists lose local state after inserts."
+        }
+      ],
+      "correctOptionId": "index-key-identity-shift",
+      "rereadPrompt": "Close. Re-read the diffing/key rules: stable keys are how React preserves identity across insertions and reorders."
     }
   },
   {
@@ -3621,6 +3921,26 @@
     "seo": {
       "title": "Render props vs HOCs in React: what is the difference?",
       "description": "Render props share logic through a function prop, while HOCs share logic by wrapping a component and injecting behavior."
+    },
+    "incidentCard": {
+      "title": "Render Control Pattern Root Cause Check",
+      "scenario": "A team wants to reuse mouse-tracking logic across pages, but each page needs very different markup from that same data. They wrapped everything with HOCs and now customization is painful. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "wrong-pattern-for-render-control",
+          "label": "They chose HOC wrapping where render-props style would better fit dynamic rendering control from the parent."
+        },
+        {
+          "id": "hoc-cannot-share-logic",
+          "label": "HOCs cannot share logic at all, so only class inheritance can solve this reuse problem."
+        },
+        {
+          "id": "render-props-break-react-tree",
+          "label": "Render props break event bubbling and context, so HOCs are required for any reusable behavior."
+        }
+      ],
+      "correctOptionId": "wrong-pattern-for-render-control",
+      "rereadPrompt": "Close. Re-read the difference: render props give caller-controlled UI, while HOCs wrap and inject behavior."
     }
   },
   {
@@ -3707,6 +4027,26 @@
     "seo": {
       "title": "What are React portals and when should you use them?",
       "description": "React portals render children into a different DOM node while keeping them in the same React tree for events and context."
+    },
+    "incidentCard": {
+      "title": "Portal Event Path Root Cause Check",
+      "scenario": "A modal is rendered with createPortal into #modal-root. Clicking inside the modal still triggers a parent React onClick handler higher in the app tree, and the team thinks portals break event boundaries. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "react-tree-bubbling",
+          "label": "Portal children stay in the same React tree, so events still bubble through React parents even if DOM nodes are elsewhere."
+        },
+        {
+          "id": "portal-disables-stop-propagation",
+          "label": "Portals disable event propagation controls, so parent handlers always fire and cannot be managed."
+        },
+        {
+          "id": "separate-react-app-created",
+          "label": "createPortal creates a second isolated React app, so click events are duplicated between both roots."
+        }
+      ],
+      "correctOptionId": "react-tree-bubbling",
+      "rereadPrompt": "Close. Re-read the portal behavior section: DOM placement changes, but React context and event bubbling stay connected to the React tree."
     }
   },
   {
@@ -3796,6 +4136,26 @@
     "seo": {
       "title": "What is concurrent rendering in React?",
       "description": "Concurrent rendering lets React interrupt and prioritize rendering work so urgent updates stay responsive during expensive UI updates."
+    },
+    "incidentCard": {
+      "title": "Concurrent Priority Root Cause Check",
+      "scenario": "A search box feels laggy because each keystroke immediately triggers an expensive list recompute in the same update path. The UI freezes while users type. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "no-priority-split",
+          "label": "Urgent input updates and heavy filtering are coupled at the same priority, so React cannot keep typing responsive."
+        },
+        {
+          "id": "concurrent-parallel-threads-required",
+          "label": "Concurrent rendering only works if React runs true parallel threads, so single-threaded browsers cannot avoid input lag."
+        },
+        {
+          "id": "usetransition-renders-twice-bug",
+          "label": "useTransition always duplicates renders and causes extra blocking, so it should never be used for search."
+        }
+      ],
+      "correctOptionId": "no-priority-split",
+      "rereadPrompt": "Close. Re-read how concurrent rendering separates urgent and non-urgent work with transition APIs to keep interactions smooth."
     }
   },
   {
@@ -3890,6 +4250,26 @@
     "seo": {
       "title": "Why do React Hooks have rules?",
       "description": "Hooks have rules because React maps hook state by call order, so conditional or reordered calls break state and effect matching."
+    },
+    "incidentCard": {
+      "title": "Hook Order Drift Root Cause Check",
+      "scenario": "A developer calls useEffect inside `if (isOpen) { ... }` so it only runs when a panel is open. After toggling isOpen a few times, state and effects behave unpredictably. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "conditional-hook-order-shift",
+          "label": "Conditional hook calls changed the hook order between renders, so React matched state/effects to the wrong slots."
+        },
+        {
+          "id": "hooks-need-class-components",
+          "label": "Hooks require class components for stable lifecycle order, so functional components cannot track hook state safely."
+        },
+        {
+          "id": "useeffect-on-toggle-resets-runtime",
+          "label": "Toggling booleans always resets React’s internal runtime, so hook order is unrelated to this bug."
+        }
+      ],
+      "correctOptionId": "conditional-hook-order-shift",
+      "rereadPrompt": "Close. Re-read the Rules of Hooks: call hooks unconditionally at the top level so order stays stable every render."
     }
   },
   {
@@ -3999,6 +4379,26 @@
     "seo": {
       "title": "Why does stale state happen in React closures?",
       "description": "Stale state happens because closures capture values from the render when they were created, not the latest state after future renders."
+    },
+    "incidentCard": {
+      "title": "Stale Closure Snapshot Root Cause Check",
+      "scenario": "A component starts an interval inside useEffect([]) that logs count every second. After clicking \"+\" several times, the UI count increases but logs stay at 0. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "captured-initial-snapshot",
+          "label": "The interval callback closed over the first render's count, and the effect never re-synced with newer state."
+        },
+        {
+          "id": "state-unreadable-in-intervals",
+          "label": "React state cannot be read inside setInterval callbacks, so stale output is expected behavior."
+        },
+        {
+          "id": "strictmode-freezes-closure-prod",
+          "label": "StrictMode freezes closure values in production builds, so interval callbacks stop seeing updates."
+        }
+      ],
+      "correctOptionId": "captured-initial-snapshot",
+      "rereadPrompt": "Close. Re-read stale-closure fixes: use correct deps, functional updates, or a ref for latest async reads."
     }
   },
   {
@@ -4159,6 +4559,26 @@
     "seo": {
       "title": "useRef vs useState in React: what is the difference?",
       "description": "useState stores reactive values that trigger re-renders, while useRef stores mutable values that persist across renders without re-rendering."
+    },
+    "incidentCard": {
+      "title": "Ref vs State Ownership Root Cause Check",
+      "scenario": "A teammate stores a text input value in useRef to \"avoid rerenders.\" While typing, the preview text on screen does not update until some unrelated state changes. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "ref-does-not-rerender-ui",
+          "label": "Updating ref.current does not trigger a render, so render-driving values should live in useState."
+        },
+        {
+          "id": "usestate-cannot-handle-typing",
+          "label": "useState is too slow for input typing, so React delays updates until another component rerenders."
+        },
+        {
+          "id": "ref-only-for-dom-nodes",
+          "label": "useRef is read-only for values and only works when attached directly to DOM nodes."
+        }
+      ],
+      "correctOptionId": "ref-does-not-rerender-ui",
+      "rereadPrompt": "Close. Re-read useRef vs useState: state is for values that must update the UI; refs are for mutable data that should not rerender."
     }
   },
   {
@@ -4297,6 +4717,26 @@
     "seo": {
       "title": "Why does React batch state updates?",
       "description": "React batches state updates to reduce extra renders and apply related updates together for more consistent UI."
+    },
+    "incidentCard": {
+      "title": "Batching Snapshot Root Cause Check",
+      "scenario": "In one click handler, a counter calls setCount(count + 1) twice. The team expects +2, but it only increments by +1. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "same-render-snapshot-used-twice",
+          "label": "Both updates read the same render snapshot of count, so batching applies one effective increment unless you use functional updates."
+        },
+        {
+          "id": "batching-drops-second-update",
+          "label": "React batching always discards the second state update in a handler to improve performance."
+        },
+        {
+          "id": "onclick-single-state-limit",
+          "label": "React allows only one state update per onClick, so extra updates are ignored by design."
+        }
+      ],
+      "correctOptionId": "same-render-snapshot-used-twice",
+      "rereadPrompt": "Close. Re-read batching behavior and compare setCount(count + 1) with setCount(c => c + 1) when stacking updates."
     }
   },
   {
@@ -4445,7 +4885,27 @@
       "state-management",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Derived State Drift Root Cause Check",
+      "scenario": "A profile form copies user.name from props into local state once, then keeps both values around. After a refetch, the header shows the new name but the input still shows the old one. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "two-sources-of-truth-drift",
+          "label": "The same data lives in both props and local derived state, so values drift out of sync."
+        },
+        {
+          "id": "props-stop-updating-after-mount",
+          "label": "React props become immutable snapshots after first render, so local state must always override them."
+        },
+        {
+          "id": "useeffect-required-for-all-props",
+          "label": "Every prop must be mirrored to state in useEffect, otherwise React cannot reconcile updates."
+        }
+      ],
+      "correctOptionId": "two-sources-of-truth-drift",
+      "rereadPrompt": "Close. Re-read derived-state guidance: prefer deriving from a single source of truth unless you intentionally need an independent draft with clear reset rules."
+    }
   },
   {
     "id": "react-context-performance-issues",
@@ -4592,6 +5052,26 @@
     "seo": {
       "title": "Why can React Context cause performance issues?",
       "description": "React Context can cause performance issues because all consumers re-render when provider value identity changes."
+    },
+    "incidentCard": {
+      "title": "Context Fan-out Root Cause Check",
+      "scenario": "A provider passes `value={{ user, theme, setTheme }}` inline. Changing only theme makes many unrelated consumers rerender across the page. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "provider-value-identity-changes",
+          "label": "The provider value gets a new object identity each render, so all consumers are notified even when they use different slices."
+        },
+        {
+          "id": "context-deep-compare-failure",
+          "label": "React deep-compares context objects and rerenders only when nested fields differ, so memoization does not matter."
+        },
+        {
+          "id": "reactmemo-blocks-context-fix",
+          "label": "Wrapping every consumer with React.memo fully prevents context-driven rerenders regardless of provider updates."
+        }
+      ],
+      "correctOptionId": "provider-value-identity-changes",
+      "rereadPrompt": "Close. Re-read context performance guidance: stabilize provider value identity, split contexts by change rate, and narrow provider scope."
     }
   },
   {
@@ -4717,6 +5197,26 @@
     "seo": {
       "title": "What do React Error Boundaries catch?",
       "description": "Error Boundaries catch render, lifecycle, and constructor errors in trees and show fallback UI. They do not catch event-handler, async, or SSR errors."
+    },
+    "incidentCard": {
+      "title": "Error Boundary Coverage Root Cause Check",
+      "scenario": "A teammate wraps a widget with an Error Boundary, but a crash thrown inside an onClick handler still breaks the interaction and no fallback UI appears. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "event-handler-not-caught",
+          "label": "Error Boundaries catch render/lifecycle errors in descendants, not exceptions thrown inside event handlers."
+        },
+        {
+          "id": "boundary-needs-suspense",
+          "label": "Error Boundaries only work when nested inside Suspense, otherwise they ignore runtime errors."
+        },
+        {
+          "id": "fallback-must-be-async",
+          "label": "Fallback UI must be loaded asynchronously, or React will skip boundary handling for click errors."
+        }
+      ],
+      "correctOptionId": "event-handler-not-caught",
+      "rereadPrompt": "Close. Re-read what Error Boundaries catch versus what still needs explicit try/catch (events, async, SSR)."
     }
   },
   {
@@ -4844,6 +5344,26 @@
     "seo": {
       "title": "Why does useEffect run twice in React StrictMode?",
       "description": "In StrictMode development, React intentionally runs effect setup-cleanup-setup to expose missing cleanup and non-idempotent side effects."
+    },
+    "incidentCard": {
+      "title": "StrictMode Cleanup Root Cause Check",
+      "scenario": "In development with StrictMode, a resize listener seems to fire twice after navigating back and forth. The component adds the listener in useEffect but forgets cleanup. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "missing-effect-cleanup",
+          "label": "StrictMode's mount-unmount-remount check is exposing a missing cleanup, so duplicate listeners accumulate."
+        },
+        {
+          "id": "strictmode-prod-duplicate-bug",
+          "label": "StrictMode duplicates effects in production by default, so listeners always fire twice regardless of cleanup."
+        },
+        {
+          "id": "useeffect-single-run-contract",
+          "label": "useEffect with [] guarantees a single lifetime run, so double listeners mean browser event APIs are unstable."
+        }
+      ],
+      "correctOptionId": "missing-effect-cleanup",
+      "rereadPrompt": "Close. Re-read StrictMode behavior: dev-only remount checks expose non-idempotent effects and missing cleanup logic."
     }
   },
   {
@@ -4988,6 +5508,26 @@
     "seo": {
       "title": "useEffect vs useLayoutEffect: what is the difference?",
       "description": "useLayoutEffect runs synchronously after DOM mutations but before paint, while useEffect runs after paint for non-blocking side effects."
+    },
+    "incidentCard": {
+      "title": "Layout Flicker Timing Root Cause Check",
+      "scenario": "A tooltip measures element position in useEffect and sets style after mount. Users briefly see it in the wrong spot before it snaps into place. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "post-paint-layout-fix",
+          "label": "The layout measurement/update runs after paint in useEffect, so users see a frame before correction; this is a useLayoutEffect timing case."
+        },
+        {
+          "id": "uselayouteffect-after-paint",
+          "label": "useLayoutEffect also runs after paint, so switching hooks cannot affect visual flicker."
+        },
+        {
+          "id": "tooltip-needs-transition-api",
+          "label": "Only useTransition can fix tooltip positioning flicker; effect timing is unrelated."
+        }
+      ],
+      "correctOptionId": "post-paint-layout-fix",
+      "rereadPrompt": "Close. Re-read effect timing: useEffect runs after paint, while useLayoutEffect can run before paint for layout-critical updates."
     }
   },
   {
@@ -5091,6 +5631,26 @@
     "seo": {
       "title": "Which React Hooks should you use and when?",
       "description": "Choose hooks by purpose: useState/useReducer for state, useEffect for side effects, useRef for mutable values, and useMemo/useCallback for memoization."
+    },
+    "incidentCard": {
+      "title": "Hook Choice Under Pressure Check",
+      "scenario": "You need to keep a search input responsive while filtering a huge list and avoid rerendering child rows from unstable handlers. Which hook combination is the best first step?",
+      "options": [
+        {
+          "id": "use-transition-plus-stable-callbacks",
+          "label": "Use useTransition (or startTransition) for non-urgent filtering, and stabilize child callback props with useCallback where needed."
+        },
+        {
+          "id": "move-everything-to-useref",
+          "label": "Move query and filtered results into useRef so updates avoid rerenders entirely."
+        },
+        {
+          "id": "replace-hooks-with-class-lifecycle",
+          "label": "Switch to class components because hooks cannot coordinate responsiveness and render stability together."
+        }
+      ],
+      "correctOptionId": "use-transition-plus-stable-callbacks",
+      "rereadPrompt": "Close. Re-read hook selection by intent: state drives UI, transition handles non-urgent work, and memoized callbacks help prop stability."
     }
   },
   {
@@ -5174,6 +5734,26 @@
     "seo": {
       "title": "What is new in React 18?",
       "description": "React 18 introduced createRoot, automatic batching, transitions, and concurrent rendering features that improve responsiveness and update scheduling."
+    },
+    "incidentCard": {
+      "title": "React 18 Responsiveness Choice Check",
+      "scenario": "You migrated to React 18 and users say typing in a search box feels laggy when results are filtered from a big list. What is the best first fix?",
+      "options": [
+        {
+          "id": "transition-non-urgent-results",
+          "label": "Keep input updates urgent, and wrap the expensive results update in startTransition (or useTransition) so typing stays responsive."
+        },
+        {
+          "id": "flushsync-every-keystroke",
+          "label": "Use flushSync on every keypress so filtering always runs immediately in the same high-priority render."
+        },
+        {
+          "id": "revert-create-root",
+          "label": "Switch back from createRoot to legacy render because concurrent features are the cause of the lag."
+        }
+      ],
+      "correctOptionId": "transition-non-urgent-results",
+      "rereadPrompt": "Almost there. In React 18, transitions are for non-urgent work so urgent input can stay fast."
     }
   }
 ]
