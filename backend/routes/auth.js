@@ -1,30 +1,31 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User.js');
+const AuthSession = require('../models/AuthSession');
 const PendingEntitlement = require('../models/PendingEntitlement');
 const { applyPendingEntitlementsForUser } = require('../services/billing/pending-entitlements');
 const { requireAuth } = require('../middleware/Auth.js');
-const { getJwtSecret, getJwtVerifyOptions, isProd } = require('../config/jwt');
+const { getJwtVerifyOptions, isProd } = require('../config/jwt');
 const { resolveAllowedFrontendOrigins, resolveFrontendBase, resolveServerBase } = require('../config/urls');
-
-
-function normalizeJwtExpiresIn(raw) {
-    if (raw == null) return '7d';
-    const v = String(raw).trim();
-    if (!v) return null;
-    const lowered = v.toLowerCase();
-    if (['none', '0', 'false', 'off', 'no-expiry', 'noexpiry'].includes(lowered)) {
-        return null;
-    }
-    return v;
-}
-
-const JWT_EXPIRES_IN = normalizeJwtExpiresIn(process.env.JWT_EXPIRES_IN);
+const {
+    createAuthSession,
+    findRefreshSession,
+    getAccessTokenExpiresIn,
+    getRefreshSessionTtlMs,
+    parseDurationToMs,
+    parseRefreshToken,
+    revokeAllSessionsForUser,
+    revokeSessionById,
+    rotateAuthSession,
+    resolvePasswordVersion,
+    signAccessToken,
+    verifyAccessToken,
+} = require('../services/auth-sessions');
 
 const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
+const REFRESH_TOKEN_COOKIE = process.env.REFRESH_COOKIE_NAME || 'refresh_token';
 const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
 
 function getCookieSameSite() {
@@ -54,70 +55,120 @@ function getCookieDomain() {
     }
 }
 
-function parseExpiresInToMs(expiresIn) {
-    const raw = String(expiresIn || '').trim();
-    if (!raw) return null;
-    if (/^\d+$/.test(raw)) return Number(raw) * 1000; // seconds
-
-    const m = raw.match(/^(\d+)\s*(ms|s|m|h|d)$/i);
-    if (!m) return null;
-    const n = Number(m[1]);
-    const unit = m[2].toLowerCase();
-    if (!Number.isFinite(n) || n <= 0) return null;
-
-    const mult =
-        unit === 'ms' ? 1 :
-            unit === 's' ? 1000 :
-                unit === 'm' ? 60 * 1000 :
-                    unit === 'h' ? 60 * 60 * 1000 :
-                        unit === 'd' ? 24 * 60 * 60 * 1000 :
-                            0;
-    return mult ? n * mult : null;
-}
-
-function parseCookieMaxAgeDays(raw) {
-    if (raw == null) return null;
-    const v = String(raw).trim();
-    if (!v) return null;
-    const n = Number(v);
-    if (!Number.isFinite(n) || n <= 0) return null;
-    return Math.round(n * 24 * 60 * 60 * 1000);
-}
-
-function authCookieOptions() {
+function cookieBaseOptions() {
     const sameSite = getCookieSameSite();
     const secure = getCookieSecure();
     const domain = getCookieDomain();
-    const maxAge =
-        parseCookieMaxAgeDays(process.env.AUTH_COOKIE_MAX_AGE_DAYS) ??
-        parseExpiresInToMs(JWT_EXPIRES_IN);
-
     return {
         sameSite,
         secure,
-        path: '/',
         ...(domain ? { domain } : {}),
-        ...(maxAge ? { maxAge } : {}),
     };
 }
 
-function setAuthCookies(res, token) {
-    const base = authCookieOptions();
-    res.cookie(ACCESS_TOKEN_COOKIE, token, { ...base, httpOnly: true });
+function accessCookieOptions() {
+    const base = cookieBaseOptions();
+    const maxAge = parseDurationToMs(getAccessTokenExpiresIn(), 15 * 60 * 1000);
+    return {
+        ...base,
+        path: '/',
+        maxAge,
+    };
+}
 
-    // Only needed when SameSite=None (cross-site cookies).
-    if (base.sameSite === 'none') {
-        const csrf = crypto.randomBytes(32).toString('hex');
-        res.cookie(CSRF_COOKIE, csrf, { ...base, httpOnly: false });
+function refreshCookieOptions() {
+    const base = cookieBaseOptions();
+    return {
+        ...base,
+        path: '/api/auth',
+        maxAge: getRefreshSessionTtlMs(),
+    };
+}
+
+function csrfCookieOptions() {
+    const base = cookieBaseOptions();
+    return {
+        ...base,
+        path: '/',
+        maxAge: getRefreshSessionTtlMs(),
+    };
+}
+
+function setAuthCookies(req, res, { accessToken, refreshToken }) {
+    res.cookie(ACCESS_TOKEN_COOKIE, accessToken, { ...accessCookieOptions(), httpOnly: true });
+    if (refreshToken) {
+        res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, { ...refreshCookieOptions(), httpOnly: true });
+    }
+
+    const sameSite = getCookieSameSite();
+    if (sameSite === 'none') {
+        const existingCsrf = String(req?.cookies?.[CSRF_COOKIE] || '').trim();
+        const csrf = existingCsrf || crypto.randomBytes(32).toString('hex');
+        res.cookie(CSRF_COOKIE, csrf, { ...csrfCookieOptions(), httpOnly: false });
         return csrf;
     }
     return null;
 }
 
 function clearAuthCookies(res) {
-    const base = authCookieOptions();
-    res.clearCookie(ACCESS_TOKEN_COOKIE, { ...base, httpOnly: true });
-    res.clearCookie(CSRF_COOKIE, { ...base, httpOnly: false });
+    res.clearCookie(ACCESS_TOKEN_COOKIE, { ...accessCookieOptions(), httpOnly: true });
+    res.clearCookie(REFRESH_TOKEN_COOKIE, { ...refreshCookieOptions(), httpOnly: true });
+    res.clearCookie(CSRF_COOKIE, { ...csrfCookieOptions(), httpOnly: false });
+}
+
+function getRefreshTokenFromRequest(req) {
+    const raw = req?.cookies?.[REFRESH_TOKEN_COOKIE];
+    return typeof raw === 'string' && raw ? raw : null;
+}
+
+function shouldEnforceCsrf() {
+    return getCookieSameSite() === 'none';
+}
+
+function enforceCookieCsrf(req, res) {
+    if (!shouldEnforceCsrf()) return true;
+    const csrfCookie = req?.cookies?.[CSRF_COOKIE];
+    const csrfHeader = req.headers['x-csrf-token'];
+    const csrf = Array.isArray(csrfHeader) ? csrfHeader[0] : csrfHeader;
+    if (!csrfCookie || !csrf || String(csrf) !== String(csrfCookie)) {
+        res.status(403).json({ error: 'CSRF token missing or invalid' });
+        return false;
+    }
+    return true;
+}
+
+async function issueAuthSessionCookies(req, res, user) {
+    const { session, refreshToken } = await createAuthSession(AuthSession, user, req);
+    const accessToken = signAccessToken(user, session);
+    setAuthCookies(req, res, { accessToken, refreshToken });
+    return { accessToken, refreshToken, session };
+}
+
+async function rotateAuthSessionCookies(req, res, user, session) {
+    const rotated = await rotateAuthSession(AuthSession, session, user, req);
+    const accessToken = signAccessToken(user, rotated.session);
+    setAuthCookies(req, res, { accessToken, refreshToken: rotated.refreshToken });
+    return { accessToken, refreshToken: rotated.refreshToken, session: rotated.session };
+}
+
+async function revokeSessionFromRequest(req, reason) {
+    const refreshToken = getRefreshTokenFromRequest(req);
+    const parsedRefresh = parseRefreshToken(refreshToken);
+    if (parsedRefresh?.sessionId) {
+        await revokeSessionById(AuthSession, parsedRefresh.sessionId, reason);
+        return;
+    }
+
+    const accessToken = req?.cookies?.[ACCESS_TOKEN_COOKIE];
+    if (!accessToken) return;
+    try {
+        const payload = verifyAccessToken(accessToken, getJwtVerifyOptions());
+        if (payload?.sid) {
+            await revokeSessionById(AuthSession, payload.sid, reason);
+        }
+    } catch {
+        // Ignore invalid/expired access tokens on logout.
+    }
 }
 
 function shouldReturnToken(req) {
@@ -392,14 +443,6 @@ const pick = (u) => {
 // GET /api/auth/ping
 router.get('/ping', (_req, res) => res.json({ ok: true }));
 
-const sign = (u) => {
-    const payload = { sub: u._id.toString(), role: u.role };
-    const options = JWT_EXPIRES_IN
-        ? { expiresIn: JWT_EXPIRES_IN, algorithm: 'HS256' }
-        : { algorithm: 'HS256' };
-    return jwt.sign(payload, getJwtSecret(), options);
-};
-
 // GET /api/auth/oauth/google/start
 router.get('/oauth/google/start', (req, res) => {
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
@@ -478,10 +521,7 @@ router.get('/oauth/google/callback', async (req, res) => {
             await user.save();
         }
 
-        const token = sign(user);
-
-        // Cookie-based auth: set httpOnly cookie and redirect back to the app.
-        setAuthCookies(res, token);
+        await issueAuthSessionCookies(req, res, user);
 
         const dest = new URL(r);
         if (s) dest.searchParams.set('state', String(s));
@@ -594,8 +634,7 @@ router.get('/oauth/github/callback', async (req, res) => {
             await user.save();
         }
 
-        const token = sign(user);
-        setAuthCookies(res, token);
+        await issueAuthSessionCookies(req, res, user);
         const dest = new URL(String(r));
         if (s) dest.searchParams.set('state', String(s));
         if (m) dest.searchParams.set('mode', String(m));
@@ -646,9 +685,8 @@ router.post('/signup', async (req, res) => {
             prefs: buildDefaultPrefs(),
         });
 
-        const token = sign(user);
-        setAuthCookies(res, token);
-        return res.status(201).json({ token, user: pick(user) });
+        const { accessToken } = await issueAuthSessionCookies(req, res, user);
+        return res.status(201).json({ token: accessToken, user: pick(user) });
     } catch (e) {
         if (isDuplicateKeyError(e)) {
             const initialFields = parseDuplicateFieldsFromError(e);
@@ -686,16 +724,55 @@ router.post('/login', async (req, res) => {
         user.lastLoginAt = new Date();
         await user.save();
 
-        const token = sign(user);
-        setAuthCookies(res, token);
-        res.json({ token, user: pick(user) });
+        const { accessToken } = await issueAuthSessionCookies(req, res, user);
+        res.json({ token: accessToken, user: pick(user) });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
+// POST /api/auth/refresh
+router.post('/refresh', async (req, res) => {
+    try {
+        if (!enforceCookieCsrf(req, res)) return;
+
+        const refreshToken = getRefreshTokenFromRequest(req);
+        if (!refreshToken) {
+            clearAuthCookies(res);
+            return res.status(401).json({ error: 'Missing refresh token' });
+        }
+
+        const lookup = await findRefreshSession(AuthSession, refreshToken);
+        if (lookup.status !== 'active' || !lookup.session) {
+            clearAuthCookies(res);
+            return res.status(401).json({ error: 'Invalid or expired refresh session' });
+        }
+
+        const user = await User.findById(lookup.session.userId);
+        if (!user) {
+            await revokeSessionById(AuthSession, lookup.session._id, 'missing_user');
+            clearAuthCookies(res);
+            return res.status(401).json({ error: 'Invalid or expired refresh session' });
+        }
+
+        if ((lookup.session.passwordVersion || 0) !== resolvePasswordVersion(user)) {
+            await revokeSessionById(AuthSession, lookup.session._id, 'password_changed');
+            clearAuthCookies(res);
+            return res.status(401).json({ error: 'Invalid or expired refresh session' });
+        }
+
+        const { accessToken } = await rotateAuthSessionCookies(req, res, user, lookup.session);
+        return res.json({ ok: true, token: accessToken });
+    } catch (e) {
+        clearAuthCookies(res);
+        return res.status(500).json({ error: 'Failed to refresh session' });
+    }
+});
+
 // POST /api/auth/logout
-router.post('/logout', (req, res) => {
+router.post('/logout', async (req, res) => {
+    if (!enforceCookieCsrf(req, res)) return;
+    await revokeSessionFromRequest(req, 'logout');
     clearAuthCookies(res);
     return res.status(200).json({ ok: true });
 });
@@ -723,6 +800,8 @@ router.post('/change-password', requireAuth, async (req, res) => {
         user.passwordHash = await bcrypt.hash(newPassword, 10);
         user.passwordUpdatedAt = new Date();
         await user.save();
+        await revokeAllSessionsForUser(AuthSession, user._id, 'password_changed');
+        await issueAuthSessionCookies(req, res, user);
 
         return res.json({ ok: true });
     } catch (e) {

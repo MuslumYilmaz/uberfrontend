@@ -61,6 +61,35 @@ Run critical suite locally (headed by default):
 
 `npm run test:e2e`
 
+Run the real auth smoke against a real backend (local or staging):
+
+1. Start the backend locally if you are using `PLAYWRIGHT_WEB_SERVER=1`.
+2. Use a non-production target by default.
+3. Run:
+
+`PLAYWRIGHT_WEB_SERVER=1 E2E_REAL_AUTH=1 npm run test:e2e:auth:real`
+
+Or against staging:
+
+`PLAYWRIGHT_BASE_URL=https://<your-staging-host> E2E_REAL_AUTH=1 npm run test:e2e:auth:real`
+
+Notes:
+- This creates a fresh email/password user, verifies signup, reload-triggered `/api/auth/me`, and logout.
+- The spec refuses to target `frontendatlas.com` unless `E2E_ALLOW_PROD_REAL_AUTH=1` is set.
+
+Run the real GitHub OAuth smoke on staging:
+
+1. Use a dedicated staging GitHub account.
+2. Prefer an account without extra 2FA prompts for automation.
+3. Run:
+
+`PLAYWRIGHT_BASE_URL=https://<your-staging-host> E2E_REAL_OAUTH=1 E2E_REAL_OAUTH_LOGIN=your-github-login E2E_REAL_OAUTH_PASSWORD=your-github-password E2E_REAL_OAUTH_EXPECTED_EMAIL=you@example.com npm run test:e2e:oauth:real`
+
+Notes:
+- This is intentionally a sparse staging smoke, not an every-push test.
+- It verifies the real GitHub redirect/callback roundtrip, session establishment, and logout.
+- The spec refuses to target `frontendatlas.com` unless `E2E_ALLOW_PROD_REAL_OAUTH=1` is set.
+
 Run the real LemonSqueezy smoke test in test mode only:
 
 1. Start the backend locally with the LemonSqueezy test webhook secret configured.

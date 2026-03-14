@@ -14,15 +14,18 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 ## Auth (cookie-based)
 
-- Access tokens are stored in an `httpOnly` cookie (`access_token`) to reduce XSS token theft risk.
+- Short-lived access tokens are stored in an `httpOnly` cookie (`access_token`) to reduce XSS token theft risk.
+- Long-lived refresh sessions are stored server-side and rotated through an `httpOnly` cookie (`refresh_token`).
 - Protected routes accept the cookie (primary) and `Authorization: Bearer <token>` (fallback).
 - If `COOKIE_SAMESITE=none`, the backend enables double-submit CSRF protection:
   - Sets a non-`httpOnly` `csrf_token` cookie on login/signup/OAuth.
-  - Requires `X-CSRF-Token` header to match `csrf_token` on `POST/PUT/PATCH/DELETE` protected routes.
+  - Requires `X-CSRF-Token` header to match `csrf_token` on `POST/PUT/PATCH/DELETE` protected routes and refresh/logout requests.
 
 ### Required env vars
 
 - `JWT_SECRET`: JWT signing secret (32+ chars required in production).
+- `ACCESS_TOKEN_EXPIRES_IN`: short access-token lifetime (recommended: `15m`).
+- `REFRESH_SESSION_TTL_DAYS`: rolling refresh-session lifetime in days (recommended: `90`).
 - `FRONTEND_ORIGINS`: Comma-separated allowed CORS origins (e.g. `http://localhost:4200,https://frontendatlas.com`).
 - `FRONTEND_ORIGIN`: Single allowed CORS origin (legacy fallback).
 - `COOKIE_SAMESITE`: `lax` (default), `strict`, or `none`.
@@ -116,8 +119,9 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 
 - Health: `GET /api/hello`
 - Auth:
-  - `POST /api/auth/signup` sets `access_token` cookie
-  - `GET /api/auth/me` returns user when cookie is present
+  - `POST /api/auth/signup` sets `access_token` + `refresh_token` cookies
+  - `POST /api/auth/refresh` rotates the refresh session and reissues `access_token`
+  - `GET /api/auth/me` returns user when access cookie is present
 - Bug report:
   - `POST /api/bug-report` returns `204` and delivers an email
 

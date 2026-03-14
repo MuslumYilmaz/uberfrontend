@@ -1,6 +1,7 @@
-const jwt = require('jsonwebtoken');
-
-const { getJwtSecret, getJwtVerifyOptions } = require('../config/jwt');
+const { getJwtVerifyOptions } = require('../config/jwt');
+const AuthSession = require('../models/AuthSession');
+const User = require('../models/User');
+const { verifyAccessToken } = require('../services/auth-sessions');
 
 const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
 const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
@@ -33,7 +34,37 @@ function getAuthToken(req) {
     return { token: null, via: null };
 }
 
-function requireAuth(req, res, next) {
+function getTokenPasswordVersion(payload) {
+    const raw = payload?.pwdv;
+    if (raw == null || raw === '') return null;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getUserPasswordVersion(user) {
+    const raw = user?.passwordUpdatedAt;
+    if (!raw) return 0;
+    const date = raw instanceof Date ? raw : new Date(raw);
+    const ts = date.getTime();
+    return Number.isFinite(ts) ? ts : 0;
+}
+
+function isTokenFreshEnoughForPasswordVersion(payload, user) {
+    const currentPasswordVersion = getUserPasswordVersion(user);
+    if (!currentPasswordVersion) return true;
+
+    const tokenPasswordVersion = getTokenPasswordVersion(payload);
+    if (tokenPasswordVersion != null) {
+        return tokenPasswordVersion === currentPasswordVersion;
+    }
+
+    // Legacy fallback for tokens minted before password-version claims existed.
+    const tokenIssuedAtSec = Number(payload?.iat);
+    if (!Number.isFinite(tokenIssuedAtSec)) return false;
+    return tokenIssuedAtSec >= Math.floor(currentPasswordVersion / 1000);
+}
+
+async function requireAuth(req, res, next) {
     try {
         const { token, via } = getAuthToken(req);
         if (!token) return res.status(401).json({ error: 'Missing token' });
@@ -48,8 +79,25 @@ function requireAuth(req, res, next) {
             }
         }
 
-        const payload = jwt.verify(token, getJwtSecret(), getJwtVerifyOptions());
-        req.auth = { userId: payload.sub, role: payload.role || 'user', via };
+        const payload = verifyAccessToken(token, getJwtVerifyOptions());
+        const user = await User.findById(payload.sub).select('passwordUpdatedAt role').lean();
+        if (!user) return res.status(401).json({ error: 'Invalid or expired token' });
+        if (!isTokenFreshEnoughForPasswordVersion(payload, user)) {
+            return res.status(401).json({ error: 'Invalid or expired token' });
+        }
+
+        const sessionId = typeof payload?.sid === 'string' && payload.sid ? payload.sid : null;
+        if (sessionId) {
+            const session = await AuthSession.findById(sessionId).select('revokedAt expiresAt userId').lean();
+            if (!session || session.revokedAt || String(session.userId) !== String(payload.sub)) {
+                return res.status(401).json({ error: 'Invalid or expired token' });
+            }
+            if (session.expiresAt && new Date(session.expiresAt).getTime() <= Date.now()) {
+                return res.status(401).json({ error: 'Invalid or expired token' });
+            }
+        }
+
+        req.auth = { userId: payload.sub, role: user.role || 'user', via, sessionId };
         next();
     } catch (e) {
         return res.status(401).json({ error: 'Invalid or expired token' });

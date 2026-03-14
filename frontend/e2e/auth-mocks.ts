@@ -25,10 +25,12 @@ type AuthMockOptions = {
   user: MockUser;
   validLogin?: { emailOrUsername: string; password: string };
   validSignup?: { email: string; username: string; password: string };
+  meSequence?: Array<{ status: number; error?: string; user?: MockUser }>;
   forceLoginError?: { status: number; error: string };
   forceSignupError?: { status: number; error: string };
   loginSequence?: Array<{ status: number; error?: string; token?: string; user?: MockUser }>;
   signupSequence?: Array<{ status: number; error?: string; token?: string; user?: MockUser }>;
+  refreshSequence?: Array<{ status: number; error?: string; token?: string }>;
   changePassword?: { currentPassword: string; currentPasswordConfirm: string; newPassword: string };
   forceChangePasswordError?: { status: number; error: string };
   changePasswordSequence?: Array<{ status: number; error?: string }>;
@@ -122,14 +124,17 @@ export function buildMockUser(overrides?: Partial<MockUser>): MockUser {
 }
 
 export async function installAuthMock(page: Page, opts: AuthMockOptions) {
+  const meSequence = Array.isArray(opts.meSequence) ? [...opts.meSequence] : [];
   const loginSequence = Array.isArray(opts.loginSequence) ? [...opts.loginSequence] : [];
   const signupSequence = Array.isArray(opts.signupSequence) ? [...opts.signupSequence] : [];
+  const refreshSequence = Array.isArray(opts.refreshSequence) ? [...opts.refreshSequence] : [];
   const changePasswordSequence = Array.isArray(opts.changePasswordSequence) ? [...opts.changePasswordSequence] : [];
+  let currentToken = opts.token;
 
   const isAuthorized = (req: Request) => {
     const auth = req.headers()['authorization'] || '';
     const cookie = cookieValueFromHeader(req.headers()['cookie'] || '', 'access_token');
-    return cookie === encodeURIComponent(opts.token) || auth === `Bearer ${opts.token}`;
+    return cookie === encodeURIComponent(currentToken) || auth === `Bearer ${currentToken}`;
   };
 
   // Activity + dashboard endpoints hit after auth redirects; mock them to avoid noisy 401s in E2E.
@@ -304,6 +309,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
         const token = next.token ?? opts.token;
         const user = next.user ?? opts.user;
         if (next.status >= 200 && next.status < 300) {
+          currentToken = token;
           return jsonResponse(route, req, next.status, { token, user }, authCookies(req, token));
         }
         const message = next.error ?? (next.status === 401 ? 'Invalid credentials' : 'Login failed');
@@ -321,6 +327,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           String(body.password || '') === opts.validLogin.password);
 
       if (!ok) return jsonResponse(route, req, 401, { error: 'Invalid credentials' });
+      currentToken = opts.token;
       return jsonResponse(route, req, 200, { token: opts.token, user: opts.user }, authCookies(req, opts.token));
     }
 
@@ -331,6 +338,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
         const token = next.token ?? opts.token;
         const user = next.user ?? opts.user;
         if (next.status >= 200 && next.status < 300) {
+          currentToken = token;
           return jsonResponse(route, req, next.status, { token, user }, authCookies(req, token));
         }
         const message = next.error ?? (next.status === 409 ? 'Account already exists' : 'Sign up failed');
@@ -349,7 +357,26 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           String(body.password || '') === opts.validSignup.password);
 
       if (!ok) return jsonResponse(route, req, 400, { error: 'Invalid signup payload' });
+      currentToken = opts.token;
       return jsonResponse(route, req, 201, { token: opts.token, user: opts.user }, authCookies(req, opts.token));
+    }
+
+    // Refresh
+    if (req.method() === 'POST' && path.endsWith('/refresh')) {
+      if (refreshSequence.length) {
+        const next = refreshSequence.shift()!;
+        const token = next.token ?? currentToken;
+        if (next.status >= 200 && next.status < 300) {
+          currentToken = token;
+          return jsonResponse(route, req, next.status, { ok: true, token }, authCookies(req, token));
+        }
+        const message = next.error ?? 'Invalid or expired refresh session';
+        return jsonResponse(route, req, next.status, { error: message });
+      }
+
+      // Default to a no-op success so auth-refresh interception does not introduce
+      // extra browser noise into guest/mock-driven specs that are not testing refresh.
+      return jsonResponse(route, req, 200, { ok: true });
     }
 
     // Logout (clears cookie)
@@ -385,6 +412,15 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
 
     // Me
     if (req.method() === 'GET' && path.endsWith('/me')) {
+      if (meSequence.length) {
+        const next = meSequence.shift()!;
+        if (next.status >= 200 && next.status < 300) {
+          return jsonResponse(route, req, next.status, next.user ?? opts.user);
+        }
+        const message = next.error ?? 'Invalid or expired token';
+        return jsonResponse(route, req, next.status, { error: message });
+      }
+
       if (!isAuthorized(req)) return jsonResponse(route, req, 401, { error: 'Invalid or expired token' });
       return jsonResponse(route, req, 200, opts.user);
     }

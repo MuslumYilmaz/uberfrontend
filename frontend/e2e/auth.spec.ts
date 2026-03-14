@@ -106,6 +106,37 @@ test('auth: login (email/password) logs in and survives reload', async ({ page }
   await expectAccessTokenCookie(page, token);
 });
 
+test.describe('auth edge: expired access token', () => {
+  test.use({
+    consoleErrorAllowlist: ['\\/api\\/auth\\/me'],
+  });
+
+  test('session refreshes transparently instead of redirecting to login', async ({ page }) => {
+    const token = `e2e-token-refresh-${Date.now()}`;
+    const user = buildMockUser({ _id: 'e2e-user-refresh', username: 'refresh_user', email: 'refresh@example.com' });
+
+    await installAuthMock(page, {
+      token,
+      user,
+      meSequence: [
+        { status: 401, error: 'Invalid or expired token' },
+      ],
+      refreshSequence: [
+        { status: 200, token },
+      ],
+    });
+
+    await page.addInitScript(() => {
+      localStorage.setItem('fa:auth:session', '1');
+    });
+
+    await page.goto('/profile');
+    await expect(page).toHaveURL('/profile');
+    await expect(page.getByRole('button', { name: 'Billing' })).toBeVisible();
+    await expectAccessTokenCookie(page, token);
+  });
+});
+
 test('auth: OAuth login works (Google + GitHub)', async ({ page }) => {
   const token = `e2e-token-oauth-login-${Date.now()}`;
   const user = buildMockUser({ _id: 'e2e-user-oauth-login', username: 'oauth_login', email: 'oauth-login@example.com' });

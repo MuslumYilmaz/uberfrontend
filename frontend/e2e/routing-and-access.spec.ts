@@ -86,6 +86,24 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByRole('button', { name: 'Billing' })).toBeVisible();
   });
 
+  test('stale session hint is cleared when /api/auth/me returns 401', async ({ page }) => {
+    const token = `e2e-token-stale-session-${Date.now()}`;
+    const user = buildMockUser({
+      _id: 'e2e-stale-session-user',
+      username: 'stale_session_user',
+      email: 'stale-session@example.com',
+    });
+
+    await installAuthMock(page, { token, user });
+    await page.addInitScript(() => {
+      localStorage.setItem('fa:auth:session', '1');
+    });
+
+    await page.goto('/profile');
+    await expect(page).toHaveURL(/\/auth\/login\?redirectTo=%2Fprofile/);
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('fa:auth:session'))).toBe(null);
+  });
+
   test('dashboard daily complete updates status and focus-areas CTA navigates', async ({ page }) => {
     const token = `e2e-token-dashboard-${Date.now()}`;
     const user = buildMockUser({

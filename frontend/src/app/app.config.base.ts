@@ -4,6 +4,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, TitleStrategy, withInMemoryScrolling, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { apiCredentialsInterceptor } from './core/interceptors/api-credentials.interceptor';
+import { authRefreshInterceptor } from './core/interceptors/auth-refresh.interceptor';
 import { SeoTitleStrategy } from './core/services/seo-title.strategy';
 import { StorageVersionService } from './core/services/storage-version.service';
 
@@ -26,7 +27,7 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled',
       }),
     ),
-    provideHttpClient(withInterceptors([apiCredentialsInterceptor])),
+    provideHttpClient(withInterceptors([apiCredentialsInterceptor, authRefreshInterceptor])),
     provideAnimations(),
     { provide: TitleStrategy, useClass: SeoTitleStrategy },
     {

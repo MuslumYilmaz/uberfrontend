@@ -107,13 +107,6 @@ test.describe('lemonsqueezy real checkout (test mode)', () => {
       postal: '12345',
     });
 
-    let saw401 = false;
-    lsPage.on('response', (response) => {
-      if (response.url().includes('/api/auth/me') && response.status() === 401) {
-        saw401 = true;
-      }
-    });
-
     const payButton = lsPage.getByRole('button', { name: /pay|subscribe|complete/i }).first();
     await expect(payButton).toBeEnabled({ timeout: 20_000 });
 
@@ -126,10 +119,6 @@ test.describe('lemonsqueezy real checkout (test mode)', () => {
 
     await expect(lsPage.getByTestId('billing-success-title')).toBeVisible({ timeout: 30_000 });
     await lsPage.waitForURL(/\/profile/, { timeout: 120_000 });
-
-    if (saw401) {
-      throw new Error('Detected /api/auth/me 401 after redirect. Check cookie SameSite/CORS or login state.');
-    }
 
     await lsPage.goto('/tracks');
     await expect(lsPage.getByText('Premium tracks')).toHaveCount(0);
