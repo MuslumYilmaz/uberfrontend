@@ -122,6 +122,7 @@ export const routes: Routes = [
         title: 'Frontend Interview Preparation Roadmap and Practice',
         description:
           'Follow a frontend interview preparation roadmap with coding challenges, guides, tracks, and system design practice to prepare with focus and confidence.',
+        canonical: '/',
         keywords: [
           'front end interview questions',
           'javascript interview',
@@ -129,6 +130,7 @@ export const routes: Routes = [
           'system design for frontend',
           'ui coding challenges',
         ],
+        robots: 'noindex,nofollow',
       },
     },
   },
