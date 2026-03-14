@@ -46,6 +46,24 @@ describe('lemonsqueezy event normalization', () => {
     expect(out.entitlement.validUntil instanceof Date).toBe(true);
   });
 
+  test('maps payment failed to cancelled until the known paid-through date', () => {
+    const body = {
+      meta: { event_name: 'subscription_payment_failed' },
+      data: {
+        id: 'sub_failed',
+        attributes: {
+          user_email: 'user@example.com',
+          status: 'failed',
+          renews_at: '2099-03-01T00:00:00Z',
+        },
+      },
+    };
+
+    const out = normalizeLemonSqueezyEvent(body, 'raw');
+    expect(out.entitlement.status).toBe('cancelled');
+    expect(out.entitlement.validUntil instanceof Date).toBe(true);
+  });
+
   test('maps refund to none', () => {
     const body = {
       meta: { event_name: 'order_refunded' },

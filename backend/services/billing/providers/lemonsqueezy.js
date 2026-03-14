@@ -243,13 +243,14 @@ function resolveStatus(eventType, attrs, lifetime) {
   const statusRaw = String(attrs?.status || '').toLowerCase();
 
   if (normalized.includes('refund') || normalized.includes('refunded')) return 'none';
-  if (normalized.includes('payment_failed')) return 'none';
+  if (normalized.includes('payment_failed')) return 'cancelled';
   if (lifetime) return 'lifetime';
   if (normalized.includes('cancel')) return 'cancelled';
   if (normalized.includes('expired')) return 'none';
 
   if (statusRaw === 'cancelled' || statusRaw === 'canceled') return 'cancelled';
-  if (['expired', 'unpaid', 'void', 'refunded', 'failed'].includes(statusRaw)) return 'none';
+  if (statusRaw === 'failed') return 'cancelled';
+  if (['expired', 'unpaid', 'void', 'refunded'].includes(statusRaw)) return 'none';
 
   return lifetime ? 'lifetime' : 'active';
 }

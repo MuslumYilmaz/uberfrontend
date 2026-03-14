@@ -3,7 +3,10 @@ const User = require('../models/User');
 const BillingEvent = require('../models/BillingEvent');
 const PendingEntitlement = require('../models/PendingEntitlement');
 const { createBillingEventStore } = require('../services/billing/billing-events');
-const { isProEntitlementActive } = require('../services/billing/entitlements');
+const {
+  applyNormalizedGumroadEventToUser,
+  applyNormalizedLemonSqueezyEventToUser,
+} = require('../services/billing/user-billing-state');
 const { normalizeGumroadEvent, verifyGumroadSignature } = require('../services/billing/providers/gumroad');
 const {
   normalizeLemonSqueezyEvent,
@@ -139,26 +142,10 @@ async function handleGumroadWebhook(req, res) {
       return res.status(200).json({ ok: true, userFound: false });
     }
 
-    user.entitlements = user.entitlements || {};
-    user.entitlements.pro = {
-      status: normalized.entitlement.status,
-      validUntil: normalized.entitlement.validUntil,
-    };
-    if (!user.entitlements.projects) {
-      user.entitlements.projects = { status: 'none', validUntil: null };
-    }
-
-    user.billing = user.billing || {};
-    user.billing.providers = user.billing.providers || {};
-    const gumroadMeta = user.billing.providers.gumroad || {};
-    if (normalized.saleId) gumroadMeta.saleId = normalized.saleId;
-    gumroadMeta.purchaserEmail = normalizedEmail;
-    gumroadMeta.lastEventId = normalized.eventId;
-    gumroadMeta.lastEventAt = new Date();
-    user.billing.providers.gumroad = gumroadMeta;
-
-    const isActive = isProEntitlementActive(user.entitlements.pro);
-    user.accessTier = isActive ? 'premium' : 'free';
+    applyNormalizedGumroadEventToUser(user, normalized, {
+      eventId: normalized.eventId,
+      purchaserEmail: normalizedEmail,
+    });
 
     await user.save();
     const processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
@@ -375,45 +362,10 @@ async function handleLemonSqueezyWebhook(req, res) {
       return res.status(200).json({ ok: true, userFound: false });
     }
 
-    user.entitlements = user.entitlements || {};
-    const existingPro = user.entitlements.pro || {};
-    const nextProStatus = normalized.entitlement.status;
-    let nextProValidUntil = normalized.entitlement.validUntil;
-    const eventTypeLower = String(normalized.eventType || '').toLowerCase();
-    const isRefundEvent = eventTypeLower.includes('refund') || eventTypeLower.includes('chargeback');
-    if (existingPro.status === 'lifetime' && nextProStatus !== 'lifetime' && !isRefundEvent) {
-      // Preserve lifetime entitlements unless a refund/chargeback event explicitly revokes it.
-      nextProValidUntil = null;
-      user.entitlements.pro = { status: 'lifetime', validUntil: null };
-    } else {
-      if (nextProStatus === 'cancelled' && !nextProValidUntil) {
-        nextProValidUntil = existingPro.validUntil || null;
-      }
-      user.entitlements.pro = {
-        status: nextProStatus,
-        validUntil: nextProValidUntil,
-      };
-    }
-    if (!user.entitlements.projects) {
-      user.entitlements.projects = { status: 'none', validUntil: null };
-    }
-
-    user.billing = user.billing || {};
-    user.billing.providers = user.billing.providers || {};
-    const lsMeta = user.billing.providers.lemonsqueezy || {};
-    if (normalized.customerId) lsMeta.customerId = normalized.customerId;
-    if (normalized.subscriptionId) lsMeta.subscriptionId = normalized.subscriptionId;
-    if (normalized.startedAt && (!lsMeta.startedAt || normalized.startedAt < lsMeta.startedAt)) {
-      lsMeta.startedAt = normalized.startedAt;
-    }
-    if (normalized.manageUrl) lsMeta.manageUrl = normalized.manageUrl;
-    if (purchaseEmail) lsMeta.purchaserEmail = purchaseEmail;
-    lsMeta.lastEventId = eventId;
-    lsMeta.lastEventAt = new Date();
-    user.billing.providers.lemonsqueezy = lsMeta;
-
-    const isActive = isProEntitlementActive(user.entitlements.pro);
-    user.accessTier = isActive ? 'premium' : 'free';
+    applyNormalizedLemonSqueezyEventToUser(user, normalized, {
+      eventId,
+      purchaseEmail,
+    });
 
     await user.save();
     const processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';

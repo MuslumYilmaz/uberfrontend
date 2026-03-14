@@ -61,6 +61,19 @@ Run critical suite locally (headed by default):
 
 `npm run test:e2e`
 
+Run the real LemonSqueezy smoke test in test mode only:
+
+1. Start the backend locally with the LemonSqueezy test webhook secret configured.
+2. Keep `PAYMENTS_MODE=test` in `src/environments/environment.ts`.
+3. Run:
+
+`PLAYWRIGHT_WEB_SERVER=1 E2E_REAL_LS=1 npm run test:e2e:lemonsqueezy:real`
+
+Notes:
+- This exercises the real hosted LemonSqueezy checkout flow in test mode and verifies the app unlocks premium afterwards.
+- It should be run manually, nightly, or before release, not on every CI run.
+- The spec itself refuses to run unless checkout provider is LemonSqueezy and payments mode is `test`.
+
 Run full suite (critical + extended + optional specs):
 
 `npm run test:e2e:full`
