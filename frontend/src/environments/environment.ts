@@ -8,6 +8,7 @@ export const environment = {
     frontendBase: "",
     cdnBaseUrl: '',
     cdnEnabled: false,
+    trustedAssetOrigins: ['https://frontendatlas.vercel.app'],
     sentryDsn: SENTRY_DSN,
     sentryRelease: SENTRY_RELEASE,
     sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,

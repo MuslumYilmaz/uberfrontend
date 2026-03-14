@@ -1174,7 +1174,7 @@
       "basics"
     ],
     "updatedAt": "2026-01-30"
-  },
+},
   {
     "id": "angular-data-binding",
     "title": "Angular data binding: interpolation, property/attribute/class/style, events, and two-way ([(...)])",
@@ -2746,6 +2746,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Injector Scope Check",
+      "scenario": "A cart badge in the app header shows three items, but inside a checkout feature the cart suddenly looks empty. A teammate notices that the checkout component added `providers: [CartService]`. One person says, \"That should not matter. Angular DI always gives the same app-wide instance for a class.\" Another says, \"That component created a new provider in its own injector, so Angular gives that subtree a different `CartService` instance because the closest provider wins.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "component-provider-created-a-new-subtree-instance",
+          "label": "The second explanation is better. Angular DI resolves a token from the nearest provider in the injector tree, so adding `providers: [CartService]` at the component level creates a new instance for that component and its children instead of reusing the root one."
+        },
+        {
+          "id": "class-based-injection-always-returns-one-global-singleton",
+          "label": "The first explanation is better. Once a service class exists in the app, Angular caches exactly one instance for that class everywhere, regardless of whether the same service is provided again lower in the tree."
+        },
+        {
+          "id": "providers-only-change-when-using-injectiontoken-not-classes",
+          "label": "The issue is probably unrelated to provider scope. Injector hierarchy only matters for `InjectionToken`-based config values, not for normal service classes injected by type."
+        }
+      ],
+      "correctOptionId": "component-provider-created-a-new-subtree-instance",
+      "rereadPrompt": "Not quite. Angular DI resolves dependencies by token through a hierarchy of injectors, and the closest matching provider wins. Root providers are app-wide singletons, but component-level providers intentionally create separate instances for that subtree."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -2873,6 +2893,26 @@
           "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Init Timing Check",
+      "scenario": "A child component receives `@Input() userId` from its parent and immediately loads user data in the constructor. In production, the first request sometimes goes out with `undefined`, and a teammate says, \"That is fine. The constructor and `ngOnInit` are basically the same place to start work in Angular.\" Another says, \"Use the constructor for DI and lightweight setup, but wait until `ngOnInit` for initialization that depends on bound inputs. If the value can change later, handle that in `ngOnChanges` or an input setter instead.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "constructor-is-for-di-while-input-dependent-init-belongs-in-ngoninit",
+          "label": "The second explanation is better. Angular calls the constructor when the class is instantiated, before initial `@Input()` binding is reliably available. `ngOnInit` runs after Angular applies the first input values, so that is the safer place for input-dependent initialization and side effects."
+        },
+        {
+          "id": "constructor-and-ngoninit-are-equivalent-for-input-based-api-calls",
+          "label": "The first explanation is better. As soon as Angular creates the component instance, bound inputs are already guaranteed to be there, so starting API work in the constructor is no different from starting it in `ngOnInit`."
+        },
+        {
+          "id": "best-practice-is-to-fetch-in-constructor-and-confirm-in-ngafterviewinit",
+          "label": "The safest pattern is to kick off the request in the constructor and then confirm the final input value in `ngAfterViewInit`, because Angular only finishes binding component data once the view exists."
+        }
+      ],
+      "correctOptionId": "constructor-is-for-di-while-input-dependent-init-belongs-in-ngoninit",
+      "rereadPrompt": "Not quite. Constructor time is for dependency injection and trivial class setup. Angular has not finished its first input binding pass yet, so reading `@Input()` there is unreliable. Use `ngOnInit` for initial input-based work, and `ngOnChanges` or an input setter when the parent can change the value later."
     },
     "access": "free",
     "type": "trivia",
@@ -3072,6 +3112,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Pure Pipe Update Check",
+      "scenario": "A team uses a custom `visibleItems` pipe in a dashboard. It works on first render, but when someone does `items.push(newItem)` the UI does not update. One teammate says, \"Pipes are unreliable for dynamic lists. We should make it impure so it runs on every change detection cycle.\" Another says, \"The pipe is probably pure, so Angular only reruns it when the input reference changes. If we want to keep it pure, we should replace the array instead of mutating it in place.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "pure-pipe-needs-a-new-reference-or-upstream-transform",
+          "label": "The second explanation is better. Pure pipes rerun when the input value changes by value or reference, so mutating the same array with `push()` can leave the pipe output unchanged. Replacing the array or moving the transform upstream keeps the pipe pure and predictable."
+        },
+        {
+          "id": "all-list-pipes-should-be-impure-because-lists-are-always-dynamic",
+          "label": "The first explanation is better. Any pipe used with arrays should usually be impure, because Angular cannot reasonably track list updates otherwise and running every change detection cycle is the normal fix."
+        },
+        {
+          "id": "async-pipe-would-fix-in-place-mutation-without-other-code-changes",
+          "label": "The real issue is that the team is not using the `async` pipe. Once a list is rendered through `async`, Angular automatically notices in-place mutations and reruns the template transform logic."
+        }
+      ],
+      "correctOptionId": "pure-pipe-needs-a-new-reference-or-upstream-transform",
+      "rereadPrompt": "Not quite. Default Angular pipes are pure, which is usually what you want for performance. The catch is that in-place mutation keeps the same array reference, so Angular may not rerun the pipe. Prefer immutable updates or precompute the derived data outside the template instead of reaching for an impure pipe first."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -3174,6 +3234,26 @@
           "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Two-Way Binding Wiring Check",
+      "scenario": "A custom `<app-text-input>` component is used as `[(value)]=\"name\"`, but typing into it never updates the parent state. Inside the child, the component has `@Input() value`, mutates that field locally, and exposes `@Output() valueChanged` instead of `valueChange`. One teammate says, \"Angular banana-in-a-box should still figure it out because the names are close enough.\" Another says, \"Custom two-way binding only works when the input/output pair matches exactly as `value` and `valueChange`, and the child still needs to emit rather than rely on mutating its own input.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "two-way-binding-needs-exact-naming-and-an-emitted-change-event",
+          "label": "The second explanation is better. Angular expands `[(value)]` to `[value]` plus `(valueChange)`, so the output name must match exactly. The child should treat the input as read-only and emit the next value instead of assuming local mutation updates the parent."
+        },
+        {
+          "id": "banana-in-a-box-can-infer-nearby-output-names-automatically",
+          "label": "The first explanation is better. Angular can infer the intended output for two-way binding as long as it looks similar, so `valueChanged` should behave the same as `valueChange` and the parent should still update automatically."
+        },
+        {
+          "id": "mutating-the-input-is-enough-as-long-as-the-child-rerenders",
+          "label": "The child does not really need to emit anything. Once it mutates its own `@Input()` field, Angular will sync that changed value back to the parent during the next change-detection pass."
+        }
+      ],
+      "correctOptionId": "two-way-binding-needs-exact-naming-and-an-emitted-change-event",
+      "rereadPrompt": "Not quite. Custom two-way binding is just syntax sugar for an input plus a matching `propChange` output. Angular does not guess close names, and mutating an `@Input()` does not push state back to the parent. The child must emit the updated value through the correctly named output."
     },
     "access": "free",
     "type": "trivia",
@@ -3362,6 +3442,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Hook Placement Check",
+      "scenario": "A modal component receives an `@Input() userId`, starts a polling stream, and focuses an input when the modal opens. Right now it reads the input in the constructor, tries to focus the `@ViewChild` in `ngOnInit`, and never stops the polling when the component is destroyed. One teammate says, \"That is mostly fine. Angular hooks are close enough that moving code around does not really matter.\" Another says, \"No. Input-driven setup belongs in `ngOnInit` or `ngOnChanges`, DOM/ViewChild work belongs in `ngAfterViewInit`, and cleanup belongs in `ngOnDestroy`.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "pick-hooks-based-on-what-is-ready-at-that-lifecycle-stage",
+          "label": "The second explanation is better. Each hook exists because different things are ready at different times: inputs for `ngOnInit` or `ngOnChanges`, the view for `ngAfterViewInit`, and teardown work for `ngOnDestroy`. Using the right hook avoids undefined values, DOM timing bugs, and leaking subscriptions."
+        },
+        {
+          "id": "constructor-and-ngoninit-and-ngafterviewinit-are-basically-interchangeable",
+          "label": "The first explanation is better. In practice Angular runs those hooks close together, so reading inputs, touching the DOM, and starting subscriptions can all live in whichever early hook is most convenient."
+        },
+        {
+          "id": "ngafterviewchecked-is-the-best-general-place-for-all-lifecycle-logic",
+          "label": "A safer pattern is to move most setup into `ngAfterViewChecked`, because that hook runs after every render and guarantees that inputs, DOM, and child content are all fully synchronized before you do work."
+        }
+      ],
+      "correctOptionId": "pick-hooks-based-on-what-is-ready-at-that-lifecycle-stage",
+      "rereadPrompt": "Not quite. Lifecycle hooks are not just naming conventions. They tell you what Angular has finished preparing. Inputs are not reliable in the constructor, `@ViewChild` access usually belongs in `ngAfterViewInit`, and subscriptions or timers should be cleaned up in `ngOnDestroy`."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -3492,6 +3592,26 @@
           "text": "<strong>Summary</strong><br><br><code>@Input</code> defines the child’s data API (parent ➜ child). <code>@Output</code> defines the child’s event API (child ➜ parent). In interviews, emphasize: typed payloads, reacting to input changes correctly, OnPush + immutability behavior, and using EventEmitter only for component outputs (not as a global event bus)."
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Input/Output Ownership Check",
+      "scenario": "A child `UserCardComponent` receives `@Input() user` and, when someone clicks Edit, it mutates `user.name` directly inside the child. The parent list updates in surprising ways, and a teammate says, \"That is normal. Once the child receives the object, it can just modify it and Angular will keep everything in sync.\" Another says, \"Inputs are parent-owned data. The child should treat them as read-only and emit an `@Output()` event so the parent decides how to update state, ideally with a new object reference.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "inputs-are-read-only-and-children-should-emit-intent-upward",
+          "label": "The second explanation is better. `@Input()` is data flowing from parent to child, so the child should not quietly mutate parent-owned state. A child should emit an `@Output()` event describing the change, and the parent should update the source of truth, usually with a new reference."
+        },
+        {
+          "id": "children-should-freely-mutate-input-objects-because-they-now-own-them",
+          "label": "The first explanation is better. As soon as Angular passes an object into a child through `@Input()`, that child effectively owns the object and can modify it directly without creating any architectural problems."
+        },
+        {
+          "id": "best-practice-is-to-replace-output-events-with-eventemitter-shared-between-components",
+          "label": "A cleaner fix is to stop using parent-child outputs and instead expose one shared `EventEmitter` as a mini event bus for the whole feature, because `@Output()` is mostly optional once components need to coordinate state."
+        }
+      ],
+      "correctOptionId": "inputs-are-read-only-and-children-should-emit-intent-upward",
+      "rereadPrompt": "Not quite. `@Input()` defines the child’s public data API, not ownership transfer. When a child mutates an input object directly, state ownership gets blurry and OnPush or immutability assumptions can break down. The safer pattern is value down, event up: render from inputs, emit intent, and let the parent update state."
     },
     "access": "free",
     "type": "trivia",
@@ -3742,6 +3862,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Stream Cancellation Check",
+      "scenario": "A search box listens to `valueChanges` and does a nested `subscribe()` for every keystroke. Users keep seeing stale results flash in after they already typed a newer query, and the component also has manual subscription cleanup scattered across the class. One teammate says, \"That is just how async search behaves. Every request should be allowed to finish, and we can sort the responses afterward.\" Another says, \"This is exactly what RxJS composition is for. Debounce the input, use `switchMap` so old requests are canceled when a new query arrives, and render the results with `async` pipe instead of manually wiring display subscriptions.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "compose-the-stream-with-switchmap-and-let-the-view-subscribe-via-async-pipe",
+          "label": "The second explanation is better. `switchMap` gives the UI latest-only behavior by canceling the previous inner request when a new query arrives, and `async` pipe usually removes the need for manual display subscriptions and teardown code."
+        },
+        {
+          "id": "let-all-requests-finish-and-merge-them-afterward-for-search",
+          "label": "The first explanation is better. Search inputs should usually keep every in-flight request alive and merge the responses in arrival order, because canceling older requests risks hiding useful results from the user."
+        },
+        {
+          "id": "convert-valuechanges-to-promises-because-promises-are-safer-than-observables",
+          "label": "A better fix is to convert the stream into Promises immediately. Promises are easier for Angular to clean up automatically, and they avoid the cancellation and subscription complexity that Observables introduce."
+        }
+      ],
+      "correctOptionId": "compose-the-stream-with-switchmap-and-let-the-view-subscribe-via-async-pipe",
+      "rereadPrompt": "Not quite. Observables are useful here because search is a stream of values over time, not a one-off async task. `switchMap` is the standard latest-only choice for typeahead because it cancels the previous inner request, and `async` pipe helps keep UI subscriptions tied to the template lifecycle."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -3828,6 +3968,26 @@
           "text": "<strong>Summary</strong><br><ul><li>Angular routing manages navigation between components in SPAs.</li><li>Routes are defined using <code>RouterModule</code> and configured in a routing module.</li><li><code>routerLink</code> and <code>Router.navigate()</code> are used for navigation.</li><li>Dynamic routes, guards, and lazy loading enhance flexibility.</li></ul>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Route Mapping Check",
+      "scenario": "A teammate adds `<a routerLink=\"/about\">About</a>` and `<a routerLink=\"/contact\">Contact</a>` to the app shell. The browser URL changes when you click them, but the main content area stays blank. They say, \"Angular routing is buggy. `routerLink` should automatically know which component to show.\" Another teammate says, \"Routing needs both a route configuration that maps paths to components and a `<router-outlet>` where the matched component gets rendered. `routerLink` only triggers navigation.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "routing-needs-route-config-plus-router-outlet-not-just-routerlink",
+          "label": "The second explanation is better. Angular routing works by matching the URL against a route config and rendering the matched component inside a `router-outlet`. `routerLink` changes navigation state, but it does not replace the need for defined routes and an outlet."
+        },
+        {
+          "id": "routerlink-alone-should-render-the-right-component-without-extra-setup",
+          "label": "The first explanation is better. Once `routerLink` points to a valid URL, Angular can infer the matching component automatically, so missing route config or `router-outlet` should not stop the page from rendering."
+        },
+        {
+          "id": "angular-routing-only-works-when-the-server-returns-a-different-html-page",
+          "label": "The real issue is that Angular routing needs the server to send a separate HTML page for each route. Without a backend page transition, a single-page app cannot actually swap views on the client."
+        }
+      ],
+      "correctOptionId": "routing-needs-route-config-plus-router-outlet-not-just-routerlink",
+      "rereadPrompt": "Not quite. In Angular, routing is client-side view switching. You define routes as path-to-component mappings and render the active match inside `router-outlet`. `routerLink` and `Router.navigate()` only move the app to a new route; they do not replace route definitions or the outlet."
     },
     "access": "free",
     "type": "trivia",
@@ -3932,6 +4092,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Load Timing Check",
+      "scenario": "An Angular app ships a large admin reporting area that only a small percentage of users ever open, but it still makes the first page load feel heavy. One teammate says, \"Just import that feature into the main app up front so navigation is instant if someone eventually clicks it.\" Another says, \"This is exactly what lazy loading is for. Put the feature behind a route with `loadChildren` so it is fetched only when needed, and use preloading later if you want a middle ground.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "lazy-load-rarely-used-features-and-consider-preloading-as-a-separate-choice",
+          "label": "The second explanation is better. Lazy loading reduces the initial bundle by deferring feature code until the route is visited, which is usually the right tradeoff for large or rarely used areas. Preloading can be added later if you want background fetches after startup."
+        },
+        {
+          "id": "eager-load-everything-because-navigation-speed-matters-more-than-startup-cost",
+          "label": "The first explanation is better. If a feature might be visited at any point, it is usually safer to load it in the main bundle so the user never waits during navigation, even if the initial load becomes noticeably heavier."
+        },
+        {
+          "id": "lazy-loading-is-only-about-code-organization-not-runtime-performance",
+          "label": "Lazy loading mostly helps keep the codebase modular, but it does not materially change runtime loading behavior because Angular still has to download all route code before the app becomes usable."
+        }
+      ],
+      "correctOptionId": "lazy-load-rarely-used-features-and-consider-preloading-as-a-separate-choice",
+      "rereadPrompt": "Not quite. The point of lazy loading is to keep code out of the startup bundle until the user actually needs that route. That usually improves first load for large apps. If later-navigation delay matters, Angular can preload lazy routes in the background, but that is a separate decision from eager-loading everything."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -4022,6 +4202,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "OnPush Trigger Check",
+      "scenario": "A dashboard row component was switched to `ChangeDetectionStrategy.OnPush`. After that, one bug appeared: the parent does `user.name = 'New name'`, but the child card sometimes keeps showing the old value until a click happens somewhere. One teammate says, \"OnPush is flaky, so we should switch everything back to Default.\" Another says, \"This is expected. OnPush mostly reacts to input reference changes, component events, async pipe emissions, or manual marks. If we mutate the same object in place, Angular may skip the child because the reference did not change.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "onpush-needs-a-meaningful-trigger-like-a-new-reference-or-markforcheck",
+          "label": "The second explanation is better. `OnPush` is not random; it follows a narrower trigger model for performance. If the parent mutates an existing object instead of passing a new reference, Angular can skip the child check until another trigger happens, so immutable updates or explicit change-marking are the usual fix."
+        },
+        {
+          "id": "onpush-and-default-should-behaviorally-identical-for-all-state-updates",
+          "label": "The first explanation is better. `OnPush` should still catch all normal property mutations automatically, so if the UI misses one update that mostly proves the strategy is unreliable in real apps."
+        },
+        {
+          "id": "onpush-only-works-correctly-when-zonejs-is-disabled",
+          "label": "The real problem is that `OnPush` conflicts with Angular’s normal async model. It becomes predictable only when Zone.js is disabled and every change is triggered manually."
+        }
+      ],
+      "correctOptionId": "onpush-needs-a-meaningful-trigger-like-a-new-reference-or-markforcheck",
+      "rereadPrompt": "Not quite. `OnPush` is a deliberate optimization, not a broken version of Default change detection. It works best when state updates are immutable or come through clear triggers like events, async pipe emissions, or `markForCheck()`. Mutating objects in place is the classic reason an OnPush child appears stale."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -4088,6 +4288,26 @@
           "text": "<strong>Summary</strong><br><ul><li>Zone.js tracks asynchronous operations and notifies Angular when they complete.</li><li>Angular uses <code>NgZone</code> to wrap these operations.</li><li>This allows Angular to automatically trigger change detection and update the DOM.</li><li>You can use <code>runOutsideAngular()</code> for performance-critical code that shouldn’t trigger detection.</li></ul>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "NgZone Boundary Check",
+      "scenario": "A chart component starts a fast `setInterval()` inside `zone.runOutsideAngular()` to avoid excessive change detection. The interval updates a `counter` property, but the template never reflects the new value until the user clicks somewhere else. One teammate says, \"Angular should update the view whenever any component field changes, no matter where the code runs.\" Another says, \"Because the work is running outside Angular’s zone, Angular is not automatically notified when that async task finishes. We need to re-enter the zone or manually trigger detection if the UI should refresh.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "outside-angular-zone-means-no-automatic-change-detection-notification",
+          "label": "The second explanation is better. Zone.js is how Angular knows many async tasks finished and should trigger change detection. When code runs outside Angular’s zone, that automatic notification is skipped, so you must re-enter with `zone.run(...)` or trigger detection manually if the UI should update."
+        },
+        {
+          "id": "angular-watches-all-component-fields-directly-so-zone-boundaries-do-not-matter",
+          "label": "The first explanation is better. Angular continuously observes component properties directly, so any field change should refresh the template even when the async work was started outside Angular’s zone."
+        },
+        {
+          "id": "runoutsideangular-is-mainly-for-blocking-network-calls-not-render-performance",
+          "label": "The issue is that `runOutsideAngular()` is being used for the wrong kind of work. It is mainly meant for HTTP calls, not timers or animation loops, so UI staleness means the API itself is misused rather than zone boundaries affecting detection."
+        }
+      ],
+      "correctOptionId": "outside-angular-zone-means-no-automatic-change-detection-notification",
+      "rereadPrompt": "Not quite. Angular does not magically deep-watch every field mutation. In the common Zone.js setup, async completion is one of the signals that tells Angular to run change detection. `runOutsideAngular()` intentionally suppresses that automatic trigger for performance-sensitive work, so UI updates need an explicit way back in."
     },
     "access": "free",
     "type": "trivia",
@@ -4187,6 +4407,26 @@
           "text": "<strong>Summary</strong><br><ul><li><code>ngOnChanges()</code> reacts to input-bound changes automatically.</li><li><code>ngDoCheck()</code> allows for custom logic to detect complex or deep changes.</li><li>Both help maintain UI consistency but differ in granularity and cost.</li></ul>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Change Hook Choice Check",
+      "scenario": "A parent passes `@Input() user` into a child card. Later, the parent mutates `user.name` in place, and the child's `ngOnChanges()` never fires. One teammate says, \"That proves `ngOnChanges()` is unreliable. We should switch all this logic to `ngDoCheck()` by default.\" Another says, \"`ngOnChanges()` only runs when the input reference changes. `ngDoCheck()` runs on every change-detection cycle and is a heavier custom tool, so the first fix is usually to update the input immutably instead of mutating it in place.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "ngonchanges-tracks-input-reference-changes-while-ngdocheck-is-the-costlier-custom-hook",
+          "label": "The second explanation is better. `ngOnChanges()` reacts to input-bound reference changes, not deep mutation inside the same object. `ngDoCheck()` can catch custom cases, but it runs on every change-detection cycle, so immutable updates are often the cleaner first fix."
+        },
+        {
+          "id": "ngonchanges-should-detect-all-deep-mutations-automatically",
+          "label": "The first explanation is better. Once an object is bound through `@Input()`, Angular should observe all nested property changes automatically, so if `ngOnChanges()` misses one mutation that means the hook is not dependable."
+        },
+        {
+          "id": "ngdocheck-is-basically-a-faster-version-of-ngonchanges-for-normal-inputs",
+          "label": "Use `ngDoCheck()` for most input-driven UI logic because it is effectively the same hook but more precise and usually more performant than `ngOnChanges()`."
+        }
+      ],
+      "correctOptionId": "ngonchanges-tracks-input-reference-changes-while-ngdocheck-is-the-costlier-custom-hook",
+      "rereadPrompt": "Not quite. `ngOnChanges()` is designed for input-bound value/reference changes, not deep observation of in-place mutation. `ngDoCheck()` is the escape hatch when you truly need custom detection, but it runs very often, so using immutable updates is usually the safer and simpler design."
     },
     "access": "free",
     "type": "trivia",
@@ -4296,6 +4536,26 @@
           "text": "<strong>Summary</strong><br><ul><li><code>forRoot()</code> initializes global providers and routing — used in the root module.</li><li><code>forChild()</code> defines feature module routes without duplicating providers.</li><li>Together, they ensure scalable, modular, and efficient routing and service management in Angular applications.</li></ul>"
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Module Scope Check",
+      "scenario": "A team imports a shared routing module with `forRoot()` inside both `AppModule` and a lazy-loaded feature module. After that, they start seeing duplicated singleton-like behavior and odd router setup issues. One teammate says, \"That is fine. `forRoot()` should be used anywhere a module needs access to the full configuration.\" Another says, \"No. `forRoot()` is the one-time root setup for global providers and root routing. Feature or lazy modules should use `forChild()` so they extend configuration without recreating root-level singletons.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "forroot-is-root-only-and-forchild-extends-feature-configuration",
+          "label": "The second explanation is better. `forRoot()` is the root-level setup path for app-wide providers and the main router instance, while `forChild()` lets feature modules add routes or config without reinitializing those singletons."
+        },
+        {
+          "id": "forroot-should-be-repeated-in-each-feature-module-that-needs-routing-or-services",
+          "label": "The first explanation is better. Each feature module should call `forRoot()` for itself so Angular creates the providers it needs locally and does not depend on root-level module configuration."
+        },
+        {
+          "id": "forchild-is-mainly-for-aot-builds-and-does-not-affect-provider-instances",
+          "label": "`forChild()` is mostly a build-time convention for organizing routes. It does not really matter for provider lifetime or duplicate singleton behavior, so either method is usually interchangeable."
+        }
+      ],
+      "correctOptionId": "forroot-is-root-only-and-forchild-extends-feature-configuration",
+      "rereadPrompt": "Not quite. The main reason this pattern exists is to avoid re-creating root-level services or router setup when the same module is imported in feature areas. Use `forRoot()` once at the app root, and use `forChild()` when a feature should add routes or configuration without duplicating global providers."
     },
     "access": "free",
     "type": "trivia",
@@ -4450,6 +4710,26 @@
         }
       ]
     },
+    "incidentCard": {
+      "title": "Optimization Strategy Check",
+      "scenario": "A large Angular app has three visible problems at once: first load is heavy, list screens rerender too much, and expensive client-side calculations occasionally freeze the UI. One teammate says, \"Angular performance tuning mostly means flipping one switch, like detaching change detection everywhere.\" Another says, \"This needs targeted fixes: reduce initial bundle size with lazy loading and production builds, reduce needless checks with OnPush, `trackBy`, and immutable updates, and move heavy work off the main thread when needed.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "performance-work-is-a-combination-of-bundle-rendering-and-main-thread-choices",
+          "label": "The second explanation is better. Angular performance is not one knob; it is a set of tradeoffs. Startup problems often point to bundle size and route loading, rerender issues point to change-detection and identity choices, and UI freezes point to heavy work blocking the main thread."
+        },
+        {
+          "id": "detaching-change-detection-is-the-main-fix-for-most-large-angular-apps",
+          "label": "The first explanation is better. If an Angular app feels slow in several places, the safest default is usually to disable or detach change detection broadly and only re-enable it where absolutely necessary."
+        },
+        {
+          "id": "aot-alone-should-solve-runtime-rendering-and-interaction-performance",
+          "label": "AOT compilation is the main solution. Once the app is built ahead of time, Angular generally stops having meaningful runtime performance issues, so list rendering and UI-thread blocking are usually secondary concerns."
+        }
+      ],
+      "correctOptionId": "performance-work-is-a-combination-of-bundle-rendering-and-main-thread-choices",
+      "rereadPrompt": "Not quite. Angular performance work usually means identifying where the cost lives: startup bundle size, repeated change-detection and DOM work, or heavy CPU tasks on the main thread. The right fix depends on that bottleneck, which is why strategies like lazy loading, OnPush, `trackBy`, `async` pipe, AOT, and web workers often work together."
+    },
     "access": "free",
     "type": "trivia",
     "tags": [
@@ -4596,6 +4876,26 @@
           "text": "<strong>Interview-level summary</strong><br><br><code>OnPush</code> makes Angular check a component only when inputs change by reference, an event happens, an async pipe emits, or you manually trigger detection. It gives big performance wins, but <strong>requires immutable state updates</strong>. Most “UI not updating” bugs in OnPush come from mutating objects instead of replacing them."
         }
       ]
+    },
+    "incidentCard": {
+      "title": "Stale UI Debug Check",
+      "scenario": "A production bug report says: \"The save succeeded, but the OnPush summary card still shows the old count until I click somewhere.\" In the code, a subscription mutates `stats.total++` on an existing object and never calls `markForCheck()`. One teammate says, \"This proves OnPush is too fragile for real apps; the safe fix is to go back to Default everywhere.\" Another says, \"This is a classic OnPush debugging case. Either emit a new object reference or explicitly mark the component for check when external subscription code updates state.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "onpush-bug-comes-from-in-place-mutation-or-missing-markforcheck-not-from-onpush-itself",
+          "label": "The second explanation is better. The bug fits the normal OnPush model: mutating the same object in a manual subscription does not automatically look like a meaningful change to Angular. The usual fixes are immutable updates, `async` pipe, or `markForCheck()` when the update happens outside Angular’s normal template triggers."
+        },
+        {
+          "id": "production-stale-ui-means-onpush-should-not-be-used-in-data-heavy-components",
+          "label": "The first explanation is better. If users can hit stale UI in production, that usually means OnPush is too risky for stateful screens and should be avoided in favor of Default change detection."
+        },
+        {
+          "id": "detectchanges-should-run-after-every-subscription-callback-by-default",
+          "label": "The main rule with OnPush is to call `detectChanges()` after every subscription callback. That is the expected baseline pattern, and immutable updates are mostly optional style preferences."
+        }
+      ],
+      "correctOptionId": "onpush-bug-comes-from-in-place-mutation-or-missing-markforcheck-not-from-onpush-itself",
+      "rereadPrompt": "Not quite. This is the common real-world OnPush bug: state changed, but the component did not get a trigger Angular recognizes for that strategy. Before abandoning OnPush, check whether the code is mutating objects in place, updating state inside manual subscriptions, or skipping `async` pipe and `markForCheck()`."
     },
     "access": "free",
     "type": "trivia",
@@ -4764,11 +5064,31 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "switchMap vs mergeMap vs concatMap vs exhaustMap: when to use?",
-      "description": "Use switchMap to cancel stale streams, mergeMap for parallel streams, concatMap for ordered queues, and exhaustMap to ignore triggers during active work."
-    }
+  "seo": {
+    "title": "switchMap vs mergeMap vs concatMap vs exhaustMap: when to use?",
+    "description": "Use switchMap to cancel stale streams, mergeMap for parallel streams, concatMap for ordered queues, and exhaustMap to ignore triggers during active work."
   },
+  "incidentCard": {
+    "title": "Autocomplete Race Condition Check",
+    "scenario": "A product search box fires a request on every keystroke. Users complain that when they type quickly, the UI sometimes flashes the right results and then gets replaced by results for an older query a moment later. One teammate says, \"Use mergeMap so we never throw away requests.\" Another says, \"This is exactly the case for switchMap, because the latest search term should win and older responses should stop updating the UI.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "switchmap-is-right-when-latest-search-should-win",
+        "label": "The second explanation is better. For typeahead search, the latest intent matters most, so switchMap is the usual fix. It unsubscribes from the previous request stream and prevents older responses from repainting the UI after a newer query has already started."
+      },
+      {
+        "id": "mergemap-is-safer-because-search-requests-should-always-all-finish",
+        "label": "The first explanation is better. Search is still user input, so every request should be allowed to finish with mergeMap. If results arrive out of order, the component should just keep the last response that comes back."
+      },
+      {
+        "id": "concatmap-is-best-because-search-requests-should-be-processed-in-order",
+        "label": "The better fix is concatMap. Search requests should stay in strict sequence so the app never skips a term, even if the user has already typed something newer."
+      }
+    ],
+    "correctOptionId": "switchmap-is-right-when-latest-search-should-win",
+    "rereadPrompt": "Not quite. The key question is what should happen when a new trigger arrives before the old one finishes. For search/autocomplete, you usually want latest wins, which is why switchMap is the common Angular choice."
+  }
+},
   {
     "id": "angular-prevent-memory-leaks-unsubscribe-patterns",
     "title": "How Do You Prevent Memory Leaks in Angular? All Real-World Unsubscribe Patterns Explained",
@@ -4914,11 +5234,31 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "How do you prevent memory leaks in Angular?",
-      "description": "Prevent Angular memory leaks by cleaning subscriptions with AsyncPipe, takeUntil patterns, and ngOnDestroy teardown for long-lived streams."
-    }
+  "seo": {
+    "title": "How do you prevent memory leaks in Angular?",
+    "description": "Prevent Angular memory leaks by cleaning subscriptions with AsyncPipe, takeUntil patterns, and ngOnDestroy teardown for long-lived streams."
   },
+  "incidentCard": {
+    "title": "Leaking Subscription Check",
+    "scenario": "A dashboard component subscribes to `route.params`, `form.valueChanges`, and a `setInterval` poller inside `ngOnInit`. After navigating away a few times, the old component keeps logging, polling, and reacting to form changes. One teammate says, \"Angular destroys components, so subscriptions and timers should disappear automatically.\" Another says, \"This is a real teardown bug. HTTP calls usually complete on their own, but long-lived streams and timers need cleanup with patterns like `async` pipe, `takeUntilDestroyed`, or explicit `ngOnDestroy` teardown.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "teardown-bug-long-lived-streams-and-timers-need-cleanup",
+        "label": "The second explanation is better. Component destruction does not magically unsubscribe every long-lived stream or stop timers. `route.params`, `valueChanges`, intervals, event listeners, and similar sources need cleanup unless Angular is managing them for you, such as with the `async` pipe."
+      },
+      {
+        "id": "component-destroy-automatically-cleans-all-subscriptions-and-timers",
+        "label": "The first explanation is better. Once Angular removes the component from the DOM, subscriptions and intervals tied to that component should be garbage-collected without any extra teardown code."
+      },
+      {
+        "id": "unsubscribe-everything-including-http-is-the-main-rule",
+        "label": "The safest rule is to manually unsubscribe every Observable, including one-off `HttpClient` calls, because Angular and RxJS do not reliably distinguish short-lived and long-lived streams."
+      }
+    ],
+    "correctOptionId": "teardown-bug-long-lived-streams-and-timers-need-cleanup",
+    "rereadPrompt": "Not quite. The important distinction is whether the source completes on its own. One-off HTTP calls usually complete, but long-lived streams like `valueChanges`, `route.params`, intervals, WebSockets, and global listeners keep running until you tear them down."
+  }
+},
   {
     "id": "angular-controlvalueaccessor-vs-custom-two-way-binding",
     "title": "What Is ControlValueAccessor in Angular and Why Is It Better Than Custom Two-Way Binding?",
@@ -5045,11 +5385,31 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "What is ControlValueAccessor in Angular and when to use it?",
-      "description": "ControlValueAccessor is Angular's form bridge for custom inputs, enabling value sync, validation, touched or dirty state, and disabled handling."
-    }
+  "seo": {
+    "title": "What is ControlValueAccessor in Angular and when to use it?",
+    "description": "ControlValueAccessor is Angular's form bridge for custom inputs, enabling value sync, validation, touched or dirty state, and disabled handling."
   },
+  "incidentCard": {
+    "title": "Custom Input Integration Check",
+    "scenario": "A team built a reusable `<app-rating>` component using custom `[(value)]` binding. It updates the number on screen, but when they plug it into a reactive form, validators do not run, `touched` never updates, and disabling the form does not disable the widget. One teammate says, \"Two-way binding already solves this; Angular Forms is being picky.\" Another says, \"This component should be implemented as a ControlValueAccessor so Angular Forms can treat it like a real form control.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "cva-is-the-right-fix-for-real-angular-forms-integration",
+        "label": "The second explanation is better. Custom two-way binding only moves a value around, but ControlValueAccessor connects the component to Angular Forms so validation, touched or dirty state, reset behavior, and disabled handling all work through the normal form APIs."
+      },
+      {
+        "id": "two-way-binding-should-cover-validation-and-disabled-state-by-default",
+        "label": "The first explanation is better. Once a component supports `[(value)]`, Angular should be able to infer validation and disabled behavior automatically without needing a separate forms interface."
+      },
+      {
+        "id": "the-main-fix-is-adding-more-output-events-not-cva",
+        "label": "The better fix is to keep custom two-way binding and just add extra outputs like `blur`, `invalid`, and `disabledChange`. That gives the parent enough hooks to match Angular Forms behavior without using ControlValueAccessor."
+      }
+    ],
+    "correctOptionId": "cva-is-the-right-fix-for-real-angular-forms-integration",
+    "rereadPrompt": "Not quite. The key distinction is value syncing versus forms integration. `[(value)]` can sync state, but CVA is what makes a custom component participate correctly in Angular Forms features like validators, touched state, reset, and disabled propagation."
+  }
+},
   {
     "id": "angular-template-driven-vs-reactive-forms-which-scales",
     "title": "Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?",
@@ -5195,11 +5555,31 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Template-driven vs reactive forms in Angular: which to use?",
-      "description": "Reactive forms scale better for complex, dynamic, and testable form logic, while template-driven forms fit simpler scenarios."
-    }
+  "seo": {
+    "title": "Template-driven vs reactive forms in Angular: which to use?",
+    "description": "Reactive forms scale better for complex, dynamic, and testable form logic, while template-driven forms fit simpler scenarios."
   },
+  "incidentCard": {
+    "title": "Form Strategy Check",
+    "scenario": "A simple signup form grew into a large workflow with dynamic address rows, cross-field validation, conditional enable or disable rules, and unit tests around form logic. The team still uses template-driven bindings because it started small. One teammate says, \"Just keep adding directives in the template. Template-driven forms and reactive forms are basically the same at any size.\" Another says, \"This has crossed into reactive-forms territory because the form model needs to be explicit, testable, and easier to change in code.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "reactive-forms-scale-better-for-complex-dynamic-workflows",
+        "label": "The second explanation is better. Once forms become dynamic, validation-heavy, and full of conditional logic, reactive forms are usually the better fit because the model lives in TypeScript, making the behavior more explicit, testable, and maintainable."
+      },
+      {
+        "id": "template-driven-is-equally-scalable-if-you-keep-template-logic-organized",
+        "label": "The first explanation is better. Template-driven forms scale just as well as reactive forms as long as the team keeps the template tidy and adds the right directives for each new rule."
+      },
+      {
+        "id": "best-practice-is-mixing-template-driven-and-reactive-in-one-form",
+        "label": "The best approach is to mix both patterns in the same form. Use template-driven pieces for simple inputs and reactive controls only for the complex parts so you get the strengths of both without a full rewrite."
+      }
+    ],
+    "correctOptionId": "reactive-forms-scale-better-for-complex-dynamic-workflows",
+    "rereadPrompt": "Not quite. The key lesson is not that template-driven forms are bad, but that reactive forms scale better once the form stops being simple. Dynamic controls, cross-field validation, and testable business rules are where an explicit TypeScript form model pays off."
+  }
+},
   {
     "id": "rxjs-sharereplay-angular-how-it-breaks-your-app",
     "title": "What Is shareReplay in RxJS and How Can It Silently Break Your Angular App?",
@@ -5381,11 +5761,31 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "What does shareReplay do in RxJS and why break Angular apps?",
-      "description": "shareReplay caches and multicasts source emissions, but wrong buffer or refCount settings can retain stale data or leak subscriptions."
-    }
+  "seo": {
+    "title": "What does shareReplay do in RxJS and why break Angular apps?",
+    "description": "shareReplay caches and multicasts source emissions, but wrong buffer or refCount settings can retain stale data or leak subscriptions."
   },
+  "incidentCard": {
+    "title": "Sticky Stream Check",
+    "scenario": "A service wraps a polling stream in `shareReplay(1)` so multiple components can reuse the same data. Later the team notices that after every component leaves the screen, the polling keeps running in the background and stale data sometimes shows up when a user comes back. One teammate says, \"That is just how RxJS caching works, so this is the right tradeoff.\" Another says, \"This is the classic `shareReplay` trap. On long-lived streams, `shareReplay(1)` can keep the source alive and replay outdated values unless you use something like `refCount: true` or define explicit refresh semantics.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "shareReplay-without-lifecycle-control-can-leak-and-cache-stale-state",
+        "label": "The second explanation is better. `shareReplay` is useful, but on long-lived streams it can keep the source subscribed and keep replaying cached data longer than you intended. In Angular, the safer default is usually `shareReplay({ bufferSize: 1, refCount: true })` plus an explicit refresh or invalidation strategy."
+      },
+      {
+        "id": "shareReplay-one-is-always-the-best-default-cache-strategy",
+        "label": "The first explanation is better. If a stream is shared across components, `shareReplay(1)` is almost always the correct default, and background activity or stale values usually point to unrelated bugs elsewhere in the app."
+      },
+      {
+        "id": "shareReplay-problems-mainly-come-from-buffer-size-not-subscription-lifetime",
+        "label": "The main fix is to set a larger replay buffer so newer subscribers get a more complete history. The real problem is usually missing past values, not that the source stays alive too long."
+      }
+    ],
+    "correctOptionId": "shareReplay-without-lifecycle-control-can-leak-and-cache-stale-state",
+    "rereadPrompt": "Not quite. The important lesson is that `shareReplay` is not just a cache; it also changes subscription behavior. That is why `shareReplay(1)` can quietly create leaks or stale-data bugs when used on long-lived streams without `refCount` or explicit invalidation."
+  }
+},
   {
     "id": "angular-http-what-actually-cancels-request",
     "title": "What Actually Cancels an HTTP Request in Angular?",
@@ -5552,11 +5952,31 @@
       "basics"
     ],
     "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "What cancels an HTTP request in Angular HttpClient?",
-      "description": "An Angular HttpClient request is canceled when its subscription is unsubscribed, such as via switchMap, takeUntil, or AsyncPipe cleanup."
-    }
+  "seo": {
+    "title": "What cancels an HTTP request in Angular HttpClient?",
+    "description": "An Angular HttpClient request is canceled when its subscription is unsubscribed, such as via switchMap, takeUntil, or AsyncPipe cleanup."
   },
+  "incidentCard": {
+    "title": "Request Cancellation Check",
+    "scenario": "A search box sends a new HttpClient request on every keystroke. Users type quickly, and older responses sometimes arrive after newer ones. A teammate replaces `switchMap` with `mergeMap` and says, \"It is fine, we can just ignore old responses in the subscribe block. That cancels the old request logically.\" Another teammate says, \"Ignoring a result is not the same as canceling the request. In Angular, the request is actually canceled only when the previous HttpClient Observable is unsubscribed, which is why `switchMap` works here.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "unsubscribe-is-what-actually-cancels-httpclient-requests",
+        "label": "The second explanation is better. In Angular, real cancellation happens when the HttpClient Observable is unsubscribed. `switchMap`, `takeUntil`, and AsyncPipe cleanup can do that. `mergeMap` does not cancel old requests; it just lets them keep running."
+      },
+      {
+        "id": "ignoring-old-results-is-basically-the-same-as-canceling-the-request",
+        "label": "The first explanation is better. Once the UI decides not to use an older response, the browser and Angular treat that request as effectively canceled even if the network call finishes in the background."
+      },
+      {
+        "id": "angular-cancels-requests-automatically-when-a-new-httpclient-call-starts",
+        "label": "The main rule is that Angular automatically cancels any previous HttpClient request to the same endpoint when a new one starts, so operator choice mostly affects only how results are mapped back into the UI."
+      }
+    ],
+    "correctOptionId": "unsubscribe-is-what-actually-cancels-httpclient-requests",
+    "rereadPrompt": "Not quite. The core lesson is simple: real HTTP cancellation in Angular comes from unsubscribe. If nothing unsubscribes from the HttpClient Observable, the request keeps going even if your code stops caring about the result."
+  }
+},
   {
     "id": "angular-hierarchical-dependency-injection-real-bug",
     "title": "Explain Hierarchical Dependency Injection in Angular With a Real Bug Example",
@@ -5705,7 +6125,27 @@
       "debugging",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Duplicate Service Instance Check",
+      "scenario": "A team has `UserCacheService` marked with `providedIn: 'root'`, but one feature component also adds `providers: [UserCacheService]`. Later they notice that cache state updates in most of the app, but inside that feature the data looks like a different copy and resets unexpectedly. One teammate says, \"That cannot be DI-related. A service is a singleton once it is in root.\" Another says, \"This is exactly a hierarchical DI bug. The component-level provider is shadowing the root provider and creating a separate instance for that branch.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "component-provider-can-shadow-root-and-create-a-new-instance",
+          "label": "The second explanation is better. Angular resolves services from the nearest injector upward, so a component-level provider can override the root provider for that subtree and create a separate instance, which is why shared state quietly falls out of sync."
+        },
+        {
+          "id": "provided-in-root-guarantees-one-instance-no-matter-where-else-it-is-listed",
+          "label": "The first explanation is better. Once a service uses `providedIn: 'root'`, Angular always reuses that single instance everywhere, even if the same service is listed again in component or route providers."
+        },
+        {
+          "id": "the-real-problem-is-that-children-do-not-inherit-parent-injectors",
+          "label": "The real issue is that child components do not inherit service instances from parent injectors, so each component naturally ends up with its own copy unless the service is passed in manually."
+        }
+      ],
+      "correctOptionId": "component-provider-can-shadow-root-and-create-a-new-instance",
+      "rereadPrompt": "Not quite. The key lesson is that Angular DI is hierarchical, not globally flat. Where a service is provided determines its scope, and re-providing a root service in a component or lazy-loaded branch can create a second instance."
+    }
   },
   {
     "id": "rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject",
@@ -5844,11 +6284,31 @@
       "basics"
     ],
     "updatedAt": "2026-02-26",
-    "seo": {
-      "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject?",
-      "description": "Use Subject for events, BehaviorSubject for current state, ReplaySubject for buffered history, and AsyncSubject for final-on-complete emission."
-    }
+  "seo": {
+    "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject?",
+    "description": "Use Subject for events, BehaviorSubject for current state, ReplaySubject for buffered history, and AsyncSubject for final-on-complete emission."
   },
+  "incidentCard": {
+    "title": "Late Subscriber State Check",
+    "scenario": "A new widget subscribes to the current filter stream after the page has already loaded. With a plain `Subject`, it renders empty until the user changes the filter again. One teammate says, \"That is normal, just trigger another `.next()` when the widget mounts.\" Another says, \"This stream represents current UI state, so late subscribers should immediately get the latest value. That is a better fit for `BehaviorSubject` or possibly `ReplaySubject(1)` if there is no real initial value.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "current-state-streams-should-give-late-subscribers-the-latest-value",
+        "label": "The second explanation is better. A plain `Subject` only delivers future emissions, so it is weak for \"current state\" streams. If late subscribers need the latest value right away, `BehaviorSubject` is the common choice, or `ReplaySubject(1)` if there is no honest initial value."
+      },
+      {
+        "id": "subject-is-still-best-for-current-state-as-long-as-you-manually-reemit",
+        "label": "The first explanation is better. `Subject` is the most flexible default for UI state, and the clean solution is simply to re-emit the current value whenever a new component subscribes."
+      },
+      {
+        "id": "asyncsubject-is-best-because-new-subscribers-should-wait-for-the-final-filter-value",
+        "label": "The better fix is `AsyncSubject`, because the filter should only be emitted once the app has fully settled, which avoids intermediate states reaching late subscribers."
+      }
+    ],
+    "correctOptionId": "current-state-streams-should-give-late-subscribers-the-latest-value",
+    "rereadPrompt": "Not quite. The key distinction is what late subscribers should receive. `Subject` gives only future emissions, `BehaviorSubject` gives the latest current value, `ReplaySubject` gives buffered history, and `AsyncSubject` emits only the final value after completion."
+  }
+},
   {
     "id": "rxjs-tap-vs-map-angular-when-to-use",
     "title": "RxJS tap vs map in Angular: side effects vs transformation (with real examples)",
@@ -5994,11 +6454,31 @@
       "basics"
     ],
     "updatedAt": "2026-02-26",
-    "seo": {
-      "title": "tap vs map in RxJS: what is the difference?",
-      "description": "Use map to transform emitted values, and use tap for side effects like logging without changing the stream output."
-    }
+  "seo": {
+    "title": "tap vs map in RxJS: what is the difference?",
+    "description": "Use map to transform emitted values, and use tap for side effects like logging without changing the stream output."
   },
+  "incidentCard": {
+    "title": "Operator Intent Check",
+    "scenario": "A teammate writes `tap(user => ({ ...user, fullName: user.first + ' ' + user.last }))` and expects downstream operators to receive the reshaped object. Another teammate says, \"That return value inside `tap` is ignored. If the stream output must change, use `map`; if you are only logging or toggling a flag, use `tap`.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "map-changes-the-emission-tap-only-runs-side-effects",
+        "label": "The second explanation is better. `map` transforms the emitted value that flows to the next operator. `tap` is for side effects like logging, metrics, or setting local flags, and it passes through the original emission unchanged."
+      },
+      {
+        "id": "tap-can-transform-values-as-long-as-you-return-a-new-object",
+        "label": "The first explanation is better. `tap` is basically a lighter version of `map`, so returning a new object there is fine when you want to keep the pipeline concise."
+      },
+      {
+        "id": "best-practice-is-using-tap-for-all-business-logic-and-map-only-for-arrays",
+        "label": "The better rule is to keep most RxJS logic in `tap` because it is more flexible, and reserve `map` mainly for obvious collection-style transformations."
+      }
+    ],
+    "correctOptionId": "map-changes-the-emission-tap-only-runs-side-effects",
+    "rereadPrompt": "Not quite. The key question is whether the next operator should receive a different value. If yes, use `map`. If the value should stay the same and you only need an effect like logging or updating a loading flag, use `tap`."
+  }
+},
   {
     "id": "ngrx-data-flow-end-to-end-angular",
     "title": "NgRx data flow end-to-end in Angular: actions, reducers, effects, selectors",

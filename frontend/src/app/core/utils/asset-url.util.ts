@@ -25,6 +25,21 @@ function warnInvalidBaseOnce(baseUrl: string): void {
     });
 }
 
+function getTrustedAssetOrigins(): string[] {
+    const raw = (environment as any).trustedAssetOrigins;
+    if (!Array.isArray(raw)) return [];
+
+    return raw
+        .map((entry) => {
+            try {
+                return new URL(String(entry)).origin;
+            } catch {
+                return '';
+            }
+        })
+        .filter(Boolean);
+}
+
 export function normalizeAssetPath(path: string): string {
     const raw = String(path || '').replace(/^\/+/, '');
     if (!raw) return 'assets/';
@@ -44,8 +59,9 @@ export function getSafeAssetBase(preferBase?: string): string {
         const origin = getCurrentOrigin();
         const isPreview = candidateUrl.hostname.endsWith('.vercel.app');
         const isSameOrigin = !!origin && candidateUrl.origin === origin;
+        const isTrustedAssetOrigin = getTrustedAssetOrigins().includes(candidateUrl.origin);
 
-        if (isPreview && !isSameOrigin) {
+        if (isPreview && !isSameOrigin && !isTrustedAssetOrigin) {
             warnInvalidBaseOnce(candidateUrl.origin);
             return '';
         }

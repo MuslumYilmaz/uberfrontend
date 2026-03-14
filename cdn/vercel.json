@@ -1,4 +1,18 @@
 {
+  "rewrites": [
+    {
+      "source": "/assets/questions/(.*)",
+      "destination": "/questions/$1"
+    },
+    {
+      "source": "/assets/sb/(.*)",
+      "destination": "/sb/$1"
+    },
+    {
+      "source": "/assets/data-version.json",
+      "destination": "/data-version.json"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

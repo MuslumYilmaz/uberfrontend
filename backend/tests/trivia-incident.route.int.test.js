@@ -1452,6 +1452,366 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
+  test('returns public incident card for angular dependency injection trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-dependency-injection/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-dependency-injection',
+      tech: 'angular',
+      title: 'Injector Scope Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular ngoninit vs constructor trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-ngoninit-vs-constructor/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-ngoninit-vs-constructor',
+      tech: 'angular',
+      title: 'Init Timing Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular pipes trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-pipes/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-pipes',
+      tech: 'angular',
+      title: 'Pure Pipe Update Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular custom two way binding trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-custom-two-way-binding/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-custom-two-way-binding',
+      tech: 'angular',
+      title: 'Two-Way Binding Wiring Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular lifecycle hooks trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-lifecycle-hooks/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-lifecycle-hooks',
+      tech: 'angular',
+      title: 'Hook Placement Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular input output trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-input-output/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-input-output',
+      tech: 'angular',
+      title: 'Input/Output Ownership Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular observables rxjs trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-observables-rxjs/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-observables-rxjs',
+      tech: 'angular',
+      title: 'Stream Cancellation Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular routing trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-routing/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-routing',
+      tech: 'angular',
+      title: 'Route Mapping Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular lazy loading trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-lazy-loading/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-lazy-loading',
+      tech: 'angular',
+      title: 'Load Timing Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular change detection strategies trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-change-detection-strategies/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-change-detection-strategies',
+      tech: 'angular',
+      title: 'OnPush Trigger Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular zonejs change detection trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-zonejs-change-detection/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-zonejs-change-detection',
+      tech: 'angular',
+      title: 'NgZone Boundary Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular ngonchanges vs ngdocheck trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-ngonchanges-vs-ngdocheck/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-ngonchanges-vs-ngdocheck',
+      tech: 'angular',
+      title: 'Change Hook Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular forroot forchild trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-forroot-forchild/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-forroot-forchild',
+      tech: 'angular',
+      title: 'Module Scope Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular performance optimization trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-performance-optimization/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-performance-optimization',
+      tech: 'angular',
+      title: 'Optimization Strategy Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular onpush change detection debugging real bug trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-onpush-change-detection-debugging-real-bug/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-onpush-change-detection-debugging-real-bug',
+      tech: 'angular',
+      title: 'Stale UI Debug Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular rxjs operator choice trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+      tech: 'angular',
+      title: 'Autocomplete Race Condition Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular prevent memory leaks trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-prevent-memory-leaks-unsubscribe-patterns/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-prevent-memory-leaks-unsubscribe-patterns',
+      tech: 'angular',
+      title: 'Leaking Subscription Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular control value accessor trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-controlvalueaccessor-vs-custom-two-way-binding/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-controlvalueaccessor-vs-custom-two-way-binding',
+      tech: 'angular',
+      title: 'Custom Input Integration Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular template driven vs reactive forms trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-template-driven-vs-reactive-forms-which-scales/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-template-driven-vs-reactive-forms-which-scales',
+      tech: 'angular',
+      title: 'Form Strategy Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular share replay trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/rxjs-sharereplay-angular-how-it-breaks-your-app/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'rxjs-sharereplay-angular-how-it-breaks-your-app',
+      tech: 'angular',
+      title: 'Sticky Stream Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular http cancellation trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-http-what-actually-cancels-request/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-http-what-actually-cancels-request',
+      tech: 'angular',
+      title: 'Request Cancellation Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular hierarchical dependency injection trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/angular-hierarchical-dependency-injection-real-bug/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'angular-hierarchical-dependency-injection-real-bug',
+      tech: 'angular',
+      title: 'Duplicate Service Instance Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular subject variants trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject',
+      tech: 'angular',
+      title: 'Late Subscriber State Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular tap vs map trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/rxjs-tap-vs-map-angular-when-to-use/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'rxjs-tap-vs-map-angular-when-to-use',
+      tech: 'angular',
+      title: 'Operator Intent Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
   test('returns public incident card for configured react trivia question', async () => {
     const res = await request(app).get('/api/trivia/react/react-usestate-purpose/incident');
 
@@ -2068,7 +2428,7 @@ describe('Trivia incident routes', () => {
   });
 
   test('returns 404 when incident card is not configured for a trivia question', async () => {
-    const res = await request(app).get('/api/trivia/angular/angular-dependency-injection/incident');
+    const res = await request(app).get('/api/trivia/angular/ngrx-data-flow-end-to-end-angular/incident');
     expect(res.status).toBe(404);
     expect(res.body).toEqual(expect.objectContaining({
       error: expect.stringContaining('Incident card not found'),

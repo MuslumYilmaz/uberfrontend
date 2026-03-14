@@ -10,4 +10,10 @@ describe('asset-url util', () => {
         expect(buildAssetUrl('questions/javascript/coding.json'))
             .toBe('assets/questions/javascript/coding.json');
     });
+
+    it('builds a trusted remote asset url for configured CDN origins', () => {
+        expect(buildAssetUrl('questions/javascript/coding.json', {
+            preferBase: 'https://frontendatlas.vercel.app',
+        })).toBe('https://frontendatlas.vercel.app/assets/questions/javascript/coding.json');
+    });
 });
