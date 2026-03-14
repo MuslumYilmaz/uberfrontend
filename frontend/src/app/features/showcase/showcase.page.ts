@@ -15,7 +15,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { ExperimentService } from '../../core/services/experiment.service';
@@ -29,6 +29,7 @@ import {
   hasCheckoutUrls,
   resolvePaymentsProvider,
 } from '../../core/utils/payments-provider.util';
+import showcaseStatsJson from '../../../assets/questions/showcase-stats.json';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
@@ -42,6 +43,8 @@ type CompanyQuestionCard = {
   note: string;
   link: any[];
 };
+
+const SHOWCASE_STATIC_STATS = showcaseStatsJson as ShowcaseStatsPayload;
 
 @Component({
   standalone: true,
@@ -430,9 +433,8 @@ You can also reset any task back to the starter whenever you want to re-practice
     { name: 'Apple', slug: 'apple', icon: 'A', iconClass: 'fa-brands fa-apple', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
   ];
 
-  companyCounts$?: Observable<ShowcaseStatsPayload['companyCounts']>;
-  totalQuestionCount$?: Observable<number>;
-  private companyCountsLoaded = false;
+  companyCounts: ShowcaseStatsPayload['companyCounts'] = SHOWCASE_STATIC_STATS.companyCounts || {};
+  heroQuestionCount = SHOWCASE_STATIC_STATS.totalQuestions || 0;
 
   explanationVisible = false;
   readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -466,6 +468,7 @@ You can also reset any task back to the starter whenever you want to re-practice
       'showcase',
     );
     this.applyHeroExperimentCopy();
+    this.refreshShowcaseStats();
 
     this.analytics.track('lp_viewed', {
       src: this.readLandingSource(),
@@ -565,7 +568,6 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.activateDemo();
     this.loadTriviaPreview();
     this.loadSystemPreview();
-    this.enableCompanyCounts();
     (Object.keys(this.sectionVisible) as Array<keyof typeof this.sectionVisible>)
       .forEach((key) => { this.sectionVisible[key] = true; });
   }
@@ -578,7 +580,6 @@ You can also reset any task back to the starter whenever you want to re-practice
       return;
     }
     if (key === 'stats') {
-      this.enableCompanyCounts();
       return;
     }
     if (key === 'trivia') {
@@ -590,7 +591,6 @@ You can also reset any task back to the starter whenever you want to re-practice
       return;
     }
     if (key === 'company') {
-      this.enableCompanyCounts();
       this.sectionVisible.company = true;
       return;
     }
@@ -874,18 +874,15 @@ You can also reset any task back to the starter whenever you want to re-practice
     });
   }
 
-  private enableCompanyCounts() {
-    if (this.companyCountsLoaded) return;
-    this.companyCountsLoaded = true;
-    const stats$ = this.qs.loadShowcaseStats({ transferState: false }).pipe(
-      shareReplay({ bufferSize: 1, refCount: true }),
-    );
-
-    this.totalQuestionCount$ = stats$.pipe(
-      map((stats) => stats.totalQuestions),
-    );
-    this.companyCounts$ = stats$.pipe(
-      map((stats) => stats.companyCounts),
-    );
+  private refreshShowcaseStats() {
+    if (!this.isBrowser) return;
+    this.qs.loadShowcaseStats({ transferState: false }).pipe(take(1)).subscribe((stats) => {
+      if (stats.totalQuestions > 0) {
+        this.heroQuestionCount = stats.totalQuestions;
+      }
+      if (Object.keys(stats.companyCounts || {}).length > 0) {
+        this.companyCounts = stats.companyCounts;
+      }
+    });
   }
 }

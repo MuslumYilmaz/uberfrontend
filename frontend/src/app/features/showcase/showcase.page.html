@@ -12,12 +12,7 @@
         <div class="hero-db-impact__kicker">Question bank strength</div>
         <div class="hero-db-impact__row">
           <div class="hero-db-impact__metric">
-            <ng-container *ngIf="totalQuestionCount$ | async as totalQuestions; else countPlaceholder">
-              <span class="hero-db-impact__value">{{ totalQuestions | number }}</span>
-            </ng-container>
-            <ng-template #countPlaceholder>
-              <span class="hero-db-impact__value hero-db-impact__value--placeholder">000</span>
-            </ng-template>
+            <span class="hero-db-impact__value">{{ heroQuestionCount | number }}</span>
             <span class="hero-db-impact__plus">+</span>
           </div>
           <p class="hero-db-impact__copy">
@@ -334,7 +329,7 @@
           <div class="company-note">{{ c.note }}</div>
         </div>
         <div class="company-meta-right">
-          <ng-container *ngIf="companyCounts$ && (companyCounts$ | async) as cc">
+          <ng-container *ngIf="companyCounts as cc">
             <span class="company-count" *ngIf="cc[c.slug]">{{ cc[c.slug].all }} questions</span>
           </ng-container>
           <a class="company-link" [routerLink]="c.link">

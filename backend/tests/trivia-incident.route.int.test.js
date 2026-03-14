@@ -1812,6 +1812,516 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
+  test('returns public incident card for angular ngrx data flow trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/ngrx-data-flow-end-to-end-angular/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'ngrx-data-flow-end-to-end-angular',
+      tech: 'angular',
+      title: 'NgRx Flow Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular ngrx store vs component state trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/ngrx-store-vs-component-state-angular-when-to-use/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'ngrx-store-vs-component-state-angular-when-to-use',
+      tech: 'angular',
+      title: 'State Ownership Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular ngrx reducer purity trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/ngrx-reducer-pure-function-immutability-side-effects/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'ngrx-reducer-pure-function-immutability-side-effects',
+      tech: 'angular',
+      title: 'Reducer Purity Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for angular ngrx selectors memoization trivia question', async () => {
+    const res = await request(app).get('/api/trivia/angular/ngrx-selectors-memoization-derived-state-performance/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'ngrx-selectors-memoization-derived-state-performance',
+      tech: 'angular',
+      title: 'Selector Memoization Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue reactivity vs react concepts trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-reactivity-vs-react-concepts/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-reactivity-vs-react-concepts',
+      tech: 'vue',
+      title: 'Reactivity Model Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue internal rendering pipeline trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-internal-rendering-pipeline/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-internal-rendering-pipeline',
+      tech: 'vue',
+      title: 'Render Pipeline Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue data must be function trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-data-must-be-function/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-data-must-be-function',
+      tech: 'vue',
+      title: 'Shared State Leak Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue reactive interpolation trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-reactive-interpolation-into-dom/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-reactive-interpolation-into-dom',
+      tech: 'vue',
+      title: 'Interpolation Update Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue v-bind reactive attributes trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-v-bind-reactive-attributes/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-v-bind-reactive-attributes',
+      tech: 'vue',
+      title: 'Binding Patch Logic Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue v-if component lifecycle trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-v-if-component-creation-destruction/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-v-if-component-creation-destruction',
+      tech: 'vue',
+      title: 'Toggle Lifecycle Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue v-for keys trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-v-for-keys/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-v-for-keys',
+      tech: 'vue',
+      title: 'List Identity Bug Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue v-model syntax sugar trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-v-model-syntax-sugar-expansion/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-v-model-syntax-sugar-expansion',
+      tech: 'vue',
+      title: 'Model Expansion Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue v-show vs v-if trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-v-show-vs-v-if-dom-lifecycle/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-v-show-vs-v-if-dom-lifecycle',
+      tech: 'vue',
+      title: 'Visibility Strategy Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue computed properties trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-computed-properties/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-computed-properties',
+      tech: 'vue',
+      title: 'Derived State Caching Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue methods in templates trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-methods-in-templates/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-methods-in-templates',
+      tech: 'vue',
+      title: 'Template Method Cost Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue native vs component events trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-native-vs-component-events/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-native-vs-component-events',
+      tech: 'vue',
+      title: 'Event Boundary Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue architecture scalability trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-architecture-decisions-scalability/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-architecture-decisions-scalability',
+      tech: 'vue',
+      title: 'Scalability Architecture Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue computed vs watchers trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-computed-vs-watchers/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-computed-vs-watchers',
+      tech: 'vue',
+      title: 'Derived Value vs Effect Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue lifecycle hooks trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-lifecycle-hooks/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-lifecycle-hooks',
+      tech: 'vue',
+      title: 'Hook Timing Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue directives trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-directives/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-directives',
+      tech: 'vue',
+      title: 'Directive Behavior Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue v-bind v-on template syntax trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-v-bind-v-on-fundamental-template-syntax/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-v-bind-v-on-fundamental-template-syntax',
+      tech: 'vue',
+      title: 'Template Binding Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue child mutates prop directly trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-child-mutates-prop-directly/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-child-mutates-prop-directly',
+      tech: 'vue',
+      title: 'Prop Ownership Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue composition api vs mixins trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-composition-api-vs-mixins/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-composition-api-vs-mixins',
+      tech: 'vue',
+      title: 'Logic Reuse Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue sfc vs global components trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-sfc-vs-global-components/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-sfc-vs-global-components',
+      tech: 'vue',
+      title: 'Component Scope Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue conditional list rendering trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-conditional-list-rendering/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-conditional-list-rendering',
+      tech: 'vue',
+      title: 'Render Strategy Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue router navigation trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-router-navigation/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-router-navigation',
+      tech: 'vue',
+      title: 'Navigation Flow Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue reactivity system trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-reactivity-system/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-reactivity-system',
+      tech: 'vue',
+      title: 'Reactivity Model Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue composition api trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-composition-api/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-composition-api',
+      tech: 'vue',
+      title: 'Composition API Reasoning Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vuex state management trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vuex-state-management/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vuex-state-management',
+      tech: 'vue',
+      title: 'Shared State Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue virtual dom diffing trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-virtual-dom-diffing/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-virtual-dom-diffing',
+      tech: 'vue',
+      title: 'Diffing Strategy Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue slots trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-slots-default-named-scoped-slot-props/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-slots-default-named-scoped-slot-props',
+      tech: 'vue',
+      title: 'Slot Design Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue provide inject tradeoffs trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-provide-inject-vs-prop-drilling-tradeoffs/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-provide-inject-vs-prop-drilling-tradeoffs',
+      tech: 'vue',
+      title: 'Dependency Wiring Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue declare emits trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-why-declare-emits-type-safety-maintenance/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-why-declare-emits-type-safety-maintenance',
+      tech: 'vue',
+      title: 'Emit Contract Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue ref vs reactive trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-ref-vs-reactive-difference-traps/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-ref-vs-reactive-difference-traps',
+      tech: 'vue',
+      title: 'State Primitive Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
   test('returns public incident card for configured react trivia question', async () => {
     const res = await request(app).get('/api/trivia/react/react-usestate-purpose/incident');
 
@@ -2428,7 +2938,7 @@ describe('Trivia incident routes', () => {
   });
 
   test('returns 404 when incident card is not configured for a trivia question', async () => {
-    const res = await request(app).get('/api/trivia/angular/ngrx-data-flow-end-to-end-angular/incident');
+    const res = await request(app).get('/api/trivia/vue/vue-destructuring-breaks-reactivity-torefs-toref/incident');
     expect(res.status).toBe(404);
     expect(res.body).toEqual(expect.objectContaining({
       error: expect.stringContaining('Incident card not found'),

@@ -197,11 +197,6 @@
   text-shadow: 0 10px 28px rgba(244, 193, 93, 0.24);
 }
 
-.hero-db-impact__value--placeholder {
-  opacity: 0.38;
-  text-shadow: none;
-}
-
 .hero-db-impact__plus {
   margin-left: 2px;
   margin-top: 3px;

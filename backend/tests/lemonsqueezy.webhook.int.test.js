@@ -48,7 +48,7 @@ beforeAll(async () => {
   BillingEvent = require('../models/BillingEvent');
   PendingEntitlement = require('../models/PendingEntitlement');
 
-  await connectToMongo(process.env.MONGO_URL);
+  await connectToMongo(process.env.MONGO_URL_TEST);
   await BillingEvent.init();
   await PendingEntitlement.init();
 });

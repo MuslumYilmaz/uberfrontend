@@ -6586,11 +6586,31 @@
       "state-management"
     ],
     "updatedAt": "2026-02-26",
-    "seo": {
-      "title": "How does NgRx data flow work in Angular?",
-      "description": "NgRx data flows from dispatched actions to reducers and effects, then selectors expose updated state back to components."
-    }
+  "seo": {
+    "title": "How does NgRx data flow work in Angular?",
+    "description": "NgRx data flows from dispatched actions to reducers and effects, then selectors expose updated state back to components."
   },
+  "incidentCard": {
+    "title": "NgRx Flow Check",
+    "scenario": "A teammate wants to handle a \"Load Books\" click by calling the API directly inside the reducer so the reducer can both fetch data and update state in one place. Another teammate says, \"That breaks the NgRx flow. The component should dispatch an action, an effect should do the async API work, the reducer should stay pure and build the next state, and selectors should expose the view model back to the component.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "effects-handle-async-reducers-stay-pure-selectors-read-state",
+        "label": "The second explanation is better. In NgRx, reducers are pure synchronous state transitions. Async work belongs in effects, and selectors are the read layer that derives what the UI needs after state changes."
+      },
+      {
+        "id": "reducers-should-own-api-calls-so-state-updates-stay-centralized",
+        "label": "The first explanation is better. Reducers are the best place for HTTP calls because they already control state updates, so keeping fetch logic there reduces indirection and makes the flow easier to follow."
+      },
+      {
+        "id": "components-should-call-api-and-manually-patch-store-state",
+        "label": "The better pattern is to keep effects optional and let components call the API directly, then dispatch a final success action only after they already hold the response locally."
+      }
+    ],
+    "correctOptionId": "effects-handle-async-reducers-stay-pure-selectors-read-state",
+    "rereadPrompt": "Not quite. The point of NgRx is the predictable loop: components dispatch intent, effects handle async work, reducers compute the next immutable state, and selectors expose derived read models. If reducers start doing HTTP, that separation breaks."
+  }
+},
   {
     "id": "ngrx-store-vs-component-state-angular-when-to-use",
     "title": "NgRx Store vs local component state in Angular: global vs local, and when to use NgRx",
@@ -6722,11 +6742,31 @@
       "basics"
     ],
     "updatedAt": "2026-02-26",
-    "seo": {
-      "title": "NgRx store vs component state in Angular: when to use?",
-      "description": "Use local component state for UI-local short-lived data, and use NgRx Store for shared, long-lived, or cross-feature state."
-    }
+  "seo": {
+    "title": "NgRx store vs component state in Angular: when to use?",
+    "description": "Use local component state for UI-local short-lived data, and use NgRx Store for shared, long-lived, or cross-feature state."
   },
+  "incidentCard": {
+    "title": "State Ownership Check",
+    "scenario": "A team wants to put every UI flag into NgRx, including whether a filter drawer is open on one page. Another teammate pushes back and says, \"That drawer state is short-lived and local to one screen. NgRx should be reserved for shared, durable, or business-critical state like user session, shared filters, and entity data that multiple parts of the app depend on.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "keep-ephemeral-ui-state-local-and-promote-shared-business-state-to-store",
+        "label": "The second explanation is better. Local component state is usually the right home for short-lived view details like whether a drawer or modal is open, while NgRx Store is better for shared state that multiple features depend on or that needs a clear global source of truth."
+      },
+      {
+        "id": "putting-all-state-in-store-is-the-cleanest-default-even-for-view-flags",
+        "label": "The first explanation is better. The cleanest Angular architecture is to move every piece of state into NgRx so developers never have to decide between local and global ownership."
+      },
+      {
+        "id": "store-should-be-avoided-unless-components-are-impossible-to-test",
+        "label": "The better rule is to avoid Store almost entirely and keep nearly everything in components, only introducing NgRx when testing has already become unmanageable."
+      }
+    ],
+    "correctOptionId": "keep-ephemeral-ui-state-local-and-promote-shared-business-state-to-store",
+    "rereadPrompt": "Not quite. The useful rule is not \"always local\" or \"always Store.\" Use local state for screen-specific UI mechanics, and use Store when the state is shared, durable, or important enough that multiple parts of the app need one source of truth."
+  }
+},
   {
     "id": "ngrx-reducer-pure-function-immutability-side-effects",
     "title": "NgRx reducer pure function in practice: immutability, side effects, and common mistakes",
@@ -6837,11 +6877,31 @@
       "basics"
     ],
     "updatedAt": "2026-02-26",
-    "seo": {
-      "title": "What is a pure reducer in NgRx?",
-      "description": "An NgRx reducer is a pure function that returns new state from current state and action without side effects or mutations."
-    }
+  "seo": {
+    "title": "What is a pure reducer in NgRx?",
+    "description": "An NgRx reducer is a pure function that returns new state from current state and action without side effects or mutations."
   },
+  "incidentCard": {
+    "title": "Reducer Purity Check",
+    "scenario": "A teammate wants to generate an ID with `Math.random()`, call an API, and navigate the router directly inside a reducer so everything happens in one place after `placeOrder`. Another teammate says, \"That breaks the reducer contract. Reducers should only compute the next immutable state from the current state and action. IDs, HTTP, routing, and other side effects belong before dispatch or inside effects.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "reducers-must-stay-pure-immutable-and-side-effect-free",
+        "label": "The second explanation is better. A reducer should be a pure, synchronous state transition: same input gives the same output, with no mutation and no side effects. API calls, routing, logging, timestamps, and random IDs belong outside reducers, typically in effects or before dispatch."
+      },
+      {
+        "id": "reducers-should-own-side-effects-to-keep-state-logic-centralized",
+        "label": "The first explanation is better. Reducers are the best place for follow-up work like HTTP calls and navigation because they already decide how state changes, so centralizing everything there keeps the architecture simpler."
+      },
+      {
+        "id": "mutation-is-fine-in-reducers-if-you-return-the-same-state-reference-consistently",
+        "label": "The better rule is to allow mutation inside reducers as long as the code path stays predictable, because purity is mostly about avoiding async behavior, not about object references."
+      }
+    ],
+    "correctOptionId": "reducers-must-stay-pure-immutable-and-side-effect-free",
+    "rereadPrompt": "Not quite. The key idea is that reducers only compute next state. If logic depends on randomness, time, HTTP, router calls, service calls, or in-place mutation, it no longer behaves like a pure reducer and will break predictability and memoization."
+  }
+},
   {
     "id": "ngrx-selectors-memoization-derived-state-performance",
     "title": "NgRx selectors beyond getting state: memoization, derived state, and Angular performance",
@@ -6974,9 +7034,29 @@
       "performance"
     ],
     "updatedAt": "2026-02-26",
-    "seo": {
-      "title": "What are NgRx selectors and how does memoization work?",
-      "description": "NgRx selectors derive and read state efficiently, and memoization reuses the last result until selector inputs change."
-    }
+  "seo": {
+    "title": "What are NgRx selectors and how does memoization work?",
+    "description": "NgRx selectors derive and read state efficiently, and memoization reuses the last result until selector inputs change."
+  },
+  "incidentCard": {
+    "title": "Selector Memoization Check",
+    "scenario": "A products page selects the whole root store in the component, then filters, sorts, and rebuilds a new view-model object on every emission. The UI starts recalculating even when unrelated parts of the app change. One teammate says, \"Selectors are basically just getters, so doing derivation in the component is fine.\" Another says, \"This logic belongs in composed memoized selectors. Selectors are the read-model layer, and keeping derived state there avoids repeated work and unstable references.\" Which explanation is better?",
+    "options": [
+      {
+        "id": "memoized-selectors-should-own-derived-read-models",
+        "label": "The second explanation is better. NgRx selectors are not just property readers; they are a memoized read layer. Putting filter, sort, and view-model shaping into selectors keeps components thinner and avoids unnecessary recalculation when unrelated state changes."
+      },
+      {
+        "id": "component-level-mapping-is-equivalent-to-selectors-because-store-already-memoizes-everything",
+        "label": "The first explanation is better. Once state comes from the Store, Angular and NgRx already handle enough caching under the hood that doing derived mapping inside the component has no meaningful performance or architecture downside."
+      },
+      {
+        "id": "best-practice-is-to-select-root-state-and-rebuild-view-models-every-time-for-freshness",
+        "label": "The better rule is to always select the broadest state possible in components so the UI never risks using stale cached data, even if that means rebuilding new arrays and objects on each emission."
+      }
+    ],
+    "correctOptionId": "memoized-selectors-should-own-derived-read-models",
+    "rereadPrompt": "Not quite. The important idea is that selectors are the memoized read-model layer. When you push filtering, sorting, and VM construction into selectors, components stay simpler and Angular avoids extra recalculation when the selector inputs did not actually change."
   }
+}
 ]

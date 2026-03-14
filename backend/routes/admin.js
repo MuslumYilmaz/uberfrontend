@@ -1,5 +1,15 @@
 const router = require('express').Router();
+const { getMongoDiagnostics } = require('../config/mongo');
 const User = require('../models/User');
+
+// GET /api/admin/diagnostics/db
+router.get('/diagnostics/db', (_req, res) => {
+    try {
+        res.json(getMongoDiagnostics());
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // GET /api/admin/users
 router.get('/users', async (_req, res) => {

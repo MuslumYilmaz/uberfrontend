@@ -132,6 +132,26 @@
     "seo": {
       "title": "Vue Reactivity vs React: Conceptual Differences That Matter",
       "description": "Vue's reactivity auto-tracks dependencies and updates affected views, while React uses explicit state updates and re-render flow."
+    },
+    "incidentCard": {
+      "title": "Reactivity Model Check",
+      "scenario": "A teammate says, \"Vue and React basically work the same way. Both just re-run everything whenever state changes, so Vue reactivity is mostly syntax sugar.\" Another teammate says, \"Not really. Vue tracks which reactive values a render or computed property actually touched, then updates only those dependents. React’s default mental model is different: state updates trigger a component re-render, and you add memoization patterns when you want to skip work.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "vue-tracks-dependencies-while-react-defaults-to-component-rerendering",
+          "label": "The second explanation is better. Vue’s reactivity system is built around dependency tracking and batched updates to the parts of the UI that actually depend on changed state. React’s default model is to re-run component render logic after state updates, then optimize from there when needed."
+        },
+        {
+          "id": "vue-and-react-have-the-same-update-model-and-only-differ-in-template-syntax",
+          "label": "The first explanation is better. The real difference between Vue and React is mostly templates versus JSX, while their state-update behavior is effectively the same under the hood for day-to-day app work."
+        },
+        {
+          "id": "vue-reactivity-mainly-exists-for-two-way-binding-not-derived-state-or-precision",
+          "label": "The better explanation is that Vue reactivity mostly exists to support convenient `v-model` bindings, while performance and derived-state behavior are handled separately from the core reactivity system."
+        }
+      ],
+      "correctOptionId": "vue-tracks-dependencies-while-react-defaults-to-component-rerendering",
+      "rereadPrompt": "Not quite. The key lesson is that Vue’s reactivity is not just convenient syntax. It is a dependency-tracking update model that solves DOM sync, derived state, and precise updates differently from React’s render-and-reconcile mental model."
     }
   },
   {
@@ -263,6 +283,26 @@
     "seo": {
       "title": "Vue rendering pipeline: state to DOM",
       "description": "Vue tracks reactive reads with effects, schedules updates in a job queue, and patches the virtual DOM to update only changed nodes."
+    },
+    "incidentCard": {
+      "title": "Render Pipeline Check",
+      "scenario": "A teammate says, \"Vue probably just polls state and refreshes the component when something looks different.\" Another teammate says, \"No. Vue records which reactive properties were read during render, then `trigger()` schedules only the dependent component effect, batches the job, and patches the DOM after re-render.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "vue-tracks-reads-triggers-dependent-effects-and-batches-dom-patches",
+          "label": "The second explanation is better. Vue 3 uses reactive tracking, so renders run inside effects that record which properties they touched. When one of those properties changes, Vue schedules the dependent update, batches it, then patches only what changed in the DOM."
+        },
+        {
+          "id": "vue-mainly-polls-state-and-refreshes-components-on-a-timer",
+          "label": "The first explanation is better. Vue’s internal update model is mostly a fast polling loop, which is why components eventually refresh after state changes even if dependency tracking is not explicit."
+        },
+        {
+          "id": "vue-rerenders-every-component-immediately-on-every-reactive-write",
+          "label": "The better explanation is that Vue responds to any reactive write by re-rendering all active components right away, then relies on virtual DOM diffing alone to keep the cost manageable."
+        }
+      ],
+      "correctOptionId": "vue-tracks-reads-triggers-dependent-effects-and-batches-dom-patches",
+      "rereadPrompt": "Not quite. The key loop is: reactive read during render gets tracked, reactive write triggers the dependent effect, Vue batches the update, then re-renders and patches the DOM. That is why Vue updates feel precise instead of brute-force."
     }
   },
   {
@@ -367,6 +407,26 @@
     "seo": {
       "title": "Why Vue Component data Must Be a Function",
       "description": "In Vue components, data must be a function so each instance gets its own state object and tracks state independently."
+    },
+    "incidentCard": {
+      "title": "Shared State Leak Check",
+      "scenario": "A team renders two copies of the same `CounterCard` component. Clicking the button in one card also changes the count in the other. One teammate says, \"Vue reactivity is just syncing them faster than expected.\" Another says, \"The real bug is that `data` was defined as a plain object, so both component instances share the same state reference. `data()` needs to return a fresh object for each instance.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "data-must-return-a-new-object-per-instance-to-avoid-shared-state",
+          "label": "The second explanation is better. In reusable Vue components, `data()` should act like a factory and return a fresh state object for each instance. If `data` is a plain object, instances can leak state into each other because they are reading and mutating the same reference."
+        },
+        {
+          "id": "shared-updates-happen-because-vue-reactivity-links-identical-templates",
+          "label": "The first explanation is better. When two components share the same template and reactive keys, Vue links them internally, so matching state updates can appear in both even when their data is separate."
+        },
+        {
+          "id": "best-practice-is-using-one-shared-data-object-and-resetting-on-mount",
+          "label": "The better approach is to keep a shared `data` object for consistency, then manually reset its fields in `mounted()` so each instance starts from the same baseline without unexpected drift."
+        }
+      ],
+      "correctOptionId": "data-must-return-a-new-object-per-instance-to-avoid-shared-state",
+      "rereadPrompt": "Not quite. The key lesson is instance isolation. A reusable component needs its own state object per instance, which is why Vue requires `data()` in component definitions instead of a shared plain object."
     }
   },
   {
@@ -460,6 +520,26 @@
     "seo": {
       "title": "Vue Reactive Interpolation: From {{ }} to DOM Updates",
       "description": "Vue compiles template interpolation into render functions, tracks reactive dependencies, and patches only the DOM nodes whose values changed."
+    },
+    "incidentCard": {
+      "title": "Interpolation Update Check",
+      "scenario": "A teammate changes `count` and says, \"Vue probably re-renders the whole DOM tree, and `{{ rawHtml }}` should also inject HTML tags directly into the page.\" Another teammate says, \"Not quite. Vue compiles interpolation into render logic, tracks the reactive reads used by that template, then patches only the affected DOM nodes. And plain `{{ }}` interpolation escapes HTML by default; `v-html` is the opt-in path for raw HTML.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "vue-patches-affected-nodes-and-escapes-html-in-interpolation",
+          "label": "The second explanation is better. Vue tracks the reactive values used during render, schedules the dependent update, and patches only the dynamic DOM parts that changed. Standard `{{ }}` interpolation renders escaped text, while `v-html` is the explicit and more dangerous way to inject HTML."
+        },
+        {
+          "id": "vue-rebuilds-the-full-dom-and-interpolation-renders-html-tags-directly",
+          "label": "The first explanation is better. Vue treats interpolation as raw HTML output during each full re-render, which is why changing one reactive value refreshes the whole DOM and can render embedded tags automatically."
+        },
+        {
+          "id": "interpolation-and-v-html-are-equivalent-because-reactivity-handles-safety",
+          "label": "The better explanation is that `{{ value }}` and `v-html` behave the same once the value is reactive, because Vue’s reactivity system already handles both rendering and HTML safety internally."
+        }
+      ],
+      "correctOptionId": "vue-patches-affected-nodes-and-escapes-html-in-interpolation",
+      "rereadPrompt": "Not quite. The core lesson is that Vue interpolation is compiled, reactive, and escaped by default. State changes trigger a scheduled re-render and DOM patch for the affected nodes, not a blind full-DOM rebuild, and raw HTML requires `v-html`."
     }
   },
   {
@@ -593,6 +673,26 @@
     "seo": {
       "title": "How v-bind Maps Vue Reactivity to DOM Attributes",
       "description": "v-bind maps reactive state to DOM attributes or properties, and Vue updates bindings as reactivity tracks source changes."
+    },
+    "incidentCard": {
+      "title": "Binding Patch Logic Check",
+      "scenario": "A teammate is debugging a button that toggles `loading` and says, \"Vue probably attaches a watcher to every bound attribute and rewrites the whole element each time. `:disabled`, `:value`, and `:class` are basically all just string attributes anyway.\" Another teammate says, \"Not really. `v-bind` is compiled into render logic, Vue tracks the reactive reads during render, and on update it patches only the changed props or attributes. It also special-cases things like class/style and often prefers DOM properties for live form and boolean state.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "v-bind-compiles-reactive-reads-and-patches-only-changed-props",
+          "label": "The second explanation is better. `v-bind` becomes render code, the bound reactive values are tracked when render runs, and updates patch only the changed DOM props or attributes. Vue also handles class, style, booleans, and form-related bindings with special runtime rules."
+        },
+        {
+          "id": "v-bind-creates-per-attribute-watchers-and-rewrites-whole-elements",
+          "label": "The first explanation is better. Each `v-bind` creates its own attribute watcher, so when one value changes Vue rebuilds the element markup and writes all bindings back as plain HTML attributes."
+        },
+        {
+          "id": "v-bind-always-uses-dom-properties-so-attributes-do-not-matter",
+          "label": "The better explanation is that Vue skips attribute patching entirely and always writes directly to DOM properties, which means `class`, `aria-*`, SVG bindings, and boolean attributes all behave the same way."
+        }
+      ],
+      "correctOptionId": "v-bind-compiles-reactive-reads-and-patches-only-changed-props",
+      "rereadPrompt": "Not quite. The key idea is that `v-bind` is part of the render pipeline, not a separate watcher per attribute. Vue tracks reactive reads during render, schedules the component update, then patches only the affected props or attributes with special handling for cases like class, style, booleans, and form state."
     }
   },
   {
@@ -733,6 +833,26 @@
     "seo": {
       "title": "How Does v-if Affect Component Creation and Destruction in Vue?",
       "description": "v-if removes and recreates components, so Vue tracks mount/unmount cycles and local component state resets on each toggle."
+    },
+    "incidentCard": {
+      "title": "Toggle Lifecycle Check",
+      "scenario": "A teammate hides a form component with `v-if` and is surprised that the input text, timer, and local counter all reset when the panel opens again. They say, \"That seems wrong. `v-if` should work like `display: none`, so the component instance should stay alive.\" Another teammate says, \"`v-if` actually removes that branch. For a component, that means unmounting the instance and destroying its local state. If you need cheap toggles while keeping state, `v-show` is usually the better fit.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "v-if-unmounts-component-and-v-show-keeps-instance-mounted",
+          "label": "The second explanation is better. `v-if` destroys the component instance when false and creates a fresh one when true again, so local state resets and cleanup hooks run. `v-show` keeps the instance mounted and usually just toggles visibility."
+        },
+        {
+          "id": "v-if-keeps-instance-mounted-and-only-hides-dom-like-v-show",
+          "label": "The first explanation is better. `v-if` keeps the component instance in memory and only removes the visible DOM, so local state should survive across toggles unless you manually clear it."
+        },
+        {
+          "id": "v-if-resets-state-only-because-refs-are-reactive-not-because-of-unmount",
+          "label": "The better explanation is that Vue resets local state after `v-if` toggles mainly because refs are re-evaluated on each render, not because the component was ever actually destroyed."
+        }
+      ],
+      "correctOptionId": "v-if-unmounts-component-and-v-show-keeps-instance-mounted",
+      "rereadPrompt": "Not quite. The key lesson is that `v-if` is structural: it mounts and unmounts branches. For components, that means a fresh instance on the next toggle, which resets local state. Use `v-show` when you want fast visibility toggles without destroying the instance."
     }
   },
   {
@@ -852,6 +972,26 @@
     "seo": {
       "title": "Why Are Stable Keys Required in Vue v-for Lists?",
       "description": "Keys in v-for give each item a stable identity, so Vue tracks the right node and patches updates without DOM mismatch bugs."
+    },
+    "incidentCard": {
+      "title": "List Identity Bug Check",
+      "scenario": "A team has an editable list of rows with inputs and expand/collapse state. After sorting the list, the typed text and toggled rows seem to jump to different items. One teammate says, \"That should be fine. Vue can just diff by position, and `:key=\"index\"` is basically the same as a real key.\" Another teammate says, \"That is exactly the problem. Vue needs a stable key per data item so it can keep the right DOM node and child instance attached to the right row. Using the index turns identity into position, so state can shift when the list reorders.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "stable-keys-preserve-item-identity-across-reorder",
+          "label": "The second explanation is better. Stable keys like `item.id` let Vue match each old node and component instance to the same logical data item across inserts, deletes, and reorders, so input state and child state stay with the correct row."
+        },
+        {
+          "id": "index-keys-work-the-same-as-real-keys-for-dynamic-lists",
+          "label": "The first explanation is better. Vue mainly compares rendered content, so using the array index as the key is effectively the same as using a stable id even when the list is sorted or filtered."
+        },
+        {
+          "id": "keys-are-mostly-performance-hints-not-correctness-boundaries",
+          "label": "The better explanation is that keys are mostly just a performance hint. Missing or unstable keys might make updates slower, but they should not change which DOM state or child component instance belongs to which item."
+        }
+      ],
+      "correctOptionId": "stable-keys-preserve-item-identity-across-reorder",
+      "rereadPrompt": "Not quite. The main lesson is that keys are about correctness first, not just speed. Vue uses `type + key` to preserve identity across updates. If the key is missing or tied to position like `index`, DOM state and child component state can drift to the wrong item when the list changes."
     }
   },
   {
@@ -988,6 +1128,26 @@
     "seo": {
       "title": "What Does v-model Expand To in Vue Templates?",
       "description": "v-model is syntax sugar that expands to prop binding plus update events, and Vue tracks model changes through those bindings."
+    },
+    "incidentCard": {
+      "title": "Model Expansion Check",
+      "scenario": "A teammate says, \"`v-model` is its own two-way binding engine. Vue handles sync magically, so native inputs and custom components all use the same hidden mechanism.\" Another teammate says, \"Not really. `v-model` is compiler sugar for a binding plus an update listener. On a text input it becomes `:value` with `@input`, on a checkbox it uses `:checked` with `@change`, and on a Vue 3 component it becomes `:modelValue` with `@update:modelValue` unless you use an argument like `v-model:title`.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "v-model-expands-to-binding-plus-update-listener-with-control-specific-details",
+          "label": "The second explanation is better. `v-model` is syntax sugar, not a separate runtime binding system. Vue rewrites it into the appropriate prop or DOM binding plus the matching update event, and that expansion differs for text inputs, checkboxes, selects, and custom components."
+        },
+        {
+          "id": "v-model-uses-one-hidden-two-way-binding-engine-for-all-elements",
+          "label": "The first explanation is better. Vue keeps `v-model` separate from normal prop and event handling, which is why native form elements and custom components all sync through the same internal two-way binding path."
+        },
+        {
+          "id": "v-model-only-desugars-for-native-inputs-but-not-for-components",
+          "label": "The better explanation is that `v-model` is only compiler sugar on native form controls. On custom components it works differently at runtime and does not map to normal props and emitted update events."
+        }
+      ],
+      "correctOptionId": "v-model-expands-to-binding-plus-update-listener-with-control-specific-details",
+      "rereadPrompt": "Not quite. The main lesson is that `v-model` is just shorthand for “bind current value and listen for updates.” The exact expansion depends on the target: text inputs, checkboxes, selects, and Vue 3 components use different prop or event combinations."
     }
   },
   {
@@ -1112,6 +1272,26 @@
     "seo": {
       "title": "What Is the Difference Between v-show and v-if in Vue?",
       "description": "v-if adds or removes DOM nodes, while v-show toggles display on mounted nodes, and Vue tracks state without destroying the element."
+    },
+    "incidentCard": {
+      "title": "Visibility Strategy Check",
+      "scenario": "A sidebar panel opens and closes constantly during the day. The team wants the panel form state to stay intact between toggles. One teammate says, \"Use `v-if` so the panel is hidden efficiently. It should keep the same component instance around and just remove it from view.\" Another teammate says, \"If we want cheap toggles and preserved local state, `v-show` is the better fit because the component stays mounted. `v-if` actually mounts and unmounts the branch, which resets local state but does stop background work while it is off.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "v-show-keeps-instance-mounted-while-v-if-unmounts-it",
+          "label": "The second explanation is better. `v-show` keeps the DOM and component instance mounted and only toggles visibility, so local state survives. `v-if` removes the branch entirely, which resets local state on the next mount but also avoids doing work while hidden."
+        },
+        {
+          "id": "v-if-and-v-show-both-preserve-state-but-v-if-is-faster-for-frequent-toggles",
+          "label": "The first explanation is better. `v-if` and `v-show` mainly differ in styling, not lifecycle, so both preserve component state and `v-if` is usually the better default for frequently toggled UI."
+        },
+        {
+          "id": "v-show-unmounts-components-but-leaves-dom-placeholders-behind",
+          "label": "The better explanation is that `v-show` is the option that unmounts components while leaving a lightweight placeholder in the DOM, which is why it both preserves performance and clears component effects."
+        }
+      ],
+      "correctOptionId": "v-show-keeps-instance-mounted-while-v-if-unmounts-it",
+      "rereadPrompt": "Not quite. The core distinction is lifecycle: `v-if` adds and removes branches from the DOM, so component instances are destroyed and recreated. `v-show` keeps the same instance alive and only toggles `display`, which is why it preserves local state and makes frequent toggles cheap."
     }
   },
   {
@@ -1219,6 +1399,26 @@
     "seo": {
       "title": "What Are Computed Properties in Vue and When Should You Use Them?",
       "description": "Computed properties are cached derived values, and Vue tracks their dependencies so recalculation happens only when source state changes."
+    },
+    "incidentCard": {
+      "title": "Derived State Caching Check",
+      "scenario": "A teammate calculates a cart total and filtered label inside a method that is called from the template. The page feels slower whenever unrelated UI state changes, and they say, \"That is just how Vue works. A computed property would run on every render too, so methods are basically the same.\" Another teammate says, \"For derived state, a computed property is the better fit because Vue caches it and only re-evaluates it when the reactive dependencies it used actually change. Methods called from the template run again every render, and computed getters should stay pure.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "computed-caches-derived-state-until-dependencies-change",
+          "label": "The second explanation is better. Computed properties are cached reactive getters, so Vue reuses the last value until one of the tracked dependencies changes. Template methods do not get that caching and will run again on each component render."
+        },
+        {
+          "id": "computed-and-template-methods-rerun-identically-on-every-render",
+          "label": "The first explanation is better. Computed properties and template methods are equivalent in practice because both are evaluated every time Vue renders the component, so the only real difference is style."
+        },
+        {
+          "id": "computed-is-mainly-for-mutating-state-in-response-to-renders",
+          "label": "The better explanation is that computed properties are most useful when you want to mutate state automatically during rendering, since Vue treats computed getters as the right place for side effects tied to derived values."
+        }
+      ],
+      "correctOptionId": "computed-caches-derived-state-until-dependencies-change",
+      "rereadPrompt": "Not quite. The key lesson is that computed properties are cached derived state. Vue tracks the reactive values they read, marks them dirty when those dependencies change, and recomputes on next access. Template methods do not have that caching, and computed getters should remain pure."
     }
   },
   {
@@ -1323,6 +1523,26 @@
     "seo": {
       "title": "What Happens When You Call Methods in Vue Templates?",
       "description": "Methods called in Vue templates run on every render and are not cached. Vue tracks reactive changes, but these method calls execute each re-render."
+    },
+    "incidentCard": {
+      "title": "Template Method Cost Check",
+      "scenario": "A teammate calls `formatPrice(item)` directly in the template for every row in a big list. The page gets janky whenever unrelated state like the theme changes, and they say, \"That method should only run when the item price changes because Vue knows its dependencies.\" Another teammate says, \"Not if it is called from the template. Vue executes that method during render, so it runs again every time the component re-renders. If the work is derived state or expensive formatting, a computed structure or precomputed lookup is usually the better fit.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "template-methods-rerun-on-every-render-and-are-not-cached",
+          "label": "The second explanation is better. A method called from the template runs during render and will execute again on every component re-render, even when unrelated reactive state caused that render. If the result is derived state or expensive work, computed or precomputed data is the safer choice."
+        },
+        {
+          "id": "template-methods-only-rerun-when-their-argument-values-change",
+          "label": "The first explanation is better. Vue tracks the arguments passed into template methods and only re-executes them when those argument values change, which makes them effectively cached like computed properties."
+        },
+        {
+          "id": "template-methods-are-best-place-for-side-effects-during-render",
+          "label": "The better explanation is that template methods are the right place for side effects such as logging, mutation, or API calls, because render-time execution keeps them synchronized with the latest state."
+        }
+      ],
+      "correctOptionId": "template-methods-rerun-on-every-render-and-are-not-cached",
+      "rereadPrompt": "Not quite. The key lesson is that template methods are just function calls inside render. They rerun whenever the component rerenders, they are not cached like computed properties, and they should stay pure to avoid performance issues and render-time side effects."
     }
   },
   {
@@ -1481,6 +1701,26 @@
     "seo": {
       "title": "How Do Native and Component Events Differ in Vue?",
       "description": "Native events come from DOM elements, while component events are emitted with $emit. Vue tracks listeners differently for DOM nodes and component emits."
+    },
+    "incidentCard": {
+      "title": "Event Boundary Check",
+      "scenario": "A parent uses `<BaseButton @click=\"save\" />` and expects it to behave exactly like a DOM button click bubbling through the page. The child component never emits `click`, and a teammate says, \"That should still work because component events bubble through the DOM just like native events.\" Another teammate says, \"Not by default. Native DOM events come from real elements and bubble through the DOM, but component events only happen when the child emits them and they go to the parent listener. On a component tag, `@click` can mean a component-emitted event or, in Vue 3, an undeclared listener falling through to the root element.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "native-dom-events-and-component-emits-are-different-boundaries",
+          "label": "The second explanation is better. Native DOM events originate on real elements and bubble through the DOM, while component events only happen when the child explicitly emits them and they do not DOM-bubble through ancestor components."
+        },
+        {
+          "id": "component-events-bubble-like-native-events-even-without-emits",
+          "label": "The first explanation is better. A parent listening with `@click` on a component tag will always receive the child’s internal button click automatically, because Vue forwards component events through the DOM event system by default."
+        },
+        {
+          "id": "dom-and-component-events-are-same-if-event-name-matches",
+          "label": "The better explanation is that Vue treats native and component events as the same mechanism whenever the event name matches, so using names like `click` or `submit` removes the need to think about emits, fallthrough, or propagation rules."
+        }
+      ],
+      "correctOptionId": "native-dom-events-and-component-emits-are-different-boundaries",
+      "rereadPrompt": "Not quite. The key lesson is that native DOM events and component-emitted events are different systems. DOM events bubble through elements. Component events only fire when the child emits them, and they are received by the parent listener rather than bubbling through the DOM like browser events."
     }
   },
   {
@@ -1609,6 +1849,26 @@
     "seo": {
       "title": "How Should You Structure a Vue Project for Scalability?",
       "description": "SPA vs SSR, routing, and state patterns determine Vue scalability because each decision tracks performance, maintainability, and team velocity over time."
+    },
+    "incidentCard": {
+      "title": "Scalability Architecture Check",
+      "scenario": "A Vue app is growing fast and multiple teams are starting to touch it. One teammate says, \"Let’s keep everything simple: one big global store, one shared `components/` tree, fetch directly inside pages, and we can worry about route splitting or stronger conventions later.\" Another teammate says, \"That will get hard to scale. We should keep state intentional, organize by feature or domain, lazy-load routes, centralize API access, and enforce conventions like typing, tests, and CI checks so teams can work without stepping on each other.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "feature-boundaries-intentional-state-and-quality-gates-scale-better",
+          "label": "The second explanation is better. Vue projects scale through boundaries and conventions: feature-based structure, intentional local vs shared state, route-level code splitting, a central API layer, and tooling such as TypeScript, tests, and CI quality gates."
+        },
+        {
+          "id": "one-global-store-and-flat-structure-scale-best-if-team-is-disciplined",
+          "label": "The first explanation is better. A single global store and flat shared structure are the most scalable default because they remove duplication, and disciplined developers can handle the complexity without architectural boundaries."
+        },
+        {
+          "id": "scalability-is-mostly-about-vue-runtime-speed-not-project-structure",
+          "label": "The better explanation is that scalability problems mostly come from Vue runtime performance, so project structure, domain ownership, and API boundaries matter far less than micro-optimizing render speed."
+        }
+      ],
+      "correctOptionId": "feature-boundaries-intentional-state-and-quality-gates-scale-better",
+      "rereadPrompt": "Not quite. The core lesson is that Vue scalability is mostly an architecture and conventions problem. Clear feature boundaries, intentional state management, route splitting, a shared API layer, and enforced tooling keep a growing codebase maintainable and predictable."
     }
   },
   {
@@ -1706,6 +1966,26 @@
     "seo": {
       "title": "What Is the Difference Between computed and watch in Vue?",
       "description": "computed is cached derived state, while watch handles side effects, and Vue tracks computed dependencies so recalculation happens only when inputs change."
+    },
+    "incidentCard": {
+      "title": "Derived Value vs Effect Check",
+      "scenario": "A teammate uses `watch` to keep `fullName`, `filteredItems`, and `cartTotal` in sync for the template, then says, \"`watch` is more flexible, so it is basically the best default for anything reactive.\" Another teammate says, \"That is backwards. If the result is a value you want to render, use `computed` so it stays derived and cached. Use `watch` when a change should trigger an effect like fetching, logging, syncing storage, or aborting stale requests.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "computed-for-derived-values-watch-for-side-effects",
+          "label": "The second explanation is better. `computed` is for derived display values and stays in sync without duplicating state, while `watch` is for imperative effects such as API calls, analytics, storage sync, or other reactions to change."
+        },
+        {
+          "id": "watch-is-best-default-for-rendered-values-because-it-is-more-flexible",
+          "label": "The first explanation is better. Because `watch` can react to any dependency, it is the stronger default for template values too, and using `computed` mostly just hides the update logic."
+        },
+        {
+          "id": "computed-and-watch-are-interchangeable-as-long-as-output-matches",
+          "label": "The better explanation is that `computed` and `watch` are mostly interchangeable. The main thing that matters is getting the same final output, not whether the code models it as derived state or a side effect."
+        }
+      ],
+      "correctOptionId": "computed-for-derived-values-watch-for-side-effects",
+      "rereadPrompt": "Not quite. The key lesson is: `computed` produces cached derived state, while `watch` runs imperative side effects when something changes. If you are creating a value for the template, prefer `computed`; if you need to do work like fetch or sync, use `watch`."
     }
   },
   {
@@ -1829,6 +2109,26 @@
     "seo": {
       "title": "What Are Vue Lifecycle Hooks and When Should You Use Them?",
       "description": "Lifecycle hooks are callbacks like created, mounted, updated, and unmounted, and Vue tracks when each runs during render, update, and teardown."
+    },
+    "incidentCard": {
+      "title": "Hook Timing Check",
+      "scenario": "A teammate tries to measure a DOM element in `created()`, starts a timer in `mounted()`, and forgets to clear it when the component goes away. They say, \"The hook names are mostly interchangeable as long as the logic runs somewhere during the component lifecycle.\" Another teammate says, \"Not really. `created()` is fine once reactive state exists, but DOM-dependent work belongs after mount. Cleanup belongs in `beforeUnmount` or `unmounted`, and update hooks should be used carefully so they do not cause loops.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "hook-choice-depends-on-timing-dom-access-and-cleanup",
+          "label": "The second explanation is better. Lifecycle hooks are about timing boundaries: state setup can happen before mount, DOM access belongs after mount, and timers, listeners, or observers should be cleaned up on unmount. Hook choice affects correctness, not just style."
+        },
+        {
+          "id": "most-lifecycle-hooks-are-interchangeable-for-side-effects",
+          "label": "The first explanation is better. In practice, most lifecycle hooks are interchangeable, so reading the DOM in `created()`, starting timers in `updated()`, or skipping explicit cleanup usually works as long as the component eventually renders."
+        },
+        {
+          "id": "mounted-is-only-for-data-fetching-while-created-is-for-dom-reads",
+          "label": "The better explanation is that `mounted()` should be reserved mainly for fetching data, while `created()` is the right place for DOM reads because it runs earlier and avoids waiting for the component to render."
+        }
+      ],
+      "correctOptionId": "hook-choice-depends-on-timing-dom-access-and-cleanup",
+      "rereadPrompt": "Not quite. The key lesson is that lifecycle hooks exist to place work at the correct stage. Use mount-time hooks for DOM-dependent logic, teardown hooks for cleanup, and be deliberate about update hooks so you do not create unnecessary rerenders or side-effect loops."
     }
   },
   {
@@ -1940,6 +2240,26 @@
     "seo": {
       "title": "What Are Vue Directives and How Do They Work?",
       "description": "Vue directives bind data, conditionally render nodes, loop lists, and handle events in templates, while Vue tracks dependencies for updates."
+    },
+    "incidentCard": {
+      "title": "Directive Behavior Check",
+      "scenario": "A teammate says, \"Directives are basically just prettier HTML attributes. `v-if`, `v-bind`, and `v-on` do not really participate in Vue’s reactivity system; they just save typing.\" Another teammate says, \"They are template instructions Vue compiles into reactive behavior. Some directives control whether DOM exists, some bind reactive values into attributes or props, and some attach event listeners that update state.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "directives-are-compiled-template-instructions-with-reactive-behavior",
+          "label": "The second explanation is better. Directives are part of Vue’s template syntax and are compiled into render behavior: they can conditionally render branches, bind reactive values, handle events, or synchronize inputs with state."
+        },
+        {
+          "id": "directives-are-mostly-html-shortcuts-without-special-runtime-meaning",
+          "label": "The first explanation is better. Directives mostly exist as shorthand for writing cleaner markup, but they do not materially change how Vue tracks state or updates the DOM."
+        },
+        {
+          "id": "all-directives-only-manipulate-css-and-never-structure-or-data-flow",
+          "label": "The better explanation is that directives are mainly for visual tweaks like classes or visibility, while structure, event handling, and data flow are handled elsewhere in Vue and are unrelated to directives."
+        }
+      ],
+      "correctOptionId": "directives-are-compiled-template-instructions-with-reactive-behavior",
+      "rereadPrompt": "Not quite. The main lesson is that directives are not decorative syntax. Vue compiles them into reactive template behavior: some affect structure (`v-if`, `v-for`), some bind data (`v-bind`, `v-model`), and some wire events (`v-on`)."
     }
   },
   {
@@ -2060,6 +2380,26 @@
     "seo": {
       "title": "Why Are v-bind and v-on Fundamental in Vue Templates?",
       "description": "v-bind and v-on are fundamental because they map reactive state to DOM output and events back to updates, and Vue tracks that loop."
+    },
+    "incidentCard": {
+      "title": "Template Binding Check",
+      "scenario": "A teammate says, \"`v-bind` and `v-on` are mostly convenience syntax. The real Vue magic happens somewhere else, and features like `v-model` are separate ideas anyway.\" Another teammate says, \"They are the core bridge. `v-bind` pushes reactive state into DOM or component props, `v-on` wires events back into code that updates state, and a lot of higher-level Vue syntax is built on top of that loop.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "bind-and-on-form-the-core-state-to-ui-and-ui-to-state-loop",
+          "label": "The second explanation is better. `v-bind` is how reactive values flow into rendered props and attributes, and `v-on` is how user or component events flow back into handlers that often change state. That is the core update loop Vue templates rely on."
+        },
+        {
+          "id": "bind-and-on-are-mainly-template-shorthand-not-core-primitives",
+          "label": "The first explanation is better. `v-bind` and `v-on` mainly exist to make templates shorter, but Vue’s reactivity and features like `v-model` work through separate mechanisms that do not really depend on them."
+        },
+        {
+          "id": "bind-is-for-styling-and-on-is-only-for-rare-dom-events",
+          "label": "The better explanation is that `v-bind` is mostly for classes or styles, while `v-on` is only a thin helper for occasional DOM clicks. Most real data flow in Vue comes from watchers and lifecycle hooks instead."
+        }
+      ],
+      "correctOptionId": "bind-and-on-form-the-core-state-to-ui-and-ui-to-state-loop",
+      "rereadPrompt": "Not quite. The key idea is that Vue templates become dynamic through bindings and events. `v-bind` moves reactive state into props or attributes, `v-on` connects events back to code, and patterns like `v-model` are built from those same primitives."
     }
   },
   {
@@ -2161,6 +2501,26 @@
     "seo": {
       "title": "What Happens If a Child Mutates a Prop Directly in Vue?",
       "description": "If a child mutates a prop directly, parent renders can overwrite it and break one-way flow, while Vue tracks prop ownership to warn and enforce emits."
+    },
+    "incidentCard": {
+      "title": "Prop Ownership Check",
+      "scenario": "A child form component receives `user` and `count` as props. A teammate says, \"If the child needs to update them, it can just change the prop directly. Vue may warn in dev, but if the UI looks right, it is fine.\" Another teammate says, \"That breaks prop ownership. The parent owns the state, so the child should emit an update or use `v-model`. Direct mutation gets overwritten on parent rerender, and mutating nested objects can silently change parent state by reference.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "props-are-parent-owned-and-child-should-emit-intent",
+          "label": "The second explanation is better. Props are parent-owned inputs. A child should emit intent to change them, and the parent should perform the mutation. Directly changing props makes updates harder to trace and can create overwrite or shared-reference bugs."
+        },
+        {
+          "id": "direct-prop-mutation-is-fine-if-dev-warning-is-ignored",
+          "label": "The first explanation is better. The warning is mostly stylistic, so if the child updates the prop and the screen reflects the new value, there is no real architectural problem."
+        },
+        {
+          "id": "primitive-props-should-be-emitted-but-object-props-are-safe-to-mutate",
+          "label": "The better explanation is that only primitive props are a problem. For objects and arrays, mutating nested fields in the child is the preferred shortcut because Vue tracks those changes more naturally."
+        }
+      ],
+      "correctOptionId": "props-are-parent-owned-and-child-should-emit-intent",
+      "rereadPrompt": "Not quite. The key lesson is that props are read-only inputs from the parent. Child components should emit updates rather than mutate props directly, and nested object or array props are especially risky because shared references can mutate parent state behind the scenes."
     }
   },
   {
@@ -2286,6 +2646,26 @@
     "seo": {
       "title": "Why Does Vue Recommend the Composition API Over Mixins?",
       "description": "Vue recommends the Composition API over mixins because composables make reuse explicit and typed, and Vue tracks dependencies without mixin collisions."
+    },
+    "incidentCard": {
+      "title": "Logic Reuse Check",
+      "scenario": "A team wants to reuse save-and-validation logic across several Vue components. One teammate says, \"A mixin is still the easiest answer. We can drop shared methods and state into it, and if names collide we will just be careful.\" Another teammate says, \"That is exactly why Vue pushes composables now. Mixins hide where values come from, can collide or override behavior, and get harder to type and refactor. Composition API keeps reuse explicit because you import and call the logic directly.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "composition-api-makes-reuse-explicit-and-avoids-mixin-collisions",
+          "label": "The second explanation is better. Composables make shared logic explicit, easier to combine, and easier to type. Mixins scale poorly because they merge behavior into components in ways that can hide dependencies and create collisions."
+        },
+        {
+          "id": "mixins-are-still-the-best-default-because-they-are-less-verbose",
+          "label": "The first explanation is better. Mixins remain the preferred default in modern Vue because they reduce boilerplate, and the collision problem is mostly theoretical if the team uses careful naming."
+        },
+        {
+          "id": "composition-api-is-mainly-about-performance-not-maintainability",
+          "label": "The better explanation is that Composition API is recommended mostly because it renders faster, while mixins are otherwise equal in maintainability, debugging, and TypeScript support."
+        }
+      ],
+      "correctOptionId": "composition-api-makes-reuse-explicit-and-avoids-mixin-collisions",
+      "rereadPrompt": "Not quite. The main lesson is that Composition API is preferred for logic reuse because it is explicit and composable. Mixins can work, but they hide sources of state and behavior, create naming collisions, and are harder to reason about in larger codebases."
     }
   },
   {
@@ -2400,6 +2780,26 @@
     "seo": {
       "title": "What Is the Difference Between Vue SFCs and Global Components?",
       "description": "Single-file components keep template, logic, and styles together, while global components are app-wide; Vue tracks local imports for clearer ownership."
+    },
+    "incidentCard": {
+      "title": "Component Scope Check",
+      "scenario": "A team starts registering most components globally so nobody has to import them. A teammate says, \"That is basically the same as using single-file components. Global registration just saves typing, so there is no real architectural tradeoff.\" Another teammate says, \"There is a tradeoff. SFCs still define components in `.vue` files, but local registration keeps dependencies explicit and easier to trace. Global components are useful for true app-wide primitives, but overusing them can make ownership and reuse less clear.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "sfcs-keep-components-modular-while-global-registration-should-stay-selective",
+          "label": "The second explanation is better. SFCs help keep template, logic, and styles modular, and local imports make dependencies explicit. Global registration is useful for a small set of shared primitives, but using it everywhere can make the app harder to reason about."
+        },
+        {
+          "id": "global-registration-is-equivalent-to-sfcs-just-with-less-boilerplate",
+          "label": "The first explanation is better. Once a component is defined, the only difference is whether you import it manually. Architecture, discoverability, and maintainability stay basically the same either way."
+        },
+        {
+          "id": "global-components-are-preferred-for-most-feature-components-because-they-load-faster",
+          "label": "The better explanation is that global registration should be the default for most feature components because Vue can optimize them better than locally imported single-file components."
+        }
+      ],
+      "correctOptionId": "sfcs-keep-components-modular-while-global-registration-should-stay-selective",
+      "rereadPrompt": "Not quite. The key lesson is that SFCs and global components are not interchangeable organizational choices. Vue apps usually benefit from keeping most components local and explicit, while reserving global registration for a small set of shared building blocks."
     }
   },
   {
@@ -2494,6 +2894,26 @@
     "seo": {
       "title": "How Does Vue Render v-if, v-show, and v-for Efficiently?",
       "description": "Vue handles conditional and list rendering by diffing virtual DOM changes, and it tracks keyed nodes to patch only affected items efficiently."
+    },
+    "incidentCard": {
+      "title": "Render Strategy Check",
+      "scenario": "A teammate uses `v-if` to hide and show a menu that opens dozens of times per minute, and they render a reorderable list with `v-for` but no stable `:key`. They say, \"Vue’s virtual DOM will figure it out anyway, so `v-if`, `v-show`, and keyed lists are mostly interchangeable.\" Another teammate says, \"Not really. `v-if` creates and destroys DOM, `v-show` is better for frequent toggling because it only changes visibility, and stable keys matter so Vue can preserve identity when lists change.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "choose-between-v-if-and-v-show-based-on-toggle-pattern-and-use-stable-keys",
+          "label": "The second explanation is better. `v-if` and `v-show` have different costs, and keyed `v-for` lists help Vue patch the right nodes when items move, update, or disappear."
+        },
+        {
+          "id": "virtual-dom-makes-conditional-directives-and-keys-mostly-irrelevant",
+          "label": "The first explanation is better. Once Vue uses a virtual DOM, the framework can optimize away most differences between `v-if`, `v-show`, and unkeyed list rendering, so those choices rarely affect behavior."
+        },
+        {
+          "id": "v-if-is-always-faster-than-v-show-and-keys-are-only-for-sorting",
+          "label": "The better explanation is that `v-if` is always the faster conditional directive and `:key` is mainly a convenience for sorting lists, not something Vue actually needs for correct identity tracking."
+        }
+      ],
+      "correctOptionId": "choose-between-v-if-and-v-show-based-on-toggle-pattern-and-use-stable-keys",
+      "rereadPrompt": "Not quite. The key idea is that Vue’s rendering directives are not interchangeable. `v-if` destroys and recreates DOM, `v-show` keeps it mounted and toggles visibility, and stable keys let Vue preserve item identity when diffing lists."
     }
   },
   {
@@ -2612,6 +3032,26 @@
     "seo": {
       "title": "What Is Vue Router and How Does Navigation Work?",
       "description": "Vue Router maps URLs to components for SPA navigation with router-link and router-view, and it tracks route changes through guards and params."
+    },
+    "incidentCard": {
+      "title": "Navigation Flow Check",
+      "scenario": "A teammate builds app navigation with plain `<a>` tags and says, \"Routing is just changing pages. Guards, `router-link`, and `router-view` are optional extras because the browser already knows how to move between URLs.\" Another teammate says, \"In a Vue SPA, the router maps URLs to components, `router-link` navigates without a full reload, `router-view` renders the matched route, and guards let us control access or redirects before navigation completes.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "vue-router-controls-spa-navigation-and-route-lifecycle",
+          "label": "The second explanation is better. Vue Router is not just decorative navigation. It coordinates SPA route changes, swaps the matched view, handles params and history, and lets guards enforce flows like auth redirects."
+        },
+        {
+          "id": "plain-links-are-equivalent-to-router-link-in-most-vue-apps",
+          "label": "The first explanation is better. In practice, `router-link` and guards mostly duplicate what the browser already does, so plain anchors are usually enough unless the app needs animations."
+        },
+        {
+          "id": "router-view-is-mainly-for-layouts-while-components-handle-navigation-directly",
+          "label": "The better explanation is that `router-view` is mostly a layout convenience, while real navigation should happen by mounting and unmounting components manually inside each page."
+        }
+      ],
+      "correctOptionId": "vue-router-controls-spa-navigation-and-route-lifecycle",
+      "rereadPrompt": "Not quite. The main lesson is that Vue Router owns client-side navigation in a Vue SPA. It maps URLs to components, updates views without full page reloads, and uses guards to manage flows like auth and redirects."
     }
   },
   {
@@ -2749,6 +3189,26 @@
     "seo": {
       "title": "How Does Vue Reactivity Work Internally?",
       "description": "Vue's reactivity uses proxies to track property reads and writes, then schedules effects so only components with changed dependencies re-render."
+    },
+    "incidentCard": {
+      "title": "Reactivity Model Check",
+      "scenario": "A teammate says, \"Vue reactivity is basically automatic magic. Once state changes, Vue just rerenders everything, and proxies are only there to make syntax nicer.\" Another teammate says, \"Not quite. Vue tracks which reactive properties were read, links them to effects like renders, computed values, or watchers, and only re-runs the parts that depend on the changed property.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "vue-tracks-dependencies-and-triggers-only-affected-effects",
+          "label": "The second explanation is better. Vue’s reactivity system tracks dependencies during reads and triggers only the effects tied to the changed property, which is why updates are targeted instead of full-app rerenders."
+        },
+        {
+          "id": "vue-mostly-rerenders-everything-and-proxies-are-just-syntax-sugar",
+          "label": "The first explanation is better. Proxies mainly make reactive code feel cleaner, but under the hood Vue usually rerenders the whole component tree whenever any tracked value changes."
+        },
+        {
+          "id": "computed-and-watch-ignore-the-main-reactivity-system",
+          "label": "The better explanation is that Vue’s core reactivity is only for template rendering, while `computed` and `watch` rely on separate update systems that are not connected to dependency tracking."
+        }
+      ],
+      "correctOptionId": "vue-tracks-dependencies-and-triggers-only-affected-effects",
+      "rereadPrompt": "Not quite. The main lesson is that Vue reactivity is dependency-driven, not broad rerender magic. Vue tracks reads, records which effects depend on which properties, and re-runs only the affected renders, computed values, or watchers when those properties change."
     }
   },
   {
@@ -2840,6 +3300,26 @@
     "seo": {
       "title": "What Are setup(), ref(), and reactive() in Vue?",
       "description": "setup(), ref(), and reactive() are Composition API primitives for organizing component logic, and Vue tracks reactive state explicitly."
+    },
+    "incidentCard": {
+      "title": "Composition API Reasoning Check",
+      "scenario": "A teammate says, \"`setup()`, `ref()`, and `reactive()` are mostly a stylistic rewrite of the Options API. The main difference is syntax, so they do not really change how you organize or reuse complex logic.\" Another teammate says, \"They were introduced because large components often scatter related logic across `data`, `methods`, `computed`, and watchers. Composition API lets you group related behavior together, reuse it through composables, and work more cleanly with TypeScript.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "composition-api-groups-related-logic-and-improves-reuse",
+          "label": "The second explanation is better. Composition API was introduced to make complex logic easier to organize, reuse, and type. `setup()` becomes the entry point, while `ref()` and `reactive()` provide reactive state you can group around a feature instead of scattering it across options."
+        },
+        {
+          "id": "composition-api-is-mostly-syntax-sugar-without-architectural-benefit",
+          "label": "The first explanation is better. Composition API mostly changes syntax, but large-scale organization, reuse, and maintainability stay basically the same as long as the component still has the same state and methods."
+        },
+        {
+          "id": "ref-and-reactive-exist-mainly-to-replace-vue-reactivity",
+          "label": "The better explanation is that `ref()` and `reactive()` were introduced mainly because Vue’s old reactivity model stopped working, so the Composition API is mostly a low-level fix rather than an organizational improvement."
+        }
+      ],
+      "correctOptionId": "composition-api-groups-related-logic-and-improves-reuse",
+      "rereadPrompt": "Not quite. The key lesson is that Composition API was introduced to improve how complex component logic is organized and reused. `setup()` groups related behavior in one place, and `ref()` or `reactive()` provide reactive building blocks for composables and scalable components."
     }
   },
   {
@@ -2956,6 +3436,26 @@
     "seo": {
       "title": "What Is Vuex and How Does It Manage State in Vue Apps?",
       "description": "Vuex centralizes shared state in a single store with predictable mutation flow, and it tracks updates so large Vue apps stay consistent."
+    },
+    "incidentCard": {
+      "title": "Shared State Check",
+      "scenario": "A large Vue app keeps duplicating auth state, cart totals, and cached API results across unrelated components. A teammate says, \"Each feature can keep its own copy and sync it however it wants. A central store mostly adds ceremony.\" Another teammate says, \"That gets brittle fast. Vuex gives shared state a single source of truth, makes writes predictable through mutations and actions, and makes debugging easier when many parts of the app depend on the same data.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "vuex-centralizes-shared-state-and-makes-updates-predictable",
+          "label": "The second explanation is better. Vuex is useful when state is shared across many parts of the app and needs predictable update flow. Centralizing that state reduces duplication and makes debugging or tracing changes much clearer."
+        },
+        {
+          "id": "duplicated-local-copies-are-usually-better-than-a-central-store",
+          "label": "The first explanation is better. Shared state is easier to manage when each component keeps its own local copy and updates it independently, because that avoids store boilerplate and still stays easy to reason about."
+        },
+        {
+          "id": "vuex-is-mainly-for-ui-local-state-not-cross-app-data",
+          "label": "The better explanation is that Vuex works best for temporary UI-local state like a single dropdown or modal, while cross-page auth and shared cached data should stay scattered inside components."
+        }
+      ],
+      "correctOptionId": "vuex-centralizes-shared-state-and-makes-updates-predictable",
+      "rereadPrompt": "Not quite. The key lesson is that Vuex exists for shared application state that many components depend on. It introduces structure and some boilerplate, but that tradeoff buys a single source of truth and more predictable updates in larger apps."
     }
   },
   {
@@ -3092,6 +3592,26 @@
     "seo": {
       "title": "How Does Vue Virtual DOM Diffing Optimize Updates?",
       "description": "Vue optimizes updates by diffing virtual DOM trees and patching only changed nodes, and Vue tracks dependencies so unchanged branches are skipped."
+    },
+    "incidentCard": {
+      "title": "Diffing Strategy Check",
+      "scenario": "A teammate says, \"Vue’s virtual DOM means list updates are automatically optimal, so keys do not matter much and Vue can always infer which DOM nodes to keep.\" Another teammate says, \"The virtual DOM helps Vue compare old and new trees, but stable keys still matter. Diffing works best when Vue can preserve node identity, patch only changed props or text, and avoid reusing the wrong DOM elements during reorders.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "virtual-dom-needs-stable-identity-to-patch-correctly",
+          "label": "The second explanation is better. Vue’s virtual DOM computes what changed, but keys and stable identity are still important so diffing can patch the right nodes instead of recreating or mismatching them."
+        },
+        {
+          "id": "virtual-dom-makes-keys-mostly-optional-because-vue-can-always-infer-identity",
+          "label": "The first explanation is better. Once Vue uses a virtual DOM, it can infer identity from structure alone in most real apps, so missing keys rarely affect correctness or performance."
+        },
+        {
+          "id": "diffing-replaces-whole-subtrees-whenever-any-child-changes",
+          "label": "The better explanation is that diffing is mainly a convenience abstraction and Vue usually replaces the whole changed subtree anyway, so keyed patching only matters in edge cases."
+        }
+      ],
+      "correctOptionId": "virtual-dom-needs-stable-identity-to-patch-correctly",
+      "rereadPrompt": "Not quite. The key lesson is that Vue’s virtual DOM and diffing reduce DOM work by comparing trees and patching only what changed, but list identity still matters. Stable keys help Vue preserve the correct DOM nodes during updates and reorders."
     }
   },
   {
@@ -3219,6 +3739,26 @@
     "seo": {
       "title": "What Are Default, Named, and Scoped Slots in Vue?",
       "description": "Default slots render unnamed content, named slots target specific outlets, and scoped slots pass child data to parents while Vue tracks slot dependencies."
+    },
+    "incidentCard": {
+      "title": "Slot Design Check",
+      "scenario": "A reusable list component owns the data and loading logic, but the parent wants full control over how each row renders. A teammate says, \"Just emit the whole row data upward and let the parent rebuild the list. Slots are mostly for dropping static markup into wrappers.\" Another teammate says, \"This is exactly where slots help. Default and named slots control where parent content renders, and scoped slots let the child expose row data to the parent’s slot template without breaking one-way data flow.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "scoped-slots-let-child-provide-data-while-parent-controls-rendering",
+          "label": "The second explanation is better. Scoped slots are designed for this pattern: the child owns behavior or data, and the parent decides how to render it using slot props. That keeps control explicit without turning the component into a tangle of custom emits."
+        },
+        {
+          "id": "slots-are-mainly-static-content-holes-and-should-not-carry-data",
+          "label": "The first explanation is better. Slots are mostly for passing static markup into wrapper components, so once data needs to cross the boundary, the right solution is to emit everything back up and let the parent rebuild the UI."
+        },
+        {
+          "id": "named-slots-replace-scoped-slots-because-all-slot-content-shares-child-scope",
+          "label": "The better explanation is that named slots already solve child-to-parent data flow because all slot content runs in the child scope, so scoped slot props are mostly redundant."
+        }
+      ],
+      "correctOptionId": "scoped-slots-let-child-provide-data-while-parent-controls-rendering",
+      "rereadPrompt": "Not quite. The key lesson is that slots are about composition, not just decoration. Default slots fill one region, named slots target multiple regions, and scoped slots let a child expose data to the parent’s slot template while preserving one-way data flow."
     }
   },
   {
@@ -3356,6 +3896,26 @@
     "seo": {
       "title": "When to Use provide/inject vs Prop Drilling in Vue?",
       "description": "Use provide/inject for deeply nested shared dependencies without long prop chains, but Vue tracks this implicit wiring less explicitly than props."
+    },
+    "incidentCard": {
+      "title": "Dependency Wiring Check",
+      "scenario": "A team is tired of passing `theme`, form context, and plugin-style config through several layers of components. One teammate says, \"Let’s use `provide`/`inject` for everything. It is basically a cleaner replacement for props and stores.\" Another teammate says, \"It solves prop drilling for deep descendants, but it also creates hidden dependencies. It is a good fit for cross-cutting infrastructure or compound components, not as a general substitute for explicit props or app state management.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "provide-inject-helps-with-deep-wiring-but-has-implicit-coupling-costs",
+          "label": "The second explanation is better. `provide`/`inject` is useful when deep descendants need shared dependencies, but it makes those dependencies less explicit. That tradeoff is acceptable for infrastructure-style wiring, not as a blanket replacement for props or stores."
+        },
+        {
+          "id": "provide-inject-should-replace-most-props-because-it-is-cleaner",
+          "label": "The first explanation is better. Once a value is needed by more than one level of the tree, `provide`/`inject` is usually the best default because it removes prop drilling without introducing meaningful downsides."
+        },
+        {
+          "id": "provide-inject-is-mainly-for-business-state-because-it-acts-like-a-free-store",
+          "label": "The better explanation is that `provide`/`inject` works best for business state such as auth, carts, and shared records, because it gives you most of the benefits of a store without needing explicit state architecture."
+        }
+      ],
+      "correctOptionId": "provide-inject-helps-with-deep-wiring-but-has-implicit-coupling-costs",
+      "rereadPrompt": "Not quite. The main lesson is that `provide`/`inject` is dependency injection, not a universal state-management shortcut. It reduces prop drilling, but it also hides dependencies, so it is best reserved for deep wiring and cross-cutting concerns where that tradeoff is worth it."
     }
   },
   {
@@ -3468,6 +4028,26 @@
     "seo": {
       "title": "Why Should You Declare emits in Vue Components?",
       "description": "Declaring emits defines a component's event contract, and Vue tracks allowed events so typos and invalid payload usage are caught earlier."
+    },
+    "incidentCard": {
+      "title": "Emit Contract Check",
+      "scenario": "A shared form component emits `save`, `cancel`, and `update:modelValue`, but none of them are declared. A teammate says, \"That is fine. Declaring emits is mostly optional ceremony, and we will notice mistakes if something breaks.\" Another teammate says, \"It is worth declaring them. Emits are part of the component’s public API, and declaring them catches typos, improves TypeScript inference, and makes refactors safer.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "declared-emits-make-component-outputs-explicit-and-safer",
+          "label": "The second explanation is better. Declaring emits turns component outputs into an explicit contract. That helps catch event-name typos, validate payload expectations, and makes shared components easier to understand and refactor."
+        },
+        {
+          "id": "declaring-emits-is-mostly-noise-because-event-bugs-are-obvious",
+          "label": "The first explanation is better. Event names are usually easy to spot in code review, so declaring emits adds little real value unless the component is part of a published library."
+        },
+        {
+          "id": "emits-should-stay-undeclared-so-components-remain-more-flexible",
+          "label": "The better explanation is that declaring emits makes components too rigid. Leaving events undeclared keeps components more flexible because parents can listen for whatever they want without needing a strict output contract."
+        }
+      ],
+      "correctOptionId": "declared-emits-make-component-outputs-explicit-and-safer",
+      "rereadPrompt": "Not quite. The key lesson is that emits are part of a component’s API. Declaring them improves discoverability, catches silent typos or payload mistakes earlier, and makes Vue 3 plus TypeScript component contracts much easier to maintain."
     }
   },
   {
@@ -3619,6 +4199,26 @@
     "seo": {
       "title": "What Is the Difference Between ref and reactive in Vue?",
       "description": "ref wraps single values while reactive wraps object-like state, and Vue tracks their access patterns differently for updates and destructuring behavior."
+    },
+    "incidentCard": {
+      "title": "State Primitive Choice Check",
+      "scenario": "A teammate keeps using `reactive()` for values they fully replace, then wonders why consumers go stale after reassignment. Another teammate says, \"That is the wrong tool for that job. Use `ref()` for single or replaceable values, use `reactive()` for state objects you mostly mutate, and be careful with traps like destructuring or replacing proxies.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "ref-is-better-for-replaceable-values-and-reactive-for-mutated-state-objects",
+          "label": "The second explanation is better. `ref()` is the safer choice for primitives or anything you replace wholesale, while `reactive()` fits object-like state you mostly mutate in place. Mixing those mental models causes the classic stale-update bugs."
+        },
+        {
+          "id": "reactive-should-be-the-default-for-all-state-because-it-avoids-value",
+          "label": "The first explanation is better. `reactive()` should usually be the default even for replaceable values, because avoiding `.value` matters more than the replacement and destructuring edge cases."
+        },
+        {
+          "id": "ref-and-reactive-are-equivalent-so-choice-is-mainly-style",
+          "label": "The better explanation is that `ref()` and `reactive()` are mostly stylistic alternatives. If reactivity breaks, it is usually unrelated to which one you picked and more about Vue’s update timing."
+        }
+      ],
+      "correctOptionId": "ref-is-better-for-replaceable-values-and-reactive-for-mutated-state-objects",
+      "rereadPrompt": "Not quite. The key lesson is that `ref()` and `reactive()` are not interchangeable. `ref()` fits single or replaceable values, `reactive()` fits objects you mutate in place, and many bugs come from using the wrong mental model or breaking the proxy connection."
     }
   },
   {

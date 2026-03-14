@@ -56,7 +56,7 @@ beforeAll(async () => {
   ({ connectToMongo, disconnectMongo } = require('../config/mongo'));
   User = require('../models/User');
 
-  await connectToMongo(process.env.MONGO_URL);
+  await connectToMongo(process.env.MONGO_URL_TEST);
 });
 
 afterAll(async () => {
