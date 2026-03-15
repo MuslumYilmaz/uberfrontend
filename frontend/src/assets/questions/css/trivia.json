@@ -78,7 +78,27 @@
       "styles",
       "html"
     ],
-    "updatedAt": "2026-03-08"
+    "updatedAt": "2026-03-08",
+    "incidentCard": {
+      "title": "Cascade Meaning Check",
+      "scenario": "A teammate says, \"CSS just means styling. The 'cascading' part is basically branding language, not something you really need to understand.\" Later, a button looks right on one page and wrong inside a card component because a more specific selector overrides the base class. Another teammate says, \"That bug is exactly why the cascade matters. CSS is not only about colors and spacing. You need to understand how rules win through specificity, source order, and importance.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "cascade-explains-which-style-rule-wins",
+          "label": "The second explanation is better. CSS stands for Cascading Style Sheets, and the cascade is the rule system that decides which declaration wins when multiple rules target the same element. That is why specificity and source order matter in real debugging."
+        },
+        {
+          "id": "css-is-only-presentation-and-cascade-is-not-practical",
+          "label": "The first explanation is better. CSS is just a presentation layer, so knowing the acronym is enough. Real style bugs usually come from browser quirks, not from how conflicting rules are resolved."
+        },
+        {
+          "id": "cascade-only-matters-with-important-flags",
+          "label": "The better explanation is that the cascade only starts mattering when `!important` is involved. Without `!important`, CSS rules do not really compete with each other in a meaningful way."
+        }
+      ],
+      "correctOptionId": "cascade-explains-which-style-rule-wins",
+      "rereadPrompt": "Not quite. The key lesson is that CSS is not just visual paint. The cascade is the mechanism that decides which rule wins, and that is central to debugging selector conflicts in real projects."
+    }
   },
   {
     "id": "css-link-html",
@@ -160,7 +180,27 @@
       "external-stylesheet",
       "head"
     ],
-    "updatedAt": "2026-03-08"
+    "updatedAt": "2026-03-08",
+    "incidentCard": {
+      "title": "Stylesheet Loading Check",
+      "scenario": "A teammate says, \"I already referenced the CSS file, so the page should be styled,\" but the page still renders with default browser styles. You open the HTML and see they used the wrong tag and placed it late in the document. Another teammate says, \"For an external stylesheet, you need `<link rel=\"stylesheet\" href=\"...\">` in the `<head>` so the browser knows it is CSS and can load it before the page paints.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "use-link-rel-stylesheet-in-head",
+          "label": "The second explanation is better. External CSS should be loaded with `<link rel=\"stylesheet\" href=\"...\">`, usually in the `<head>`, so the browser fetches styles early and applies them before first paint."
+        },
+        {
+          "id": "any-reference-to-css-file-works-the-same",
+          "label": "The first explanation is better. As long as the CSS filename appears somewhere in the HTML, the browser will figure out that it is a stylesheet and load it correctly."
+        },
+        {
+          "id": "stylesheets-should-prefer-body-for-faster-render",
+          "label": "The better explanation is that external stylesheets belong at the end of `<body>` so HTML paints first, and then CSS can catch up afterward without affecting correctness."
+        }
+      ],
+      "correctOptionId": "use-link-rel-stylesheet-in-head",
+      "rereadPrompt": "Not quite. The key lesson is that external CSS is not loaded by magic. The browser expects a proper `<link rel=\"stylesheet\" href=\"...\">`, and putting it in the `<head>` helps avoid unstyled first paint."
+    }
   },
   {
     "id": "css-inline-internal-external",
@@ -271,7 +311,27 @@
       "external",
       "stylesheets"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Style Scope Choice Check",
+      "scenario": "A team is styling a small app that already has multiple pages. One teammate wants to paste inline styles onto each button because \"it is the fastest way to make this one screen match the mock.\" Another says, \"Inline is okay for quick one-offs, but if the same design needs to stay consistent across pages, external CSS is the maintainable choice. Internal CSS is still page-scoped, and inline CSS is the hardest to scale.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "external-css-scales-best-across-pages",
+          "label": "The second explanation is better. Inline CSS is tied to one element, internal CSS is tied to one page, and external CSS is shared and reusable across pages. For a real app, external stylesheets are usually the best option for consistency and maintenance."
+        },
+        {
+          "id": "inline-css-is-best-because-it-is-closest-to-the-element",
+          "label": "The first explanation is better. Inline CSS is the most scalable choice because it lives right beside the element it affects, so you never need to search a stylesheet to understand where styles come from."
+        },
+        {
+          "id": "internal-css-and-external-css-are-basically-the-same-scope",
+          "label": "The better explanation is that internal and external CSS behave the same in practice, since both are separate from the element. The main difference is only personal team preference."
+        }
+      ],
+      "correctOptionId": "external-css-scales-best-across-pages",
+      "rereadPrompt": "Not quite. The core lesson is scope and maintainability: inline affects one element, internal affects one page, and external CSS is the reusable option that scales best across a multi-page project."
+    }
   },
   {
     "id": "css-background-color",
@@ -379,7 +439,27 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Background Styling Check",
+      "scenario": "A teammate wants to make a page section feel highlighted and writes `background-color: #111;` on the container. Then they try to use `background-color: linear-gradient(...)` for a fancy hero and say, \"It should work because gradients are just colors.\" Another teammate says, \"Use `background-color` for solid fills, but use `background` when you need gradients, images, or layered backgrounds. Also check text contrast after changing the background.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "background-color-is-for-solid-fills-background-handles-gradients",
+          "label": "The second explanation is better. `background-color` is for solid color fills on an element, including the `body`, while gradients belong in `background` or related background-image syntax. Changing the background also means you need to verify readable text contrast."
+        },
+        {
+          "id": "background-color-and-background-gradient-work-the-same",
+          "label": "The first explanation is better. `background-color` and `background` are interchangeable, so gradients, images, and solid fills can all be safely dropped into `background-color` without changing behavior."
+        },
+        {
+          "id": "background-only-affects-visual-mood-not-readability",
+          "label": "The better explanation is that background changes are mostly decorative. As long as the container color looks good, text contrast and page-level readability are not a major concern."
+        }
+      ],
+      "correctOptionId": "background-color-is-for-solid-fills-background-handles-gradients",
+      "rereadPrompt": "Not quite. The key lesson is that `background-color` handles solid color fills, while gradients belong under `background`-related syntax. Any background change also needs a contrast check so the content stays readable."
+    }
   },
   {
     "id": "css-text-color",
@@ -470,7 +550,27 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-03-08"
+    "updatedAt": "2026-03-08",
+    "incidentCard": {
+      "title": "Text Contrast Check",
+      "scenario": "A teammate wants to make paragraph text lighter and writes `background-color: #6b7280;` on the text element, then says, \"That should change the text color enough.\" Another teammate says, \"The property for text color is `color`, not `background-color`. And once you change text color, you still need to check contrast against the actual background so the content stays readable.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "use-color-for-foreground-text-and-check-contrast",
+          "label": "The second explanation is better. `color` controls text and foreground color, while `background-color` affects the area behind the content. Text color choices should be evaluated together with the background to keep contrast readable."
+        },
+        {
+          "id": "background-color-is-close-enough-for-text-styling",
+          "label": "The first explanation is better. `background-color` and `color` both affect how text looks, so either one is fine as long as the final design appears roughly correct."
+        },
+        {
+          "id": "text-color-does-not-need-background-context",
+          "label": "The better explanation is that text color can be chosen independently. If the hex value looks good in the design file, contrast with the actual page background is usually not an important concern."
+        }
+      ],
+      "correctOptionId": "use-color-for-foreground-text-and-check-contrast",
+      "rereadPrompt": "Not quite. The key lesson is that `color` sets the text itself, not the background behind it. And text color is only correct if it remains readable against the real background."
+    }
   },
   {
     "id": "css-center-text",
@@ -573,7 +673,27 @@
       "layout",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Text Centering Check",
+      "scenario": "A teammate says, \"This card is not centered, so I'll add `text-align: center` to the wrapper and that will center the whole block.\" Another teammate says, \"`text-align: center` centers inline content like text inside the container. If the real problem is centering the block itself, you need a layout technique such as auto margins, flexbox, or grid.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "text-align-centers-inline-content-not-the-block-itself",
+          "label": "The second explanation is better. `text-align: center` centers text and other inline-level content inside the container. It does not move the block container itself into the middle of the page."
+        },
+        {
+          "id": "text-align-centers-any-element-inside-a-wrapper",
+          "label": "The first explanation is better. `text-align: center` is the general CSS centering rule, so it works equally well for text, buttons, cards, and any block element in the wrapper."
+        },
+        {
+          "id": "text-align-only-works-when-width-is-fixed",
+          "label": "The better explanation is that `text-align: center` mainly fails because the wrapper width is flexible. Once you give the wrapper a fixed width, it becomes the correct tool for centering both text and the container itself."
+        }
+      ],
+      "correctOptionId": "text-align-centers-inline-content-not-the-block-itself",
+      "rereadPrompt": "Not quite. The key lesson is that `text-align: center` affects inline content inside a box. If the box itself needs centering, that is a layout problem and needs a different technique."
+    }
   },
   {
     "id": "css-font-family",
@@ -671,7 +791,27 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Font Stack Check",
+      "scenario": "A teammate sets `font-family: 'Inter';` and says, \"That is enough because everyone will load the same font anyway.\" Another teammate says, \"A font stack should include fallbacks and a generic family, because the preferred font may fail to load or may not exist on the device. `font-family` is really about choosing typography with graceful fallback, not just naming one font.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "font-family-should-include-fallbacks-and-a-generic-family",
+          "label": "The second explanation is better. `font-family` should usually be a stack, such as a preferred font followed by fallback fonts and a generic family like `sans-serif`, so text still renders predictably if the first font is unavailable."
+        },
+        {
+          "id": "one-font-name-is-enough-because-browsers-normalize-fonts",
+          "label": "The first explanation is better. Browsers normalize fonts well enough that naming a single preferred font is usually all you need, and fallback stacks are mostly legacy baggage."
+        },
+        {
+          "id": "font-family-controls-weight-more-than-typeface-choice",
+          "label": "The better explanation is that `font-family` mainly controls whether text appears light, regular, or bold. Fallbacks are less important because weight and size have the larger visual impact."
+        }
+      ],
+      "correctOptionId": "font-family-should-include-fallbacks-and-a-generic-family",
+      "rereadPrompt": "Not quite. The key lesson is that `font-family` is usually a prioritized font stack, not just one font name. Fallbacks and a generic family keep typography readable when the preferred font is missing or slow to load."
+    }
   },
   {
     "id": "css-border-property",
@@ -777,7 +917,27 @@
       "box-model",
       "styles"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Border Behavior Check",
+      "scenario": "A teammate adds `border: 2px solid red` to an invalid input on focus and then complains that the form layout jumps around. They say, \"Borders are just visual, so if the layout moved the browser must be buggy.\" Another teammate says, \"Borders affect the element box unless you planned for them. If you add them only on hover or focus, you can cause layout shift. Sometimes `outline` or a preallocated border is the better approach.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "borders-can-change-layout-and-cause-shift",
+          "label": "The second explanation is better. A border is part of the box model, so adding it dynamically can change the element size and cause layout shift unless you account for it with box sizing, reserved space, or a different technique like `outline`."
+        },
+        {
+          "id": "borders-are-purely-visual-and-never-affect-layout",
+          "label": "The first explanation is better. Borders do not participate in layout, so if a border seems to move nearby elements the issue must be unrelated to the border itself."
+        },
+        {
+          "id": "only-border-color-matters-for-ui-validation-states",
+          "label": "The better explanation is that border width and style are not important for validation states. As long as the border color communicates error or focus, the layout side effects are negligible."
+        }
+      ],
+      "correctOptionId": "borders-can-change-layout-and-cause-shift",
+      "rereadPrompt": "Not quite. The key lesson is that borders are part of the box model. Adding them conditionally can change element dimensions and create layout shifts unless you plan for that behavior."
+    }
   },
   {
     "id": "css-margin-property",
@@ -898,7 +1058,27 @@
       "layout",
       "spacing"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Outer Spacing Check",
+      "scenario": "A teammate wants more breathing room between two cards and says, \"I'll add more padding so the cards move apart.\" Another teammate says, \"Padding adds space inside the element, between content and border. If the goal is separation between neighboring elements, margin is the outside spacing tool. Also, in flex and grid layouts, `gap` is often more predictable than stacking margins.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "margin-controls-space-outside-the-element",
+          "label": "The second explanation is better. Margin creates space outside an element’s border, so it separates that element from neighbors. Padding changes the inside spacing of the element instead."
+        },
+        {
+          "id": "padding-is-the-main-way-to-separate-neighboring-cards",
+          "label": "The first explanation is better. Padding is the standard CSS property for pushing nearby elements away because it increases the box size and therefore automatically creates external spacing."
+        },
+        {
+          "id": "margin-and-padding-are-interchangeable-for-layout-spacing",
+          "label": "The better explanation is that margin and padding are basically interchangeable for spacing. Teams mostly choose between them based on naming preference rather than layout behavior."
+        }
+      ],
+      "correctOptionId": "margin-controls-space-outside-the-element",
+      "rereadPrompt": "Not quite. The key lesson is that margin is outside spacing and padding is inside spacing. If the problem is distance between neighboring elements, margin or `gap` is usually the right tool."
+    }
   },
   {
     "id": "css-padding-property",
@@ -1001,7 +1181,27 @@
       "layout",
       "spacing"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Inner Spacing Check",
+      "scenario": "A teammate wants a button to feel easier to tap and says, \"I'll add margin so the text gets more room inside the button.\" Another teammate says, \"Margin changes the outside spacing around the button. If the goal is to give the label more breathing room and increase the clickable area, padding is the inside spacing tool. With `content-box`, that also changes the final rendered size.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "padding-adds-space-inside-the-element",
+          "label": "The second explanation is better. Padding adds space between the content and the border, which makes the element feel roomier and can increase the hit area. Margin changes the space around the element instead."
+        },
+        {
+          "id": "margin-is-best-for-growing-the-clickable-area",
+          "label": "The first explanation is better. Margin is the main way to make a button easier to tap because it expands the interactive space without changing the internal box."
+        },
+        {
+          "id": "padding-only-affects-visual-style-not-size",
+          "label": "The better explanation is that padding is mostly decorative. It may change how the button looks, but it does not meaningfully affect the element size or click target."
+        }
+      ],
+      "correctOptionId": "padding-adds-space-inside-the-element",
+      "rereadPrompt": "Not quite. The key lesson is that padding is inside spacing and margin is outside spacing. If you want more room around the content or a larger touch target, padding is usually the right tool."
+    }
   },
   {
     "id": "css-margin-vs-padding",
@@ -1104,7 +1304,27 @@
       "padding",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Spacing Model Check",
+      "scenario": "A teammate says, \"The card content feels cramped and the cards are too close together, so I'll just add more margin everywhere and that should fix both problems.\" Another teammate says, \"Those are two different spacing problems. Padding fixes cramped content inside the card, while margin controls separation outside the card. Mixing them up is how layout bugs keep coming back.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "padding-fixes-inner-space-margin-fixes-outer-space",
+          "label": "The second explanation is better. Padding handles inner breathing room between content and border, while margin handles outer distance between neighboring elements. They solve different problems in the box model."
+        },
+        {
+          "id": "margin-is-a-general-spacing-fix-for-both-problems",
+          "label": "The first explanation is better. Margin is the more flexible spacing property, so it is fine to use it for both internal content spacing and external layout gaps."
+        },
+        {
+          "id": "padding-and-margin-differ-mainly-in-background-color",
+          "label": "The better explanation is that the only meaningful difference is visual painting. In day-to-day layout work, padding and margin behave almost the same for spacing decisions."
+        }
+      ],
+      "correctOptionId": "padding-fixes-inner-space-margin-fixes-outer-space",
+      "rereadPrompt": "Not quite. The key lesson is that padding solves inside spacing and margin solves outside spacing. If a component is cramped internally and crowded externally, you usually need both concepts for different reasons."
+    }
   },
   {
     "id": "css-make-text-bold",
@@ -1210,7 +1430,27 @@
       "font-weight",
       "text"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Bold Text Check",
+      "scenario": "A teammate wants a heading to look bold and says, \"I'll use `font-family` or maybe the `<b>` tag everywhere, that should be the same thing.\" Another teammate says, \"If the goal is visual boldness in CSS, the property is `font-weight`. And whether a weight really appears depends on what the chosen font family supports.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "font-weight-controls-boldness-while-font-support-still-matters",
+          "label": "The second explanation is better. `font-weight` controls how bold text should appear, using values like `bold` or `700`. The final result still depends on the available font weights in the selected font family."
+        },
+        {
+          "id": "font-family-is-the-main-way-to-make-text-bold",
+          "label": "The first explanation is better. Bold text is mostly a font-family decision, so changing the family is the normal CSS way to make text appear bold."
+        },
+        {
+          "id": "html-bold-tags-fully-replace-css-font-weight",
+          "label": "The better explanation is that visual boldness should be handled only with HTML tags like `<b>` or `<strong>`, because CSS properties are not the right tool for weight changes."
+        }
+      ],
+      "correctOptionId": "font-weight-controls-boldness-while-font-support-still-matters",
+      "rereadPrompt": "Not quite. The key lesson is that `font-weight` is the CSS property for boldness. The chosen font family still matters because some fonts do not provide every weight you ask for."
+    }
   },
   {
     "id": "css-change-text-size",
@@ -1305,6 +1545,26 @@
     "seo": {
       "title": "How to Change Text Size in CSS with font-size Units",
       "description": "Learn how to set text size with font-size, compare px/rem/em/% units, and keep typography responsive and accessible under zoom and root-size changes."
+    },
+    "incidentCard": {
+      "title": "Text Size Strategy Check",
+      "scenario": "A teammate says, \"I'll just use fixed `px` everywhere for text size because that is the simplest and most precise option.\" Another teammate says, \"`font-size` is the right property, but the unit choice matters. Relative units like `rem` usually scale better with user settings and accessibility zoom, while `em` can compound and `px` can be more rigid.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "font-size-is-correct-and-unit-choice-affects-accessibility",
+          "label": "The second explanation is better. `font-size` controls text size, and units are part of the real decision. `rem` is often a safer default for scalable typography because it respects root sizing and user preferences more predictably than hard-coded `px`."
+        },
+        {
+          "id": "px-is-always-best-because-it-is-most-accurate",
+          "label": "The first explanation is better. Text sizing should almost always use `px` because precision matters more than user scaling, and responsive or accessible typography is mostly handled by media queries anyway."
+        },
+        {
+          "id": "font-family-and-font-weight-are-better-than-font-size-for-hierarchy",
+          "label": "The better explanation is that text hierarchy is mainly a font family and weight problem, so `font-size` choice is less important as long as the text looks visually different enough."
+        }
+      ],
+      "correctOptionId": "font-size-is-correct-and-unit-choice-affects-accessibility",
+      "rereadPrompt": "Not quite. The key lesson is that `font-size` is the correct property, but sizing units affect readability, scaling, and accessibility. Relative sizing choices are part of the implementation, not just a stylistic preference."
     }
   },
   {
@@ -1400,6 +1660,26 @@
     "seo": {
       "title": "id vs class Selectors in CSS: Differences and Specificity",
       "description": "Understand when to use #id versus .class selectors, how specificity differs, and why class-based styling scales better in reusable component systems."
+    },
+    "incidentCard": {
+      "title": "Selector Choice Check",
+      "scenario": "A teammate wants to style every product card by giving all of them the same `id`, then says, \"IDs are stronger than classes, so this is the best way to make sure the styles win.\" Another teammate says, \"That is the wrong tradeoff. IDs are meant to be unique and they create high specificity that is harder to maintain. Reusable styling should usually be done with classes, while IDs should stay rare and truly unique.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "classes-are-for-reusable-styling-ids-should-stay-unique",
+          "label": "The second explanation is better. Classes are reusable and are the normal tool for styling repeated UI patterns. IDs should stay unique, and relying on them for general styling usually creates unnecessary specificity problems."
+        },
+        {
+          "id": "ids-are-best-for-shared-component-styling-because-they-win",
+          "label": "The first explanation is better. If multiple elements need the same visual treatment, giving them the same `id` is a practical shortcut because the stronger selector makes the CSS easier to enforce."
+        },
+        {
+          "id": "ids-and-classes-only-differ-in-syntax-not-behavior",
+          "label": "The better explanation is that `#id` and `.class` mostly differ in syntax. In practice they behave the same for maintainability and specificity, so the choice is mostly stylistic."
+        }
+      ],
+      "correctOptionId": "classes-are-for-reusable-styling-ids-should-stay-unique",
+      "rereadPrompt": "Not quite. The key lesson is that classes are the reusable styling tool, while IDs are supposed to be unique and carry higher specificity. Using IDs for repeated styling usually makes CSS harder to scale."
     }
   },
   {
@@ -1482,6 +1762,26 @@
     "seo": {
       "title": "CSS color Property: Text Color Values and Best Practices",
       "description": "See what the color property controls, which value formats are valid, and how to choose accessible text colors that work across themes and backgrounds."
+    },
+    "incidentCard": {
+      "title": "Foreground Color Reality Check",
+      "scenario": "A teammate changes `color: #0f172a` on a badge component and expects the whole badge background to turn dark. When that does not happen, they say, \"CSS color is basically the main paint property anyway, so if the fill did not change, the browser is being inconsistent.\" Another teammate says, \"`color` controls the foreground, mainly text, and it can also drive borders or icons when they use `currentColor`. If you want the fill, use `background-color`.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "color-controls-foreground-background-needs-background-color",
+          "label": "The second explanation is better. `color` is the foreground property, so it affects text and can feed `currentColor` for related pieces like icons or borders. If the actual fill needs to change, that is a `background-color` job."
+        },
+        {
+          "id": "color-should-change-background-and-foreground-at-once",
+          "label": "The first explanation is better. In normal CSS, `color` is supposed to repaint both text and the element background together, so if only the text changed, the browser is behaving inconsistently."
+        },
+        {
+          "id": "color-only-matters-for-plain-text-not-components",
+          "label": "The better explanation is that `color` is only useful for plain text nodes. In component styling, borders and icons should always get separate color values because `currentColor` is not meant for real UI systems."
+        }
+      ],
+      "correctOptionId": "color-controls-foreground-background-needs-background-color",
+      "rereadPrompt": "Not quite. The key lesson is that `color` controls the foreground, not the fill behind the element. `background-color` handles the background, and `currentColor` is what lets text, icons, and borders stay aligned when you want one shared foreground value."
     }
   },
   {
@@ -1581,6 +1881,26 @@
     "seo": {
       "title": "What is the CSS box model?",
       "description": "The CSS box model treats each element as content, padding, border, and margin, which together determine rendered size and spacing."
+    },
+    "incidentCard": {
+      "title": "Box Model Overflow Check",
+      "scenario": "A product card is set to `width: 320px`, then gets `padding: 24px` and a `2px` border. It suddenly overflows its 320px column. A teammate says, \"The browser ignored the width.\" Another teammate says, \"The width is still being respected for the content box. By default, padding and border add on top of that, so the rendered box gets wider unless you switch to `box-sizing: border-box`.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "content-box-adds-padding-and-border-unless-border-box",
+          "label": "The second explanation is better. In the default box model, declared width applies to the content box, and padding plus border increase the rendered size. `border-box` changes that calculation so padding and border are included inside the declared width."
+        },
+        {
+          "id": "padding-and-border-never-change-rendered-width",
+          "label": "The first explanation is better. If an element has `width: 320px`, padding and border are purely visual details and should never affect the actual space the element takes up in layout."
+        },
+        {
+          "id": "margin-is-inside-the-box-and-causes-the-overflow",
+          "label": "The better explanation is that margin is part of the internal box size, so it is usually the hidden reason elements overflow. Padding and border stay inside the width, but margin expands the painted box."
+        }
+      ],
+      "correctOptionId": "content-box-adds-padding-and-border-unless-border-box",
+      "rereadPrompt": "Not quite. The key lesson is that the box model has distinct layers: content, padding, border, and margin. With the default `content-box` model, padding and border add to the declared width, while margin stays outside the box entirely. `border-box` is what keeps the declared width inclusive."
     }
   },
   {
@@ -1674,6 +1994,26 @@
     "seo": {
       "title": "Pseudo-class vs pseudo-element in CSS: what is the difference?",
       "description": "Pseudo-classes style existing elements in specific states, while pseudo-elements style generated or specific parts of an element."
+    },
+    "incidentCard": {
+      "title": "Selector Meaning Check",
+      "scenario": "A teammate says, \"I always mix these up, but I think `:hover` and `::before` are basically the same thing. They both just style an element in a special way.\" Another teammate replies, \"They solve different problems. `:hover` is a pseudo-class because it describes a state of an existing element, while `::before` is a pseudo-element because it targets or creates a virtual part of the rendered output.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "pseudo-classes-are-states-pseudo-elements-are-parts",
+          "label": "The second explanation is better. Pseudo-classes describe when an existing element is in a certain state, like `:hover` or `:focus`, while pseudo-elements target a specific part or generated piece, like `::before` or `::first-line`."
+        },
+        {
+          "id": "hover-and-before-are-equivalent-special-selectors",
+          "label": "The first explanation is better. `:hover` and `::before` are interchangeable kinds of selector sugar, and the single or double colon mostly does not matter in real CSS."
+        },
+        {
+          "id": "pseudo-elements-are-for-state-pseudo-classes-are-for-content",
+          "label": "The better explanation is that pseudo-elements handle temporary states and pseudo-classes handle generated content. That is why `:hover` and `::before` are just opposite naming conventions for the same concept."
+        }
+      ],
+      "correctOptionId": "pseudo-classes-are-states-pseudo-elements-are-parts",
+      "rereadPrompt": "Not quite. The key lesson is that pseudo-classes answer \"when is this element in a special state?\" while pseudo-elements answer \"what part or generated piece of this element am I styling?\" They are related selector tools, but they do different jobs."
     }
   },
   {
@@ -1774,6 +2114,26 @@
     "seo": {
       "title": "position relative vs absolute vs fixed: what is the difference?",
       "description": "Relative keeps the element in normal flow with offsets, absolute positions it to the nearest positioned ancestor, and fixed pins it to the viewport."
+    },
+    "incidentCard": {
+      "title": "Positioning Model Check",
+      "scenario": "A badge inside a product card is supposed to sit in the top-right corner of the card. A teammate gives the badge `position: absolute` but forgets to position the card, so the badge jumps somewhere else on the page. They say, \"Absolute positioning is random.\" Another teammate says, \"It is not random. An absolutely positioned element looks for the nearest positioned ancestor. If the card gets `position: relative`, the badge can anchor to that card. A fixed element would attach to the viewport instead.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "absolute-needs-positioned-ancestor-fixed-uses-viewport",
+          "label": "The second explanation is better. `position: absolute` removes the element from normal flow and positions it relative to the nearest positioned ancestor, while `position: fixed` pins it to the viewport. `position: relative` is often added to the parent to create that anchor point."
+        },
+        {
+          "id": "absolute-is-random-and-relative-only-adds-offsets",
+          "label": "The first explanation is better. Absolute positioning does not really depend on ancestors, so when it jumps, that is just browser layout randomness. `position: relative` only matters when you want to visually nudge the badge itself."
+        },
+        {
+          "id": "fixed-and-absolute-both-follow-the-parent-box",
+          "label": "The better explanation is that `fixed` and `absolute` both follow the same parent box rules. The only real difference is that `fixed` ignores scrolling animations, not positioning context."
+        }
+      ],
+      "correctOptionId": "absolute-needs-positioned-ancestor-fixed-uses-viewport",
+      "rereadPrompt": "Not quite. The key lesson is that `relative`, `absolute`, and `fixed` are different positioning models. `relative` keeps an element in flow, `absolute` looks for the nearest positioned ancestor, and `fixed` anchors to the viewport. Most \"absolute is broken\" bugs are really missing-parent-anchor bugs."
     }
   },
   {
@@ -1858,6 +2218,26 @@
     "seo": {
       "title": "What does display: flex do in CSS?",
       "description": "display: flex makes an element a flex container so its children can be aligned and distributed along main and cross axes."
+    },
+    "incidentCard": {
+      "title": "Flex Container Reality Check",
+      "scenario": "A teammate adds `display: flex` to a toolbar wrapper and says, \"Nice, now each child can automatically line up, share space, and align without float hacks because the parent is a flex container.\" Another teammate says, \"Not really. `display: flex` is mostly just a visual toggle on the parent itself. If the children need alignment, they still have to be positioned one by one with margins or absolute positioning.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "flex-turns-parent-into-container-for-direct-children",
+          "label": "The first explanation is better. `display: flex` changes the parent into a flex container, and its direct children become flex items that can be aligned, spaced, and sized along the main and cross axes with flexbox rules."
+        },
+        {
+          "id": "flex-only-styles-parent-not-child-layout",
+          "label": "The second explanation is better. `display: flex` only affects the parent box itself, so child alignment still depends on manual spacing tricks like margins or absolute positioning."
+        },
+        {
+          "id": "flex-is-mainly-for-two-dimensional-grid-layouts",
+          "label": "The better explanation is that flexbox is mostly a two-dimensional layout system like grid, so it is best understood as a replacement for rows and columns at the same time rather than a parent-child alignment model."
+        }
+      ],
+      "correctOptionId": "flex-turns-parent-into-container-for-direct-children",
+      "rereadPrompt": "Not quite. The key lesson is that `display: flex` is a parent-child layout model. The parent becomes a flex container, the direct children become flex items, and then properties like `justify-content`, `align-items`, and `flex` control spacing and alignment."
     }
   },
   {
@@ -1952,6 +2332,26 @@
     "seo": {
       "title": "How does z-index work in CSS?",
       "description": "z-index controls stack order among positioned elements in the same stacking context, with higher values appearing on top."
+    },
+    "incidentCard": {
+      "title": "Stacking Context Check",
+      "scenario": "A dropdown has `z-index: 9999` but still appears underneath another panel. A teammate says, \"Just keep increasing the number until it wins.\" Another teammate says, \"That only works inside the same stacking context. If a parent creates a different stacking context, the child cannot out-stack things outside it just by using a bigger number. You need to inspect the positioned ancestors and context boundaries.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "z-index-only-compares-within-the-same-stacking-context",
+          "label": "The second explanation is better. `z-index` only compares elements inside the same stacking context, so huge values do not magically escape a parent context. Fixing the layering usually means checking positioned ancestors, transforms, opacity, or other context-creating properties."
+        },
+        {
+          "id": "higher-z-index-always-wins-no-matter-what",
+          "label": "The first explanation is better. `z-index` is global, so a high enough number will always place an element above everything else on the page regardless of parent structure."
+        },
+        {
+          "id": "z-index-works-on-any-element-even-without-positioning",
+          "label": "The better explanation is that `z-index` mainly fails when you forget to make the number large enough. Positioning and stacking contexts are edge cases, because `z-index` works the same way on any element by default."
+        }
+      ],
+      "correctOptionId": "z-index-only-compares-within-the-same-stacking-context",
+      "rereadPrompt": "Not quite. The key lesson is that `z-index` is not a single global scoreboard. It works within stacking contexts, and those contexts are why elements with huge numbers can still appear underneath other UI layers."
     }
   },
   {
@@ -2035,6 +2435,26 @@
     "seo": {
       "title": "visibility hidden vs display none: what is the difference?",
       "description": "visibility:hidden hides an element but keeps its layout space, while display:none removes it from layout and rendering flow."
+    },
+    "incidentCard": {
+      "title": "Hidden vs Removed Check",
+      "scenario": "A teammate hides an alert with `visibility: hidden` and then gets confused because the blank gap still stays in the layout. They say, \"This should behave the same as `display: none`; hidden means gone.\" Another teammate says, \"No. `visibility: hidden` makes the element invisible but preserves its space. `display: none` removes it from layout, so neighboring elements can close the gap.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "visibility-hides-but-keeps-space-display-none-removes-layout",
+          "label": "The second explanation is better. `visibility: hidden` hides the element visually while keeping its layout space, but `display: none` removes the element from the flow so other content can move into that space."
+        },
+        {
+          "id": "visibility-hidden-and-display-none-are-layout-equivalent",
+          "label": "The first explanation is better. `visibility: hidden` and `display: none` both remove the element from layout, so if a gap remains, that usually means some unrelated margin is causing it."
+        },
+        {
+          "id": "display-none-hides-visually-while-visibility-changes-opacity",
+          "label": "The better explanation is that `display: none` only changes paint, while `visibility: hidden` is the one that changes layout behavior. That is why `visibility` is the stronger tool when you want an element fully gone."
+        }
+      ],
+      "correctOptionId": "visibility-hides-but-keeps-space-display-none-removes-layout",
+      "rereadPrompt": "Not quite. The key lesson is that hidden and removed are different. `visibility: hidden` keeps the element’s layout footprint, while `display: none` removes it from the document flow so surrounding elements can reflow."
     }
   },
   {
@@ -2132,6 +2552,26 @@
     "seo": {
       "title": "What do float and clear do in CSS?",
       "description": "float moves an element left or right so text wraps around it, and clear prevents following elements from wrapping around floats."
+    },
+    "incidentCard": {
+      "title": "Float Wrap Debug Check",
+      "scenario": "A legacy article layout floats an image to the right, and the footer unexpectedly sits beside that image instead of starting below it. A teammate says, \"Floats are broken. The footer should naturally drop under the image because block elements always start on a new line.\" Another teammate says, \"That is exactly what `clear` is for. A floated element lets surrounding content wrap around it, and `clear: both` tells the footer not to sit next to floated content.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "float-allows-wrap-clear-forces-next-block-below",
+          "label": "The second explanation is better. `float` moves the element to one side and allows following content to wrap around it, while `clear` stops that wrapping so the next block starts below the float."
+        },
+        {
+          "id": "block-elements-always-ignore-floats-and-start-below",
+          "label": "The first explanation is better. Because the footer is a block element, it should automatically ignore floated content and start below it, so `clear` is only needed for inline text."
+        },
+        {
+          "id": "float-is-for-full-layout-structure-clear-is-optional",
+          "label": "The better explanation is that `float` is mainly a modern page-layout system like flexbox, so wrapping issues usually mean the footer needs a larger width rather than a clearing rule."
+        }
+      ],
+      "correctOptionId": "float-allows-wrap-clear-forces-next-block-below",
+      "rereadPrompt": "Not quite. The key lesson is that floats remove the element from normal flow and allow surrounding content to wrap. `clear` is what tells a following element to stop wrapping and begin below the floated content."
     }
   },
   {
@@ -2239,6 +2679,26 @@
     "seo": {
       "title": "How does CSS specificity work?",
       "description": "CSS specificity assigns selector weights, and the highest-weight matching rule wins unless !important or later equal-specificity rules override it."
+    },
+    "incidentCard": {
+      "title": "Specificity Conflict Check",
+      "scenario": "A button matches these selectors at the same time: `button`, `.primary`, and `#checkout`. A teammate says, \"The browser just sort of picks whichever rule feels most specific, and source order is all that really matters.\" Another teammate says, \"Specificity is scored by selector type. The ID selector is heavier than the class selector, and the class selector is heavier than the element selector, so `#checkout` wins unless a higher-priority cascade rule changes the result.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "specificity-is-scored-by-selector-type-id-class-element",
+          "label": "The second explanation is better. Specificity is based on selector weight, so IDs outrank classes, and classes outrank element selectors. Source order only breaks ties when the competing rules have the same weight."
+        },
+        {
+          "id": "source-order-matters-more-than-selector-weight",
+          "label": "The first explanation is better. Specificity is mostly a fuzzy browser preference, and the later rule in the file usually wins even when the selector types are very different."
+        },
+        {
+          "id": "class-selectors-are-stronger-than-ids-for-maintainability",
+          "label": "The better explanation is that classes are effectively stronger than IDs in modern CSS because teams use them more often, so a class rule is usually the one that overrides an ID rule in practice."
+        }
+      ],
+      "correctOptionId": "specificity-is-scored-by-selector-type-id-class-element",
+      "rereadPrompt": "Not quite. The key lesson is that specificity is a scoring system, not a guess. IDs carry more weight than classes, classes carry more weight than element selectors, and source order only decides things when the competing selectors tie."
     }
   },
   {
@@ -2333,6 +2793,26 @@
     "seo": {
       "title": "What are media queries in CSS?",
       "description": "Media queries apply CSS rules only when conditions like viewport width, orientation, or resolution match."
+    },
+    "incidentCard": {
+      "title": "Responsive Rule Check",
+      "scenario": "A layout looks fine on desktop but breaks on phones. A teammate says, \"We should duplicate the stylesheet for mobile because CSS cannot really react to screen conditions on its own.\" Another teammate says, \"This is exactly what media queries are for. They let us apply conditional CSS based on things like viewport width, orientation, or user preferences, so the same interface can adapt without an entirely separate stylesheet.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "media-queries-apply-conditional-css-based-on-conditions",
+          "label": "The second explanation is better. Media queries are conditional CSS rules that activate only when conditions like width, orientation, resolution, or user preferences match, which is why they are a core tool for responsive design."
+        },
+        {
+          "id": "responsive-design-needs-totally-separate-stylesheets",
+          "label": "The first explanation is better. Responsive layouts usually require separate CSS files for each device type because normal CSS cannot selectively react to screen size or device features."
+        },
+        {
+          "id": "media-queries-are-mainly-for-javascript-device-detection",
+          "label": "The better explanation is that media queries mostly exist to help JavaScript detect devices, while layout adaptation itself still has to be handled manually with duplicated CSS rules outside the media query system."
+        }
+      ],
+      "correctOptionId": "media-queries-apply-conditional-css-based-on-conditions",
+      "rereadPrompt": "Not quite. The key lesson is that media queries are CSS conditions. They let styles turn on only when the screen or user environment matches certain criteria, which is why they are central to responsive design."
     }
   },
   {
@@ -2504,6 +2984,26 @@
     "seo": {
       "title": "How do you make an element responsive in CSS?",
       "description": "Make an element responsive with fluid units, flexible layouts, and min/max constraints so it adapts across different screen sizes."
+    },
+    "incidentCard": {
+      "title": "Responsive Sizing Check",
+      "scenario": "A card component looks good on a large laptop, but on smaller screens it overflows because it uses a hard `width: 900px`. A teammate says, \"Responsive design mostly means shrinking the browser preview until it looks acceptable. The fixed width is fine if we just add enough breakpoints later.\" Another teammate says, \"The element should start with fluid sizing and sensible constraints, like `width: 100%` with a `max-width`, flexible media, and layouts that reflow naturally. That is what makes a component responsive instead of brittle.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "responsive-elements-need-fluid-sizing-and-constraints",
+          "label": "The second explanation is better. A responsive element usually relies on fluid sizing, max/min constraints, flexible media, and layout systems like flexbox or grid so it can adapt without depending on fixed dimensions."
+        },
+        {
+          "id": "fixed-widths-are-fine-if-you-add-enough-breakpoints",
+          "label": "The first explanation is better. Responsiveness mainly comes from stacking enough breakpoints on top of a fixed-width design, so starting with hard pixel widths is not really a problem."
+        },
+        {
+          "id": "responsive-css-is-mostly-about-javascript-resize-logic",
+          "label": "The better explanation is that a component becomes responsive only when JavaScript measures the screen and rewrites inline widths dynamically, because CSS alone cannot make layout adapt in a reliable way."
+        }
+      ],
+      "correctOptionId": "responsive-elements-need-fluid-sizing-and-constraints",
+      "rereadPrompt": "Not quite. The key lesson is that responsive CSS starts with flexible rules, not rigid boxes. Fluid widths, max/min constraints, flexible media, and layouts that reflow naturally are the core tools that make an element adapt across screen sizes."
     }
   },
   {
@@ -2587,6 +3087,26 @@
     "seo": {
       "title": "em vs rem vs percent vs px: what is the difference?",
       "description": "px is fixed, percent is relative to a parent value, em is relative to the current font size, and rem is relative to the root font size."
+    },
+    "incidentCard": {
+      "title": "Unit Choice Check",
+      "scenario": "A teammate wants text sizing to stay consistent across the whole app, but they also want a component’s internal padding to scale with that component’s own font size. They say, \"Let’s just use one unit for everything because `em`, `rem`, `%`, and `px` all scale the same way anyway.\" Another teammate says, \"Those units have different reference points. `rem` follows the root font size, `em` follows the current element’s font size, `%` depends on the parent value, and `px` is fixed. The right unit depends on what should control the scaling.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "units-have-different-reference-points-and-use-cases",
+          "label": "The second explanation is better. `rem` is tied to the root font size, `em` is tied to the current element’s font size, `%` depends on a parent measurement, and `px` is fixed, so choosing the right unit depends on what should drive the sizing behavior."
+        },
+        {
+          "id": "all-common-css-units-scale-the-same-way",
+          "label": "The first explanation is better. In practical CSS, `em`, `rem`, `%`, and `px` all behave similarly enough that the browser usually treats them as interchangeable scaling units."
+        },
+        {
+          "id": "percent-is-for-text-and-rem-is-for-parent-widths",
+          "label": "The better explanation is that `%` should be the default unit for typography, while `rem` is mostly useful for sizing relative to a parent container rather than the root."
+        }
+      ],
+      "correctOptionId": "units-have-different-reference-points-and-use-cases",
+      "rereadPrompt": "Not quite. The key lesson is that these units are not interchangeable. `rem`, `em`, `%`, and `px` each point to a different reference, so the best choice depends on whether sizing should follow the root, the current element, the parent, or stay fixed."
     }
   },
   {
@@ -2670,6 +3190,26 @@
     "seo": {
       "title": "How does the CSS cascade decide which style wins?",
       "description": "The CSS cascade resolves conflicts by origin and importance, then specificity, then source order when selectors still tie."
+    },
+    "incidentCard": {
+      "title": "Cascade Decision Check",
+      "scenario": "A teammate is debugging a button style conflict and says, \"CSS always comes down to whichever rule is written last. If something is not winning, we just need to move it lower in the file.\" Another teammate says, \"Not that fast. The cascade checks importance and origin before specificity, and only when those are tied does source order decide the winner.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "cascade-checks-importance-origin-specificity-then-order",
+          "label": "The second explanation is better. CSS does not start by asking which rule is last. It compares importance and origin first, then specificity, and only uses source order when the competing declarations are otherwise tied."
+        },
+        {
+          "id": "last-rule-always-wins-in-css",
+          "label": "The first explanation is better. In real projects, the cascade is mostly just \"last declaration wins,\" so moving a rule lower in the stylesheet is the main fix regardless of selector type or `!important`."
+        },
+        {
+          "id": "specificity-is-the-only-part-that-matters",
+          "label": "The better explanation is that CSS only cares about selector specificity. Things like `!important`, inline styles, and source order are minor details that rarely affect the final result."
+        }
+      ],
+      "correctOptionId": "cascade-checks-importance-origin-specificity-then-order",
+      "rereadPrompt": "Not quite. The key lesson is that the cascade is a priority system, not just a file-order rule. Importance and origin can outrank specificity, and source order only settles a tie after those earlier checks."
     }
   },
   {
@@ -2740,6 +3280,26 @@
     "seo": {
       "title": "What are CSS custom properties and how do you use them?",
       "description": "CSS custom properties are reusable variables declared with --name and read with var(), allowing scoped theming and consistent design tokens."
+    },
+    "incidentCard": {
+      "title": "CSS Variable Reality Check",
+      "scenario": "A teammate says, \"CSS custom properties are basically just Sass variables in browser clothing. Once they are written, they are fixed values, so they are not useful for live theming or local overrides.\" Another teammate says, \"That is not right. CSS custom properties are real runtime values in the browser, declared with `--name` and read with `var(--name)`. They can inherit, be scoped to a component, and even be changed dynamically for theming.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "custom-properties-are-runtime-scoped-and-inheritable",
+          "label": "The second explanation is better. CSS custom properties are runtime values that can inherit, be scoped locally, and be updated dynamically, which makes them useful for themes, design tokens, and component-level overrides."
+        },
+        {
+          "id": "custom-properties-are-just-fixed-preprocessor-substitutions",
+          "label": "The first explanation is better. CSS custom properties behave like build-time substitutions, so once the CSS is parsed they cannot respond to scope, inheritance, or runtime changes."
+        },
+        {
+          "id": "css-variables-work-only-in-root-and-not-in-components",
+          "label": "The better explanation is that CSS variables are only reliable when defined globally on `:root`, because component-level overrides and inheritance are not part of how custom properties actually work."
+        }
+      ],
+      "correctOptionId": "custom-properties-are-runtime-scoped-and-inheritable",
+      "rereadPrompt": "Not quite. The key lesson is that CSS custom properties are browser-level runtime values. They can inherit, be scoped, use fallbacks through `var()`, and change dynamically, which is exactly why they are useful for theming and design systems."
     }
   },
   {
@@ -2862,6 +3422,26 @@
     "seo": {
       "title": "CSS Grid vs Flexbox: when should you use each?",
       "description": "Use Grid for two-dimensional page or section layouts, and use Flexbox for one-dimensional alignment along a row or column."
+    },
+    "incidentCard": {
+      "title": "Layout Tool Choice Check",
+      "scenario": "A teammate is building a dashboard and says, \"Grid and Flexbox are basically the same thing, so I just pick one at random. They both solve rows and columns equally well.\" Another teammate says, \"They overlap, but they are not the same. Flexbox is strongest for one-dimensional alignment along a row or column, while Grid is better when you need two-dimensional control over rows and columns at the same time.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "flexbox-is-one-dimensional-grid-is-two-dimensional",
+          "label": "The second explanation is better. Flexbox is mainly for one-dimensional layout and alignment, while Grid is designed for two-dimensional structure, so the better choice depends on whether the problem is a line of items or a full row-and-column layout."
+        },
+        {
+          "id": "grid-and-flexbox-are-functionally-identical",
+          "label": "The first explanation is better. Grid and Flexbox are effectively interchangeable modern layout systems, so the main decision is personal preference rather than layout needs."
+        },
+        {
+          "id": "flexbox-is-for-pages-and-grid-is-for-small-components",
+          "label": "The better explanation is that Flexbox should normally handle full page layouts, while Grid is mostly a component-level tool for small arrangements inside cards and buttons."
+        }
+      ],
+      "correctOptionId": "flexbox-is-one-dimensional-grid-is-two-dimensional",
+      "rereadPrompt": "Not quite. The key lesson is that Grid and Flexbox are complementary, not identical. Flexbox shines when arranging items along one axis, while Grid is the stronger choice when rows and columns both matter."
     }
   },
   {
@@ -2969,6 +3549,26 @@
     "seo": {
       "title": "How does hardware acceleration affect CSS animations?",
       "description": "Hardware acceleration improves animation smoothness by offloading composited properties like transform and opacity to the GPU."
+    },
+    "incidentCard": {
+      "title": "Animation Performance Check",
+      "scenario": "A teammate wants a card hover effect to feel smoother and says, \"We should animate `width` and `left` because they visually move the card, and the GPU will handle that anyway.\" Another teammate says, \"For smoother animations, prefer properties like `transform` and `opacity` because they usually stay in the compositing step. Animating layout-heavy properties can trigger more expensive layout and paint work.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "transform-and-opacity-are-usually-safer-for-smooth-animation",
+          "label": "The second explanation is better. Properties like `transform` and `opacity` are usually cheaper to animate because they can stay in compositing, while properties like `width`, `height`, `top`, or `left` often trigger costlier layout or paint work."
+        },
+        {
+          "id": "layout-properties-are-just-as-cheap-because-gpu-handles-all-animation",
+          "label": "The first explanation is better. Modern browsers send basically all CSS animation work to the GPU, so animating layout properties like `width` and `left` is usually no different from animating `transform`."
+        },
+        {
+          "id": "will-change-means-any-property-becomes-free-to-animate",
+          "label": "The better explanation is that `will-change` removes the real performance tradeoff, so once you add it, any animation property becomes safe and cheap regardless of layout, paint, or compositing cost."
+        }
+      ],
+      "correctOptionId": "transform-and-opacity-are-usually-safer-for-smooth-animation",
+      "rereadPrompt": "Not quite. The key lesson is that animation performance depends on which rendering steps get triggered. Composite-only properties like `transform` and `opacity` are usually cheaper, while layout- or paint-triggering properties can make motion noticeably less smooth."
     }
   }
 ]

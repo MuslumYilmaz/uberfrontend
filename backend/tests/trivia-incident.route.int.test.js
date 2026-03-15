@@ -1,5 +1,6 @@
 'use strict';
 
+const express = require('express');
 const request = require('supertest');
 
 let app;
@@ -2322,6 +2323,906 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
+  test('returns public incident card for vue destructuring reactivity trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-destructuring-breaks-reactivity-torefs-toref/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-destructuring-breaks-reactivity-torefs-toref',
+      tech: 'vue',
+      title: 'Proxy Extraction Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue watch vs watchEffect trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-watch-vs-watcheffect-differences-infinite-loops/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-watch-vs-watcheffect-differences-infinite-loops',
+      tech: 'vue',
+      title: 'Effect Tracking Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue nexttick dom queue trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-nexttick-dom-update-queue/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-nexttick-dom-update-queue',
+      tech: 'vue',
+      title: 'DOM Flush Timing Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for vue v-for keys identity trivia question', async () => {
+    const res = await request(app).get('/api/trivia/vue/vue-v-for-keys-why-not-index/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'vue-v-for-keys-why-not-index',
+      tech: 'vue',
+      title: 'List Identity Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css definition trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-definition/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-definition',
+      tech: 'css',
+      title: 'Cascade Meaning Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css link html trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-link-html/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-link-html',
+      tech: 'css',
+      title: 'Stylesheet Loading Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css inline internal external trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-inline-internal-external/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-inline-internal-external',
+      tech: 'css',
+      title: 'Style Scope Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css background color trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-background-color/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-background-color',
+      tech: 'css',
+      title: 'Background Styling Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css text color trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-text-color/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-text-color',
+      tech: 'css',
+      title: 'Text Contrast Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css center text trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-center-text/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-center-text',
+      tech: 'css',
+      title: 'Text Centering Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css font family trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-font-family/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-font-family',
+      tech: 'css',
+      title: 'Font Stack Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css border property trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-border-property/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-border-property',
+      tech: 'css',
+      title: 'Border Behavior Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css margin property trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-margin-property/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-margin-property',
+      tech: 'css',
+      title: 'Outer Spacing Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css padding property trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-padding-property/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-padding-property',
+      tech: 'css',
+      title: 'Inner Spacing Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css margin vs padding trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-margin-vs-padding/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-margin-vs-padding',
+      tech: 'css',
+      title: 'Spacing Model Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css make text bold trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-make-text-bold/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-make-text-bold',
+      tech: 'css',
+      title: 'Bold Text Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css change text size trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-change-text-size/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-change-text-size',
+      tech: 'css',
+      title: 'Text Size Strategy Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css id vs class trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-id-vs-class/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-id-vs-class',
+      tech: 'css',
+      title: 'Selector Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css color property trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-color-property/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-color-property',
+      tech: 'css',
+      title: 'Foreground Color Reality Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css box model trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-box-model/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-box-model',
+      tech: 'css',
+      title: 'Box Model Overflow Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css pseudo classes elements trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-pseudo-classes-elements/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-pseudo-classes-elements',
+      tech: 'css',
+      title: 'Selector Meaning Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css position relative absolute fixed trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-position-relative-absolute-fixed/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-position-relative-absolute-fixed',
+      tech: 'css',
+      title: 'Positioning Model Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css display flex trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-display-flex/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-display-flex',
+      tech: 'css',
+      title: 'Flex Container Reality Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css z index trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-z-index/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-z-index',
+      tech: 'css',
+      title: 'Stacking Context Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css visibility vs display trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-visibility-vs-display/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-visibility-vs-display',
+      tech: 'css',
+      title: 'Hidden vs Removed Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css float clear trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-float-clear/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-float-clear',
+      tech: 'css',
+      title: 'Float Wrap Debug Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css specificity hierarchy trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-specificity-hierarchy/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-specificity-hierarchy',
+      tech: 'css',
+      title: 'Specificity Conflict Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css media queries trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-media-queries/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-media-queries',
+      tech: 'css',
+      title: 'Responsive Rule Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css make element responsive trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-make-element-responsive/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-make-element-responsive',
+      tech: 'css',
+      title: 'Responsive Sizing Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css cascade order trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-cascade-order/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-cascade-order',
+      tech: 'css',
+      title: 'Cascade Decision Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css units em rem percent px trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-units-em-rem-percent-px/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-units-em-rem-percent-px',
+      tech: 'css',
+      title: 'Unit Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css custom properties trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-custom-properties/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-custom-properties',
+      tech: 'css',
+      title: 'CSS Variable Reality Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css grid vs flexbox trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-grid-vs-flexbox/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-grid-vs-flexbox',
+      tech: 'css',
+      title: 'Layout Tool Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for css hardware acceleration trivia question', async () => {
+    const res = await request(app).get('/api/trivia/css/css-hardware-acceleration/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'css-hardware-acceleration',
+      tech: 'css',
+      title: 'Animation Performance Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html dom trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-dom/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-dom',
+      tech: 'html',
+      title: 'DOM Tree Mental Model Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html tags trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-tags/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-tags',
+      tech: 'html',
+      title: 'Semantic Tag Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html head tag trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-head-tag/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-head-tag',
+      tech: 'html',
+      title: 'Head Metadata Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html div vs span trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-div-vs-span/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-div-vs-span',
+      tech: 'html',
+      title: 'Block vs Inline Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html title tag trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-title-tag/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-title-tag',
+      tech: 'html',
+      title: 'Page Title Signal Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html img alt attribute trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-img-alt-attribute/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-img-alt-attribute',
+      tech: 'html',
+      title: 'Alt Text Purpose Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html semantic elements trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-semantic-elements/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-semantic-elements',
+      tech: 'html',
+      title: 'Semantic Structure Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html block inline elements trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-block-inline-elements/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-block-inline-elements',
+      tech: 'html',
+      title: 'Layout Flow Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html br tag trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-br-tag/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-br-tag',
+      tech: 'html',
+      title: 'Line Break Intent Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html a tag trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-a-tag/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-a-tag',
+      tech: 'html',
+      title: 'Navigation Primitive Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html href attribute trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-href-attribute/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-href-attribute',
+      tech: 'html',
+      title: 'Destination Wiring Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html meta tag trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-meta-tag/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-meta-tag',
+      tech: 'html',
+      title: 'Metadata Role Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html list differences trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-ol-ul-dl-difference/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-ol-ul-dl-difference',
+      tech: 'html',
+      title: 'List Type Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html form default method trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-form-default-method/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-form-default-method',
+      tech: 'html',
+      title: 'Default Method Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html input placeholder trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-input-placeholder/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-input-placeholder',
+      tech: 'html',
+      title: 'Hint vs Label Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html id vs class trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-id-vs-class/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-id-vs-class',
+      tech: 'html',
+      title: 'Unique vs Shared Selector Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html iframe tag trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-iframe-tag/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-iframe-tag',
+      tech: 'html',
+      title: 'Embedded Content Risk Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html data attribute trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-data-attribute/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-data-attribute',
+      tech: 'html',
+      title: 'Dataset Safety Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html clickable image trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-clickable-image/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-clickable-image',
+      tech: 'html',
+      title: 'Linked Image Accessibility Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html vs xhtml trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-vs-xhtml/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-vs-xhtml',
+      tech: 'html',
+      title: 'Markup Strictness Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html anchor target trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-anchor-target/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-anchor-target',
+      tech: 'html',
+      title: 'New Tab Link Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html img srcset trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-img-srcset/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-img-srcset',
+      tech: 'html',
+      title: 'Responsive Image Choice Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html parsing rendering trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-parsing-rendering/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-parsing-rendering',
+      tech: 'html',
+      title: 'Render Blocking Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html aria roles trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-aria-roles/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-aria-roles',
+      tech: 'html',
+      title: 'ARIA Reality Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html shadow dom trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-shadow-dom/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-shadow-dom',
+      tech: 'html',
+      title: 'Component Encapsulation Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns public incident card for html page accessibility trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/web-accessibility-make-page-accessible/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'web-accessibility-make-page-accessible',
+      tech: 'html',
+      title: 'Accessibility Review Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
   test('returns public incident card for configured react trivia question', async () => {
     const res = await request(app).get('/api/trivia/react/react-usestate-purpose/incident');
 
@@ -2937,12 +3838,42 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
-  test('returns 404 when incident card is not configured for a trivia question', async () => {
-    const res = await request(app).get('/api/trivia/vue/vue-destructuring-breaks-reactivity-torefs-toref/incident');
+  test('returns public incident card for html dom tree structure trivia question', async () => {
+    const res = await request(app).get('/api/trivia/html/html-dom-tree-structure/incident');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      questionId: 'html-dom-tree-structure',
+      tech: 'html',
+      title: 'DOM Depth Performance Check',
+      scenario: expect.any(String),
+      options: expect.any(Array),
+    }));
+    expect(res.body.options).toHaveLength(3);
+    expect(res.body.correctOptionId).toBeUndefined();
+  });
+
+  test('returns 404 when incident metadata resolves to null', async () => {
+    jest.resetModules();
+    jest.doMock('../services/gamification/question-catalog', () => ({
+      getTriviaIncidentMeta: jest.fn(() => null),
+    }));
+
+    const isolatedApp = express();
+    isolatedApp.use(express.json());
+    jest.isolateModules(() => {
+      const mockedRouter = require('../routes/trivia-incident');
+      isolatedApp.use('/api/trivia', mockedRouter);
+    });
+
+    const res = await request(isolatedApp).get('/api/trivia/html/html-dom-tree-structure/incident');
     expect(res.status).toBe(404);
     expect(res.body).toEqual(expect.objectContaining({
       error: expect.stringContaining('Incident card not found'),
     }));
+
+    jest.dontMock('../services/gamification/question-catalog');
+    jest.resetModules();
   });
 
   test('returns 400 for unsupported tech slug', async () => {

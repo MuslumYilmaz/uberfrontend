@@ -132,6 +132,26 @@
     "seo": {
       "title": "What is the JavaScript event loop?",
       "description": "The JavaScript event loop coordinates the call stack and task queues so asynchronous callbacks run after synchronous code completes."
+    },
+    "incidentCard": {
+      "title": "Event Loop Root Cause Check",
+      "scenario": "A teammate sees this output order: synchronous logs first, then a `Promise.then`, then a `setTimeout(..., 0)`. They say, \"Promises must just be faster than timers, so the browser randomly finishes them first.\" Another teammate says, \"The real reason is the event loop: after the current stack finishes, JavaScript drains the microtask queue before it runs the next macrotask.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "microtask-loop",
+          "label": "The second explanation is better. `Promise.then` callbacks go into the microtask queue, and the event loop drains microtasks before it takes the next macrotask like `setTimeout`, which is why promise callbacks run first."
+        },
+        {
+          "id": "dom-heavy",
+          "label": "The first explanation is better. Promises usually resolve faster than timers, so they naturally print first even though both are just waiting in the same queue."
+        },
+        {
+          "id": "timer-first",
+          "label": "The better explanation is that `setTimeout(..., 0)` should normally run before promise callbacks if it was scheduled first, but browsers sometimes reorder them for performance."
+        }
+      ],
+      "correctOptionId": "microtask-loop",
+      "rereadPrompt": "Re-read the event loop ordering. The key lesson is queue priority, not \"speed.\" After synchronous code finishes, JavaScript drains all pending microtasks before it runs the next macrotask, so promise callbacks beat timers."
     }
   },
   {

@@ -4328,6 +4328,26 @@
     "seo": {
       "title": "Why does destructuring break reactivity in Vue?",
       "description": "Destructuring breaks Vue reactivity because extracted variables are no longer tracked by Vue's Proxy. Use toRefs() or toRef() to preserve reactivity."
+    },
+    "incidentCard": {
+      "title": "Proxy Extraction Check",
+      "scenario": "A composable returns a `reactive()` state object, and a teammate immediately writes `const { count } = useCounter()`. Later the UI stops updating and they say, \"Vue reactivity is flaky here. Destructuring should not matter because `count` came from reactive state.\" Another teammate says, \"Destructuring is the bug. Reactivity lives on the Proxy, and destructuring pulls out plain values. If you need extracted fields, use `toRefs()` or `toRef()` so the connection stays live.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "destructuring-pulls-values-out-of-the-proxy-so-use-torefs-or-toref",
+          "label": "The second explanation is better. Vue tracks access through the reactive proxy. Once you destructure plain values out of it, Vue can no longer track them. `toRefs()` and `toRef()` preserve the link back to the original reactive source."
+        },
+        {
+          "id": "destructuring-is-safe-and-the-real-issue-is-async-render-timing",
+          "label": "The first explanation is better. Destructuring does not affect Vue tracking, so stale values usually come from async rendering or watcher timing rather than from how the state was extracted."
+        },
+        {
+          "id": "torefs-is-only-for-typescript-and-not-for-reactivity",
+          "label": "The better explanation is that `toRefs()` mainly exists for TypeScript ergonomics. It is optional for reactivity because Vue already keeps destructured fields connected under the hood."
+        }
+      ],
+      "correctOptionId": "destructuring-pulls-values-out-of-the-proxy-so-use-torefs-or-toref",
+      "rereadPrompt": "Not quite. The main lesson is that reactivity lives on the proxy, not in copied values. Direct destructuring breaks that connection, while `toRefs()` and `toRef()` keep extracted properties reactive."
     }
   },
   {
@@ -4507,6 +4527,26 @@
     "seo": {
       "title": "When should you use watch vs watchEffect in Vue?",
       "description": "Use watch for explicit sources and watchEffect for automatic tracking. Infinite loops happen when an effect writes to the same reactive state it reads."
+    },
+    "incidentCard": {
+      "title": "Effect Tracking Check",
+      "scenario": "A teammate swaps a targeted `watch()` for `watchEffect()` in a data-fetching flow, then adds a few extra reactive reads inside the effect and accidentally creates noisy reruns. They say, \"These APIs are basically interchangeable, so picking one is mostly style.\" Another teammate says, \"Not really. `watch()` is explicit and predictable, while `watchEffect()` automatically tracks everything it touches and runs immediately. That convenience also makes it easier to create accidental dependencies or self-triggering loops.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "watch-is-explicit-while-watcheffect-is-automatic-and-easier-to-misuse",
+          "label": "The second explanation is better. `watch()` is best when you know the exact source you care about, while `watchEffect()` is useful for broad automatic tracking but easier to over-trigger or loop if it reads and writes the wrong reactive state."
+        },
+        {
+          "id": "watch-and-watcheffect-are-equivalent-so-choice-is-mostly-preference",
+          "label": "The first explanation is better. Both APIs react to the same changes in the same way, so the difference is mostly naming preference rather than dependency behavior or loop risk."
+        },
+        {
+          "id": "watcheffect-is-safer-because-vue-prevents-loops-automatically",
+          "label": "The better explanation is that `watchEffect()` is usually the safer default because Vue automatically filters out accidental dependencies and prevents self-triggered loops for you."
+        }
+      ],
+      "correctOptionId": "watch-is-explicit-while-watcheffect-is-automatic-and-easier-to-misuse",
+      "rereadPrompt": "Not quite. The key lesson is that `watch()` and `watchEffect()` behave differently. `watch()` is explicit and predictable, while `watchEffect()` eagerly tracks whatever reactive values it touches, which is convenient but easier to misuse."
     }
   },
   {
@@ -4658,6 +4698,26 @@
     "seo": {
       "title": "What does nextTick do in Vue?",
       "description": "nextTick waits for Vue to flush pending DOM updates after reactive state changes. Use it before reading layout, refs, or element measurements."
+    },
+    "incidentCard": {
+      "title": "DOM Flush Timing Check",
+      "scenario": "A teammate opens a panel with reactive state and immediately measures its height in the next line of code. When the number is wrong, they say, \"Vue updated too slowly, so we should just wrap the measurement in `setTimeout` and hope the DOM is ready by then.\" Another teammate says, \"The real issue is timing. Vue batches DOM updates, so right after a state change the DOM can still reflect the old render. `nextTick()` is the correct way to wait for Vue’s update queue to flush before measuring.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "nexttick-waits-for-vues-dom-flush-before-reading-layout",
+          "label": "The second explanation is better. `nextTick()` is for waiting until Vue has applied pending DOM updates. If you need to read layout, refs, or newly rendered elements after state changes, that is the right boundary to wait for."
+        },
+        {
+          "id": "settimeout-is-the-real-fix-because-vue-cannot-predict-render-timing",
+          "label": "The first explanation is better. `setTimeout(..., 0)` is the safest way to handle Vue DOM timing because it waits longer than `nextTick()` and avoids depending on Vue internals."
+        },
+        {
+          "id": "dom-reads-should-work-immediately-after-state-because-state-is-synchronous",
+          "label": "The better explanation is that DOM measurement should always be correct immediately after a reactive assignment, since JavaScript state updates are synchronous and Vue does not really defer render work."
+        }
+      ],
+      "correctOptionId": "nexttick-waits-for-vues-dom-flush-before-reading-layout",
+      "rereadPrompt": "Not quite. The key lesson is that reactive state changes and DOM updates do not happen at the same moment. Vue batches renders, and `nextTick()` is how you wait for that render flush before reading or measuring the DOM."
     }
   },
   {
@@ -4801,6 +4861,26 @@
       "structure",
       "keys"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "List Identity Check",
+      "scenario": "A teammate renders a sortable list with `:key=\"index\"` because \"the rows are already in order, so index is simpler.\" It looks fine at first, but after someone inserts a new row at the top, text typed into one input suddenly appears under a different person. One teammate says, \"Vue's diffing is flaky when lists reorder.\" Another says, \"The real bug is that index describes position, not identity. Vue is reusing the wrong DOM nodes and component state because the keys shift when the list changes.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "index-keys-break-identity-when-list-order-changes",
+          "label": "The second explanation is better. Keys tell Vue which item is which across renders. If you use the array index, identity changes whenever the list is inserted into, removed from, or reordered, so Vue can keep the wrong DOM node, input value, or component state attached to the wrong item."
+        },
+        {
+          "id": "vue-should-rerender-every-row-so-index-keys-are-safe",
+          "label": "The first explanation is better. `v-for` with index keys is still safe because Vue rerenders the full list on every update, so reused DOM nodes cannot really cause state or input mix-ups."
+        },
+        {
+          "id": "index-keys-only-cause-animation-issues-not-state-bugs",
+          "label": "The better explanation is that index keys only matter for move animations. Inputs, local component state, and DOM reuse are unaffected as long as the array contents stay the same."
+        }
+      ],
+      "correctOptionId": "index-keys-break-identity-when-list-order-changes",
+      "rereadPrompt": "Not quite. The core lesson is that Vue keys represent identity, not position. When you key by index, reorders and inserts make Vue reuse the wrong DOM nodes and component state, which is why inputs and row state can jump to the wrong item."
+    }
   }
 ]
