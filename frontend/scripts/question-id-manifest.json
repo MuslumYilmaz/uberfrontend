@@ -1,0 +1,2688 @@
+{
+  "version": 1,
+  "generatedAt": "2026-03-15T15:26:15.643Z",
+  "entries": [
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-autocomplete-search-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-chessboard-click-highlight",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-chips-input-autocomplete",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-contact-form-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-counter-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-debounced-search",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-dynamic-counter-buttons",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-dynamic-table-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-faq-accordion",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-filterable-user-list",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-image-slider-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-input-output-two-way",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-like-button",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-multi-step-form-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-nested-checkboxes",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-nested-comments",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-pagination-table",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-progress-bar-thresholds",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-shopping-cart-mini",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-snake-game",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-star-rating",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-tabs-switcher",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-theme-toggle",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-tictactoe-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-todo-list-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-transfer-list",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "debug",
+      "id": "ng-debug-counter-change-detection",
+      "file": "angular/debug.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-appmodule-standalone-changes",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-change-detection-strategies",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-component-metadata",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-component-vs-service-responsibilities",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-controlvalueaccessor-vs-custom-two-way-binding",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-custom-two-way-binding",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-data-binding",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-dependency-injection",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-directives",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-event-binding-dom-vs-output-change-detection",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-forroot-forchild",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-hierarchical-dependency-injection-real-bug",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-http-what-actually-cancels-request",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-input-output",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-interpolation-vs-property-binding",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-lazy-loading",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-lifecycle-constructor-oninit-afterviewinit-dom",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-lifecycle-hooks",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-ngfor-trackby",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-ngif-dom-lifecycle",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-ngmodules-vs-standalone",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-ngonchanges-vs-ngdocheck",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-ngoninit-vs-constructor",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-observables-rxjs",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-onpush-change-detection-debugging-real-bug",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-performance-optimization",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-pipes",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-prevent-memory-leaks-unsubscribe-patterns",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-routing",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-services",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-structural-vs-attribute-directives",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-template-compilation-and-binding",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-template-driven-vs-reactive-forms-which-scales",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-vs-angularjs",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-zonejs-change-detection",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "ngrx-data-flow-end-to-end-angular",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "ngrx-reducer-pure-function-immutability-side-effects",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "ngrx-selectors-memoization-derived-state-performance",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "ngrx-store-vs-component-state-angular-when-to-use",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "rxjs-sharereplay-angular-how-it-breaks-your-app",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "rxjs-tap-vs-map-angular-when-to-use",
+      "file": "angular/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-box-model-margin-padding-border",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-flexbox-navbar",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-fluid-clamp",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-forms-pseudoclasses",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-grid-card-gallery",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-inline-centering",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-positioning-badge",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-selectors-text-basics",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-theme-variables-dark-mode",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "coding",
+      "id": "css-transitions-transforms-lift",
+      "file": "css/coding.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-background-color",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-border-property",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-box-model",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-cascade-order",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-center-text",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-change-text-size",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-color-property",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-custom-properties",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-definition",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-display-flex",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-float-clear",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-font-family",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-grid-vs-flexbox",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-hardware-acceleration",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-id-vs-class",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-inline-internal-external",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-link-html",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-make-element-responsive",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-make-text-bold",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-margin-property",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-margin-vs-padding",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-media-queries",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-padding-property",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-position-relative-absolute-fixed",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-pseudo-classes-elements",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-specificity-hierarchy",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-text-color",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-units-em-rem-percent-px",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-visibility-vs-display",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-z-index",
+      "file": "css/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-basic-structure",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-contact-form-labeled",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-dialog-confirm-a11y",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-forms-validation-required",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-head-seo-basics",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-inline-vs-block",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-links-and-images",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-lists-and-navigation",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-semantic-layout",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "coding",
+      "id": "html-tables-accessibility",
+      "file": "html/coding.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-a-tag",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-anchor-target",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-aria-roles",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-block-inline-elements",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-br-tag",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-clickable-image",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-data-attribute",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-div-vs-span",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-dom",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-dom-tree-structure",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-form-default-method",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-head-tag",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-href-attribute",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-id-vs-class",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-iframe-tag",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-img-alt-attribute",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-img-srcset",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-input-placeholder",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-meta-tag",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-ol-ul-dl-difference",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-parsing-rendering",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-semantic-elements",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-shadow-dom",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-tags",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-title-tag",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-vs-xhtml",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "web-accessibility-make-page-accessible",
+      "file": "html/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-abortable-helpers",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-add-strings",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-add-two-promises",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-array-foreach",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-array-prototype-filter",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-array-prototype-map",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-array-prototype-reduce",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-array-sort",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-arrays-equal",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-capitalize-words",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-compact",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-compose",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-concurrency-map-limit",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-count-vowels",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-create-cleanup-bag",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-create-counter",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-create-deferred-promise",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-create-lru-cache",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-create-spy-function",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-curry-function",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-debounce",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-deep-clone",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-deep-clone-cycles-3",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-deep-equal",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-delegated-events-1",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-delegated-events-2",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-delegated-events-3",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-dom-find-node",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-dom-renderer",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-dom-twin-node",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-dom-walk-text-content-1",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-dom-walk-text-content-2",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-dom-walk-text-content-3",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-escape-html",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-event-emitter-mini",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-fetch-json-timeout",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-flatten-depth",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-flatten-once",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-format-date-timezone",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-get-by-path-1",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-group-by",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-implement-bind",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-implement-instanceof",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-implement-new",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-is-object-empty",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-lodash-get",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-max-char",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-maze-path",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-measure-duration",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-median-of-array",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-memoize-function",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-merge-sorted-arrays",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-number-clamp",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-object-create",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-once",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-palindrome-check",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-poll-until",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-promise-all",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-promise-any",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-querystring-parse-1",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-querystring-parse-3",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-querystring-stringify-2",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-recover-bst-swapped-nodes",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-resolve-package-exports",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-reverse-string",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-run-with-perf-budget",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-safe-json-parse",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-sanitize-href-url",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-selector-polyfill-closest-2",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-selector-polyfill-matches-1",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-selector-polyfill-qsa-3",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-set-by-path-2",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-shallow-clone",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-sleep",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-stack-queue-implementation",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-storage-ttl-cache",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-stream-to-text",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-streaming-ndjson-parser",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-sum-numbers",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-take-latest",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-three-sum",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-throttle",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-timer-manager",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-timer-manager-and-dom-renderer",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-unique-array",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-update-at-index",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-valid-anagram",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-validate-username",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-async-race",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-mutating-input",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-off-by-one",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "ai-streaming-data-handling",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "ai-ux-integration-challenges",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "chat-conversation-state-management",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "content-delivery-caching-strategies-streaming",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "debounce-vs-throttle-search-input",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "http-caching-basics",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-array-sort-pitfalls",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-arrow-functions",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-arrow-vs-regular-functions",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-async-await-example-when-promise-is-preferred",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-async-race-conditions",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-big-o-notation",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-bigint-data-type",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-block-scoped-or-function-scoped",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-calback-hell-resolved-with-promise",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-call-apply-bind",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-callbacks",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-check-data-type-with-typeof",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-classes",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-closures",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-compare-two-objects",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-cookie-options",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-cookie-sessionstorage-localstorage",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-current-trends",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-currying",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-data-types",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-deferred-scripts",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-design-patterns",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-equality-vs-strict-equality",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-escape-vs-sanitize",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-esm-vs-cjs",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-event-bubbling-capturing",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-event-delegation",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-event-loop",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-foreach-vs-map",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-garbage-collection-and-gc-pauses",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-higher-order-function",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-hoisting",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-hoisting-tdz",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-intl-datetime-timezone",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-map-filter-reduce",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-map-set-get",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-map-vs-object",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-memoization",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-memory-leaks-common-sources",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-microtasks-vs-macrotasks",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-mock-vs-stub-vs-spy",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-mutability-vs-immutability",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-nan-property",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-null-coalescing-operator",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-null-undefined-undeclared",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-object-create-vs-new",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-object-creation-methods",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-object-destructuring",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-passing-by-value-and-by-reference",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-performance-profiling-workflow",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-promise-combinators-all-allsettled-race-any",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-promise-fundamental-understanding",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-promises-async-await",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-prototypal-inheritance",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-prototype-vs-proto",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-queue-vs-stack",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-repaint-reflow",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-secure-cors-handling",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-shallow-vs-deep-copy",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-spread-vs-rest-parameters",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-static-vs-dynamic-typing",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-testing-edge-cases-strategy",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-this-keyword",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-tree-shaking",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-type-coercion",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-undefined-vs-not-defined",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-use-strict-describe",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-var-let-const-hoisting",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-web-workers-basics",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-why-eval-function-considered-dangerous",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-xss-dom-sinks",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "prompt-engineering-frontend",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "sse-vs-websocket-real-time",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "web-performance-optimize-load-time",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-accordion-faq",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-autocomplete-search-starter",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-chat-streaming-ui",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-chessboard-click-highlight",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-chips-input-autocomplete",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-contact-form-starter",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-counter",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-debounced-search",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-debug-double-render",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-dynamic-counter-buttons",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-dynamic-table",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-filterable-user-list",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-image-slider",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-like-button",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-multi-step-signup",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-nested-checkboxes",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-nested-comments",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-pagination-table",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-progress-bar-thresholds",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-shopping-cart",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-snake-game",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-star-rating",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-tabs-switcher",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-theme-toggle",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-tictactoe",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-todo-list",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-transfer-list",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-use-effect-once",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-18-whats-new",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-component-rerendering",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-concurrent-rendering",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-conditional-rendering",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-context-performance-issues",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-controlled-vs-uncontrolled",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-core-problem-and-non-goals",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-default-vs-named-exports-runtime-break",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-derived-state-anti-pattern",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-diffing-algorithm",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-error-boundaries-what-they-solve",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-fragments-dom-and-reconciliation",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-function-treated-as-component-rules",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-functional-vs-class-components",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-higher-order-components",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-hooks-youve-used",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-jsx-transform-and-why-not-required",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-keys-in-lists",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-lifting-state-up",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-mixing-state-and-props-responsibilities",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-one-way-data-flow",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-portals",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-prevent-unnecessary-rerenders",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-pure-function-of-props-and-state",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-reconciliation",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-render-nothing-return-value",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-render-props-vs-hocs",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-rerender-decision-and-render",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-stale-state-closures",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-strictmode-double-invoke-effects",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-strictmode-purpose",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-useeffect-purpose",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-useeffect-vs-uselayouteffect",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-usememo-vs-usecallback",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-useref-vs-usestate",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-usestate-purpose",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-virtual-dom",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-why-batching-state-updates",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-why-event-delegation",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-why-hooks-have-rules",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-why-props-immutable",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-accordion-faq",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-autocomplete-search",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-chessboard-click-highlight",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-chips-input-autocomplete",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-contact-form-starter",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-counter",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-debounced-search",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-dynamic-counter-buttons",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-dynamic-table",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-filterable-user-list",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-image-slider",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-like-button",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-multi-step-form",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-nested-checkboxes",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-nested-comments",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-pagination-table",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-progress-bar-thresholds",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-shopping-cart",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-snake-game",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-star-rating",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-tabs-switcher",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-theme-toggle",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-tictactoe",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-todo-list",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-transfer-list",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-architecture-decisions-scalability",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-child-mutates-prop-directly",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-composition-api",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-composition-api-vs-mixins",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-computed-properties",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-computed-vs-watchers",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-conditional-list-rendering",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-data-must-be-function",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-destructuring-breaks-reactivity-torefs-toref",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-directives",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-internal-rendering-pipeline",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-lifecycle-hooks",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-methods-in-templates",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-native-vs-component-events",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-nexttick-dom-update-queue",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-provide-inject-vs-prop-drilling-tradeoffs",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-reactive-interpolation-into-dom",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-reactivity-system",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-reactivity-vs-react-concepts",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-ref-vs-reactive-difference-traps",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-router-navigation",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-sfc-vs-global-components",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-slots-default-named-scoped-slot-props",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-v-bind-reactive-attributes",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-v-bind-v-on-fundamental-template-syntax",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-v-for-keys",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-v-for-keys-why-not-index",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-v-if-component-creation-destruction",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-v-model-syntax-sugar-expansion",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-v-show-vs-v-if-dom-lifecycle",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-virtual-dom-diffing",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-watch-vs-watcheffect-differences-infinite-loops",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-why-declare-emits-type-safety-maintenance",
+      "file": "vue/trivia.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vuex-state-management",
+      "file": "vue/trivia.json"
+    }
+  ]
+}

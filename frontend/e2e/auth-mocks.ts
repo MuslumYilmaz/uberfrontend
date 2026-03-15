@@ -219,6 +219,8 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           topTopics: [],
         },
         settings: {
+          weeklyGoalEnabled: true,
+          weeklyGoalTarget: 10,
           showStreakWidget: true,
           dailyChallengeTech: 'auto',
         },
@@ -264,6 +266,8 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           weekKey: 'mock-week',
         },
         settings: {
+          weeklyGoalEnabled: enabled,
+          weeklyGoalTarget: target,
           showStreakWidget,
           dailyChallengeTech,
         },

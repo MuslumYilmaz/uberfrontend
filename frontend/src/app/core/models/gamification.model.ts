@@ -57,6 +57,8 @@ export interface DashboardProgress {
 }
 
 export interface DashboardGamificationSettings {
+  weeklyGoalEnabled: boolean;
+  weeklyGoalTarget: number;
   showStreakWidget: boolean;
   dailyChallengeTech?: 'auto' | 'javascript' | 'react' | 'angular' | 'vue' | 'html' | 'css';
 }

@@ -105,8 +105,8 @@ function applyChallengeStreak(previous, completionDayKey) {
 
 function readActiveActivityStreakCurrent(streak, todayDayKey) {
   const rawCurrent = Math.max(0, Number(streak?.current) || 0);
-  const lastActiveUTCDate = streak?.lastActiveUTCDate || null;
-  const diff = dayDiffByKey(lastActiveUTCDate, todayDayKey);
+  const lastActiveDayKey = streak?.lastActiveDayKey || streak?.lastActiveUTCDate || null;
+  const diff = dayDiffByKey(lastActiveDayKey, todayDayKey);
 
   if (!Number.isFinite(diff)) return 0;
   // If at least one full day was missed, the active streak is broken for today.

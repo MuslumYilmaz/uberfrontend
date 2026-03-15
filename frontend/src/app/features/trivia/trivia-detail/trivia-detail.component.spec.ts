@@ -52,11 +52,10 @@ describe('TriviaDetailComponent', () => {
       'markSolved',
       'markSolvedLocal',
       'setSolvedIds',
-      'unmarkSolved',
       'solvedIds',
     ]);
     auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'headers']);
-    activity = jasmine.createSpyObj<ActivityService>('ActivityService', ['complete']);
+    activity = jasmine.createSpyObj<ActivityService>('ActivityService', ['complete', 'uncomplete', 'isCompletionPending']);
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     onboarding = jasmine.createSpyObj<OnboardingService>('OnboardingService', ['getProfile', 'markPending']);
     triviaIncident = jasmine.createSpyObj<TriviaIncidentService>('TriviaIncidentService', ['getIncident', 'answerIncident']);
@@ -66,10 +65,11 @@ describe('TriviaDetailComponent', () => {
     progress.markSolved.and.resolveTo();
     progress.markSolvedLocal.and.stub();
     progress.setSolvedIds.and.stub();
-    progress.unmarkSolved.and.resolveTo();
     auth.user.and.returnValue(null);
     auth.isLoggedIn.and.returnValue(false);
     activity.complete.and.returnValue(of({ solvedQuestionIds: ['q1'], stats: {} } as any));
+    activity.uncomplete.and.returnValue(of({ solvedQuestionIds: [], stats: {}, rollbackApplied: true } as any));
+    activity.isCompletionPending.and.returnValue(false);
     onboarding.getProfile.and.returnValue(null);
     triviaIncident.getIncident.and.returnValue(of(null));
     triviaIncident.answerIncident.and.returnValue(of({
@@ -313,5 +313,29 @@ describe('TriviaDetailComponent', () => {
     expect(progress.setSolvedIds).toHaveBeenCalledWith(['q1']);
     expect(activity.complete).toHaveBeenCalled();
     expect(fixture.componentInstance.solved()).toBeTrue();
+  });
+
+  it('uses activity rollback when marking a solved trivia question incomplete', async () => {
+    progress.isSolved.and.returnValue(true);
+    progress.solvedIds.and.returnValue(['q1']);
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    routeData$.next({ questionDetail: makeResolved('free') });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.solved()).toBeTrue();
+
+    await fixture.componentInstance.markComplete();
+
+    expect(activity.uncomplete).toHaveBeenCalledWith({
+      kind: 'trivia',
+      tech: 'javascript',
+      itemId: 'q1',
+    });
+    expect(fixture.componentInstance.solved()).toBeFalse();
   });
 });

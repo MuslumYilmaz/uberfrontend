@@ -62,6 +62,8 @@ describe('DashboardComponent', () => {
       ],
     },
     settings: {
+      weeklyGoalEnabled: true,
+      weeklyGoalTarget: 10,
       showStreakWidget: true,
       dailyChallengeTech: 'auto',
     },
@@ -128,7 +130,7 @@ describe('DashboardComponent', () => {
         progress: 0.4,
         weekKey: '2026-02-09',
       },
-      settings: { showStreakWidget: true, dailyChallengeTech: 'auto' },
+      settings: { weeklyGoalEnabled: true, weeklyGoalTarget: 10, showStreakWidget: true, dailyChallengeTech: 'auto' },
     }));
 
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);

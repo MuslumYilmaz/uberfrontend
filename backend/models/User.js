@@ -93,7 +93,7 @@ const UserSchema = new mongoose.Schema(
       streak: {
         current: { type: Number, default: 0 },
         longest: { type: Number, default: 0 },
-        lastActiveUTCDate: { type: String, default: null }, // 'YYYY-MM-DD'
+        lastActiveUTCDate: { type: String, default: null }, // app-local day key ('YYYY-MM-DD')
       },
       challengeStreak: {
         current: { type: Number, default: 0 },

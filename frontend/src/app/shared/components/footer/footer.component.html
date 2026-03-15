@@ -49,7 +49,8 @@
 
         <!-- RIGHT -->
         <div class="right">
-            <button *ngIf="showSubmit" class="pbtn-sm primary" type="button" (click)="submit.emit()">
+            <button *ngIf="showSubmit" class="pbtn-sm primary" type="button" [disabled]="submitDisabled"
+                (click)="submit.emit()">
                 {{ submitLabel }}
             </button>
         </div>

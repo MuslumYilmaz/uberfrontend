@@ -1,12 +1,10 @@
 const WeeklyGoalBonusCredit = require('../../models/WeeklyGoalBonusCredit');
 const { WEEKLY_GOAL_BONUS_XP, APP_TIMEZONE } = require('./constants');
-const { readWeeklyGoalSettings } = require('./engine');
-const { currentWeekBounds } = require('./timezone');
 const { countWeeklySolvedUnique } = require('./dashboard');
+const { ensureCurrentWeeklyGoalState } = require('./weekly-goal-state');
 
 async function awardWeeklyGoalBonusIfEligible(user, { timeZone = APP_TIMEZONE, session = null } = {}) {
-  const settings = readWeeklyGoalSettings(user);
-  const weekBounds = currentWeekBounds(timeZone);
+  const { settings, weekBounds } = await ensureCurrentWeeklyGoalState(user, { timeZone, session });
   const weeklyCompleted = await countWeeklySolvedUnique(user._id, weekBounds, { timeZone, session });
   const reached = settings.enabled && weeklyCompleted >= settings.target;
 

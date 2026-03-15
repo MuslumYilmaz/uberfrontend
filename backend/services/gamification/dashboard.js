@@ -1,14 +1,15 @@
-const ActivityEvent = require('../../models/ActivityEvent');
+const ActivityCompletion = require('../../models/ActivityCompletion');
 const WeeklyGoalBonusCredit = require('../../models/WeeklyGoalBonusCredit');
 const { APP_TIMEZONE, SOLVE_KINDS, WEEKLY_GOAL_BONUS_XP } = require('./constants');
 const {
-  computeLevel,
   readWeeklyGoalSettings,
+  computeLevel,
   readStreakVisibility,
   readDailyChallengeTech,
 } = require('./engine');
 const { currentWeekBounds, dayKeyInTimezone } = require('./timezone');
 const { loadQuestionCatalog } = require('./question-catalog');
+const { ensureCurrentWeeklyGoalState } = require('./weekly-goal-state');
 
 function toTitleCase(input) {
   return String(input || '')
@@ -22,8 +23,9 @@ async function countWeeklySolvedUnique(userId, weekBounds, { timeZone = APP_TIME
   const since = new Date();
   since.setUTCDate(since.getUTCDate() - 14);
 
-  const query = ActivityEvent.find({
+  const query = ActivityCompletion.find({
     userId,
+    active: true,
     kind: { $in: Array.from(SOLVE_KINDS) },
     itemId: { $exists: true, $ne: '' },
     completedAt: { $gte: since },
@@ -40,6 +42,28 @@ async function countWeeklySolvedUnique(userId, weekBounds, { timeZone = APP_TIME
     unique.add(`${row.kind}:${row.itemId}`);
   }
   return unique.size;
+}
+
+async function countTodayCompletedKinds(userId, dayKey, { timeZone = APP_TIMEZONE, session = null } = {}) {
+  const since = new Date();
+  since.setUTCDate(since.getUTCDate() - 2);
+
+  const query = ActivityCompletion.find({
+    userId,
+    active: true,
+    kind: { $in: Array.from(SOLVE_KINDS) },
+    completedAt: { $gte: since },
+  }).select('kind completedAt');
+  if (session) query.session(session);
+
+  const rows = await query.lean();
+  const uniqueKinds = new Set();
+  for (const row of rows) {
+    const rowDayKey = dayKeyInTimezone(new Date(row.completedAt), timeZone);
+    if (rowDayKey !== dayKey) continue;
+    uniqueKinds.add(row.kind);
+  }
+  return uniqueKinds.size;
 }
 
 function buildProgressSummary(user) {
@@ -132,8 +156,7 @@ function deriveNextBestAction({ dailyChallengeCompleted, weeklyGoal, progress, c
 }
 
 async function buildDashboardPayload(user, { challenge, challengeCompletion, timeZone = APP_TIMEZONE } = {}) {
-  const weekBounds = currentWeekBounds(timeZone);
-  const weeklyGoalSettings = readWeeklyGoalSettings(user);
+  const { weekBounds, settings: weeklyGoalSettings } = await ensureCurrentWeeklyGoalState(user, { timeZone });
   const weeklyCompleted = await countWeeklySolvedUnique(user._id, weekBounds, { timeZone });
   const weeklyProgress = weeklyGoalSettings.target > 0
     ? Math.min(1, weeklyCompleted / weeklyGoalSettings.target)
@@ -146,6 +169,7 @@ async function buildDashboardPayload(user, { challenge, challengeCompletion, tim
 
   const xpLevel = computeLevel(user?.stats?.xpTotal || 0);
   const progress = buildProgressSummary(user);
+  const preferenceSettings = readWeeklyGoalSettings(user);
 
   const dailyChallenge = challenge
     ? {
@@ -201,6 +225,8 @@ async function buildDashboardPayload(user, { challenge, challengeCompletion, tim
     xpLevel,
     progress,
     settings: {
+      weeklyGoalEnabled: preferenceSettings.enabled,
+      weeklyGoalTarget: preferenceSettings.target,
       showStreakWidget: readStreakVisibility(user),
       dailyChallengeTech: readDailyChallengeTech(user),
     },
@@ -209,6 +235,7 @@ async function buildDashboardPayload(user, { challenge, challengeCompletion, tim
 
 module.exports = {
   countWeeklySolvedUnique,
+  countTodayCompletedKinds,
   buildProgressSummary,
   deriveNextBestAction,
   buildDashboardPayload,

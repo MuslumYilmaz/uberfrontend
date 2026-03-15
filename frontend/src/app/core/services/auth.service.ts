@@ -23,7 +23,7 @@ export interface UserPrefs {
 export interface Streak {
   current: number;
   longest: number;
-  lastActiveUTCDate: string | null;
+  lastActiveUTCDate: string | null; // app-local day key from backend
 }
 
 export interface PerTech { xp: number; completed: number; }

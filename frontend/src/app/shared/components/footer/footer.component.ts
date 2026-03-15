@@ -44,6 +44,7 @@ export class FooterComponent {
   // Optional right-side submit/action (reading lessons)
   @Input() showSubmit = false;
   @Input() submitLabel = 'Submit';
+  @Input() submitDisabled = false;
 
   // Left-side course-outline menu (courses only)
   @Input() leftCourseLabel?: string | null;

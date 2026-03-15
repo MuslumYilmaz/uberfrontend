@@ -1,6 +1,6 @@
 /* ========================= trivia-detail.component.ts ========================= */
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, computed, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -354,7 +354,15 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     private onboarding: OnboardingService,
     private triviaIncident: TriviaIncidentService,
     private lifecyclePrompts: LifecyclePromptService,
-  ) { }
+  ) {
+    effect(() => {
+      const q = this.question();
+      const solvedIds = this.progress.solvedIds();
+      if (q) {
+        this.solved.set(solvedIds.includes(q.id));
+      }
+    }, { allowSignalWrites: true });
+  }
 
   ngOnInit() {
     this.signupPromptVariant = this.experiments.variant('signup_prompt_copy_v1', 'trivia_detail');
@@ -858,6 +866,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   async markComplete() {
     const q = this.question();
     if (!q) return;
+    if (this.isCompletionPending()) return;
     if (!this.solved()) {
       const opened = await this.tryOpenIncidentPrompt(q);
       if (opened) return;
@@ -866,7 +875,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   submitLabel(): string {
+    if (this.isCompletionPending()) return 'Syncing completion...';
     return this.solved() ? 'Mark as incomplete' : 'Mark as complete';
+  }
+
+  isCompletionPending(): boolean {
+    return this.activity.isCompletionPending('trivia', this.question()?.id ?? null);
   }
 
   incidentPromptTitle(): string {
@@ -1059,7 +1073,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const wasSolved = this.solved();
     if (wasSolved) {
-      await this.progress.unmarkSolved(q.id);
+      await firstValueFrom(this.activity.uncomplete({
+        kind: 'trivia',
+        tech: this.tech,
+        itemId: q.id,
+      }));
       this.solved.set(false);
       return;
     }
@@ -1073,6 +1091,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         durationMin: 3,
         difficulty: q.difficulty,
       }));
+      if (res?.pending) {
+        return;
+      }
       if (res?.credited === false && !res?.stats) {
         return;
       }

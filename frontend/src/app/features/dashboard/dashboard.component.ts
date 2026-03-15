@@ -1020,8 +1020,8 @@ export class DashboardComponent {
         next: (payload) => {
           this.gamificationLoading.set(false);
           this.gamificationState.set(payload);
-          this.weeklyGoalEnabled.set(payload?.weeklyGoal?.enabled !== false);
-          this.weeklyGoalTarget.set(payload?.weeklyGoal?.target || 10);
+          this.weeklyGoalEnabled.set(payload?.settings?.weeklyGoalEnabled ?? payload?.weeklyGoal?.enabled !== false);
+          this.weeklyGoalTarget.set(payload?.settings?.weeklyGoalTarget || payload?.weeklyGoal?.target || 10);
           this.showStreakWidget.set(payload?.settings?.showStreakWidget !== false);
           this.dailyChallengeTech.set((payload?.settings?.dailyChallengeTech as DailyChallengeTech) || 'auto');
           if (!preserveDailyCompleteFeedback) {

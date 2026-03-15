@@ -131,4 +131,26 @@ describe('GET /api/dashboard', () => {
     expect(secondChallengeId).toBe(firstChallengeId);
     expect(second.body?.dailyChallenge?.dayKey).toBe(first.body?.dailyChallenge?.dayKey);
   });
+
+  test('drops removed question ids from progress totals while preserving current catalog coverage', async () => {
+    const user = await User.create({
+      email: 'removed-progress@example.com',
+      username: 'removed_progress_user',
+      passwordHash: 'hash',
+      solvedQuestionIds: ['react-counter', 'removed-question-id'],
+      stats: { xpTotal: 120, completedTotal: 2 },
+    });
+
+    const res = await request(app)
+      .get('/api/dashboard')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body?.progress?.solvedCount).toBe(1);
+    expect(res.body?.progress?.totalCount).toBeGreaterThan(1);
+    expect(res.body?.progress?.solvedPercent).toBe(
+      Math.round((1 / Number(res.body?.progress?.totalCount || 1)) * 100)
+    );
+    expect(Array.isArray(res.body?.progress?.topTopics)).toBe(true);
+  });
 });

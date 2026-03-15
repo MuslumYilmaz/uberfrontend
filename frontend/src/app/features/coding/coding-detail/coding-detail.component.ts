@@ -427,6 +427,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   hasAnyTests = computed(() => !!(this.testCode()?.trim()));
 
   submitLabel(): string {
+    if (this.isCompletionPending()) {
+      return 'Syncing completion...';
+    }
     const canSave = this.auth.isLoggedIn();
     const solved = canSave && this.solved();
 
@@ -434,6 +437,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return solved ? 'Mark as incomplete' : 'Mark as complete';
     }
     return solved ? 'Mark as incomplete' : 'Submit';
+  }
+
+  isCompletionPending(): boolean {
+    const q = this.question();
+    if (!q) return false;
+    return this.activity.isCompletionPending(this.kind, q.id);
   }
 
   ensureAuthenticated(): boolean {
@@ -1561,6 +1570,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ---------- submit ----------
   async submitCode(): Promise<void> {
+    if (this.isCompletionPending()) {
+      return;
+    }
     if (!this.ensureAuthenticated()) {
       return;
     }
@@ -1571,7 +1583,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // Toggle off if already completed
     if (this.solved()) {
-      await this.progress.unmarkSolved(q.id);
+      await firstValueFrom(this.activity.uncomplete({
+        kind: this.kind,
+        tech: this.tech,
+        itemId: q.id,
+      }));
       this.solved.set(false);
       return;
     }
@@ -2338,6 +2354,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         xp: this.xpFor(q),
         difficulty: q.difficulty,
       }));
+
+      if (res?.pending) {
+        return false;
+      }
 
       if (res?.credited === false && !res?.stats) {
         return false;

@@ -6,14 +6,20 @@ const {
   readStreakVisibility,
   sanitizeDailyChallengeTech,
   readDailyChallengeTech,
+  readWeeklyGoalSettings,
 } = require('../services/gamification/engine');
 const { countWeeklySolvedUnique } = require('../services/gamification/dashboard');
-const { currentWeekBounds } = require('../services/gamification/timezone');
+const { ensureCurrentWeeklyGoalState } = require('../services/gamification/weekly-goal-state');
 
 router.post('/', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.auth.userId).select('prefs');
     if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const currentPreference = readWeeklyGoalSettings(user);
+    const currentWeek = await ensureCurrentWeeklyGoalState(user, {
+      sourceSettings: currentPreference,
+    });
 
     const enabled = req.body?.enabled !== false;
     const target = sanitizeWeeklyGoalTarget(req.body?.target);
@@ -29,19 +35,22 @@ router.post('/', requireAuth, async (req, res) => {
 
     await user.save();
 
-    const weekBounds = currentWeekBounds();
-    const weeklyCompleted = await countWeeklySolvedUnique(user._id, weekBounds);
-    const progress = target > 0 ? Math.min(1, weeklyCompleted / target) : 1;
+    const weeklyCompleted = await countWeeklySolvedUnique(user._id, currentWeek.weekBounds);
+    const progress = currentWeek.settings.target > 0
+      ? Math.min(1, weeklyCompleted / currentWeek.settings.target)
+      : 1;
 
     return res.json({
       weeklyGoal: {
-        enabled,
-        target,
+        enabled: currentWeek.settings.enabled,
+        target: currentWeek.settings.target,
         completed: weeklyCompleted,
         progress,
-        weekKey: weekBounds.weekKey,
+        weekKey: currentWeek.weekBounds.weekKey,
       },
       settings: {
+        weeklyGoalEnabled: enabled,
+        weeklyGoalTarget: target,
         showStreakWidget: readStreakVisibility(user),
         dailyChallengeTech: readDailyChallengeTech(user),
       },

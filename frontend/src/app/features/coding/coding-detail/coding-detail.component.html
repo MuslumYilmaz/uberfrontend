@@ -556,7 +556,8 @@
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
     [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
     [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
-    [submitLabel]="submitLabel()" (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
+    [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && isCompletionPending()"
+    (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
     (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
   </app-footer>
 </ng-container>

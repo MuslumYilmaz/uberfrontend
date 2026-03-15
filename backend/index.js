@@ -250,6 +250,7 @@ app.use('/api/activity', require('./routes/activity'));
 app.use('/api/admin', requireAuth, requireAdmin, require('./routes/admin'));
 
 // ---- Progress routes ----
+// Authenticated-only manual solved sync. Guest solve attempts are intentionally not persisted.
 app.post('/api/users/me/solved', requireAuth, async (req, res) => {
     try {
         const { questionId, solved } = req.body || {};

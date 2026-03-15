@@ -1,11 +1,14 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
-import { Observable, Subject, catchError, of, shareReplay, tap, throwError } from 'rxjs';
+import { Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
+import { Observable, Subject, catchError, finalize, firstValueFrom, of, shareReplay, tap, throwError } from 'rxjs';
 import { Tech } from '../models/user.model';
 import { AuthService } from './auth.service';
 import { apiUrl } from '../utils/api-base';
 import { AnalyticsService } from './analytics.service';
 import { GamificationService } from './gamification.service';
+import { OfflineService } from './offline';
+import { UserProgressService } from './user-progress.service';
 
 export interface ActivityEvent {
   _id: string;
@@ -16,8 +19,8 @@ export interface ActivityEvent {
   source: 'tech' | 'company' | 'course' | 'system';
   durationMin: number;
   xp: number;
-  completedAt: string;  // ISO
-  dayUTC: string;       // YYYY-MM-DD
+  completedAt: string;
+  dayUTC: string;
 }
 
 export interface ActivitySummary {
@@ -31,6 +34,44 @@ export interface ActivitySummary {
   today: { completed: number; total: number; progress: number };
 }
 
+export interface ActivityCompleteResponse {
+  stats: any;
+  solvedQuestionIds?: string[];
+  event?: ActivityEvent | null;
+  recent?: ActivityEvent[];
+  xpAwarded?: number;
+  levelUp?: boolean;
+  weeklyGoal?: {
+    completed?: number;
+    target?: number;
+    reached?: boolean;
+    bonusGranted?: boolean;
+  };
+  logicalCompletionCreated?: boolean;
+  pending?: boolean;
+  queued?: boolean;
+  credited?: boolean;
+  requestId?: string;
+}
+
+export interface ActivityUncompleteResponse {
+  stats: any;
+  solvedQuestionIds?: string[];
+  xpRemoved?: number;
+  levelDown?: boolean;
+  rollbackApplied?: boolean;
+  weeklyGoal?: {
+    completed?: number;
+    target?: number;
+    reached?: boolean;
+    bonusGranted?: boolean;
+    bonusRevoked?: boolean;
+  };
+  dailyChallenge?: {
+    revoked?: boolean;
+  };
+}
+
 export type ActivityCompletedEvent = {
   stats?: any;
   kind?: 'coding' | 'trivia' | 'debug';
@@ -42,45 +83,75 @@ export type ActivityCompletedEvent = {
 
 type CachedObs<T> = { ts: number; obs: Observable<T> };
 
+type PendingActivityCompletion = {
+  key: string;
+  userId: string;
+  requestId: string;
+  kind: 'coding' | 'trivia' | 'debug';
+  tech: Tech | 'system-design';
+  itemId: string;
+  source: 'tech' | 'company' | 'course' | 'system';
+  durationMin: number;
+  difficulty?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const LS_PENDING_COMPLETIONS = 'fa:activity:pending:v1';
+
 @Injectable({ providedIn: 'root' })
 export class ActivityService {
-  private base = apiUrl('/activity');
-  private readonly DEFAULT_TTL = 60_000; // 60s
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private readonly base = apiUrl('/activity');
+  private readonly DEFAULT_TTL = 60_000;
 
-  // Emits when any activity is completed
   activityCompleted$ = new Subject<ActivityCompletedEvent>();
-
-  // Live summary cache for quick read in components
   summarySig = signal<ActivitySummary | null>(null);
 
-  // ---- request caches (dedupe + TTL) ----
   private summaryCache: CachedObs<ActivitySummary> | null = null;
   private recentCache = new Map<string, CachedObs<ActivityEvent[]>>();
   private heatmapCache = new Map<string, CachedObs<any>>();
+  private readonly pendingCompletions = signal<Record<string, PendingActivityCompletion>>(this.readPendingCompletions());
+  private readonly flushInFlight = new Set<string>();
+  private flushScheduled = false;
 
   constructor(
     private http: HttpClient,
     private auth: AuthService,
     private analytics: AnalyticsService,
-    private gamification: GamificationService
+    private gamification: GamificationService,
+    private offline: OfflineService,
+    private progress: UserProgressService,
   ) {
-    // Invalidate on completion (so widgets refresh immediately)
     this.activityCompleted$.subscribe(() => {
       this.invalidateAll();
       this.gamification.invalidateDashboardCache();
     });
+
+    if (this.isBrowser) {
+      window.addEventListener('focus', () => {
+        this.scheduleFlushPendingCompletions();
+      });
+    }
+
+    // React to auth/online state without requiring component orchestration.
+    effect(() => {
+      const user = this.auth.user();
+      const online = this.offline.isOnline();
+      if (!user || !online) return;
+      this.scheduleFlushPendingCompletions();
+    }, { allowSignalWrites: true });
   }
 
   private isLoggedIn(): boolean {
     return this.auth.isLoggedIn();
   }
 
-  // ---------- headers ----------
   private headers(): HttpHeaders {
     return this.auth.headers();
   }
 
-  // ---------- invalidation ----------
   invalidateAll() {
     this.summaryCache = null;
     this.recentCache.clear();
@@ -90,11 +161,9 @@ export class ActivityService {
   invalidateRecent() { this.recentCache.clear(); }
   invalidateHeatmap() { this.heatmapCache.clear(); }
 
-  // ---------- cached endpoints ----------
   getSummary(options?: { force?: boolean; ttlMs?: number }): Observable<ActivitySummary> {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
 
-    // 🛑 Do nothing when logged out (no console errors)
     if (!this.isLoggedIn()) {
       this.summarySig.set(null);
       const obs = of(null as unknown as ActivitySummary).pipe(shareReplay(1));
@@ -110,7 +179,6 @@ export class ActivityService {
     const url = `${this.base}/summary${options?.force ? `?_=${Date.now()}` : ''}`;
     const obs = this.http.get<ActivitySummary>(url, { headers: this.headers() }).pipe(
       tap((s) => this.summarySig.set(s)),
-      // 🔇 Swallow 401s (e.g., token expired race)
       catchError(err => {
         if (err?.status === 401) {
           this.summarySig.set(null);
@@ -132,7 +200,6 @@ export class ActivityService {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
     const key = `limit=${params?.limit ?? ''}|since=${params?.since ?? ''}|all=${params?.all ?? ''}`;
 
-    // 🛑 Skip when logged out
     if (!this.isLoggedIn()) {
       const obs = of([] as ActivityEvent[]).pipe(shareReplay(1));
       this.recentCache.set(key, { ts: Date.now(), obs });
@@ -171,7 +238,6 @@ export class ActivityService {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
     const key = `days=${params?.days ?? ''}`;
 
-    // 🛑 Skip when logged out
     if (!this.isLoggedIn()) {
       const obs = of(null).pipe(shareReplay(1));
       this.heatmapCache.set(key, { ts: Date.now(), obs } as any);
@@ -199,7 +265,6 @@ export class ActivityService {
     return obs;
   }
 
-  // ---------- mutation ----------
   complete(payload: {
     kind: 'coding' | 'trivia' | 'debug';
     tech: Tech | 'system-design';
@@ -209,62 +274,376 @@ export class ActivityService {
     xp?: number;
     solved?: boolean;
     difficulty?: string;
-  }) {
-    // 🛑 If logged out, act like a no-op (no error, no network)
+  }): Observable<ActivityCompleteResponse> {
     if (!this.isLoggedIn()) {
-      return of({ credited: false, stats: null } as any);
+      return of({ credited: false, stats: null } as ActivityCompleteResponse);
     }
 
-    return this.http.post<any>(
-      `${this.base}/complete`,
-      payload,
-      { headers: this.headers() }
-    ).pipe(
-      tap((res) => {
-        this.invalidateAll();
-        const xpAwarded = Number(res?.xpAwarded || 0);
-        const weeklyGoalCompleted = !!res?.weeklyGoal?.reached;
-        this.activityCompleted$.next({
-          kind: payload.kind,
-          tech: payload.tech,
-          itemId: payload.itemId,
-          xpAwarded,
-          weeklyGoalCompleted,
-        });
-        if (xpAwarded > 0) {
-          this.analytics.track('xp_awarded', {
-            source: 'question_complete',
-            kind: payload.kind,
-            tech: payload.tech,
-            item_id: payload.itemId,
-            xp: xpAwarded,
-          });
-        }
-        this.analytics.track('weekly_goal_progressed', {
-          completed: Number(res?.weeklyGoal?.completed || 0),
-          target: Number(res?.weeklyGoal?.target || 0),
-        });
-        if (weeklyGoalCompleted) {
-          this.analytics.track('weekly_goal_completed', {
-            completed: Number(res?.weeklyGoal?.completed || 0),
-            target: Number(res?.weeklyGoal?.target || 0),
-          });
-        }
-        if (res?.levelUp) {
-          this.analytics.track('level_up', { source: 'question_complete' });
-        }
-        this.getSummary({ force: true }).subscribe();
-      }),
-      catchError(err => {
-        if (err?.status === 401) return of({ credited: false, stats: null });
-        return throwError(() => err);
-      })
-    );
+    const user = this.auth.user();
+    const itemId = String(payload.itemId || '').trim();
+    if (!user || !itemId) {
+      return throwError(() => new Error('itemId is required to complete activity'));
+    }
+
+    const pending = this.upsertPendingCompletion({
+      userId: user._id,
+      kind: payload.kind,
+      tech: payload.tech,
+      itemId,
+      source: payload.source || 'tech',
+      durationMin: Math.max(0, Number(payload.durationMin) || 0),
+      difficulty: payload.difficulty,
+    });
+
+    if (!this.offline.isOnline()) {
+      return of(this.pendingResult(pending));
+    }
+
+    return this.dispatchPendingCompletion(pending);
   }
 
-  // ---------- legacy API (kept for compatibility; prefer get* above) ----------
+  isCompletionPending(
+    kind: 'coding' | 'trivia' | 'debug',
+    itemId?: string | null,
+    userId: string | null = this.auth.user()?._id ?? null,
+  ): boolean {
+    const itemIdText = String(itemId || '').trim();
+    if (!itemIdText || !userId) return false;
+    return Boolean(this.pendingCompletions()[this.pendingKey(userId, kind, itemIdText)]);
+  }
+
   recent(params?: { limit?: number; since?: string; all?: boolean }) { return this.getRecent(params); }
   summary() { return this.getSummary(); }
   heatmap(params?: { days?: number }) { return this.getHeatmap(params); }
   refreshSummary() { this.getSummary({ force: true }).subscribe({ next: () => { }, error: () => { } }); }
+
+  uncomplete(payload: {
+    kind: 'coding' | 'trivia' | 'debug';
+    tech: Tech | 'system-design';
+    itemId?: string;
+  }): Observable<ActivityUncompleteResponse> {
+    if (!this.isLoggedIn()) {
+      return of({ rollbackApplied: false, stats: null } as ActivityUncompleteResponse);
+    }
+
+    const itemId = String(payload.itemId || '').trim();
+    if (!itemId) {
+      return throwError(() => new Error('itemId is required to roll back activity'));
+    }
+
+    return this.http.post<ActivityUncompleteResponse>(
+      `${this.base}/uncomplete`,
+      {
+        kind: payload.kind,
+        tech: payload.tech,
+        itemId,
+      },
+      { headers: this.headers() }
+    ).pipe(
+      tap((res) => this.handleRollbackSuccess(payload, res)),
+      tap(() => this.refreshSummary())
+    );
+  }
+
+  private pendingKey(userId: string, kind: 'coding' | 'trivia' | 'debug', itemId: string): string {
+    return `${userId}:${kind}:${itemId}`;
+  }
+
+  private generateRequestId(): string {
+    try {
+      if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+      }
+    } catch { }
+    return `req_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  }
+
+  private readPendingCompletions(): Record<string, PendingActivityCompletion> {
+    if (!this.isBrowser) return {};
+    try {
+      const raw = localStorage.getItem(LS_PENDING_COMPLETIONS);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return {};
+      const entries = parsed
+        .filter((entry) => entry && typeof entry === 'object')
+        .map((entry) => this.normalizePendingCompletion(entry))
+        .filter((entry): entry is PendingActivityCompletion => !!entry);
+      return Object.fromEntries(entries.map((entry) => [entry.key, entry]));
+    } catch {
+      return {};
+    }
+  }
+
+  private normalizePendingCompletion(value: any): PendingActivityCompletion | null {
+    const userId = String(value?.userId || '').trim();
+    const itemId = String(value?.itemId || '').trim();
+    const requestId = String(value?.requestId || '').trim();
+    const kind = value?.kind;
+    const tech = value?.tech;
+    const source = value?.source;
+    if (!userId || !itemId || !requestId) return null;
+    if (!['coding', 'trivia', 'debug'].includes(kind)) return null;
+    if (!['tech', 'company', 'course', 'system'].includes(source)) return null;
+    return {
+      key: this.pendingKey(userId, kind, itemId),
+      userId,
+      requestId,
+      kind,
+      tech,
+      itemId,
+      source,
+      durationMin: Math.max(0, Number(value?.durationMin) || 0),
+      difficulty: typeof value?.difficulty === 'string' ? value.difficulty : undefined,
+      createdAt: String(value?.createdAt || new Date().toISOString()),
+      updatedAt: String(value?.updatedAt || new Date().toISOString()),
+    };
+  }
+
+  private writePendingCompletions(next: Record<string, PendingActivityCompletion>) {
+    this.pendingCompletions.set(next);
+    if (!this.isBrowser) return;
+    try {
+      localStorage.setItem(LS_PENDING_COMPLETIONS, JSON.stringify(
+        Object.values(next).sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      ));
+    } catch { }
+  }
+
+  private upsertPendingCompletion(payload: {
+    userId: string;
+    kind: 'coding' | 'trivia' | 'debug';
+    tech: Tech | 'system-design';
+    itemId: string;
+    source: 'tech' | 'company' | 'course' | 'system';
+    durationMin: number;
+    difficulty?: string;
+  }): PendingActivityCompletion {
+    const key = this.pendingKey(payload.userId, payload.kind, payload.itemId);
+    const existing = this.pendingCompletions()[key];
+    if (existing) {
+      const updated: PendingActivityCompletion = {
+        ...existing,
+        tech: payload.tech,
+        source: payload.source,
+        durationMin: payload.durationMin,
+        difficulty: payload.difficulty,
+        updatedAt: new Date().toISOString(),
+      };
+      this.writePendingCompletions({
+        ...this.pendingCompletions(),
+        [key]: updated,
+      });
+      return updated;
+    }
+
+    const created: PendingActivityCompletion = {
+      key,
+      userId: payload.userId,
+      requestId: this.generateRequestId(),
+      kind: payload.kind,
+      tech: payload.tech,
+      itemId: payload.itemId,
+      source: payload.source,
+      durationMin: payload.durationMin,
+      difficulty: payload.difficulty,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.writePendingCompletions({
+      ...this.pendingCompletions(),
+      [key]: created,
+    });
+    return created;
+  }
+
+  private removePendingCompletion(key: string) {
+    const next = { ...this.pendingCompletions() };
+    delete next[key];
+    this.writePendingCompletions(next);
+  }
+
+  private pendingResult(entry: PendingActivityCompletion): ActivityCompleteResponse {
+    return {
+      credited: false,
+      pending: true,
+      queued: true,
+      requestId: entry.requestId,
+      stats: null,
+    };
+  }
+
+  private shouldRetry(err: any): boolean {
+    const status = Number(err?.status || 0);
+    if (!status) return true;
+    if (status === 401 || status === 408 || status === 429) return true;
+    return status >= 500;
+  }
+
+  private scheduleFlushPendingCompletions() {
+    if (this.flushScheduled) return;
+    this.flushScheduled = true;
+    queueMicrotask(() => {
+      this.flushScheduled = false;
+      void this.flushPendingCompletions();
+    });
+  }
+
+  private async flushPendingCompletions(): Promise<void> {
+    const user = this.auth.user();
+    if (!user || !this.offline.isOnline()) return;
+
+    const entries = Object.values(this.pendingCompletions())
+      .filter((entry) => entry.userId === user._id)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
+    for (const entry of entries) {
+      if (!this.offline.isOnline()) break;
+      try {
+        await firstValueFrom(this.dispatchPendingCompletion(entry));
+      } catch {
+        break;
+      }
+    }
+  }
+
+  private dispatchPendingCompletion(entry: PendingActivityCompletion): Observable<ActivityCompleteResponse> {
+    if (this.flushInFlight.has(entry.key)) {
+      return of(this.pendingResult(entry));
+    }
+
+    const currentUserId = this.auth.user()?._id ?? null;
+    if (!currentUserId || currentUserId !== entry.userId || !this.offline.isOnline()) {
+      return of(this.pendingResult(entry));
+    }
+
+    this.flushInFlight.add(entry.key);
+
+    return this.http.post<ActivityCompleteResponse>(
+      `${this.base}/complete`,
+      {
+        kind: entry.kind,
+        tech: entry.tech,
+        itemId: entry.itemId,
+        source: entry.source,
+        durationMin: entry.durationMin,
+        difficulty: entry.difficulty,
+        requestId: entry.requestId,
+      },
+      { headers: this.headers() }
+    ).pipe(
+      tap((res) => this.handleCompletionSuccess(entry, res)),
+      tap(() => {
+        if (this.pendingCompletions()[entry.key]) {
+          this.removePendingCompletion(entry.key);
+        }
+      }),
+      tap((res) => {
+        if (!res?.pending) {
+          this.refreshSummary();
+        }
+      }),
+      catchError((err) => {
+        if (this.shouldRetry(err)) {
+          return of(this.pendingResult(entry));
+        }
+
+        this.removePendingCompletion(entry.key);
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this.flushInFlight.delete(entry.key);
+      })
+    );
+  }
+
+  private handleCompletionSuccess(entry: PendingActivityCompletion, res: ActivityCompleteResponse) {
+    this.invalidateAll();
+    this.syncAuthUserState(res?.stats, res?.solvedQuestionIds);
+
+    if (Array.isArray(res?.solvedQuestionIds)) {
+      this.progress.setSolvedIds(res.solvedQuestionIds);
+    } else {
+      this.progress.markSolvedLocal(entry.itemId);
+    }
+
+    const xpAwarded = Number(res?.xpAwarded || 0);
+    const weeklyGoalCompleted = !!res?.weeklyGoal?.reached;
+    this.activityCompleted$.next({
+      stats: res?.stats,
+      kind: entry.kind,
+      tech: entry.tech,
+      itemId: entry.itemId,
+      xpAwarded,
+      weeklyGoalCompleted,
+    });
+
+    if (xpAwarded > 0) {
+      this.analytics.track('xp_awarded', {
+        source: 'question_complete',
+        kind: entry.kind,
+        tech: entry.tech,
+        item_id: entry.itemId,
+        xp: xpAwarded,
+      });
+    }
+
+    this.analytics.track('weekly_goal_progressed', {
+      completed: Number(res?.weeklyGoal?.completed || 0),
+      target: Number(res?.weeklyGoal?.target || 0),
+    });
+
+    if (weeklyGoalCompleted) {
+      this.analytics.track('weekly_goal_completed', {
+        completed: Number(res?.weeklyGoal?.completed || 0),
+        target: Number(res?.weeklyGoal?.target || 0),
+      });
+    }
+
+    if (res?.levelUp) {
+      this.analytics.track('level_up', { source: 'question_complete' });
+    }
+  }
+
+  private handleRollbackSuccess(
+    payload: { kind: 'coding' | 'trivia' | 'debug'; tech: Tech | 'system-design'; itemId?: string },
+    res: ActivityUncompleteResponse
+  ) {
+    this.invalidateAll();
+    this.gamification.invalidateDashboardCache();
+    this.syncAuthUserState(res?.stats, res?.solvedQuestionIds);
+
+    if (Array.isArray(res?.solvedQuestionIds)) {
+      this.progress.setSolvedIds(res.solvedQuestionIds);
+    }
+
+    this.activityCompleted$.next({
+      stats: res?.stats,
+      kind: payload.kind,
+      tech: payload.tech,
+      itemId: payload.itemId,
+      xpAwarded: -Math.max(0, Number(res?.xpRemoved || 0)),
+      weeklyGoalCompleted: !!res?.weeklyGoal?.reached,
+    });
+
+    this.analytics.track('weekly_goal_progressed', {
+      completed: Number(res?.weeklyGoal?.completed || 0),
+      target: Number(res?.weeklyGoal?.target || 0),
+    });
+  }
+
+  private syncAuthUserState(nextStats: any, nextSolvedIds: string[] | undefined) {
+    const safeSolvedIds = Array.isArray(nextSolvedIds) ? nextSolvedIds : null;
+    if (!nextStats && !nextSolvedIds) return;
+
+    this.auth.user.update((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        stats: nextStats ?? current.stats,
+        solvedQuestionIds: safeSolvedIds ?? current.solvedQuestionIds,
+      };
+    });
+  }
 }

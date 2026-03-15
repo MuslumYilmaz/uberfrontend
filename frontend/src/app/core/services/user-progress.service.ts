@@ -23,15 +23,16 @@ export class UserProgressService {
       const user = this.auth.user();
       if (user) {
         this.initFromUser(user);
-        this.mergeGuestIntoBackend();
       } else {
-        this.solved.set(new Set(this.readGuestSolved()));
+        this.clearLegacyGuestSolved();
+        this.solved.set(new Set());
       }
     }, { allowSignalWrites: true });
 
-    // Seed for guests on startup
+    // Guest solves do not persist progress or merge into gamification state.
     if (!this.auth.user()) {
-      this.solved.set(new Set(this.readGuestSolved()));
+      this.clearLegacyGuestSolved();
+      this.solved.set(new Set());
     }
   }
 
@@ -58,6 +59,7 @@ export class UserProgressService {
   /** Optimistic mark. Falls back to localStorage when logged out. */
   async markSolved(id: string): Promise<void> {
     if (!id) return;
+    if (!this.auth.user()) return;
     if (this.solved().has(id)) return;
 
     const next = new Set(this.solved());
@@ -65,10 +67,7 @@ export class UserProgressService {
     this.solved.set(next);
 
     const user = this.auth.user();
-    if (!user) {
-      this.writeGuestSolved(next);
-      return;
-    }
+    if (!user) return;
 
     try {
       const res = await this.http.post<{ solvedQuestionIds: string[] }>(
@@ -90,6 +89,7 @@ export class UserProgressService {
 
   async unmarkSolved(id: string): Promise<void> {
     if (!id) return;
+    if (!this.auth.user()) return;
     if (!this.solved().has(id)) return;
 
     const next = new Set(this.solved());
@@ -97,10 +97,7 @@ export class UserProgressService {
     this.solved.set(next);
 
     const user = this.auth.user();
-    if (!user) {
-      this.writeGuestSolved(next);
-      return;
-    }
+    if (!user) return;
 
     try {
       const res = await this.http.post<{ solvedQuestionIds: string[] }>(
@@ -125,28 +122,7 @@ export class UserProgressService {
     this.solved.set(new Set(ids));
   }
 
-  private readGuestSolved(): string[] {
-    try {
-      const raw = localStorage.getItem(LS_SOLVED_GUEST);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string') : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private writeGuestSolved(set: Set<string>) {
-    try { localStorage.setItem(LS_SOLVED_GUEST, JSON.stringify(Array.from(set))); } catch { }
-  }
-
-  /** When a user logs in, push any guest completions to backend then clear guest cache. */
-  private async mergeGuestIntoBackend() {
-    const guest = this.readGuestSolved();
-    if (!guest.length || !this.auth.user()) return;
-    for (const id of guest) {
-      try { await this.markSolved(id); } catch { /* ignore */ }
-    }
+  private clearLegacyGuestSolved() {
     try { localStorage.removeItem(LS_SOLVED_GUEST); } catch { }
   }
 }

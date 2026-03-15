@@ -20,6 +20,9 @@ describe('CodingDetailComponent', () => {
   let bugReport: jasmine.SpyObj<BugReportService>;
   let seo: jasmine.SpyObj<SeoService>;
   let analytics: jasmine.SpyObj<AnalyticsService>;
+  let activity: jasmine.SpyObj<ActivityService>;
+  let progress: jasmine.SpyObj<UserProgressService>;
+  let auth: jasmine.SpyObj<AuthService>;
 
   beforeEach(async () => {
     sessionStorage.clear();
@@ -28,14 +31,28 @@ describe('CodingDetailComponent', () => {
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
+    activity = jasmine.createSpyObj<ActivityService>('ActivityService', ['complete', 'uncomplete', 'isCompletionPending']);
+    progress = jasmine.createSpyObj<UserProgressService>('UserProgressService', ['solvedIds', 'isSolved', 'setSolvedIds', 'markSolvedLocal']);
+    auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'ensureMe', 'headers']);
     seo.buildCanonicalUrl.and.callFake((value: string) => `https://frontendatlas.com${value}`);
+    activity.complete.and.returnValue(of({ solvedQuestionIds: ['q1'], stats: {} } as any));
+    activity.uncomplete.and.returnValue(of({ solvedQuestionIds: [], stats: {}, rollbackApplied: true } as any));
+    activity.isCompletionPending.and.returnValue(false);
+    progress.solvedIds.and.returnValue([]);
+    progress.isSolved.and.returnValue(false);
+    progress.setSolvedIds.and.stub();
+    progress.markSolvedLocal.and.stub();
+    auth.user.and.returnValue(null);
+    auth.isLoggedIn.and.returnValue(false);
+    auth.ensureMe.and.returnValue(of(null));
+    auth.headers.and.returnValue({} as any);
 
     await TestBed.configureTestingModule({
       imports: [CodingDetailComponent, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: QuestionService, useValue: questionService },
         { provide: DailyService, useValue: dailyService },
-        { provide: ActivityService, useValue: {} },
+        { provide: ActivityService, useValue: activity },
         { provide: SeoService, useValue: seo },
         { provide: AnalyticsService, useValue: analytics },
         {
@@ -45,11 +62,8 @@ describe('CodingDetailComponent', () => {
             getJsAsync: () => Promise.resolve(null),
           },
         },
-        { provide: UserProgressService, useValue: { solvedIds: () => [], isSolved: () => false } },
-        {
-          provide: AuthService,
-          useValue: { user: () => null, isLoggedIn: () => false, ensureMe: () => of(null), headers: () => ({}) },
-        },
+        { provide: UserProgressService, useValue: progress },
+        { provide: AuthService, useValue: auth },
         { provide: BugReportService, useValue: bugReport },
       ],
     }).compileComponents();
@@ -246,6 +260,27 @@ describe('CodingDetailComponent', () => {
       questionId: 'q1',
       questionTitle: 'Two Sum',
     }));
+  });
+
+  it('uses activity rollback when marking a solved coding question incomplete', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'html';
+    component.kind = 'coding';
+    component.question.set({ id: 'q1', access: 'free' } as any);
+    component.solved.set(true);
+
+    await component.submitCode();
+
+    expect(activity.uncomplete).toHaveBeenCalledWith({
+      kind: 'coding',
+      tech: 'html',
+      itemId: 'q1',
+    });
+    expect(component.solved()).toBeFalse();
   });
 
   it('navigates back using returnToUrl when available', () => {
