@@ -118,6 +118,46 @@ describe('POST /api/activity/complete', () => {
         );
     });
 
+    test('completion level-up is reflected end-to-end in dashboard xp level', async () => {
+        const user = await User.create({
+            email: 'levelup@example.com',
+            username: 'levelup_user',
+            passwordHash: 'hash',
+            stats: { xpTotal: 190, completedTotal: 0 },
+        });
+
+        const completeRes = await request(app)
+            .post('/api/activity/complete')
+            .set('Authorization', authHeader(user._id))
+            .send({
+                kind: 'coding',
+                tech: 'javascript',
+                itemId: 'level-up-item',
+                difficulty: 'easy',
+            });
+
+        expect(completeRes.status).toBe(200);
+        expect(Number(completeRes.body?.xpAwarded || 0)).toBe(10);
+        expect(completeRes.body?.levelUp).toBe(true);
+        expect(completeRes.body?.stats?.xpTotal).toBe(200);
+
+        const dashboardRes = await request(app)
+            .get('/api/dashboard')
+            .set('Authorization', authHeader(user._id));
+
+        expect(dashboardRes.status).toBe(200);
+        expect(dashboardRes.body?.xpLevel).toEqual(
+            expect.objectContaining({
+                totalXp: 200,
+                level: 2,
+                nextLevelXp: 400,
+                currentLevelXp: 0,
+                levelStepXp: 200,
+                progress: 0,
+            })
+        );
+    });
+
     test('activity summary weekly metrics align with dashboard and user goal target', async () => {
         const user = await User.create({
             email: 'weekly-summary@example.com',
