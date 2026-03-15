@@ -65,6 +65,7 @@ function schedulePostLoad(task: () => void): void {
 
 function initSentryLazily(): void {
   if (typeof window === 'undefined') return;
+  if (!environment.production) return;
   if (!environment.sentryDsn) return;
 
   schedulePostLoad(() => {

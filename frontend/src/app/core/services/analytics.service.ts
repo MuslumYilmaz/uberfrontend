@@ -3,12 +3,20 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 type GtagFn = (...args: unknown[]) => void;
+type AnalyticsWindow = Window & {
+  dataLayer?: unknown[];
+  gtag?: GtagFn;
+  __playwright__binding__?: unknown;
+  __pwInitScripts?: unknown;
+  Cypress?: unknown;
+};
 
 @Injectable({ providedIn: 'root' })
 export class AnalyticsService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly document = inject(DOCUMENT);
   private readonly measurementId = String(environment.gaMeasurementId || '').trim();
+  private readonly analyticsEnabled = this.isBrowser && !!this.measurementId && !this.detectAutomationContext();
   private readonly scriptId = 'ga4-gtag-script';
   private lastTrackedPath: string | null = null;
 
@@ -17,7 +25,7 @@ export class AnalyticsService {
   }
 
   track(name: string, params?: Record<string, unknown>) {
-    if (!this.isBrowser) return;
+    if (!this.analyticsEnabled) return;
     const gtag = this.getGtag();
     if (!gtag) return;
     gtag('event', name, {
@@ -27,7 +35,7 @@ export class AnalyticsService {
   }
 
   trackPageView(path?: string) {
-    if (!this.isBrowser) return;
+    if (!this.analyticsEnabled) return;
     const gtag = this.getGtag();
     if (!gtag) return;
 
@@ -44,7 +52,7 @@ export class AnalyticsService {
   }
 
   private init() {
-    if (!this.isBrowser || !this.measurementId) return;
+    if (!this.analyticsEnabled) return;
     const gtag = this.getGtag();
     if (!gtag) return;
 
@@ -54,15 +62,11 @@ export class AnalyticsService {
   }
 
   private getGtag(): GtagFn | null {
-    if (!this.isBrowser) return null;
-    const globalScope = window as Window & {
-      dataLayer?: unknown[];
-      gtag?: GtagFn;
-    };
+    if (!this.analyticsEnabled) return null;
+    const globalScope = window as AnalyticsWindow;
     if (typeof globalScope.gtag === 'function') {
       return globalScope.gtag;
     }
-    if (!this.measurementId) return null;
 
     globalScope.dataLayer = globalScope.dataLayer || [];
     globalScope.gtag = function gtagShim(...args: unknown[]) {
@@ -73,7 +77,7 @@ export class AnalyticsService {
   }
 
   private injectScriptTag() {
-    if (!this.measurementId) return;
+    if (!this.analyticsEnabled) return;
     if (this.document.getElementById(this.scriptId)) return;
 
     const script = this.document.createElement('script');
@@ -94,5 +98,22 @@ export class AnalyticsService {
       }
     }
     return path.startsWith('/') ? path : `/${path}`;
+  }
+
+  // Suppress analytics in browser automation so local/CI traffic does not pollute GA.
+  private detectAutomationContext(): boolean {
+    if (!this.isBrowser) return false;
+
+    const globalScope = window as AnalyticsWindow;
+    const navigatorObject = globalScope.navigator;
+    const userAgent = String(navigatorObject?.userAgent || '');
+
+    return Boolean(
+      navigatorObject?.webdriver ||
+      typeof globalScope.__playwright__binding__ !== 'undefined' ||
+      typeof globalScope.__pwInitScripts !== 'undefined' ||
+      typeof globalScope.Cypress !== 'undefined' ||
+      /HeadlessChrome|Playwright|Puppeteer|Cypress/i.test(userAgent),
+    );
   }
 }
