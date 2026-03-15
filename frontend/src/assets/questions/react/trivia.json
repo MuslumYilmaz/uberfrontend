@@ -126,16 +126,16 @@
       "scenario": "You are kicking off a React dashboard, and a teammate says, \"No need to decide routing or data-fetching strategy, React already gives us all of that.\" What is the best response?",
       "options": [
         {
+          "id": "skip-architecture-and-use-dom",
+          "label": "Best move is to skip ecosystem choices and handle navigation/data manually with direct DOM APIs."
+        },
+        {
           "id": "react-ui-core-add-ecosystem",
           "label": "React owns UI rendering and component composition; we still need to choose routing, server-state/data-fetching, and state architecture."
         },
         {
           "id": "react-includes-full-app-stack",
           "label": "That is correct. React includes built-in router, caching, and global store once we enable the modern root API."
-        },
-        {
-          "id": "skip-architecture-and-use-dom",
-          "label": "Best move is to skip ecosystem choices and handle navigation/data manually with direct DOM APIs."
         }
       ],
       "correctOptionId": "react-ui-core-add-ecosystem",
@@ -264,16 +264,16 @@
       "scenario": "In development with StrictMode, a profile page sends duplicate analytics pings. You discover the event call is inside the component body during render. What is the best fix?",
       "options": [
         {
+          "id": "memo-component-to-hide-side-effect",
+          "label": "Wrap the component with React.memo so side effects in render happen less often."
+        },
+        {
           "id": "move-effect-out-of-render",
           "label": "Keep render pure and move analytics to useEffect (or an explicit event handler), with cleanup if needed."
         },
         {
           "id": "disable-strictmode-and-keep-render-side-effect",
           "label": "Disable StrictMode so render runs once, then keep analytics in the component body."
-        },
-        {
-          "id": "memo-component-to-hide-side-effect",
-          "label": "Wrap the component with React.memo so side effects in render happen less often."
         }
       ],
       "correctOptionId": "move-effect-out-of-render",
@@ -446,16 +446,16 @@
       "scenario": "In a code review, someone says: \"We should rewrite every class this sprint because function components are always faster.\" What is the best response?",
       "options": [
         {
-          "id": "incremental-hooks-migration",
-          "label": "Use hooks as the default for new work, migrate classes incrementally, and evaluate performance from render patterns, not component type alone."
-        },
-        {
           "id": "rewrite-all-classes-now",
           "label": "Rewrite all class components immediately because classes are unsupported and guaranteed slower."
         },
         {
           "id": "avoid-hooks-for-lifecycle",
           "label": "Avoid hooks and keep classes only, since hooks cannot model lifecycle or cleanup behavior."
+        },
+        {
+          "id": "incremental-hooks-migration",
+          "label": "Use hooks as the default for new work, migrate classes incrementally, and evaluate performance from render patterns, not component type alone."
         }
       ],
       "correctOptionId": "incremental-hooks-migration",
@@ -1055,16 +1055,16 @@
       "scenario": "A badge should disappear when count is 0, but users see a literal \"0\" on screen. In another component, someone wrote `return;` to hide content and now gets \"Nothing was returned from render\". What is the best fix?",
       "options": [
         {
-          "id": "use-null-and-explicit-conditions",
-          "label": "Return `null` when you want no UI, and use explicit conditions like `count > 0 ? <Badge /> : null` to avoid numeric `&&` gotchas."
-        },
-        {
           "id": "return-empty-object",
           "label": "Return `{}` when you want React to render nothing, and keep `count && <Badge />` because React ignores all falsy values."
         },
         {
           "id": "return-undefined-intentionally",
           "label": "Use `return;` intentionally for hidden states because `undefined` and `null` are treated the same in React renders."
+        },
+        {
+          "id": "use-null-and-explicit-conditions",
+          "label": "Return `null` when you want no UI, and use explicit conditions like `count > 0 ? <Badge /> : null` to avoid numeric `&&` gotchas."
         }
       ],
       "correctOptionId": "use-null-and-explicit-conditions",
@@ -1193,16 +1193,16 @@
       "scenario": "Two sibling components show the same `user.name`. One child mutates `props.user.name` directly, and now the other sibling updates inconsistently. What is the best fix?",
       "options": [
         {
-          "id": "single-owner-callback-updates",
-          "label": "Keep user state in the parent as the single source of truth, pass data down via props, and send changes up with callbacks using immutable updates."
-        },
-        {
           "id": "local-copies-in-each-child",
           "label": "Give each child its own local copy of `user` and sync them manually so both can write to the data."
         },
         {
           "id": "shared-mutable-ref",
           "label": "Store `user` in a shared mutable ref and let children mutate it directly to avoid parent re-renders."
+        },
+        {
+          "id": "single-owner-callback-updates",
+          "label": "Keep user state in the parent as the single source of truth, pass data down via props, and send changes up with callbacks using immutable updates."
         }
       ],
       "correctOptionId": "single-owner-callback-updates",
@@ -1344,16 +1344,16 @@
       "scenario": "A memoized `UserCard` receives `user` as a prop. Inside the child, someone mutates `user.name` directly and now updates are inconsistent across siblings. What is the best fix?",
       "options": [
         {
-          "id": "parent-owned-immutable-update",
-          "label": "Keep props read-only, send an update callback from parent, and create a new user object in parent state (`setUser(prev => ({ ...prev, name }))`)."
-        },
-        {
           "id": "mutate-and-forceupdate",
           "label": "Keep mutating the prop object in the child and call forceUpdate whenever the UI looks stale."
         },
         {
           "id": "store-prop-object-in-ref-and-mutate",
           "label": "Copy the prop object into a ref in the child and mutate the ref so React memoization does not block updates."
+        },
+        {
+          "id": "parent-owned-immutable-update",
+          "label": "Keep props read-only, send an update callback from parent, and create a new user object in parent state (`setUser(prev => ({ ...prev, name }))`)."
         }
       ],
       "correctOptionId": "parent-owned-immutable-update",
@@ -1593,16 +1593,16 @@
       "scenario": "A large list becomes sluggish after each filter change because click handlers are rebound for every item render. Which root cause is most likely?",
       "options": [
         {
+          "id": "portal-repaint",
+          "label": "Portals force full-document repaint after each click, causing unavoidable lag."
+        },
+        {
           "id": "listener-churn",
           "label": "Per-item native listeners are repeatedly attached/removed instead of relying on delegated root handling."
         },
         {
           "id": "bubbling-disabled",
           "label": "React disables bubbling by default, so every click must be captured manually on each element."
-        },
-        {
-          "id": "portal-repaint",
-          "label": "Portals force full-document repaint after each click, causing unavoidable lag."
         }
       ],
       "correctOptionId": "listener-churn",
@@ -1799,16 +1799,16 @@
       "scenario": "A signup field starts fine, then React warns: \"A component is changing an uncontrolled input to be controlled,\" and submitted values drift from what users see. What is the most likely root cause?",
       "options": [
         {
-          "id": "switching-modes",
-          "label": "The same input flips between DOM-managed and state-managed (for example, value is undefined first, then later set from state)."
-        },
-        {
           "id": "controlled-impossible",
           "label": "Controlled inputs cannot work with validation because onChange always breaks synchronization."
         },
         {
           "id": "refs-required",
           "label": "Every input in React must use ref + defaultValue; value/onChange is only for special cases."
+        },
+        {
+          "id": "switching-modes",
+          "label": "The same input flips between DOM-managed and state-managed (for example, value is undefined first, then later set from state)."
         }
       ],
       "correctOptionId": "switching-modes",
@@ -1946,16 +1946,16 @@
       "scenario": "After a refactor, your app boots but crashes on one route with \"Element type is invalid... got: undefined\" when rendering <Button />. What is the most likely root cause?",
       "options": [
         {
-          "id": "default-named-mismatch",
-          "label": "The component export/import styles are mismatched (default vs named), so Button resolves to undefined at runtime."
-        },
-        {
           "id": "jsx-runtime-off",
           "label": "The JSX runtime is disabled, so React cannot parse component tags without React in scope."
         },
         {
           "id": "css-module-break",
           "label": "A CSS module failed to load, so React falls back to rendering undefined components."
+        },
+        {
+          "id": "default-named-mismatch",
+          "label": "The component export/import styles are mismatched (default vs named), so Button resolves to undefined at runtime."
         }
       ],
       "correctOptionId": "default-named-mismatch",
@@ -2135,16 +2135,16 @@
       "scenario": "You toggle a filter form with {open && <FilterForm />}. Every time users close and reopen it, their typed draft is gone. What is the most likely root cause?",
       "options": [
         {
-          "id": "unmount-resets-state",
-          "label": "When open becomes false, FilterForm unmounts, so its local state resets on the next mount."
-        },
-        {
           "id": "boolean-clears-inputs",
           "label": "Any boolean state change in a parent automatically clears child input state in React."
         },
         {
           "id": "and-always-loses-state",
           "label": "Using && always loses state, while ternary always preserves it, regardless of mount behavior."
+        },
+        {
+          "id": "unmount-resets-state",
+          "label": "When open becomes false, FilterForm unmounts, so its local state resets on the next mount."
         }
       ],
       "correctOptionId": "unmount-resets-state",
@@ -2629,16 +2629,16 @@
       "scenario": "A teammate says \"every re-render rewrites the whole DOM.\" But in profiling, a component re-renders while its DOM subtree stays unchanged. What is the most likely explanation?",
       "options": [
         {
-          "id": "render-not-commit",
-          "label": "React recomputed the next tree, but reconciliation found no DOM differences to commit for that subtree."
-        },
-        {
           "id": "vdom-off-prod",
           "label": "Virtual DOM diffing is disabled in production builds, so DOM writes are skipped by default."
         },
         {
           "id": "rerender-means-mutate",
           "label": "A re-render always mutates DOM nodes, but browser devtools cannot detect most React updates."
+        },
+        {
+          "id": "render-not-commit",
+          "label": "React recomputed the next tree, but reconciliation found no DOM differences to commit for that subtree."
         }
       ],
       "correctOptionId": "render-not-commit",
@@ -2823,16 +2823,16 @@
       "scenario": "You wrapped a heavy child with React.memo, but it still re-renders on every parent update. Parent passes onSave={() => ...} and options={{ mode: 'fast' }} inline. What is the most likely root cause?",
       "options": [
         {
+          "id": "commit-always-reruns-child",
+          "label": "Any DOM commit in a parent subtree forces all memoized children to re-render by design."
+        },
+        {
           "id": "unstable-prop-identity",
           "label": "Inline function/object props create new references each render, so shallow prop comparison sees them as changed."
         },
         {
           "id": "memo-forces-rerender",
           "label": "React.memo intentionally re-renders children whenever parent state changes, regardless of props."
-        },
-        {
-          "id": "commit-always-reruns-child",
-          "label": "Any DOM commit in a parent subtree forces all memoized children to re-render by design."
         }
       ],
       "correctOptionId": "unstable-prop-identity",
@@ -2968,16 +2968,16 @@
       "scenario": "A child input gets value as a prop, but also copies that prop into local state and edits locally. After parent refetches, the field sometimes reverts or shows stale text. What is the most likely root cause?",
       "options": [
         {
-          "id": "double-source-truth",
-          "label": "The same value is owned by both parent props and child state, so updates drift and overwrite each other."
-        },
-        {
           "id": "prop-readonly-bug",
           "label": "React blocks prop updates after first render, so children must copy props into state to stay current."
         },
         {
           "id": "state-never-syncs",
           "label": "React state cannot be synced from parent-driven values, so reversion is expected behavior."
+        },
+        {
+          "id": "double-source-truth",
+          "label": "The same value is owned by both parent props and child state, so updates drift and overwrite each other."
         }
       ],
       "correctOptionId": "double-source-truth",
@@ -3079,16 +3079,16 @@
       "scenario": "A slider and a numeric input should always show the same value. Each sibling keeps its own local state, so typing in one does not reliably update the other. What should you change first?",
       "options": [
         {
-          "id": "lift-to-parent",
-          "label": "Move the shared value to their closest common parent and pass value/onChange down to both siblings."
-        },
-        {
           "id": "dual-local-with-effects",
           "label": "Keep separate local state in both siblings and sync them with useEffect in each component."
         },
         {
           "id": "force-rerender-loop",
           "label": "Call setState in a loop when either input changes so both re-render until they match."
+        },
+        {
+          "id": "lift-to-parent",
+          "label": "Move the shared value to their closest common parent and pass value/onChange down to both siblings."
         }
       ],
       "correctOptionId": "lift-to-parent",
@@ -3276,16 +3276,16 @@
       "scenario": "A team wraps a component with withAuth() inside a parent render function. Every parent update makes the wrapped form lose local input state. What is the most likely root cause?",
       "options": [
         {
+          "id": "displayname-required-state",
+          "label": "Missing displayName makes React drop component state because DevTools cannot track wrapper identity."
+        },
+        {
           "id": "hoc-created-in-render",
           "label": "Creating the HOC during render makes a new component type each time, so React remounts and resets local state."
         },
         {
           "id": "hoc-disables-memo",
           "label": "Any HOC automatically disables React.memo, so child state is always cleared after updates."
-        },
-        {
-          "id": "displayname-required-state",
-          "label": "Missing displayName makes React drop component state because DevTools cannot track wrapper identity."
         }
       ],
       "correctOptionId": "hoc-created-in-render",
@@ -3380,16 +3380,16 @@
       "scenario": "You wrapped SearchResults with React.memo. The filtered list is memoized with useMemo, but SearchResults still re-renders on every parent keystroke. Parent also passes onSelect={(id) => selectItem(id)} inline. What is the most likely root cause?",
       "options": [
         {
+          "id": "reactmemo-class-only",
+          "label": "React.memo only works with class components, so function children always re-render."
+        },
+        {
           "id": "unstable-callback-reference",
           "label": "The inline callback creates a new function reference every render, so React.memo sees changed props unless you stabilize it with useCallback."
         },
         {
           "id": "usememo-forces-rerender",
           "label": "useMemo forces memoized children to re-render whenever parent state changes, even if memoized values are unchanged."
-        },
-        {
-          "id": "reactmemo-class-only",
-          "label": "React.memo only works with class components, so function children always re-render."
         }
       ],
       "correctOptionId": "unstable-callback-reference",
@@ -3495,16 +3495,16 @@
       "scenario": "You store both theme and a rapidly changing searchTerm in one Context value object. Components that only read theme still rerender on every keystroke. What is the most likely root cause?",
       "options": [
         {
+          "id": "keys-control-context",
+          "label": "Missing list keys in child components causes provider-level rerenders for every context change."
+        },
+        {
           "id": "broad-context-churn",
           "label": "The shared context value changes whenever searchTerm updates, so all consumers rerender; split context or memoize/scope state."
         },
         {
           "id": "reactmemo-blocks-context",
           "label": "React.memo blocks context updates, so React rerenders the whole subtree to keep values accurate."
-        },
-        {
-          "id": "keys-control-context",
-          "label": "Missing list keys in child components causes provider-level rerenders for every context change."
         }
       ],
       "correctOptionId": "broad-context-churn",
@@ -3601,16 +3601,16 @@
       "scenario": "In development, an analytics effect sends two pageview requests on first mount, but production sends one. A teammate says StrictMode is broken and should be removed. What is the most likely root cause?",
       "options": [
         {
+          "id": "jsx-double-render-network",
+          "label": "JSX elements trigger duplicate network calls whenever React renders fragments."
+        },
+        {
           "id": "non-idempotent-effect",
           "label": "The effect is not idempotent or lacks proper cleanup/guarding, and StrictMode is intentionally exposing that in development."
         },
         {
           "id": "strictmode-prod-duplicate",
           "label": "StrictMode duplicates production effects by design, so removing it is the only correct fix."
-        },
-        {
-          "id": "jsx-double-render-network",
-          "label": "JSX elements trigger duplicate network calls whenever React renders fragments."
         }
       ],
       "correctOptionId": "non-idempotent-effect",
@@ -3710,16 +3710,16 @@
       "scenario": "A checkout form keeps losing typed input when a layout toggle changes the wrapper from <section> to <div>. The child component and props stay the same. What is the most likely root cause?",
       "options": [
         {
+          "id": "reconciliation-skipped-on-toggle",
+          "label": "React skips reconciliation for layout toggles, so it fully rebuilds the tree on every toggle by default."
+        },
+        {
           "id": "element-type-changed-remount",
           "label": "Changing the parent element type makes React treat it as a different subtree, so children remount and local state resets."
         },
         {
           "id": "props-always-reset-state",
           "label": "Any prop update automatically clears child local state, even when component identity is stable."
-        },
-        {
-          "id": "reconciliation-skipped-on-toggle",
-          "label": "React skips reconciliation for layout toggles, so it fully rebuilds the tree on every toggle by default."
         }
       ],
       "correctOptionId": "element-type-changed-remount",
@@ -3819,16 +3819,16 @@
       "scenario": "A todo list now prepends new items at the top. After each insert, checkbox state appears on the wrong rows. The team uses index as key and says diffing is random. What is the most likely root cause?",
       "options": [
         {
-          "id": "index-key-identity-shift",
-          "label": "Index keys shift when list order changes, so React matches the wrong previous items and state appears to move."
-        },
-        {
           "id": "diffing-random-order",
           "label": "React intentionally randomizes list matching in diffing to improve performance on large arrays."
         },
         {
           "id": "virtual-dom-loses-state",
           "label": "Virtual DOM cannot preserve list item state, so all dynamic lists lose local state after inserts."
+        },
+        {
+          "id": "index-key-identity-shift",
+          "label": "Index keys shift when list order changes, so React matches the wrong previous items and state appears to move."
         }
       ],
       "correctOptionId": "index-key-identity-shift",
@@ -4033,16 +4033,16 @@
       "scenario": "A modal is rendered with createPortal into #modal-root. Clicking inside the modal still triggers a parent React onClick handler higher in the app tree, and the team thinks portals break event boundaries. What is the most likely root cause?",
       "options": [
         {
+          "id": "separate-react-app-created",
+          "label": "createPortal creates a second isolated React app, so click events are duplicated between both roots."
+        },
+        {
           "id": "react-tree-bubbling",
           "label": "Portal children stay in the same React tree, so events still bubble through React parents even if DOM nodes are elsewhere."
         },
         {
           "id": "portal-disables-stop-propagation",
           "label": "Portals disable event propagation controls, so parent handlers always fire and cannot be managed."
-        },
-        {
-          "id": "separate-react-app-created",
-          "label": "createPortal creates a second isolated React app, so click events are duplicated between both roots."
         }
       ],
       "correctOptionId": "react-tree-bubbling",
@@ -4256,16 +4256,16 @@
       "scenario": "A developer calls useEffect inside `if (isOpen) { ... }` so it only runs when a panel is open. After toggling isOpen a few times, state and effects behave unpredictably. What is the most likely root cause?",
       "options": [
         {
-          "id": "conditional-hook-order-shift",
-          "label": "Conditional hook calls changed the hook order between renders, so React matched state/effects to the wrong slots."
-        },
-        {
           "id": "hooks-need-class-components",
           "label": "Hooks require class components for stable lifecycle order, so functional components cannot track hook state safely."
         },
         {
           "id": "useeffect-on-toggle-resets-runtime",
           "label": "Toggling booleans always resets React’s internal runtime, so hook order is unrelated to this bug."
+        },
+        {
+          "id": "conditional-hook-order-shift",
+          "label": "Conditional hook calls changed the hook order between renders, so React matched state/effects to the wrong slots."
         }
       ],
       "correctOptionId": "conditional-hook-order-shift",
@@ -4385,16 +4385,16 @@
       "scenario": "A component starts an interval inside useEffect([]) that logs count every second. After clicking \"+\" several times, the UI count increases but logs stay at 0. What is the most likely root cause?",
       "options": [
         {
+          "id": "strictmode-freezes-closure-prod",
+          "label": "StrictMode freezes closure values in production builds, so interval callbacks stop seeing updates."
+        },
+        {
           "id": "captured-initial-snapshot",
           "label": "The interval callback closed over the first render's count, and the effect never re-synced with newer state."
         },
         {
           "id": "state-unreadable-in-intervals",
           "label": "React state cannot be read inside setInterval callbacks, so stale output is expected behavior."
-        },
-        {
-          "id": "strictmode-freezes-closure-prod",
-          "label": "StrictMode freezes closure values in production builds, so interval callbacks stop seeing updates."
         }
       ],
       "correctOptionId": "captured-initial-snapshot",
@@ -4565,16 +4565,16 @@
       "scenario": "A teammate stores a text input value in useRef to \"avoid rerenders.\" While typing, the preview text on screen does not update until some unrelated state changes. What is the most likely root cause?",
       "options": [
         {
-          "id": "ref-does-not-rerender-ui",
-          "label": "Updating ref.current does not trigger a render, so render-driving values should live in useState."
-        },
-        {
           "id": "usestate-cannot-handle-typing",
           "label": "useState is too slow for input typing, so React delays updates until another component rerenders."
         },
         {
           "id": "ref-only-for-dom-nodes",
           "label": "useRef is read-only for values and only works when attached directly to DOM nodes."
+        },
+        {
+          "id": "ref-does-not-rerender-ui",
+          "label": "Updating ref.current does not trigger a render, so render-driving values should live in useState."
         }
       ],
       "correctOptionId": "ref-does-not-rerender-ui",
@@ -5350,16 +5350,16 @@
       "scenario": "In development with StrictMode, a resize listener seems to fire twice after navigating back and forth. The component adds the listener in useEffect but forgets cleanup. What is the most likely root cause?",
       "options": [
         {
-          "id": "missing-effect-cleanup",
-          "label": "StrictMode's mount-unmount-remount check is exposing a missing cleanup, so duplicate listeners accumulate."
-        },
-        {
           "id": "strictmode-prod-duplicate-bug",
           "label": "StrictMode duplicates effects in production by default, so listeners always fire twice regardless of cleanup."
         },
         {
           "id": "useeffect-single-run-contract",
           "label": "useEffect with [] guarantees a single lifetime run, so double listeners mean browser event APIs are unstable."
+        },
+        {
+          "id": "missing-effect-cleanup",
+          "label": "StrictMode's mount-unmount-remount check is exposing a missing cleanup, so duplicate listeners accumulate."
         }
       ],
       "correctOptionId": "missing-effect-cleanup",
@@ -5637,16 +5637,16 @@
       "scenario": "You need to keep a search input responsive while filtering a huge list and avoid rerendering child rows from unstable handlers. Which hook combination is the best first step?",
       "options": [
         {
+          "id": "replace-hooks-with-class-lifecycle",
+          "label": "Switch to class components because hooks cannot coordinate responsiveness and render stability together."
+        },
+        {
           "id": "use-transition-plus-stable-callbacks",
           "label": "Use useTransition (or startTransition) for non-urgent filtering, and stabilize child callback props with useCallback where needed."
         },
         {
           "id": "move-everything-to-useref",
           "label": "Move query and filtered results into useRef so updates avoid rerenders entirely."
-        },
-        {
-          "id": "replace-hooks-with-class-lifecycle",
-          "label": "Switch to class components because hooks cannot coordinate responsiveness and render stability together."
         }
       ],
       "correctOptionId": "use-transition-plus-stable-callbacks",

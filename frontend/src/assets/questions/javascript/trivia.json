@@ -138,16 +138,16 @@
       "scenario": "A teammate sees this output order: synchronous logs first, then a `Promise.then`, then a `setTimeout(..., 0)`. They say, \"Promises must just be faster than timers, so the browser randomly finishes them first.\" Another teammate says, \"The real reason is the event loop: after the current stack finishes, JavaScript drains the microtask queue before it runs the next macrotask.\" Which explanation is better?",
       "options": [
         {
+          "id": "timer-first",
+          "label": "The better explanation is that `setTimeout(..., 0)` should normally run before promise callbacks if it was scheduled first, but browsers sometimes reorder them for performance."
+        },
+        {
           "id": "microtask-loop",
           "label": "The second explanation is better. `Promise.then` callbacks go into the microtask queue, and the event loop drains microtasks before it takes the next macrotask like `setTimeout`, which is why promise callbacks run first."
         },
         {
           "id": "dom-heavy",
           "label": "The first explanation is better. Promises usually resolve faster than timers, so they naturally print first even though both are just waiting in the same queue."
-        },
-        {
-          "id": "timer-first",
-          "label": "The better explanation is that `setTimeout(..., 0)` should normally run before promise callbacks if it was scheduled first, but browsers sometimes reorder them for performance."
         }
       ],
       "correctOptionId": "microtask-loop",
@@ -238,16 +238,16 @@
       "scenario": "You create click handlers in a `for (var i = 0; i < 3; i++)` loop, but every handler logs `3` instead of its own index. What is the best fix?",
       "options": [
         {
-          "id": "capture-per-iteration-scope",
-          "label": "Use `let` in the loop (or wrap each iteration in an IIFE) so each handler closes over its own scoped value."
-        },
-        {
           "id": "delay-with-timeout",
           "label": "Wrap the log in `setTimeout(..., 0)` so the event loop gives each callback a different copy of `i`."
         },
         {
           "id": "move-i-to-global",
           "label": "Move `i` to a global variable so all handlers share one stable reference."
+        },
+        {
+          "id": "capture-per-iteration-scope",
+          "label": "Use `let` in the loop (or wrap each iteration in an IIFE) so each handler closes over its own scoped value."
         }
       ],
       "correctOptionId": "capture-per-iteration-scope",
@@ -484,16 +484,16 @@
       "scenario": "Your app crashes at startup with `ReferenceError: Cannot access 'config' before initialization` on a `let config` variable. A teammate says \"let is not hoisted, switch to var.\" What is the best fix?",
       "options": [
         {
+          "id": "disable-strict-mode",
+          "label": "Disable strict mode so TDZ errors are downgraded and pre-declaration reads become valid."
+        },
+        {
           "id": "initialize-before-read",
           "label": "Keep `let`/`const`, and reorder code so reads happen after declaration/initialization (or pass the value as an argument)."
         },
         {
           "id": "replace-with-var",
           "label": "Replace `let` with `var` everywhere so hoisting initializes variables to `undefined` and avoids runtime errors."
-        },
-        {
-          "id": "disable-strict-mode",
-          "label": "Disable strict mode so TDZ errors are downgraded and pre-declaration reads become valid."
         }
       ],
       "correctOptionId": "initialize-before-read",
@@ -602,16 +602,16 @@
       "scenario": "A teammate reads a variable before its declaration and says, \"Let's switch to var so it stops throwing.\" What is the best response?",
       "options": [
         {
-          "id": "const-first-let-when-needed",
-          "label": "Keep `const` by default and `let` when reassignment is needed, then reorder code so variables are declared before reads."
-        },
-        {
           "id": "use-var-everywhere",
           "label": "Use `var` everywhere so pre-declaration access returns `undefined` instead of throwing."
         },
         {
           "id": "try-catch-tdz",
           "label": "Keep reading before declaration and wrap TDZ errors with `try/catch` to preserve current control flow."
+        },
+        {
+          "id": "const-first-let-when-needed",
+          "label": "Keep `const` by default and `let` when reassignment is needed, then reorder code so variables are declared before reads."
         }
       ],
       "correctOptionId": "const-first-let-when-needed",
@@ -751,16 +751,16 @@
       "scenario": "In a `for` loop, each click handler should print its row index, but every handler logs the same final value. Which fix best matches the root cause?",
       "options": [
         {
-          "id": "use-let-per-iteration-binding",
-          "label": "Use `let` for the loop variable (or create a per-iteration closure) so each handler captures its own block-scoped binding."
-        },
-        {
           "id": "keep-var-and-add-timeout",
           "label": "Keep `var` and wrap each log in `setTimeout` so the event loop separates values automatically."
         },
         {
           "id": "move-loop-var-global",
           "label": "Move the loop variable to module/global scope so every handler reads from one shared source of truth."
+        },
+        {
+          "id": "use-let-per-iteration-binding",
+          "label": "Use `let` for the loop variable (or create a per-iteration closure) so each handler captures its own block-scoped binding."
         }
       ],
       "correctOptionId": "use-let-per-iteration-binding",
@@ -888,16 +888,16 @@
       "scenario": "A page loads user profile and notifications with two independent `await` calls in sequence, and users report slow loading. What is the best first fix?",
       "options": [
         {
+          "id": "delay-second-call",
+          "label": "Add a short `setTimeout` before the second request so each Promise has time to settle cleanly."
+        },
+        {
           "id": "parallelize-independent-awaits",
           "label": "Start both independent requests together and await them with `Promise.all`, keeping centralized error handling."
         },
         {
           "id": "keep-sequential-awaits",
           "label": "Keep sequential `await` calls because `await` automatically runs network work in parallel under the hood."
-        },
-        {
-          "id": "delay-second-call",
-          "label": "Add a short `setTimeout` before the second request so each Promise has time to settle cleanly."
         }
       ],
       "correctOptionId": "parallelize-independent-awaits",
@@ -1179,16 +1179,16 @@
       "scenario": "Three independent APIs (pricing, inventory, recommendations) are awaited one-by-one in a product page loader. The team asks when Promise style is actually better than pure step-by-step `await`. What is the best answer?",
       "options": [
         {
+          "id": "mix-nested-then-and-await",
+          "label": "Nesting `.then()` inside `await` chains is best practice because it preserves both styles and avoids return propagation issues."
+        },
+        {
           "id": "use-combinators-for-composition",
           "label": "Prefer Promise combinators (`all`, `allSettled`, `race`, `any`) when coordinating concurrent outcomes or sharing in-flight work is the core problem."
         },
         {
           "id": "always-rewrite-to-await",
           "label": "Always convert Promise composition to sequential `await` because async/await is strictly clearer and faster in every async flow."
-        },
-        {
-          "id": "mix-nested-then-and-await",
-          "label": "Nesting `.then()` inside `await` chains is best practice because it preserves both styles and avoids return propagation issues."
         }
       ],
       "correctOptionId": "use-combinators-for-composition",
@@ -1871,16 +1871,16 @@
       "scenario": "A teammate wants to power admin-defined pricing rules by storing strings like `order.total > 100 ? discount() : fullPrice()` and running them with `eval`. They argue, \"Only internal admins touch it.\" What is the best response?",
       "options": [
         {
+          "id": "eval-is-safe-if-wrapped-in-try-catch",
+          "label": "It becomes safe enough if we wrap the `eval` call in `try/catch`, since runtime errors are the real issue, not the code execution itself."
+        },
+        {
           "id": "eval-turns-data-into-executable-risk",
           "label": "That is still risky because `eval` turns string input into executable code, which increases injection, debugging, CSP, and maintenance problems even if the source seems trusted today."
         },
         {
           "id": "eval-is-fine-for-internal-tools",
           "label": "It is acceptable here because internal users are trusted, so the main concern is only a small performance hit."
-        },
-        {
-          "id": "eval-is-safe-if-wrapped-in-try-catch",
-          "label": "It becomes safe enough if we wrap the `eval` call in `try/catch`, since runtime errors are the real issue, not the code execution itself."
         }
       ],
       "correctOptionId": "eval-turns-data-into-executable-risk",
@@ -2028,16 +2028,16 @@
       "scenario": "A settings page shows `retryCount = 0`, `subtitle = ''`, and `emailOptIn = false` as real saved values. A teammate replaces all fallbacks with `value || defaultValue`, and the UI starts overwriting those values. What is the better fix?",
       "options": [
         {
+          "id": "use-optional-chaining-alone",
+          "label": "Switch to optional chaining only, because `?.` will prevent the fallback bug without needing `??`."
+        },
+        {
           "id": "use-nullish-for-missing-values",
           "label": "Use `??` for data defaults, because it only falls back for `null` or `undefined` and keeps valid values like `0`, `''`, and `false`."
         },
         {
           "id": "keep-using-or-for-all-defaults",
           "label": "Keep `||`, because any falsy value should be treated as missing in UI code and replaced with a default."
-        },
-        {
-          "id": "use-optional-chaining-alone",
-          "label": "Switch to optional chaining only, because `?.` will prevent the fallback bug without needing `??`."
         }
       ],
       "correctOptionId": "use-nullish-for-missing-values",
@@ -2147,16 +2147,16 @@
       "scenario": "A login guard checks `if (userInput == 0)` and starts treating `''` and `false` as if the user entered zero. A teammate says, \"That is just how equality works.\" What is the better fix?",
       "options": [
         {
-          "id": "prefer-strict-and-convert-explicitly",
-          "label": "Use `===` by default and convert values intentionally first, so comparisons do not succeed because JavaScript quietly coerced different types."
-        },
-        {
           "id": "keep-loose-equality-for-convenience",
           "label": "Keep `==`, because it is more flexible and these matches are useful when different input types should collapse automatically."
         },
         {
           "id": "replace-equality-with-truthy-checks",
           "label": "Avoid equality entirely and switch to truthy checks, because truthiness is a stricter comparison model than `===`."
+        },
+        {
+          "id": "prefer-strict-and-convert-explicitly",
+          "label": "Use `===` by default and convert values intentionally first, so comparisons do not succeed because JavaScript quietly coerced different types."
         }
       ],
       "correctOptionId": "prefer-strict-and-convert-explicitly",
@@ -2397,16 +2397,16 @@
       "scenario": "A cart helper does three things wrong at once: it uses `cart.retry = cart.retry || 3`, checks `if (cart.total == '0')`, and mutates the `cart` object it received. Now valid `0` values get replaced, loose equality matches unexpectedly, and caller state changes behind the scenes. What is the best fix?",
       "options": [
         {
+          "id": "truthy-checks-and-reassign",
+          "label": "Replace the equality check with truthy checks and reassign the same object, because shared mutation is fine when the function returns it."
+        },
+        {
           "id": "clone-nullish-strict-compare",
           "label": "Clone the input first, use `??` for missing-value defaults, and convert data intentionally before comparing with `===`."
         },
         {
           "id": "strict-equality-only",
           "label": "Keep the mutation and `||` fallback, but switch only `==` to `===` because the equality check is the real bug here."
-        },
-        {
-          "id": "truthy-checks-and-reassign",
-          "label": "Replace the equality check with truthy checks and reassign the same object, because shared mutation is fine when the function returns it."
         }
       ],
       "correctOptionId": "clone-nullish-strict-compare",
@@ -2624,16 +2624,16 @@
       "scenario": "A teammate says `map`, `setTimeout`, and a function like `makeMultiplier(x) { return y => x * y; }` are all unrelated patterns. You need to explain what they actually share. What is the best answer?",
       "options": [
         {
+          "id": "must-do-both-to-count",
+          "label": "A function is only higher-order if it both takes another function and returns one in the same call."
+        },
+        {
           "id": "functions-used-as-values",
           "label": "They are higher-order because they either accept a function, return a function, or both, which means JavaScript is treating functions as values."
         },
         {
           "id": "only-array-methods-count",
           "label": "Only array methods like `map` count as higher-order functions; callbacks and returned functions are separate concepts."
-        },
-        {
-          "id": "must-do-both-to-count",
-          "label": "A function is only higher-order if it both takes another function and returns one in the same call."
         }
       ],
       "correctOptionId": "functions-used-as-values",
@@ -2755,16 +2755,16 @@
       "scenario": "A modal contains a button inside a panel. Clicking the button logs the button handler first, then the panel handler, and finally closes the modal because the backdrop listener also runs. You want the button click handled without bubbling up and closing everything. What is the best explanation and fix?",
       "options": [
         {
+          "id": "remove-all-parent-listeners",
+          "label": "Parent handlers should never coexist with child handlers, so the right fix is to remove the panel and backdrop listeners entirely."
+        },
+        {
           "id": "default-bubbling-stop-propagation",
           "label": "The click is using the default bubbling phase, so it travels from the target outward. Handle the button click and call `event.stopPropagation()` when you need to prevent ancestor listeners from running."
         },
         {
           "id": "capturing-is-default",
           "label": "This happens because capturing is the default phase, so the event starts at the document and cannot be stopped once the target handler runs."
-        },
-        {
-          "id": "remove-all-parent-listeners",
-          "label": "Parent handlers should never coexist with child handlers, so the right fix is to remove the panel and backdrop listeners entirely."
         }
       ],
       "correctOptionId": "default-bubbling-stop-propagation",
@@ -2895,16 +2895,16 @@
       "scenario": "A class method works when called directly, but breaks when passed as a callback because `this` is lost. In another place, a utility must run immediately with a custom `this` and an array of arguments. What is the best fix?",
       "options": [
         {
+          "id": "bind-runs-immediately",
+          "label": "Use `bind()` in both cases, because it runs the function right away and is just a cleaner version of `apply()`."
+        },
+        {
           "id": "bind-for-later-apply-for-array-now",
           "label": "Use `bind()` when you need a reusable function for later with fixed `this`, and use `apply()` when you need to call immediately with `this` plus an array of arguments."
         },
         {
           "id": "call-does-everything",
           "label": "Use `call()` for both cases, because it can both create a reusable bound function and accept array arguments without extra work."
-        },
-        {
-          "id": "bind-runs-immediately",
-          "label": "Use `bind()` in both cases, because it runs the function right away and is just a cleaner version of `apply()`."
         }
       ],
       "correctOptionId": "bind-for-later-apply-for-array-now",
@@ -3147,16 +3147,16 @@
       "scenario": "A product team has three needs: keep a theme preference across browser restarts, keep checkout progress only in the current tab, and store a session identifier that the server should receive automatically on requests. What is the best mapping?",
       "options": [
         {
-          "id": "local-session-cookie",
-          "label": "Use `localStorage` for the theme, `sessionStorage` for tab-only checkout progress, and a secure cookie for the server-managed session identifier."
-        },
-        {
           "id": "session-local-cookie",
           "label": "Use `sessionStorage` for the theme, `localStorage` for checkout progress, and `localStorage` for the session identifier so the browser keeps everything in one place."
         },
         {
           "id": "cookies-for-everything",
           "label": "Use cookies for all three, because they are the only browser storage that survives refreshes and can be shared across tabs."
+        },
+        {
+          "id": "local-session-cookie",
+          "label": "Use `localStorage` for the theme, `sessionStorage` for tab-only checkout progress, and a secure cookie for the server-managed session identifier."
         }
       ],
       "correctOptionId": "local-session-cookie",
@@ -3483,16 +3483,16 @@
       "scenario": "A teammate creates two instances from the same constructor and puts `speak()` on the prototype. Later they update that prototype method, and both instances start using the new behavior immediately. They think JavaScript secretly copied the method into each object and then synchronized it. What is the better explanation?",
       "options": [
         {
-          "id": "objects-link-to-shared-prototype",
-          "label": "The instances are linked to a shared prototype, so property lookup finds `speak()` through the prototype chain instead of storing a separate copy on each object."
-        },
-        {
           "id": "methods-are-copied-per-instance",
           "label": "Each instance got its own hidden copy of `speak()`, and JavaScript automatically pushed the later method update into every instance."
         },
         {
           "id": "classes-disable-prototypes",
           "label": "This only happens with old constructor functions. If the code used `class`, JavaScript would stop using prototypes and store methods directly on each instance."
+        },
+        {
+          "id": "objects-link-to-shared-prototype",
+          "label": "The instances are linked to a shared prototype, so property lookup finds `speak()` through the prototype chain instead of storing a separate copy on each object."
         }
       ],
       "correctOptionId": "objects-link-to-shared-prototype",
@@ -3798,16 +3798,16 @@
       "scenario": "A validation helper uses only `typeof value` and starts classifying `null` and arrays as generic objects, while `NaN` slips through as a normal number. A teammate says, \"`typeof` already tells us everything we need.\" What is the better fix?",
       "options": [
         {
-          "id": "typeof-plus-targeted-checks",
-          "label": "Keep `typeof` as the first pass, but add targeted checks like `value === null`, `Array.isArray(value)`, and `Number.isNaN(value)` for the edge cases it does not distinguish well."
-        },
-        {
           "id": "typeof-object-is-enough",
           "label": "Treat anything with `typeof value === 'object'` as the same category and handle arrays, null, and plain objects with one generic object branch."
         },
         {
           "id": "replace-with-loose-equality",
           "label": "Use loose equality instead of `typeof`, because `==` is better at telling whether values behave like numbers, arrays, or nulls."
+        },
+        {
+          "id": "typeof-plus-targeted-checks",
+          "label": "Keep `typeof` as the first pass, but add targeted checks like `value === null`, `Array.isArray(value)`, and `Number.isNaN(value)` for the edge cases it does not distinguish well."
         }
       ],
       "correctOptionId": "typeof-plus-targeted-checks",
@@ -3954,16 +3954,16 @@
       "scenario": "A service sends 64-bit transaction IDs to the frontend. A teammate parses them with `Number()`, mixes them with `1n` in arithmetic, and then tries to send the result through `JSON.stringify`. The IDs start colliding and the serializer throws. What is the best fix?",
       "options": [
         {
+          "id": "json-supports-bigint-directly",
+          "label": "Leave the values as `bigint` everywhere, because `JSON.stringify` will preserve them automatically as long as they end with the `n` suffix."
+        },
+        {
           "id": "keep-bigint-separate-and-stringify-boundaries",
           "label": "Keep large integer IDs as `bigint` or strings at the boundary, avoid mixing `number` and `bigint` in arithmetic without explicit conversion, and convert BigInt values to strings before JSON serialization."
         },
         {
           "id": "convert-everything-to-number",
           "label": "Convert all IDs to `number` early, because JavaScript numbers are simpler and precise enough for any integer the browser receives."
-        },
-        {
-          "id": "json-supports-bigint-directly",
-          "label": "Leave the values as `bigint` everywhere, because `JSON.stringify` will preserve them automatically as long as they end with the `n` suffix."
         }
       ],
       "correctOptionId": "keep-bigint-separate-and-stringify-boundaries",
@@ -4121,16 +4121,16 @@
       "scenario": "A teammate says, \"We added TypeScript, so JavaScript is basically statically typed now and we do not need runtime validation for API payloads.\" Later, an API field arrives as a string instead of a number and breaks production logic. What is the best explanation?",
       "options": [
         {
-          "id": "js-runtime-is-still-dynamic",
-          "label": "JavaScript is still dynamically typed at runtime. TypeScript helps catch many mistakes before execution, but external input still needs runtime parsing and validation because annotations do not enforce production payloads by themselves."
-        },
-        {
           "id": "typescript-removes-runtime-type-risk",
           "label": "Once TypeScript is added, runtime type drift is no longer a real issue because the compiler guarantees the incoming API data matches the declared types."
         },
         {
           "id": "const-makes-types-static",
           "label": "Using `const` with TypeScript effectively makes values statically typed and immutable all the way through runtime, so validation is mostly redundant."
+        },
+        {
+          "id": "js-runtime-is-still-dynamic",
+          "label": "JavaScript is still dynamically typed at runtime. TypeScript helps catch many mistakes before execution, but external input still needs runtime parsing and validation because annotations do not enforce production payloads by themselves."
         }
       ],
       "correctOptionId": "js-runtime-is-still-dynamic",
@@ -4248,16 +4248,16 @@
       "scenario": "A checkout form sends everything as strings. A teammate compares `quantity == 0`, uses truthy checks for numeric fields, and mixes `'5' + 1` style operations in business logic. The results keep surprising the team. What is the best fix?",
       "options": [
         {
+          "id": "truthy-checks-are-enough",
+          "label": "Avoid parsing and just rely on truthy/falsy checks, because they cover the same cases as explicit numeric validation with less code."
+        },
+        {
           "id": "parse-validate-compare-explicitly",
           "label": "Convert external input intentionally first, validate it, and then use strict comparisons like `===` so business rules do not depend on JavaScript’s implicit coercion."
         },
         {
           "id": "lean-into-double-equals",
           "label": "Use `==` more consistently, because coercion is the feature that lets mixed input types behave correctly without extra parsing."
-        },
-        {
-          "id": "truthy-checks-are-enough",
-          "label": "Avoid parsing and just rely on truthy/falsy checks, because they cover the same cases as explicit numeric validation with less code."
         }
       ],
       "correctOptionId": "parse-validate-compare-explicitly",
@@ -4395,16 +4395,16 @@
       "scenario": "A helper receives a `cart` object. Inside the function, one version changes `cart.total = 0`, and another version does `cart = { total: 0 }`. The first changes the caller’s object, the second does not. A teammate says, \"That proves JavaScript passes objects by reference.\" What is the better explanation?",
       "options": [
         {
+          "id": "const-is-the-real-cause",
+          "label": "The difference happens only because the object was likely declared with `const`; with `let`, reassignment inside the function would also change the caller’s value."
+        },
+        {
           "id": "pass-by-value-reference-inside-value",
           "label": "JavaScript still passes arguments by value. For objects, that value is a reference to shared data, so mutating the object is visible outside while reassigning the local parameter is not."
         },
         {
           "id": "objects-are-pass-by-reference",
           "label": "Objects are the one exception to JavaScript’s pass-by-value model, so they are passed by reference while primitives are passed by value."
-        },
-        {
-          "id": "const-is-the-real-cause",
-          "label": "The difference happens only because the object was likely declared with `const`; with `let`, reassignment inside the function would also change the caller’s value."
         }
       ],
       "correctOptionId": "pass-by-value-reference-inside-value",
@@ -4498,16 +4498,16 @@
       "scenario": "A form accepts a numeric field. One teammate uses global `isNaN(value)` and starts flagging some string inputs in confusing ways, while another compares `value === NaN` and never catches the bad result. What is the better fix?",
       "options": [
         {
-          "id": "use-number-isnan-after-conversion",
-          "label": "Convert the input intentionally first if needed, then use `Number.isNaN(...)` to detect real NaN values without the coercion surprises of global `isNaN()`."
-        },
-        {
           "id": "compare-directly-to-nan",
           "label": "Compare against `NaN` directly with `===`, because NaN is just another numeric constant once the input has been parsed."
         },
         {
           "id": "global-isnan-is-more-complete",
           "label": "Use global `isNaN()` everywhere, because its automatic coercion catches more invalid values than `Number.isNaN()` and is therefore safer."
+        },
+        {
+          "id": "use-number-isnan-after-conversion",
+          "label": "Convert the input intentionally first if needed, then use `Number.isNaN(...)` to detect real NaN values without the coercion surprises of global `isNaN()`."
         }
       ],
       "correctOptionId": "use-number-isnan-after-conversion",
@@ -4597,16 +4597,16 @@
       "scenario": "A teammate sees `api(baseUrl)(token)(path)` and says, \"This is just a weird nested callback.\" You want to explain why the pattern is useful when building reusable helpers like partially configured API clients. What is the best answer?",
       "options": [
         {
+          "id": "currying-is-default-parameters",
+          "label": "Currying is basically the same as default parameters, because both techniques pre-fill missing arguments automatically."
+        },
+        {
           "id": "currying-enables-partial-reuse",
           "label": "This is currying: a multi-argument function is split into single-argument steps so each call can capture one value and return a reusable partially configured function."
         },
         {
           "id": "currying-means-running-all-at-once",
           "label": "This is still one normal function call, just written with extra parentheses. Currying does not change reuse or composition; it only changes formatting."
-        },
-        {
-          "id": "currying-is-default-parameters",
-          "label": "Currying is basically the same as default parameters, because both techniques pre-fill missing arguments automatically."
         }
       ],
       "correctOptionId": "currying-enables-partial-reuse",
@@ -4865,16 +4865,16 @@
       "scenario": "An onboarding flow nests callbacks three levels deep, repeats `if (err)` in every branch, and runs independent async steps one after another by accident. A teammate says, \"Promises just rename callbacks.\" What is the better explanation?",
       "options": [
         {
-          "id": "promises-flatten-and-centralize-errors",
-          "label": "Promises turn nested async control flow into a flatter chain, let values move through predictable steps, and centralize failures with a shared `.catch()` instead of repeating error handling in every callback."
-        },
-        {
           "id": "promises-only-change-syntax",
           "label": "Promises mainly change punctuation. The control flow, composition options, and error handling model are basically the same as callback hell."
         },
         {
           "id": "promises-force-sequential-work",
           "label": "Promises fix callback hell by making async work run strictly one after another, so there is no need to think about parallel calls or returned values anymore."
+        },
+        {
+          "id": "promises-flatten-and-centralize-errors",
+          "label": "Promises turn nested async control flow into a flatter chain, let values move through predictable steps, and centralize failures with a shared `.catch()` instead of repeating error handling in every callback."
         }
       ],
       "correctOptionId": "promises-flatten-and-centralize-errors",
@@ -4969,32 +4969,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-02-01",
-  "seo": {
-    "title": "What are arrow functions in JavaScript?",
-    "description": "Arrow functions are concise function expressions with lexical this binding and no own arguments, super, or prototype."
+    "updatedAt": "2026-02-01",
+    "seo": {
+      "title": "What are arrow functions in JavaScript?",
+      "description": "Arrow functions are concise function expressions with lexical this binding and no own arguments, super, or prototype."
+    },
+    "incidentCard": {
+      "title": "Arrow Function Reality Check",
+      "scenario": "A teammate changes an object method to an arrow function because it looks cleaner. After the refactor, `this.name` inside that method starts coming back `undefined`, and they say JavaScript somehow \"lost\" the object. What is the better explanation?",
+      "options": [
+        {
+          "id": "arrow-functions-only-break-in-async-code",
+          "label": "Arrow functions and regular functions handle `this` the same way in normal methods. The only time arrows change behavior is inside async callbacks like `setTimeout`."
+        },
+        {
+          "id": "arrow-functions-use-outer-this",
+          "label": "Arrow functions do not create their own `this`. They keep the surrounding scope's `this`, so they can break object methods that expect `this` to come from how the method was called."
+        },
+        {
+          "id": "arrow-functions-bind-to-object-literal",
+          "label": "Arrow functions automatically bind `this` to the object literal where they are written, so `this.name` should still point at the object unless the property name is wrong."
+        }
+      ],
+      "correctOptionId": "arrow-functions-use-outer-this",
+      "rereadPrompt": "Close, but the key point is that arrow functions inherit `this` from the outer scope. They are great for callbacks, but usually the wrong choice for object methods that rely on their own call-time `this`."
+    }
   },
-  "incidentCard": {
-    "title": "Arrow Function Reality Check",
-    "scenario": "A teammate changes an object method to an arrow function because it looks cleaner. After the refactor, `this.name` inside that method starts coming back `undefined`, and they say JavaScript somehow \"lost\" the object. What is the better explanation?",
-    "options": [
-      {
-        "id": "arrow-functions-use-outer-this",
-        "label": "Arrow functions do not create their own `this`. They keep the surrounding scope's `this`, so they can break object methods that expect `this` to come from how the method was called."
-      },
-      {
-        "id": "arrow-functions-bind-to-object-literal",
-        "label": "Arrow functions automatically bind `this` to the object literal where they are written, so `this.name` should still point at the object unless the property name is wrong."
-      },
-      {
-        "id": "arrow-functions-only-break-in-async-code",
-        "label": "Arrow functions and regular functions handle `this` the same way in normal methods. The only time arrows change behavior is inside async callbacks like `setTimeout`."
-      }
-    ],
-    "correctOptionId": "arrow-functions-use-outer-this",
-    "rereadPrompt": "Close, but the key point is that arrow functions inherit `this` from the outer scope. They are great for callbacks, but usually the wrong choice for object methods that rely on their own call-time `this`."
-  }
-},
   {
     "id": "js-arrow-vs-regular-functions",
     "title": "Arrow functions vs regular functions in JavaScript",
@@ -5149,32 +5149,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-03-02",
-  "seo": {
-    "title": "Arrow vs Regular Functions in JavaScript: Key Differences",
-    "description": "Compare arrow and regular functions in JavaScript: this binding, constructors, arguments, prototypes, and practical use cases."
+    "updatedAt": "2026-03-02",
+    "seo": {
+      "title": "Arrow vs Regular Functions in JavaScript: Key Differences",
+      "description": "Compare arrow and regular functions in JavaScript: this binding, constructors, arguments, prototypes, and practical use cases."
+    },
+    "incidentCard": {
+      "title": "Function Choice Check",
+      "scenario": "A teammate says, \"We should replace every regular function with arrows because they're shorter.\" Later, an object method that depends on `this.balance` starts returning `undefined`, while a callback inside `setTimeout` works better with an arrow. What is the best explanation?",
+      "options": [
+        {
+          "id": "regular-functions-only-matter-for-speed",
+          "label": "The main difference is performance. Regular functions are mostly kept for speed, while arrows should be used everywhere else because `this` works the same in both."
+        },
+        {
+          "id": "choose-based-on-runtime-behavior",
+          "label": "Arrow and regular functions are not interchangeable. Arrows are useful when you want lexical `this`, but regular methods are safer when behavior should depend on how the function is called."
+        },
+        {
+          "id": "arrows-are-always-better-modern-default",
+          "label": "Arrow functions are the modern replacement for regular functions, so any bug after switching usually means the object or property names were set up incorrectly."
+        }
+      ],
+      "correctOptionId": "choose-based-on-runtime-behavior",
+      "rereadPrompt": "Close. The key lesson is that the choice is about runtime semantics, not shorter syntax. Arrows keep outer `this`; regular functions can use call-site `this`, support constructors, and behave differently as methods."
+    }
   },
-  "incidentCard": {
-    "title": "Function Choice Check",
-    "scenario": "A teammate says, \"We should replace every regular function with arrows because they're shorter.\" Later, an object method that depends on `this.balance` starts returning `undefined`, while a callback inside `setTimeout` works better with an arrow. What is the best explanation?",
-    "options": [
-      {
-        "id": "choose-based-on-runtime-behavior",
-        "label": "Arrow and regular functions are not interchangeable. Arrows are useful when you want lexical `this`, but regular methods are safer when behavior should depend on how the function is called."
-      },
-      {
-        "id": "arrows-are-always-better-modern-default",
-        "label": "Arrow functions are the modern replacement for regular functions, so any bug after switching usually means the object or property names were set up incorrectly."
-      },
-      {
-        "id": "regular-functions-only-matter-for-speed",
-        "label": "The main difference is performance. Regular functions are mostly kept for speed, while arrows should be used everywhere else because `this` works the same in both."
-      }
-    ],
-    "correctOptionId": "choose-based-on-runtime-behavior",
-    "rereadPrompt": "Close. The key lesson is that the choice is about runtime semantics, not shorter syntax. Arrows keep outer `this`; regular functions can use call-site `this`, support constructors, and behave differently as methods."
-  }
-},
   {
     "id": "js-object-destructuring",
     "title": "What is Object Destructuring in JavaScript?",
@@ -5276,32 +5276,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "What is object destructuring in JavaScript?",
-    "description": "Object destructuring extracts properties into variables by key, with optional defaults and renaming."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "What is object destructuring in JavaScript?",
+      "description": "Object destructuring extracts properties into variables by key, with optional defaults and renaming."
+    },
+    "incidentCard": {
+      "title": "Destructuring Debug Check",
+      "scenario": "A teammate writes `const { firstName, theme = 'light' } = userSettings;` and says destructuring is just a shorter way to avoid typing `userSettings.` over and over. Later they are confused when `firstName` comes back `undefined` because the API actually returns `{ name: 'Maya' }`. What is the better explanation?",
+      "options": [
+        {
+          "id": "destructuring-guesses-similar-property-names",
+          "label": "Destructuring will usually map close property names automatically, so `firstName` should read from `name` unless strict mode is turned on."
+        },
+        {
+          "id": "destructuring-only-works-on-nested-objects",
+          "label": "Destructuring is mainly for nested objects. For flat objects like this one, JavaScript expects normal dot notation instead of matching keys directly."
+        },
+        {
+          "id": "destructuring-matches-property-keys",
+          "label": "Destructuring is shorthand, but it still matches by property key. If the object does not have `firstName`, that variable becomes `undefined` unless you rename from an existing key or provide the right default."
+        }
+      ],
+      "correctOptionId": "destructuring-matches-property-keys",
+      "rereadPrompt": "Close. The important point is that destructuring follows actual property names. It does not guess similar keys, so you need matching names, renaming syntax, or defaults when data may be missing."
+    }
   },
-  "incidentCard": {
-    "title": "Destructuring Debug Check",
-    "scenario": "A teammate writes `const { firstName, theme = 'light' } = userSettings;` and says destructuring is just a shorter way to avoid typing `userSettings.` over and over. Later they are confused when `firstName` comes back `undefined` because the API actually returns `{ name: 'Maya' }`. What is the better explanation?",
-    "options": [
-      {
-        "id": "destructuring-matches-property-keys",
-        "label": "Destructuring is shorthand, but it still matches by property key. If the object does not have `firstName`, that variable becomes `undefined` unless you rename from an existing key or provide the right default."
-      },
-      {
-        "id": "destructuring-guesses-similar-property-names",
-        "label": "Destructuring will usually map close property names automatically, so `firstName` should read from `name` unless strict mode is turned on."
-      },
-      {
-        "id": "destructuring-only-works-on-nested-objects",
-        "label": "Destructuring is mainly for nested objects. For flat objects like this one, JavaScript expects normal dot notation instead of matching keys directly."
-      }
-    ],
-    "correctOptionId": "destructuring-matches-property-keys",
-    "rereadPrompt": "Close. The important point is that destructuring follows actual property names. It does not guess similar keys, so you need matching names, renaming syntax, or defaults when data may be missing."
-  }
-},
   {
     "id": "js-spread-vs-rest-parameters",
     "title": "Spread operator vs rest parameters in JavaScript",
@@ -5432,32 +5432,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-03-02",
-  "seo": {
-    "title": "Spread vs Rest in JavaScript: Differences and Examples",
-    "description": "Understand spread operator and rest parameters in JavaScript with practical examples, function patterns, and common interview pitfalls."
+    "updatedAt": "2026-03-02",
+    "seo": {
+      "title": "Spread vs Rest in JavaScript: Differences and Examples",
+      "description": "Understand spread operator and rest parameters in JavaScript with practical examples, function patterns, and common interview pitfalls."
+    },
+    "incidentCard": {
+      "title": "Spread or Rest Check",
+      "scenario": "A teammate is cleaning up utility code and says, \"`...` always means the same thing anyway.\" In one place they need to pass an array of scores into `Math.max`, and in another they want a function parameter that gathers all extra tags into one array. What is the best explanation?",
+      "options": [
+        {
+          "id": "spread-expands-rest-collects",
+          "label": "The syntax is the same, but the roles are opposite. Spread expands one array or object into individual values, while rest collects remaining arguments or properties into one array or object."
+        },
+        {
+          "id": "spread-and-rest-are-interchangeable",
+          "label": "They are interchangeable in practice. The only real difference is style, so whichever form reads better will work in both the `Math.max` call and the function parameter list."
+        },
+        {
+          "id": "rest-is-for-function-calls-spread-for-params",
+          "label": "Use rest when calling functions because it sends many values out, and use spread in parameter lists because it pulls values back into the function."
+        }
+      ],
+      "correctOptionId": "spread-expands-rest-collects",
+      "rereadPrompt": "Close. The key is direction: spread expands outward, rest gathers inward. Same `...` token, but different meaning depending on where it appears."
+    }
   },
-  "incidentCard": {
-    "title": "Spread or Rest Check",
-    "scenario": "A teammate is cleaning up utility code and says, \"`...` always means the same thing anyway.\" In one place they need to pass an array of scores into `Math.max`, and in another they want a function parameter that gathers all extra tags into one array. What is the best explanation?",
-    "options": [
-      {
-        "id": "spread-expands-rest-collects",
-        "label": "The syntax is the same, but the roles are opposite. Spread expands one array or object into individual values, while rest collects remaining arguments or properties into one array or object."
-      },
-      {
-        "id": "spread-and-rest-are-interchangeable",
-        "label": "They are interchangeable in practice. The only real difference is style, so whichever form reads better will work in both the `Math.max` call and the function parameter list."
-      },
-      {
-        "id": "rest-is-for-function-calls-spread-for-params",
-        "label": "Use rest when calling functions because it sends many values out, and use spread in parameter lists because it pulls values back into the function."
-      }
-    ],
-    "correctOptionId": "spread-expands-rest-collects",
-    "rereadPrompt": "Close. The key is direction: spread expands outward, rest gathers inward. Same `...` token, but different meaning depending on where it appears."
-  }
-},
   {
     "id": "js-design-patterns",
     "title": "What do you mean by JavaScript Design Patterns?",
@@ -5560,32 +5560,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "What are JavaScript design patterns?",
-    "description": "JavaScript design patterns are reusable solution templates for common software design problems, such as module, factory, and observer."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "What are JavaScript design patterns?",
+      "description": "JavaScript design patterns are reusable solution templates for common software design problems, such as module, factory, and observer."
+    },
+    "incidentCard": {
+      "title": "Pattern Choice Check",
+      "scenario": "A dashboard codebase keeps repeating the same subscription and notification logic in different widgets. A teammate says, \"Let's just copy the cleanest version into every file. Design patterns are mostly fancy naming.\" What is the better explanation?",
+      "options": [
+        {
+          "id": "patterns-are-copy-paste-templates",
+          "label": "Design patterns are mainly prewritten code templates. Once you find one that works, the simplest approach is to duplicate it wherever the same behavior appears."
+        },
+        {
+          "id": "patterns-only-matter-in-framework-source",
+          "label": "Design patterns are useful mostly inside frameworks, not regular app code. In product code, they usually add too much structure unless you are writing a library."
+        },
+        {
+          "id": "patterns-are-reusable-structure",
+          "label": "Design patterns are reusable approaches to recurring problems. The point is to apply a proven structure, like Observer for subscriptions, so the code stays easier to reason about, extend, and discuss as the app grows."
+        }
+      ],
+      "correctOptionId": "patterns-are-reusable-structure",
+      "rereadPrompt": "Close. The key idea is that a pattern is a reusable solution shape, not copy-paste code. It gives teams a shared structure and vocabulary for recurring problems."
+    }
   },
-  "incidentCard": {
-    "title": "Pattern Choice Check",
-    "scenario": "A dashboard codebase keeps repeating the same subscription and notification logic in different widgets. A teammate says, \"Let's just copy the cleanest version into every file. Design patterns are mostly fancy naming.\" What is the better explanation?",
-    "options": [
-      {
-        "id": "patterns-are-reusable-structure",
-        "label": "Design patterns are reusable approaches to recurring problems. The point is to apply a proven structure, like Observer for subscriptions, so the code stays easier to reason about, extend, and discuss as the app grows."
-      },
-      {
-        "id": "patterns-are-copy-paste-templates",
-        "label": "Design patterns are mainly prewritten code templates. Once you find one that works, the simplest approach is to duplicate it wherever the same behavior appears."
-      },
-      {
-        "id": "patterns-only-matter-in-framework-source",
-        "label": "Design patterns are useful mostly inside frameworks, not regular app code. In product code, they usually add too much structure unless you are writing a library."
-      }
-    ],
-    "correctOptionId": "patterns-are-reusable-structure",
-    "rereadPrompt": "Close. The key idea is that a pattern is a reusable solution shape, not copy-paste code. It gives teams a shared structure and vocabulary for recurring problems."
-  }
-},
   {
     "id": "js-deferred-scripts",
     "title": "What is the role of deferred scripts in JavaScript?",
@@ -5676,32 +5676,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "What does defer do in a script tag?",
-    "description": "The defer attribute downloads a script during HTML parsing and executes it after parsing completes, in document order."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "What does defer do in a script tag?",
+      "description": "The defer attribute downloads a script during HTML parsing and executes it after parsing completes, in document order."
+    },
+    "incidentCard": {
+      "title": "Defer Behavior Check",
+      "scenario": "A page feels slow because a large app bundle is loaded with a plain `<script>` tag in the document head. A teammate switches it to `<script src=\"app.js\" defer></script>` and says, \"Now it will still load during parsing, but wait to run until the DOM is ready, and multiple deferred scripts will keep their order.\" Is that the right explanation?",
+      "options": [
+        {
+          "id": "defer-blocks-parsing-until-dom-ready",
+          "label": "No. `defer` still blocks HTML parsing, but it delays the first paint until the browser decides the DOM is stable enough for scripts."
+        },
+        {
+          "id": "defer-downloads-now-runs-after-parse",
+          "label": "Yes. Deferred scripts download while HTML is still being parsed, execute only after parsing finishes, and preserve document order across multiple deferred scripts."
+        },
+        {
+          "id": "defer-runs-immediately-when-downloaded",
+          "label": "No. `defer` behaves like `async`, so the script runs as soon as it finishes downloading and execution order between deferred files is not guaranteed."
+        }
+      ],
+      "correctOptionId": "defer-downloads-now-runs-after-parse",
+      "rereadPrompt": "Close. The key point is that `defer` does not block HTML parsing. It downloads in parallel, waits until parsing is done, and keeps execution order for deferred scripts."
+    }
   },
-  "incidentCard": {
-    "title": "Defer Behavior Check",
-    "scenario": "A page feels slow because a large app bundle is loaded with a plain `<script>` tag in the document head. A teammate switches it to `<script src=\"app.js\" defer></script>` and says, \"Now it will still load during parsing, but wait to run until the DOM is ready, and multiple deferred scripts will keep their order.\" Is that the right explanation?",
-    "options": [
-      {
-        "id": "defer-downloads-now-runs-after-parse",
-        "label": "Yes. Deferred scripts download while HTML is still being parsed, execute only after parsing finishes, and preserve document order across multiple deferred scripts."
-      },
-      {
-        "id": "defer-runs-immediately-when-downloaded",
-        "label": "No. `defer` behaves like `async`, so the script runs as soon as it finishes downloading and execution order between deferred files is not guaranteed."
-      },
-      {
-        "id": "defer-blocks-parsing-until-dom-ready",
-        "label": "No. `defer` still blocks HTML parsing, but it delays the first paint until the browser decides the DOM is stable enough for scripts."
-      }
-    ],
-    "correctOptionId": "defer-downloads-now-runs-after-parse",
-    "rereadPrompt": "Close. The key point is that `defer` does not block HTML parsing. It downloads in parallel, waits until parsing is done, and keeps execution order for deferred scripts."
-  }
-},
   {
     "id": "js-classes",
     "title": "What are classes in JavaScript?",
@@ -5797,32 +5797,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "What are classes in JavaScript?",
-    "description": "JavaScript classes are syntax sugar over prototypes for creating constructors, instance methods, and inheritance."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "What are classes in JavaScript?",
+      "description": "JavaScript classes are syntax sugar over prototypes for creating constructors, instance methods, and inheritance."
+    },
+    "incidentCard": {
+      "title": "Class Model Check",
+      "scenario": "A teammate says, \"Now that we switched to `class`, this part of the app no longer uses prototypes.\" Later they move a method into the class body and are surprised that every instance still shares the same method implementation. What is the better explanation?",
+      "options": [
+        {
+          "id": "classes-work-like-functions-only-with-new",
+          "label": "Classes are basically normal functions with stricter constructor rules. Their methods are stored directly on each object, and prototypes matter only when using old constructor syntax."
+        },
+        {
+          "id": "classes-still-use-prototypes",
+          "label": "JavaScript classes are mostly cleaner syntax over the same prototype-based model. Methods declared in the class body live on the prototype, so instances share them instead of each getting their own copy."
+        },
+        {
+          "id": "classes-create-copied-methods-per-instance",
+          "label": "Classes replace prototypes with a separate class-only inheritance system, so each instance gets its own fresh copy of every method unless you mark it as static."
+        }
+      ],
+      "correctOptionId": "classes-still-use-prototypes",
+      "rereadPrompt": "Close. The key point is that `class` improves readability, but it does not replace JavaScript's prototype model. Class methods are still shared through the prototype chain."
+    }
   },
-  "incidentCard": {
-    "title": "Class Model Check",
-    "scenario": "A teammate says, \"Now that we switched to `class`, this part of the app no longer uses prototypes.\" Later they move a method into the class body and are surprised that every instance still shares the same method implementation. What is the better explanation?",
-    "options": [
-      {
-        "id": "classes-still-use-prototypes",
-        "label": "JavaScript classes are mostly cleaner syntax over the same prototype-based model. Methods declared in the class body live on the prototype, so instances share them instead of each getting their own copy."
-      },
-      {
-        "id": "classes-create-copied-methods-per-instance",
-        "label": "Classes replace prototypes with a separate class-only inheritance system, so each instance gets its own fresh copy of every method unless you mark it as static."
-      },
-      {
-        "id": "classes-work-like-functions-only-with-new",
-        "label": "Classes are basically normal functions with stricter constructor rules. Their methods are stored directly on each object, and prototypes matter only when using old constructor syntax."
-      }
-    ],
-    "correctOptionId": "classes-still-use-prototypes",
-    "rereadPrompt": "Close. The key point is that `class` improves readability, but it does not replace JavaScript's prototype model. Class methods are still shared through the prototype chain."
-  }
-},
   {
     "id": "js-object-creation-methods",
     "title": "In JavaScript, how many different methods can you make an object?",
@@ -6001,32 +6001,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "How do you create an object in JavaScript?",
-    "description": "You can create objects with object literals, constructor functions, classes, Object.create, or factory functions."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "How do you create an object in JavaScript?",
+      "description": "You can create objects with object literals, constructor functions, classes, Object.create, or factory functions."
+    },
+    "incidentCard": {
+      "title": "Object Creation Choice Check",
+      "scenario": "A teammate says, \"There is basically one real way to create objects in JavaScript. Everything else is just weird syntax.\" Later the team needs a quick config object in one place, shared instance methods in another, and direct prototype control in a low-level utility. What is the better explanation?",
+      "options": [
+        {
+          "id": "different-object-creation-methods-fit-different-needs",
+          "label": "JavaScript has multiple object creation approaches for different goals. Object literals are great for simple objects, constructors or classes help with reusable instances, and `Object.create()` gives explicit prototype control."
+        },
+        {
+          "id": "object-literals-are-the-only-modern-choice",
+          "label": "Modern JavaScript treats object literals as the only practical option. Constructors, classes, factory functions, and `Object.create()` are mostly historical and should be avoided even when requirements differ."
+        },
+        {
+          "id": "all-object-creation-methods-behave-identically",
+          "label": "All object creation methods produce the same behavior under the hood, so the only meaningful difference is whether the syntax feels shorter or longer to the team."
+        }
+      ],
+      "correctOptionId": "different-object-creation-methods-fit-different-needs",
+      "rereadPrompt": "Close. The main lesson is that JavaScript supports several object creation styles, and each one is useful for a different kind of problem, especially when prototypes, reuse, or simplicity matter."
+    }
   },
-  "incidentCard": {
-    "title": "Object Creation Choice Check",
-    "scenario": "A teammate says, \"There is basically one real way to create objects in JavaScript. Everything else is just weird syntax.\" Later the team needs a quick config object in one place, shared instance methods in another, and direct prototype control in a low-level utility. What is the better explanation?",
-    "options": [
-      {
-        "id": "different-object-creation-methods-fit-different-needs",
-        "label": "JavaScript has multiple object creation approaches for different goals. Object literals are great for simple objects, constructors or classes help with reusable instances, and `Object.create()` gives explicit prototype control."
-      },
-      {
-        "id": "object-literals-are-the-only-modern-choice",
-        "label": "Modern JavaScript treats object literals as the only practical option. Constructors, classes, factory functions, and `Object.create()` are mostly historical and should be avoided even when requirements differ."
-      },
-      {
-        "id": "all-object-creation-methods-behave-identically",
-        "label": "All object creation methods produce the same behavior under the hood, so the only meaningful difference is whether the syntax feels shorter or longer to the team."
-      }
-    ],
-    "correctOptionId": "different-object-creation-methods-fit-different-needs",
-    "rereadPrompt": "Close. The main lesson is that JavaScript supports several object creation styles, and each one is useful for a different kind of problem, especially when prototypes, reuse, or simplicity matter."
-  }
-},
   {
     "id": "js-memoization",
     "title": "What is memoization in JavaScript?",
@@ -6122,32 +6122,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "What is memoization in JavaScript?",
-    "description": "Memoization caches function results for repeated inputs so expensive computations can return faster on later calls."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "What is memoization in JavaScript?",
+      "description": "Memoization caches function results for repeated inputs so expensive computations can return faster on later calls."
+    },
+    "incidentCard": {
+      "title": "Memoization Tradeoff Check",
+      "scenario": "A teammate wraps a cheap function in a cache and says, \"Memoization always makes code faster.\" Later the cache grows large, but the function rarely receives the same input twice. What is the better explanation?",
+      "options": [
+        {
+          "id": "memoization-helps-repeated-pure-expensive-work",
+          "label": "Memoization helps when a pure function is expensive and gets called repeatedly with the same inputs. It trades memory for speed, so it can be a bad fit when results are rarely reused or the function is already cheap."
+        },
+        {
+          "id": "memoization-is-best-for-any-function",
+          "label": "Memoization is a general speed upgrade for almost any function. The cache cost is usually negligible, so the safest performance choice is to memoize by default."
+        },
+        {
+          "id": "memoization-fixes-impure-functions-too",
+          "label": "Memoization works especially well for functions that depend on changing external state, because the cache smooths out randomness and keeps outputs more consistent over time."
+        }
+      ],
+      "correctOptionId": "memoization-helps-repeated-pure-expensive-work",
+      "rereadPrompt": "Close. The key point is that memoization is situational: it helps repeated expensive pure computations, but it also adds cache overhead and memory growth."
+    }
   },
-  "incidentCard": {
-    "title": "Memoization Tradeoff Check",
-    "scenario": "A teammate wraps a cheap function in a cache and says, \"Memoization always makes code faster.\" Later the cache grows large, but the function rarely receives the same input twice. What is the better explanation?",
-    "options": [
-      {
-        "id": "memoization-helps-repeated-pure-expensive-work",
-        "label": "Memoization helps when a pure function is expensive and gets called repeatedly with the same inputs. It trades memory for speed, so it can be a bad fit when results are rarely reused or the function is already cheap."
-      },
-      {
-        "id": "memoization-is-best-for-any-function",
-        "label": "Memoization is a general speed upgrade for almost any function. The cache cost is usually negligible, so the safest performance choice is to memoize by default."
-      },
-      {
-        "id": "memoization-fixes-impure-functions-too",
-        "label": "Memoization works especially well for functions that depend on changing external state, because the cache smooths out randomness and keeps outputs more consistent over time."
-      }
-    ],
-    "correctOptionId": "memoization-helps-repeated-pure-expensive-work",
-    "rereadPrompt": "Close. The key point is that memoization is situational: it helps repeated expensive pure computations, but it also adds cache overhead and memory growth."
-  }
-},
   {
     "id": "js-microtasks-vs-macrotasks",
     "title": "Microtasks vs Macrotasks in JavaScript (Event Loop Priority)",
@@ -6238,32 +6238,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "Microtasks vs macrotasks in JavaScript: what is different?",
-    "description": "Microtasks run before the next macrotask and before rendering opportunities, while macrotasks run in later event loop turns."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Microtasks vs macrotasks in JavaScript: what is different?",
+      "description": "Microtasks run before the next macrotask and before rendering opportunities, while macrotasks run in later event loop turns."
+    },
+    "incidentCard": {
+      "title": "Event Loop Priority Check",
+      "scenario": "A teammate logs a `Promise.resolve().then(...)` callback and a `setTimeout(..., 0)` callback, then gets confused when the Promise logs first. They also notice a long chain of Promise callbacks can make the UI feel stuck for a moment. What is the better explanation?",
+      "options": [
+        {
+          "id": "microtasks-run-before-next-macrotask",
+          "label": "Promise callbacks go into the microtask queue, which is fully drained after the current stack and before the next macrotask like `setTimeout`. That same priority is why a long microtask chain can delay rendering."
+        },
+        {
+          "id": "timeouts-are-slower-because-zero-is-not-zero",
+          "label": "The timer loses only because `setTimeout(fn, 0)` is secretly rounded up. If the delay were truly zero, it would run before Promise callbacks and would not affect rendering."
+        },
+        {
+          "id": "promises-and-timers-share-one-queue",
+          "label": "Promises and timers both use the same event queue, so whichever one was scheduled first runs first. UI delays happen only when a single callback itself is too long."
+        }
+      ],
+      "correctOptionId": "microtasks-run-before-next-macrotask",
+      "rereadPrompt": "Close. The key rule is priority: microtasks run before the next macrotask, and the runtime drains them completely before moving on, which can postpone paint and input handling."
+    }
   },
-  "incidentCard": {
-    "title": "Event Loop Priority Check",
-    "scenario": "A teammate logs a `Promise.resolve().then(...)` callback and a `setTimeout(..., 0)` callback, then gets confused when the Promise logs first. They also notice a long chain of Promise callbacks can make the UI feel stuck for a moment. What is the better explanation?",
-    "options": [
-      {
-        "id": "microtasks-run-before-next-macrotask",
-        "label": "Promise callbacks go into the microtask queue, which is fully drained after the current stack and before the next macrotask like `setTimeout`. That same priority is why a long microtask chain can delay rendering."
-      },
-      {
-        "id": "timeouts-are-slower-because-zero-is-not-zero",
-        "label": "The timer loses only because `setTimeout(fn, 0)` is secretly rounded up. If the delay were truly zero, it would run before Promise callbacks and would not affect rendering."
-      },
-      {
-        "id": "promises-and-timers-share-one-queue",
-        "label": "Promises and timers both use the same event queue, so whichever one was scheduled first runs first. UI delays happen only when a single callback itself is too long."
-      }
-    ],
-    "correctOptionId": "microtasks-run-before-next-macrotask",
-    "rereadPrompt": "Close. The key rule is priority: microtasks run before the next macrotask, and the runtime drains them completely before moving on, which can postpone paint and input handling."
-  }
-},
   {
     "id": "js-promise-combinators-all-allsettled-race-any",
     "title": "Promise.all vs allSettled vs race vs any (JavaScript Promise Combinators)",
@@ -6364,32 +6364,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "Promise.all vs allSettled vs race vs any: what is the difference?",
-    "description": "Promise.all fails on first rejection, allSettled waits for all outcomes, race settles on first settled promise, and any fulfills on first success."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Promise.all vs allSettled vs race vs any: what is the difference?",
+      "description": "Promise.all fails on first rejection, allSettled waits for all outcomes, race settles on first settled promise, and any fulfills on first success."
+    },
+    "incidentCard": {
+      "title": "Promise Combinator Choice Check",
+      "scenario": "A dashboard loads four independent widgets. Product wants to show which ones succeeded and which ones failed, even if one request breaks. A teammate uses `Promise.all()` and says, \"If one fails, we can just catch the error and still know what happened to the rest.\" What is the better explanation?",
+      "options": [
+        {
+          "id": "all-is-best-for-partial-results",
+          "label": "Keep `Promise.all()`. It is the best choice when you want partial results because the `catch` block still receives enough information to inspect which individual promises fulfilled before the rejection."
+        },
+        {
+          "id": "race-for-fastest-summary",
+          "label": "Use `Promise.race()` so the first completed request decides the dashboard state, then the rest can be inferred later from the same result."
+        },
+        {
+          "id": "allsettled-for-complete-outcomes",
+          "label": "Use `Promise.allSettled()` here. It waits for every promise to finish and gives a per-request status result, which fits a UI that needs both successes and failures instead of fail-fast behavior."
+        }
+      ],
+      "correctOptionId": "allsettled-for-complete-outcomes",
+      "rereadPrompt": "Close. The key distinction is that `Promise.all()` fails fast, while `Promise.allSettled()` gives you the outcome of every promise, which is what you need when partial success still matters."
+    }
   },
-  "incidentCard": {
-    "title": "Promise Combinator Choice Check",
-    "scenario": "A dashboard loads four independent widgets. Product wants to show which ones succeeded and which ones failed, even if one request breaks. A teammate uses `Promise.all()` and says, \"If one fails, we can just catch the error and still know what happened to the rest.\" What is the better explanation?",
-    "options": [
-      {
-        "id": "allsettled-for-complete-outcomes",
-        "label": "Use `Promise.allSettled()` here. It waits for every promise to finish and gives a per-request status result, which fits a UI that needs both successes and failures instead of fail-fast behavior."
-      },
-      {
-        "id": "all-is-best-for-partial-results",
-        "label": "Keep `Promise.all()`. It is the best choice when you want partial results because the `catch` block still receives enough information to inspect which individual promises fulfilled before the rejection."
-      },
-      {
-        "id": "race-for-fastest-summary",
-        "label": "Use `Promise.race()` so the first completed request decides the dashboard state, then the rest can be inferred later from the same result."
-      }
-    ],
-    "correctOptionId": "allsettled-for-complete-outcomes",
-    "rereadPrompt": "Close. The key distinction is that `Promise.all()` fails fast, while `Promise.allSettled()` gives you the outcome of every promise, which is what you need when partial success still matters."
-  }
-},
   {
     "id": "js-object-create-vs-new",
     "title": "Object.create vs new in JavaScript (Prototypes, Constructors, and Inheritance)",
@@ -6491,32 +6491,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "Object.create vs new in JavaScript: what is the difference?",
-    "description": "new creates an instance by running a constructor, while Object.create makes an object with a chosen prototype without running a constructor."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Object.create vs new in JavaScript: what is the difference?",
+      "description": "new creates an instance by running a constructor, while Object.create makes an object with a chosen prototype without running a constructor."
+    },
+    "incidentCard": {
+      "title": "Creation Path Check",
+      "scenario": "A teammate swaps `new User('Maya')` for `Object.create(User.prototype)` and says, \"Same result, just cleaner.\" After that change, methods still exist, but fields normally set in the constructor are missing. What is the better explanation?",
+      "options": [
+        {
+          "id": "object-create-runs-constructor-later",
+          "label": "`Object.create()` still runs the constructor, but only after the object is first accessed. The missing fields usually mean the prototype chain was attached in the wrong order."
+        },
+        {
+          "id": "new-and-object-create-are-equivalent",
+          "label": "`new` and `Object.create()` are functionally equivalent for class-style objects. If instance fields disappeared, the bug must be inside the methods, not the creation path."
+        },
+        {
+          "id": "object-create-skips-constructor",
+          "label": "`Object.create(User.prototype)` only creates an object linked to that prototype. It does not run the constructor, so any initialization logic or assigned instance fields must be done separately."
+        }
+      ],
+      "correctOptionId": "object-create-skips-constructor",
+      "rereadPrompt": "Close. The key distinction is that `new` wires the prototype and runs constructor initialization, while `Object.create()` only sets the prototype link unless you add the setup step yourself."
+    }
   },
-  "incidentCard": {
-    "title": "Creation Path Check",
-    "scenario": "A teammate swaps `new User('Maya')` for `Object.create(User.prototype)` and says, \"Same result, just cleaner.\" After that change, methods still exist, but fields normally set in the constructor are missing. What is the better explanation?",
-    "options": [
-      {
-        "id": "object-create-skips-constructor",
-        "label": "`Object.create(User.prototype)` only creates an object linked to that prototype. It does not run the constructor, so any initialization logic or assigned instance fields must be done separately."
-      },
-      {
-        "id": "object-create-runs-constructor-later",
-        "label": "`Object.create()` still runs the constructor, but only after the object is first accessed. The missing fields usually mean the prototype chain was attached in the wrong order."
-      },
-      {
-        "id": "new-and-object-create-are-equivalent",
-        "label": "`new` and `Object.create()` are functionally equivalent for class-style objects. If instance fields disappeared, the bug must be inside the methods, not the creation path."
-      }
-    ],
-    "correctOptionId": "object-create-skips-constructor",
-    "rereadPrompt": "Close. The key distinction is that `new` wires the prototype and runs constructor initialization, while `Object.create()` only sets the prototype link unless you add the setup step yourself."
-  }
-},
   {
     "id": "js-prototype-vs-proto",
     "title": "prototype vs __proto__ in JavaScript (Prototype Chain, new, and Object.getPrototypeOf)",
@@ -6607,32 +6607,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-31",
-  "seo": {
-    "title": "prototype vs __proto__ in JavaScript: what is the difference?",
-    "description": "prototype is a property on constructor functions, while __proto__ is an object's link to its prototype in the chain."
+    "updatedAt": "2026-01-31",
+    "seo": {
+      "title": "prototype vs __proto__ in JavaScript: what is the difference?",
+      "description": "prototype is a property on constructor functions, while __proto__ is an object's link to its prototype in the chain."
+    },
+    "incidentCard": {
+      "title": "Prototype Link Check",
+      "scenario": "A teammate says, \"`prototype` and `__proto__` are basically the same property with two names.\" While debugging, they inspect `User.prototype` and an instance's `__proto__` and assume both belong to the same object type. What is the better explanation?",
+      "options": [
+        {
+          "id": "prototype-and-proto-are-identical-everywhere",
+          "label": "`prototype` and `__proto__` are interchangeable in practice. The engine keeps both only for compatibility, so reading either one tells you the exact same thing on functions and on instances."
+        },
+        {
+          "id": "proto-is-only-for-classes",
+          "label": "`__proto__` matters only for ES6 classes, while `prototype` is the older constructor-function version. In modern JavaScript you can ignore the connection between them."
+        },
+        {
+          "id": "prototype-on-functions-proto-on-objects",
+          "label": "`prototype` is a property on constructor functions that defines what instances created with `new` should inherit from. `__proto__` is the instance's prototype link, so they are related, but they live on different things and mean different roles."
+        }
+      ],
+      "correctOptionId": "prototype-on-functions-proto-on-objects",
+      "rereadPrompt": "Close. The key distinction is where each one lives: `Foo.prototype` is on the constructor, while an object's prototype link is on the instance itself and is best inspected with `Object.getPrototypeOf`."
+    }
   },
-  "incidentCard": {
-    "title": "Prototype Link Check",
-    "scenario": "A teammate says, \"`prototype` and `__proto__` are basically the same property with two names.\" While debugging, they inspect `User.prototype` and an instance's `__proto__` and assume both belong to the same object type. What is the better explanation?",
-    "options": [
-      {
-        "id": "prototype-on-functions-proto-on-objects",
-        "label": "`prototype` is a property on constructor functions that defines what instances created with `new` should inherit from. `__proto__` is the instance's prototype link, so they are related, but they live on different things and mean different roles."
-      },
-      {
-        "id": "prototype-and-proto-are-identical-everywhere",
-        "label": "`prototype` and `__proto__` are interchangeable in practice. The engine keeps both only for compatibility, so reading either one tells you the exact same thing on functions and on instances."
-      },
-      {
-        "id": "proto-is-only-for-classes",
-        "label": "`__proto__` matters only for ES6 classes, while `prototype` is the older constructor-function version. In modern JavaScript you can ignore the connection between them."
-      }
-    ],
-    "correctOptionId": "prototype-on-functions-proto-on-objects",
-    "rereadPrompt": "Close. The key distinction is where each one lives: `Foo.prototype` is on the constructor, while an object's prototype link is on the instance itself and is best inspected with `Object.getPrototypeOf`."
-  }
-},
   {
     "id": "js-shallow-vs-deep-copy",
     "title": "Shallow Copy vs Deep Copy in JavaScript (Objects, Arrays, References)",
@@ -6726,32 +6726,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "Shallow copy vs deep copy in JavaScript: what is the difference?",
-    "description": "A shallow copy duplicates only top-level references, while a deep copy recursively duplicates nested objects and arrays."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Shallow copy vs deep copy in JavaScript: what is the difference?",
+      "description": "A shallow copy duplicates only top-level references, while a deep copy recursively duplicates nested objects and arrays."
+    },
+    "incidentCard": {
+      "title": "Copy Bug Check",
+      "scenario": "A teammate clones state with `{ ...user }` and says, \"Now the copy is fully independent.\" Later they change `copy.preferences.theme` and the original object changes too. What is the better explanation?",
+      "options": [
+        {
+          "id": "spread-is-only-a-shallow-copy",
+          "label": "Object spread creates only a shallow copy. The top-level object is new, but nested objects still share the same references, so mutating nested data affects both copies."
+        },
+        {
+          "id": "spread-creates-a-deep-copy-by-default",
+          "label": "Object spread creates a deep copy unless the object contains arrays. If the original still changed, the bug is probably from async timing rather than shared references."
+        },
+        {
+          "id": "nested-mutation-never-affects-original",
+          "label": "Once the top-level object is copied, nested objects are isolated automatically. If the original changed too, JavaScript likely reused the old variable by mistake."
+        }
+      ],
+      "correctOptionId": "spread-is-only-a-shallow-copy",
+      "rereadPrompt": "Close. The key lesson is that spread and `Object.assign` copy only the first level. Nested objects and arrays remain shared unless you copy those layers too or perform a real deep clone."
+    }
   },
-  "incidentCard": {
-    "title": "Copy Bug Check",
-    "scenario": "A teammate clones state with `{ ...user }` and says, \"Now the copy is fully independent.\" Later they change `copy.preferences.theme` and the original object changes too. What is the better explanation?",
-    "options": [
-      {
-        "id": "spread-is-only-a-shallow-copy",
-        "label": "Object spread creates only a shallow copy. The top-level object is new, but nested objects still share the same references, so mutating nested data affects both copies."
-      },
-      {
-        "id": "spread-creates-a-deep-copy-by-default",
-        "label": "Object spread creates a deep copy unless the object contains arrays. If the original still changed, the bug is probably from async timing rather than shared references."
-      },
-      {
-        "id": "nested-mutation-never-affects-original",
-        "label": "Once the top-level object is copied, nested objects are isolated automatically. If the original changed too, JavaScript likely reused the old variable by mistake."
-      }
-    ],
-    "correctOptionId": "spread-is-only-a-shallow-copy",
-    "rereadPrompt": "Close. The key lesson is that spread and `Object.assign` copy only the first level. Nested objects and arrays remain shared unless you copy those layers too or perform a real deep clone."
-  }
-},
   {
     "id": "js-map-filter-reduce",
     "title": "map vs filter vs reduce in JavaScript (Array Transformations)",
@@ -6866,32 +6866,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "map vs filter vs reduce in JavaScript: when to use each?",
-    "description": "Use map to transform items, filter to keep matching items, and reduce to combine values into one result."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "map vs filter vs reduce in JavaScript: when to use each?",
+      "description": "Use map to transform items, filter to keep matching items, and reduce to combine values into one result."
+    },
+    "incidentCard": {
+      "title": "Array Method Choice Check",
+      "scenario": "A teammate needs a list of names for active users. They reach for `reduce()` immediately because \"it can do everything,\" even though the code is getting harder to read. What is the better explanation?",
+      "options": [
+        {
+          "id": "map-can-filter-and-reduce-alone",
+          "label": "`map()` is enough for this case because it can both remove inactive users and combine the remaining names into one pass without any extra logic."
+        },
+        {
+          "id": "use-the-method-that-matches-intent",
+          "label": "Use the method that matches the job: `filter()` to keep active users, `map()` to turn them into names, and `reduce()` when you truly need to accumulate into one result. Readability matters more than forcing everything through `reduce()`."
+        },
+        {
+          "id": "reduce-is-always-best",
+          "label": "`reduce()` is the most advanced array method, so it is usually the best default even when `map()` or `filter()` would describe the intent more clearly."
+        }
+      ],
+      "correctOptionId": "use-the-method-that-matches-intent",
+      "rereadPrompt": "Close. The key lesson is that `map`, `filter`, and `reduce` express different intentions. `reduce` is powerful, but it is not the clearest tool when you are simply selecting items or transforming them."
+    }
   },
-  "incidentCard": {
-    "title": "Array Method Choice Check",
-    "scenario": "A teammate needs a list of names for active users. They reach for `reduce()` immediately because \"it can do everything,\" even though the code is getting harder to read. What is the better explanation?",
-    "options": [
-      {
-        "id": "use-the-method-that-matches-intent",
-        "label": "Use the method that matches the job: `filter()` to keep active users, `map()` to turn them into names, and `reduce()` when you truly need to accumulate into one result. Readability matters more than forcing everything through `reduce()`."
-      },
-      {
-        "id": "reduce-is-always-best",
-        "label": "`reduce()` is the most advanced array method, so it is usually the best default even when `map()` or `filter()` would describe the intent more clearly."
-      },
-      {
-        "id": "map-can-filter-and-reduce-alone",
-        "label": "`map()` is enough for this case because it can both remove inactive users and combine the remaining names into one pass without any extra logic."
-      }
-    ],
-    "correctOptionId": "use-the-method-that-matches-intent",
-    "rereadPrompt": "Close. The key lesson is that `map`, `filter`, and `reduce` express different intentions. `reduce` is powerful, but it is not the clearest tool when you are simply selecting items or transforming them."
-  }
-},
   {
     "id": "js-array-sort-pitfalls",
     "title": "Array.sort Pitfalls in JavaScript (Lexicographic Sorting, Mutation, Comparator)",
@@ -6980,32 +6980,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "Why does Array.sort cause bugs in JavaScript?",
-    "description": "Array.sort can cause bugs because it mutates the original array and sorts strings lexicographically unless you provide a comparator."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Why does Array.sort cause bugs in JavaScript?",
+      "description": "Array.sort can cause bugs because it mutates the original array and sorts strings lexicographically unless you provide a comparator."
+    },
+    "incidentCard": {
+      "title": "Sort Trap Check",
+      "scenario": "A teammate sorts `[1, 2, 10]` with `arr.sort()` and also reuses that same array elsewhere assuming it stayed unchanged. Later they are surprised by both the order and the mutation. What is the better explanation?",
+      "options": [
+        {
+          "id": "sort-is-numeric-and-nonmutating",
+          "label": "`Array.sort()` is already numeric for number arrays and returns a new sorted copy, so the unexpected result usually comes from rendering stale state rather than the sort itself."
+        },
+        {
+          "id": "sort-only-mutates-objects-not-numbers",
+          "label": "`Array.sort()` mutates only when the array contains objects. For plain numbers it preserves the original array and only changes the returned value."
+        },
+        {
+          "id": "sort-mutates-and-defaults-to-string-compare",
+          "label": "`Array.sort()` mutates the original array in place, and without a comparator it compares values as strings. For numeric sorting without side effects, clone first and use something like `(a, b) => a - b`."
+        }
+      ],
+      "correctOptionId": "sort-mutates-and-defaults-to-string-compare",
+      "rereadPrompt": "Close. The key pitfalls are that `sort()` changes the original array and uses string comparison by default. Numeric sorting needs an explicit comparator, and immutable code needs a copied array first."
+    }
   },
-  "incidentCard": {
-    "title": "Sort Trap Check",
-    "scenario": "A teammate sorts `[1, 2, 10]` with `arr.sort()` and also reuses that same array elsewhere assuming it stayed unchanged. Later they are surprised by both the order and the mutation. What is the better explanation?",
-    "options": [
-      {
-        "id": "sort-mutates-and-defaults-to-string-compare",
-        "label": "`Array.sort()` mutates the original array in place, and without a comparator it compares values as strings. For numeric sorting without side effects, clone first and use something like `(a, b) => a - b`."
-      },
-      {
-        "id": "sort-is-numeric-and-nonmutating",
-        "label": "`Array.sort()` is already numeric for number arrays and returns a new sorted copy, so the unexpected result usually comes from rendering stale state rather than the sort itself."
-      },
-      {
-        "id": "sort-only-mutates-objects-not-numbers",
-        "label": "`Array.sort()` mutates only when the array contains objects. For plain numbers it preserves the original array and only changes the returned value."
-      }
-    ],
-    "correctOptionId": "sort-mutates-and-defaults-to-string-compare",
-    "rereadPrompt": "Close. The key pitfalls are that `sort()` changes the original array and uses string comparison by default. Numeric sorting needs an explicit comparator, and immutable code needs a copied array first."
-  }
-},
   {
     "id": "js-mutability-vs-immutability",
     "title": "Mutability vs Immutability in JavaScript (State, References, and Side Effects)",
@@ -7126,32 +7126,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "Mutability vs immutability in JavaScript: what is the difference?",
-    "description": "Mutability allows changing existing objects, while immutability creates new values instead of modifying existing references."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Mutability vs immutability in JavaScript: what is the difference?",
+      "description": "Mutability allows changing existing objects, while immutability creates new values instead of modifying existing references."
+    },
+    "incidentCard": {
+      "title": "State Update Check",
+      "scenario": "A teammate updates a shared state object in place and says, \"The values changed, so the UI should notice.\" Later a component using reference checks does not re-render. What is the better explanation?",
+      "options": [
+        {
+          "id": "mutation-is-better-for-change-detection",
+          "label": "Mutating the existing object is better because frameworks compare field values deeply by default, so keeping the same reference reduces memory use without affecting updates."
+        },
+        {
+          "id": "const-prevents-mutation-bugs",
+          "label": "If the state variable was declared with `const`, JavaScript would block these mutation issues automatically, so the main fix is to stop reassigning state variables."
+        },
+        {
+          "id": "immutability-creates-new-references",
+          "label": "In-place mutation keeps the same object reference, so code that relies on reference equality may not detect a change. Immutable updates create a new object, which makes state transitions easier to detect and reason about."
+        }
+      ],
+      "correctOptionId": "immutability-creates-new-references",
+      "rereadPrompt": "Close. The key point is that immutability is about creating a new reference instead of changing the old object in place. That makes updates predictable and lets reference-based change detection work correctly."
+    }
   },
-  "incidentCard": {
-    "title": "State Update Check",
-    "scenario": "A teammate updates a shared state object in place and says, \"The values changed, so the UI should notice.\" Later a component using reference checks does not re-render. What is the better explanation?",
-    "options": [
-      {
-        "id": "immutability-creates-new-references",
-        "label": "In-place mutation keeps the same object reference, so code that relies on reference equality may not detect a change. Immutable updates create a new object, which makes state transitions easier to detect and reason about."
-      },
-      {
-        "id": "mutation-is-better-for-change-detection",
-        "label": "Mutating the existing object is better because frameworks compare field values deeply by default, so keeping the same reference reduces memory use without affecting updates."
-      },
-      {
-        "id": "const-prevents-mutation-bugs",
-        "label": "If the state variable was declared with `const`, JavaScript would block these mutation issues automatically, so the main fix is to stop reassigning state variables."
-      }
-    ],
-    "correctOptionId": "immutability-creates-new-references",
-    "rereadPrompt": "Close. The key point is that immutability is about creating a new reference instead of changing the old object in place. That makes updates predictable and lets reference-based change detection work correctly."
-  }
-},
   {
     "id": "js-secure-cors-handling",
     "title": "How would you securely handle CORS issues in a frontend application?",
@@ -7267,32 +7267,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-02-01",
-  "seo": {
-    "title": "How do you handle CORS securely in frontend apps?",
-    "description": "CORS must be handled by allowing trusted origins on the server, because browsers enforce cross-origin restrictions on frontend requests."
+    "updatedAt": "2026-02-01",
+    "seo": {
+      "title": "How do you handle CORS securely in frontend apps?",
+      "description": "CORS must be handled by allowing trusted origins on the server, because browsers enforce cross-origin restrictions on frontend requests."
+    },
+    "incidentCard": {
+      "title": "CORS Fix Check",
+      "scenario": "A teammate hits a CORS error when the frontend calls a third-party API. They say, \"Let's just use `mode: 'no-cors'` or add an `Access-Control-Allow-Origin` header from the browser.\" What is the better explanation?",
+      "options": [
+        {
+          "id": "frontend-can-set-cors-response-headers",
+          "label": "The frontend can usually solve CORS by sending `Access-Control-Allow-Origin` in the request headers, since the browser only checks whether that header exists somewhere in the exchange."
+        },
+        {
+          "id": "cors-must-be-allowed-by-server-or-proxy",
+          "label": "CORS is enforced by the browser, so the real fix must come from the API or a trusted backend proxy/BFF. The server has to allow the frontend origin and handle preflight correctly; the frontend alone cannot grant itself access."
+        },
+        {
+          "id": "no-cors-solves-most-cors-errors",
+          "label": "Using `mode: 'no-cors'` is the normal secure fix because it bypasses the browser restriction while still returning a readable response body to JavaScript."
+        }
+      ],
+      "correctOptionId": "cors-must-be-allowed-by-server-or-proxy",
+      "rereadPrompt": "Close. The important point is that CORS is a browser-enforced server policy. The API must explicitly allow the origin, or you need a same-origin proxy/BFF that makes the cross-origin call on the server side."
+    }
   },
-  "incidentCard": {
-    "title": "CORS Fix Check",
-    "scenario": "A teammate hits a CORS error when the frontend calls a third-party API. They say, \"Let's just use `mode: 'no-cors'` or add an `Access-Control-Allow-Origin` header from the browser.\" What is the better explanation?",
-    "options": [
-      {
-        "id": "cors-must-be-allowed-by-server-or-proxy",
-        "label": "CORS is enforced by the browser, so the real fix must come from the API or a trusted backend proxy/BFF. The server has to allow the frontend origin and handle preflight correctly; the frontend alone cannot grant itself access."
-      },
-      {
-        "id": "no-cors-solves-most-cors-errors",
-        "label": "Using `mode: 'no-cors'` is the normal secure fix because it bypasses the browser restriction while still returning a readable response body to JavaScript."
-      },
-      {
-        "id": "frontend-can-set-cors-response-headers",
-        "label": "The frontend can usually solve CORS by sending `Access-Control-Allow-Origin` in the request headers, since the browser only checks whether that header exists somewhere in the exchange."
-      }
-    ],
-    "correctOptionId": "cors-must-be-allowed-by-server-or-proxy",
-    "rereadPrompt": "Close. The important point is that CORS is a browser-enforced server policy. The API must explicitly allow the origin, or you need a same-origin proxy/BFF that makes the cross-origin call on the server side."
-  }
-},
   {
     "id": "content-delivery-caching-strategies-streaming",
     "title": "Streaming Platform Caching Architecture: CDN, HTTP Cache, and Frontend Delivery",
@@ -7433,32 +7433,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-02-16",
-  "seo": {
-    "title": "How does caching work in frontend content delivery?",
-    "description": "Frontend content delivery uses layered caching across browser, CDN edge, and origin to reduce latency and repeated network load."
+    "updatedAt": "2026-02-16",
+    "seo": {
+      "title": "How does caching work in frontend content delivery?",
+      "description": "Frontend content delivery uses layered caching across browser, CDN edge, and origin to reduce latency and repeated network load."
+    },
+    "incidentCard": {
+      "title": "Caching Strategy Check",
+      "scenario": "A streaming team wants faster startup times and lower origin load. One teammate suggests using the exact same long cache policy for everything, including versioned player assets, video segments, and personalized API responses. What is the better explanation?",
+      "options": [
+        {
+          "id": "only-service-worker-caching-matters",
+          "label": "The main decision is whether to cache in a service worker. CDN and HTTP cache rules are secondary, so once the app shell is cached locally, most content delivery concerns are effectively solved."
+        },
+        {
+          "id": "cache-policy-should-match-resource-type",
+          "label": "Different resource types need different cache strategies. Versioned static assets and media segments can be cached aggressively, while personalized or fast-changing API data should use shorter lifetimes, revalidation, or no-store depending on correctness needs."
+        },
+        {
+          "id": "one-long-ttl-is-best-for-all-content",
+          "label": "A single long TTL across all responses is the safest performance choice. If the content changes, the client can always refresh manually, so per-resource cache rules usually add unnecessary complexity."
+        }
+      ],
+      "correctOptionId": "cache-policy-should-match-resource-type",
+      "rereadPrompt": "Close. The key lesson is that caching strategy depends on the resource. Static versioned assets benefit from aggressive caching, but personalized or frequently changing data needs more careful freshness and invalidation rules."
+    }
   },
-  "incidentCard": {
-    "title": "Caching Strategy Check",
-    "scenario": "A streaming team wants faster startup times and lower origin load. One teammate suggests using the exact same long cache policy for everything, including versioned player assets, video segments, and personalized API responses. What is the better explanation?",
-    "options": [
-      {
-        "id": "cache-policy-should-match-resource-type",
-        "label": "Different resource types need different cache strategies. Versioned static assets and media segments can be cached aggressively, while personalized or fast-changing API data should use shorter lifetimes, revalidation, or no-store depending on correctness needs."
-      },
-      {
-        "id": "one-long-ttl-is-best-for-all-content",
-        "label": "A single long TTL across all responses is the safest performance choice. If the content changes, the client can always refresh manually, so per-resource cache rules usually add unnecessary complexity."
-      },
-      {
-        "id": "only-service-worker-caching-matters",
-        "label": "The main decision is whether to cache in a service worker. CDN and HTTP cache rules are secondary, so once the app shell is cached locally, most content delivery concerns are effectively solved."
-      }
-    ],
-    "correctOptionId": "cache-policy-should-match-resource-type",
-    "rereadPrompt": "Close. The key lesson is that caching strategy depends on the resource. Static versioned assets benefit from aggressive caching, but personalized or frequently changing data needs more careful freshness and invalidation rules."
-  }
-},
   {
     "id": "debounce-vs-throttle-search-input",
     "title": "Debounce vs Throttle in JavaScript: Which One Should You Use for Search Inputs?",
@@ -7548,32 +7548,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-30",
-  "seo": {
-    "title": "Debounce vs throttle for search input: what is the difference?",
-    "description": "Debounce waits until input activity pauses, while throttle limits calls to a fixed rate during continuous input."
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Debounce vs throttle for search input: what is the difference?",
+      "description": "Debounce waits until input activity pauses, while throttle limits calls to a fixed rate during continuous input."
+    },
+    "incidentCard": {
+      "title": "Search Input Choice Check",
+      "scenario": "A teammate wires a live search box to fire network requests while the user types and says, \"Let's throttle it every 200ms so we still keep sending updates regularly.\" Product only cares about the final query after the user pauses. What is the better explanation?",
+      "options": [
+        {
+          "id": "debounce-and-throttle-are-equivalent-here",
+          "label": "Debounce and throttle solve the same problem for search boxes, so the choice is mostly style. A 200ms value makes them behave almost identically."
+        },
+        {
+          "id": "debounce-fits-search-pause-behavior",
+          "label": "Debounce is usually the better fit for search input because it waits until typing pauses before sending one cleaner request. Throttle is more useful for continuous events like scroll or resize where regular updates matter."
+        },
+        {
+          "id": "throttle-is-best-for-all-user-input",
+          "label": "Throttle is the safest default for search because sending requests at a steady interval always gives a better user experience than waiting for typing to stop."
+        }
+      ],
+      "correctOptionId": "debounce-fits-search-pause-behavior",
+      "rereadPrompt": "Close. The key distinction is intent: debounce waits for the final pause in typing, while throttle keeps firing on a regular interval. Search inputs usually care more about the settled query than continuous updates."
+    }
   },
-  "incidentCard": {
-    "title": "Search Input Choice Check",
-    "scenario": "A teammate wires a live search box to fire network requests while the user types and says, \"Let's throttle it every 200ms so we still keep sending updates regularly.\" Product only cares about the final query after the user pauses. What is the better explanation?",
-    "options": [
-      {
-        "id": "debounce-fits-search-pause-behavior",
-        "label": "Debounce is usually the better fit for search input because it waits until typing pauses before sending one cleaner request. Throttle is more useful for continuous events like scroll or resize where regular updates matter."
-      },
-      {
-        "id": "throttle-is-best-for-all-user-input",
-        "label": "Throttle is the safest default for search because sending requests at a steady interval always gives a better user experience than waiting for typing to stop."
-      },
-      {
-        "id": "debounce-and-throttle-are-equivalent-here",
-        "label": "Debounce and throttle solve the same problem for search boxes, so the choice is mostly style. A 200ms value makes them behave almost identically."
-      }
-    ],
-    "correctOptionId": "debounce-fits-search-pause-behavior",
-    "rereadPrompt": "Close. The key distinction is intent: debounce waits for the final pause in typing, while throttle keeps firing on a regular interval. Search inputs usually care more about the settled query than continuous updates."
-  }
-},
   {
     "id": "js-map-vs-object",
     "title": "What’s the difference between a Map and a plain Object in JavaScript?",
@@ -7652,32 +7652,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-31",
-  "seo": {
-    "title": "Map vs Object in JavaScript: what is the difference?",
-    "description": "Map supports any key type and preserves insertion order reliably, while Object is mainly for keyed records with string or symbol keys."
+    "updatedAt": "2026-01-31",
+    "seo": {
+      "title": "Map vs Object in JavaScript: what is the difference?",
+      "description": "Map supports any key type and preserves insertion order reliably, while Object is mainly for keyed records with string or symbol keys."
+    },
+    "incidentCard": {
+      "title": "Key-Value Structure Check",
+      "scenario": "A teammate stores DOM elements as keys in a plain object and says, \"Objects and Maps are basically the same now.\" Later the keys collapse into awkward strings and iteration logic gets messy. What is the better explanation?",
+      "options": [
+        {
+          "id": "map-is-better-for-dynamic-keyed-collections",
+          "label": "Use `Map` for dynamic key-value collections, especially when keys are objects or when you need reliable iteration, `size`, and frequent inserts or deletes. Plain objects are better for fixed record-like data with known string keys."
+        },
+        {
+          "id": "object-and-map-behave-the-same",
+          "label": "Objects and Maps are interchangeable in modern JavaScript. The only meaningful difference is syntax preference, so object keys becoming strings usually means the debugger is displaying them incorrectly."
+        },
+        {
+          "id": "objects-are-better-for-all-key-types",
+          "label": "Plain objects are still the best choice for any key type because JavaScript automatically preserves object identity as a property key, while Maps mainly exist for older browser compatibility."
+        }
+      ],
+      "correctOptionId": "map-is-better-for-dynamic-keyed-collections",
+      "rereadPrompt": "Close. The key distinction is that `Map` is a real keyed collection and can use any value as a key, while plain objects are primarily for structured records with string or symbol keys."
+    }
   },
-  "incidentCard": {
-    "title": "Key-Value Structure Check",
-    "scenario": "A teammate stores DOM elements as keys in a plain object and says, \"Objects and Maps are basically the same now.\" Later the keys collapse into awkward strings and iteration logic gets messy. What is the better explanation?",
-    "options": [
-      {
-        "id": "map-is-better-for-dynamic-keyed-collections",
-        "label": "Use `Map` for dynamic key-value collections, especially when keys are objects or when you need reliable iteration, `size`, and frequent inserts or deletes. Plain objects are better for fixed record-like data with known string keys."
-      },
-      {
-        "id": "object-and-map-behave-the-same",
-        "label": "Objects and Maps are interchangeable in modern JavaScript. The only meaningful difference is syntax preference, so object keys becoming strings usually means the debugger is displaying them incorrectly."
-      },
-      {
-        "id": "objects-are-better-for-all-key-types",
-        "label": "Plain objects are still the best choice for any key type because JavaScript automatically preserves object identity as a property key, while Maps mainly exist for older browser compatibility."
-      }
-    ],
-    "correctOptionId": "map-is-better-for-dynamic-keyed-collections",
-    "rereadPrompt": "Close. The key distinction is that `Map` is a real keyed collection and can use any value as a key, while plain objects are primarily for structured records with string or symbol keys."
-  }
-},
   {
     "id": "js-map-set-get",
     "title": "What are Map and Set in JavaScript, and how does get() work?",
@@ -7777,32 +7777,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-03-02",
-  "seo": {
-    "title": "JavaScript Map and Set: set(), get(), has(), and Real Use Cases",
-    "description": "Understand Map and Set in JavaScript with practical examples of set/get/has, deduplication, key equality rules, and common interview pitfalls."
+    "updatedAt": "2026-03-02",
+    "seo": {
+      "title": "JavaScript Map and Set: set(), get(), has(), and Real Use Cases",
+      "description": "Understand Map and Set in JavaScript with practical examples of set/get/has, deduplication, key equality rules, and common interview pitfalls."
+    },
+    "incidentCard": {
+      "title": "Map Lookup Check",
+      "scenario": "A teammate stores feature settings in a `Map` and some valid entries are intentionally set to `undefined`. Later they write `if (settings.get(key) === undefined)` to decide whether the key is missing. What is the better explanation?",
+      "options": [
+        {
+          "id": "set-is-better-than-map-for-undefined-values",
+          "label": "If a value might be `undefined`, you should switch from `Map` to `Set`, because Sets can distinguish missing entries from stored values more clearly."
+        },
+        {
+          "id": "use-has-to-check-key-existence",
+          "label": "`map.get(key)` returns `undefined` both when the key is missing and when the stored value is actually `undefined`. If that distinction matters, you should pair `get()` with `has()`."
+        },
+        {
+          "id": "get-can-always-detect-missing-keys",
+          "label": "`get()` already tells you whether the key exists, so checking for `undefined` is enough. `has()` is only useful for performance, not correctness."
+        }
+      ],
+      "correctOptionId": "use-has-to-check-key-existence",
+      "rereadPrompt": "Close. The important detail is that `Map.get()` cannot by itself tell you whether `undefined` means \"missing key\" or \"stored value.\" Use `has()` when that difference matters."
+    }
   },
-  "incidentCard": {
-    "title": "Map Lookup Check",
-    "scenario": "A teammate stores feature settings in a `Map` and some valid entries are intentionally set to `undefined`. Later they write `if (settings.get(key) === undefined)` to decide whether the key is missing. What is the better explanation?",
-    "options": [
-      {
-        "id": "use-has-to-check-key-existence",
-        "label": "`map.get(key)` returns `undefined` both when the key is missing and when the stored value is actually `undefined`. If that distinction matters, you should pair `get()` with `has()`."
-      },
-      {
-        "id": "get-can-always-detect-missing-keys",
-        "label": "`get()` already tells you whether the key exists, so checking for `undefined` is enough. `has()` is only useful for performance, not correctness."
-      },
-      {
-        "id": "set-is-better-than-map-for-undefined-values",
-        "label": "If a value might be `undefined`, you should switch from `Map` to `Set`, because Sets can distinguish missing entries from stored values more clearly."
-      }
-    ],
-    "correctOptionId": "use-has-to-check-key-existence",
-    "rereadPrompt": "Close. The important detail is that `Map.get()` cannot by itself tell you whether `undefined` means \"missing key\" or \"stored value.\" Use `has()` when that difference matters."
-  }
-},
   {
     "id": "http-caching-basics",
     "title": "HTTP Caching in Frontend: Cache-Control, ETag, Last-Modified, and 304",
@@ -7938,32 +7938,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-02-16",
-  "seo": {
-    "title": "What are Cache-Control ETag Last-Modified and 304?",
-    "description": "Cache-Control defines caching policy, ETag and Last-Modified enable validation, and 304 means cached content is still valid."
+    "updatedAt": "2026-02-16",
+    "seo": {
+      "title": "What are Cache-Control ETag Last-Modified and 304?",
+      "description": "Cache-Control defines caching policy, ETag and Last-Modified enable validation, and 304 means cached content is still valid."
+    },
+    "incidentCard": {
+      "title": "HTTP Cache Policy Check",
+      "scenario": "A teammate wants to fix slow repeat visits by putting the same long cache TTL on everything, including HTML, product APIs, and user profile responses. They say, \"Caching is caching.\" What is the better explanation?",
+      "options": [
+        {
+          "id": "long-max-age-is-best-for-all-responses",
+          "label": "A long `max-age` is usually the safest default for every response type because the browser can always ignore the cache later if the data changes."
+        },
+        {
+          "id": "304-means-a-new-response-body-arrived",
+          "label": "The main goal is to force more 304 responses, since a 304 returns the updated body with less bandwidth than a normal 200 response."
+        },
+        {
+          "id": "cache-policy-depends-on-resource-and-freshness-needs",
+          "label": "HTTP caching depends on the resource. Versioned static assets can use long-lived immutable caching, mutable HTML or APIs often need revalidation with ETag or Last-Modified, and sensitive user data may require `private` or `no-store`."
+        }
+      ],
+      "correctOptionId": "cache-policy-depends-on-resource-and-freshness-needs",
+      "rereadPrompt": "Close. The key lesson is that HTTP caching is resource-specific: immutable assets, revalidated mutable content, and sensitive data should not all share the same policy."
+    }
   },
-  "incidentCard": {
-    "title": "HTTP Cache Policy Check",
-    "scenario": "A teammate wants to fix slow repeat visits by putting the same long cache TTL on everything, including HTML, product APIs, and user profile responses. They say, \"Caching is caching.\" What is the better explanation?",
-    "options": [
-      {
-        "id": "cache-policy-depends-on-resource-and-freshness-needs",
-        "label": "HTTP caching depends on the resource. Versioned static assets can use long-lived immutable caching, mutable HTML or APIs often need revalidation with ETag or Last-Modified, and sensitive user data may require `private` or `no-store`."
-      },
-      {
-        "id": "long-max-age-is-best-for-all-responses",
-        "label": "A long `max-age` is usually the safest default for every response type because the browser can always ignore the cache later if the data changes."
-      },
-      {
-        "id": "304-means-a-new-response-body-arrived",
-        "label": "The main goal is to force more 304 responses, since a 304 returns the updated body with less bandwidth than a normal 200 response."
-      }
-    ],
-    "correctOptionId": "cache-policy-depends-on-resource-and-freshness-needs",
-    "rereadPrompt": "Close. The key lesson is that HTTP caching is resource-specific: immutable assets, revalidated mutable content, and sensitive data should not all share the same policy."
-  }
-},
   {
     "id": "web-performance-optimize-load-time",
     "title": "How do you optimize a web page’s response or load time?",
@@ -8073,32 +8073,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-02-06",
-  "seo": {
-    "title": "How do you optimize web page load time?",
-    "description": "Optimize load time by reducing transfer size, removing render-blocking work, and caching assets so pages become interactive faster."
+    "updatedAt": "2026-02-06",
+    "seo": {
+      "title": "How do you optimize web page load time?",
+      "description": "Optimize load time by reducing transfer size, removing render-blocking work, and caching assets so pages become interactive faster."
+    },
+    "incidentCard": {
+      "title": "Load-Time Priority Check",
+      "scenario": "A product page is slow on first load. One teammate wants to start with tiny code micro-optimizations in a helper function, while another points out a heavy hero image, render-blocking CSS/JS, and no effective caching. What is the better explanation?",
+      "options": [
+        {
+          "id": "fix-the-critical-path-first",
+          "label": "Start with the biggest critical-path wins: reduce transfer size, unblock rendering, optimize key assets like the hero image, and set sensible caching. Small code-level tweaks matter later, but they are usually not the first fix for slow page loads."
+        },
+        {
+          "id": "micro-optimizations-should-come-first",
+          "label": "Begin with the smallest JavaScript functions because runtime efficiency is almost always the main reason pages load slowly, even before network and rendering costs are investigated."
+        },
+        {
+          "id": "load-time-is-mostly-about-more-hardware",
+          "label": "The main fix for slow loads is giving the server more CPU and memory. Frontend asset strategy, compression, and render-blocking resources usually have only minor impact compared with backend hardware."
+        }
+      ],
+      "correctOptionId": "fix-the-critical-path-first",
+      "rereadPrompt": "Close. The important point is prioritization: page-load performance usually improves fastest by reducing network cost, removing render blockers, and optimizing critical assets before chasing low-impact micro-optimizations."
+    }
   },
-  "incidentCard": {
-    "title": "Load-Time Priority Check",
-    "scenario": "A product page is slow on first load. One teammate wants to start with tiny code micro-optimizations in a helper function, while another points out a heavy hero image, render-blocking CSS/JS, and no effective caching. What is the better explanation?",
-    "options": [
-      {
-        "id": "fix-the-critical-path-first",
-        "label": "Start with the biggest critical-path wins: reduce transfer size, unblock rendering, optimize key assets like the hero image, and set sensible caching. Small code-level tweaks matter later, but they are usually not the first fix for slow page loads."
-      },
-      {
-        "id": "micro-optimizations-should-come-first",
-        "label": "Begin with the smallest JavaScript functions because runtime efficiency is almost always the main reason pages load slowly, even before network and rendering costs are investigated."
-      },
-      {
-        "id": "load-time-is-mostly-about-more-hardware",
-        "label": "The main fix for slow loads is giving the server more CPU and memory. Frontend asset strategy, compression, and render-blocking resources usually have only minor impact compared with backend hardware."
-      }
-    ],
-    "correctOptionId": "fix-the-critical-path-first",
-    "rereadPrompt": "Close. The important point is prioritization: page-load performance usually improves fastest by reducing network cost, removing render blockers, and optimizing critical assets before chasing low-impact micro-optimizations."
-  }
-},
   {
     "id": "js-repaint-reflow",
     "title": "What is the difference between reflow and repaint in browsers?",
@@ -8235,32 +8235,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-03-02",
-  "seo": {
-    "title": "Reflow vs Repaint in JavaScript: Browser Rendering Explained",
-    "description": "Understand reflow and repaint in browser rendering, what triggers layout recalculation, how layout thrashing occurs, and ways to improve UI performance."
+    "updatedAt": "2026-03-02",
+    "seo": {
+      "title": "Reflow vs Repaint in JavaScript: Browser Rendering Explained",
+      "description": "Understand reflow and repaint in browser rendering, what triggers layout recalculation, how layout thrashing occurs, and ways to improve UI performance."
+    },
+    "incidentCard": {
+      "title": "Layout Jank Check",
+      "scenario": "A teammate updates element widths in a loop and reads layout measurements right after each write. Typing in the UI starts to feel laggy, and they say, \"It is probably just repaint work.\" What is the better explanation?",
+      "options": [
+        {
+          "id": "repaint-and-reflow-are-basically-the-same",
+          "label": "Repaint and reflow are effectively the same browser step, so if the UI feels slow the real issue is usually just too many colors, shadows, or gradients on the page."
+        },
+        {
+          "id": "the-browser-always-batches-layout-perfectly",
+          "label": "Modern browsers automatically batch every DOM read and write, so doing measurement and style changes in the same loop should not create meaningful performance issues."
+        },
+        {
+          "id": "layout-changes-can-trigger-reflow-thrashing",
+          "label": "Changing geometry like width can trigger reflow, and mixing layout reads with writes can force repeated synchronous layout work. That kind of layout thrashing is usually more expensive than a simple repaint."
+        }
+      ],
+      "correctOptionId": "layout-changes-can-trigger-reflow-thrashing",
+      "rereadPrompt": "Close. The key point is that layout work is different from paint work. Geometry changes and forced layout reads can cause expensive reflow thrashing, so batching reads and writes matters."
+    }
   },
-  "incidentCard": {
-    "title": "Layout Jank Check",
-    "scenario": "A teammate updates element widths in a loop and reads layout measurements right after each write. Typing in the UI starts to feel laggy, and they say, \"It is probably just repaint work.\" What is the better explanation?",
-    "options": [
-      {
-        "id": "layout-changes-can-trigger-reflow-thrashing",
-        "label": "Changing geometry like width can trigger reflow, and mixing layout reads with writes can force repeated synchronous layout work. That kind of layout thrashing is usually more expensive than a simple repaint."
-      },
-      {
-        "id": "repaint-and-reflow-are-basically-the-same",
-        "label": "Repaint and reflow are effectively the same browser step, so if the UI feels slow the real issue is usually just too many colors, shadows, or gradients on the page."
-      },
-      {
-        "id": "the-browser-always-batches-layout-perfectly",
-        "label": "Modern browsers automatically batch every DOM read and write, so doing measurement and style changes in the same loop should not create meaningful performance issues."
-      }
-    ],
-    "correctOptionId": "layout-changes-can-trigger-reflow-thrashing",
-    "rereadPrompt": "Close. The key point is that layout work is different from paint work. Geometry changes and forced layout reads can cause expensive reflow thrashing, so batching reads and writes matters."
-  }
-},
   {
     "id": "js-current-trends",
     "title": "How do you evaluate modern JavaScript trends for production frontend apps?",
@@ -8405,32 +8405,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-02-16",
-  "seo": {
-    "title": "What are current JavaScript trends in production apps?",
-    "description": "Current JavaScript trends include TypeScript adoption, native ESM workflows, faster tooling, and performance-focused rendering patterns."
+    "updatedAt": "2026-02-16",
+    "seo": {
+      "title": "What are current JavaScript trends in production apps?",
+      "description": "Current JavaScript trends include TypeScript adoption, native ESM workflows, faster tooling, and performance-focused rendering patterns."
+    },
+    "incidentCard": {
+      "title": "Trend Evaluation Check",
+      "scenario": "A teammate wants to adopt a new JavaScript tool because \"everyone on social media is talking about it.\" There is no clear production problem, no target metric, and no rollback plan if it fails. What is the better explanation?",
+      "options": [
+        {
+          "id": "popularity-is-enough-to-adopt",
+          "label": "If enough teams are talking about a tool, that is usually enough evidence to adopt it quickly. Metrics and rollback plans matter more after the migration is already underway."
+        },
+        {
+          "id": "newer-tools-are-always-safer",
+          "label": "Modern JavaScript trends are almost always net improvements, so the main risk is falling behind. The best strategy is to upgrade first and validate business value later."
+        },
+        {
+          "id": "evaluate-trends-by-problem-metric-tradeoff",
+          "label": "A production trend should be evaluated by the problem it solves, the metric it is expected to improve, and the trade-offs it introduces. If you cannot name those clearly, it is probably hype rather than an engineering decision."
+        }
+      ],
+      "correctOptionId": "evaluate-trends-by-problem-metric-tradeoff",
+      "rereadPrompt": "Close. The key lesson is that good trend evaluation is evidence-based: connect the trend to a real problem, a measurable outcome, and explicit trade-offs before adopting it."
+    }
   },
-  "incidentCard": {
-    "title": "Trend Evaluation Check",
-    "scenario": "A teammate wants to adopt a new JavaScript tool because \"everyone on social media is talking about it.\" There is no clear production problem, no target metric, and no rollback plan if it fails. What is the better explanation?",
-    "options": [
-      {
-        "id": "evaluate-trends-by-problem-metric-tradeoff",
-        "label": "A production trend should be evaluated by the problem it solves, the metric it is expected to improve, and the trade-offs it introduces. If you cannot name those clearly, it is probably hype rather than an engineering decision."
-      },
-      {
-        "id": "popularity-is-enough-to-adopt",
-        "label": "If enough teams are talking about a tool, that is usually enough evidence to adopt it quickly. Metrics and rollback plans matter more after the migration is already underway."
-      },
-      {
-        "id": "newer-tools-are-always-safer",
-        "label": "Modern JavaScript trends are almost always net improvements, so the main risk is falling behind. The best strategy is to upgrade first and validate business value later."
-      }
-    ],
-    "correctOptionId": "evaluate-trends-by-problem-metric-tradeoff",
-    "rereadPrompt": "Close. The key lesson is that good trend evaluation is evidence-based: connect the trend to a real problem, a measurable outcome, and explicit trade-offs before adopting it."
-  }
-},
   {
     "id": "ai-streaming-data-handling",
     "title": "How should a front-end handle streaming data from an AI model?",
@@ -8499,32 +8499,32 @@
       ]
     },
     "access": "free",
-  "updatedAt": "2026-01-31",
-  "seo": {
-    "title": "How do you handle AI streaming responses in frontend?",
-    "description": "Handle AI streaming by rendering chunks incrementally, supporting cancellation, and preserving message state through partial and final outputs."
+    "updatedAt": "2026-01-31",
+    "seo": {
+      "title": "How do you handle AI streaming responses in frontend?",
+      "description": "Handle AI streaming by rendering chunks incrementally, supporting cancellation, and preserving message state through partial and final outputs."
+    },
+    "incidentCard": {
+      "title": "Streaming UI Check",
+      "scenario": "A teammate waits for the full AI response before rendering anything because it feels simpler. Another teammate wants to append chunks as they arrive, let the user cancel, and show an error state if the stream breaks halfway through. What is the better explanation?",
+      "options": [
+        {
+          "id": "stream-incrementally-with-cancel-and-error-handling",
+          "label": "A streaming UI should render partial output incrementally, support cancellation, and handle mid-stream failures cleanly. That gives faster feedback and avoids trapping the user behind a long-running request."
+        },
+        {
+          "id": "wait-for-complete-response-is-always-better",
+          "label": "Waiting for the full response is usually better because streaming adds visual noise. Cancellation and partial-state handling are unnecessary if the backend eventually returns the complete answer."
+        },
+        {
+          "id": "streaming-only-matters-for-websockets",
+          "label": "Incremental rendering is only useful with WebSockets. If the frontend uses fetch or SSE, it should treat the result like a normal full response and update the UI once at the end."
+        }
+      ],
+      "correctOptionId": "stream-incrementally-with-cancel-and-error-handling",
+      "rereadPrompt": "Close. The key idea is that streaming is a UX pattern, not just a transport detail. The frontend should show progress incrementally, manage partial state safely, and allow the user to stop or recover from failures."
+    }
   },
-  "incidentCard": {
-    "title": "Streaming UI Check",
-    "scenario": "A teammate waits for the full AI response before rendering anything because it feels simpler. Another teammate wants to append chunks as they arrive, let the user cancel, and show an error state if the stream breaks halfway through. What is the better explanation?",
-    "options": [
-      {
-        "id": "stream-incrementally-with-cancel-and-error-handling",
-        "label": "A streaming UI should render partial output incrementally, support cancellation, and handle mid-stream failures cleanly. That gives faster feedback and avoids trapping the user behind a long-running request."
-      },
-      {
-        "id": "wait-for-complete-response-is-always-better",
-        "label": "Waiting for the full response is usually better because streaming adds visual noise. Cancellation and partial-state handling are unnecessary if the backend eventually returns the complete answer."
-      },
-      {
-        "id": "streaming-only-matters-for-websockets",
-        "label": "Incremental rendering is only useful with WebSockets. If the frontend uses fetch or SSE, it should treat the result like a normal full response and update the UI once at the end."
-      }
-    ],
-    "correctOptionId": "stream-incrementally-with-cancel-and-error-handling",
-    "rereadPrompt": "Close. The key idea is that streaming is a UX pattern, not just a transport detail. The frontend should show progress incrementally, manage partial state safely, and allow the user to stop or recover from failures."
-  }
-},
   {
     "id": "chat-conversation-state-management",
     "title": "How would you maintain conversation state in a chat app like ChatGPT?",
@@ -8634,16 +8634,16 @@
       "scenario": "A chat app starts showing duplicate assistant text after a user sends a second prompt before the first streamed reply finishes. One teammate wants to keep appending chunks to whichever assistant message is last in the array. Another wants each request to create its own assistant placeholder, track the active request ID, and ignore chunks from older streams. Which explanation is better?",
       "options": [
         {
-          "id": "use-request-scoped-message-state",
-          "label": "Treat chat history as an ordered timeline with stable message IDs, explicit statuses, and request-scoped streaming. Create an assistant placeholder per request and discard stale chunks that do not match the active request."
-        },
-        {
           "id": "append-to-last-assistant-message",
           "label": "Always append new chunks to the last assistant message in the array. As long as messages stay visually sorted, you do not need separate request tracking or message lifecycle states."
         },
         {
           "id": "persist-every-message-immediately",
           "label": "The real fix is to persist every message to the backend as soon as a chunk arrives. Once storage is reliable, duplicate text and out-of-order stream updates stop being a frontend state problem."
+        },
+        {
+          "id": "use-request-scoped-message-state",
+          "label": "Treat chat history as an ordered timeline with stable message IDs, explicit statuses, and request-scoped streaming. Create an assistant placeholder per request and discard stale chunks that do not match the active request."
         }
       ],
       "correctOptionId": "use-request-scoped-message-state",
@@ -8805,16 +8805,16 @@
       "scenario": "A teammate wants to use WebSocket for an AI answer stream because 'real-time always means WebSocket.' Another teammate says the browser mostly just receives tokens from the server, so SSE is the better default unless the feature needs fast two-way messaging like collaborative cursors or multiplayer state sync. Which explanation is better?",
       "options": [
         {
-          "id": "choose-sse-for-one-way-streaming",
-          "label": "Use SSE when updates are mostly server to client, like AI token streams or notifications. It stays on normal HTTP, keeps the client simpler, and gives you built-in reconnect without full-duplex complexity."
-        },
-        {
           "id": "choose-websocket-for-any-realtime-ui",
           "label": "Use WebSocket for any product that feels real-time. If the UI updates live, full-duplex transport is always the safer default, even when the client rarely sends anything upstream."
         },
         {
           "id": "transport-choice-is-mostly-preference",
           "label": "Either transport is basically interchangeable as long as you add reconnect logic. The important decision is styling the chat well, not whether the stream is one-way or bidirectional."
+        },
+        {
+          "id": "choose-sse-for-one-way-streaming",
+          "label": "Use SSE when updates are mostly server to client, like AI token streams or notifications. It stays on normal HTTP, keeps the client simpler, and gives you built-in reconnect without full-duplex complexity."
         }
       ],
       "correctOptionId": "choose-sse-for-one-way-streaming",
@@ -9110,16 +9110,16 @@
       "scenario": "A team builds an AI feature where users paste anything into one large text box and send it directly to the model. Another teammate proposes breaking the UI into task, format, constraints, and context fields, trimming oversized context, and versioning the prompt template so output changes can be tracked over time. Which explanation is better?",
       "options": [
         {
-          "id": "treat-ui-controls-as-prompt-controls",
-          "label": "Treat the prompt as a generated artifact. Structured UI fields, bounded context, guardrails, and prompt versioning make outputs more consistent, easier to debug, and safer in production."
-        },
-        {
           "id": "keep-one-freeform-box-for-creativity",
           "label": "A single freeform text area is usually better because structure gets in the user's way. If the model is strong enough, prompt quality should not depend much on frontend controls or template versioning."
         },
         {
           "id": "focus-on-backend-only",
           "label": "Prompt engineering is mostly a backend concern. The frontend should just collect raw text and let the model figure out the task, format, and safety boundaries on its own."
+        },
+        {
+          "id": "treat-ui-controls-as-prompt-controls",
+          "label": "Treat the prompt as a generated artifact. Structured UI fields, bounded context, guardrails, and prompt versioning make outputs more consistent, easier to debug, and safer in production."
         }
       ],
       "correctOptionId": "treat-ui-controls-as-prompt-controls",
@@ -9209,16 +9209,16 @@
       "scenario": "A teammate is building a job runner for image uploads. Jobs should be processed in the same order users submitted them, but the current code uses `push()` and `pop()`. Another teammate says this needs queue semantics instead, and that using `shift()` on a large array can become a performance problem unless you keep a head index or use two stacks. Which explanation is better?",
       "options": [
         {
+          "id": "array-shift-is-fine-for-all-queues",
+          "label": "Use queue semantics, but the simplest production approach is always `push()` and `shift()`. JavaScript engines optimize `shift()` enough that queue performance does not matter in practice."
+        },
+        {
           "id": "use-queue-for-fifo-processing",
           "label": "Use a queue because uploads should run first-in, first-out. If performance matters, implement dequeue with a head index or two stacks instead of relying on `Array.shift()`."
         },
         {
           "id": "use-stack-because-push-pop-are-fast",
           "label": "Keep the stack because `push()` and `pop()` are O(1). The newest upload should naturally run first, and order is not a real queue concern if all jobs finish eventually."
-        },
-        {
-          "id": "array-shift-is-fine-for-all-queues",
-          "label": "Use queue semantics, but the simplest production approach is always `push()` and `shift()`. JavaScript engines optimize `shift()` enough that queue performance does not matter in practice."
         }
       ],
       "correctOptionId": "use-queue-for-fifo-processing",
@@ -9700,16 +9700,16 @@
       "scenario": "A team is adding user bios. For the plain profile header, the product only needs text. For the long-form editor, the product wants to allow a small subset of rich text like links and bold tags. One teammate says to sanitize everything and always inject with `innerHTML`. Another says plain text should be escaped through safe text APIs, and sanitizing should be reserved for places where limited markup is intentionally allowed. Which explanation is better?",
       "options": [
         {
-          "id": "escape-text-sanitize-allowed-html",
-          "label": "Use escaping or safe text APIs like `textContent` for plain text, because the browser should treat the value as text. Only sanitize when the feature intentionally allows some HTML, and then apply an allowlist-based sanitizer before rendering."
-        },
-        {
           "id": "sanitize-everything-with-innerhtml",
           "label": "Sanitize all user content once and always render it with `innerHTML`. That way you only need one security rule, and escaping becomes unnecessary because the sanitizer already handled everything."
         },
         {
           "id": "strip-tags-with-regex-first",
           "label": "The simplest fix is to remove angle brackets with a regex before rendering. If most tags are gone, escaping and sanitizing become mostly interchangeable from a security standpoint."
+        },
+        {
+          "id": "escape-text-sanitize-allowed-html",
+          "label": "Use escaping or safe text APIs like `textContent` for plain text, because the browser should treat the value as text. Only sanitize when the feature intentionally allows some HTML, and then apply an allowlist-based sanitizer before rendering."
         }
       ],
       "correctOptionId": "escape-text-sanitize-allowed-html",
@@ -9858,16 +9858,16 @@
       "scenario": "A page reads `q` from the URL and shows it in a results header. One teammate suggests assigning the value to `innerHTML` because it is quick and 'the server already escaped things somewhere.' Another teammate says the client should still treat URL data as untrusted, render plain text with a safe API like `textContent`, and validate structured values such as links before putting them into DOM sinks. Which explanation is better?",
       "options": [
         {
+          "id": "single-sanitizer-call-solves-all-sinks",
+          "label": "The main rule is to run every string through one sanitizer helper before any DOM write. After that, sink choice does not matter much because the helper already neutralized the dangerous content."
+        },
+        {
           "id": "prefer-safe-sinks-and-validate-structured-inputs",
           "label": "Treat client-side sources like URL params as untrusted. Use safe sinks such as `textContent` for text, and validate structured values like URLs before assigning them to attributes like `href`."
         },
         {
           "id": "innerhtml-is-fine-if-server-escaped-once",
           "label": "Using `innerHTML` is acceptable here because the value originally came through server-side escaping. Once a string has been cleaned earlier in the stack, the client can reuse it in any DOM sink without extra checks."
-        },
-        {
-          "id": "single-sanitizer-call-solves-all-sinks",
-          "label": "The main rule is to run every string through one sanitizer helper before any DOM write. After that, sink choice does not matter much because the helper already neutralized the dangerous content."
         }
       ],
       "correctOptionId": "prefer-safe-sinks-and-validate-structured-inputs",
@@ -10317,16 +10317,16 @@
       "scenario": "A modal opens and closes many times during a session. After a while the tab gets slower and memory keeps climbing. One teammate blames the garbage collector for 'not freeing things fast enough.' Another says the likely issue is that listeners, timers, or other references still point at modal state after close, so the objects remain reachable and never become collectible. Which explanation is better?",
       "options": [
         {
+          "id": "one-heap-snapshot-is-enough-proof",
+          "label": "Take one heap snapshot after memory grows and look at the largest object. If the snapshot looks big once, that is enough to prove a leak without repeating the interaction or checking retaining paths."
+        },
+        {
           "id": "look-for-retained-references-and-missing-cleanup",
           "label": "Treat it as a retention bug first. Event listeners, intervals, subscriptions, detached DOM references, or unbounded caches can keep modal state reachable, so the fix is explicit cleanup plus snapshot comparison and retainers analysis."
         },
         {
           "id": "garbage-collector-is-usually-the-problem",
           "label": "This is mainly a garbage-collector timing issue. If the GC does not reclaim memory quickly enough, the safest fix is usually to force more collections or wait longer between modal opens."
-        },
-        {
-          "id": "one-heap-snapshot-is-enough-proof",
-          "label": "Take one heap snapshot after memory grows and look at the largest object. If the snapshot looks big once, that is enough to prove a leak without repeating the interaction or checking retaining paths."
         }
       ],
       "correctOptionId": "look-for-retained-references-and-missing-cleanup",
@@ -10603,16 +10603,16 @@
       "scenario": "A team imports one helper from a shared package, but the production bundle still pulls in almost the whole library. One teammate says tree-shaking should remove unused code automatically no matter how the package is built. Another teammate says tree-shaking works best when the package uses static ESM exports, avoids hidden side effects, and marks side effects accurately so the bundler can safely drop unused modules. Which explanation is better?",
       "options": [
         {
-          "id": "esm-and-side-effect-rules-enable-tree-shaking",
-          "label": "Tree-shaking depends on static ESM structure and trustworthy side-effect information. If code is CommonJS, dynamically imported, or has side effects the bundler cannot safely ignore, unused pieces often stay in the bundle."
-        },
-        {
           "id": "bundlers-always-remove-unused-code",
           "label": "Modern bundlers are smart enough to remove unused code in almost any module format. If the app imports only one helper, tree-shaking should work even if the package relies on CommonJS or side-effectful barrel files."
         },
         {
           "id": "only-minification-matters-for-bundle-size",
           "label": "Tree-shaking is a minor detail compared with minification. As long as the build is minified, module format and side-effect metadata do not meaningfully change how much dead code stays in the output."
+        },
+        {
+          "id": "esm-and-side-effect-rules-enable-tree-shaking",
+          "label": "Tree-shaking depends on static ESM structure and trustworthy side-effect information. If code is CommonJS, dynamically imported, or has side effects the bundler cannot safely ignore, unused pieces often stay in the bundle."
         }
       ],
       "correctOptionId": "esm-and-side-effect-rules-enable-tree-shaking",
@@ -10761,16 +10761,16 @@
       "scenario": "A booking screen shows the wrong local time for some users after a daylight-saving change. One teammate wants to keep subtracting a fixed hour offset because 'the business is always UTC-5 anyway.' Another teammate says timestamps should stay in UTC, and the UI should format them with `Intl.DateTimeFormat` plus an explicit IANA zone like `America/New_York` or the user's real zone. Which explanation is better?",
       "options": [
         {
-          "id": "store-utc-format-with-intl-and-iana-zone",
-          "label": "Keep the source-of-truth timestamp in UTC and format for display with `Intl.DateTimeFormat` using an explicit IANA time zone. That handles locale rules and daylight-saving transitions without fragile manual offset math."
-        },
-        {
           "id": "fixed-offset-is-good-enough",
           "label": "Use a fixed offset like UTC-5 or UTC-8 because business time usually does not move enough to justify a full time-zone solution. Manual offset math is simpler and should be stable as long as the region does not change often."
         },
         {
           "id": "store-local-display-strings-directly",
           "label": "Save the already formatted local time string in storage and reuse it later. If the exact displayed string is preserved, you avoid timezone conversion bugs because the frontend no longer needs to calculate anything."
+        },
+        {
+          "id": "store-utc-format-with-intl-and-iana-zone",
+          "label": "Keep the source-of-truth timestamp in UTC and format for display with `Intl.DateTimeFormat` using an explicit IANA time zone. That handles locale rules and daylight-saving transitions without fragile manual offset math."
         }
       ],
       "correctOptionId": "store-utc-format-with-intl-and-iana-zone",
@@ -10865,16 +10865,16 @@
       "scenario": "You are unit-testing a function that calls an HTTP helper and returns parsed users. One teammate wants to mock every internal call and assert the exact implementation steps. Another says to inject the HTTP helper, stub its response so the test stays deterministic, and optionally spy on the call boundary only if the request URL or retry behavior is part of the contract. Which explanation is better?",
       "options": [
         {
+          "id": "never-use-spies-or-stubs",
+          "label": "Avoid spies and stubs because they hide real behavior. Unit tests should call the actual network helper whenever possible so the test proves the whole flow works from end to end."
+        },
+        {
           "id": "prefer-stub-inputs-and-spy-on-boundaries",
           "label": "Prefer dependency injection, stub the external dependency to control inputs, and spy only on meaningful boundary interactions. Focus assertions on outputs first so tests stay useful without becoming brittle."
         },
         {
           "id": "mock-every-internal-step",
           "label": "Mock everything inside the function and assert the full sequence of internal calls. The more implementation detail a unit test locks down, the more confidence you get when refactoring."
-        },
-        {
-          "id": "never-use-spies-or-stubs",
-          "label": "Avoid spies and stubs because they hide real behavior. Unit tests should call the actual network helper whenever possible so the test proves the whole flow works from end to end."
         }
       ],
       "correctOptionId": "prefer-stub-inputs-and-spy-on-boundaries",
@@ -11000,16 +11000,16 @@
       "scenario": "A feed feels smooth at first, but after a few minutes of scrolling it starts stuttering. One teammate says garbage collection is automatic, so the slowdown must be somewhere else. Another says heavy allocation churn or retained objects can increase memory pressure, trigger more GC work, and show up as frame drops, so the right move is to profile both performance and memory before changing code. Which explanation is better?",
       "options": [
         {
-          "id": "profile-allocation-churn-and-retained-objects",
-          "label": "Treat GC-related jank as a signal of allocation patterns or retained references. Record a Performance trace for GC markers, inspect Memory snapshots and retainers, then reduce hot-path allocations and clean up references that should no longer stay reachable."
-        },
-        {
           "id": "gc-is-automatic-so-ignore-it",
           "label": "Ignore garbage collection because it is fully automatic. If the browser owns memory management, GC cannot meaningfully contribute to UI jank, so performance work should focus only on rendering and networking."
         },
         {
           "id": "take-one-snapshot-and-stop",
           "label": "Open the Memory panel once, take a single snapshot, and look for a big number. If heap usage seems high in that moment, you already know the cause, so repeated traces or before-and-after comparisons are unnecessary."
+        },
+        {
+          "id": "profile-allocation-churn-and-retained-objects",
+          "label": "Treat GC-related jank as a signal of allocation patterns or retained references. Record a Performance trace for GC markers, inspect Memory snapshots and retainers, then reduce hot-path allocations and clean up references that should no longer stay reachable."
         }
       ],
       "correctOptionId": "profile-allocation-churn-and-retained-objects",

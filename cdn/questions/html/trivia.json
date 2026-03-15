@@ -108,16 +108,16 @@
       "scenario": "A teammate says, \"The DOM is basically just the raw HTML file sitting in the browser. JavaScript mostly searches that text and swaps pieces out.\" Another teammate says, \"Not really. The browser parses the HTML into an in-memory tree of nodes, and JavaScript works with that object model to read or change the page.\" Which explanation is better?",
       "options": [
         {
-          "id": "dom-is-in-memory-node-tree",
-          "label": "The second explanation is better. The DOM is an in-memory tree of document, element, text, and attribute nodes. JavaScript uses APIs like `document.querySelector` to work with that structure, not with the raw HTML text file itself."
-        },
-        {
           "id": "dom-is-html-string-search",
           "label": "The first explanation is better. The DOM is mostly a plain-text copy of the HTML source, so DOM APIs are basically convenience wrappers around string search and replace."
         },
         {
           "id": "dom-is-css-render-layer",
           "label": "The better explanation is that the DOM is mainly the browser's styling layer. HTML provides content, CSS creates the DOM, and JavaScript only tweaks styles after that."
+        },
+        {
+          "id": "dom-is-in-memory-node-tree",
+          "label": "The second explanation is better. The DOM is an in-memory tree of document, element, text, and attribute nodes. JavaScript uses APIs like `document.querySelector` to work with that structure, not with the raw HTML text file itself."
         }
       ],
       "correctOptionId": "dom-is-in-memory-node-tree",
@@ -225,16 +225,16 @@
       "scenario": "A teammate builds a blog card entirely with nested `div`s and says, \"Tags are mostly visual anyway. We can style any element to look the same, so semantics do not really matter.\" Another teammate says, \"The browser may render them similarly, but tags still communicate meaning to assistive tech, crawlers, and other developers. Choosing `article`, headings, paragraphs, and links makes the page easier to understand and maintain.\" Which explanation is better?",
       "options": [
         {
+          "id": "semantics-only-matter-for-seo-tools",
+          "label": "The better explanation is that semantic tags mainly help SEO tools. For accessibility, maintainability, and browser understanding, there is not much practical difference between semantic tags and generic `div`s."
+        },
+        {
           "id": "semantic-tags-communicate-meaning",
           "label": "The second explanation is better. HTML tags define structure and meaning, not just appearance. Semantic tags make the document easier for browsers, screen readers, search engines, and teammates to understand."
         },
         {
           "id": "all-tags-are-interchangeable-if-styled",
           "label": "The first explanation is better. Since CSS can make different tags look identical, the browser does not really care which tags you use as long as the layout appears correct."
-        },
-        {
-          "id": "semantics-only-matter-for-seo-tools",
-          "label": "The better explanation is that semantic tags mainly help SEO tools. For accessibility, maintainability, and browser understanding, there is not much practical difference between semantic tags and generic `div`s."
         }
       ],
       "correctOptionId": "semantic-tags-communicate-meaning",
@@ -479,16 +479,16 @@
       "scenario": "A teammate wants to highlight one word inside a paragraph and wraps it in a `div`, saying, \"`div` and `span` are both generic containers, so it does not really matter which one we use.\" Another teammate says, \"It does matter here. `span` is meant for inline content that should stay in the text flow, while `div` is a block-level container that can change layout behavior.\" Which explanation is better?",
       "options": [
         {
+          "id": "always-use-div-unless-semantics-needed",
+          "label": "The better explanation is that `div` should be the default generic container everywhere, and `span` is only useful when you need special semantic meaning inside text."
+        },
+        {
           "id": "span-for-inline-div-for-block",
           "label": "The second explanation is better. `span` is the right fit for small inline text-level targeting, while `div` is a block-level wrapper used for larger grouped sections and layout containers."
         },
         {
           "id": "div-and-span-are-practically-identical",
           "label": "The first explanation is better. Because both elements are generic and non-semantic, browsers treat them almost the same by default, so choosing one over the other rarely affects layout."
-        },
-        {
-          "id": "always-use-div-unless-semantics-needed",
-          "label": "The better explanation is that `div` should be the default generic container everywhere, and `span` is only useful when you need special semantic meaning inside text."
         }
       ],
       "correctOptionId": "span-for-inline-div-for-block",
@@ -604,16 +604,16 @@
       "scenario": "A teammate leaves `<title>Home</title>` on dozens of pages and says, \"The title tag is minor. Users already see the page heading, so the browser tab text and search result label are not a big deal.\" Another teammate says, \"That is a real problem. The title tag helps users identify tabs, bookmarks, and history entries, and search engines often use it as the result headline. Each page should have a clear, specific title.\" Which explanation is better?",
       "options": [
         {
-          "id": "title-helps-tabs-and-search",
-          "label": "The second explanation is better. The `<title>` tag is high-impact metadata: it helps users scan tabs and saved pages, and it often shapes the search result headline, so page titles should be unique and intent-focused."
-        },
-        {
           "id": "title-is-mostly-decorative",
           "label": "The first explanation is better. The `<title>` tag is mostly decorative because visible page content already tells users where they are, so repeating generic titles across pages is usually fine."
         },
         {
           "id": "title-only-matters-for-bookmarks",
           "label": "The better explanation is that `<title>` mainly matters for bookmarks. It has very little effect on tab clarity or discoverability, so using a generic title is not a meaningful product issue."
+        },
+        {
+          "id": "title-helps-tabs-and-search",
+          "label": "The second explanation is better. The `<title>` tag is high-impact metadata: it helps users scan tabs and saved pages, and it often shapes the search result headline, so page titles should be unique and intent-focused."
         }
       ],
       "correctOptionId": "title-helps-tabs-and-search",
@@ -1064,16 +1064,16 @@
       "scenario": "A teammate stacks several `<br>` tags between sections to create vertical spacing and says, \"A break tag is the quickest layout tool for pushing content down.\" Another teammate says, \"That is the wrong use. `<br>` is for meaningful line breaks inside text, like addresses or poems. If you want spacing between sections, use proper block elements and CSS instead.\" Which explanation is better?",
       "options": [
         {
+          "id": "br-should-replace-paragraphs-when-lines-are-short",
+          "label": "The better explanation is that `<br>` should usually replace paragraphs whenever content is short, because paragraphs add too much structure for simple text."
+        },
+        {
           "id": "br-is-for-text-line-breaks-not-layout",
           "label": "The second explanation is better. `<br>` is meant for line breaks within the same text block, not for layout spacing. Section spacing should come from semantic HTML structure and CSS."
         },
         {
           "id": "br-is-a-lightweight-spacing-tool",
           "label": "The first explanation is better. Since `<br>` just creates vertical movement, it is a cleaner and simpler spacing tool than adding margins or extra structural elements."
-        },
-        {
-          "id": "br-should-replace-paragraphs-when-lines-are-short",
-          "label": "The better explanation is that `<br>` should usually replace paragraphs whenever content is short, because paragraphs add too much structure for simple text."
         }
       ],
       "correctOptionId": "br-is-for-text-line-breaks-not-layout",
@@ -1178,16 +1178,16 @@
       "scenario": "A teammate wires the sidebar with plain `div`s and click handlers, saying, \"An anchor tag is basically just a styling choice. If JavaScript can navigate, we do not need real links.\" Another teammate says, \"If the element performs navigation, `<a>` is the right primitive because it carries link semantics, supports browser behaviors like open-in-new-tab and history, and uses `href` as the destination.\" Which explanation is better?",
       "options": [
         {
-          "id": "anchors-are-for-real-navigation",
-          "label": "The second explanation is better. `<a>` is the correct element for navigation because it provides built-in link semantics and browser behavior, while `href` tells the browser where to go."
-        },
-        {
           "id": "anchors-are-optional-when-js-exists",
           "label": "The first explanation is better. Once JavaScript can change routes, anchor tags become optional, so using generic containers for navigation is functionally the same."
         },
         {
           "id": "anchors-only-matter-for-external-sites",
           "label": "The better explanation is that `<a>` tags are mainly for external links. For internal navigation or section jumps, generic elements with click handlers are usually just as correct."
+        },
+        {
+          "id": "anchors-are-for-real-navigation",
+          "label": "The second explanation is better. `<a>` is the correct element for navigation because it provides built-in link semantics and browser behavior, while `href` tells the browser where to go."
         }
       ],
       "correctOptionId": "anchors-are-for-real-navigation",
@@ -1291,16 +1291,16 @@
       "scenario": "A teammate says, \"The anchor tag already tells the browser this is a link. The `href` value is optional detail, so we can add click handlers later and still consider it a proper hyperlink.\" Another teammate says, \"That misses the core role of `href`. It is the destination reference that tells the browser where the link or resource points. Without it, you lose the real navigation target and a lot of expected browser behavior.\" Which explanation is better?",
       "options": [
         {
-          "id": "href-defines-the-destination",
-          "label": "The second explanation is better. `href` is the destination reference for links and related elements. It is what tells the browser where to navigate or which resource to load."
-        },
-        {
           "id": "href-is-optional-decoration",
           "label": "The first explanation is better. `href` mostly decorates an existing link element, so it is fine to treat it as optional and rely on JavaScript for the real destination."
         },
         {
           "id": "href-only-matters-on-external-links",
           "label": "The better explanation is that `href` only really matters for external URLs. For internal links, fragments, and linked resources like stylesheets, it is not a core requirement."
+        },
+        {
+          "id": "href-defines-the-destination",
+          "label": "The second explanation is better. `href` is the destination reference for links and related elements. It is what tells the browser where to navigate or which resource to load."
         }
       ],
       "correctOptionId": "href-defines-the-destination",
@@ -1560,16 +1560,16 @@
       "scenario": "A teammate uses a plain bullet list for a three-step checkout flow and says, \"All list tags are basically interchangeable. We can style any of them however we want, so choosing `ol`, `ul`, or `dl` is not a meaningful semantic decision.\" Another teammate says, \"The tag still matters. `ol` is for sequences where order matters, `ul` is for grouped items without sequence, and `dl` is for term-definition style relationships.\" Which explanation is better?",
       "options": [
         {
-          "id": "choose-list-based-on-meaning",
-          "label": "The second explanation is better. The right list element depends on the relationship between the items: ordered steps use `ol`, unordered groups use `ul`, and term-definition pairs use `dl`."
-        },
-        {
           "id": "all-list-tags-are-semantically-the-same",
           "label": "The first explanation is better. Since CSS can change bullets and numbering, list tags are mostly visual shells and do not carry important meaning for browsers or assistive tech."
         },
         {
           "id": "dl-is-a-flexible-replacement-for-most-lists",
           "label": "The better explanation is that `dl` is the safest general-purpose list because it is flexible enough to represent steps, grouped items, and glossary terms all at once."
+        },
+        {
+          "id": "choose-list-based-on-meaning",
+          "label": "The second explanation is better. The right list element depends on the relationship between the items: ordered steps use `ol`, unordered groups use `ul`, and term-definition pairs use `dl`."
         }
       ],
       "correctOptionId": "choose-list-based-on-meaning",
@@ -1777,28 +1777,28 @@
       "post",
       "http"
     ],
-  "updatedAt": "2026-01-30",
-  "incidentCard": {
-    "title": "Default Method Check",
-    "scenario": "A teammate builds a login form without a `method` attribute and says, \"Forms naturally submit securely unless we explicitly switch them to GET.\" Another teammate says, \"That is backwards. If you do not set a method, the browser defaults to GET, which puts the form data in the URL. For sensitive actions like login, you should explicitly use POST.\" Which explanation is better?",
-    "options": [
-      {
-        "id": "forms-default-to-get",
-        "label": "The second explanation is better. HTML forms default to GET when no `method` is specified, so sensitive submissions should explicitly use `method=\"post\"` instead of relying on the default."
-      },
-      {
-        "id": "forms-default-to-post",
-        "label": "The first explanation is better. Browsers default form submissions to POST for safety, and GET only happens when developers explicitly request it."
-      },
-      {
-        "id": "default-method-depends-on-input-types",
-        "label": "The better explanation is that the browser chooses GET or POST automatically based on the form fields, so there is no real universal default method to remember."
-      }
-    ],
-    "correctOptionId": "forms-default-to-get",
-    "rereadPrompt": "Re-read the overview and comparison. The default form method is GET, which appends values to the URL. Use POST explicitly when the submission is sensitive or should not be exposed in the address bar."
-  },
-  "seo": {
+    "updatedAt": "2026-01-30",
+    "incidentCard": {
+      "title": "Default Method Check",
+      "scenario": "A teammate builds a login form without a `method` attribute and says, \"Forms naturally submit securely unless we explicitly switch them to GET.\" Another teammate says, \"That is backwards. If you do not set a method, the browser defaults to GET, which puts the form data in the URL. For sensitive actions like login, you should explicitly use POST.\" Which explanation is better?",
+      "options": [
+        {
+          "id": "default-method-depends-on-input-types",
+          "label": "The better explanation is that the browser chooses GET or POST automatically based on the form fields, so there is no real universal default method to remember."
+        },
+        {
+          "id": "forms-default-to-get",
+          "label": "The second explanation is better. HTML forms default to GET when no `method` is specified, so sensitive submissions should explicitly use `method=\"post\"` instead of relying on the default."
+        },
+        {
+          "id": "forms-default-to-post",
+          "label": "The first explanation is better. Browsers default form submissions to POST for safety, and GET only happens when developers explicitly request it."
+        }
+      ],
+      "correctOptionId": "forms-default-to-get",
+      "rereadPrompt": "Re-read the overview and comparison. The default form method is GET, which appends values to the URL. Use POST explicitly when the submission is sensitive or should not be exposed in the address bar."
+    },
+    "seo": {
       "title": "What is the default form method in HTML?",
       "description": "The default HTML form method is GET when no method attribute is specified."
     }
@@ -1892,16 +1892,16 @@
       "scenario": "A teammate removes visible labels from a signup form and says, \"The placeholder already tells people what to type, so labels are redundant.\" Another teammate says, \"That is a UX and accessibility mistake. A placeholder is only a temporary hint inside the input, but a real label is still needed because the placeholder disappears as soon as the user starts typing.\" Which explanation is better?",
       "options": [
         {
+          "id": "placeholder-is-mainly-for-validation",
+          "label": "The better explanation is that placeholders are mostly there for validation rules, so whether a field has a label matters less than having the right placeholder text."
+        },
+        {
           "id": "placeholder-is-only-a-temporary-hint",
           "label": "The second explanation is better. The `placeholder` attribute is just a short hint or example, and it should not replace a visible label because it disappears once the user types."
         },
         {
           "id": "placeholder-can-replace-labels",
           "label": "The first explanation is better. Since placeholders already describe the expected value, they are usually enough on their own and can safely replace labels in most forms."
-        },
-        {
-          "id": "placeholder-is-mainly-for-validation",
-          "label": "The better explanation is that placeholders are mostly there for validation rules, so whether a field has a label matters less than having the right placeholder text."
         }
       ],
       "correctOptionId": "placeholder-is-only-a-temporary-hint",
@@ -2004,16 +2004,16 @@
       "scenario": "A teammate gives the same `id=\"card\"` to twelve product cards and says, \"`id` and `class` are basically interchangeable. We can style and script them the same way, so reusing an id is not a real problem.\" Another teammate says, \"That breaks the meaning of `id`. An id should uniquely identify one element, while a class is what you reuse across many elements for shared styling or behavior.\" Which explanation is better?",
       "options": [
         {
+          "id": "class-should-only-be-used-for-javascript",
+          "label": "The better explanation is that `class` is mainly a JavaScript hook, while `id` should be the default choice for most CSS styling because it is more specific."
+        },
+        {
           "id": "id-is-unique-class-is-reusable",
           "label": "The second explanation is better. `id` is for one unique element on the page, while `class` is meant for grouping multiple elements that share styling or behavior."
         },
         {
           "id": "id-and-class-are-practically-the-same",
           "label": "The first explanation is better. The difference between `id` and `class` is mostly selector syntax, so reusing either one across many elements is usually fine."
-        },
-        {
-          "id": "class-should-only-be-used-for-javascript",
-          "label": "The better explanation is that `class` is mainly a JavaScript hook, while `id` should be the default choice for most CSS styling because it is more specific."
         }
       ],
       "correctOptionId": "id-is-unique-class-is-reusable",
@@ -2137,16 +2137,16 @@
       "scenario": "A teammate says, \"An iframe is just a visual embed box. If it loads, we are done. Accessibility titles, sandboxing, and source trust are extra details we can ignore for now.\" Another teammate says, \"That is risky. An iframe embeds another browsing context, so you need to think about what source you are loading, give it a useful `title`, and restrict it with attributes like `sandbox` when appropriate.\" Which explanation is better?",
       "options": [
         {
-          "id": "iframe-needs-purpose-and-safety-controls",
-          "label": "The second explanation is better. An `iframe` is useful for embedding pages, videos, or maps, but it also introduces accessibility, security, and performance concerns, so attributes like `title`, `sandbox`, and `loading` matter."
-        },
-        {
           "id": "iframe-is-only-a-visual-container",
           "label": "The first explanation is better. Once the embedded page renders, the iframe is basically just a box on the screen, so accessibility labels and permission restrictions are usually optional cleanup work."
         },
         {
           "id": "iframe-is-safe-as-long-as-it-is-hidden",
           "label": "The better explanation is that iframes only become risky when users interact with them directly, so hidden or passive embeds do not need much thought beyond width and height."
+        },
+        {
+          "id": "iframe-needs-purpose-and-safety-controls",
+          "label": "The second explanation is better. An `iframe` is useful for embedding pages, videos, or maps, but it also introduces accessibility, security, and performance concerns, so attributes like `title`, `sandbox`, and `loading` matter."
         }
       ],
       "correctOptionId": "iframe-needs-purpose-and-safety-controls",
@@ -2259,12 +2259,6 @@
       "scenario": "A teammate says, \"Let's put the user's role, plan, and auth token into `data-*` attributes on the button. It keeps everything close to the markup, and users can't really see it anyway.\" Another teammate says, \"Use `data-*` for small, non-sensitive values like IDs or UI actions. They are still in the DOM, JavaScript reads them as strings through `dataset`, and secrets do not belong there.\" Which explanation is better?",
       "options": [
         {
-          "id": "data-attributes-are-lightweight-hooks-not-secret-storage",
-          "label": "The second explanation is better. `data-*` attributes are useful for lightweight custom metadata or behavior hooks, but they stay visible in the DOM and `dataset` returns strings, so sensitive data should not be stored there.",
-          "isCorrect": true,
-          "explanation": "`data-*` is meant for small, custom, non-sensitive values attached to elements. It is convenient for IDs, actions, or UI state, but it is not private storage and often requires parsing because values come through as strings."
-        },
-        {
           "id": "data-attributes-are-hidden-from-users",
           "label": "The first explanation is better because `data-*` attributes are hidden from users, so they are a safe place for tokens or other protected values.",
           "isCorrect": false,
@@ -2275,6 +2269,12 @@
           "label": "The first explanation is better because `data-*` attributes are the preferred place to store most app state directly in HTML instead of passing data through JavaScript.",
           "isCorrect": false,
           "explanation": "`data-*` can support lightweight metadata, but it is limited and string-based. It is not a replacement for proper application state management."
+        },
+        {
+          "id": "data-attributes-are-lightweight-hooks-not-secret-storage",
+          "label": "The second explanation is better. `data-*` attributes are useful for lightweight custom metadata or behavior hooks, but they stay visible in the DOM and `dataset` returns strings, so sensitive data should not be stored there.",
+          "isCorrect": true,
+          "explanation": "`data-*` is meant for small, custom, non-sensitive values attached to elements. It is convenient for IDs, actions, or UI state, but it is not private storage and often requires parsing because values come through as strings."
         }
       ],
       "correctOptionId": "data-attributes-are-lightweight-hooks-not-secret-storage",
@@ -2522,6 +2522,12 @@
       "scenario": "A teammate says, \"If we lowercase our tags and self-close `<img />`, our HTML page basically becomes XHTML. Browsers will start enforcing XML-style rules automatically, so this is enough.\" Another teammate says, \"Not really. HTML is still parsed with forgiving HTML rules, while XHTML is XML-based and requires well-formed markup, proper closing, quoted attributes, and usually the correct MIME type to be treated as real XHTML.\" Which explanation is better?",
       "options": [
         {
+          "id": "html-and-xhtml-have-the-same-error-handling",
+          "label": "The first explanation is better because browsers handle HTML and XHTML with the same forgiving parser, so syntax strictness is mostly theoretical.",
+          "isCorrect": false,
+          "explanation": "HTML and XHTML differ specifically in how strict the syntax rules are and how documents are parsed."
+        },
+        {
           "id": "xhtml-is-a-strict-xml-based-markup-mode",
           "label": "The second explanation is better. XHTML is stricter because it follows XML rules, while regular HTML remains forgiving even if the markup looks cleaner or more XHTML-like.",
           "isCorrect": true,
@@ -2532,12 +2538,6 @@
           "label": "The first explanation is better because XHTML is basically just HTML with lowercase tags and a few self-closing slashes.",
           "isCorrect": false,
           "explanation": "XHTML is not just style preferences. It is an XML-based markup format with stricter parsing rules."
-        },
-        {
-          "id": "html-and-xhtml-have-the-same-error-handling",
-          "label": "The first explanation is better because browsers handle HTML and XHTML with the same forgiving parser, so syntax strictness is mostly theoretical.",
-          "isCorrect": false,
-          "explanation": "HTML and XHTML differ specifically in how strict the syntax rules are and how documents are parsed."
         }
       ],
       "correctOptionId": "xhtml-is-a-strict-xml-based-markup-mode",
@@ -2670,6 +2670,12 @@
       "scenario": "A teammate says, \"Let's add `target=\"_blank\"` to all links so users never leave our page. That is the normal default anyway, and we do not need to think about anything else.\" Another teammate says, \"`target` controls where a link opens. `_self` is the normal default, `_blank` opens a new tab or window, and when we use it we should think about user expectations and add `rel=\"noopener noreferrer\"` for safety.\" Which explanation is better?",
       "options": [
         {
+          "id": "target-is-only-a-visual-preference",
+          "label": "The first explanation is better because `target` is mostly visual and does not affect navigation or security decisions in practice.",
+          "isCorrect": false,
+          "explanation": "`target` directly affects navigation behavior, and `_blank` has both UX and security implications."
+        },
+        {
           "id": "target-controls-opening-context-and-blank-needs-care",
           "label": "The second explanation is better. `target` chooses the browsing context, `_self` is the default, and `_blank` needs deliberate UX and security handling.",
           "isCorrect": true,
@@ -2680,12 +2686,6 @@
           "label": "The first explanation is better because links normally open in new tabs, so `_blank` just makes the default behavior explicit.",
           "isCorrect": false,
           "explanation": "The default is `_self`, which opens in the current tab or frame. `_blank` changes that behavior."
-        },
-        {
-          "id": "target-is-only-a-visual-preference",
-          "label": "The first explanation is better because `target` is mostly visual and does not affect navigation or security decisions in practice.",
-          "isCorrect": false,
-          "explanation": "`target` directly affects navigation behavior, and `_blank` has both UX and security implications."
         }
       ],
       "correctOptionId": "target-controls-opening-context-and-blank-needs-care",
@@ -2786,6 +2786,12 @@
       "scenario": "A teammate says, \"Let's add `srcset` because the browser will try the first image, and if it fails it will move to the next one like a fallback list. That way we do not need to think about screen density or layout size.\" Another teammate says, \"`srcset` gives the browser multiple image candidates so it can choose the best one for the current device and layout. With width-based candidates, `sizes` helps the browser make the right performance choice.\" Which explanation is better?",
       "options": [
         {
+          "id": "sizes-is-unnecessary-for-width-candidates",
+          "label": "The first explanation is better because once you add multiple width-based images to `srcset`, the browser does not need `sizes` to decide anything important.",
+          "isCorrect": false,
+          "explanation": "When using `w` descriptors, `sizes` is often necessary to tell the browser how much space the image will take so it can choose well."
+        },
+        {
           "id": "srcset-is-for-browser-selection-based-on-context",
           "label": "The second explanation is better. `srcset` is for responsive image selection, letting the browser choose the most appropriate file based on density or width and layout information.",
           "isCorrect": true,
@@ -2796,12 +2802,6 @@
           "label": "The first explanation is better because `srcset` mainly works as a failure fallback chain that the browser steps through in order.",
           "isCorrect": false,
           "explanation": "That is not the purpose of `srcset`. The browser evaluates candidates and picks one based on device and layout conditions."
-        },
-        {
-          "id": "sizes-is-unnecessary-for-width-candidates",
-          "label": "The first explanation is better because once you add multiple width-based images to `srcset`, the browser does not need `sizes` to decide anything important.",
-          "isCorrect": false,
-          "explanation": "When using `w` descriptors, `sizes` is often necessary to tell the browser how much space the image will take so it can choose well."
         }
       ],
       "correctOptionId": "srcset-is-for-browser-selection-based-on-context",
@@ -3015,12 +3015,6 @@
       "scenario": "A teammate says, \"We can make any custom UI accessible just by sprinkling ARIA roles everywhere. It is basically a shortcut, so using a `<div role='button'>` is always as good as a real `<button>` even if we skip keyboard handling.\" Another teammate says, \"ARIA helps assistive technologies understand custom UI, but it does not replace native semantics or interaction behavior. If a native element already fits, use it first, and if you add ARIA to a custom control, the keyboard behavior and state updates have to match.\" Which explanation is better?",
       "options": [
         {
-          "id": "aria-supports-accessibility-but-does-not-replace-native-behavior",
-          "label": "The second explanation is better. ARIA can describe custom controls, but native elements are preferred, and ARIA only works properly when the control's behavior and states actually match.",
-          "isCorrect": true,
-          "explanation": "ARIA adds semantics for assistive technologies, but it does not magically supply keyboard support, focus behavior, or correct interaction. Native elements are usually safer and more complete."
-        },
-        {
           "id": "aria-can-replace-native-semantics-without-other-work",
           "label": "The first explanation is better because roles alone are enough to make a custom element equivalent to a native control.",
           "isCorrect": false,
@@ -3031,6 +3025,12 @@
           "label": "The first explanation is better because the safest pattern is to add extra ARIA roles to native elements even when they already have the right semantics.",
           "isCorrect": false,
           "explanation": "You generally prefer correct native HTML first. Unnecessary ARIA on already-semantic elements can be redundant or harmful."
+        },
+        {
+          "id": "aria-supports-accessibility-but-does-not-replace-native-behavior",
+          "label": "The second explanation is better. ARIA can describe custom controls, but native elements are preferred, and ARIA only works properly when the control's behavior and states actually match.",
+          "isCorrect": true,
+          "explanation": "ARIA adds semantics for assistive technologies, but it does not magically supply keyboard support, focus behavior, or correct interaction. Native elements are usually safer and more complete."
         }
       ],
       "correctOptionId": "aria-supports-accessibility-but-does-not-replace-native-behavior",
@@ -3311,12 +3311,6 @@
       "scenario": "A teammate says, \"The DOM is basically just a flat list the browser can scan however it wants, so deep nesting is mostly a readability issue. It does not really affect traversal or layout work.\" Another teammate says, \"The DOM is a tree of nodes with parent-child relationships. Tree depth matters because deep or skewed structures can increase traversal, style recalculation, and layout cost, even though real pages are not perfectly balanced trees.\" Which explanation is better?",
       "options": [
         {
-          "id": "dom-is-a-tree-and-depth-affects-work",
-          "label": "The second explanation is better. The DOM is a tree, not a flat list, and excessive depth can raise traversal and rendering costs.",
-          "isCorrect": true,
-          "explanation": "The important lesson is structural: the DOM is hierarchical, and deeper nesting can make traversal, style work, and layout more expensive."
-        },
-        {
           "id": "dom-is-mostly-flat-in-practice",
           "label": "The first explanation is better because browsers treat the DOM like a mostly flat structure, so depth has little practical effect beyond code readability.",
           "isCorrect": false,
@@ -3327,6 +3321,12 @@
           "label": "The first explanation is better because only the total number of nodes matters; tree shape and skew do not meaningfully affect traversal or layout discussions.",
           "isCorrect": false,
           "explanation": "Node count matters, but tree shape and depth also matter. A very deep or skewed tree can be more expensive to work with."
+        },
+        {
+          "id": "dom-is-a-tree-and-depth-affects-work",
+          "label": "The second explanation is better. The DOM is a tree, not a flat list, and excessive depth can raise traversal and rendering costs.",
+          "isCorrect": true,
+          "explanation": "The important lesson is structural: the DOM is hierarchical, and deeper nesting can make traversal, style work, and layout more expensive."
         }
       ],
       "correctOptionId": "dom-is-a-tree-and-depth-affects-work",
