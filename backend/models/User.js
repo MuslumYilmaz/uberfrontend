@@ -159,4 +159,9 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+UserSchema.index(
+  { 'providers.provider': 1, 'providers.providerId': 1 },
+  { name: 'idx_user_provider_identity' }
+);
+
 module.exports = mongoose.model('User', UserSchema);

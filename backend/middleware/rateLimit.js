@@ -7,9 +7,10 @@ function getClientIp(req) {
     return req.ip;
 }
 
-function rateLimit({ windowMs, max, keyGenerator, message }) {
+function rateLimit({ windowMs, max, keyGenerator, message, code }) {
     const hits = new Map(); // key -> { count, resetAt }
     const msg = message || 'Too many requests';
+    const errorCode = String(code || '').trim();
     const windowMsSafe = Math.max(1000, Number(windowMs) || 60_000);
     const maxSafe = Math.max(1, Number(max) || 60);
     const keyFn = typeof keyGenerator === 'function' ? keyGenerator : (req) => getClientIp(req);
@@ -29,7 +30,7 @@ function rateLimit({ windowMs, max, keyGenerator, message }) {
         if (entry.count > maxSafe) {
             const retryAfterSec = Math.max(1, Math.ceil((entry.resetAt - now) / 1000));
             res.setHeader('Retry-After', String(retryAfterSec));
-            return res.status(429).json({ error: msg });
+            return res.status(429).json(errorCode ? { code: errorCode, error: msg } : { error: msg });
         }
 
         // Opportunistic cleanup to avoid unbounded growth

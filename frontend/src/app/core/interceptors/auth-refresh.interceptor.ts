@@ -7,12 +7,15 @@ import {
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, finalize, map, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { apiUrl, getApiRoot } from '../utils/api-base';
+import { AuthSessionAuthorityService } from '../services/auth-session-authority.service';
 
 const API_ROOT = getApiRoot();
 const REFRESH_URL = apiUrl('/auth/refresh');
 const SESSION_ERRORS = new Set(['Missing token', 'Invalid or expired token']);
+const SESSION_ERROR_CODES = new Set(['AUTH_MISSING', 'AUTH_INVALID']);
+const UNRECOVERABLE_REFRESH_CODES = new Set(['REFRESH_MISSING', 'REFRESH_INVALID', 'AUTH_CSRF_INVALID']);
 
 let refreshInFlight$: Observable<{ ok: boolean }> | null = null;
 
@@ -37,23 +40,39 @@ function readCookie(name: string): string | null {
   }
 }
 
-function hasSessionHint(): boolean {
-  if (typeof localStorage === 'undefined') return false;
-  try {
-    return localStorage.getItem('fa:auth:session') === '1';
-  } catch {
-    return false;
-  }
+function extractErrorCode(err: HttpErrorResponse): string {
+  return String(err.error?.code || '').trim();
 }
 
-function shouldAttemptRefresh(req: { url: string }, err: unknown): err is HttpErrorResponse {
+function extractErrorMessage(err: HttpErrorResponse): string {
+  return String(err.error?.error || '').trim();
+}
+
+function shouldAttemptRefresh(
+  req: { url: string },
+  err: unknown,
+  authAuthority: AuthSessionAuthorityService,
+): err is HttpErrorResponse {
   if (!(err instanceof HttpErrorResponse)) return false;
   if (err.status !== 401) return false;
   if (!isApiRequest(req.url) || isRefreshRequest(req.url)) return false;
-  if (!hasSessionHint()) return false;
+  if (!authAuthority.hasSessionHint()) return false;
 
-  const message = String(err.error?.error || '').trim();
-  return SESSION_ERRORS.has(message);
+  const code = extractErrorCode(err);
+  if (SESSION_ERROR_CODES.has(code)) return true;
+
+  return SESSION_ERRORS.has(extractErrorMessage(err));
+}
+
+function shouldForceSignOut(err: unknown): boolean {
+  if (!(err instanceof HttpErrorResponse)) return false;
+  if (err.status !== 401 && err.status !== 403) return false;
+
+  const code = extractErrorCode(err);
+  if (code && UNRECOVERABLE_REFRESH_CODES.has(code)) return true;
+
+  const message = extractErrorMessage(err);
+  return message === 'Missing refresh token' || message === 'Invalid or expired refresh session';
 }
 
 function getRefreshHeaders(): HttpHeaders {
@@ -90,16 +109,25 @@ export const authRefreshInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   const rawHttp = new HttpClient(inject(HttpBackend));
+  const authAuthority = inject(AuthSessionAuthorityService);
 
   return next(req).pipe(
     catchError((err) => {
-      if (!shouldAttemptRefresh(req, err)) {
+      if (!shouldAttemptRefresh(req, err, authAuthority)) {
         return throwError(() => err);
       }
 
+      authAuthority.markRefreshing();
       return refreshSession(rawHttp).pipe(
-        switchMap(() => next(req)),
-        catchError(() => throwError(() => err))
+        switchMap(() => next(req).pipe(
+          tap(() => authAuthority.finishRefresh()),
+        )),
+        catchError((refreshErr) => {
+          if (shouldForceSignOut(refreshErr)) {
+            authAuthority.forceSignOut('session_expired');
+          }
+          return throwError(() => err);
+        })
       );
     })
   );

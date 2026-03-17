@@ -1,13 +1,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Entitlements, Tech } from '../models/user.model';
 import { environment } from '../../../environments/environment';
-import { apiUrl, getApiBase, getFrontendBase } from '../utils/api-base';
+import { apiUrl, getFrontendBase } from '../utils/api-base';
 import { resolvePaymentsProvider } from '../utils/payments-provider.util';
 import { sanitizeRedirectTarget } from '../utils/redirect.util';
 import { AttemptInsightsService } from './attempt-insights.service';
+import { AuthSessionAuthorityService, AuthSyncEvent } from './auth-session-authority.service';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
@@ -87,15 +88,31 @@ export interface User {
   createdAt: string;
 }
 
+type AuthBootstrapContext = 'login' | 'signup' | 'oauth';
+
+function buildSessionBootstrapError(context: AuthBootstrapContext) {
+  const action =
+    context === 'login' ? 'sign you in' :
+    context === 'signup' ? 'create your session' :
+    'finish authentication';
+
+  return {
+    code: 'AUTH_SESSION_BOOTSTRAP_FAILED',
+    error: `We could not ${action}. Please try again.`,
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private static readonly AUTH_CONTEXT_HEADER = 'X-Auth-Context-Id';
+  private static readonly AUTH_REQUEST_HEADER = 'X-Auth-Request-Id';
   private base = apiUrl('/auth');
   private frontendBase = getFrontendBase();
-  private static readonly SESSION_HINT_KEY = 'fa:auth:session';
   private static readonly OAUTH_STATE_KEY = 'oauth:state';
   private static readonly OAUTH_REDIRECT_KEY = 'oauth:redirect';
   private static readonly OAUTH_MODE_KEY = 'oauth:mode';
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
+  private readonly authAuthority = inject(AuthSessionAuthorityService);
 
   /** Reactive user */
   user = signal<User | null>(null);
@@ -103,25 +120,18 @@ export class AuthService {
   /** Reactive auth state */
   isLoggedIn = computed(() => !!this.user());
 
-  /** Used to ignore stale in-flight /me responses (e.g., logout during request). */
-  private sessionSeq = 0;
+  /** Used to ignore stale in-flight /me responses when newer /me calls complete first. */
+  private meSeq = 0;
+  private readonly pendingLoginAttempts = new Map<string, Observable<User>>();
+  private readonly pendingSignupAttempts = new Map<string, Observable<User>>();
 
   constructor(private http: HttpClient) {
+    this.authAuthority.events$.subscribe((event) => this.handleAuthorityEvent(event));
+
     // Avoid an eager /me call for logged-out visitors (prevents noisy 401s in the console).
-    if (this.hasSessionHint()) {
-      this.fetchMe().subscribe();
+    if (this.authAuthority.hasSessionHint()) {
+      this.fetchMe().subscribe({ error: () => undefined });
     }
-  }
-
-  private hasSessionHint(): boolean {
-    try { return localStorage.getItem(AuthService.SESSION_HINT_KEY) === '1'; } catch { return false; }
-  }
-
-  private setSessionHint(on: boolean) {
-    try {
-      if (on) localStorage.setItem(AuthService.SESSION_HINT_KEY, '1');
-      else localStorage.removeItem(AuthService.SESSION_HINT_KEY);
-    } catch { }
   }
 
   public headers(): HttpHeaders {
@@ -131,65 +141,86 @@ export class AuthService {
 
   // ---------- API ----------
   signup(data: { email: string; username: string; password: string }) {
-    return this.http
-      .post<{ token?: string; user?: User }>(`${this.base}/signup`, data, { withCredentials: true })
+    const key = this.buildSignupAttemptKey(data);
+    const existing = this.pendingSignupAttempts.get(key);
+    if (existing) return existing;
+
+    const authEpoch = this.authAuthority.captureEpoch();
+    const headers = this.buildAuthAttemptHeaders();
+    const request$ = this.http
+      .post<{ token?: string; user?: User }>(`${this.base}/signup`, data, { withCredentials: true, headers })
       .pipe(
         tap((res) => {
-          this.setSessionHint(true);
-          if (res.user) this.user.set(this.cloneUser(res.user));
+          this.authAuthority.noteSessionHintPresent();
+          if (res.user && this.authAuthority.isCurrentEpoch(authEpoch)) {
+            this.user.set(this.cloneUser(res.user));
+          }
           this.attemptInsights?.notifyAuthSessionStarted();
         }),
-        switchMap(() => this.fetchMe()),
+        switchMap(() => this.hydrateAuthenticatedUser('signup', { broadcastLogin: true })),
+        finalize(() => this.pendingSignupAttempts.delete(key)),
         shareReplay(1)
       );
+    this.pendingSignupAttempts.set(key, request$);
+    return request$;
   }
 
   login(data: { emailOrUsername: string; password: string }) {
-    return this.http
-      .post<{ token?: string; user?: User }>(`${this.base}/login`, data, { withCredentials: true })
+    const key = this.buildLoginAttemptKey(data);
+    const existing = this.pendingLoginAttempts.get(key);
+    if (existing) return existing;
+
+    const authEpoch = this.authAuthority.captureEpoch();
+    const headers = this.buildAuthAttemptHeaders();
+    const request$ = this.http
+      .post<{ token?: string; user?: User }>(`${this.base}/login`, data, { withCredentials: true, headers })
       .pipe(
         tap((res) => {
-          this.setSessionHint(true);
+          this.authAuthority.noteSessionHintPresent();
           // optional: keep UI snappy if backend returns user
-          if (res.user) this.user.set(this.cloneUser(res.user));
+          if (res.user && this.authAuthority.isCurrentEpoch(authEpoch)) {
+            this.user.set(this.cloneUser(res.user));
+          }
           this.attemptInsights?.notifyAuthSessionStarted();
         }),
         // ✅ always hydrate full user (solvedQuestionIds, stats, billing, etc.)
-        switchMap(() => this.fetchMe()),
+        switchMap(() => this.hydrateAuthenticatedUser('login', { broadcastLogin: true })),
+        finalize(() => this.pendingLoginAttempts.delete(key)),
         shareReplay(1)
       );
+    this.pendingLoginAttempts.set(key, request$);
+    return request$;
   }
 
   logout() {
-    // Clear reactive state first so dependents react immediately.
-    this.sessionSeq++;
-    this.user.set(null);
-    this.setSessionHint(false);
+    this.authAuthority.forceSignOut('logout');
+    this.meSeq++;
     return this.http
       .post<void>(`${this.base}/logout`, {}, { withCredentials: true })
       .pipe(catchError(() => of(void 0)));
   }
 
   /** GET /api/auth/me */
-  fetchMe(): Observable<User | null> {
-    const seq = ++this.sessionSeq;
+  fetchMe(options?: { broadcastLogin?: boolean }): Observable<User | null> {
+    const seq = ++this.meSeq;
+    const authEpoch = this.authAuthority.captureEpoch();
 
     return this.http
       .get<User>(`${this.base}/me`, { withCredentials: true })
       .pipe(
-        tap((u) => {
-          // If user logged out (or another fetch started) while request was in-flight, ignore it.
-          if (this.sessionSeq !== seq) return;
-          this.setSessionHint(true);
-          this.user.set(this.cloneUser(u));
+        map((u) => {
+          if (!this.canApplyAuthResponse(seq, authEpoch)) return null;
+          const cloned = this.cloneUser(u);
+          this.authAuthority.commitAuthenticated({ broadcast: options?.broadcastLogin === true });
+          this.user.set(cloned);
           this.attemptInsights?.notifyAuthSessionStarted();
+          return cloned;
         }),
         catchError((err) => {
-          if (this.sessionSeq !== seq) return of(null);
+          if (!this.canApplyAuthResponse(seq, authEpoch)) return of(null);
           // If session cookie is missing/expired, clear user.
           if (err?.status === 401 || err?.status === 403) {
-            this.user.set(null);
-            this.setSessionHint(false);
+            this.authAuthority.forceSignOut('session_expired');
             return of(null);
           }
           return throwError(() => err);
@@ -199,23 +230,25 @@ export class AuthService {
 
   /** GET /api/auth/me with status (used by billing success polling). */
   fetchMeStatus(): Observable<{ user: User | null; status: number }> {
-    const seq = ++this.sessionSeq;
+    const seq = ++this.meSeq;
+    const authEpoch = this.authAuthority.captureEpoch();
     return this.http
       .get<User>(`${this.base}/me`, { withCredentials: true, observe: 'response' })
       .pipe(
         map((res) => {
-          if (this.sessionSeq === seq && res.body) {
-            this.setSessionHint(true);
-            this.user.set(this.cloneUser(res.body));
+          if (this.canApplyAuthResponse(seq, authEpoch) && res.body) {
+            this.authAuthority.commitAuthenticated();
+            const cloned = this.cloneUser(res.body);
+            this.user.set(cloned);
             this.attemptInsights?.notifyAuthSessionStarted();
+            return { user: cloned, status: res.status };
           }
-          return { user: res.body ?? null, status: res.status };
+          return { user: null, status: res.status };
         }),
         catchError((err) => {
-          if (this.sessionSeq !== seq) return of({ user: null, status: err?.status ?? 0 });
+          if (!this.canApplyAuthResponse(seq, authEpoch)) return of({ user: null, status: err?.status ?? 0 });
           if (err?.status === 401 || err?.status === 403) {
-            this.user.set(null);
-            this.setSessionHint(false);
+            this.authAuthority.forceSignOut('session_expired');
             return of({ user: null, status: err.status });
           }
           return throwError(() => err);
@@ -354,16 +387,29 @@ export class AuthService {
       })
       : this.http.get<User>(`${this.base}/me`, { withCredentials: true });
 
+    const seq = ++this.meSeq;
+    const authEpoch = this.authAuthority.captureEpoch();
+
     return me$.pipe(
-      tap((u) => {
-        this.setSessionHint(true);
-        this.user.set(this.cloneUser(u));
+      map((u) => {
+        if (!this.canApplyAuthResponse(seq, authEpoch)) return null;
+        const cloned = this.cloneUser(u);
+        this.authAuthority.commitAuthenticated({ broadcast: true });
+        this.user.set(cloned);
+        return cloned;
       }),
-      catchError((e) => {
-        this.user.set(null);
-        this.setSessionHint(false);
-        return throwError(() => e);
-      })
+      catchError((error) => {
+        if (this.canApplyAuthResponse(seq, authEpoch)) {
+          this.authAuthority.forceSignOut('session_expired');
+        }
+        if (error?.status === 401 || error?.status === 403) {
+          return throwError(() => ({
+            status: error.status,
+            error: buildSessionBootstrapError('oauth'),
+          }));
+        }
+        return throwError(() => error);
+      }),
     );
   }
 
@@ -397,6 +443,79 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  forceSignOut(reason: 'logout' | 'session_expired' = 'session_expired'): void {
+    this.authAuthority.forceSignOut(reason);
+  }
+
+  private canApplyAuthResponse(seq: number, authEpoch: number): boolean {
+    return this.meSeq === seq && this.authAuthority.isCurrentEpoch(authEpoch);
+  }
+
+  private buildAuthAttemptHeaders(): HttpHeaders {
+    const requestId =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`;
+    return new HttpHeaders({
+      [AuthService.AUTH_CONTEXT_HEADER]: this.authAuthority.getContextId(),
+      [AuthService.AUTH_REQUEST_HEADER]: requestId,
+    });
+  }
+
+  private buildLoginAttemptKey(data: { emailOrUsername: string; password: string }): string {
+    return [
+      'login',
+      String(data.emailOrUsername || '').trim().toLowerCase(),
+      String(data.password || ''),
+    ].join('|');
+  }
+
+  private buildSignupAttemptKey(data: { email: string; username: string; password: string }): string {
+    return [
+      'signup',
+      String(data.email || '').trim().toLowerCase(),
+      String(data.username || '').trim(),
+      String(data.password || ''),
+    ].join('|');
+  }
+
+  private hydrateAuthenticatedUser(
+    context: AuthBootstrapContext,
+    options?: { broadcastLogin?: boolean },
+  ): Observable<User> {
+    return this.fetchMe(options).pipe(
+      switchMap((user) => {
+        if (user) return of(user);
+        const bootstrapError = buildSessionBootstrapError(context);
+        return throwError(() => ({
+          status: 401,
+          error: bootstrapError,
+        }));
+      }),
+      catchError((error) => {
+        if (error?.status === 401 || error?.status === 403) {
+          return throwError(() => ({
+            status: error.status,
+            error: buildSessionBootstrapError(context),
+          }));
+        }
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  private handleAuthorityEvent(event: AuthSyncEvent): void {
+    if (event.type === 'login') {
+      if (event.local) return;
+      this.authAuthority.noteSessionHintPresent();
+      this.fetchMe().subscribe({ error: () => undefined });
+      return;
+    }
+
+    this.meSeq++;
+    this.user.set(null);
   }
 
 }

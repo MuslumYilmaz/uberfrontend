@@ -77,6 +77,21 @@ function createRefreshSecret() {
   return crypto.randomBytes(32).toString('base64url');
 }
 
+function createReplayableRefreshSecret(replayContext) {
+  const sessionId = String(replayContext?.sessionId || '').trim();
+  const action = String(replayContext?.action || '').trim();
+  const contextId = String(replayContext?.contextId || '').trim();
+  const requestId = String(replayContext?.requestId || '').trim();
+  if (!sessionId || !action || !contextId || !requestId) {
+    return createRefreshSecret();
+  }
+
+  return crypto
+    .createHmac('sha256', getJwtSecret())
+    .update(`auth-replay:${action}:${contextId}:${requestId}:${sessionId}`)
+    .digest('base64url');
+}
+
 function formatRefreshToken(sessionId, secret) {
   return `${sessionId}.${secret}`;
 }
@@ -118,19 +133,24 @@ function getSessionClientContext(req) {
 }
 
 async function createAuthSession(AuthSession, user, req) {
-  const secret = createRefreshSecret();
   const now = Date.now();
   const { ip, userAgent } = getSessionClientContext(req);
-
-  const session = await AuthSession.create({
+  const session = new AuthSession({
     userId: user._id,
-    secretHash: hashRefreshSecret(secret),
     passwordVersion: resolvePasswordVersion(user),
     expiresAt: new Date(now + REFRESH_SESSION_TTL_MS),
     lastUsedAt: new Date(now),
     ip,
     userAgent,
   });
+  const secret = createReplayableRefreshSecret(req?.authReplayContext
+    ? {
+      ...req.authReplayContext,
+      sessionId: session._id.toString(),
+    }
+    : null);
+  session.secretHash = hashRefreshSecret(secret);
+  await session.save();
 
   return { session, refreshToken: formatRefreshToken(session._id.toString(), secret) };
 }
@@ -191,7 +211,18 @@ function verifyAccessToken(token, verifyOptions) {
   return jwt.verify(token, getJwtSecret(), verifyOptions);
 }
 
+function buildReplayableRefreshTokenForSession(session, replayContext) {
+  const sessionId = session?._id?.toString?.() || session?.id || '';
+  if (!sessionId) return null;
+  const secret = createReplayableRefreshSecret({
+    ...replayContext,
+    sessionId,
+  });
+  return formatRefreshToken(sessionId, secret);
+}
+
 module.exports = {
+  buildReplayableRefreshTokenForSession,
   createAuthSession,
   findRefreshSession,
   getAccessTokenExpiresIn,

@@ -5,6 +5,11 @@ const { verifyAccessToken } = require('../services/auth-sessions');
 
 const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
 const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
+const AUTH_CODES = {
+    missing: 'AUTH_MISSING',
+    invalid: 'AUTH_INVALID',
+    csrf: 'AUTH_CSRF_INVALID',
+};
 
 function isStateChanging(method = '') {
     const m = String(method).toUpperCase();
@@ -64,10 +69,14 @@ function isTokenFreshEnoughForPasswordVersion(payload, user) {
     return tokenIssuedAtSec >= Math.floor(currentPasswordVersion / 1000);
 }
 
+function sendAuthError(res, status, code, error) {
+    return res.status(status).json({ code, error });
+}
+
 async function requireAuth(req, res, next) {
     try {
         const { token, via } = getAuthToken(req);
-        if (!token) return res.status(401).json({ error: 'Missing token' });
+        if (!token) return sendAuthError(res, 401, AUTH_CODES.missing, 'Missing token');
 
         // Double-submit CSRF protection when SameSite=None and auth is cookie-based.
         if (via === 'cookie' && shouldEnforceCsrf() && isStateChanging(req.method)) {
@@ -75,33 +84,33 @@ async function requireAuth(req, res, next) {
             const csrfHeader = req.headers['x-csrf-token'];
             const csrf = Array.isArray(csrfHeader) ? csrfHeader[0] : csrfHeader;
             if (!csrfCookie || !csrf || String(csrf) !== String(csrfCookie)) {
-                return res.status(403).json({ error: 'CSRF token missing or invalid' });
+                return sendAuthError(res, 403, AUTH_CODES.csrf, 'CSRF token missing or invalid');
             }
         }
 
         const payload = verifyAccessToken(token, getJwtVerifyOptions());
         const user = await User.findById(payload.sub).select('passwordUpdatedAt role').lean();
-        if (!user) return res.status(401).json({ error: 'Invalid or expired token' });
+        if (!user) return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
         if (!isTokenFreshEnoughForPasswordVersion(payload, user)) {
-            return res.status(401).json({ error: 'Invalid or expired token' });
+            return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
         }
 
         const sessionId = typeof payload?.sid === 'string' && payload.sid ? payload.sid : null;
         if (sessionId) {
             const session = await AuthSession.findById(sessionId).select('revokedAt expiresAt userId').lean();
             if (!session || session.revokedAt || String(session.userId) !== String(payload.sub)) {
-                return res.status(401).json({ error: 'Invalid or expired token' });
+                return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
             }
             if (session.expiresAt && new Date(session.expiresAt).getTime() <= Date.now()) {
-                return res.status(401).json({ error: 'Invalid or expired token' });
+                return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
             }
         }
 
         req.auth = { userId: payload.sub, role: user.role || 'user', via, sessionId };
         next();
     } catch (e) {
-        return res.status(401).json({ error: 'Invalid or expired token' });
+        return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
     }
 }
 
-module.exports = { requireAuth, getBearerToken, getAuthToken };
+module.exports = { requireAuth, getBearerToken, getAuthToken, AUTH_CODES };

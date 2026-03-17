@@ -12,6 +12,7 @@ const { requireAdmin } = require('./middleware/RequireAdmin');
 const { rateLimit, getClientIp } = require('./middleware/rateLimit');
 const { connectToMongo } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
+const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
 
 const app = express();
 
@@ -37,6 +38,22 @@ const BUG_REPORT_MAX_URL_CHARS = Number(process.env.BUG_REPORT_MAX_URL_CHARS || 
 
 // Validate critical secrets early (fail-fast in production)
 getJwtSecret();
+
+const authRuntimeValidation = validateAuthRuntimeConfig({
+    serverBase: SERVER_BASE,
+    frontendOrigins: ALLOWED_FRONTEND_ORIGINS,
+    cookieSameSite: process.env.COOKIE_SAMESITE,
+    cookieSecure: process.env.COOKIE_SECURE,
+    cookieDomain: process.env.COOKIE_DOMAIN,
+    isProdRuntime: process.env.NODE_ENV === 'production',
+});
+
+if (authRuntimeValidation.errors.length) {
+    throw new Error(`Auth runtime config invalid: ${authRuntimeValidation.errors.join(' ')}`);
+}
+for (const warning of authRuntimeValidation.warnings) {
+    console.warn(`⚠️ Auth config: ${warning}`);
+}
 
 // ---- Middleware ----
 // Behind proxies (Vercel/Render/etc), set TRUST_PROXY=true so req.ip is accurate and secure cookies work.

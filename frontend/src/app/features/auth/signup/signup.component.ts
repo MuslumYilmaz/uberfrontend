@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { getAuthDisplayError } from '../../../core/utils/auth-error.util';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
@@ -98,10 +99,10 @@ export class SignupComponent {
           if (fields.email) this.setCtrlError(this.emailCtrl, 'duplicate');
           if (fields.username) this.setCtrlError(this.usernameCtrl, 'duplicate');
           if (!fields.email && !fields.username) {
-            this.error = data.error || 'Email or username already in use';
+            this.error = getAuthDisplayError(err, 'Email or username already in use');
           }
         } else {
-          this.error = data.error || 'Sign up failed';
+          this.error = getAuthDisplayError(err, 'Sign up failed');
         }
         this.loading = false;
       }

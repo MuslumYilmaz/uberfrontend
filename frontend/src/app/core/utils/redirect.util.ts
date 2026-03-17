@@ -1,5 +1,9 @@
 const FALLBACK_REDIRECT = '/dashboard';
 
+function isBlockedAuthRedirect(pathname: string): boolean {
+  return pathname === '/auth' || pathname.startsWith('/auth/');
+}
+
 /**
  * Only allow same-origin absolute-path redirects.
  * Reject protocol-relative and absolute external URLs.
@@ -17,6 +21,7 @@ export function sanitizeRedirectTarget(
     const base = new URL('https://frontendatlas.local');
     const parsed = new URL(target, base);
     if (parsed.origin !== base.origin) return fallback;
+    if (isBlockedAuthRedirect(parsed.pathname)) return fallback;
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
   } catch {
     return fallback;
@@ -26,4 +31,3 @@ export function sanitizeRedirectTarget(
 export function hasRedirectTarget(rawTarget: string | null | undefined): boolean {
   return sanitizeRedirectTarget(rawTarget, '') !== '';
 }
-

@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { getAuthDisplayError } from '../../../core/utils/auth-error.util';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
@@ -70,12 +71,11 @@ export class LoginComponent {
       .subscribe({
         next: () => this.router.navigateByUrl(this.redirectTo),
         error: (err) => {
-          const data = err?.error || {};
           if (err?.status === 401) {
             this.form.setErrors({ ...(this.form.errors || {}), invalidCredentials: true });
-            this.error = data.error || 'Invalid credentials';
+            this.error = getAuthDisplayError(err, 'Invalid credentials');
           } else {
-            this.error = data.error || 'Login failed';
+            this.error = getAuthDisplayError(err, 'Login failed');
           }
           this.loading = false;
         },

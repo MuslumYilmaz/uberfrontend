@@ -26,6 +26,12 @@ describe('redirect.util', () => {
     expect(sanitizeRedirectTarget('auth/login')).toBe('/dashboard');
   });
 
+  it('blocks auth-page redirect loops', () => {
+    expect(sanitizeRedirectTarget('/auth/login')).toBe('/dashboard');
+    expect(sanitizeRedirectTarget('/auth/signup?redirectTo=/profile#retry')).toBe('/dashboard');
+    expect(sanitizeRedirectTarget('/auth/callback?mode=login')).toBe('/dashboard');
+  });
+
   it('respects custom fallback', () => {
     expect(sanitizeRedirectTarget('https://evil.example', '/pricing')).toBe('/pricing');
   });
