@@ -468,7 +468,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="pricing-title">
+<section class="section reveal" #observeSection aria-labelledby="pricing-title" data-load="pricing">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -481,7 +481,8 @@
     <app-pricing-plans-section
       variant="compact"
       [paymentsEnabled]="paymentsEnabled"
-      [checkoutUrls]="checkoutUrls"
+      [paymentsConfigReady]="paymentsConfigReady"
+      [checkoutAvailability]="checkoutAvailability"
       analyticsSource="showcase_pricing"
       ctaMode="navigatePricing">
     </app-pricing-plans-section>
@@ -619,7 +620,7 @@
       </div>
       <div class="cta-actions">
         <a class="sk-btn sk-btn-primary" routerLink="/auth/signup">Start free preview</a>
-        <a class="sk-btn sk-btn-ghost" routerLink="/guides">View interview blueprint</a>
+        <a class="sk-btn sk-btn-ghost" routerLink="/guides/interview-blueprint">View interview blueprint</a>
       </div>
     </div>
   </div>

@@ -61,14 +61,15 @@ type VisibleEntry = {
           <a *ngIf="!isPro()" class="fah-btn" routerLink="/pricing">Pricing</a>
 
           <div class="fah-profile fah-profile-right">
-            <button class="fah-avatar" data-testid="header-profile-button"
-                    (click)="toggleProfileMenu()"
+            <button type="button"
+                    class="fah-avatar" data-testid="header-profile-button"
+                    (click)="toggleProfileMenu($event)"
                     aria-haspopup="menu"
                     [attr.aria-label]="profileOpen() ? 'Close account menu' : 'Open account menu'"
                     [attr.aria-expanded]="profileOpen()">
               <i class="pi pi-user"></i>
             </button>
-            <div *ngIf="profileOpen()" class="fah-menu" role="menu" data-testid="header-profile-menu">
+            <div *ngIf="profileOpen()" class="fah-menu" role="menu" data-testid="header-profile-menu" (click)="$event.stopPropagation()">
               <div class="fah-menu-section">Account</div>
 
               <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
@@ -366,6 +367,7 @@ export class HeaderComponent implements OnInit {
 
   private doc = inject(DOCUMENT);
   private router = inject(Router);
+  private hostEl = inject(ElementRef<HTMLElement>);
 
   // route state
   mode = signal<Mode>('dashboard');
@@ -629,8 +631,17 @@ export class HeaderComponent implements OnInit {
     this.doc.documentElement.style.setProperty('--app-safe-top', `${base + ctx}px`);
   }
 
-  @HostListener('document:click')
-  onDocumentClick() { this.closeAll(); }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target;
+    if (!(target instanceof Node)) {
+      this.closeAll();
+      return;
+    }
+    if (!this.hostEl.nativeElement.contains(target)) {
+      this.closeAll();
+    }
+  }
 
   @HostListener('document:keydown.escape')
   onDocumentEsc() { this.closeAll(); }
@@ -674,7 +685,10 @@ export class HeaderComponent implements OnInit {
     this.syncMegaAnchor(ev);
     this.openOnly('mega');
   }
-  toggleProfileMenu() { this.openOnly(this.profileOpen() ? null : 'profile'); }
+  toggleProfileMenu(event?: Event) {
+    event?.stopPropagation();
+    this.openOnly(this.profileOpen() ? null : 'profile');
+  }
   toggleMobileMenu() { this.openOnly(this.mobileNavOpen() ? null : 'mobile'); }
 
   closeAll() { this.openOnly(null); }

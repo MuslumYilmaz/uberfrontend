@@ -1,4 +1,5 @@
 import {
+  resolveCheckoutPaymentsProvider,
   resolveCheckoutUrl,
   resolvePaymentsMode,
   resolvePaymentsProvider,
@@ -54,5 +55,16 @@ describe('payments-provider util', () => {
     const provider = resolvePaymentsProvider(env);
     expect(resolveCheckoutUrl(provider, 'annual', env)).toBeNull();
     expect(resolveCheckoutUrl(provider, 'quarterly', env)).toBe('https://live.example.com/quarterly');
+  });
+
+  it('exposes configured stripe but does not expose it as a runtime checkout provider', () => {
+    const env = {
+      PAYMENTS_PROVIDER: 'stripe',
+      STRIPE_MONTHLY_URL: 'https://checkout.stripe.com/example',
+    };
+
+    expect(resolvePaymentsProvider(env)).toBe('stripe');
+    expect(resolveCheckoutPaymentsProvider(env)).toBeNull();
+    expect(resolveCheckoutUrl('stripe', 'monthly', env)).toBe('https://checkout.stripe.com/example');
   });
 });

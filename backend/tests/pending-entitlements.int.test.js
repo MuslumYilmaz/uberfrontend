@@ -159,3 +159,103 @@ test('lemonsqueezy pending entitlement requires matching userId', async () => {
   const pending = await PendingEntitlement.findOne({ eventId: 'evt_ls_mismatch' }).lean();
   expect(pending.appliedAt).toBeFalsy();
 });
+
+test('applies only matching lemonsqueezy pending entitlements and leaves mismatched ones unresolved', async () => {
+  const user = await User.create({
+    email: 'apply@example.com',
+    username: 'apply_user',
+    passwordHash: 'hash',
+    accessTier: 'free',
+    entitlements: {
+      pro: { status: 'none', validUntil: null },
+      projects: { status: 'none', validUntil: null },
+    },
+  });
+
+  await PendingEntitlement.create([
+    {
+      provider: 'lemonsqueezy',
+      scope: 'pro',
+      eventId: 'evt_ls_match',
+      eventType: 'subscription_created',
+      email: 'apply@example.com',
+      userId: String(user._id),
+      entitlement: { status: 'active', validUntil: new Date('2099-01-01T00:00:00Z') },
+    },
+    {
+      provider: 'lemonsqueezy',
+      scope: 'pro',
+      eventId: 'evt_ls_other_user',
+      eventType: 'subscription_created',
+      email: 'apply@example.com',
+      userId: 'some-other-user-id',
+      entitlement: { status: 'active', validUntil: new Date('2099-02-01T00:00:00Z') },
+    },
+  ]);
+
+  const token = signToken(user);
+  const res = await request(app)
+    .get('/api/auth/me')
+    .set('Authorization', `Bearer ${token}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body.entitlements.pro.status).toBe('active');
+  expect(res.body.accessTierEffective).toBe('premium');
+
+  const applied = await PendingEntitlement.findOne({ eventId: 'evt_ls_match' }).lean();
+  const blocked = await PendingEntitlement.findOne({ eventId: 'evt_ls_other_user' }).lean();
+  expect(applied.appliedAt).toBeTruthy();
+  expect(String(applied.appliedUserId)).toBe(String(user._id));
+  expect(blocked.appliedAt).toBeFalsy();
+});
+
+test('late stale lemonsqueezy cancel does not regress a later paid-through pending entitlement', async () => {
+  const user = await User.create({
+    email: 'apply@example.com',
+    username: 'apply_user',
+    passwordHash: 'hash',
+    accessTier: 'free',
+    entitlements: {
+      pro: { status: 'none', validUntil: null },
+      projects: { status: 'none', validUntil: null },
+    },
+  });
+
+  await PendingEntitlement.create([
+    {
+      provider: 'lemonsqueezy',
+      scope: 'pro',
+      eventId: 'evt_ls_renewed',
+      eventType: 'subscription_payment_success',
+      email: 'apply@example.com',
+      userId: String(user._id),
+      entitlement: { status: 'active', validUntil: new Date('2099-03-01T00:00:00Z') },
+      receivedAt: new Date('2026-01-01T00:00:00Z'),
+    },
+    {
+      provider: 'lemonsqueezy',
+      scope: 'pro',
+      eventId: 'evt_ls_stale_cancel',
+      eventType: 'subscription_cancelled',
+      email: 'apply@example.com',
+      userId: String(user._id),
+      entitlement: { status: 'cancelled', validUntil: new Date('2099-02-01T00:00:00Z') },
+      receivedAt: new Date('2026-01-02T00:00:00Z'),
+    },
+  ]);
+
+  const token = signToken(user);
+  const res = await request(app)
+    .get('/api/auth/me')
+    .set('Authorization', `Bearer ${token}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body.entitlements.pro.status).toBe('active');
+  expect(new Date(res.body.entitlements.pro.validUntil).toISOString()).toBe('2099-03-01T00:00:00.000Z');
+  expect(res.body.accessTierEffective).toBe('premium');
+
+  const renewed = await PendingEntitlement.findOne({ eventId: 'evt_ls_renewed' }).lean();
+  const staleCancel = await PendingEntitlement.findOne({ eventId: 'evt_ls_stale_cancel' }).lean();
+  expect(renewed.appliedAt).toBeTruthy();
+  expect(staleCancel.appliedAt).toBeTruthy();
+});

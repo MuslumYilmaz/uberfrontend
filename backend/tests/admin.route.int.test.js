@@ -9,6 +9,8 @@ jest.setTimeout(120000);
 let app;
 let User;
 let BillingEvent;
+let CheckoutAttempt;
+let PendingEntitlement;
 let connectToMongo;
 let disconnectMongo;
 let mongoServer;
@@ -43,9 +45,12 @@ beforeAll(async () => {
   ({ connectToMongo, disconnectMongo } = require('../config/mongo'));
   User = require('../models/User');
   BillingEvent = require('../models/BillingEvent');
+  CheckoutAttempt = require('../models/CheckoutAttempt');
+  PendingEntitlement = require('../models/PendingEntitlement');
 
   await connectToMongo(process.env.MONGO_URL_TEST);
   await BillingEvent.init();
+  await CheckoutAttempt.init();
 });
 
 afterAll(async () => {
@@ -57,6 +62,8 @@ afterAll(async () => {
 beforeEach(async () => {
   await User.deleteMany({});
   await BillingEvent.deleteMany({});
+  await CheckoutAttempt.deleteMany({});
+  await PendingEntitlement.deleteMany({});
 });
 
 describe('Admin DB diagnostics', () => {
@@ -225,6 +232,106 @@ describe('Admin billing simulator', () => {
     expect(res.body.error).toContain('validUntil');
     expect(res.body.supportedScenarios).toEqual(
       expect.arrayContaining(['activate', 'renew', 'cancel', 'refund', 'lifetime', 'expire'])
+    );
+  });
+});
+
+describe('Admin billing reconciliation', () => {
+  test('returns unresolved checkout attempts, pending entitlements, and unresolved billing events', async () => {
+    const admin = await User.create({
+      email: 'billing-admin@example.com',
+      username: 'billing_admin_user',
+      passwordHash: 'hash',
+      role: 'admin',
+    });
+
+    const user = await User.create({
+      email: 'billing-subscriber@example.com',
+      username: 'billing_subscriber_user',
+      passwordHash: 'hash',
+      role: 'user',
+    });
+
+    await CheckoutAttempt.create({
+      attemptId: 'chk_reconcile_123',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'pending_user_match',
+      billingEventId: 'test:event_reconcile_123',
+      customerEmail: user.email,
+      lastErrorCode: 'PENDING_USER_MATCH',
+      lastErrorMessage: 'Payment received, but we could not safely match it to this account yet.',
+    });
+
+    await PendingEntitlement.create({
+      provider: 'lemonsqueezy',
+      scope: 'pro',
+      eventId: 'test:event_reconcile_123',
+      eventType: 'subscription_created',
+      email: user.email,
+      userId: String(user._id),
+      entitlement: { status: 'active', validUntil: null },
+      payload: {
+        data: {
+          attributes: {
+            custom_data: {
+              fa_checkout_attempt_id: 'chk_reconcile_123',
+            },
+          },
+        },
+      },
+    });
+
+    await BillingEvent.create({
+      provider: 'lemonsqueezy',
+      eventId: 'test:event_unresolved_456',
+      eventType: 'subscription_created',
+      email: 'unknown@example.com',
+      processingStatus: 'pending_user',
+      payload: {},
+    });
+
+    const res = await request(app)
+      .get('/api/admin/billing/reconciliation')
+      .set('Authorization', authHeader(admin._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.summary).toEqual({
+      pendingAttempts: 1,
+      pendingEntitlements: 1,
+      unresolvedEvents: 1,
+    });
+    expect(res.body.checkoutAttempts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          attemptId: 'chk_reconcile_123',
+          supportReference: 'chk_reconcile_123',
+          status: 'pending_user_match',
+          billingEventId: 'test:event_reconcile_123',
+          lastErrorCode: 'PENDING_USER_MATCH',
+        }),
+      ])
+    );
+    expect(res.body.pendingEntitlements).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          eventId: 'test:event_reconcile_123',
+          attemptId: 'chk_reconcile_123',
+          supportReference: 'chk_reconcile_123',
+          bindingStatus: 'exact_user_required',
+        }),
+      ])
+    );
+    expect(res.body.billingEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          eventId: 'test:event_unresolved_456',
+          supportReference: 'test:event_unresolved_456',
+          processingStatus: 'pending_user',
+        }),
+      ])
     );
   });
 });

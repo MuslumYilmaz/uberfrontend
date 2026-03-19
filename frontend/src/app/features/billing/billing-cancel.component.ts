@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { OnboardingService } from '../../core/services/onboarding.service';
 import {
@@ -22,6 +22,7 @@ export class BillingCancelComponent implements OnInit {
   private static readonly CHECKOUT_SOURCE_KEY = 'fa:checkout:last_source';
 
   planId: string | null = null;
+  attemptId: string | null = null;
   source = 'billing_cancel';
   freeChallengeRoute: any[] = ['/react', 'coding', 'react-counter'];
   freeChallengeLabel = 'Try free challenge';
@@ -29,6 +30,7 @@ export class BillingCancelComponent implements OnInit {
 
   constructor(
     private analytics: AnalyticsService,
+    private route: ActivatedRoute,
     private onboarding: OnboardingService,
   ) { }
 
@@ -37,6 +39,12 @@ export class BillingCancelComponent implements OnInit {
       src: 'billing_cancel',
       method: 'billing_cancel_page',
     };
+
+    const attemptId = this.route.snapshot.queryParamMap.get('attempt');
+    if (attemptId) {
+      this.attemptId = attemptId;
+      event['attempt_id'] = attemptId;
+    }
 
     if (typeof window !== 'undefined') {
       try {
@@ -74,6 +82,7 @@ export class BillingCancelComponent implements OnInit {
     this.analytics.track('checkout_cancel_winback_clicked', {
       action,
       plan_id: this.planId,
+      attempt_id: this.attemptId,
       src: this.source,
       framework: profile?.framework ?? null,
       timeline: profile?.timeline ?? null,

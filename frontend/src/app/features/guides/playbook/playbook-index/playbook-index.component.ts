@@ -1,9 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PLAYBOOK, PLAYBOOK_GROUPS } from '../../../../shared/guides/guide.registry';
 import { OfflineBannerComponent } from "../../../../shared/components/offline-banner/offline-banner";
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../../shared/components/prep-signal-grid/prep-signal-grid.component';
+
+const PLAYBOOK_ENTRIES = new Map(PLAYBOOK.map((entry) => [entry.slug, entry]));
+const PLAYBOOK_GLOBAL_INDEX = (() => {
+  const map = new Map<string, number>();
+  let n = 0;
+  for (const group of PLAYBOOK_GROUPS) {
+    for (const item of group.items) {
+      map.set(item.slug, ++n);
+    }
+  }
+  return map;
+})();
 
 @Component({
   standalone: true,
@@ -132,17 +144,17 @@ import { PrepSignalGridComponent, PrepSignalItem } from '../../../../shared/comp
         </div>
       </section>
 
-      <div *ngFor="let g of groups()" class="section">
+      <div *ngFor="let g of groups" class="section">
         <div class="sec-head fa-section-title">{{ g.title }}</div>
 
         <a *ngFor="let it of g.items"
            class="card" [routerLink]="routeForSlug(it.slug)">
-          <div class="num fa-chip fa-chip--label">{{ globalIdx().get(it.slug) }}</div>
+          <div class="num fa-chip fa-chip--label">{{ globalIdx.get(it.slug) }}</div>
           <div class="body">
-            <div class="title fa-card-title">{{ entries().get(it.slug)?.title || it.slug }}</div>
-            <div class="sub fa-meta-text">{{ entries().get(it.slug)?.summary }}</div>
+            <div class="title fa-card-title">{{ entries.get(it.slug)?.title || it.slug }}</div>
+            <div class="sub fa-meta-text">{{ entries.get(it.slug)?.summary }}</div>
           </div>
-          <div class="mins" *ngIf="entries().get(it.slug)?.minutes as m">{{ m }} min</div>
+          <div class="mins" *ngIf="entries.get(it.slug)?.minutes as m">{{ m }} min</div>
           <div class="arrow" aria-hidden="true">→</div>
         </a>
       </div>
@@ -179,18 +191,11 @@ export class PlaybookIndexComponent {
   }
 
   /** Section groups (order matters). */
-  groups = computed(() => PLAYBOOK_GROUPS);
+  readonly groups = PLAYBOOK_GROUPS;
 
   /** Quick lookup: slug -> GuideEntry */
-  entries = computed(() => new Map(PLAYBOOK.map(e => [e.slug, e])));
+  readonly entries = PLAYBOOK_ENTRIES;
 
   /** Global numbering: slug -> 1..N across all sections */
-  globalIdx = computed(() => {
-    const map = new Map<string, number>();
-    let n = 0;
-    for (const g of PLAYBOOK_GROUPS) {
-      for (const it of g.items) map.set(it.slug, ++n);
-    }
-    return map;
-  });
+  readonly globalIdx = PLAYBOOK_GLOBAL_INDEX;
 }

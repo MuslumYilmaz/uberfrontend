@@ -1,5 +1,9 @@
 const { isDuplicateKeyError } = require('./billing-events');
-const { isProEntitlementActive } = require('./entitlements');
+const {
+  applyNormalizedGumroadEventToUser,
+  applyNormalizedLemonSqueezyEventToUser,
+  syncAccessTierFromEntitlements,
+} = require('./user-billing-state');
 
 function normalizeEmail(raw) {
   if (!raw) return '';
@@ -52,71 +56,168 @@ function extractUserIdFromPayload(payload) {
   return String(candidate).trim();
 }
 
-async function applyPendingEntitlementsForUser(model, user) {
-  const email = normalizeEmail(user?.email);
-  if (!email) return { applied: false };
-
-  const pending = await model.find({ email, appliedAt: null }).sort({ receivedAt: 1 });
-  if (!pending.length) return { applied: false };
-
-  const latest = pending[pending.length - 1];
-  if (latest.provider === 'lemonsqueezy') {
-    const pendingUserId = latest.userId || extractUserIdFromPayload(latest.payload);
-    if (!pendingUserId || String(pendingUserId) !== String(user._id)) {
-      return { applied: false, reason: 'lemonsqueezy_user_mismatch', eventId: latest.eventId };
-    }
-  }
-
+function ensureEntitlements(user) {
   user.entitlements = user.entitlements || {};
-  if (latest.scope === 'projects') {
-    user.entitlements.projects = {
-      status: latest.entitlement?.status || 'none',
-      validUntil: latest.entitlement?.validUntil || null,
-    };
-  } else {
-    user.entitlements.pro = {
-      status: latest.entitlement?.status || 'none',
-      validUntil: latest.entitlement?.validUntil || null,
-    };
+  if (!user.entitlements.pro) {
+    user.entitlements.pro = { status: 'none', validUntil: null };
   }
   if (!user.entitlements.projects) {
     user.entitlements.projects = { status: 'none', validUntil: null };
   }
+}
 
+function ensureBillingProviders(user) {
   user.billing = user.billing || {};
   user.billing.providers = user.billing.providers || {};
-  if (latest.provider === 'gumroad') {
+}
+
+function resolvePendingBindingUserId(item) {
+  return item?.userId || extractUserIdFromPayload(item?.payload);
+}
+
+function compareReceivedAtAsc(left, right) {
+  const leftMs = new Date(left?.receivedAt || left?.createdAt || 0).getTime();
+  const rightMs = new Date(right?.receivedAt || right?.createdAt || 0).getTime();
+  if (leftMs !== rightMs) return leftMs - rightMs;
+  return String(left?._id || '').localeCompare(String(right?._id || ''));
+}
+
+function applyProjectsPendingEntitlement(user, item) {
+  ensureEntitlements(user);
+  ensureBillingProviders(user);
+
+  user.entitlements.projects = {
+    status: item.entitlement?.status || 'none',
+    validUntil: item.entitlement?.validUntil || null,
+  };
+
+  if (item.provider === 'gumroad') {
     const gumroadMeta = user.billing.providers.gumroad || {};
-    if (latest.saleId) gumroadMeta.saleId = latest.saleId;
-    gumroadMeta.purchaserEmail = email;
-    gumroadMeta.lastEventId = latest.eventId;
-    gumroadMeta.lastEventAt = latest.receivedAt || new Date();
+    if (item.saleId) gumroadMeta.saleId = item.saleId;
+    gumroadMeta.purchaserEmail = normalizeEmail(item.email);
+    gumroadMeta.lastEventId = item.eventId;
+    gumroadMeta.lastEventAt = item.receivedAt || new Date();
     user.billing.providers.gumroad = gumroadMeta;
   }
-  if (latest.provider === 'lemonsqueezy') {
+
+  if (item.provider === 'lemonsqueezy') {
     const lsMeta = user.billing.providers.lemonsqueezy || {};
-    if (latest.customerId) lsMeta.customerId = latest.customerId;
-    if (latest.subscriptionId) lsMeta.subscriptionId = latest.subscriptionId;
-    if (latest.manageUrl) lsMeta.manageUrl = latest.manageUrl;
-    lsMeta.lastEventId = latest.eventId;
-    lsMeta.lastEventAt = latest.receivedAt || new Date();
+    if (item.customerId) lsMeta.customerId = item.customerId;
+    if (item.subscriptionId) lsMeta.subscriptionId = item.subscriptionId;
+    if (item.manageUrl) lsMeta.manageUrl = item.manageUrl;
+    lsMeta.lastEventId = item.eventId;
+    lsMeta.lastEventAt = item.receivedAt || new Date();
     user.billing.providers.lemonsqueezy = lsMeta;
   }
 
-  if (latest.scope === 'pro') {
-    const isActive = isProEntitlementActive(user.entitlements.pro);
-    user.accessTier = isActive ? 'premium' : 'free';
+  syncAccessTierFromEntitlements(user);
+}
+
+function applyPendingEntitlementToUser(user, item) {
+  if (item.scope === 'projects') {
+    applyProjectsPendingEntitlement(user, item);
+    return;
+  }
+
+  if (item.provider === 'gumroad') {
+    applyNormalizedGumroadEventToUser(
+      user,
+      {
+        eventId: item.eventId,
+        eventType: item.eventType,
+        entitlement: item.entitlement || {},
+        saleId: item.saleId,
+      },
+      {
+        eventId: item.eventId,
+        purchaserEmail: normalizeEmail(item.email),
+      }
+    );
+    return;
+  }
+
+  if (item.provider === 'lemonsqueezy') {
+    applyNormalizedLemonSqueezyEventToUser(
+      user,
+      {
+        eventId: item.eventId,
+        eventType: item.eventType,
+        entitlement: item.entitlement || {},
+        customerId: item.customerId,
+        subscriptionId: item.subscriptionId,
+        manageUrl: item.manageUrl,
+      },
+      {
+        eventId: item.eventId,
+        purchaseEmail: normalizeEmail(item.email),
+      }
+    );
+    return;
+  }
+
+  applyProjectsPendingEntitlement(user, item);
+}
+
+async function applyPendingEntitlementsForUser(model, user) {
+  const email = normalizeEmail(user?.email);
+  if (!email) return { applied: false };
+
+  const pending = await model.find({ email, appliedAt: null }).sort({ receivedAt: 1, _id: 1 });
+  if (!pending.length) return { applied: false };
+
+  const applicable = [];
+  let sawLemonSqueezyMismatch = false;
+  let sawLemonSqueezyWithoutBinding = false;
+
+  for (const item of pending) {
+    if (item.provider !== 'lemonsqueezy') {
+      applicable.push(item);
+      continue;
+    }
+
+    const pendingUserId = resolvePendingBindingUserId(item);
+    if (!pendingUserId) {
+      sawLemonSqueezyWithoutBinding = true;
+      continue;
+    }
+    if (String(pendingUserId) !== String(user._id)) {
+      sawLemonSqueezyMismatch = true;
+      continue;
+    }
+    applicable.push(item);
+  }
+
+  if (!applicable.length) {
+    if (sawLemonSqueezyMismatch) {
+      return { applied: false, reason: 'lemonsqueezy_user_mismatch', eventId: pending[pending.length - 1]?.eventId };
+    }
+    if (sawLemonSqueezyWithoutBinding) {
+      return { applied: false, reason: 'lemonsqueezy_user_binding_missing', eventId: pending[pending.length - 1]?.eventId };
+    }
+    return { applied: false };
+  }
+
+  ensureEntitlements(user);
+  ensureBillingProviders(user);
+
+  const orderedApplicable = [...applicable].sort(compareReceivedAtAsc);
+  for (const item of orderedApplicable) {
+    applyPendingEntitlementToUser(user, item);
   }
 
   await user.save();
 
   const now = new Date();
   await model.updateMany(
-    { _id: { $in: pending.map((p) => p._id) } },
+    { _id: { $in: orderedApplicable.map((item) => item._id) } },
     { $set: { appliedAt: now, appliedUserId: user._id } }
   );
 
-  return { applied: true, appliedCount: pending.length, eventId: latest.eventId };
+  return {
+    applied: true,
+    appliedCount: orderedApplicable.length,
+    eventId: orderedApplicable[orderedApplicable.length - 1]?.eventId,
+  };
 }
 
 module.exports = {

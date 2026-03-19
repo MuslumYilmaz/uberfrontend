@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { environment } from '../../src/environments/environment';
 import {
+  resolveCheckoutPaymentsProvider,
   resolveCheckoutUrl,
   resolvePaymentsMode,
   resolvePaymentsProvider,
@@ -10,9 +11,13 @@ import {
   fillLemonSqueezyCheckout,
 } from '../helpers/lemonsqueezy-checkout';
 
-const provider = resolvePaymentsProvider(environment);
+const configuredProvider = resolvePaymentsProvider(environment);
+const provider = resolveCheckoutPaymentsProvider(environment);
 const paymentsMode = resolvePaymentsMode(environment);
-const runRealCheckout = process.env.E2E_REAL_LS === '1' && provider === 'lemonsqueezy' && paymentsMode === 'test';
+const runRealCheckout =
+  process.env.E2E_REAL_LS === '1' &&
+  provider === 'lemonsqueezy' &&
+  paymentsMode === 'test';
 
 const expectedMonthlyUrl = resolveCheckoutUrl('lemonsqueezy', 'monthly', environment) || '';
 const expectedBuyId = (() => {
@@ -26,7 +31,10 @@ const expectedBuyId = (() => {
 
 test.describe('lemonsqueezy real checkout (test mode)', () => {
   test.describe.configure({ mode: 'serial' });
-  test.skip(!runRealCheckout, 'Real LemonSqueezy checkout is disabled (set E2E_REAL_LS=1 and PAYMENTS_MODE=test).');
+  test.skip(
+    !runRealCheckout,
+    `Real LemonSqueezy checkout is disabled (set E2E_REAL_LS=1, use PAYMENTS_MODE=test, and keep a checkout-capable provider configured; current=${configuredProvider}).`
+  );
 
   test('hosted checkout completes and premium unlocks', async ({ browser, baseURL }, testInfo) => {
     test.setTimeout(180_000);

@@ -27,6 +27,7 @@ import {
   systemGuideDetailResolver,
 } from './core/resolvers/guide-detail.resolver';
 import { masteryPathResolver } from './core/resolvers/mastery-path.resolver';
+import { PlaybookIndexComponent } from './features/guides/playbook/playbook-index/playbook-index.component';
 
 /** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -680,10 +681,7 @@ export const routes: Routes = [
 
       {
         path: 'interview-blueprint',
-        loadComponent: () =>
-          import('./features/guides/playbook/playbook-index/playbook-index.component').then(
-            (m) => m.PlaybookIndexComponent,
-          ),
+        component: PlaybookIndexComponent,
         data: {
           seo: {
             title: 'Frontend Interview Preparation Guides',

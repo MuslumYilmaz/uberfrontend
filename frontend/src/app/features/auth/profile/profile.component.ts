@@ -11,7 +11,9 @@ import { SolvedQuestion, SolvedQuestionsService } from '../../../core/services/s
 import { take } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../environments/environment';
-import { PaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
+import { getManageSubscriptionErrorMessage } from '../../../core/utils/billing-ux.util';
+import { openExternalWindow } from '../../../core/utils/external-window.util';
+import { ConfiguredPaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
 
 type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
@@ -520,25 +522,20 @@ export class ProfileComponent implements OnInit {
       next: ({ url }) => {
         this.manageLoading.set(false);
         if (!url) {
-          this.manageError.set('Manage URL is not available yet. Please contact support.');
+          this.manageError.set(
+            'We could not open the billing portal automatically right now. Contact support@frontendatlas.com for help.'
+          );
           return;
         }
-        const hook = (window as any).__faCheckoutRedirect;
-        if (typeof hook === 'function') {
-          hook(url);
+        const openResult = openExternalWindow(url);
+        if (openResult === 'blocked') {
+          this.manageError.set('Your browser blocked the billing portal. Allow popups and try again.');
           return;
         }
-        window.open(url, '_blank', 'noopener');
       },
       error: (err) => {
         this.manageLoading.set(false);
-        if (err?.status === 409) {
-          this.manageError.set('Manage URL is not available yet. Please contact support.');
-        } else if (err?.status === 400) {
-          this.manageError.set('Subscription management is not supported for this provider.');
-        } else {
-          this.manageError.set('Failed to load manage URL. Please try again.');
-        }
+        this.manageError.set(getManageSubscriptionErrorMessage(err));
       },
     });
   }
@@ -575,7 +572,7 @@ export class ProfileComponent implements OnInit {
       });
   }
 
-  private providerLabel(provider: PaymentsProvider): string {
+  private providerLabel(provider: ConfiguredPaymentsProvider): string {
     switch (provider) {
       case 'gumroad':
         return 'Gumroad';

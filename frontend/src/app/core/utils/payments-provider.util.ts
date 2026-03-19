@@ -1,11 +1,12 @@
 import { environment } from '../../../environments/environment';
 
-export type PaymentsProvider = 'gumroad' | 'lemonsqueezy' | 'stripe';
+export type ConfiguredPaymentsProvider = 'gumroad' | 'lemonsqueezy' | 'stripe';
+export type PaymentsProvider = 'gumroad' | 'lemonsqueezy';
 export type PaymentsMode = 'test' | 'live';
 export type PlanId = 'monthly' | 'quarterly' | 'annual' | 'lifetime';
 
 type PaymentsEnv = {
-  PAYMENTS_PROVIDER?: PaymentsProvider | string;
+  PAYMENTS_PROVIDER?: ConfiguredPaymentsProvider | string;
   PAYMENTS_MODE?: PaymentsMode | string;
   production?: boolean;
   GUMROAD_MONTHLY_URL?: string;
@@ -34,11 +35,17 @@ type PaymentsEnv = {
   STRIPE_MANAGE_URL?: string;
 };
 
-const PROVIDERS: PaymentsProvider[] = ['gumroad', 'lemonsqueezy', 'stripe'];
+const CONFIGURED_PROVIDERS: ConfiguredPaymentsProvider[] = ['gumroad', 'lemonsqueezy', 'stripe'];
+const CHECKOUT_PROVIDERS: PaymentsProvider[] = ['gumroad', 'lemonsqueezy'];
 
-export function resolvePaymentsProvider(env: PaymentsEnv = environment): PaymentsProvider {
+export function resolvePaymentsProvider(env: PaymentsEnv = environment): ConfiguredPaymentsProvider {
   const raw = String(env.PAYMENTS_PROVIDER || 'gumroad').trim().toLowerCase();
-  return (PROVIDERS as string[]).includes(raw) ? (raw as PaymentsProvider) : 'gumroad';
+  return (CONFIGURED_PROVIDERS as string[]).includes(raw) ? (raw as ConfiguredPaymentsProvider) : 'gumroad';
+}
+
+export function resolveCheckoutPaymentsProvider(env: PaymentsEnv = environment): PaymentsProvider | null {
+  const configured = resolvePaymentsProvider(env);
+  return (CHECKOUT_PROVIDERS as string[]).includes(configured) ? (configured as PaymentsProvider) : null;
 }
 
 export function resolvePaymentsMode(env: PaymentsEnv = environment): PaymentsMode {
@@ -48,7 +55,7 @@ export function resolvePaymentsMode(env: PaymentsEnv = environment): PaymentsMod
 }
 
 export function resolveCheckoutUrl(
-  provider: PaymentsProvider,
+  provider: ConfiguredPaymentsProvider,
   planId: PlanId,
   env: PaymentsEnv = environment
 ): string | null {
@@ -56,7 +63,7 @@ export function resolveCheckoutUrl(
 }
 
 export type CheckoutUrlResolution = {
-  provider: PaymentsProvider;
+  provider: ConfiguredPaymentsProvider;
   planId: PlanId;
   mode: PaymentsMode;
   url: string | null;
@@ -64,7 +71,7 @@ export type CheckoutUrlResolution = {
 };
 
 export function resolveCheckoutUrlWithMeta(
-  provider: PaymentsProvider,
+  provider: ConfiguredPaymentsProvider,
   planId: PlanId,
   env: PaymentsEnv = environment
 ): CheckoutUrlResolution {
@@ -163,7 +170,7 @@ export function resolveCheckoutUrlWithMeta(
 }
 
 export function buildCheckoutUrls(
-  provider: PaymentsProvider,
+  provider: ConfiguredPaymentsProvider,
   env: PaymentsEnv = environment
 ): Record<PlanId, string> {
   return {
@@ -179,7 +186,7 @@ export function hasCheckoutUrls(urls: Record<PlanId, string>): boolean {
 }
 
 export function resolveManageUrl(
-  provider: PaymentsProvider,
+  provider: ConfiguredPaymentsProvider,
   env: PaymentsEnv = environment
 ): string | null {
   const mode = resolvePaymentsMode(env);
@@ -187,7 +194,7 @@ export function resolveManageUrl(
     mode === 'live'
       ? env.LEMONSQUEEZY_MANAGE_URL_LIVE || env.LEMONSQUEEZY_MANAGE_URL
       : env.LEMONSQUEEZY_MANAGE_URL_TEST || env.LEMONSQUEEZY_MANAGE_URL;
-  const map: Record<PaymentsProvider, string | undefined> = {
+  const map: Record<ConfiguredPaymentsProvider, string | undefined> = {
     gumroad: env.GUMROAD_MANAGE_URL,
     lemonsqueezy: lsManage,
     stripe: env.STRIPE_MANAGE_URL,

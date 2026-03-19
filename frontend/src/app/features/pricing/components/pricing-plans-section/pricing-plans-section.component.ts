@@ -5,6 +5,8 @@ import { firstValueFrom } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
+import { getCheckoutLaunchNotice, getManageSubscriptionErrorMessage } from '../../../../core/utils/billing-ux.util';
+import { openExternalWindow } from '../../../../core/utils/external-window.util';
 import { PlanId } from '../../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../../core/utils/entitlements.util';
 import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
@@ -98,8 +100,8 @@ type CtaMode = 'emit' | 'navigatePricing';
             class="btn"
             type="button"
             (click)="onCta(plan.id)"
-            [disabled]="paymentsEnabled && (!isCheckoutAvailable(plan.id) || isCheckoutLoading(plan.id))"
-            [attr.aria-disabled]="paymentsEnabled && (!isCheckoutAvailable(plan.id) || isCheckoutLoading(plan.id)) ? 'true' : null"
+            [disabled]="isCheckoutDisabled(plan.id)"
+            [attr.aria-disabled]="isCheckoutDisabled(plan.id) ? 'true' : null"
             [attr.title]="checkoutTooltip(plan.id)"
             [attr.data-testid]="'pricing-cta-' + plan.id">
             {{ ctaText }}
@@ -167,7 +169,7 @@ type CtaMode = 'emit' | 'navigatePricing';
         </app-faq-section>
       </section>
 
-      <p class="tiny muted pr-footnote" *ngIf="variant === 'full' && !paymentsEnabled">
+      <p class="tiny muted pr-footnote" *ngIf="variant === 'full' && paymentsConfigReady && !paymentsEnabled">
         Payments are not enabled in this build.
       </p>
       <p class="tiny muted pr-footnote" *ngIf="checkoutNotice" data-testid="checkout-notice">
@@ -241,11 +243,12 @@ export class PricingPlansSectionComponent implements OnInit, OnDestroy {
 
   @Input() variant: PricingVariant = 'full';
   @Input() paymentsEnabled = false;
+  @Input() paymentsConfigReady = true;
   @Input() ctaMode: CtaMode = 'navigatePricing';
   @Input() ctaLabel?: string;
   @Input() analyticsSource = 'pricing';
   @Input() riskReversalPlacement: 'top' | 'after_plans' = 'top';
-  @Input() checkoutUrls: Partial<Record<PlanId, string>> | null = null;
+  @Input() checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
   @Output() ctaClick = new EventEmitter<{ planId: PlanId }>();
 
   private checkoutLoading: PlanId | null = null;
@@ -533,8 +536,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   ngOnInit(): void {
-    if (this.paymentsEnabled) {
-      this.billingCheckout.prefetch();
+    if (typeof window !== 'undefined' && this.paymentsEnabled) {
+      void this.billingCheckout.prefetch();
     }
   }
 
@@ -545,13 +548,15 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     }
   }
 
-  private resolveCheckoutUrl(planId: PlanId): string | null {
-    const url = this.checkoutUrls?.[planId] || '';
-    return url ? url : null;
+  isCheckoutAvailable(planId: PlanId): boolean {
+    if (!this.paymentsEnabled) return false;
+    if (!this.paymentsConfigReady) return true;
+    return this.checkoutAvailability?.[planId] === true;
   }
 
-  isCheckoutAvailable(planId: PlanId): boolean {
-    return !!this.resolveCheckoutUrl(planId);
+  isCheckoutDisabled(planId: PlanId): boolean {
+    if (this.paymentsConfigReady && !this.paymentsEnabled) return true;
+    return this.paymentsEnabled && (!this.isCheckoutAvailable(planId) || this.isCheckoutLoading(planId));
   }
 
   isCheckoutLoading(planId: PlanId): boolean {
@@ -560,6 +565,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
 
   checkoutTooltip(planId: PlanId): string | null {
     if (this.isCheckoutLoading(planId)) return 'Loading checkout...';
+    if (this.paymentsConfigReady && !this.paymentsEnabled) return 'Payments are not enabled in this build.';
     if (!this.paymentsEnabled || this.isCheckoutAvailable(planId)) return null;
     return 'Checkout is temporarily unavailable.';
   }
@@ -626,9 +632,13 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       this.openManageSubscription(planId);
       return;
     }
+    if (this.paymentsConfigReady && !this.paymentsEnabled) {
+      this.trackPlanClick(planId, 'checkout_unavailable');
+      this.setCheckoutNotice('Payments are not enabled in this build.');
+      return;
+    }
     if (this.paymentsEnabled) {
-      const checkoutUrl = this.resolveCheckoutUrl(planId);
-      if (checkoutUrl) {
+      if (this.isCheckoutAvailable(planId)) {
         this.trackPlanClick(planId, 'checkout');
         this.checkoutLoading = planId;
         try {
@@ -663,8 +673,9 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
             return;
           }
           this.trackCheckoutStarted(planId, result.provider, result.mode);
-          if (result.mode === 'new-tab') {
-            this.setCheckoutNotice('Checkout opened in a new tab. If it did not open, allow popups and try again.');
+          const launchNotice = getCheckoutLaunchNotice(result.mode, result.reused);
+          if (launchNotice) {
+            this.setCheckoutNotice(launchNotice);
           }
         } finally {
           if (this.checkoutLoading === planId) {
@@ -698,25 +709,20 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       next: ({ url }) => {
         this.checkoutLoading = null;
         if (!url) {
-          this.setCheckoutNotice('Manage URL is not available yet. Please contact support.');
+          this.setCheckoutNotice(
+            'We could not open the billing portal automatically right now. Contact support@frontendatlas.com for help.'
+          );
           return;
         }
-        const hook = (window as any).__faCheckoutRedirect;
-        if (typeof hook === 'function') {
-          hook(url);
+        const openResult = openExternalWindow(url);
+        if (openResult === 'blocked') {
+          this.setCheckoutNotice('Your browser blocked the billing portal. Allow popups and try again.');
           return;
         }
-        window.open(url, '_blank', 'noopener');
       },
       error: (err) => {
         this.checkoutLoading = null;
-        if (err?.status === 409) {
-          this.setCheckoutNotice('Manage URL is not available yet. Please contact support.');
-        } else if (err?.status === 400) {
-          this.setCheckoutNotice('Subscription management is not supported for this provider.');
-        } else {
-          this.setCheckoutNotice('Failed to load manage URL. Please try again.');
-        }
+        this.setCheckoutNotice(getManageSubscriptionErrorMessage(err));
       },
     });
   }

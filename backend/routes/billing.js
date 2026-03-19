@@ -1,8 +1,16 @@
 const express = require('express');
 const User = require('../models/User');
 const BillingEvent = require('../models/BillingEvent');
+const CheckoutAttempt = require('../models/CheckoutAttempt');
 const PendingEntitlement = require('../models/PendingEntitlement');
 const { createBillingEventStore } = require('../services/billing/billing-events');
+const {
+  CheckoutStartError,
+  createCheckoutAttempt,
+  resolveCheckoutConfig,
+} = require('../services/billing/checkout-start');
+const { isProEntitlementActive } = require('../services/billing/entitlements');
+const { applyPendingEntitlementsForUser, normalizeEmail } = require('../services/billing/pending-entitlements');
 const {
   applyNormalizedGumroadEventToUser,
   applyNormalizedLemonSqueezyEventToUser,
@@ -46,6 +54,49 @@ const gumroadParsers = [
 ];
 
 const eventStore = createBillingEventStore(BillingEvent);
+
+async function updateCheckoutAttempt(attemptId, updates = {}) {
+  const normalizedAttemptId = String(attemptId || '').trim();
+  if (!normalizedAttemptId) return;
+  const patch = Object.fromEntries(
+    Object.entries({ ...updates }).filter(([, value]) => value !== undefined)
+  );
+  if (!patch.updatedAt) patch.updatedAt = new Date();
+  await CheckoutAttempt.updateOne({ attemptId: normalizedAttemptId }, { $set: patch });
+}
+
+function toAttemptPublicState(attempt) {
+  switch (attempt?.status) {
+    case 'applied':
+      return 'applied';
+    case 'pending_user_match':
+      return 'pending_user_match';
+    case 'failed':
+      return 'failed';
+    case 'expired':
+      return 'expired';
+    default:
+      return 'awaiting_webhook';
+  }
+}
+
+function serializeCheckoutAttemptStatus(attempt, user) {
+  const entitlementActive = isProEntitlementActive(user?.entitlements?.pro);
+  return {
+    attemptId: attempt.attemptId,
+    supportReference: attempt.attemptId,
+    provider: attempt.provider,
+    planId: attempt.planId,
+    mode: attempt.mode,
+    state: toAttemptPublicState(attempt),
+    rawStatus: attempt.status,
+    entitlementActive,
+    accessTierEffective: entitlementActive ? 'premium' : 'free',
+    billingEventId: attempt.billingEventId || null,
+    lastErrorCode: attempt.lastErrorCode || null,
+    lastErrorMessage: attempt.lastErrorMessage || null,
+  };
+}
 
 async function handleGumroadWebhook(req, res) {
   try {
@@ -165,6 +216,7 @@ async function handleGumroadWebhook(req, res) {
 }
 
 async function handleLemonSqueezyWebhook(req, res) {
+  let normalizedAttemptId = '';
   try {
     const debug =
       process.env.BILLING_WEBHOOK_DEBUG === 'true' || process.env.NODE_ENV !== 'production';
@@ -276,6 +328,7 @@ async function handleLemonSqueezyWebhook(req, res) {
     const normalizedEmail = normalized.email ? normalized.email.trim().toLowerCase() : '';
     const purchaseEmail = normalized.purchaseEmail ? normalized.purchaseEmail.trim().toLowerCase() : '';
     const normalizedUserId = normalized.userId ? String(normalized.userId).trim() : '';
+    normalizedAttemptId = normalized.attemptId ? String(normalized.attemptId).trim() : '';
     const eventMode = chosenMode || 'unknown';
     const eventId = normalized.eventId ? `${eventMode}:${normalized.eventId}` : '';
     if (!normalized.eventId) {
@@ -303,6 +356,13 @@ async function handleLemonSqueezyWebhook(req, res) {
     if (duplicate) {
       return res.status(200).json({ ok: true, duplicate: true });
     }
+
+    await updateCheckoutAttempt(normalizedAttemptId, {
+      status: 'webhook_received',
+      billingEventId: eventId,
+      providerOrderId: normalized.orderId || undefined,
+      providerSubscriptionId: normalized.subscriptionId || undefined,
+    });
 
     let user = null;
     if (normalizedUserId) {
@@ -333,6 +393,14 @@ async function handleLemonSqueezyWebhook(req, res) {
         { provider: 'lemonsqueezy', eventId },
         { $set: { processingStatus: 'pending_user', processedAt: new Date() } }
       );
+      await updateCheckoutAttempt(normalizedAttemptId, {
+        status: 'pending_user_match',
+        billingEventId: eventId,
+        providerOrderId: normalized.orderId || undefined,
+        providerSubscriptionId: normalized.subscriptionId || undefined,
+        lastErrorCode: 'PENDING_USER_MATCH',
+        lastErrorMessage: 'Payment received, but we could not safely match it to this account yet.',
+      });
       return res.status(200).json({ ok: true, userFound: false });
     }
 
@@ -358,6 +426,14 @@ async function handleLemonSqueezyWebhook(req, res) {
           { provider: 'lemonsqueezy', eventId },
           { $set: { processingStatus: 'pending_user', processedAt: new Date() } }
         );
+        await updateCheckoutAttempt(normalizedAttemptId, {
+          status: 'pending_user_match',
+          billingEventId: eventId,
+          providerOrderId: normalized.orderId || undefined,
+          providerSubscriptionId: normalized.subscriptionId || undefined,
+          lastErrorCode: 'PENDING_USER_MATCH',
+          lastErrorMessage: 'Payment received, but the referenced account could not be found yet.',
+        });
       }
       return res.status(200).json({ ok: true, userFound: false });
     }
@@ -373,6 +449,17 @@ async function handleLemonSqueezyWebhook(req, res) {
       { provider: 'lemonsqueezy', eventId },
       { $set: { processingStatus: processedStatus, processedAt: new Date(), userId: user._id } }
     );
+    await updateCheckoutAttempt(normalizedAttemptId, {
+      status: 'applied',
+      billingEventId: eventId,
+      providerOrderId: normalized.orderId || undefined,
+      providerSubscriptionId: normalized.subscriptionId || undefined,
+      completedAt: new Date(),
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+      lastErrorCode: null,
+      lastErrorMessage: null,
+    });
     if (debug) {
       console.log(`[lemonsqueezy] updated user ${user._id} -> ${user.entitlements.pro.status}`);
     }
@@ -380,9 +467,98 @@ async function handleLemonSqueezyWebhook(req, res) {
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('[lemonsqueezy] webhook error:', err);
+    if (normalizedAttemptId) {
+      await updateCheckoutAttempt(normalizedAttemptId, {
+        status: 'failed',
+        lastErrorCode: 'WEBHOOK_PROCESSING_FAILED',
+        lastErrorMessage: err?.message || 'Webhook processing failed',
+      });
+    }
     return res.status(500).json({ error: 'Webhook processing failed' });
   }
 }
+
+router.post('/checkout/start', requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.auth.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
+    }
+
+    const { attemptId, provider, planId, mode, checkoutUrl, successUrl, cancelUrl, reused } =
+      await createCheckoutAttempt(CheckoutAttempt, {
+        user,
+        planId: req.body?.planId,
+      });
+
+    return res.status(200).json({
+      attemptId,
+      provider,
+      planId,
+      mode,
+      checkoutUrl,
+      successUrl,
+      cancelUrl,
+      reused,
+    });
+  } catch (err) {
+    if (err instanceof CheckoutStartError) {
+      return res.status(err.status).json({ error: err.message, code: err.code });
+    }
+    console.error('[billing] checkout/start error:', err);
+    return res.status(500).json({ error: 'Failed to start checkout', code: 'CHECKOUT_START_FAILED' });
+  }
+});
+
+router.get('/checkout/config', async (_req, res) => {
+  try {
+    return res.status(200).json(resolveCheckoutConfig());
+  } catch (err) {
+    console.error('[billing] checkout/config error:', err);
+    return res.status(500).json({
+      error: 'Failed to resolve checkout configuration',
+      code: 'CHECKOUT_CONFIG_FAILED',
+    });
+  }
+});
+
+router.get('/checkout/attempts/:attemptId/status', requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.auth.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
+    }
+
+    const attemptId = String(req.params.attemptId || '').trim();
+    if (!attemptId) {
+      return res.status(400).json({ error: 'Attempt id missing', code: 'CHECKOUT_ATTEMPT_ID_MISSING' });
+    }
+
+    let attempt = await CheckoutAttempt.findOne({ attemptId, userId: user._id });
+    if (!attempt) {
+      return res.status(404).json({ error: 'Checkout attempt not found', code: 'CHECKOUT_ATTEMPT_NOT_FOUND' });
+    }
+
+    const pendingApply = await applyPendingEntitlementsForUser(PendingEntitlement, user);
+    if (pendingApply.applied && attempt.billingEventId && pendingApply.eventId === attempt.billingEventId) {
+      await updateCheckoutAttempt(attempt.attemptId, {
+        status: 'applied',
+        completedAt: attempt.completedAt || new Date(),
+        customerEmail: normalizeEmail(user.email),
+        customerUserId: String(user._id),
+      });
+      attempt = await CheckoutAttempt.findOne({ attemptId, userId: user._id });
+    }
+
+    return res.status(200).json(serializeCheckoutAttemptStatus(attempt, user));
+  } catch (err) {
+    console.error('[billing] checkout attempt status error:', err);
+    return res.status(500).json({
+      error: 'Failed to resolve checkout attempt status',
+      code: 'CHECKOUT_ATTEMPT_STATUS_FAILED',
+    });
+  }
+});
 
 function normalizeManageUrlCandidate(url) {
   if (!url) return '';
@@ -441,23 +617,38 @@ async function fetchLemonSqueezyManageUrl({ apiKey, subscriptionId, customerId }
 router.get('/manage-url', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.auth.userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
+    }
 
     const lsMeta = user?.billing?.providers?.lemonsqueezy || {};
     const requestedProvider = String(req.query.provider || process.env.BILLING_PROVIDER || '').toLowerCase();
     const hasLsMeta = !!(lsMeta.manageUrl || lsMeta.subscriptionId || lsMeta.customerId);
     const provider = hasLsMeta ? 'lemonsqueezy' : requestedProvider || 'gumroad';
     if (provider !== 'lemonsqueezy') {
-      return res.status(400).json({ error: 'Provider not supported for manage URL' });
+      return res.status(400).json({
+        error: 'Provider not supported for manage URL',
+        code: 'MANAGE_PROVIDER_UNSUPPORTED',
+      });
     }
 
     if (lsMeta.manageUrl) {
       return res.status(200).json({ url: lsMeta.manageUrl });
     }
 
+    if (!lsMeta.subscriptionId && !lsMeta.customerId) {
+      return res.status(409).json({
+        error: 'Manage URL not ready for this account',
+        code: 'MANAGE_URL_NOT_READY',
+      });
+    }
+
     const apiKey = process.env.LEMONSQUEEZY_API_KEY || '';
     if (!apiKey) {
-      return res.status(409).json({ error: 'Manage URL unavailable' });
+      return res.status(409).json({
+        error: 'Manage URL unavailable',
+        code: 'MANAGE_URL_UNAVAILABLE',
+      });
     }
 
     const { url } = await fetchLemonSqueezyManageUrl({
@@ -467,7 +658,10 @@ router.get('/manage-url', requireAuth, async (req, res) => {
     });
 
     if (!url) {
-      return res.status(409).json({ error: 'Manage URL unavailable' });
+      return res.status(409).json({
+        error: 'Manage URL unavailable',
+        code: 'MANAGE_URL_UNAVAILABLE',
+      });
     }
 
     lsMeta.manageUrl = url;
@@ -478,7 +672,10 @@ router.get('/manage-url', requireAuth, async (req, res) => {
     return res.status(200).json({ url });
   } catch (err) {
     console.error('[lemonsqueezy] manage-url error:', err);
-    return res.status(500).json({ error: 'Failed to resolve manage URL' });
+    return res.status(500).json({
+      error: 'Failed to resolve manage URL',
+      code: 'MANAGE_URL_FAILED',
+    });
   }
 });
 

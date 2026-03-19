@@ -18,17 +18,13 @@ import { Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
+import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService, ShowcaseStatsPayload } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
-import { environment } from '../../../environments/environment';
-import {
-  buildCheckoutUrls,
-  hasCheckoutUrls,
-  resolvePaymentsProvider,
-} from '../../core/utils/payments-provider.util';
+import { PlanId } from '../../core/utils/payments-provider.util';
 import showcaseStatsJson from '../../../assets/questions/showcase-stats.json';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
@@ -64,9 +60,10 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   demoComponent?: Type<unknown>;
   private demoComponentPromise?: Promise<Type<unknown>>;
 
-  paymentsProvider = resolvePaymentsProvider(environment);
-  checkoutUrls = buildCheckoutUrls(this.paymentsProvider, environment);
-  paymentsEnabled = hasCheckoutUrls(this.checkoutUrls);
+  paymentsEnabled = true;
+  paymentsConfigReady = false;
+  checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
+  private checkoutConfigRequested = false;
 
   contact = {
     name: '',
@@ -455,6 +452,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     private injector: Injector,
     private qs: QuestionService,
     private analytics: AnalyticsService,
+    private billingCheckout: BillingCheckoutService,
     private experiments: ExperimentService,
     private route: ActivatedRoute,
   ) { }
@@ -500,6 +498,17 @@ You can also reset any task back to the starter whenever you want to re-practice
       window.removeEventListener('resize', this.onViewportResize);
     }
     if (typeof window !== 'undefined' && this.flowTimer) window.clearInterval(this.flowTimer);
+  }
+
+  private async loadCheckoutConfig(): Promise<void> {
+    if (this.checkoutConfigRequested) {
+      return;
+    }
+    this.checkoutConfigRequested = true;
+    const config = await this.billingCheckout.getCheckoutConfig();
+    this.paymentsEnabled = config?.enabled ?? false;
+    this.checkoutAvailability = config?.plans ?? null;
+    this.paymentsConfigReady = true;
   }
 
   toggleExplanation() {
@@ -568,6 +577,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.activateDemo();
     this.loadTriviaPreview();
     this.loadSystemPreview();
+    void this.loadCheckoutConfig();
     (Object.keys(this.sectionVisible) as Array<keyof typeof this.sectionVisible>)
       .forEach((key) => { this.sectionVisible[key] = true; });
   }
@@ -608,6 +618,10 @@ You can also reset any task back to the starter whenever you want to re-practice
     }
     if (key === 'faq') {
       this.sectionVisible.faq = true;
+      return;
+    }
+    if (key === 'pricing') {
+      void this.loadCheckoutConfig();
       return;
     }
     if (key === 'contact') {

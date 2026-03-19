@@ -3,14 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PricingPlansSectionComponent } from './components/pricing-plans-section/pricing-plans-section.component';
-import { environment } from '../../../environments/environment';
-import {
-  buildCheckoutUrls,
-  hasCheckoutUrls,
-  resolvePaymentsProvider,
-} from '../../core/utils/payments-provider.util';
 import { AnalyticsService } from '../../core/services/analytics.service';
+import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
+import { PlanId } from '../../core/utils/payments-provider.util';
 
 @Component({
   standalone: true,
@@ -22,7 +18,8 @@ import { ExperimentService } from '../../core/services/experiment.service';
       <app-pricing-plans-section
         variant="full"
         [paymentsEnabled]="paymentsEnabled"
-        [checkoutUrls]="checkoutUrls"
+        [paymentsConfigReady]="paymentsConfigReady"
+        [checkoutAvailability]="checkoutAvailability"
         [riskReversalPlacement]="riskReversalPlacement"
         analyticsSource="pricing_page"
         ctaMode="emit">
@@ -32,13 +29,14 @@ import { ExperimentService } from '../../core/services/experiment.service';
 })
 export class PricingComponent implements OnInit {
   private readonly SRC_PATTERN = /^[a-z0-9_-]{1,64}$/;
-  paymentsProvider = resolvePaymentsProvider(environment);
-  checkoutUrls = buildCheckoutUrls(this.paymentsProvider, environment);
-  paymentsEnabled = hasCheckoutUrls(this.checkoutUrls);
+  paymentsEnabled = true;
+  paymentsConfigReady = false;
+  checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
   riskReversalPlacement: 'top' | 'after_plans' = 'top';
 
   constructor(
     private analytics: AnalyticsService,
+    private billingCheckout: BillingCheckoutService,
     private experiments: ExperimentService,
     private route: ActivatedRoute,
   ) { }
@@ -60,6 +58,10 @@ export class PricingComponent implements OnInit {
       page: 'pricing',
       risk_reversal_variant: this.riskReversalPlacement,
     });
+
+    if (typeof window !== 'undefined') {
+      void this.loadCheckoutConfig();
+    }
   }
 
   private readSource(): string {
@@ -68,5 +70,12 @@ export class PricingComponent implements OnInit {
       .toLowerCase();
     if (!raw || !this.SRC_PATTERN.test(raw)) return 'direct';
     return raw;
+  }
+
+  private async loadCheckoutConfig(): Promise<void> {
+    const config = await this.billingCheckout.getCheckoutConfig();
+    this.paymentsEnabled = config?.enabled ?? false;
+    this.checkoutAvailability = config?.plans ?? null;
+    this.paymentsConfigReady = true;
   }
 }

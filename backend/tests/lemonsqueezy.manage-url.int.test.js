@@ -132,5 +132,52 @@ describe('LemonSqueezy manage-url route', () => {
       .set('Authorization', authHeader(user._id));
 
     expect(res.status).toBe(409);
+    expect(res.body.code).toBe('MANAGE_URL_UNAVAILABLE');
+  });
+
+  test('returns 400 with a stable code when provider does not support self-serve manage URLs', async () => {
+    const user = await seedUser({
+      accessTier: 'free',
+      entitlements: {
+        pro: { status: 'none', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+      billing: {
+        pro: { status: 'none' },
+        projects: { status: 'none' },
+        providers: {},
+      },
+    });
+
+    const res = await request(app)
+      .get('/api/billing/manage-url?provider=gumroad')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('MANAGE_PROVIDER_UNSUPPORTED');
+  });
+
+  test('returns 409 with a stable code when the account has no billing portal metadata yet', async () => {
+    const user = await seedUser({
+      accessTier: 'premium',
+      entitlements: {
+        pro: { status: 'active', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+      billing: {
+        pro: { status: 'active' },
+        projects: { status: 'none' },
+        providers: {
+          lemonsqueezy: {},
+        },
+      },
+    });
+
+    const res = await request(app)
+      .get('/api/billing/manage-url')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(409);
+    expect(res.body.code).toBe('MANAGE_URL_NOT_READY');
   });
 });

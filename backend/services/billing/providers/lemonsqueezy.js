@@ -171,6 +171,18 @@ function extractCustomUserId(body) {
   ]);
 }
 
+function extractCustomAttemptId(body) {
+  const customData = extractCustomData(body);
+  return extractCustomValue(customData, [
+    'fa_checkout_attempt_id',
+    'faCheckoutAttemptId',
+    'checkout_attempt_id',
+    'checkoutAttemptId',
+    'attempt_id',
+    'attemptId',
+  ]);
+}
+
 function extractCustomEmail(body) {
   const customData = extractCustomData(body);
   return extractCustomValue(customData, [
@@ -321,6 +333,7 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
     purchaseEmail,
     customEmail,
     userId: extractCustomUserId(body),
+    attemptId: extractCustomAttemptId(body),
     startedAt,
     customerId: extractCustomerId(body),
     subscriptionId: extractSubscriptionId(body),

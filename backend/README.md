@@ -34,13 +34,20 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 ### Billing (webhooks)
 
-- `BILLING_PROVIDER`: `gumroad` (default), `lemonsqueezy`, or `stripe` (future use).
+- `BILLING_PROVIDER`: `gumroad` (default) or `lemonsqueezy` for active hosted checkout. `stripe` remains reserved and is intentionally not exposed as a runtime checkout provider yet.
 - `GUMROAD_WEBHOOK_SECRET`: shared secret for Gumroad webhooks.
 - `LEMONSQUEEZY_WEBHOOK_SECRET_TEST`: LemonSqueezy test webhook secret.
 - `LEMONSQUEEZY_WEBHOOK_SECRET_LIVE`: LemonSqueezy live webhook secret.
 - `LEMONSQUEEZY_WEBHOOK_SECRET`: legacy fallback (treated as test secret if _TEST is not set).
 - `LEMONSQUEEZY_API_KEY`: LemonSqueezy API key for resolving customer portal/manage URLs.
 - `STRIPE_WEBHOOK_SECRET`: reserved for future use.
+- `PAYMENTS_MODE`: `test` or `live` for checkout-start URL selection. Production should use `live`. Local/E2E should stay on `test` unless you explicitly intend to hit live billing.
+- Provider checkout URLs for `POST /api/billing/checkout/start`:
+  - `GUMROAD_MONTHLY_URL`, `GUMROAD_QUARTERLY_URL`, `GUMROAD_ANNUAL_URL`
+  - `LEMONSQUEEZY_MONTHLY_URL`, `LEMONSQUEEZY_QUARTERLY_URL`, `LEMONSQUEEZY_ANNUAL_URL`, `LEMONSQUEEZY_LIFETIME_URL`
+  - `LEMONSQUEEZY_MONTHLY_URL_TEST`, `LEMONSQUEEZY_QUARTERLY_URL_TEST`, `LEMONSQUEEZY_ANNUAL_URL_TEST`, `LEMONSQUEEZY_LIFETIME_URL_TEST`
+  - `LEMONSQUEEZY_MONTHLY_URL_LIVE`, `LEMONSQUEEZY_QUARTERLY_URL_LIVE`, `LEMONSQUEEZY_ANNUAL_URL_LIVE`, `LEMONSQUEEZY_LIFETIME_URL_LIVE`
+  - `STRIPE_*` values are still reserved; `/api/billing/checkout/config` will report `configuredProvider: "stripe"` with `provider: null` and `enabled: false` until Stripe is fully implemented.
 
 ### LemonSqueezy prod setup
 
@@ -58,9 +65,25 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 3) Domain routing:
    - Ensure `api.frontendatlas.com` points to the backend Vercel project (`frontendatlas-be`) and the env vars are set there.
 
-3) Manage URL (customer portal):
+4) Checkout start:
+   - Route: `POST /api/billing/checkout/start` (auth required).
+   - The backend creates a `CheckoutAttempt`, appends custom metadata like `fa_checkout_attempt_id`, and returns the final hosted checkout URL.
+   - If the same user already has a recent active attempt for the same plan/provider, the backend reuses that attempt instead of creating a second one.
+   - Success/cancel redirects include `?attempt=<attemptId>` so the frontend can correlate the return flow.
+
+4b) Checkout attempt status:
+   - Route: `GET /api/billing/checkout/attempts/:attemptId/status` (auth required).
+   - Returns the correlated attempt state (`awaiting_webhook`, `applied`, `pending_user_match`, `failed`, `expired`) so the success page can show a deterministic activation state instead of trusting the redirect alone.
+   - Current product contract is single-tier: the success page only verifies whether premium access became active. It does not try to prove a specific plan delta or transaction-by-transaction upgrade path yet.
+
+5) Manage URL (customer portal):
    - Route: `GET /api/billing/manage-url` (auth required).
    - Requires `LEMONSQUEEZY_API_KEY` if the webhook payload did not include a portal URL.
+
+6) Provider semantics that are intentionally different:
+   - LemonSqueezy `subscription_cancelled` without an end date keeps the user's existing paid-through window instead of expiring access immediately.
+   - Gumroad cancellation without an end date expires access immediately.
+   - Those differences are intentional and covered by tests; do not normalize them away without an explicit product decision.
 
 ## Run
 

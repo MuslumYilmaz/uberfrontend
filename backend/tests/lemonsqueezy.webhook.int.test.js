@@ -13,6 +13,7 @@ jest.setTimeout(120000);
 let app;
 let User;
 let BillingEvent;
+let CheckoutAttempt;
 let PendingEntitlement;
 let connectToMongo;
 let disconnectMongo;
@@ -46,10 +47,12 @@ beforeAll(async () => {
   ({ connectToMongo, disconnectMongo } = require('../config/mongo'));
   User = require('../models/User');
   BillingEvent = require('../models/BillingEvent');
+  CheckoutAttempt = require('../models/CheckoutAttempt');
   PendingEntitlement = require('../models/PendingEntitlement');
 
   await connectToMongo(process.env.MONGO_URL_TEST);
   await BillingEvent.init();
+  await CheckoutAttempt.init();
   await PendingEntitlement.init();
 });
 
@@ -68,6 +71,7 @@ beforeEach(async () => {
   process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = '';
   await User.deleteMany({});
   await BillingEvent.deleteMany({});
+  await CheckoutAttempt.deleteMany({});
   await PendingEntitlement.deleteMany({});
   await seedUser();
 });
@@ -396,5 +400,59 @@ describe('LemonSqueezy webhook integration', () => {
 
     const pendingCount = await PendingEntitlement.countDocuments({ email: 'nouser@example.com' });
     expect(pendingCount).toBe(1);
+  });
+
+  test('correlates webhook payloads to an existing checkout attempt', async () => {
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    await CheckoutAttempt.create({
+      attemptId: 'chk_test_attempt',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'created',
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_test_attempt',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_test_attempt',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+    });
+
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_attempt_123',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_test_attempt',
+          },
+        },
+        relationships: {
+          subscription: { data: { id: 'sub_attempt_123' } },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+
+    const updatedAttempt = await CheckoutAttempt.findOne({ attemptId: 'chk_test_attempt' }).lean();
+    expect(updatedAttempt).toBeTruthy();
+    expect(updatedAttempt.status).toBe('applied');
+    expect(updatedAttempt.billingEventId).toBe('test:sub_attempt_123');
+    expect(updatedAttempt.providerSubscriptionId).toBe('sub_attempt_123');
+    expect(updatedAttempt.completedAt).toBeTruthy();
+    expect(updatedAttempt.lastErrorCode).toBeFalsy();
   });
 });
