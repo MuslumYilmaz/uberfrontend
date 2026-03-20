@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "id": "websocket-memory-leak",
+    "title": "Realtime feed leaks sockets and listeners",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "A live feed gets slower after route changes because each mount adds another socket listener and some never clean up.",
+    "signals": [
+      "Memory climbs after repeated navigation",
+      "Duplicate messages appear in the UI",
+      "Connection count keeps increasing in dev tools"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["memory", "websocket", "effects"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  },
+  "context": {
+    "symptom": "A trading feed works for the first visit, but after opening and closing the page several times, each incoming event renders multiple duplicates.",
+    "userImpact": "The page becomes noisy and slower over time, especially for users who navigate between dashboards.",
+    "environment": "React route mounts a feed component that opens a WebSocket and binds message listeners inside an effect.",
+    "evidence": [
+      {
+        "type": "metric",
+        "title": "Heap growth",
+        "body": "Heap grows by roughly 8MB after each open-close cycle and never returns to baseline."
+      },
+      {
+        "type": "log",
+        "title": "Connection count",
+        "body": "Network tab shows 1 socket, then 2, then 3 active connections after repeated visits."
+      },
+      {
+        "type": "snippet",
+        "title": "Effect excerpt",
+        "language": "tsx",
+        "body": "useEffect(() => {\n  const socket = new WebSocket(url);\n  socket.addEventListener('message', onMessage);\n}, [url, filters]);"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "root-cause",
+      "type": "single-select",
+      "title": "Stage 1: likely root cause",
+      "prompt": "What explains the leak most directly?",
+      "helperText": "Choose the explanation that matches duplicate events and growing connection count.",
+      "options": [
+        {
+          "id": "missing-cleanup",
+          "label": "The effect recreates sockets and listeners without proper cleanup, so mounts and dependency changes accumulate subscriptions.",
+          "points": 25,
+          "feedback": "Correct. The growing connection count and duplicate events both point to incomplete teardown.",
+          "isHarmful": false
+        },
+        {
+          "id": "json-payload-size",
+          "label": "Message payloads are just too large, so the browser reports a memory leak.",
+          "points": 5,
+          "feedback": "Large payloads can stress memory, but they do not explain steadily increasing connections and duplicate listeners.",
+          "isHarmful": false
+        },
+        {
+          "id": "react-reconciler-bug",
+          "label": "React reconciliation is leaking DOM nodes even though subscriptions are cleaned correctly.",
+          "points": 0,
+          "feedback": "The evidence points to retained external resources, not DOM diffing itself.",
+          "isHarmful": false
+        },
+        {
+          "id": "turn-off-strictmode",
+          "label": "StrictMode double-invocation is the issue, so production cleanup does not matter.",
+          "points": -5,
+          "feedback": "StrictMode can reveal lifecycle issues, but the real problem is missing cleanup around external subscriptions.",
+          "isHarmful": true
+        }
+      ]
+    },
+    {
+      "id": "debug-order",
+      "type": "priority-order",
+      "title": "Stage 2: debug priority order",
+      "prompt": "Rank the three most effective debug steps first.",
+      "helperText": "Start by reproducing lifecycle churn and proving retained subscriptions.",
+      "candidates": [
+        {
+          "id": "reproduce-lifecycle",
+          "label": "Repeat mount-unmount cycles and count active connections or listeners after each pass."
+        },
+        {
+          "id": "inspect-effect-cleanup",
+          "label": "Inspect the effect dependencies and whether cleanup removes listeners and closes the socket."
+        },
+        {
+          "id": "confirm-retained-handlers",
+          "label": "Use dev tools or logs to confirm old handlers still receive events after unmount."
+        },
+        {
+          "id": "compress-messages",
+          "label": "Compress socket payloads before checking lifecycle behavior."
+        },
+        {
+          "id": "increase-memory-limit",
+          "label": "Raise browser memory thresholds so the app stops slowing down."
+        }
+      ],
+      "expectedOrder": [
+        "reproduce-lifecycle",
+        "inspect-effect-cleanup",
+        "confirm-retained-handlers"
+      ],
+      "slotWeights": [12, 8, 5]
+    },
+    {
+      "id": "fix-set",
+      "type": "multi-select",
+      "title": "Stage 3: best fix set",
+      "prompt": "Which changes belong in the first reliable fix?",
+      "helperText": "Choose the options that reduce retained subscriptions and align lifecycle ownership.",
+      "options": [
+        {
+          "id": "cleanup-socket",
+          "label": "Return cleanup that removes listeners and closes the socket on dependency change or unmount.",
+          "points": 10,
+          "feedback": "Correct. External subscriptions must be torn down explicitly.",
+          "isHarmful": false
+        },
+        {
+          "id": "narrow-dependencies",
+          "label": "Limit the effect to the true connection key so unrelated state changes do not recreate the socket.",
+          "points": 10,
+          "feedback": "Correct. Broad dependency churn often creates accidental reconnection storms.",
+          "isHarmful": false
+        },
+        {
+          "id": "single-owner",
+          "label": "Centralize socket ownership or guard post-unmount state updates so only one active subscription exists.",
+          "points": 5,
+          "feedback": "Correct. Ownership clarity prevents overlapping listeners across mounts.",
+          "isHarmful": false
+        },
+        {
+          "id": "hide-warnings",
+          "label": "Suppress duplicate message warnings in the console to keep the UI calm.",
+          "points": 0,
+          "feedback": "That hides the signal instead of fixing the retained subscriptions.",
+          "isHarmful": false
+        },
+        {
+          "id": "socket-in-render",
+          "label": "Create the socket in render so React always keeps it in sync with props.",
+          "points": -10,
+          "feedback": "Opening sockets during render makes lifecycle bugs worse, not better.",
+          "isHarmful": true
+        }
+      ]
+    },
+    {
+      "id": "guardrail",
+      "type": "single-select",
+      "title": "Stage 4: regression guard",
+      "prompt": "What is the best follow-up guardrail?",
+      "helperText": "Pick the safeguard that catches leaks before users notice them.",
+      "options": [
+        {
+          "id": "connection-count-guard",
+          "label": "Add a mount-unmount regression test and connection-count instrumentation so duplicate subscriptions are obvious.",
+          "points": 25,
+          "feedback": "Correct. This guards the lifecycle bug directly and provides a production signal if it returns.",
+          "isHarmful": false
+        },
+        {
+          "id": "api-latency-only",
+          "label": "Track only feed latency because slower messages caused the duplicates.",
+          "points": 5,
+          "feedback": "Latency is useful, but it does not catch duplicate listeners or retained sockets.",
+          "isHarmful": false
+        },
+        {
+          "id": "monthly-manual-check",
+          "label": "Have someone manually refresh the page monthly to watch for memory growth.",
+          "points": 0,
+          "feedback": "Manual checks are too weak for a lifecycle leak that can recur with small code changes.",
+          "isHarmful": false
+        },
+        {
+          "id": "reload-after-navigation",
+          "label": "Force a full page reload after every navigation away from the feed.",
+          "points": -5,
+          "feedback": "That hides the leak by resetting the app instead of fixing subscription ownership.",
+          "isHarmful": true
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "scoreBands": [
+      {
+        "min": 0,
+        "max": 39,
+        "label": "Leak identified too vaguely",
+        "summary": "You saw slowness, but not the retained subscription lifecycle behind it."
+      },
+      {
+        "min": 40,
+        "max": 69,
+        "label": "Correct diagnosis, softer guardrail",
+        "summary": "You found the cleanup issue, but the debug order or long-term guard missed one lever."
+      },
+      {
+        "min": 70,
+        "max": 100,
+        "label": "Lifecycle ownership mindset",
+        "summary": "You connected the leak to subscription teardown, controlled dependencies, and added a durable guard."
+      }
+    ],
+    "idealRunbook": [
+      "Reproduce repeated mount-unmount cycles.",
+      "Measure active connections and retained listeners.",
+      "Fix cleanup and dependency scope together.",
+      "Add instrumentation that makes duplicate subscriptions visible."
+    ],
+    "teachingBlocks": [
+      {
+        "type": "callout",
+        "title": "Common interview trap",
+        "text": "Many candidates say 'memory leak' but stop there. The stronger answer names what is retained and why the lifecycle allows it.",
+        "variant": "warning"
+      },
+      {
+        "type": "checklist",
+        "title": "Stronger explanation",
+        "items": [
+          "External resource ownership is explicit.",
+          "Cleanup is tied to the same effect that subscribed.",
+          "Dependencies reflect connection identity, not every render input."
+        ]
+      }
+    ],
+    "optionalReflectionPrompt": "If the feed connection were shared globally, how would your cleanup strategy change?"
+  },
+  "relatedPractice": [
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-useeffect-purpose"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-memory-leaks-common-sources"
+    }
+  ]
+}

@@ -50,6 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
     /^\/guides\/system-design\/.+/,
     /^\/guides\/behavioral\/.+/,
     /^\/system-design\/[^/]+\/?$/,
+    /^\/incidents\/[^/]+\/?$/,
     /^\/(javascript|angular|react|vue|html|css)\/trivia\/[^/]+$/,
     /^\/coding\/[^/]+$/,
     /^\/(javascript|angular|react|vue|html|css)\/coding\/[^/]+$/,

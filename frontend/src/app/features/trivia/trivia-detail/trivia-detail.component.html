@@ -403,6 +403,7 @@
 
 <!-- Footer -->
 <app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
+    [practiceLeftLabel]="'Incidents hub'" [practiceLeftRoute]="['/incidents']"
     [showSubmit]="true" [submitLabel]="submitLabel()" [submitDisabled]="isCompletionPending()"
     (submit)="markComplete()" (prev)="prev()" (next)="next()" (back)="backToReturn()">
 </app-footer>

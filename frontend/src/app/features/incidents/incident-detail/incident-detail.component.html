@@ -1,0 +1,339 @@
+<ng-container *ngIf="incident() as scenario; else missingIncident">
+  <div class="incident-detail-shell">
+    <header class="incident-hero">
+      <div class="incident-hero__copy">
+        <a class="incident-hero__back" [routerLink]="['/incidents']">← Back to incidents</a>
+        <p class="incident-hero__eyebrow">{{ scenario.meta.tech === 'react' ? 'React' : 'JavaScript' }} incident</p>
+        <h1>{{ scenario.meta.title }}</h1>
+        <p class="incident-hero__summary">{{ scenario.meta.summary }}</p>
+        <div class="incident-hero__chips">
+          <span class="incident-chip">{{ scenario.meta.difficulty | titlecase }}</span>
+          <span class="incident-chip">{{ scenario.meta.estimatedMinutes }} min</span>
+          <span class="incident-chip" *ngIf="progressRecord().bestScore > 0">Best {{ progressRecord().bestScore }}/100</span>
+        </div>
+      </div>
+
+      <aside class="incident-hero__panel">
+        <p class="incident-hero__panel-title">Failure signals</p>
+        <ul>
+          <li *ngFor="let signal of scenario.meta.signals; trackBy: trackByString">{{ signal }}</li>
+        </ul>
+      </aside>
+    </header>
+
+    <nav class="incident-step-nav" aria-label="Incident steps">
+      <button type="button" class="incident-step-nav__item" [class.is-active]="activeStepIndex() === 0"
+        [class.is-unlocked]="isStepUnlocked(0)" (click)="goToStep(0)">
+        Overview
+      </button>
+      <button
+        type="button"
+        class="incident-step-nav__item"
+        *ngFor="let stage of scenario.stages; let index = index"
+        [class.is-active]="activeStepIndex() === index + 1"
+        [class.is-unlocked]="isStepUnlocked(index + 1)"
+        [disabled]="!isStepUnlocked(index + 1)"
+        (click)="goToStep(index + 1)">
+        {{ index + 1 }}
+      </button>
+      <button type="button" class="incident-step-nav__item" [class.is-active]="activeStepIndex() === debriefStepIndex()"
+        [class.is-unlocked]="isStepUnlocked(debriefStepIndex())" [disabled]="!isStepUnlocked(debriefStepIndex())"
+        (click)="goToStep(debriefStepIndex())">
+        Debrief
+      </button>
+    </nav>
+
+    <section class="incident-stage-card" *ngIf="activeStepIndex() === 0">
+      <div class="incident-stage-card__header">
+        <div>
+          <p class="incident-stage-card__eyebrow">Overview</p>
+          <h2>What failed in production?</h2>
+        </div>
+        <span class="incident-stage-card__badge">Guided simulator</span>
+      </div>
+
+      <div class="incident-context-grid">
+        <article class="incident-context-block">
+          <h3>Symptom</h3>
+          <p>{{ scenario.context.symptom }}</p>
+        </article>
+        <article class="incident-context-block">
+          <h3>User impact</h3>
+          <p>{{ scenario.context.userImpact }}</p>
+        </article>
+        <article class="incident-context-block incident-context-block--wide">
+          <h3>Environment</h3>
+          <p>{{ scenario.context.environment }}</p>
+        </article>
+      </div>
+
+      <div class="incident-evidence-grid">
+        <article class="incident-evidence-card" *ngFor="let card of scenario.context.evidence">
+          <div class="incident-evidence-card__type">{{ card.type | titlecase }}</div>
+          <h3>{{ card.title }}</h3>
+          <pre *ngIf="card.type === 'snippet'; else textEvidence"><code>{{ card.body }}</code></pre>
+          <ng-template #textEvidence>
+            <p>{{ card.body }}</p>
+          </ng-template>
+        </article>
+      </div>
+    </section>
+
+    <section class="incident-stage-card" *ngIf="currentStage() as stage" [attr.data-testid]="'incident-stage-' + stage.id">
+      <div class="incident-stage-card__header">
+        <div>
+          <p class="incident-stage-card__eyebrow">{{ stage.title }}</p>
+          <h2>{{ stage.prompt }}</h2>
+        </div>
+        <span class="incident-stage-card__badge">Scored</span>
+      </div>
+
+      <p class="incident-stage-card__helper" *ngIf="stage.helperText">{{ stage.helperText }}</p>
+
+      <div class="incident-options" *ngIf="stage.type === 'single-select'" role="radiogroup">
+        <button
+          type="button"
+          class="incident-option"
+          *ngFor="let option of stage.options"
+          role="radio"
+          [attr.aria-checked]="isOptionSelected(stage.id, option.id)"
+          [class.is-selected]="isOptionSelected(stage.id, option.id)"
+          [disabled]="isStageSubmitted(stage.id)"
+          [attr.data-testid]="'incident-option-' + stage.id + '-' + option.id"
+          (click)="activateOption(stage, option.id)"
+          (keydown)="onOptionKeydown($event, stage, option.id)">
+          <span class="incident-option__marker" aria-hidden="true"></span>
+          <span class="incident-option__copy">{{ option.label }}</span>
+        </button>
+      </div>
+
+      <div class="incident-options" *ngIf="stage.type === 'multi-select'">
+        <button
+          type="button"
+          class="incident-option"
+          *ngFor="let option of stage.options"
+          role="checkbox"
+          [attr.aria-checked]="isOptionSelected(stage.id, option.id)"
+          [class.is-selected]="isOptionSelected(stage.id, option.id)"
+          [disabled]="isStageSubmitted(stage.id)"
+          [attr.data-testid]="'incident-option-' + stage.id + '-' + option.id"
+          (click)="activateOption(stage, option.id)"
+          (keydown)="onOptionKeydown($event, stage, option.id)">
+          <span class="incident-option__marker" aria-hidden="true"></span>
+          <span class="incident-option__copy">{{ option.label }}</span>
+        </button>
+      </div>
+
+      <div class="incident-priority" *ngIf="stage.type === 'priority-order'">
+        <ol class="incident-priority__list">
+          <li class="incident-priority__item" *ngFor="let candidateId of priorityOrder(stage); let index = index">
+            <div class="incident-priority__rank">#{{ index + 1 }}</div>
+            <div class="incident-priority__copy">
+              <div class="incident-priority__title">{{ candidateLabel(stage, candidateId) }}</div>
+              <div class="incident-priority__desc" *ngIf="candidateDescription(stage, candidateId)">
+                {{ candidateDescription(stage, candidateId) }}
+              </div>
+            </div>
+            <div class="incident-priority__controls">
+              <button
+                type="button"
+                class="incident-priority__btn"
+                [disabled]="isStageSubmitted(stage.id) || index === 0"
+                [attr.data-testid]="'incident-priority-up-' + candidateId"
+                (click)="movePriorityItem(stage, candidateId, -1)"
+                (keydown)="onPriorityControlKeydown($event, stage, candidateId, -1)">
+                Up
+              </button>
+              <button
+                type="button"
+                class="incident-priority__btn"
+                [disabled]="isStageSubmitted(stage.id) || index === priorityOrder(stage).length - 1"
+                [attr.data-testid]="'incident-priority-down-' + candidateId"
+                (click)="movePriorityItem(stage, candidateId, 1)"
+                (keydown)="onPriorityControlKeydown($event, stage, candidateId, 1)">
+                Down
+              </button>
+            </div>
+          </li>
+        </ol>
+        <p class="incident-priority__hint">Only the top {{ stage.expectedOrder.length }} positions are scored.</p>
+      </div>
+
+      <div class="incident-feedback" *ngIf="currentFeedback() as feedback" [attr.data-testid]="'incident-feedback-' + stage.id">
+        <div class="incident-feedback__head" [attr.data-status]="stageFeedbackStatus(stage.id)">
+          <h3>{{ feedbackHeading(stage.id) }}</h3>
+          <span>{{ feedback.rawScore }}/{{ feedback.maxScore }}</span>
+        </div>
+
+        <div class="incident-feedback__body" *ngIf="feedback.optionFeedback.length">
+          <article class="incident-feedback__entry" *ngFor="let item of feedback.optionFeedback">
+            <div class="incident-feedback__entry-title">{{ item.label }}</div>
+            <p>{{ item.feedback }}</p>
+          </article>
+        </div>
+
+        <div class="incident-feedback__body" *ngIf="feedback.priorityFeedback.length">
+          <article class="incident-feedback__entry" *ngFor="let slot of feedback.priorityFeedback">
+            <div class="incident-feedback__entry-title">
+              Slot {{ slot.slot }}: {{ slot.matched ? 'matched' : 'review this step' }}
+            </div>
+            <p>Expected: {{ slot.expectedLabel }}</p>
+            <p>Chosen: {{ slot.actualLabel || 'None' }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="incident-stage-card" *ngIf="activeStepIndex() === debriefStepIndex()" data-testid="incident-debrief">
+      <div class="incident-stage-card__header">
+        <div>
+          <p class="incident-stage-card__eyebrow">Debrief</p>
+          <h2>{{ attemptEvaluation().passed ? 'Passed' : 'Review again' }} · {{ attemptEvaluation().score }}/100</h2>
+        </div>
+        <span class="incident-stage-card__badge" [class.is-pass]="attemptEvaluation().passed">
+          {{ attemptEvaluation().passed ? '70+ reached' : 'Below 70' }}
+        </span>
+      </div>
+
+      <div class="incident-score-band" *ngIf="scoreBand() as band">
+        <h3>{{ band.label }}</h3>
+        <p>{{ band.summary }}</p>
+      </div>
+
+      <div class="incident-debrief-grid">
+        <article class="incident-debrief-card">
+          <h3>Ideal runbook</h3>
+          <ol>
+            <li *ngFor="let item of scenario.debrief.idealRunbook; trackBy: trackByString">{{ item }}</li>
+          </ol>
+        </article>
+
+        <article class="incident-debrief-card">
+          <h3>Reflection note</h3>
+          <p *ngIf="scenario.debrief.optionalReflectionPrompt">{{ scenario.debrief.optionalReflectionPrompt }}</p>
+          <textarea
+            [ngModel]="reflectionNote()"
+            (ngModelChange)="onReflectionChange($event)"
+            [ngModelOptions]="{ standalone: true }"
+            maxlength="240"
+            rows="5"
+            data-testid="incident-reflection-note"></textarea>
+          <div class="incident-debrief-card__counter">{{ reflectionNote().length }}/240</div>
+        </article>
+      </div>
+
+      <div class="incident-teaching-blocks">
+        <article class="incident-teaching-block" *ngFor="let block of scenario.debrief.teachingBlocks">
+          <ng-container [ngSwitch]="block.type">
+            <div *ngSwitchCase="'text'">
+              <p>{{ $any(block).text }}</p>
+            </div>
+
+            <div *ngSwitchCase="'callout'" class="incident-callout" [attr.data-variant]="$any(block).variant || 'info'">
+              <h3 *ngIf="$any(block).title">{{ $any(block).title }}</h3>
+              <p>{{ $any(block).text }}</p>
+            </div>
+
+            <div *ngSwitchCase="'checklist'">
+              <h3 *ngIf="$any(block).title">{{ $any(block).title }}</h3>
+              <ul>
+                <li *ngFor="let item of $any(block).items; trackBy: trackByString">{{ item }}</li>
+              </ul>
+            </div>
+
+            <div *ngSwitchCase="'steps'">
+              <h3 *ngIf="$any(block).title">{{ $any(block).title }}</h3>
+              <ol>
+                <li *ngFor="let item of $any(block).items; trackBy: trackByString">{{ item }}</li>
+              </ol>
+            </div>
+          </ng-container>
+        </article>
+      </div>
+
+      <div class="incident-related" *ngIf="scenario.relatedPractice.length">
+        <h3>Related practice</h3>
+        <div class="incident-related__links">
+          <a
+            *ngFor="let item of scenario.relatedPractice"
+            [routerLink]="relatedPracticeRoute(item)"
+            [attr.data-testid]="'incident-related-' + item.id">
+            <span>{{ relatedPracticeLabel(item) }}</span>
+            <strong>{{ item.id }}</strong>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="incident-action-bar">
+      <button type="button" class="incident-action-bar__btn" [disabled]="activeStepIndex() === 0" (click)="previousStep()">
+        Previous
+      </button>
+
+      <div class="incident-action-bar__meta">
+        <span *ngIf="activeStepIndex() > 0 && activeStepIndex() < debriefStepIndex()">Stage {{ activeStepIndex() }} of {{ stages().length }}</span>
+        <span *ngIf="activeStepIndex() === 0">Overview</span>
+        <span *ngIf="activeStepIndex() === debriefStepIndex()">Debrief</span>
+      </div>
+
+      <div class="incident-action-bar__cluster" *ngIf="activeStepIndex() < debriefStepIndex(); else debriefActions">
+        <ng-container *ngIf="currentStage() as actionStage; else overviewAdvance">
+          <button
+            type="button"
+            class="incident-action-bar__btn incident-action-bar__btn--primary"
+            *ngIf="!isStageSubmitted(actionStage.id); else stageAdvance"
+            [disabled]="!canSubmitCurrentStage()"
+            (click)="submitCurrentStage()">
+            Submit response
+          </button>
+        </ng-container>
+
+        <ng-template #overviewAdvance>
+          <button
+            type="button"
+            class="incident-action-bar__btn incident-action-bar__btn--primary"
+            (click)="nextStep()">
+            {{ nextButtonLabel() }}
+          </button>
+        </ng-template>
+
+        <ng-template #stageAdvance>
+          <button
+            type="button"
+            class="incident-action-bar__btn incident-action-bar__btn--primary"
+            (click)="nextStep()">
+            {{ nextButtonLabel() }}
+          </button>
+        </ng-template>
+      </div>
+
+      <ng-template #debriefActions>
+        <div class="incident-action-bar__cluster">
+          <button type="button" class="incident-action-bar__btn" (click)="restartIncident()">Replay</button>
+          <button
+            type="button"
+            class="incident-action-bar__btn"
+            [disabled]="!prevIncident()"
+            (click)="goToAdjacentIncident(prevIncident())">
+            Previous incident
+          </button>
+          <button
+            type="button"
+            class="incident-action-bar__btn incident-action-bar__btn--primary"
+            [disabled]="!nextIncident()"
+            (click)="goToAdjacentIncident(nextIncident())">
+            Next incident
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #missingIncident>
+  <section class="incident-missing">
+    <h1>Incident not found</h1>
+    <p>This simulator entry could not be loaded.</p>
+    <a [routerLink]="['/incidents']">Back to incidents</a>
+  </section>
+</ng-template>

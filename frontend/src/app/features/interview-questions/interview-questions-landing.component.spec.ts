@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { InterviewQuestionsLandingComponent } from './interview-questions-landing.component';
+import { PracticeRegistryService } from '../../core/services/practice-registry.service';
 import { QuestionService } from '../../core/services/question.service';
 import { SeoService } from '../../core/services/seo.service';
 
@@ -93,6 +95,23 @@ describe('InterviewQuestionsLandingComponent', () => {
             loadQuestionSummaries: () => of([]),
           },
         },
+        {
+          provide: PracticeRegistryService,
+          useValue: {
+            primaryHubEntries: signal([
+              { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
+              { key: 'incidents', label: 'Production incidents', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
+              {
+                key: 'system-design',
+                label: 'System design',
+                icon: 'pi pi-sitemap',
+                route: '/coding',
+                query: { view: 'formats', category: 'system' },
+                family: 'question',
+              },
+            ]),
+          },
+        },
       ],
     }).compileComponents();
   });
@@ -108,9 +127,11 @@ describe('InterviewQuestionsLandingComponent', () => {
     const codingLink = fixture.nativeElement.querySelector('a[href="/react/coding/react-counter"]') as HTMLAnchorElement | null;
     const triviaLink = fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-purpose"]') as HTMLAnchorElement | null;
     const featuredLink = fixture.nativeElement.querySelector('a[href="/react/trivia/react-hooks-rules"]') as HTMLAnchorElement | null;
+    const incidentsLink = fixture.nativeElement.querySelector('a[href="/incidents"]') as HTMLAnchorElement | null;
     expect(codingLink).toBeTruthy();
     expect(triviaLink).toBeTruthy();
     expect(featuredLink).toBeTruthy();
+    expect(incidentsLink).toBeTruthy();
 
     const mustKnowStat = fixture.nativeElement.textContent || '';
     expect(mustKnowStat).toContain('Must know');

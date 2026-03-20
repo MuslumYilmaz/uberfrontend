@@ -8,7 +8,7 @@
             <ul>
                 <li>
                     <a class="nav-link" [routerLink]="$any(nav[0]).to" [queryParams]="$any(nav[0]).query || null"
-                        routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+                        [class.is-active]="isLinkActive($any(nav[0]))"
                         aria-label="Home">
                         <i class="pi nav-ic pi-compass"></i>
                         <span class="label">Home base</span>
@@ -30,28 +30,11 @@
 
                     <div class="group-list" [id]="'group-1'" [class.open]="$any(nav[1]).open">
                         <ul class="group-inner">
-                            <li>
-                                <a class="nav-sublink" [routerLink]="$any(nav[1]).children[0].to"
-                                    [queryParams]="$any(nav[1]).children[0].query || null" routerLinkActive="is-active"
-                                    [routerLinkActiveOptions]="{ exact: true }" aria-label="Question library">
-                                    <i class="pi nav-ic pi-database"></i>
-                                    <span class="label">Question library</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="nav-sublink" [routerLink]="$any(nav[1]).children[1].to"
-                                    [queryParams]="$any(nav[1]).children[1].query || null" routerLinkActive="is-active"
-                                    [routerLinkActiveOptions]="{ exact: true }" aria-label="Interview prep tracks">
-                                    <i class="pi nav-ic pi-server"></i>
-                                    <span class="label">Interview prep tracks</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="nav-sublink" [routerLink]="$any(nav[1]).children[2].to"
-                                    [queryParams]="$any(nav[1]).children[2].query || null" routerLinkActive="is-active"
-                                    [routerLinkActiveOptions]="{ exact: true }" aria-label="Question styles">
-                                    <i class="pi nav-ic pi-clone"></i>
-                                    <span class="label">Question styles</span>
+                            <li *ngFor="let c of $any(nav[1]).children">
+                                <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
+                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label">
+                                    <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
+                                    <span class="label">{{ c.label }}</span>
                                 </a>
                             </li>
                         </ul>
@@ -76,9 +59,8 @@
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[2]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
-                                    routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
-                                    [attr.aria-label]="c.label">
-                                    <i class="pi nav-ic pi-directions"></i>
+                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label">
+                                    <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
                                     <span class="label">{{ c.label }}</span>
                                 </a>
                             </li>
@@ -100,9 +82,8 @@
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[3]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
-                                    routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
-                                    [attr.aria-label]="c.label">
-                                    <i class="pi nav-ic pi-book"></i>
+                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label">
+                                    <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
                                     <span class="label">{{ c.label }}</span>
                                 </a>
                             </li>
@@ -127,8 +108,7 @@
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[4]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
-                                    routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
-                                    [attr.aria-label]="c.label">
+                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label">
                                     <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
                                     <span class="label">{{ c.label }}</span>
                                 </a>

@@ -3,8 +3,12 @@ import path from 'path';
 
 const SRC_DIR = path.resolve('src');
 const ASSETS_DIR = path.join(SRC_DIR, 'assets');
+const PRACTICE_DIR = path.join(ASSETS_DIR, 'practice');
+const PRACTICE_REGISTRY = path.join(PRACTICE_DIR, 'registry.json');
 const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
+const INCIDENTS_DIR = path.join(ASSETS_DIR, 'incidents');
 const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
+const INCIDENTS_INDEX = path.join(INCIDENTS_DIR, 'index.json');
 const TRACK_REGISTRY = path.join(QUESTIONS_DIR, 'track-registry.json');
 const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
 const MASTERY_PATHS_DIR = path.join(SRC_DIR, 'app', 'shared', 'mastery', 'paths');
@@ -157,6 +161,7 @@ function buildRoutes() {
     '/admin/users',
     '/changelog',
     '/coding',
+    '/incidents',
     '/pricing',
     '/interview-questions',
     '/guides/framework-prep',
@@ -184,6 +189,17 @@ function buildRoutes() {
     '/legal/cookies',
   ].forEach((route) => addRoute(routes, route));
 
+  const hasPracticeRegistry = fs.existsSync(PRACTICE_REGISTRY);
+  if (hasPracticeRegistry) {
+    const items = readJson(PRACTICE_REGISTRY);
+    if (Array.isArray(items)) {
+      items.forEach((item) => {
+        if (!item?.route) return;
+        addRoute(routes, item.route);
+      });
+    }
+  }
+
   // Trivia detail routes
   listTechDirs().forEach((tech) => {
     const codingPath = path.join(QUESTIONS_DIR, tech, 'coding.json');
@@ -191,28 +207,30 @@ function buildRoutes() {
     const debugPath = path.join(QUESTIONS_DIR, tech, 'debug.json');
     if (fs.existsSync(codingPath)) {
       const codingList = readJson(codingPath);
-      addQuestionUrls(routes, tech, 'coding', codingList);
+      if (!hasPracticeRegistry) addQuestionUrls(routes, tech, 'coding', codingList);
       addCompanySlugs(companyPreviewSlugs, codingList);
     }
     if (fs.existsSync(triviaPath)) {
       const list = readJson(triviaPath);
       if (Array.isArray(list)) {
-        list.forEach((q) => {
-          if (!q?.id) return;
-          addRoute(routes, `/${tech}/trivia/${q.id}`);
-        });
+        if (!hasPracticeRegistry) {
+          list.forEach((q) => {
+            if (!q?.id) return;
+            addRoute(routes, `/${tech}/trivia/${q.id}`);
+          });
+        }
         addCompanySlugs(companyPreviewSlugs, list);
       }
     }
     if (fs.existsSync(debugPath)) {
       const debugList = readJson(debugPath);
-      addQuestionUrls(routes, tech, 'debug', debugList);
+      if (!hasPracticeRegistry) addQuestionUrls(routes, tech, 'debug', debugList);
       addCompanySlugs(companyPreviewSlugs, debugList);
     }
   });
 
   // System design detail routes
-  if (fs.existsSync(SYSTEM_DESIGN_INDEX)) {
+  if (!hasPracticeRegistry && fs.existsSync(SYSTEM_DESIGN_INDEX)) {
     const items = readJson(SYSTEM_DESIGN_INDEX);
     if (Array.isArray(items)) {
       items.forEach((q) => {
@@ -220,6 +238,16 @@ function buildRoutes() {
         addRoute(routes, `/system-design/${q.id}`);
       });
       addCompanySlugs(companyPreviewSlugs, items);
+    }
+  }
+
+  if (!hasPracticeRegistry && fs.existsSync(INCIDENTS_INDEX)) {
+    const items = readJson(INCIDENTS_INDEX);
+    if (Array.isArray(items)) {
+      items.forEach((item) => {
+        if (!item?.id) return;
+        addRoute(routes, `/incidents/${item.id}`);
+      });
     }
   }
 

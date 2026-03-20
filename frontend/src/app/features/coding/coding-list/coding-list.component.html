@@ -32,6 +32,18 @@
       </div>
     </section>
 
+    <section class="fa-hub-cluster" aria-label="Adjacent practice routes">
+      <h2 class="fa-section-title">Adjacent practice routes</h2>
+      <p class="fa-meta-text">
+        Switch into adjacent practice modes when you want incidents, system design, or future review-style simulations.
+      </p>
+      <div class="fa-hub-cluster__links">
+        <a *ngFor="let link of practiceRouteLinks()" [routerLink]="link.route" [queryParams]="link.query || null">
+          Open {{ link.label | lowercase }}
+        </a>
+      </div>
+    </section>
+
     <section faCard class="fa-prep-cluster" aria-label="Framework prep path guidance">
       <div class="fa-prep-cluster__header">
         <div class="fa-prep-cluster__heading">

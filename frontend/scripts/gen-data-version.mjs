@@ -14,6 +14,8 @@ const projectRoot = path.resolve(__dirname, "..");
 // pick the files that should bump the data version when they change
 const globs = [
     "src/assets/questions/**/*.{json,md}",
+    "src/assets/incidents/**/*.{json,md}",
+    "src/assets/practice/**/*.{json,md}",
     "src/app/**/*.ts",
     "package.json",
     "angular.json"

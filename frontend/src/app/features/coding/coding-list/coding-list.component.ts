@@ -17,6 +17,8 @@ import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { QuestionListResolved } from '../../../core/resolvers/question-list.resolver';
+import { PracticeCatalogEntry } from '../../../core/models/practice.model';
+import { PracticeRegistryService } from '../../../core/services/practice-registry.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
@@ -240,11 +242,15 @@ function inferCategory(q: any): CategoryKey {
 })
 export class CodingListComponent implements OnInit, OnDestroy {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly practiceRegistry = inject(PracticeRegistryService);
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
   solvedIds = this.progress.solvedIds;
   solvedSet = computed(() => new Set(this.progress.solvedIds()));
   solvedIds$ = toObservable(this.progress.solvedIds);
+  readonly practiceRouteLinks = computed<PracticeCatalogEntry[]>(() =>
+    this.practiceRegistry.primaryHubEntries().filter((entry) => entry.key !== 'question-library'),
+  );
 
   // ----- filter UI state -----
   searchTerm = '';

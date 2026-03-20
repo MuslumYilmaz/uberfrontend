@@ -213,6 +213,13 @@
 /html/trivia/html-title-tag
 /html/trivia/html-vs-xhtml
 /html/trivia/web-accessibility-make-page-accessible
+/incidents
+/incidents/autosave-overwrites-latest-edit
+/incidents/context-rerender-storm
+/incidents/modal-screen-reader-failure
+/incidents/search-typing-lag
+/incidents/stale-search-race
+/incidents/websocket-memory-leak
 /interview-questions
 /javascript/coding/js-abortable-helpers
 /javascript/coding/js-add-strings

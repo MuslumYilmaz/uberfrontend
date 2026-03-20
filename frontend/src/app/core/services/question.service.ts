@@ -5,12 +5,11 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { firstValueFrom, forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
 import { AccessLevel, Question } from '../models/question.model';
 import { Tech } from '../models/user.model';
 import { ASSET_READER, AssetReader } from './asset-reader';
 import { QuestionPersistenceService } from './question-persistence.service';
-import { buildAssetUrl, getSafeAssetBase, normalizeAssetPath } from '../utils/asset-url.util';
+import { PracticeAssetResolverService } from './practice-asset-resolver.service';
 
 type Kind = 'coding' | 'trivia' | 'debug';
 type LoadQuestionsOptions = {
@@ -32,8 +31,6 @@ export type ShowcaseStatsPayload = {
   companyCounts: Record<string, { all: number; coding: number; trivia: number; system: number }>;
 };
 
-type DataVersion = { dataVersion?: string; version?: string };
-
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
   private readonly platformId = inject(PLATFORM_ID);
@@ -41,22 +38,11 @@ export class QuestionService {
   private readonly transferState = inject(TransferState);
   private readonly assetReader = inject(ASSET_READER) as AssetReader;
   private readonly persistence = inject(QuestionPersistenceService);
+  private readonly assetResolver = inject(PracticeAssetResolverService);
 
   private readonly cachePrefix = 'qcache:';          // normalized cache
   private readonly overridePrefix = 'qoverride:';    // manual/local overrides
-  private readonly dvKey = `${this.cachePrefix}dv`;
   private readonly inflightLoads = new Map<string, Observable<Question[]>>();
-  private readonly cacheVersionInflight = new Map<string, Promise<void>>();
-
-  // NEW: CDN / LocalStorage switcher flag
-  private readonly cdnFlagKey = 'fa:cdn:enabled';
-  // Varsayılan: environment.cdnBaseUrl varsa CDN açık kabul ediyoruz
-  private readonly defaultCdnEnabled =
-    typeof (environment as any).cdnEnabled === 'boolean'
-      ? (environment as any).cdnEnabled
-      : !!(environment as any).cdnBaseUrl;
-  private version$?: Observable<string>;
-  private versionModeKey: string | null = null;
 
   constructor(private http: HttpClient) { }
 
@@ -64,25 +50,13 @@ export class QuestionService {
 
   /** Runtime'da CDN'i aç/kapatmak için. Örn: settings ekranından çağır. */
   setCdnEnabled(enabled: boolean): void {
-    this.safeSet(this.cdnFlagKey, enabled ? '1' : '0');
-    // Mod değişince eski normalized cache'leri temizlemek mantıklı
+    this.assetResolver.setCdnEnabled(enabled);
     this.clearCache();
-    // Re-read data-version from the new source (CDN vs assets)
-    this.version$ = undefined;
-    this.versionModeKey = null;
   }
 
   /** Şu an CDN modunun açık mı, local-only mod mu olduğunu döner. */
   isCdnEnabled(): boolean {
-    return this.cdnEnabled;
-  }
-
-  // Internal getter
-  private get cdnEnabled(): boolean {
-    const raw = this.safeGet(this.cdnFlagKey);
-    if (raw === '0' || raw === 'false') return false;
-    if (raw === '1' || raw === 'true') return true;
-    return this.defaultCdnEnabled;
+    return this.assetResolver.isCdnEnabled();
   }
 
   // ---------- public API ----------------------------------------------------
@@ -113,7 +87,7 @@ export class QuestionService {
       return of(list);
     }
 
-    const inflightKey = `${technology}:${kind}:${this.cdnEnabled ? 'cdn' : 'assets'}`;
+    const inflightKey = `${technology}:${kind}:${this.assetResolver.isCdnEnabled() ? 'cdn' : 'assets'}`;
     const existing = this.inflightLoads.get(inflightKey);
     if (existing) return existing;
 
@@ -349,7 +323,7 @@ export class QuestionService {
     kind: Kind,
     bankVersion: string,
   ): Promise<Question[]> {
-    await this.ensureCacheVersionAsync(bankVersion);
+    await this.assetResolver.ensureCacheVersionAsync(this.cachePrefix, bankVersion);
 
     const oKey = this.overrideKey(technology, kind);
     const cKey = this.key(technology, kind);
@@ -386,7 +360,7 @@ export class QuestionService {
   }
 
   private async loadSystemDesignClient(bankVersion: string): Promise<any[]> {
-    await this.ensureCacheVersionAsync(bankVersion);
+    await this.assetResolver.ensureCacheVersionAsync(this.cachePrefix, bankVersion);
 
     const key = `${this.cachePrefix}system-design`;
     const cachedRaw = await this.persistence.get(key);
@@ -568,83 +542,12 @@ export class QuestionService {
     );
   }
 
-  /** Fetch data-version once; invalidate normalized cache when it changes. */
   private getVersion(): Observable<string> {
-    const base = this.getAssetBase();
-    const modeKey = base ? `base:${base}` : 'assets';
-    if (!this.version$ || this.versionModeKey !== modeKey) {
-      this.versionModeKey = modeKey;
-
-      const bust = `t=${Date.now()}`;
-      const { primary, fallback } = this.getAssetUrls('data-version.json');
-      const primaryUrl = this.appendQuery(primary, bust);
-      const fallbackUrl = this.appendQuery(fallback, bust);
-      const src$ = primaryUrl !== fallbackUrl
-        ? this.http.get<DataVersion>(primaryUrl).pipe(
-          catchError(() => this.http.get<DataVersion>(fallbackUrl))
-        )
-        : this.http.get<DataVersion>(fallbackUrl);
-
-      this.version$ = src$.pipe(
-        map((v) => String(v?.dataVersion ?? v?.version ?? '0')),
-        catchError(() => of('0')),
-        shareReplay(1)
-      );
-    }
-
-    return this.version$;
-  }
-
-  private getAssetBase(): string {
-    if (!this.cdnEnabled) return '';
-    return getSafeAssetBase((environment as any).cdnBaseUrl || '');
+    return this.assetResolver.getVersion();
   }
 
   private getAssetUrls(path: string, bankVersion?: string): { primary: string; fallback: string } {
-    const normalized = normalizeAssetPath(path);
-    const base = this.getAssetBase();
-    const primary = base ? buildAssetUrl(normalized, { preferBase: base }) : normalized;
-    const fallback = normalized;
-
-    const versionedPrimary = this.appendVersion(primary, bankVersion);
-    const versionedFallback = this.appendVersion(fallback, bankVersion);
-    return { primary: versionedPrimary, fallback: versionedFallback };
-  }
-
-  private appendVersion(url: string, bankVersion?: string): string {
-    const v = String(bankVersion ?? '').trim();
-    if (!v || v === '0') return url;
-    return this.appendQuery(url, `v=${encodeURIComponent(v)}`);
-  }
-
-  private appendQuery(url: string, query: string): string {
-    if (!query) return url;
-    const joiner = url.includes('?') ? '&' : '?';
-    return `${url}${joiner}${query}`;
-  }
-
-  private async ensureCacheVersionAsync(verRaw: string): Promise<void> {
-    const ver = String(verRaw ?? '').trim();
-    if (!ver) return;
-
-    const existingInflight = this.cacheVersionInflight.get(ver);
-    if (existingInflight) {
-      await existingInflight;
-      return;
-    }
-
-    const task = (async () => {
-      const prev = await this.persistence.get(this.dvKey);
-      if (prev === ver) return;
-
-      await this.persistence.clearByPrefix(this.cachePrefix);
-      await this.persistence.set(this.dvKey, ver);
-    })().finally(() => {
-      this.cacheVersionInflight.delete(ver);
-    });
-
-    this.cacheVersionInflight.set(ver, task);
-    await task;
+    return this.assetResolver.getAssetUrls(path, bankVersion);
   }
 
   // ---------- small helpers -------------------------------------------------

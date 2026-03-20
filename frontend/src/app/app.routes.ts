@@ -19,8 +19,10 @@ import {
   systemDesignDetailResolver,
   triviaDetailResolver,
 } from './core/resolvers/question-detail.resolver';
+import { incidentExistsGuard } from './core/guards/incident-exists.guard';
 import { interviewQuestionsHubResolver } from './core/resolvers/interview-questions.resolver';
 import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
+import { incidentDetailResolver, incidentListResolver } from './core/resolvers/incident.resolver';
 import {
   behavioralGuideDetailResolver,
   playbookGuideDetailResolver,
@@ -977,6 +979,39 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend Coding Challenges',
         description: 'Practice frontend coding challenges by framework, difficulty, and focus area, then follow a clear interview prep roadmap from drills to review.',
+      },
+    },
+  },
+  {
+    path: 'incidents',
+    loadComponent: () =>
+      import('./features/incidents/incident-list.component').then((m) => m.IncidentListComponent),
+    resolve: {
+      incidentList: incidentListResolver,
+    },
+    data: {
+      seo: {
+        title: 'Production incidents for frontend interview preparation',
+        description:
+          'Practice frontend production incidents with guided simulators covering root cause analysis, debug plans, fixes, and regression guards.',
+      },
+    },
+  },
+  {
+    path: 'incidents/:id',
+    canActivate: [incidentExistsGuard],
+    loadComponent: () =>
+      import('./features/incidents/incident-detail/incident-detail.component').then(
+        (m) => m.IncidentDetailComponent,
+      ),
+    resolve: {
+      incidentDetail: incidentDetailResolver,
+    },
+    data: {
+      seo: {
+        title: 'Frontend production incident simulator',
+        description:
+          'Guided frontend incident drill covering likely root cause, debug order, fixes, and guardrails.',
       },
     },
   },

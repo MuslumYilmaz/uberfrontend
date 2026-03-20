@@ -1,0 +1,124 @@
+<div class="fa-page-shell incident-list-page">
+  <header class="fa-page-header incident-list-header">
+    <p class="fa-page-kicker">Production incidents</p>
+    <h1 class="fa-page-title">Guided frontend incident simulator</h1>
+    <p class="fa-page-subtitle">
+      Practice the part interviews usually miss: root cause, debug order, fixes, and guardrails under production-style pressure.
+    </p>
+  </header>
+
+  <section class="incident-brief fa-section-shell" aria-label="Incident simulator overview">
+    <div class="incident-brief__copy">
+      <p class="incident-brief__eyebrow">How it works</p>
+      <h2 class="fa-section-title">Production-style diagnosis, not trivia</h2>
+      <p>
+        Each scenario is a short simulator: likely root cause, debug order, best fix set, and regression guard. Progress stays local and separate from coding or trivia.
+      </p>
+    </div>
+
+    <aside class="incident-progress" aria-label="Incident progress snapshot">
+      <p class="incident-progress__eyebrow">Progress snapshot</p>
+      <div class="incident-progress__hero">
+        <strong>{{ passedCount() }}/{{ items().length }}</strong>
+        <span>passed</span>
+      </div>
+      <div class="incident-progress__bar" aria-hidden="true">
+        <span [style.width.%]="passRate()"></span>
+      </div>
+      <p class="incident-progress__caption">{{ passRate() }}% cleared</p>
+      <dl class="incident-progress__meta">
+        <div>
+          <dt>Started</dt>
+          <dd>{{ startedCount() }}</dd>
+        </div>
+        <div>
+          <dt>Catalog</dt>
+          <dd>{{ items().length }}</dd>
+        </div>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="incident-controls fa-section-shell" aria-label="Incident filters">
+    <label class="incident-search">
+      <span class="incident-search__icon" aria-hidden="true">⌕</span>
+      <input
+        type="text"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="setSearchTerm($event)"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Search by symptom, tag, or signal"
+        data-testid="incident-list-search" />
+    </label>
+
+    <div class="incident-controls__footer">
+      <div class="incident-controls__meta">
+        <p class="incident-controls__eyebrow">Tech focus</p>
+        <p class="incident-controls__caption">Filter by stack. New technologies appear here automatically as the incident catalog grows.</p>
+      </div>
+
+      <div class="incident-tech-filter" role="group" aria-label="Filter by technology">
+        <button
+          type="button"
+          class="incident-tech-filter__pill"
+          *ngFor="let option of techFilters()"
+          [class.is-active]="techFilter() === option.value"
+          (click)="setTechFilter(option.value)">
+          <span>{{ option.label }}</span>
+          <span class="incident-tech-filter__count">{{ option.count }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="incident-list-surface fa-section-shell" aria-label="Incident scenarios">
+    <div class="incident-list-head">
+      <div>Scenario</div>
+      <div>Signals</div>
+      <div>Status</div>
+    </div>
+
+    <ng-container *ngIf="filteredItems().length; else emptyState">
+      <article
+        class="incident-row"
+        *ngFor="let item of filteredItems(); trackBy: trackById"
+        [attr.data-testid]="'incident-card-' + item.id">
+        <div class="incident-row__main">
+          <h2 class="incident-row__title">{{ item.title }}</h2>
+          <p class="incident-row__summary">{{ item.summary }}</p>
+          <div class="incident-row__chips">
+            <span class="incident-chip">{{ techLabel(item) }}</span>
+            <span class="incident-chip">{{ item.difficulty | titlecase }}</span>
+            <span class="incident-chip">{{ item.estimatedMinutes }} min</span>
+          </div>
+          <div class="incident-row__tags">
+            <span class="incident-tag" *ngFor="let tag of item.tags">{{ tag }}</span>
+          </div>
+        </div>
+
+        <div class="incident-row__signals">
+          <span class="incident-signal" *ngFor="let signal of item.signals">{{ signal }}</span>
+        </div>
+
+        <div class="incident-row__status">
+          <span class="incident-status" [class.is-passed]="recordFor(item.id).passed">
+            {{ statusLabel(item.id) }}
+          </span>
+          <span class="incident-score" *ngIf="recordFor(item.id).bestScore > 0">
+            Best {{ recordFor(item.id).bestScore }}/100
+          </span>
+          <span class="incident-updated">Updated {{ item.updatedAt | date: 'mediumDate' }}</span>
+          <a class="incident-open" [routerLink]="['/incidents', item.id]">
+            Open simulator →
+          </a>
+        </div>
+      </article>
+    </ng-container>
+
+    <ng-template #emptyState>
+      <div class="incident-empty" data-testid="incident-empty-state">
+        No incidents match the current filter set.
+      </div>
+    </ng-template>
+  </section>
+</div>

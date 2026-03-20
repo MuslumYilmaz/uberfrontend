@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "id": "search-typing-lag",
+    "title": "Search box typing lag under product-card load",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "Typing feels sticky after the third character because urgent render work and search requests both fire on every keystroke.",
+    "signals": [
+      "Input delay spikes after 3+ characters",
+      "Large CPU cost in render and highlight logic",
+      "Every keystroke also triggers network work"
+    ],
+    "estimatedMinutes": 12,
+    "tags": ["performance", "search", "react"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  },
+  "context": {
+    "symptom": "Search input starts smooth, then each keystroke stalls for roughly 200ms once the result set grows.",
+    "userImpact": "Users feel like the UI is dropping characters and abandon the search flow before refining their query.",
+    "environment": "React 18 catalog page, 2,400 local items rendered as cards, server suggestions requested on every change.",
+    "evidence": [
+      {
+        "type": "metric",
+        "title": "RUM input delay",
+        "body": "P95 input delay rises from 38ms to 212ms after the third character."
+      },
+      {
+        "type": "log",
+        "title": "Profiler summary",
+        "body": "Most time is inside filter + highlight logic before the browser paints."
+      },
+      {
+        "type": "snippet",
+        "title": "Current handler",
+        "language": "tsx",
+        "body": "const onChange = (value: string) => {\n  setQuery(value);\n  setResults(expensiveFilter(allItems, value));\n  fetchSuggestions(value);\n};"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "root-cause",
+      "type": "single-select",
+      "title": "Stage 1: likely root cause",
+      "prompt": "Which explanation best matches the evidence?",
+      "helperText": "Choose the failure mode that explains both the CPU spike and the janky typing.",
+      "options": [
+        {
+          "id": "urgent-render-work",
+          "label": "Expensive filtering and highlighting run on the urgent input path, so every keystroke blocks paint.",
+          "points": 25,
+          "feedback": "Correct. The lag is dominated by synchronous work tied directly to the input event.",
+          "isHarmful": false
+        },
+        {
+          "id": "css-transition-only",
+          "label": "Card hover transitions are the main cause; JavaScript is mostly fine.",
+          "points": 5,
+          "feedback": "CSS can contribute, but the profiler points to JavaScript work before paint, not hover styling.",
+          "isHarmful": false
+        },
+        {
+          "id": "keyboard-listener-leak",
+          "label": "Global keyboard listeners are leaking and duplicating each keypress.",
+          "points": 0,
+          "feedback": "There is no signal of duplicated handlers. The evidence points to heavy work, not repeated events.",
+          "isHarmful": false
+        },
+        {
+          "id": "network-only",
+          "label": "Network latency alone is causing the input to freeze.",
+          "points": -5,
+          "feedback": "Network can delay results, but it does not explain the CPU-heavy render path seen in the profiler.",
+          "isHarmful": true
+        }
+      ]
+    },
+    {
+      "id": "debug-order",
+      "type": "priority-order",
+      "title": "Stage 2: debug priority order",
+      "prompt": "Put the three highest-leverage debug steps first.",
+      "helperText": "The top three positions are scored. Move the best first steps to the top.",
+      "candidates": [
+        {
+          "id": "profile-input-path",
+          "label": "Profile a realistic typing session in React DevTools or Performance panel.",
+          "description": "Confirm where urgent time is spent before changing architecture."
+        },
+        {
+          "id": "mock-network-and-data",
+          "label": "Mock network responses and isolate the client-side filter/highlight cost.",
+          "description": "Separate CPU work from request latency."
+        },
+        {
+          "id": "compare-cpu-network",
+          "label": "Throttle CPU and network independently to see which pressure dominates.",
+          "description": "Check whether the bottleneck is paint-blocking work or request latency."
+        },
+        {
+          "id": "rewrite-backend-first",
+          "label": "Rewrite the suggestions endpoint before measuring the UI.",
+          "description": "Large change with weak diagnostic value."
+        },
+        {
+          "id": "ship-debounce-blindly",
+          "label": "Add a debounce immediately and skip profiling.",
+          "description": "Common fix, but weak as a first diagnostic step."
+        }
+      ],
+      "expectedOrder": [
+        "profile-input-path",
+        "mock-network-and-data",
+        "compare-cpu-network"
+      ],
+      "slotWeights": [12, 8, 5]
+    },
+    {
+      "id": "fix-set",
+      "type": "multi-select",
+      "title": "Stage 3: best fix set",
+      "prompt": "Which fixes attack the real bottleneck without hiding the problem?",
+      "helperText": "Select all changes that belong in the first production-quality patch.",
+      "options": [
+        {
+          "id": "debounce-requests",
+          "label": "Debounce suggestion requests so network work is not fired on every single keystroke.",
+          "points": 10,
+          "feedback": "Correct. This cuts avoidable request churn and reduces work on the input path.",
+          "isHarmful": false
+        },
+        {
+          "id": "defer-derived-work",
+          "label": "Move expensive derived filtering/highlighting off the urgent path with deferred rendering or equivalent scheduling.",
+          "points": 10,
+          "feedback": "Correct. The key is reducing blocking render work, not only shrinking request count.",
+          "isHarmful": false
+        },
+        {
+          "id": "virtualize-results",
+          "label": "Virtualize the result list so a large card grid does not rerender in full while typing.",
+          "points": 5,
+          "feedback": "Correct. Rendering fewer cards lowers total update cost once the query changes.",
+          "isHarmful": false
+        },
+        {
+          "id": "raise-timeout",
+          "label": "Increase the fetch timeout so requests stop failing under load.",
+          "points": -5,
+          "feedback": "This does not address input lag and can hide the real performance problem.",
+          "isHarmful": true
+        },
+        {
+          "id": "disable-strict-mode",
+          "label": "Disable StrictMode locally so typing feels smoother in development.",
+          "points": 0,
+          "feedback": "That can change dev noise, but it does not solve the production bottleneck.",
+          "isHarmful": false
+        }
+      ]
+    },
+    {
+      "id": "guardrail",
+      "type": "single-select",
+      "title": "Stage 4: regression guard",
+      "prompt": "What is the best regression guard after the fix ships?",
+      "helperText": "Choose the signal that would catch this class of issue early next time.",
+      "options": [
+        {
+          "id": "interaction-budget",
+          "label": "Track search interaction latency and add a budget for typing responsiveness in the performance workflow.",
+          "points": 25,
+          "feedback": "Correct. This watches the actual user-facing failure mode instead of only backend timing.",
+          "isHarmful": false
+        },
+        {
+          "id": "api-only-monitoring",
+          "label": "Monitor only the search API p95 because slower requests caused the lag.",
+          "points": 5,
+          "feedback": "API timing matters, but it misses the blocking render work shown in the incident.",
+          "isHarmful": false
+        },
+        {
+          "id": "manual-qa-once",
+          "label": "Have QA type quickly on release day and rely on that spot check.",
+          "points": 0,
+          "feedback": "Manual checks help, but they are too weak as the main guardrail.",
+          "isHarmful": false
+        },
+        {
+          "id": "remove-highlights",
+          "label": "Delete result highlighting permanently so the page can never regress again.",
+          "points": -5,
+          "feedback": "That throws away product behavior instead of building a durable performance guardrail.",
+          "isHarmful": true
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "scoreBands": [
+      {
+        "min": 0,
+        "max": 39,
+        "label": "Needs a tighter perf runbook",
+        "summary": "You reached for fixes before isolating the urgent work on the typing path."
+      },
+      {
+        "min": 40,
+        "max": 69,
+        "label": "Good instincts, incomplete prioritization",
+        "summary": "You found useful fixes, but your debug ordering or guardrail missed the main user-facing signal."
+      },
+      {
+        "min": 70,
+        "max": 100,
+        "label": "Production-ready diagnosis",
+        "summary": "You isolated the blocking render path, chose layered fixes, and added a measurable regression guard."
+      }
+    ],
+    "idealRunbook": [
+      "Profile the typing interaction before changing architecture.",
+      "Separate synchronous render cost from request latency.",
+      "Reduce urgent work first, then cut list rendering and request churn.",
+      "Track user-visible interaction latency after rollout."
+    ],
+    "teachingBlocks": [
+      {
+        "type": "callout",
+        "title": "What this incident tests",
+        "text": "Frontend performance incidents are usually about choosing the right bottleneck first. Here, urgent render work mattered more than backend latency.",
+        "variant": "info"
+      },
+      {
+        "type": "checklist",
+        "title": "Strong answer signals",
+        "items": [
+          "You profile before optimizing.",
+          "You distinguish CPU-bound lag from stale or slow network responses.",
+          "You pick a regression metric tied to the actual interaction."
+        ]
+      }
+    ],
+    "optionalReflectionPrompt": "What would you measure first if this issue reappeared only on low-end mobile devices?"
+  },
+  "relatedPractice": [
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-debounced-search"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "debounce-vs-throttle-search-input"
+    }
+  ]
+}

@@ -28,7 +28,7 @@ type SysDesign = {
   selector: 'app-system-design-list',
   imports: [
     CommonModule, RouterModule, FormsModule,
-    InputTextModule, MultiSelectModule, ProgressSpinnerModule, ChipModule, ButtonModule
+    InputTextModule, MultiSelectModule, ProgressSpinnerModule, ChipModule, ButtonModule,
   ],
   templateUrl: './system-design-list.component.html',
   styleUrls: ['./system-design-list.component.css']

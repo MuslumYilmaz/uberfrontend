@@ -3,6 +3,11 @@
     <div class="bar">
         <!-- LEFT -->
         <div class="left">
+            <a *ngIf="isPractice && practiceLeftLabel && practiceLeftRoute" class="left-trigger left-trigger--link"
+                [routerLink]="practiceLeftRoute">
+                <span class="icon">↗</span>
+                <span class="truncate">{{ practiceLeftLabel }}</span>
+            </a>
             <button *ngIf="isCourse && hasOutline && leftCourseLabel" class="left-trigger" type="button"
                 (click)="openMenu()" aria-label="Open course outline">
                 <span class="icon">☰</span>

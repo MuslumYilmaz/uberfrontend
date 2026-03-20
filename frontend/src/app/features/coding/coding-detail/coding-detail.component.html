@@ -554,6 +554,7 @@
 <ng-container *ngIf="!hideFooterBar; else demoFooter">
   <app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
+    [practiceLeftLabel]="!isCourseContext() ? 'Incidents hub' : null" [practiceLeftRoute]="!isCourseContext() ? ['/incidents'] : null"
     [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
     [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
     [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && isCompletionPending()"

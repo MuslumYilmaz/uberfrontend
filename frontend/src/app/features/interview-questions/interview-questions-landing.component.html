@@ -62,7 +62,9 @@
           <div class="iq-link-group">
             <p class="iq-link-group__label">Primary prep routes</p>
             <div class="iq-links iq-links--primary">
-              <a [routerLink]="['/coding']">Open coding hub</a>
+              <a *ngFor="let link of practiceRouteLinks()" [routerLink]="link.route" [queryParams]="link.query || null">
+                Open {{ link.label | lowercase }}
+              </a>
               <a [routerLink]="['/tracks']">Open interview practice platform (/tracks)</a>
               <a [routerLink]="['/guides']">Open guides hub</a>
               <a *ngIf="!isMasterHub()" [routerLink]="['/interview-questions']">Open frontend interview warm-up hub</a>

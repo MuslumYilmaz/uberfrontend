@@ -1,0 +1,98 @@
+[
+  {
+    "id": "search-typing-lag",
+    "title": "Search box typing lag under product-card load",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "Typing feels sticky after the third character because urgent render work and search requests both fire on every keystroke.",
+    "signals": [
+      "Input delay spikes after 3+ characters",
+      "Large CPU cost in render and highlight logic",
+      "Every keystroke also triggers network work"
+    ],
+    "estimatedMinutes": 12,
+    "tags": ["performance", "search", "react"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  },
+  {
+    "id": "stale-search-race",
+    "title": "Latest query loses to stale search results",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Users type quickly, but an older slow response overwrites the newest results because requests are not sequenced or cancelled.",
+    "signals": [
+      "Result list flashes backwards",
+      "Older response lands after newer query",
+      "Debounce reduced calls but did not fix stale UI"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["async", "race-condition", "search"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  },
+  {
+    "id": "modal-screen-reader-failure",
+    "title": "Modal opens visually but fails screen-reader users",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "A custom modal looks fine, but focus escapes behind it and screen readers announce an unnamed generic region.",
+    "signals": [
+      "Tab moves into background page",
+      "Screen reader does not announce modal name",
+      "Closing the modal loses the original trigger focus"
+    ],
+    "estimatedMinutes": 15,
+    "tags": ["accessibility", "modal", "focus-management"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  },
+  {
+    "id": "websocket-memory-leak",
+    "title": "Realtime feed leaks sockets and listeners",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "A live feed gets slower after route changes because each mount adds another socket listener and some never clean up.",
+    "signals": [
+      "Memory climbs after repeated navigation",
+      "Duplicate messages appear in the UI",
+      "Connection count keeps increasing in dev tools"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["memory", "websocket", "effects"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  },
+  {
+    "id": "context-rerender-storm",
+    "title": "Context update causes rerender storm",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "One provider holds too much frequently changing state, so unrelated consumers rerender on every tiny update.",
+    "signals": [
+      "Unrelated panels rerender during typing",
+      "Profiler shows broad context fan-out",
+      "Provider value identity changes every update"
+    ],
+    "estimatedMinutes": 16,
+    "tags": ["react", "context", "rendering"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  },
+  {
+    "id": "autosave-overwrites-latest-edit",
+    "title": "Autosave overwrites the latest draft",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Rapid edits plus flaky network produce out-of-order autosave acknowledgements that replace newer text with stale content.",
+    "signals": [
+      "Textarea jumps back to older content",
+      "Dirty badge clears too early",
+      "Slow-network replay reproduces the overwrite"
+    ],
+    "estimatedMinutes": 18,
+    "tags": ["autosave", "async", "state-consistency"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  }
+]

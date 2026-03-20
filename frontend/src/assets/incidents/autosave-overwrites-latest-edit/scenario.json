@@ -1,0 +1,255 @@
+{
+  "meta": {
+    "id": "autosave-overwrites-latest-edit",
+    "title": "Autosave overwrites the latest draft",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Rapid edits plus flaky network produce out-of-order autosave acknowledgements that replace newer text with stale content.",
+    "signals": [
+      "Textarea jumps back to older content",
+      "Dirty badge clears too early",
+      "Slow-network replay reproduces the overwrite"
+    ],
+    "estimatedMinutes": 18,
+    "tags": ["autosave", "async", "state-consistency"],
+    "updatedAt": "2026-03-19",
+    "access": "free"
+  },
+  "context": {
+    "symptom": "A user types a paragraph, pauses briefly, continues typing, then sees the textarea revert to an older partial draft once the network catches up.",
+    "userImpact": "Users stop trusting autosave because it can delete or overwrite their most recent work.",
+    "environment": "React form with autosave every few seconds, optimistic local state, and a server endpoint that returns the saved draft payload.",
+    "evidence": [
+      {
+        "type": "log",
+        "title": "Request sequence",
+        "body": "Draft version 12 is sent after version 11, but version 11 resolves later and still replaces the editor state."
+      },
+      {
+        "type": "snippet",
+        "title": "Current success path",
+        "language": "tsx",
+        "body": "const saved = await saveDraft(currentText);\nsetText(saved.text);\nsetDirty(false);"
+      },
+      {
+        "type": "note",
+        "title": "Product behavior",
+        "body": "Offline retry plus quick edits reproduces the overwrite almost every time."
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "root-cause",
+      "type": "single-select",
+      "title": "Stage 1: likely root cause",
+      "prompt": "What is the main failure mode?",
+      "helperText": "Focus on why old data is allowed to become source of truth again.",
+      "options": [
+        {
+          "id": "stale-ack-overwrites",
+          "label": "Autosave acknowledgements are applied without version checks, so stale responses can overwrite newer local edits.",
+          "points": 25,
+          "feedback": "Correct. The broken part is commit logic around out-of-order save responses.",
+          "isHarmful": false
+        },
+        {
+          "id": "textarea-too-fast",
+          "label": "The textarea updates too quickly for the autosave loop to keep up.",
+          "points": 0,
+          "feedback": "Typing speed is not the core issue. The app lacks conflict handling for async saves.",
+          "isHarmful": false
+        },
+        {
+          "id": "server-needs-more-ram",
+          "label": "The backend is slow because the save endpoint needs more memory.",
+          "points": 5,
+          "feedback": "Backend latency can trigger the timing, but it does not justify applying stale responses.",
+          "isHarmful": false
+        },
+        {
+          "id": "always-trust-server",
+          "label": "The client should always replace local state with the latest server payload, regardless of local edits.",
+          "points": -5,
+          "feedback": "That policy is exactly what makes stale acknowledgements destructive here.",
+          "isHarmful": true
+        }
+      ]
+    },
+    {
+      "id": "debug-order",
+      "type": "priority-order",
+      "title": "Stage 2: debug priority order",
+      "prompt": "Rank the three most useful debug steps first.",
+      "helperText": "Start by proving the ordering and commit mismatch, not by redesigning the full editor.",
+      "candidates": [
+        {
+          "id": "log-draft-version",
+          "label": "Log local draft version, request id, and response id for each autosave cycle."
+        },
+        {
+          "id": "reproduce-out-of-order",
+          "label": "Reproduce with slow or flaky network while continuing to edit during in-flight saves."
+        },
+        {
+          "id": "inspect-commit-policy",
+          "label": "Inspect when the UI clears dirty state and whether stale acknowledgements can still commit."
+        },
+        {
+          "id": "increase-save-interval",
+          "label": "Raise the autosave interval first so requests overlap less often."
+        },
+        {
+          "id": "disable-optimistic-ui",
+          "label": "Disable local typing updates until every save completes."
+        }
+      ],
+      "expectedOrder": [
+        "log-draft-version",
+        "reproduce-out-of-order",
+        "inspect-commit-policy"
+      ],
+      "slotWeights": [12, 8, 5]
+    },
+    {
+      "id": "fix-set",
+      "type": "multi-select",
+      "title": "Stage 3: best fix set",
+      "prompt": "Which changes belong in a robust autosave fix?",
+      "helperText": "Select the options that preserve local intent when responses arrive out of order.",
+      "options": [
+        {
+          "id": "version-token",
+          "label": "Send a version token or draft revision and ignore acknowledgements that no longer match the current revision.",
+          "points": 10,
+          "feedback": "Correct. Save responses need a freshness contract before they can update state.",
+          "isHarmful": false
+        },
+        {
+          "id": "dirty-only-on-match",
+          "label": "Clear dirty state only when the acknowledgement matches the current local draft revision.",
+          "points": 10,
+          "feedback": "Correct. This prevents the UI from falsely claiming the latest text is safely persisted.",
+          "isHarmful": false
+        },
+        {
+          "id": "abort-or-supersede",
+          "label": "Abort or supersede older in-flight saves when a newer draft replaces them.",
+          "points": 5,
+          "feedback": "Correct. This reduces overlap and supports a take-latest autosave policy.",
+          "isHarmful": false
+        },
+        {
+          "id": "trust-client-timestamp",
+          "label": "Use the local wall-clock timestamp only and assume whichever timestamp is larger is correct.",
+          "points": 0,
+          "feedback": "Timestamps can help, but alone they are weaker than explicit draft versions and commit guards.",
+          "isHarmful": false
+        },
+        {
+          "id": "replace-text-on-success",
+          "label": "Reset the textarea from the server payload after every successful save, even if the user kept typing.",
+          "points": -10,
+          "feedback": "That is the destructive behavior you are trying to remove.",
+          "isHarmful": true
+        }
+      ]
+    },
+    {
+      "id": "guardrail",
+      "type": "single-select",
+      "title": "Stage 4: regression guard",
+      "prompt": "What is the strongest follow-up guardrail?",
+      "helperText": "Pick the guard that proves stale saves cannot overwrite the newest draft anymore.",
+      "options": [
+        {
+          "id": "autosave-race-test",
+          "label": "Add an out-of-order autosave integration test and surface a conflict-safe status signal in the UI.",
+          "points": 25,
+          "feedback": "Correct. You want both a regression test and a product-level signal that the latest draft is or is not safely persisted.",
+          "isHarmful": false
+        },
+        {
+          "id": "longer-interval-only",
+          "label": "Increase the autosave interval so overlapping saves happen less often.",
+          "points": 5,
+          "feedback": "That reduces frequency but does not prove correctness when overlap still happens.",
+          "isHarmful": false
+        },
+        {
+          "id": "manual-doc-review",
+          "label": "Ask QA to write a long paragraph manually before release and trust the outcome.",
+          "points": 0,
+          "feedback": "Manual coverage is not strong enough for timing-sensitive overwrite bugs.",
+          "isHarmful": false
+        },
+        {
+          "id": "disable-autosave",
+          "label": "Turn autosave off entirely and require a manual save button.",
+          "points": -5,
+          "feedback": "That removes the feature instead of fixing ordering and persistence guarantees.",
+          "isHarmful": true
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "scoreBands": [
+      {
+        "min": 0,
+        "max": 39,
+        "label": "Draft consistency still fragile",
+        "summary": "You saw the overwrite, but not the freshness contract needed between local draft state and save acknowledgements."
+      },
+      {
+        "min": 40,
+        "max": 69,
+        "label": "Correct direction, weak guardrail",
+        "summary": "You identified stale acknowledgements, but one part of the fix or regression plan still relied on hope."
+      },
+      {
+        "min": 70,
+        "max": 100,
+        "label": "State-consistency thinking",
+        "summary": "You protected local intent with versions, commit guards, and a test that reproduces the real race."
+      }
+    ],
+    "idealRunbook": [
+      "Log draft revisions and request order.",
+      "Reproduce overlapping saves while the user keeps editing.",
+      "Guard commits with explicit revision matching.",
+      "Test out-of-order acknowledgements before shipping."
+    ],
+    "teachingBlocks": [
+      {
+        "type": "callout",
+        "title": "Autosave rule of thumb",
+        "text": "Never let the server payload blindly replace local text unless you know it still corresponds to the current draft.",
+        "variant": "warning"
+      },
+      {
+        "type": "checklist",
+        "title": "Strong answer signals",
+        "items": [
+          "Explicit version or request identity",
+          "Take-latest commit policy",
+          "Dirty-state rules tied to the current revision",
+          "Regression test for out-of-order acknowledgements"
+        ]
+      }
+    ],
+    "optionalReflectionPrompt": "What product signal would you show if the latest draft is only partially synced?"
+  },
+  "relatedPractice": [
+    {
+      "tech": "system-design",
+      "kind": "system-design",
+      "id": "multi-step-form-autosave"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-async-race-conditions"
+    }
+  ]
+}

@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import type { InterviewQuestionsHubResolved } from '../../core/resolvers/interview-questions.resolver';
+import { PracticeCatalogEntry } from '../../core/models/practice.model';
+import { PracticeRegistryService } from '../../core/services/practice-registry.service';
 import { QuestionListItem, QuestionService } from '../../core/services/question.service';
 import { SeoService, type SeoMeta } from '../../core/services/seo.service';
 import { Tech } from '../../core/models/user.model';
@@ -112,6 +114,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly questionService = inject(QuestionService);
   private readonly seo = inject(SeoService);
+  private readonly practiceRegistry = inject(PracticeRegistryService);
 
   config: InterviewQuestionsLandingConfig = DEFAULT_CONFIG;
   loading = true;
@@ -119,6 +122,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   triviaQuestions: QuestionSummaryRow[] = [];
   relatedHubLinks: HubLink[] = [];
   featuredLinks: HubLink[] = [];
+  readonly practiceRouteLinks = computed<PracticeCatalogEntry[]>(() => this.practiceRegistry.primaryHubEntries());
 
   ngOnInit(): void {
     const incoming = this.route.snapshot.data['interviewQuestions'] as Partial<InterviewQuestionsLandingConfig> | undefined;
