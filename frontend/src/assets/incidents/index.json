@@ -20,15 +20,15 @@
     "title": "Latest query loses to stale search results",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Users type quickly, but an older slow response overwrites the newest results because requests are not sequenced or cancelled.",
+    "summary": "A shared results bucket mixes cache hydrate and network commits, so an older slow query can still repaint the list after the user has moved on.",
     "signals": [
-      "Result list flashes backwards",
-      "Older response lands after newer query",
-      "Debounce reduced calls but did not fix stale UI"
+      "Cards briefly flash back to an older query",
+      "Cache hydrate and network response both write into one results store",
+      "Debounce reduced traffic but stale UI still appears on slow network"
     ],
     "estimatedMinutes": 14,
     "tags": ["async", "race-condition", "search"],
-    "updatedAt": "2026-03-19",
+    "updatedAt": "2026-03-20",
     "access": "free"
   },
   {
@@ -52,15 +52,15 @@
     "title": "Realtime feed leaks sockets and listeners",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "A live feed gets slower after route changes because each mount adds another socket listener and some never clean up.",
+    "summary": "Route mounts and filter changes both create overlapping feed subscriptions, while stale handlers and unclear socket ownership leave old work alive.",
     "signals": [
-      "Memory climbs after repeated navigation",
-      "Duplicate messages appear in the UI",
-      "Connection count keeps increasing in dev tools"
+      "Duplicate events grow after route changes and filter tweaks",
+      "Some duplicate logs still mention old filter values",
+      "Connection and listener counts keep climbing in dev tools"
     ],
     "estimatedMinutes": 14,
     "tags": ["memory", "websocket", "effects"],
-    "updatedAt": "2026-03-19",
+    "updatedAt": "2026-03-20",
     "access": "free"
   },
   {

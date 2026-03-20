@@ -6,7 +6,7 @@
     "route": "/incidents/stale-search-race",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Users type quickly, but an older slow response overwrites the newest results because requests are not sequenced or cancelled.",
+    "summary": "A shared results bucket mixes cache hydrate and network commits, so an older slow query can still repaint the list after the user has moved on.",
     "tags": [
       "async",
       "race-condition",
@@ -14,7 +14,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 14,
-    "updatedAt": "2026-03-19",
+    "updatedAt": "2026-03-20",
     "schemaVersion": "incident.v1",
     "assetRef": "incidents/stale-search-race/scenario.json"
   },
@@ -82,7 +82,7 @@
     "route": "/incidents/websocket-memory-leak",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "A live feed gets slower after route changes because each mount adds another socket listener and some never clean up.",
+    "summary": "Route mounts and filter changes both create overlapping feed subscriptions, while stale handlers and unclear socket ownership leave old work alive.",
     "tags": [
       "memory",
       "websocket",
@@ -90,7 +90,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 14,
-    "updatedAt": "2026-03-19",
+    "updatedAt": "2026-03-20",
     "schemaVersion": "incident.v1",
     "assetRef": "incidents/websocket-memory-leak/scenario.json"
   },

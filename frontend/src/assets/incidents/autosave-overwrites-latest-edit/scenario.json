@@ -47,24 +47,17 @@
       "helperText": "Focus on why old data is allowed to become source of truth again.",
       "options": [
         {
-          "id": "stale-ack-overwrites",
-          "label": "Autosave acknowledgements are applied without version checks, so stale responses can overwrite newer local edits.",
-          "points": 25,
-          "feedback": "Correct. The broken part is commit logic around out-of-order save responses.",
-          "isHarmful": false
-        },
-        {
-          "id": "textarea-too-fast",
-          "label": "The textarea updates too quickly for the autosave loop to keep up.",
-          "points": 0,
-          "feedback": "Typing speed is not the core issue. The app lacks conflict handling for async saves.",
-          "isHarmful": false
-        },
-        {
           "id": "server-needs-more-ram",
           "label": "The backend is slow because the save endpoint needs more memory.",
           "points": 5,
           "feedback": "Backend latency can trigger the timing, but it does not justify applying stale responses.",
+          "isHarmful": false
+        },
+        {
+          "id": "stale-ack-overwrites",
+          "label": "Autosave acknowledgements are applied without version checks, so stale responses can overwrite newer local edits.",
+          "points": 25,
+          "feedback": "Correct. The broken part is commit logic around out-of-order save responses.",
           "isHarmful": false
         },
         {
@@ -73,6 +66,13 @@
           "points": -5,
           "feedback": "That policy is exactly what makes stale acknowledgements destructive here.",
           "isHarmful": true
+        },
+        {
+          "id": "textarea-too-fast",
+          "label": "The textarea updates too quickly for the autosave loop to keep up.",
+          "points": 0,
+          "feedback": "Typing speed is not the core issue. The app lacks conflict handling for async saves.",
+          "isHarmful": false
         }
       ]
     },
@@ -126,24 +126,17 @@
           "isHarmful": false
         },
         {
-          "id": "dirty-only-on-match",
-          "label": "Clear dirty state only when the acknowledgement matches the current local draft revision.",
-          "points": 10,
-          "feedback": "Correct. This prevents the UI from falsely claiming the latest text is safely persisted.",
-          "isHarmful": false
-        },
-        {
-          "id": "abort-or-supersede",
-          "label": "Abort or supersede older in-flight saves when a newer draft replaces them.",
-          "points": 5,
-          "feedback": "Correct. This reduces overlap and supports a take-latest autosave policy.",
-          "isHarmful": false
-        },
-        {
           "id": "trust-client-timestamp",
           "label": "Use the local wall-clock timestamp only and assume whichever timestamp is larger is correct.",
           "points": 0,
           "feedback": "Timestamps can help, but alone they are weaker than explicit draft versions and commit guards.",
+          "isHarmful": false
+        },
+        {
+          "id": "dirty-only-on-match",
+          "label": "Clear dirty state only when the acknowledgement matches the current local draft revision.",
+          "points": 10,
+          "feedback": "Correct. This prevents the UI from falsely claiming the latest text is safely persisted.",
           "isHarmful": false
         },
         {
@@ -152,6 +145,13 @@
           "points": -10,
           "feedback": "That is the destructive behavior you are trying to remove.",
           "isHarmful": true
+        },
+        {
+          "id": "abort-or-supersede",
+          "label": "Abort or supersede older in-flight saves when a newer draft replaces them.",
+          "points": 5,
+          "feedback": "Correct. This reduces overlap and supports a take-latest autosave policy.",
+          "isHarmful": false
         }
       ]
     },
@@ -162,13 +162,6 @@
       "prompt": "What is the strongest follow-up guardrail?",
       "helperText": "Pick the guard that proves stale saves cannot overwrite the newest draft anymore.",
       "options": [
-        {
-          "id": "autosave-race-test",
-          "label": "Add an out-of-order autosave integration test and surface a conflict-safe status signal in the UI.",
-          "points": 25,
-          "feedback": "Correct. You want both a regression test and a product-level signal that the latest draft is or is not safely persisted.",
-          "isHarmful": false
-        },
         {
           "id": "longer-interval-only",
           "label": "Increase the autosave interval so overlapping saves happen less often.",
@@ -189,6 +182,13 @@
           "points": -5,
           "feedback": "That removes the feature instead of fixing ordering and persistence guarantees.",
           "isHarmful": true
+        },
+        {
+          "id": "autosave-race-test",
+          "label": "Add an out-of-order autosave integration test and surface a conflict-safe status signal in the UI.",
+          "points": 25,
+          "feedback": "Correct. You want both a regression test and a product-level signal that the latest draft is or is not safely persisted.",
+          "isHarmful": false
         }
       ]
     }

@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
 const QUESTION_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'questions');
+const INCIDENT_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'incidents');
 const FRAMEWORK_FAMILIES_PATH = path.join(
   projectRoot,
   'src',
@@ -125,6 +126,7 @@ function computeTotalQuestions(lists) {
   for (const q of lists.coding) add('coding', q);
   for (const q of lists.trivia) add('trivia', q);
   for (const q of lists.system) add('system', q);
+  for (const q of lists.incident ?? []) add('incident', q);
   return ids.size;
 }
 
@@ -133,6 +135,7 @@ async function main() {
     coding: [],
     trivia: [],
     system: [],
+    incident: [],
   };
 
   for (const tech of TECHS) {
@@ -147,6 +150,8 @@ async function main() {
     path.join(QUESTION_ASSETS_DIR, 'system-design', 'index.json'),
   );
   allLists.system.push(...systemList);
+  const incidentList = await readJsonArray(path.join(INCIDENT_ASSETS_DIR, 'index.json'));
+  allLists.incident.push(...incidentList);
 
   const frameworkFamiliesSource = await fs.readFile(FRAMEWORK_FAMILIES_PATH, 'utf8');
   const frameworkFamilyById = buildFrameworkFamilyByIdMap(frameworkFamiliesSource);

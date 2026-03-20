@@ -47,24 +47,10 @@
       "helperText": "Choose the explanation that matches broad rerender fan-out, not one specific child component.",
       "options": [
         {
-          "id": "broad-provider-value",
-          "label": "A broad provider value is recreated on every change, so all consumers observing that context rerender together.",
-          "points": 25,
-          "feedback": "Correct. Context propagation and unstable provider identity are the core problem here.",
-          "isHarmful": false
-        },
-        {
           "id": "missing-reactmemo-everywhere",
           "label": "The issue is simply that every consumer forgot to use React.memo.",
           "points": 5,
           "feedback": "Memo can help local props, but it does not stop context updates from reaching consumers.",
-          "isHarmful": false
-        },
-        {
-          "id": "browser-layout-thrash",
-          "label": "The main bottleneck is browser layout thrash, not React updates.",
-          "points": 0,
-          "feedback": "Layout can matter, but the profiler already shows broad React rerender fan-out as the immediate issue.",
           "isHarmful": false
         },
         {
@@ -73,6 +59,20 @@
           "points": -5,
           "feedback": "React context does not work that way. Designing narrower update boundaries is the application responsibility.",
           "isHarmful": true
+        },
+        {
+          "id": "broad-provider-value",
+          "label": "A broad provider value is recreated on every change, so all consumers observing that context rerender together.",
+          "points": 25,
+          "feedback": "Correct. Context propagation and unstable provider identity are the core problem here.",
+          "isHarmful": false
+        },
+        {
+          "id": "browser-layout-thrash",
+          "label": "The main bottleneck is browser layout thrash, not React updates.",
+          "points": 0,
+          "feedback": "Layout can matter, but the profiler already shows broad React rerender fan-out as the immediate issue.",
+          "isHarmful": false
         }
       ]
     },
@@ -119,6 +119,13 @@
       "helperText": "Select the changes that reduce update scope, not just the ones that hide symptoms.",
       "options": [
         {
+          "id": "memo-all-consumers",
+          "label": "Rely only on React.memo around consumers to stop context rerenders.",
+          "points": 0,
+          "feedback": "Memo alone does not solve broad context propagation.",
+          "isHarmful": false
+        },
+        {
           "id": "split-contexts",
           "label": "Split the broad provider into narrower contexts based on update frequency and responsibility.",
           "points": 10,
@@ -137,13 +144,6 @@
           "label": "Stabilize provider values and callbacks where the architecture still uses context.",
           "points": 5,
           "feedback": "Correct. Stable identities matter, though they are not enough alone if the provider stays too broad.",
-          "isHarmful": false
-        },
-        {
-          "id": "memo-all-consumers",
-          "label": "Rely only on React.memo around consumers to stop context rerenders.",
-          "points": 0,
-          "feedback": "Memo alone does not solve broad context propagation.",
           "isHarmful": false
         },
         {
@@ -170,17 +170,17 @@
           "isHarmful": false
         },
         {
-          "id": "api-monitoring-only",
-          "label": "Track API latency because server speed affects typing responsiveness.",
-          "points": 0,
-          "feedback": "That does not guard the local rerender scope issue.",
-          "isHarmful": false
-        },
-        {
           "id": "manual-profiler-sometimes",
           "label": "Open the profiler once before major releases and trust the architecture.",
           "points": 5,
           "feedback": "Manual profiling helps, but it is too weak as the primary guardrail.",
+          "isHarmful": false
+        },
+        {
+          "id": "api-monitoring-only",
+          "label": "Track API latency because server speed affects typing responsiveness.",
+          "points": 0,
+          "feedback": "That does not guard the local rerender scope issue.",
           "isHarmful": false
         },
         {

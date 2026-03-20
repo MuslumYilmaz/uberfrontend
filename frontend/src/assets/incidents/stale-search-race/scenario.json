@@ -4,37 +4,37 @@
     "title": "Latest query loses to stale search results",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Users type quickly, but an older slow response overwrites the newest results because requests are not sequenced or cancelled.",
+    "summary": "A shared results bucket mixes cache hydrate and network commits, so an older slow query can still repaint the list after the user has moved on.",
     "signals": [
-      "Result list flashes backwards",
-      "Older response lands after newer query",
-      "Debounce reduced calls but did not fix stale UI"
+      "Cards briefly flash back to an older query",
+      "Cache hydrate and network response both write into one results store",
+      "Debounce reduced traffic but stale UI still appears on slow network"
     ],
     "estimatedMinutes": 14,
     "tags": ["async", "race-condition", "search"],
-    "updatedAt": "2026-03-19",
+    "updatedAt": "2026-03-20",
     "access": "free"
   },
   "context": {
-    "symptom": "A user types 'react', then quickly deletes to 're'. The UI briefly shows the latest query, then older results overwrite it.",
+    "symptom": "A user types 'react', then quickly deletes to 're'. The UI shows the latest query, then flashes older 'react' cards because an older commit path still wins briefly.",
     "userImpact": "Search feels unreliable because the interface does not reflect the most recent intent.",
-    "environment": "Vanilla JS fetch flow with a small debounce, no request tracking, and a shared results store.",
+    "environment": "Vanilla JS search flow with a 250ms debounce, a recent-query cache, and one shared results store reused by every query path.",
     "evidence": [
       {
         "type": "log",
         "title": "Network timeline",
-        "body": "Request 17 for 'react' starts before request 18 for 're', but request 17 resolves last and still commits."
+        "body": "Request 17 for 'react' resolves after request 18 for 're', and both end up calling the same commit path for the shared results store."
       },
       {
         "type": "snippet",
-        "title": "Current response handling",
+        "title": "Current cache + response handling",
         "language": "ts",
-        "body": "const res = await fetch(`/api/search?q=${query}`);\nconst data = await res.json();\nrenderResults(data);"
+        "body": "const cached = cache.get(query);\nif (cached) {\n  resultsStore.items = cached.items;\n  renderResults(resultsStore.items);\n}\nconst res = await fetch(`/api/search?q=${query}`);\nconst data = await res.json();\nresultsStore.items = data.items;\nrenderResults(resultsStore.items);"
       },
       {
         "type": "note",
         "title": "Observed behavior",
-        "body": "Adding a 250ms debounce reduced traffic but stale results still appear on throttled 3G."
+        "body": "Adding a 250ms debounce reduced traffic, but stale flashes still appear on throttled 3G when backspacing quickly."
       }
     ]
   },
@@ -44,27 +44,20 @@
       "type": "single-select",
       "title": "Stage 1: likely root cause",
       "prompt": "What is the main failure mode?",
-      "helperText": "Pick the explanation that matches the stale overwrite itself, not just request count.",
+      "helperText": "Pick the explanation that matches the stale repaint itself, not just request count or cache presence.",
       "options": [
         {
-          "id": "stale-response-wins",
-          "label": "Older responses are allowed to commit after newer queries because there is no abort or latest-response guard.",
-          "points": 25,
-          "feedback": "Correct. The problem is not just too many requests; it is that outdated ones can still win the commit.",
-          "isHarmful": false
-        },
-        {
-          "id": "missing-debounce-only",
-          "label": "The only problem is missing debounce on the search input.",
+          "id": "debounce-too-short",
+          "label": "The debounce window is too short, so the UI ends up showing the wrong query.",
           "points": 5,
-          "feedback": "Debounce helps traffic, but stale overwrites can still happen when multiple requests remain in flight.",
+          "feedback": "A longer debounce might reduce overlap, but it does not fix a commit path that still lets stale work paint the screen.",
           "isHarmful": false
         },
         {
-          "id": "json-parse-slow",
-          "label": "JSON parsing is so slow that results arrive in the wrong order.",
-          "points": 0,
-          "feedback": "JSON parse cost is not the signal here. The requests are finishing out of order and committing blindly.",
+          "id": "stale-response-wins",
+          "label": "Both cache hydrate and network responses write into one shared results bucket without an active-query guard, so older work can still repaint the list.",
+          "points": 25,
+          "feedback": "Correct. This is a take-latest bug in the commit path, not just a traffic problem.",
           "isHarmful": false
         },
         {
@@ -73,6 +66,13 @@
           "points": -5,
           "feedback": "Fastest is not the same as latest. This framing confuses a race primitive with product intent.",
           "isHarmful": true
+        },
+        {
+          "id": "cache-only-problem",
+          "label": "The main issue is simply that the cache sometimes has old data for the query.",
+          "points": 5,
+          "feedback": "Cache staleness can contribute to the flash, but the deeper bug is that multiple sources can still commit blindly into one live bucket.",
+          "isHarmful": false
         }
       ]
     },
@@ -81,19 +81,19 @@
       "type": "priority-order",
       "title": "Stage 2: debug priority order",
       "prompt": "Rank the three most useful debug steps first.",
-      "helperText": "You are trying to prove the stale overwrite path quickly and cheaply.",
+      "helperText": "You are trying to prove exactly where stale work is still allowed to repaint the current query.",
       "candidates": [
         {
-          "id": "reproduce-throttled",
-          "label": "Reproduce on slow network while logging query text and request ids together."
+          "id": "reproduce-source-timeline",
+          "label": "Reproduce on slow network while logging query text, source type (cache or network), and request ids together."
         },
         {
-          "id": "confirm-out-of-order",
-          "label": "Confirm that an older response resolves after a newer one and still commits."
+          "id": "inspect-shared-commit-path",
+          "label": "Inspect whether cache hydrate and network response paths both write into the same shared results store."
         },
         {
-          "id": "inspect-guards",
-          "label": "Inspect whether the code aborts prior requests or ignores stale results."
+          "id": "confirm-query-mismatch",
+          "label": "Confirm that the committed payload query differs from the currently active query when the flash happens."
         },
         {
           "id": "rewrite-endpoint",
@@ -105,9 +105,9 @@
         }
       ],
       "expectedOrder": [
-        "reproduce-throttled",
-        "confirm-out-of-order",
-        "inspect-guards"
+        "reproduce-source-timeline",
+        "inspect-shared-commit-path",
+        "confirm-query-mismatch"
       ],
       "slotWeights": [12, 8, 5]
     },
@@ -116,13 +116,13 @@
       "type": "multi-select",
       "title": "Stage 3: best fix set",
       "prompt": "Which changes belong in the first robust fix?",
-      "helperText": "Choose the options that align commits with the latest user intent.",
+      "helperText": "Choose the options that make every commit query-aware instead of last-writer-wins.",
       "options": [
         {
-          "id": "abort-previous",
-          "label": "Abort the previous in-flight request when a newer query starts.",
+          "id": "query-aware-commit",
+          "label": "Route cache hydrate and network responses through one query-aware commit helper that refuses stale writes.",
           "points": 10,
-          "feedback": "Correct. Abort reduces wasted work and prevents many stale completions.",
+          "feedback": "Correct. The fix needs one guarded commit path instead of multiple blind writers.",
           "isHarmful": false
         },
         {
@@ -133,18 +133,18 @@
           "isHarmful": false
         },
         {
-          "id": "dirty-query-check",
-          "label": "Commit results only if the response still matches the current query state.",
-          "points": 5,
-          "feedback": "Correct. Guarding commit time is part of a durable take-latest strategy.",
-          "isHarmful": false
-        },
-        {
           "id": "promise-race",
           "label": "Wrap all requests in Promise.race so the fastest response updates the UI.",
           "points": -10,
           "feedback": "Fastest response is explicitly the wrong goal here. Latest intent is what matters.",
           "isHarmful": true
+        },
+        {
+          "id": "abort-previous",
+          "label": "Abort or supersede older in-flight requests when a newer query starts.",
+          "points": 5,
+          "feedback": "Correct. This reduces overlap, though the real guarantee still comes from guarded commits.",
+          "isHarmful": false
         },
         {
           "id": "debounce-alone",
@@ -163,18 +163,18 @@
       "helperText": "Think about something that proves stale responses cannot overwrite fresh intent anymore.",
       "options": [
         {
-          "id": "delayed-response-test",
-          "label": "Add an integration test that forces out-of-order responses and asserts only the latest query can commit.",
-          "points": 25,
-          "feedback": "Correct. That directly covers the failure mode and prevents a false sense of safety from debounce alone.",
-          "isHarmful": false
-        },
-        {
           "id": "faster-api-only",
           "label": "Reduce API latency budgets so requests are less likely to overlap.",
           "points": 5,
           "feedback": "Useful, but lower latency does not replace correctness guarantees in the client.",
           "isHarmful": false
+        },
+        {
+          "id": "cache-everything",
+          "label": "Cache every result forever so the client no longer needs to issue new searches.",
+          "points": -5,
+          "feedback": "That changes product behavior and still does not solve stale commit logic.",
+          "isHarmful": true
         },
         {
           "id": "manual-smoke",
@@ -184,11 +184,11 @@
           "isHarmful": false
         },
         {
-          "id": "cache-everything",
-          "label": "Cache every result forever so the client no longer needs to issue new searches.",
-          "points": -5,
-          "feedback": "That changes product behavior and still does not solve stale commit logic.",
-          "isHarmful": true
+          "id": "delayed-response-test",
+          "label": "Add an integration test that mixes cached hydrate and delayed network responses, then asserts only the active query can repaint the list.",
+          "points": 25,
+          "feedback": "Correct. That covers the real messy flow here: multiple sources trying to write into one visible list.",
+          "isHarmful": false
         }
       ]
     }
@@ -211,33 +211,33 @@
         "min": 70,
         "max": 100,
         "label": "Take-latest thinking",
-        "summary": "You proved the stale overwrite, added layered guards, and chose a test that mirrors the failure mode."
+        "summary": "You proved the stale repaint, guarded the shared commit path, and tested the exact cache plus network race."
       }
     ],
     "idealRunbook": [
-      "Reproduce with throttled timing and explicit request ids.",
-      "Show that older work can commit after newer intent.",
-      "Add both abort and latest-response guards.",
-      "Protect the flow with an out-of-order integration test."
+      "Reproduce with throttled timing and log cache plus network sources together.",
+      "Prove that one shared commit path accepts stale work after newer intent.",
+      "Add query-aware guards plus request supersession.",
+      "Protect the flow with a mixed cache and delayed-response integration test."
     ],
     "teachingBlocks": [
       {
         "type": "callout",
-        "title": "Key distinction",
-        "text": "Debounce manages request volume. It does not guarantee correct ordering when multiple responses are still possible.",
+        "title": "The easy trap",
+        "text": "Once cache hydrate and network response share the same commit sink, this stops being only a request-volume problem. It becomes a state-ownership problem too.",
         "variant": "warning"
       },
       {
         "type": "steps",
-        "title": "Interview framing",
+        "title": "Stronger interview framing",
         "items": [
           "Name the bug as an async race condition.",
-          "Explain why latest intent must win, not fastest response.",
-          "Describe both prevention and a regression test."
+          "Point out the shared commit path instead of only blaming request overlap.",
+          "Explain why latest intent must win across both cache and network sources."
         ]
       }
     ],
-    "optionalReflectionPrompt": "If abort were unavailable in one browser target, what fallback guard would you keep?"
+    "optionalReflectionPrompt": "If you kept the cache, what single commit invariant would you enforce before anything can repaint the result list?"
   },
   "relatedPractice": [
     {

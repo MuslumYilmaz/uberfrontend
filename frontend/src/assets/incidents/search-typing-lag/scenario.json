@@ -54,6 +54,13 @@
           "isHarmful": false
         },
         {
+          "id": "network-only",
+          "label": "Network latency alone is causing the input to freeze.",
+          "points": -5,
+          "feedback": "Network can delay results, but it does not explain the CPU-heavy render path seen in the profiler.",
+          "isHarmful": true
+        },
+        {
           "id": "css-transition-only",
           "label": "Card hover transitions are the main cause; JavaScript is mostly fine.",
           "points": 5,
@@ -66,13 +73,6 @@
           "points": 0,
           "feedback": "There is no signal of duplicated handlers. The evidence points to heavy work, not repeated events.",
           "isHarmful": false
-        },
-        {
-          "id": "network-only",
-          "label": "Network latency alone is causing the input to freeze.",
-          "points": -5,
-          "feedback": "Network can delay results, but it does not explain the CPU-heavy render path seen in the profiler.",
-          "isHarmful": true
         }
       ]
     },
@@ -124,10 +124,24 @@
       "helperText": "Select all changes that belong in the first production-quality patch.",
       "options": [
         {
+          "id": "raise-timeout",
+          "label": "Increase the fetch timeout so requests stop failing under load.",
+          "points": -5,
+          "feedback": "This does not address input lag and can hide the real performance problem.",
+          "isHarmful": true
+        },
+        {
           "id": "debounce-requests",
           "label": "Debounce suggestion requests so network work is not fired on every single keystroke.",
           "points": 10,
           "feedback": "Correct. This cuts avoidable request churn and reduces work on the input path.",
+          "isHarmful": false
+        },
+        {
+          "id": "disable-strict-mode",
+          "label": "Disable StrictMode locally so typing feels smoother in development.",
+          "points": 0,
+          "feedback": "That can change dev noise, but it does not solve the production bottleneck.",
           "isHarmful": false
         },
         {
@@ -143,20 +157,6 @@
           "points": 5,
           "feedback": "Correct. Rendering fewer cards lowers total update cost once the query changes.",
           "isHarmful": false
-        },
-        {
-          "id": "raise-timeout",
-          "label": "Increase the fetch timeout so requests stop failing under load.",
-          "points": -5,
-          "feedback": "This does not address input lag and can hide the real performance problem.",
-          "isHarmful": true
-        },
-        {
-          "id": "disable-strict-mode",
-          "label": "Disable StrictMode locally so typing feels smoother in development.",
-          "points": 0,
-          "feedback": "That can change dev noise, but it does not solve the production bottleneck.",
-          "isHarmful": false
         }
       ]
     },
@@ -167,13 +167,6 @@
       "prompt": "What is the best regression guard after the fix ships?",
       "helperText": "Choose the signal that would catch this class of issue early next time.",
       "options": [
-        {
-          "id": "interaction-budget",
-          "label": "Track search interaction latency and add a budget for typing responsiveness in the performance workflow.",
-          "points": 25,
-          "feedback": "Correct. This watches the actual user-facing failure mode instead of only backend timing.",
-          "isHarmful": false
-        },
         {
           "id": "api-only-monitoring",
           "label": "Monitor only the search API p95 because slower requests caused the lag.",
@@ -186,6 +179,13 @@
           "label": "Have QA type quickly on release day and rely on that spot check.",
           "points": 0,
           "feedback": "Manual checks help, but they are too weak as the main guardrail.",
+          "isHarmful": false
+        },
+        {
+          "id": "interaction-budget",
+          "label": "Track search interaction latency and add a budget for typing responsiveness in the performance workflow.",
+          "points": 25,
+          "feedback": "Correct. This watches the actual user-facing failure mode instead of only backend timing.",
           "isHarmful": false
         },
         {

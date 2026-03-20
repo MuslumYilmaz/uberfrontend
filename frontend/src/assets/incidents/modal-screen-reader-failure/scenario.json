@@ -47,10 +47,10 @@
       "helperText": "Look for the missing semantics and focus behavior, not just visual polish.",
       "options": [
         {
-          "id": "missing-dialog-contract",
-          "label": "The custom modal is missing the dialog accessibility contract: naming, focus entry, focus return, and background isolation.",
-          "points": 25,
-          "feedback": "Correct. The bug is broader than one aria attribute; the modal never behaves like an actual dialog.",
+          "id": "button-copy-only",
+          "label": "The only issue is that the confirm button text is too short.",
+          "points": 5,
+          "feedback": "Clear copy helps, but it does not explain unnamed dialog output or escaped focus.",
           "isHarmful": false
         },
         {
@@ -61,18 +61,18 @@
           "isHarmful": false
         },
         {
-          "id": "button-copy-only",
-          "label": "The only issue is that the confirm button text is too short.",
-          "points": 5,
-          "feedback": "Clear copy helps, but it does not explain unnamed dialog output or escaped focus.",
-          "isHarmful": false
-        },
-        {
           "id": "screen-reader-bug",
           "label": "This is mostly a VoiceOver bug, so the app should not change much.",
           "points": -5,
           "feedback": "The current markup and focus behavior are objectively incomplete; blaming the tool misses the app defect.",
           "isHarmful": true
+        },
+        {
+          "id": "missing-dialog-contract",
+          "label": "The custom modal is missing the dialog accessibility contract: naming, focus entry, focus return, and background isolation.",
+          "points": 25,
+          "feedback": "Correct. The bug is broader than one aria attribute; the modal never behaves like an actual dialog.",
+          "isHarmful": false
         }
       ]
     },
@@ -126,20 +126,6 @@
           "isHarmful": false
         },
         {
-          "id": "focus-trap-return",
-          "label": "Move focus into the modal on open, trap it while open, and restore it to the trigger on close.",
-          "points": 10,
-          "feedback": "Correct. Focus lifecycle is central to usable modal behavior.",
-          "isHarmful": false
-        },
-        {
-          "id": "background-isolation",
-          "label": "Prevent background interaction and tabbing while the modal is open.",
-          "points": 5,
-          "feedback": "Correct. Background content should not compete with the active dialog.",
-          "isHarmful": false
-        },
-        {
           "id": "placeholder-copy",
           "label": "Rewrite placeholders and rely on that as the accessibility improvement.",
           "points": 0,
@@ -152,6 +138,20 @@
           "points": -5,
           "feedback": "That makes the modal harder to use and avoids the real accessibility work.",
           "isHarmful": true
+        },
+        {
+          "id": "focus-trap-return",
+          "label": "Move focus into the modal on open, trap it while open, and restore it to the trigger on close.",
+          "points": 10,
+          "feedback": "Correct. Focus lifecycle is central to usable modal behavior.",
+          "isHarmful": false
+        },
+        {
+          "id": "background-isolation",
+          "label": "Prevent background interaction and tabbing while the modal is open.",
+          "points": 5,
+          "feedback": "Correct. Background content should not compete with the active dialog.",
+          "isHarmful": false
         }
       ]
     },
@@ -163,13 +163,6 @@
       "helperText": "Pick the safeguard that checks behavior, not just markup presence.",
       "options": [
         {
-          "id": "keyboard-a11y-test",
-          "label": "Add an automated modal test that checks keyboard flow, focus return, and accessibility assertions.",
-          "points": 25,
-          "feedback": "Correct. This protects the actual behavior users depend on.",
-          "isHarmful": false
-        },
-        {
           "id": "lint-aria-only",
           "label": "Add an aria linter rule and assume the interaction will stay correct.",
           "points": 5,
@@ -177,10 +170,10 @@
           "isHarmful": false
         },
         {
-          "id": "visual-regression-only",
-          "label": "Add a screenshot regression because the modal looked right visually.",
-          "points": 0,
-          "feedback": "Visual regression is insufficient for keyboard and screen-reader behavior.",
+          "id": "keyboard-a11y-test",
+          "label": "Add an automated modal test that checks keyboard flow, focus return, and accessibility assertions.",
+          "points": 25,
+          "feedback": "Correct. This protects the actual behavior users depend on.",
           "isHarmful": false
         },
         {
@@ -189,6 +182,13 @@
           "points": -5,
           "feedback": "That discards the product UX instead of maintaining an accessible modal implementation.",
           "isHarmful": true
+        },
+        {
+          "id": "visual-regression-only",
+          "label": "Add a screenshot regression because the modal looked right visually.",
+          "points": 0,
+          "feedback": "Visual regression is insufficient for keyboard and screen-reader behavior.",
+          "isHarmful": false
         }
       ]
     }
