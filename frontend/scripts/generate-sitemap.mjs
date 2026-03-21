@@ -89,6 +89,7 @@ function buildUrls() {
     '/pricing',
     '/coding',
     '/incidents',
+    '/tradeoffs',
     '/interview-questions',
     '/javascript/interview-questions',
     '/react/interview-questions',

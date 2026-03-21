@@ -1429,6 +1429,15 @@
     <loc>https://frontendatlas.com/tracks</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/tradeoffs</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/context-vs-zustand-vs-redux</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/sse-vs-websocket-live-dashboard</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/vue/coding/vue-accordion-faq</loc>
   </url>
   <url>

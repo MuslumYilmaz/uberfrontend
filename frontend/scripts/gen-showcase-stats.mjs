@@ -10,6 +10,7 @@ const projectRoot = path.resolve(__dirname, '..');
 
 const QUESTION_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'questions');
 const INCIDENT_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'incidents');
+const TRADEOFF_BATTLES_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'tradeoff-battles');
 const FRAMEWORK_FAMILIES_PATH = path.join(
   projectRoot,
   'src',
@@ -127,6 +128,7 @@ function computeTotalQuestions(lists) {
   for (const q of lists.trivia) add('trivia', q);
   for (const q of lists.system) add('system', q);
   for (const q of lists.incident ?? []) add('incident', q);
+  for (const q of lists.tradeoffBattle ?? []) add('tradeoff-battle', q);
   return ids.size;
 }
 
@@ -136,6 +138,7 @@ async function main() {
     trivia: [],
     system: [],
     incident: [],
+    tradeoffBattle: [],
   };
 
   for (const tech of TECHS) {
@@ -152,6 +155,8 @@ async function main() {
   allLists.system.push(...systemList);
   const incidentList = await readJsonArray(path.join(INCIDENT_ASSETS_DIR, 'index.json'));
   allLists.incident.push(...incidentList);
+  const tradeoffBattleList = await readJsonArray(path.join(TRADEOFF_BATTLES_ASSETS_DIR, 'index.json'));
+  allLists.tradeoffBattle.push(...tradeoffBattleList);
 
   const frameworkFamiliesSource = await fs.readFile(FRAMEWORK_FAMILIES_PATH, 'utf8');
   const frameworkFamilyById = buildFrameworkFamilyByIdMap(frameworkFamiliesSource);

@@ -611,7 +611,7 @@
 
 .incident-action-bar {
   position: sticky;
-  bottom: 0.75rem;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -623,6 +623,7 @@
   border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, transparent);
   background: color-mix(in srgb, var(--uf-surface) 90%, black);
   backdrop-filter: blur(10px);
+  z-index: 6;
 }
 
 .incident-action-bar__meta {
@@ -659,13 +660,13 @@
   }
 
   .incident-action-bar {
-    bottom: 0.25rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0.4rem);
   }
 }
 
 @media (max-width: 640px) {
   .incident-detail-shell {
-    padding-bottom: 8rem;
+    padding-bottom: calc(9rem + env(safe-area-inset-bottom, 0px));
   }
 
   .incident-priority__item {
@@ -673,9 +674,17 @@
   }
 
   .incident-priority__controls,
-  .incident-action-bar,
   .incident-action-bar__cluster {
     width: 100%;
+  }
+
+  .incident-action-bar {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 0.7rem;
+    padding: 0.8rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0.3rem);
   }
 
   .incident-signal-card,
@@ -693,7 +702,22 @@
     top: 0.95rem;
   }
 
-  .incident-action-bar__cluster,
+  .incident-action-bar__meta {
+    order: 2;
+    text-align: center;
+  }
+
+  .incident-action-bar > .incident-action-bar__btn:first-child {
+    width: 100%;
+  }
+
+  .incident-action-bar__cluster {
+    order: 3;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
   .incident-priority__controls {
     justify-content: stretch;
   }
@@ -701,5 +725,6 @@
   .incident-priority__btn,
   .incident-action-bar__btn {
     flex: 1 1 0;
+    width: 100%;
   }
 }

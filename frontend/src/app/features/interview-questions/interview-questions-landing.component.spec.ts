@@ -100,7 +100,7 @@ describe('InterviewQuestionsLandingComponent', () => {
           useValue: {
             primaryHubEntries: signal([
               { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
-              { key: 'incidents', label: 'Production incidents', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
+              { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
               {
                 key: 'system-design',
                 label: 'System design',
@@ -109,6 +109,7 @@ describe('InterviewQuestionsLandingComponent', () => {
                 query: { view: 'formats', category: 'system' },
                 family: 'question',
               },
+              { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle' },
             ]),
           },
         },

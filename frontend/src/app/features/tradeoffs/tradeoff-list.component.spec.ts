@@ -1,0 +1,82 @@
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { SeoService } from '../../core/services/seo.service';
+import { TradeoffBattleProgressService } from '../../core/services/tradeoff-battle-progress.service';
+import { TradeoffListComponent } from './tradeoff-list.component';
+
+describe('TradeoffListComponent', () => {
+  let seo: jasmine.SpyObj<SeoService>;
+
+  beforeEach(async () => {
+    seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
+    seo.buildCanonicalUrl.and.callFake((value: string) => {
+      const raw = String(value || '').trim();
+      if (!raw) return 'https://frontendatlas.com/';
+      if (/^https?:\/\//i.test(raw)) return raw;
+      return raw.startsWith('/')
+        ? `https://frontendatlas.com${raw}`
+        : `https://frontendatlas.com/${raw}`;
+    });
+
+    await TestBed.configureTestingModule({
+      imports: [TradeoffListComponent, RouterTestingModule],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                tradeoffBattleList: {
+                  items: [
+                    {
+                      id: 'context-vs-zustand-vs-redux',
+                      title: 'Context vs Zustand vs Redux for a growing React dashboard',
+                      tech: 'react',
+                      difficulty: 'intermediate',
+                      summary: 'Shared state tradeoff question.',
+                      tags: ['react', 'tradeoffs'],
+                      access: 'free',
+                      estimatedMinutes: 14,
+                      updatedAt: '2026-03-21',
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        {
+          provide: TradeoffBattleProgressService,
+          useValue: {
+            getRecord: () => ({
+              started: false,
+              completed: false,
+              lastPlayedAt: null,
+              selectedOptionId: '',
+            }),
+          },
+        },
+        { provide: SeoService, useValue: seo },
+      ],
+    }).compileComponents();
+  });
+
+  it('publishes CollectionPage schema for tradeoff battles', async () => {
+    const fixture = TestBed.createComponent(TradeoffListComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+
+    expect(collection).toBeTruthy();
+    expect(collection?.url || '').toContain('/tradeoffs');
+    expect(collection?.mainEntity?.itemListElement?.[0]?.url || '').toContain('/tradeoffs/context-vs-zustand-vs-redux');
+    expect(breadcrumb).toBeTruthy();
+  });
+});

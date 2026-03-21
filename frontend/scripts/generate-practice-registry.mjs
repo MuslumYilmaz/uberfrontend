@@ -6,6 +6,7 @@ const SRC_DIR = path.resolve('src');
 const ASSETS_DIR = path.join(SRC_DIR, 'assets');
 const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
 const INCIDENTS_DIR = path.join(ASSETS_DIR, 'incidents');
+const TRADEOFF_BATTLES_DIR = path.join(ASSETS_DIR, 'tradeoff-battles');
 const OUT_DIR = path.join(ASSETS_DIR, 'practice');
 const OUT_PATH = path.join(OUT_DIR, 'registry.json');
 const CDN_OUT_DIR = path.resolve('../cdn/practice');
@@ -168,6 +169,33 @@ function buildIncidentEntries() {
     }));
 }
 
+function buildTradeoffBattleEntries() {
+  const indexPath = path.join(TRADEOFF_BATTLES_DIR, 'index.json');
+  if (!fs.existsSync(indexPath)) return [];
+
+  const fallback = fallbackDate(indexPath);
+  return safeArray(readJson(indexPath))
+    .filter((item) => item?.id && item?.title)
+    .map((item) => ({
+      id: String(item.id),
+      family: 'tradeoff-battle',
+      title: String(item.title),
+      route: `/tradeoffs/${item.id}`,
+      tech: String(item.tech || 'javascript'),
+      difficulty: normalizeDifficulty(item.difficulty),
+      summary: shortSummary(item.summary),
+      tags: safeArray(item.tags).filter((tag) => typeof tag === 'string'),
+      access: normalizeAccess(item.access),
+      estimatedMinutes:
+        typeof item.estimatedMinutes === 'number'
+          ? item.estimatedMinutes
+          : 14,
+      updatedAt: toDateOnly(item.updatedAt, fallback),
+      schemaVersion: 'tradeoff-battle.v1',
+      assetRef: `tradeoff-battles/${item.id}/scenario.json`,
+    }));
+}
+
 function sortEntries(entries) {
   return [...entries].sort((a, b) => {
     if (a.family !== b.family) return a.family.localeCompare(b.family);
@@ -179,6 +207,7 @@ function sortEntries(entries) {
 const registry = sortEntries([
   ...buildQuestionEntries(),
   ...buildIncidentEntries(),
+  ...buildTradeoffBattleEntries(),
 ]);
 
 ensureDir(OUT_DIR);

@@ -15,6 +15,7 @@ const projectRoot = path.resolve(__dirname, "..");
 const globs = [
     "src/assets/questions/**/*.{json,md}",
     "src/assets/incidents/**/*.{json,md}",
+    "src/assets/tradeoff-battles/**/*.{json,md}",
     "src/assets/practice/**/*.{json,md}",
     "src/app/**/*.ts",
     "package.json",

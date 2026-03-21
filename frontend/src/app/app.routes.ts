@@ -20,9 +20,14 @@ import {
   triviaDetailResolver,
 } from './core/resolvers/question-detail.resolver';
 import { incidentExistsGuard } from './core/guards/incident-exists.guard';
+import { tradeoffBattleExistsGuard } from './core/guards/tradeoff-battle-exists.guard';
 import { interviewQuestionsHubResolver } from './core/resolvers/interview-questions.resolver';
 import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
 import { incidentDetailResolver, incidentListResolver } from './core/resolvers/incident.resolver';
+import {
+  tradeoffBattleDetailResolver,
+  tradeoffBattleListResolver,
+} from './core/resolvers/tradeoff-battle.resolver';
 import {
   behavioralGuideDetailResolver,
   playbookGuideDetailResolver,
@@ -1012,6 +1017,39 @@ export const routes: Routes = [
         title: 'Frontend Debug Scenario for Interview Practice',
         description:
           'Practice a frontend debugging interview question with a guided debug scenario covering the root cause, debug order, fix, and regression guard.',
+      },
+    },
+  },
+  {
+    path: 'tradeoffs',
+    loadComponent: () =>
+      import('./features/tradeoffs/tradeoff-list.component').then((m) => m.TradeoffListComponent),
+    resolve: {
+      tradeoffBattleList: tradeoffBattleListResolver,
+    },
+    data: {
+      seo: {
+        title: 'Frontend Tradeoff Interview Questions and Architecture Decisions',
+        description:
+          'Practice frontend tradeoff interview questions like Context vs Zustand vs Redux, SSE vs WebSocket, and CSR vs SSR vs RSC. Learn how to defend decisions clearly in interviews.',
+      },
+    },
+  },
+  {
+    path: 'tradeoffs/:id',
+    canActivate: [tradeoffBattleExistsGuard],
+    loadComponent: () =>
+      import('./features/tradeoffs/tradeoff-detail/tradeoff-detail.component').then(
+        (m) => m.TradeoffDetailComponent,
+      ),
+    resolve: {
+      tradeoffBattleDetail: tradeoffBattleDetailResolver,
+    },
+    data: {
+      seo: {
+        title: 'Frontend Tradeoff Battle for Interview Practice',
+        description:
+          'Practice a frontend tradeoff interview question and learn how to compare options, defend a balanced choice, and explain the downsides clearly.',
       },
     },
   },

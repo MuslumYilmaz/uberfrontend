@@ -1,0 +1,34 @@
+[
+  {
+    "id": "sse-vs-websocket-live-dashboard",
+    "title": "SSE vs WebSocket for a live operations dashboard",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A support dashboard needs live status updates, but most user actions are still normal HTTP writes. Which transport would you defend in an interview?",
+    "tags": [
+      "realtime",
+      "architecture",
+      "networking",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-21"
+  },
+  {
+    "id": "context-vs-zustand-vs-redux",
+    "title": "Context vs Zustand vs Redux for a growing React dashboard",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "You need shared state for filters, optimistic updates, background refetches, and multiple teams. Which state approach would you defend in an interview?",
+    "tags": [
+      "react",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21"
+  }
+]

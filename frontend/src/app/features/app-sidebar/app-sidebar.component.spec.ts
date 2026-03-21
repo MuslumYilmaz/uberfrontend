@@ -18,7 +18,7 @@ describe('AppSidebarComponent', () => {
     const practiceRegistry = {
       catalogEntries: signal([
         { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
-        { key: 'incidents', label: 'Production incidents', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
+        { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
         {
           key: 'system-design',
           label: 'System design',
@@ -27,6 +27,7 @@ describe('AppSidebarComponent', () => {
           query: { view: 'formats', category: 'system' },
           family: 'question',
         },
+        { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle' },
         { key: 'tracks', label: 'Interview prep tracks', icon: 'pi pi-directions', route: '/tracks', isSupplemental: true },
         {
           key: 'question-formats',
@@ -52,6 +53,8 @@ describe('AppSidebarComponent', () => {
           { path: ':tech/debug/:id', component: DummyPageComponent },
           { path: 'incidents', component: DummyPageComponent },
           { path: 'incidents/:id', component: DummyPageComponent },
+          { path: 'tradeoffs', component: DummyPageComponent },
+          { path: 'tradeoffs/:id', component: DummyPageComponent },
           { path: 'system-design', component: DummyPageComponent },
           { path: 'system-design/:slug', component: DummyPageComponent },
           { path: 'tracks', component: DummyPageComponent },
@@ -101,7 +104,7 @@ describe('AppSidebarComponent', () => {
     }));
   });
 
-  it('highlights production incidents and opens the practice catalog for incident detail routes', async () => {
+  it('highlights debug scenarios and opens the practice catalog for incident detail routes', async () => {
     const { router } = await configureTestingModule();
     const fixture = TestBed.createComponent(AppSidebarComponent);
 
@@ -109,10 +112,25 @@ describe('AppSidebarComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const incidentsLink = fixture.nativeElement.querySelector('a[aria-label="Production incidents"]') as HTMLAnchorElement;
+    const incidentsLink = fixture.nativeElement.querySelector('a[aria-label="Debug scenarios"]') as HTMLAnchorElement;
     const practiceCatalog = fixture.nativeElement.querySelector('#group-1') as HTMLElement;
 
     expect(incidentsLink.classList.contains('is-active')).toBeTrue();
+    expect(practiceCatalog.classList.contains('open')).toBeTrue();
+  });
+
+  it('highlights tradeoff battles for tradeoff detail routes', async () => {
+    const { router } = await configureTestingModule();
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+
+    await fixture.ngZone?.run(async () => router.navigateByUrl('/tradeoffs/context-vs-zustand-vs-redux'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const tradeoffLink = fixture.nativeElement.querySelector('a[aria-label="Tradeoff battles"]') as HTMLAnchorElement;
+    const practiceCatalog = fixture.nativeElement.querySelector('#group-1') as HTMLElement;
+
+    expect(tradeoffLink.classList.contains('is-active')).toBeTrue();
     expect(practiceCatalog.classList.contains('open')).toBeTrue();
   });
 

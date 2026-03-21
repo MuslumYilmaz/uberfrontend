@@ -1,0 +1,160 @@
+.tradeoff-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.tradeoff-hero,
+.tradeoff-search,
+.tradeoff-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(230, 186, 95, 0.16), transparent 30%),
+    rgba(8, 12, 22, 0.92);
+  border-radius: 1.5rem;
+}
+
+.tradeoff-hero {
+  padding: 1.75rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.tradeoff-hero__eyebrow {
+  margin: 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.26em;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.tradeoff-hero h1 {
+  margin: 0;
+  max-width: 16ch;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 0.98;
+}
+
+.tradeoff-hero__summary {
+  margin: 0;
+  max-width: 60rem;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.tradeoff-hero__meta {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.tradeoff-hero__stat {
+  min-width: 8.5rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tradeoff-hero__stat-value {
+  display: block;
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.tradeoff-hero__stat-label {
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.tradeoff-search {
+  padding: 1rem;
+}
+
+.tradeoff-search input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  border-radius: 999px;
+  background: rgba(3, 6, 13, 0.92);
+  padding: 0.95rem 1.1rem;
+  color: #fff;
+  font: inherit;
+}
+
+.tradeoff-cards {
+  display: grid;
+  gap: 1rem;
+}
+
+.tradeoff-card {
+  display: grid;
+  gap: 0.95rem;
+  padding: 1.35rem 1.4rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 140ms ease, border-color 140ms ease;
+}
+
+.tradeoff-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(230, 186, 95, 0.38);
+}
+
+.tradeoff-card__header {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tradeoff-card__header h2 {
+  margin: 0.2rem 0 0;
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  line-height: 1.2;
+}
+
+.tradeoff-card__status,
+.tradeoff-card__minutes {
+  margin: 0;
+  color: rgba(230, 186, 95, 0.9);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tradeoff-card__summary {
+  margin: 0;
+  max-width: 58rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.tradeoff-card__meta,
+.tradeoff-card__tags {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.tradeoff-card__meta span,
+.tradeoff-card__tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 720px) {
+  .tradeoff-hero,
+  .tradeoff-search,
+  .tradeoff-card {
+    border-radius: 1.15rem;
+  }
+
+  .tradeoff-card__header {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,237 @@
+<ng-container *ngIf="battle() as current">
+  <section class="tradeoff-detail">
+    <header class="tradeoff-detail__hero">
+      <div class="tradeoff-detail__hero-main">
+        <p class="tradeoff-detail__eyebrow">TRADEOFF BATTLE</p>
+        <h1>{{ current.meta.title }}</h1>
+        <p class="tradeoff-detail__summary">{{ current.meta.summary }}</p>
+      </div>
+
+      <div class="tradeoff-detail__hero-meta">
+        <span>{{ current.meta.tech }}</span>
+        <span>{{ current.meta.difficulty }}</span>
+        <span>{{ current.meta.estimatedMinutes }} min</span>
+      </div>
+    </header>
+
+    <section class="tradeoff-detail__scenario">
+      <h2>The prompt</h2>
+      <p>{{ current.scenario }}</p>
+      <div class="tradeoff-detail__prompt">{{ current.prompt }}</div>
+    </section>
+
+    <section class="tradeoff-detail__section">
+      <div class="tradeoff-detail__section-head">
+        <h2>Pick the direction you would defend</h2>
+        <p>You are not looking for the universal winner. You are picking the strongest answer for this prompt.</p>
+      </div>
+
+      <div class="tradeoff-detail__options">
+        <button
+          *ngFor="let option of current.options"
+          type="button"
+          class="tradeoff-option"
+          [class.is-selected]="selectedOptionId() === option.id"
+          (click)="selectOption(option.id)"
+        >
+          <span class="tradeoff-option__label">{{ option.label }}</span>
+          <span class="tradeoff-option__summary">{{ option.summary }}</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="tradeoff-detail__section">
+      <div class="tradeoff-detail__section-head">
+        <h2>Commit to a direction</h2>
+        <p>Pick the option you would defend, then reveal the stronger interview framing for this prompt.</p>
+      </div>
+
+      <div class="tradeoff-detail__decision-bar">
+        <div class="tradeoff-detail__decision-copy" *ngIf="selectedOption() as picked; else noSelection">
+          <p class="tradeoff-detail__decision-label">Your current angle</p>
+          <h3>{{ picked.label }}</h3>
+          <p>{{ picked.summary }}</p>
+        </div>
+        <ng-template #noSelection>
+          <div class="tradeoff-detail__decision-copy">
+            <p class="tradeoff-detail__decision-label">Next step</p>
+            <h3>Choose one side first</h3>
+            <p>This works better when you commit to an answer before seeing the breakdown.</p>
+          </div>
+        </ng-template>
+
+        <div class="tradeoff-detail__actions">
+          <button
+            type="button"
+            class="tradeoff-detail__cta"
+            [disabled]="!selectedOptionId()"
+            (click)="revealAnalysis()"
+          >
+            {{ analysisRevealed() ? 'Analysis revealed' : 'Reveal analysis' }}
+          </button>
+        </div>
+        <p class="tradeoff-detail__decision-note">
+          Strong answers are scenario-specific, not universal.
+        </p>
+      </div>
+    </section>
+
+    <ng-container *ngIf="analysisRevealed()">
+      <section class="tradeoff-detail__section tradeoff-detail__callout">
+        <p class="tradeoff-detail__eyebrow">STRONG ANSWER</p>
+        <h2>{{ current.strongAnswer.title }}</h2>
+        <p>{{ current.strongAnswer.summary }}</p>
+        <ul>
+          <li *ngFor="let item of current.strongAnswer.reasoning; trackBy: trackByString">{{ item }}</li>
+        </ul>
+        <p *ngIf="current.strongAnswer.recommendation" class="tradeoff-detail__recommendation">
+          {{ current.strongAnswer.recommendation }}
+        </p>
+      </section>
+
+      <section class="tradeoff-detail__section">
+        <div class="tradeoff-detail__section-head">
+          <h2>Decision matrix</h2>
+          <p>Watch how the answer changes as the scenario changes. This is where tradeoff thinking starts to feel real.</p>
+        </div>
+
+        <div class="tradeoff-detail__matrix">
+          <article *ngFor="let row of current.decisionMatrix" class="tradeoff-matrix-row">
+            <div class="tradeoff-matrix-row__head">
+              <h3>{{ row.title }}</h3>
+              <p>{{ row.prompt }}</p>
+            </div>
+
+            <div class="tradeoff-matrix-row__cells">
+              <article
+                *ngFor="let option of current.options"
+                class="tradeoff-matrix-cell"
+                [class.is-selected]="selectedOptionId() === option.id"
+              >
+                <p class="tradeoff-detail__comparison-kicker">{{ option.label }}</p>
+                <span
+                  *ngIf="matrixCell(row, option.id) as cell"
+                  class="tradeoff-matrix-cell__verdict"
+                  [ngClass]="'is-' + cell.verdict"
+                >
+                  {{ verdictLabel(cell.verdict) }}
+                </span>
+                <p *ngIf="matrixCell(row, option.id) as cell">{{ cell.note }}</p>
+              </article>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="tradeoff-detail__section">
+        <div class="tradeoff-detail__section-head">
+          <h2>Side-by-side comparison</h2>
+          <p>Once the answer is revealed, compare all options. The selected card stays highlighted so you can pressure-test your own instinct.</p>
+        </div>
+
+        <div class="tradeoff-detail__comparison-grid">
+          <article
+            *ngFor="let option of current.options"
+            class="tradeoff-detail__panel tradeoff-detail__comparison-card"
+            [class.is-selected]="selectedOptionId() === option.id"
+          >
+            <p class="tradeoff-detail__comparison-kicker">
+              {{ selectedOptionId() === option.id ? 'Your pick' : 'Alternative' }}
+            </p>
+            <h3>{{ option.label }}</h3>
+            <p>{{ option.summary }}</p>
+
+            <div class="tradeoff-detail__comparison-lists">
+              <div>
+                <h4>When it wins</h4>
+                <ul>
+                  <li *ngFor="let item of option.whenItWins; trackBy: trackByString">{{ item }}</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4>Watch out for</h4>
+                <ul>
+                  <li *ngFor="let item of option.watchOutFor; trackBy: trackByString">{{ item }}</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="tradeoff-detail__section">
+        <div class="tradeoff-detail__section-head">
+          <h2>Interviewer pushback you should be ready for</h2>
+          <p>A strong answer survives follow-up pressure. These are the questions most likely to expose shallow reasoning.</p>
+        </div>
+
+        <div class="tradeoff-detail__pushback-grid">
+          <article *ngFor="let item of current.interviewerPushback" class="tradeoff-detail__panel tradeoff-pushback">
+            <p class="tradeoff-detail__comparison-kicker">Pushback</p>
+            <h3>{{ item.question }}</h3>
+            <p>{{ item.answer }}</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="tradeoff-detail__section">
+        <div class="tradeoff-detail__section-head">
+          <h2>What weak, decent, and strong answers sound like</h2>
+          <p>This is often the fastest way to internalize the difference between opinions and interview-grade reasoning.</p>
+        </div>
+
+        <div class="tradeoff-detail__examples">
+          <article
+            *ngFor="let example of current.answerExamples"
+            class="tradeoff-detail__panel tradeoff-example"
+            [ngClass]="answerExampleTone(example)"
+          >
+            <p class="tradeoff-detail__comparison-kicker">{{ example.title }}</p>
+            <blockquote>{{ example.answer }}</blockquote>
+            <p>{{ example.whyItWorks }}</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="tradeoff-detail__section">
+        <div class="tradeoff-detail__section-head">
+          <h2>How the interviewer is probably evaluating this</h2>
+          <p>These are the dimensions that make your answer feel senior instead of generic.</p>
+        </div>
+
+        <div class="tradeoff-detail__dimensions">
+          <article *ngFor="let dimension of current.evaluationDimensions" class="tradeoff-dimension">
+            <h3>{{ dimension.title }}</h3>
+            <p>{{ dimension.description }}</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="tradeoff-detail__section">
+        <div class="tradeoff-detail__section-head">
+          <h2>One clean answer framework</h2>
+          <p>Use this structure if you want your answer to sound calm and easy to follow.</p>
+        </div>
+        <ol class="tradeoff-detail__framework">
+          <li *ngFor="let item of current.answerFramework; trackBy: trackByString">{{ item }}</li>
+        </ol>
+      </section>
+
+      <section class="tradeoff-detail__section">
+        <div class="tradeoff-detail__section-head">
+          <h2>Answers that sound weak</h2>
+          <p>Avoid these shortcuts if you want the answer to feel grounded in engineering tradeoffs.</p>
+        </div>
+        <ul class="tradeoff-detail__anti-patterns">
+          <li *ngFor="let item of current.antiPatterns; trackBy: trackByString">{{ item }}</li>
+        </ul>
+      </section>
+    </ng-container>
+
+    <footer class="tradeoff-detail__footer">
+      <button type="button" (click)="goToAdjacentBattle(prevBattle())" [disabled]="!prevBattle()">Previous</button>
+      <button type="button" (click)="goToAdjacentBattle(nextBattle())" [disabled]="!nextBattle()">Next</button>
+    </footer>
+  </section>
+</ng-container>

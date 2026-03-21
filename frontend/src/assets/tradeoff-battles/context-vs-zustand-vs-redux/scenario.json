@@ -1,0 +1,216 @@
+{
+  "meta": {
+    "id": "context-vs-zustand-vs-redux",
+    "title": "Context vs Zustand vs Redux for a growing React dashboard",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "You need shared state for filters, optimistic updates, background refetches, and multiple teams. Which state approach would you defend in an interview?",
+    "tags": [
+      "react",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21"
+  },
+  "scenario": "You are designing a React operations dashboard used by support, fraud, and fulfillment teams. The app has shared filters, live counters, optimistic row actions, background refetches, and several engineers working in parallel. In the interview, the panel asks which state approach you would pick for the main shared product state: Context plus useReducer, Zustand, or Redux Toolkit.",
+  "prompt": "Which direction would you defend, and what would you say about the other options so your answer sounds balanced instead of dogmatic?",
+  "options": [
+    {
+      "id": "context",
+      "label": "Context + useReducer",
+      "summary": "A good fit when the shared state is still small, updates are not too hot, and the team wants the lightest built-in option.",
+      "whenItWins": [
+        "The shared state is limited to a few cross-page concerns such as auth, theme, locale, or one stable filter model.",
+        "You want the simplest built-in solution and do not need advanced debugging or async orchestration.",
+        "The team can keep providers narrow so unrelated screens do not rerender on every small update."
+      ],
+      "watchOutFor": [
+        "Large fast-changing state can spread rerenders too broadly and make reducers hard to reason about.",
+        "It gets awkward once many async workflows, optimistic updates, and cross-screen writes pile up."
+      ]
+    },
+    {
+      "id": "zustand",
+      "label": "Zustand",
+      "summary": "Often the middle ground: less ceremony than Redux, easier to adopt than a big state architecture, and still strong enough for many product teams.",
+      "whenItWins": [
+        "You need a shared store without much boilerplate and the team values speed of iteration.",
+        "The product has meaningful shared state, but the async story and team conventions are still manageable.",
+        "You want selectors and store slices without moving the whole app into a heavyweight pattern."
+      ],
+      "watchOutFor": [
+        "Without team discipline, store boundaries and async conventions can drift over time.",
+        "You need to explain how debugging, testing, and long-term conventions will stay clear as the app grows."
+      ]
+    },
+    {
+      "id": "redux-toolkit",
+      "label": "Redux Toolkit",
+      "summary": "The easiest answer to defend when shared state is broad, async workflows are serious, and several teams need predictable patterns.",
+      "whenItWins": [
+        "The app has many cross-screen writes, optimistic updates, background refetches, and a long shelf life.",
+        "Multiple teams need shared conventions, clearer debugging, and predictable reducer and async patterns.",
+        "Interviewers care as much about long-term maintainability and debugging as short-term coding speed."
+      ],
+      "watchOutFor": [
+        "It can be heavier than the app really needs if the state surface is still small.",
+        "A weak answer sounds like 'Redux because enterprise'; you still need to tie it to this specific scenario."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "small-stable-app",
+      "title": "Smaller app with calmer shared state",
+      "prompt": "Only a few shared concerns, fewer async flows, and a small team.",
+      "cells": [
+        {
+          "optionId": "context",
+          "verdict": "best-fit",
+          "note": "Very defendable here if providers stay narrow and updates are not too hot."
+        },
+        {
+          "optionId": "zustand",
+          "verdict": "reasonable",
+          "note": "Still fine, but it may be more structure than the app needs right now."
+        },
+        {
+          "optionId": "redux-toolkit",
+          "verdict": "stretch",
+          "note": "Harder to justify unless you have near-term complexity that the prompt does not mention."
+        }
+      ]
+    },
+    {
+      "id": "current-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Broad shared state, optimistic actions, background refetches, and multiple teams.",
+      "cells": [
+        {
+          "optionId": "context",
+          "verdict": "stretch",
+          "note": "Possible only with many careful boundaries, which makes the answer harder to defend."
+        },
+        {
+          "optionId": "zustand",
+          "verdict": "reasonable",
+          "note": "A solid middle ground, especially if the team values speed and lower ceremony."
+        },
+        {
+          "optionId": "redux-toolkit",
+          "verdict": "best-fit",
+          "note": "The easiest answer to defend when long-term predictability and team conventions matter."
+        }
+      ]
+    },
+    {
+      "id": "heavier-future-state",
+      "title": "Even heavier async and team growth",
+      "prompt": "More slices, more workflows, more engineers, and more debugging pressure.",
+      "cells": [
+        {
+          "optionId": "context",
+          "verdict": "stretch",
+          "note": "At this point the answer starts to sound optimistic unless you narrow its scope heavily."
+        },
+        {
+          "optionId": "zustand",
+          "verdict": "reasonable",
+          "note": "Still viable, but the burden shifts to your team conventions and store discipline."
+        },
+        {
+          "optionId": "redux-toolkit",
+          "verdict": "best-fit",
+          "note": "The maintainability and debugging story becomes easier to defend as scale rises."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "state-surface",
+      "title": "How wide is the shared state?",
+      "description": "Is this only a couple of stable app concerns, or is state flowing across many screens, tables, actions, and async workflows?"
+    },
+    {
+      "id": "update-frequency",
+      "title": "How often does the state change?",
+      "description": "Hot updates, live counters, optimistic writes, and rapid filter changes push you away from broad rerender patterns."
+    },
+    {
+      "id": "team-scale",
+      "title": "How many people will touch this code?",
+      "description": "The bigger the team, the more valuable explicit patterns, debugging tools, and predictable conventions become."
+    },
+    {
+      "id": "async-complexity",
+      "title": "How messy is the async story?",
+      "description": "Background refetches, retries, optimistic updates, and rollback logic are where a state choice starts to show its real cost."
+    },
+    {
+      "id": "interview-balance",
+      "title": "Can you explain why not the other options?",
+      "description": "A strong tradeoff answer sounds balanced. You should show where the rejected options still make sense."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean Redux Toolkit, but only because of this scenario",
+    "summary": "This dashboard has broad shared state, meaningful async complexity, and several teams touching the same flows. That makes Redux Toolkit the easiest option to defend for the main shared product state.",
+    "reasoning": [
+      "Context plus useReducer is still a good answer for low-frequency app concerns, but it starts to feel stretched once fast-changing shared state and optimistic workflows spread across many screens.",
+      "Zustand is a very reasonable middle ground, especially if the team wants less boilerplate. In a smaller or medium-size app, that could absolutely be the best answer.",
+      "Redux Toolkit becomes easier to defend when the interview prompt emphasizes long-term maintainability, debugging, shared team conventions, and predictable async patterns."
+    ],
+    "recommendation": "For this exact prompt, I would say Redux Toolkit for the main shared product state, while still using Context for low-frequency app concerns such as theme, auth, or locale."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not Zustand if it is lighter and faster to adopt?",
+      "answer": "I would call Zustand a very reasonable second choice here. I would still lean Redux Toolkit because the prompt emphasizes multiple teams, optimistic workflows, and long-term debugging clarity. If the team were smaller or the async story calmer, Zustand could absolutely win."
+    },
+    {
+      "question": "Why not just use Context plus useReducer and avoid another library?",
+      "answer": "I would still use Context for low-frequency app concerns. I would avoid it for the main shared product state in this case because the prompt describes broad shared state and fast-changing workflows. That makes rerender isolation, store boundaries, and debugging discipline more important."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the app were meaningfully smaller, the team were only a few people, and the shared state stayed calmer, I would probably move the answer toward Zustand or even Context for the core state. My answer is tied to the stated scale and async complexity, not to a universal preference."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use Redux because it is enterprise-ready and better than the others.",
+      "whyItWorks": "This sounds shallow because it is generic, absolute, and not tied to the prompt."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use Zustand because it gives us a store with less boilerplate, but Redux could also work if the app gets bigger.",
+      "whyItWorks": "This is directionally fine, but it still does not explain the specific constraints strongly enough."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would lean Redux Toolkit for the main shared product state because the dashboard has broad cross-screen state, optimistic workflows, background refetches, and several teams touching the same flows. Zustand would be my lighter second choice, and I would still keep Context for low-frequency app concerns like theme or auth.",
+      "whyItWorks": "This sounds stronger because it starts from the scenario, makes a clear call, and still gives balanced boundaries for the other options."
+    }
+  ],
+  "answerFramework": [
+    "Start with the scenario instead of the library name: broad shared state, async complexity, and multiple teams.",
+    "Name the choice you would make for this prompt.",
+    "Explain two or three concrete reasons that fit the prompt.",
+    "Acknowledge where the other options still win so your answer sounds balanced.",
+    "End with a clean boundary, for example: Redux Toolkit for core shared product state, Context for low-frequency app concerns."
+  ],
+  "antiPatterns": [
+    "Saying Redux is always best because it is enterprise.",
+    "Saying Context is always enough because adding a library is bad.",
+    "Picking Zustand without explaining how team conventions and async workflows stay understandable over time.",
+    "Answering as if there is one universal winner instead of tying the choice to the scenario."
+  ]
+}

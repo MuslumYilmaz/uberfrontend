@@ -157,7 +157,7 @@ describe('PracticeProgressService', () => {
     expect(localStorage.getItem('fa:practice:progress:v3:user:user-1')).toBeNull();
   });
 
-  it('hydrates signed-in incident progress from the backend and syncs later updates back', () => {
+  it('hydrates signed-in practice progress from the backend and syncs later updates back', () => {
     authUser.set({
       _id: 'user-1',
       username: 'user1',
@@ -184,7 +184,7 @@ describe('PracticeProgressService', () => {
 
     const service = TestBed.inject(PracticeProgressService);
     TestBed.flushEffects();
-    const loadReq = httpMock.expectOne('/api/practice-progress?family=incident');
+    const loadReq = httpMock.expectOne('/api/practice-progress');
     expect(loadReq.request.method).toBe('GET');
     loadReq.flush({
       records: [
@@ -198,10 +198,21 @@ describe('PracticeProgressService', () => {
           lastPlayedAt: '2026-03-20T10:00:00.000Z',
           extension: { reflectionNote: 'Server-side note.' },
         },
+        {
+          family: 'tradeoff-battle',
+          itemId: 'context-vs-zustand-vs-redux',
+          started: true,
+          completed: true,
+          passed: false,
+          bestScore: 0,
+          lastPlayedAt: '2026-03-20T10:05:00.000Z',
+          extension: { selectedOptionId: 'redux-toolkit' },
+        },
       ],
     });
 
     expect(service.getRecord('incident', 'incident-1').bestScore).toBe(77);
+    expect(service.getRecord('tradeoff-battle', 'context-vs-zustand-vs-redux').completed).toBeTrue();
 
     service.updateRecord('incident', 'incident-1', (current) => ({
       ...current,

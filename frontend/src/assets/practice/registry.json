@@ -10021,5 +10021,45 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-why-declare-emits-type-safety-maintenance"
+  },
+  {
+    "id": "sse-vs-websocket-live-dashboard",
+    "family": "tradeoff-battle",
+    "title": "SSE vs WebSocket for a live operations dashboard",
+    "route": "/tradeoffs/sse-vs-websocket-live-dashboard",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A support dashboard needs live status updates, but most user actions are still normal HTTP writes. Which transport would you defend in an interview?",
+    "tags": [
+      "realtime",
+      "architecture",
+      "networking",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/sse-vs-websocket-live-dashboard/scenario.json"
+  },
+  {
+    "id": "context-vs-zustand-vs-redux",
+    "family": "tradeoff-battle",
+    "title": "Context vs Zustand vs Redux for a growing React dashboard",
+    "route": "/tradeoffs/context-vs-zustand-vs-redux",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "You need shared state for filters, optimistic updates, background refetches, and multiple teams. Which state approach would you defend in an interview?",
+    "tags": [
+      "react",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/context-vs-zustand-vs-redux/scenario.json"
   }
 ]

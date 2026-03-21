@@ -16,21 +16,74 @@ export interface TradeoffBattleOption {
   id: string;
   label: string;
   summary: string;
+  whenItWins: string[];
+  watchOutFor: string[];
 }
 
-export interface TradeoffBattleScoreBand {
-  label: string;
-  min: number;
-  max: number;
+export interface TradeoffBattleMatrixCell {
+  optionId: string;
+  verdict: 'best-fit' | 'reasonable' | 'stretch';
+  note: string;
+}
+
+export interface TradeoffBattleMatrixRow {
+  id: string;
+  title: string;
+  prompt: string;
+  cells: TradeoffBattleMatrixCell[];
+}
+
+export interface TradeoffBattleEvaluationDimension {
+  id: string;
+  title: string;
+  description: string;
+}
+
+export interface TradeoffBattleStrongAnswer {
+  title: string;
   summary: string;
+  reasoning: string[];
+  recommendation?: string;
+}
+
+export interface TradeoffBattlePushbackCard {
+  question: string;
+  answer: string;
+}
+
+export interface TradeoffBattleAnswerExample {
+  level: 'weak' | 'decent' | 'strong';
+  title: string;
+  answer: string;
+  whyItWorks: string;
 }
 
 export interface TradeoffBattleScenario {
   meta: TradeoffBattleListItem;
   scenario: string;
+  prompt: string;
   options: TradeoffBattleOption[];
-  evaluationDimensions: string[];
-  scoreBands: TradeoffBattleScoreBand[];
-  exemplarReasoning: string[];
+  decisionMatrix: TradeoffBattleMatrixRow[];
+  evaluationDimensions: TradeoffBattleEvaluationDimension[];
+  strongAnswer: TradeoffBattleStrongAnswer;
+  interviewerPushback: TradeoffBattlePushbackCard[];
+  answerExamples: TradeoffBattleAnswerExample[];
+  answerFramework: string[];
   antiPatterns: string[];
+}
+
+export interface TradeoffBattleProgressRecord {
+  started: boolean;
+  completed: boolean;
+  lastPlayedAt: string | null;
+  selectedOptionId: string;
+}
+
+export function createEmptyTradeoffBattleProgressRecord(): TradeoffBattleProgressRecord {
+  return {
+    started: false,
+    completed: false,
+    lastPlayedAt: null,
+    selectedOptionId: '',
+  };
 }

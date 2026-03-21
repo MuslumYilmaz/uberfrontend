@@ -318,24 +318,25 @@
 /* ---- mobile drawer ---- */
 .sidebar-toggle {
   position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 60;
-  width: 36px;
-  height: 32px;
-  border-radius: 8px;
+  top: calc(var(--app-safe-top) + 12px);
+  left: 12px;
+  z-index: 41;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   border: 1px solid var(--sb-border);
-  background: var(--sb-surface-alt);
+  background: color-mix(in srgb, var(--sb-surface-alt) 92%, black);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
   display: none;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  color: var(--sb-text);
 }
-.sidebar-toggle span {
-  width: 16px;
-  height: 2px;
-  background: var(--sb-text);
-  display: block;
+.sidebar-toggle .pi {
+  font-size: 0.98rem;
+}
+.sidebar-toggle:hover {
+  background: color-mix(in srgb, var(--sb-surface-alt) 84%, white);
 }
 .backdrop {
   position: fixed;

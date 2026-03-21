@@ -499,6 +499,9 @@
 /tracks/crash-7d/preview
 /tracks/foundations-30d/preview
 /tracks/javascript-prep-path/mastery
+/tradeoffs
+/tradeoffs/context-vs-zustand-vs-redux
+/tradeoffs/sse-vs-websocket-live-dashboard
 /vue/coding/vue-accordion-faq
 /vue/coding/vue-autocomplete-search
 /vue/coding/vue-chessboard-click-highlight

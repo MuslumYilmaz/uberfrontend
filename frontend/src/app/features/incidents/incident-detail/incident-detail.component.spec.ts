@@ -308,7 +308,7 @@ describe('IncidentDetailComponent', () => {
     const fixture = TestBed.createComponent(IncidentDetailComponent);
     fixture.detectChanges();
     TestBed.flushEffects();
-    const loadReq = httpMock.expectOne('/api/practice-progress?family=incident');
+    const loadReq = httpMock.expectOne('/api/practice-progress');
     loadReq.flush({ records: [] });
     const flushIncidentSyncs = () => {
       httpMock

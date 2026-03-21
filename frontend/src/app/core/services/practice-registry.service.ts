@@ -16,7 +16,7 @@ import { PracticeAssetResolverService } from './practice-asset-resolver.service'
 
 const DEFAULT_CATALOG: PracticeCatalogEntry[] = [
   { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
-  { key: 'incidents', label: 'Production incidents', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
+  { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
   {
     key: 'system-design',
     label: 'System design',

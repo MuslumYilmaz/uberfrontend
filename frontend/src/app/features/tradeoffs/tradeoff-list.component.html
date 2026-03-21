@@ -1,0 +1,58 @@
+<section class="tradeoff-list">
+  <header class="tradeoff-hero">
+    <p class="tradeoff-hero__eyebrow">TRADEOFF BATTLES</p>
+    <h1>Practice the interview questions where reasoning matters more than a single right answer</h1>
+    <p class="tradeoff-hero__summary">
+      These scenarios focus on how you defend a decision. Pick a direction, pressure-test it, then compare it with a stronger interview answer.
+    </p>
+
+    <div class="tradeoff-hero__meta">
+      <div class="tradeoff-hero__stat">
+        <span class="tradeoff-hero__stat-value">{{ items().length }}</span>
+        <span class="tradeoff-hero__stat-label">battles</span>
+      </div>
+      <div class="tradeoff-hero__stat">
+        <span class="tradeoff-hero__stat-value">{{ completedCount() }}</span>
+        <span class="tradeoff-hero__stat-label">completed</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="tradeoff-search">
+    <input
+      type="search"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="setSearchTerm($event)"
+      placeholder="Search by topic, stack, or tradeoff"
+      aria-label="Search tradeoff battles"
+    />
+  </section>
+
+  <section class="tradeoff-cards">
+    <a
+      *ngFor="let item of filteredItems(); trackBy: trackById"
+      class="tradeoff-card"
+      [routerLink]="['/tradeoffs', item.id]"
+    >
+      <div class="tradeoff-card__header">
+        <div>
+          <p class="tradeoff-card__status">{{ statusLabel(item.id) }}</p>
+          <h2>{{ item.title }}</h2>
+        </div>
+        <span class="tradeoff-card__minutes">{{ item.estimatedMinutes }} min</span>
+      </div>
+
+      <p class="tradeoff-card__summary">{{ item.summary }}</p>
+
+      <div class="tradeoff-card__meta">
+        <span>{{ item.tech }}</span>
+        <span>{{ item.difficulty }}</span>
+        <span>{{ item.updatedAt }}</span>
+      </div>
+
+      <div class="tradeoff-card__tags">
+        <span *ngFor="let tag of item.tags">{{ tag }}</span>
+      </div>
+    </a>
+  </section>
+</section>

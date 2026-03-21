@@ -1,0 +1,596 @@
+.tradeoff-detail {
+  display: grid;
+  gap: 1.35rem;
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 7rem;
+}
+
+.tradeoff-detail__hero,
+.tradeoff-detail__scenario,
+.tradeoff-detail__section,
+.tradeoff-detail__footer {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at top right, rgba(230, 186, 95, 0.14), transparent 26%),
+    rgba(8, 12, 22, 0.94);
+}
+
+.tradeoff-detail__hero,
+.tradeoff-detail__scenario,
+.tradeoff-detail__section {
+  padding: 1.5rem;
+}
+
+.tradeoff-detail__hero {
+  display: grid;
+  gap: 1rem;
+}
+
+.tradeoff-detail__eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.24em;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.tradeoff-detail__hero h1,
+.tradeoff-detail__section h2,
+.tradeoff-detail__scenario h2 {
+  margin: 0;
+}
+
+.tradeoff-detail__summary {
+  margin: 0.65rem 0 0;
+  max-width: 58rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.tradeoff-detail__hero-meta {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.tradeoff-detail__hero-meta span,
+.tradeoff-detail__prompt {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.1rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.tradeoff-detail__scenario p,
+.tradeoff-detail__section-head p,
+.tradeoff-dimension p,
+.tradeoff-option__summary {
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.tradeoff-detail__prompt {
+  margin-top: 1rem;
+  border-radius: 1rem;
+}
+
+.tradeoff-detail__section {
+  display: grid;
+  gap: 1rem;
+}
+
+.tradeoff-detail__section-head {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.tradeoff-detail__section-head h2,
+.tradeoff-detail__section-head p {
+  margin: 0;
+}
+
+.tradeoff-detail__options,
+.tradeoff-detail__dimensions,
+.tradeoff-detail__comparison-grid,
+.tradeoff-detail__pushback-grid,
+.tradeoff-detail__examples,
+.tradeoff-detail__matrix,
+.tradeoff-matrix-row__cells {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.tradeoff-detail__matrix,
+.tradeoff-detail__pushback-grid,
+.tradeoff-detail__examples {
+  gap: 1.05rem;
+}
+
+.tradeoff-option,
+.tradeoff-detail__panel,
+.tradeoff-dimension {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.15rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tradeoff-option {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem 1.05rem;
+  text-align: left;
+  color: inherit;
+}
+
+.tradeoff-option.is-selected {
+  border-color: rgba(230, 186, 95, 0.5);
+  background: rgba(230, 186, 95, 0.08);
+}
+
+.tradeoff-option__label {
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.tradeoff-detail__decision-bar {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(120deg, rgba(230, 186, 95, 0.08), transparent 55%),
+    rgba(255, 255, 255, 0.03);
+}
+
+.tradeoff-detail__decision-copy {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.tradeoff-detail__decision-label,
+.tradeoff-detail__comparison-kicker {
+  margin: 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(230, 186, 95, 0.9);
+}
+
+.tradeoff-detail__decision-copy h3,
+.tradeoff-detail__comparison-card h3,
+.tradeoff-detail__comparison-lists h4 {
+  margin: 0;
+}
+
+.tradeoff-detail__decision-copy p,
+.tradeoff-detail__comparison-card p {
+  margin: 0;
+}
+
+.tradeoff-detail__decision-note {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.tradeoff-detail__actions,
+.tradeoff-detail__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tradeoff-detail__cta,
+.tradeoff-detail__footer button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(230, 186, 95, 0.45);
+  background: rgba(230, 186, 95, 0.14);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  font: inherit;
+}
+
+.tradeoff-detail__cta[disabled],
+.tradeoff-detail__footer button[disabled] {
+  opacity: 0.45;
+}
+
+.tradeoff-detail__callout {
+  background:
+    radial-gradient(circle at top left, rgba(230, 186, 95, 0.18), transparent 30%),
+    rgba(8, 12, 22, 0.94);
+}
+
+.tradeoff-detail__callout ul,
+.tradeoff-detail__panel ul,
+.tradeoff-detail__anti-patterns,
+.tradeoff-detail__framework {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.tradeoff-detail__callout li,
+.tradeoff-detail__panel li,
+.tradeoff-detail__anti-patterns li,
+.tradeoff-detail__framework li {
+  margin-top: 0.5rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tradeoff-detail__recommendation {
+  margin: 0;
+  color: rgba(230, 186, 95, 0.92);
+}
+
+.tradeoff-detail__panel,
+.tradeoff-dimension {
+  padding: 1rem;
+}
+
+.tradeoff-detail__comparison-card {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tradeoff-detail__comparison-card.is-selected {
+  border-color: rgba(230, 186, 95, 0.55);
+  background:
+    linear-gradient(135deg, rgba(230, 186, 95, 0.12), transparent 58%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.tradeoff-detail__comparison-lists {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.tradeoff-matrix-row {
+  display: grid;
+  gap: 1rem;
+  padding: 1.1rem;
+  border-radius: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tradeoff-matrix-row__head {
+  display: grid;
+  gap: 0.35rem;
+  padding-bottom: 0.1rem;
+}
+
+.tradeoff-matrix-row__head h3,
+.tradeoff-matrix-row__head p,
+.tradeoff-matrix-cell p,
+.tradeoff-pushback p,
+.tradeoff-example p,
+.tradeoff-example blockquote {
+  margin: 0;
+}
+
+.tradeoff-matrix-cell {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tradeoff-matrix-cell.is-selected {
+  border-color: rgba(230, 186, 95, 0.55);
+  background:
+    linear-gradient(135deg, rgba(230, 186, 95, 0.12), transparent 58%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.tradeoff-matrix-cell__verdict {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 1.95rem;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.tradeoff-matrix-cell__verdict.is-best-fit {
+  background: rgba(75, 211, 126, 0.14);
+  color: #6ee7a3;
+}
+
+.tradeoff-matrix-cell__verdict.is-reasonable {
+  background: rgba(230, 186, 95, 0.14);
+  color: #f1cf86;
+}
+
+.tradeoff-matrix-cell__verdict.is-stretch {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.tradeoff-example {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tradeoff-pushback {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1.1rem;
+}
+
+.tradeoff-example blockquote {
+  padding-left: 0.95rem;
+  border-left: 3px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.86);
+  line-height: 1.65;
+}
+
+.tradeoff-example.is-weak {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.tradeoff-example.is-decent {
+  border-color: rgba(230, 186, 95, 0.32);
+}
+
+.tradeoff-example.is-strong {
+  border-color: rgba(75, 211, 126, 0.42);
+  background:
+    linear-gradient(135deg, rgba(75, 211, 126, 0.12), transparent 58%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.tradeoff-detail__panel h3,
+.tradeoff-dimension h3 {
+  margin: 0 0 0.45rem;
+}
+
+.tradeoff-pushback h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #f8fafc;
+}
+
+.tradeoff-pushback p:last-child {
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.68;
+}
+
+.tradeoff-detail__footer {
+  padding: 1rem 1.25rem;
+}
+
+.tradeoff-detail__framework,
+.tradeoff-detail__anti-patterns {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tradeoff-detail__framework {
+  counter-reset: framework-step;
+}
+
+.tradeoff-detail__framework li,
+.tradeoff-detail__anti-patterns li {
+  position: relative;
+  padding: 0.95rem 1rem 0.95rem 3.35rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  margin-top: 0.75rem;
+}
+
+.tradeoff-detail__framework li::before {
+  counter-increment: framework-step;
+  content: counter(framework-step);
+  position: absolute;
+  left: 1rem;
+  top: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: rgba(230, 186, 95, 0.16);
+  color: #f1cf86;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.tradeoff-detail__anti-patterns li::before {
+  content: '';
+  position: absolute;
+  left: 1.2rem;
+  top: 1.45rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: rgba(230, 186, 95, 0.78);
+  box-shadow: 0 0 0 0.28rem rgba(230, 186, 95, 0.12);
+}
+
+@media (min-width: 900px) {
+  .tradeoff-detail__options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tradeoff-detail__dimensions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tradeoff-detail__comparison-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tradeoff-detail__pushback-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tradeoff-detail__examples {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tradeoff-matrix-row__cells {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tradeoff-detail__decision-bar {
+    grid-template-columns: minmax(0, 1.6fr) auto;
+    align-items: center;
+  }
+}
+
+@media (max-width: 900px) {
+  .tradeoff-detail {
+    padding: 1.15rem 1rem 6.5rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .tradeoff-detail {
+    padding: 1rem 0.8rem 6rem;
+    gap: 1rem;
+  }
+
+  .tradeoff-detail__hero,
+  .tradeoff-detail__scenario,
+  .tradeoff-detail__section,
+  .tradeoff-detail__footer {
+    border-radius: 1.15rem;
+  }
+
+  .tradeoff-detail__hero,
+  .tradeoff-detail__scenario,
+  .tradeoff-detail__section {
+    padding: 1.1rem;
+  }
+
+  .tradeoff-detail__hero h1 {
+    font-size: clamp(1.55rem, 7vw, 2rem);
+    line-height: 1.15;
+  }
+
+  .tradeoff-detail__summary,
+  .tradeoff-detail__scenario p,
+  .tradeoff-detail__section-head p,
+  .tradeoff-dimension p,
+  .tradeoff-option__summary,
+  .tradeoff-pushback p:last-child,
+  .tradeoff-example blockquote {
+    line-height: 1.6;
+  }
+
+  .tradeoff-detail__hero-meta {
+    gap: 0.5rem;
+  }
+
+  .tradeoff-detail__hero-meta span,
+  .tradeoff-detail__prompt {
+    min-height: 2rem;
+    padding: 0.28rem 0.72rem;
+    font-size: 0.92rem;
+  }
+
+  .tradeoff-detail__prompt {
+    display: block;
+    line-height: 1.55;
+  }
+
+  .tradeoff-option,
+  .tradeoff-detail__panel,
+  .tradeoff-dimension,
+  .tradeoff-pushback,
+  .tradeoff-matrix-row,
+  .tradeoff-matrix-cell {
+    padding: 0.95rem;
+  }
+
+  .tradeoff-detail__decision-bar {
+    padding: 0.95rem;
+  }
+
+  .tradeoff-detail__actions {
+    width: 100%;
+  }
+
+  .tradeoff-detail__actions,
+  .tradeoff-detail__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tradeoff-detail__cta,
+  .tradeoff-detail__footer button {
+    width: 100%;
+  }
+
+  .tradeoff-pushback h3 {
+    font-size: 1.04rem;
+  }
+
+  .tradeoff-detail__framework li,
+  .tradeoff-detail__anti-patterns li {
+    padding: 0.9rem 0.9rem 0.9rem 3rem;
+  }
+
+  .tradeoff-detail__framework li::before {
+    left: 0.9rem;
+  }
+
+  .tradeoff-detail__anti-patterns li::before {
+    left: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tradeoff-detail {
+    padding: 0.9rem 0.7rem 5.5rem;
+  }
+
+  .tradeoff-detail__hero,
+  .tradeoff-detail__scenario,
+  .tradeoff-detail__section {
+    padding: 1rem;
+  }
+
+  .tradeoff-detail__eyebrow,
+  .tradeoff-detail__decision-label,
+  .tradeoff-detail__comparison-kicker {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+  }
+
+  .tradeoff-detail__hero-meta span,
+  .tradeoff-detail__prompt {
+    font-size: 0.88rem;
+  }
+
+  .tradeoff-detail__decision-copy h3,
+  .tradeoff-detail__comparison-card h3,
+  .tradeoff-matrix-row__head h3,
+  .tradeoff-pushback h3,
+  .tradeoff-dimension h3 {
+    font-size: 1rem;
+  }
+
+  .tradeoff-detail__footer {
+    padding: 0.9rem 1rem;
+  }
+}

@@ -52,7 +52,7 @@ export class PracticeProgressService {
       this.recordsState.set(localRecords);
 
       if (this.isBrowser && userId) {
-        this.hydrateRemoteIncidentProgress(scope);
+        this.hydrateRemoteProgress(scope);
       }
     }, { allowSignalWrites: true });
   }
@@ -300,9 +300,9 @@ export class PracticeProgressService {
     }
   }
 
-  private hydrateRemoteIncidentProgress(scope: string): void {
+  private hydrateRemoteProgress(scope: string): void {
     this.http
-      .get<{ records?: PracticeProgressApiRecord[] }>(apiUrl('/practice-progress?family=incident'), {
+      .get<{ records?: PracticeProgressApiRecord[] }>(apiUrl('/practice-progress'), {
         headers: this.auth.headers(),
       })
       .subscribe({

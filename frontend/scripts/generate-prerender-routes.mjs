@@ -162,6 +162,7 @@ function buildRoutes() {
     '/changelog',
     '/coding',
     '/incidents',
+    '/tradeoffs',
     '/pricing',
     '/interview-questions',
     '/guides/framework-prep',
