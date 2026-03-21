@@ -110,5 +110,53 @@
     "tags": ["angular", "onpush", "change-detection", "immutability"],
     "updatedAt": "2026-03-21",
     "access": "free"
+  },
+  {
+    "id": "angular-duplicate-cart-service",
+    "title": "Cart badge and cart page drift out of sync",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "The header badge and the cart page stop agreeing because one feature quietly creates a second CartService instance.",
+    "signals": [
+      "The header shows 3 items while the cart page shows 0",
+      "Refreshing the cart page briefly 'fixes' only one side",
+      "The feature component has its own CartService provider"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["angular", "dependency-injection", "services", "state"],
+    "updatedAt": "2026-03-21",
+    "access": "free"
+  },
+  {
+    "id": "vue-pinia-destructure-stale-filter",
+    "title": "Pinia filter label stays stale after a store update",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "The product grid updates, but one filter label stays old because store state was destructured into plain values.",
+    "signals": [
+      "The list reacts, but the selected filter pill stays old",
+      "A page reload or remount suddenly shows the right value",
+      "The component destructures Pinia store state directly"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["vue", "pinia", "reactivity", "state-management"],
+    "updatedAt": "2026-03-21",
+    "access": "free"
+  },
+  {
+    "id": "vue-index-key-wrong-row-state",
+    "title": "Draft note jumps to the wrong row after adding at the top",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "The list updates, but edit state and draft text jump to the wrong row because `v-for` is keyed by index instead of item identity.",
+    "signals": [
+      "Text typed into one row appears under a different row after insert",
+      "Edit mode sticks to the wrong item after reordering",
+      "The list uses `:key=\"index\"`"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["vue", "keys", "list-rendering", "forms"],
+    "updatedAt": "2026-03-21",
+    "access": "free"
   }
 ]

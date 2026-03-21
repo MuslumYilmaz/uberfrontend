@@ -83,10 +83,22 @@ test('offline solve replays on reconnect and dashboard reflects xp + level', asy
         progress: 0.95,
       },
       progress: {
-        solvedCount: 0,
-        totalCount: 256,
-        solvedPercent: 0,
-        topTopics: [],
+        questions: {
+          solvedCount: 0,
+          totalCount: 256,
+          solvedPercent: 0,
+          topTopics: [],
+        },
+        incidents: {
+          passedCount: 0,
+          totalCount: 0,
+          passedPercent: 0,
+        },
+        practice: {
+          completedCount: 0,
+          totalCount: 256,
+          completedPercent: 0,
+        },
       },
       settings: {
         weeklyGoalEnabled: true,
@@ -145,8 +157,16 @@ test('offline solve replays on reconnect and dashboard reflects xp + level', asy
       },
       progress: {
         ...state.dashboard.progress,
-        solvedCount: 1,
-        solvedPercent: 1 / 256,
+        questions: {
+          ...state.dashboard.progress.questions,
+          solvedCount: 1,
+          solvedPercent: Math.round((1 / 256) * 100),
+        },
+        practice: {
+          ...state.dashboard.progress.practice,
+          completedCount: 1,
+          completedPercent: Math.round((1 / 256) * 100),
+        },
       },
     };
 

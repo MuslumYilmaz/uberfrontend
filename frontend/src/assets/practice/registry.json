@@ -1,5 +1,25 @@
 [
   {
+    "id": "angular-duplicate-cart-service",
+    "family": "incident",
+    "title": "Cart badge and cart page drift out of sync",
+    "route": "/incidents/angular-duplicate-cart-service",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "The header badge and the cart page stop agreeing because one feature quietly creates a second CartService instance.",
+    "tags": [
+      "angular",
+      "dependency-injection",
+      "services",
+      "state"
+    ],
+    "access": "free",
+    "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "incident.v1",
+    "assetRef": "incidents/angular-duplicate-cart-service/scenario.json"
+  },
+  {
     "id": "angular-onpush-stale-row",
     "family": "incident",
     "title": "OnPush order row stays stale after a live update",
@@ -132,6 +152,46 @@
     "updatedAt": "2026-03-19",
     "schemaVersion": "incident.v1",
     "assetRef": "incidents/search-typing-lag/scenario.json"
+  },
+  {
+    "id": "vue-index-key-wrong-row-state",
+    "family": "incident",
+    "title": "Draft note jumps to the wrong row after adding at the top",
+    "route": "/incidents/vue-index-key-wrong-row-state",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "The list updates, but edit state and draft text jump to the wrong row because `v-for` is keyed by index instead of item identity.",
+    "tags": [
+      "vue",
+      "keys",
+      "list-rendering",
+      "forms"
+    ],
+    "access": "free",
+    "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "incident.v1",
+    "assetRef": "incidents/vue-index-key-wrong-row-state/scenario.json"
+  },
+  {
+    "id": "vue-pinia-destructure-stale-filter",
+    "family": "incident",
+    "title": "Pinia filter label stays stale after a store update",
+    "route": "/incidents/vue-pinia-destructure-stale-filter",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "The product grid updates, but one filter label stays old because store state was destructured into plain values.",
+    "tags": [
+      "vue",
+      "pinia",
+      "reactivity",
+      "state-management"
+    ],
+    "access": "free",
+    "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "incident.v1",
+    "assetRef": "incidents/vue-pinia-destructure-stale-filter/scenario.json"
   },
   {
     "id": "angular-faq-accordion",
@@ -10043,6 +10103,86 @@
     "assetRef": "questions/vue/trivia.json#vue-why-declare-emits-type-safety-maintenance"
   },
   {
+    "id": "feature-service-vs-ngrx-angular",
+    "family": "tradeoff-battle",
+    "title": "Feature service state vs NgRx Store for a shared Angular workbench",
+    "route": "/tradeoffs/feature-service-vs-ngrx-angular",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "Several Angular screens now share filters, selections, optimistic actions, and restore-on-navigation behavior. Which state approach would you defend?",
+    "tags": [
+      "angular",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/feature-service-vs-ngrx-angular/scenario.json"
+  },
+  {
+    "id": "reactive-forms-vs-template-driven-angular",
+    "family": "tradeoff-battle",
+    "title": "Reactive forms vs template-driven forms for a growing Angular workflow",
+    "route": "/tradeoffs/reactive-forms-vs-template-driven-angular",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "A small signup form turned into a dynamic multi-step workflow with validation rules, saved drafts, and tests. Which form approach would you defend?",
+    "tags": [
+      "angular",
+      "forms",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/reactive-forms-vs-template-driven-angular/scenario.json"
+  },
+  {
+    "id": "debounce-vs-throttle-live-search",
+    "family": "tradeoff-battle",
+    "title": "Debounce vs throttle for a live search box",
+    "route": "/tradeoffs/debounce-vs-throttle-live-search",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A search input should feel responsive without spamming requests on every keypress. Which timing strategy would you defend in an interview?",
+    "tags": [
+      "javascript",
+      "performance",
+      "events",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/debounce-vs-throttle-live-search/scenario.json"
+  },
+  {
+    "id": "event-delegation-vs-direct-listeners",
+    "family": "tradeoff-battle",
+    "title": "Event delegation vs direct listeners for a dynamic action list",
+    "route": "/tradeoffs/event-delegation-vs-direct-listeners",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A list keeps adding, removing, and reordering rows with action buttons. Which event binding strategy would you defend in an interview?",
+    "tags": [
+      "javascript",
+      "dom",
+      "events",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/event-delegation-vs-direct-listeners/scenario.json"
+  },
+  {
     "id": "sse-vs-websocket-live-dashboard",
     "family": "tradeoff-battle",
     "title": "SSE vs WebSocket for a live operations dashboard",
@@ -10081,5 +10221,25 @@
     "updatedAt": "2026-03-21",
     "schemaVersion": "tradeoff-battle.v1",
     "assetRef": "tradeoff-battles/context-vs-zustand-vs-redux/scenario.json"
+  },
+  {
+    "id": "computed-vs-watch-vue-catalog",
+    "family": "tradeoff-battle",
+    "title": "Computed vs watch for a filterable Vue catalog",
+    "route": "/tradeoffs/computed-vs-watch-vue-catalog",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue catalog page needs filtered results, a count badge, and a URL-sync side effect. Which approach would you defend for derived UI state?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-21",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/computed-vs-watch-vue-catalog/scenario.json"
   }
 ]

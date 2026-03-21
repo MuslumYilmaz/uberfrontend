@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "debounce-vs-throttle-live-search",
+    "title": "Debounce vs throttle for a live search box",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A search input should feel responsive without spamming requests on every keypress. Which timing strategy would you defend in an interview?",
+    "tags": [
+      "javascript",
+      "performance",
+      "events",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-21"
+  },
+  "scenario": "You are building a browser search box for an admin catalog. As the user types, the page can fetch matching results from the server and update a suggestions panel. The backend is not cheap to call, and the team wants the input to feel smooth without sending a request on every keypress. In the interview, you are asked whether you would use debounce or throttle around the search handler.",
+  "prompt": "Which timing strategy would you defend for this prompt, and how would you explain when the other option becomes the better answer?",
+  "options": [
+    {
+      "id": "debounce",
+      "label": "Debounce",
+      "summary": "Usually the stronger answer when you care about the settled value after the user pauses, especially if each request or render is expensive.",
+      "whenItWins": [
+        "The product mainly cares about the final query after the user pauses typing, not every intermediate character.",
+        "Each request is meaningful enough that you want to reduce noise and avoid calling the backend for every keypress.",
+        "You want calmer loading states and a smaller chance of stale responses racing each other."
+      ],
+      "watchOutFor": [
+        "It can feel too laggy if the UI should keep updating continuously while the interaction is still happening.",
+        "A weak answer uses debounce for every noisy event, even when the product needs regular in-progress feedback."
+      ]
+    },
+    {
+      "id": "throttle",
+      "label": "Throttle",
+      "summary": "The better answer when the UI should keep reacting during continuous interaction, but at a controlled rate.",
+      "whenItWins": [
+        "The user should keep seeing updates while the interaction is still happening, not only after they stop.",
+        "The event is continuous by nature, such as scroll, resize, drag, or a live preview that should refresh on a cadence.",
+        "You want a predictable maximum update frequency rather than one final callback after a pause."
+      ],
+      "watchOutFor": [
+        "For server-backed search, throttle often still sends too many requests compared with the actual value the user settles on.",
+        "A weak answer picks throttle just because it sounds faster, without checking whether the product really needs continuous updates."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "A server-backed search input should feel good, but the real goal is useful results after the user pauses typing.",
+      "cells": [
+        {
+          "optionId": "debounce",
+          "verdict": "best-fit",
+          "note": "This is the cleaner answer when the product mainly cares about the settled query and each request has a cost."
+        },
+        {
+          "optionId": "throttle",
+          "verdict": "stretch",
+          "note": "It can work, but it still emits periodic requests during typing and is harder to justify for this exact prompt."
+        }
+      ]
+    },
+    {
+      "id": "continuous-feedback",
+      "title": "Continuous feedback during interaction",
+      "prompt": "The product needs regular in-progress updates, such as scroll position work, drag feedback, or a live preview that should keep moving.",
+      "cells": [
+        {
+          "optionId": "debounce",
+          "verdict": "stretch",
+          "note": "Waiting until the interaction pauses starts to fight the user expectation here."
+        },
+        {
+          "optionId": "throttle",
+          "verdict": "best-fit",
+          "note": "This is where a controlled cadence is much easier to defend than waiting for the final pause."
+        }
+      ]
+    },
+    {
+      "id": "hybrid-ui",
+      "title": "Hybrid UX: instant local feedback, calm server fetches",
+      "prompt": "The input should update local UI instantly, but remote search should wait until the user pauses.",
+      "cells": [
+        {
+          "optionId": "debounce",
+          "verdict": "best-fit",
+          "note": "For the fetch path, debounce is still the strongest answer even if the raw input updates immediately."
+        },
+        {
+          "optionId": "throttle",
+          "verdict": "reasonable",
+          "note": "Throttle may still fit another UI path, but it is weaker for the expensive remote search call itself."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "final-vs-continuous",
+      "title": "Do you care about the final value or continuous progress?",
+      "description": "This is the first split. Search after a pause and scroll during motion are not the same shape of problem."
+    },
+    {
+      "id": "cost-per-event",
+      "title": "How expensive is each event?",
+      "description": "If each call hits the network or triggers heavy rendering, reducing noise becomes part of the answer."
+    },
+    {
+      "id": "ux-latency",
+      "title": "How much delay can the user tolerate?",
+      "description": "Some experiences should feel calm and deliberate, while others need constant visible movement."
+    },
+    {
+      "id": "event-shape",
+      "title": "Is this a bursty input or a continuous stream?",
+      "description": "Typing, scrolling, dragging, and resizing do not all benefit from the same timing strategy."
+    },
+    {
+      "id": "answer-boundary",
+      "title": "Can you explain when your choice stops fitting?",
+      "description": "A strong interview answer names the boundary instead of pretending one utility wins every case."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean debounce because the prompt cares more about the settled query than every in-progress keypress",
+    "summary": "This search box hits the server, and the team wants a smooth input without wasting requests. That makes debounce easier to defend for the exact prompt.",
+    "reasoning": [
+      "The product mainly needs good results after the user pauses typing, not a network request for every intermediate character.",
+      "Debounce cuts request noise, keeps loading calmer, and lowers the chance of stale search responses competing with each other.",
+      "Throttle becomes stronger when the UI should keep updating during the interaction itself, such as scroll work, resize work, drag feedback, or truly continuous preview behavior."
+    ],
+    "recommendation": "For this exact prompt, I would debounce the remote search handler and keep the raw input itself immediate. I would switch to throttle when the product needs regular in-progress updates instead of a settled result after a pause."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not throttle so the search feels more live?",
+      "answer": "Because this prompt is server-backed and mainly cares about the settled query. Throttle still sends periodic requests during typing, which adds noise without clearly improving the real user goal."
+    },
+    {
+      "question": "Would debounce make the UI feel slow?",
+      "answer": "Not if I separate the raw input from the remote search. The input can still update immediately while only the expensive fetch waits for a short pause."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the product needed continuous feedback during motion, such as scroll-driven effects, dragging, resizing, or a live preview that should keep refreshing, I would move the answer toward throttle."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use throttle because it feels faster.",
+      "whyItWorks": "It does not. This ignores what the product actually cares about and says nothing about request cost or event shape."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably debounce search so it does not call the API too often, but throttle could also work.",
+      "whyItWorks": "This is directionally right, but it still needs a cleaner explanation of why debounce fits the exact prompt better and when throttle takes over."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would debounce the remote search call because the product mainly cares about the settled query after the user pauses. That keeps request volume calmer while the input itself can still update immediately. I would switch to throttle if the real goal were continuous feedback during the interaction, like scroll, drag, or live preview updates.",
+      "whyItWorks": "This sounds stronger because it ties the choice to the product goal, acknowledges cost, and names the condition that flips the answer."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming the user goal: final settled result or continuous in-progress feedback.",
+    "Tie the timing choice to the cost of each event in this prompt.",
+    "Explain how you would keep the raw input feeling immediate if you choose debounce.",
+    "State clearly when the other utility becomes the better fit.",
+    "End with a calm boundary instead of claiming one helper is always better."
+  ],
+  "antiPatterns": [
+    "Saying throttle is better because it feels more real time without checking whether the product truly needs continuous updates.",
+    "Using debounce for every noisy event, including scroll and drag interactions that should keep updating.",
+    "Talking only about utility names instead of the product goal and event shape.",
+    "Ignoring the difference between immediate input feedback and expensive downstream work."
+  ]
+}

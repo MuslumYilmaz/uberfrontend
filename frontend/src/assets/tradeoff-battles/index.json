@@ -16,6 +16,38 @@
     "updatedAt": "2026-03-21"
   },
   {
+    "id": "debounce-vs-throttle-live-search",
+    "title": "Debounce vs throttle for a live search box",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A search input should feel responsive without spamming requests on every keypress. Which timing strategy would you defend in an interview?",
+    "tags": [
+      "javascript",
+      "performance",
+      "events",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-21"
+  },
+  {
+    "id": "event-delegation-vs-direct-listeners",
+    "title": "Event delegation vs direct listeners for a dynamic action list",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A list keeps adding, removing, and reordering rows with action buttons. Which event binding strategy would you defend in an interview?",
+    "tags": [
+      "javascript",
+      "dom",
+      "events",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-21"
+  },
+  {
     "id": "context-vs-zustand-vs-redux",
     "title": "Context vs Zustand vs Redux for a growing React dashboard",
     "tech": "react",
@@ -29,6 +61,54 @@
     ],
     "access": "free",
     "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21"
+  },
+  {
+    "id": "reactive-forms-vs-template-driven-angular",
+    "title": "Reactive forms vs template-driven forms for a growing Angular workflow",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "A small signup form turned into a dynamic multi-step workflow with validation rules, saved drafts, and tests. Which form approach would you defend?",
+    "tags": [
+      "angular",
+      "forms",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-21"
+  },
+  {
+    "id": "feature-service-vs-ngrx-angular",
+    "title": "Feature service state vs NgRx Store for a shared Angular workbench",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "Several Angular screens now share filters, selections, optimistic actions, and restore-on-navigation behavior. Which state approach would you defend?",
+    "tags": [
+      "angular",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 14,
+    "updatedAt": "2026-03-21"
+  },
+  {
+    "id": "computed-vs-watch-vue-catalog",
+    "title": "Computed vs watch for a filterable Vue catalog",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue catalog page needs filtered results, a count badge, and a URL-sync side effect. Which approach would you defend for derived UI state?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
     "updatedAt": "2026-03-21"
   }
 ]

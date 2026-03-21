@@ -36,6 +36,33 @@ type AuthMockOptions = {
   changePasswordSequence?: Array<{ status: number; error?: string }>;
 };
 
+function buildDashboardProgress(user: MockUser) {
+  const solvedCount = Array.isArray(user.solvedQuestionIds) ? user.solvedQuestionIds.length : 0;
+  const questionTotalCount = 0;
+  const incidentTotalCount = 0;
+  const practiceCompletedCount = solvedCount;
+  const practiceTotalCount = questionTotalCount + incidentTotalCount;
+
+  return {
+    questions: {
+      solvedCount,
+      totalCount: questionTotalCount,
+      solvedPercent: 0,
+      topTopics: [],
+    },
+    incidents: {
+      passedCount: 0,
+      totalCount: incidentTotalCount,
+      passedPercent: 0,
+    },
+    practice: {
+      completedCount: practiceCompletedCount,
+      totalCount: practiceTotalCount,
+      completedPercent: 0,
+    },
+  };
+}
+
 function getCorsHeaders(req: Request) {
   const origin = req.headers()['origin'] || '*';
   return {
@@ -212,12 +239,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           nextLevelXp: 200,
           progress: 0,
         },
-        progress: {
-          solvedCount: 0,
-          totalCount: 0,
-          solvedPercent: 0,
-          topTopics: [],
-        },
+        progress: buildDashboardProgress(opts.user),
         settings: {
           weeklyGoalEnabled: true,
           weeklyGoalTarget: 10,
@@ -235,7 +257,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
         weeklyGoal: {
           completed: 1,
           target: 10,
-          progress: 10,
+          progress: 0.1,
           reached: false,
           bonusGranted: false,
         },

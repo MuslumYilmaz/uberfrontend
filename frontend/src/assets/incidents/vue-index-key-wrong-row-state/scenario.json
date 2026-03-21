@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "id": "vue-index-key-wrong-row-state",
+    "title": "Draft note jumps to the wrong row after adding at the top",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "The list updates, but edit state and draft text jump to the wrong row because `v-for` is keyed by index instead of item identity.",
+    "signals": [
+      "Text typed into one row appears under a different row after insert",
+      "Edit mode sticks to the wrong item after reordering",
+      "The list uses `:key=\"index\"`"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["vue", "keys", "list-rendering", "forms"],
+    "updatedAt": "2026-03-21",
+    "access": "free"
+  },
+  "context": {
+    "symptom": "A manager starts editing a note for Maya, then adds a new teammate to the top of the list. The typed draft is now shown under Noah instead, even though Maya was the one being edited.",
+    "userImpact": "Users stop trusting inline editing because the UI makes it look like the wrong person is being changed.",
+    "environment": "Vue 3 team-management screen with editable rows. The list can prepend, filter, and sort members, and each row has local edit state and a draft note input.",
+    "evidence": [
+      {
+        "type": "note",
+        "title": "What the user sees",
+        "body": "As soon as a new row is inserted at the top, the draft and edit mode appear under a different teammate, even though no save happened."
+      },
+      {
+        "type": "log",
+        "title": "Render clue",
+        "body": "The row component instance is being reused for the new position instead of staying attached to the same logical teammate."
+      },
+      {
+        "type": "snippet",
+        "title": "Current list rendering",
+        "language": "vue",
+        "body": "<MemberRow\n  v-for=\"(member, index) in members\"\n  :key=\"index\"\n  :member=\"member\"\n/>\n\n<button @click=\"members.unshift(createMember())\">\n  Add to top\n</button>"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "root-cause",
+      "type": "single-select",
+      "title": "Stage 1: likely root cause",
+      "prompt": "Why does the draft jump to the wrong row?",
+      "helperText": "Pick the explanation that matches Vue list identity, not just generic form bugs.",
+      "options": [
+        {
+          "id": "vue-input-cache",
+          "label": "Vue probably caches inputs too aggressively when lists grow, so old text can appear in the wrong row for a moment.",
+          "points": 0,
+          "feedback": "The issue is not generic input caching. The stronger clue is that the wrong row identity is being reused.",
+          "isHarmful": false
+        },
+        {
+          "id": "insert-animation-delay",
+          "label": "The insert animation is probably delaying the real rerender, so the old row content stays visible too long.",
+          "points": 5,
+          "feedback": "Animation can affect timing, but it does not explain why edit state moves to a different logical item.",
+          "isHarmful": false
+        },
+        {
+          "id": "index-key-breaks-identity",
+          "label": "The list is keyed by index, so after insert Vue reuses the wrong row DOM and local row state for a different teammate.",
+          "points": 25,
+          "feedback": "Correct. In Vue, keys represent identity. `index` tracks position, so inserts and reorders make row state jump to the wrong item.",
+          "isHarmful": false
+        },
+        {
+          "id": "vmodel-unreliable-in-vfor",
+          "label": "`v-model` is not reliable inside `v-for`, so inline editing should move to a modal instead.",
+          "points": -5,
+          "feedback": "`v-model` is fine here. The problem is the unstable key, not the fact that the input lives in a list.",
+          "isHarmful": true
+        }
+      ]
+    },
+    {
+      "id": "debug-order",
+      "type": "priority-order",
+      "title": "Stage 2: debug priority order",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "First prove that the wrong logical row is being reused after the insert.",
+      "candidates": [
+        {
+          "id": "reproduce-with-one-edited-row",
+          "label": "Reproduce with one row in edit mode, then insert at the top and observe which logical item keeps the draft.",
+          "description": "Confirm the exact user-facing failure."
+        },
+        {
+          "id": "inspect-key-choice",
+          "label": "Inspect the `v-for` key and confirm whether it is based on `index` or a stable item id.",
+          "description": "Identity mistakes usually start here."
+        },
+        {
+          "id": "swap-to-stable-id",
+          "label": "Try a quick repro with `:key=\"member.id\"` and see whether the draft stays with the right row.",
+          "description": "A minimal change can confirm the root cause fast."
+        },
+        {
+          "id": "add-nexttick-everywhere",
+          "label": "Add `nextTick()` around the insert path before confirming the identity bug.",
+          "description": "Weak first move."
+        },
+        {
+          "id": "force-full-rerender",
+          "label": "Force the whole list to remount on every update before measuring what Vue is reusing.",
+          "description": "Masks the bug instead of explaining it."
+        }
+      ],
+      "expectedOrder": [
+        "reproduce-with-one-edited-row",
+        "inspect-key-choice",
+        "swap-to-stable-id"
+      ],
+      "slotWeights": [12, 8, 5]
+    },
+    {
+      "id": "fix-set",
+      "type": "multi-select",
+      "title": "Stage 3: best fix set",
+      "prompt": "Which changes belong in the real fix?",
+      "helperText": "Pick the changes that keep row state attached to the correct logical item.",
+      "options": [
+        {
+          "id": "use-stable-id-key",
+          "label": "Key each row by a stable unique id such as `member.id` instead of `index`.",
+          "points": 10,
+          "feedback": "Correct. This gives Vue the real identity signal it needs.",
+          "isHarmful": false
+        },
+        {
+          "id": "clear-drafts-after-insert",
+          "label": "Clear every draft whenever the list changes so users never notice rows jumping.",
+          "points": 0,
+          "feedback": "That hides the symptom by destroying user work, but it does not fix the wrong identity mapping.",
+          "isHarmful": false
+        },
+        {
+          "id": "tie-persisted-edit-state-to-id",
+          "label": "If edit state must outlive reorders, tie it to `member.id` instead of current array position.",
+          "points": 10,
+          "feedback": "Correct. Any longer-lived row state should follow the item id, not the row index.",
+          "isHarmful": false
+        },
+        {
+          "id": "keep-list-updates-identity-friendly",
+          "label": "Keep inserts, filters, and sorts working against stable item ids so the row identity stays clear across updates.",
+          "points": 5,
+          "feedback": "Correct. Stable identity is the key design rule here.",
+          "isHarmful": false
+        },
+        {
+          "id": "remount-list-on-every-change",
+          "label": "Wrap the list in a changing parent `:key` so Vue remounts every row on every update.",
+          "points": -5,
+          "feedback": "That wipes local state and performance to hide the bug. The right fix is stable keys.",
+          "isHarmful": true
+        }
+      ]
+    },
+    {
+      "id": "guardrail",
+      "type": "single-select",
+      "title": "Stage 4: regression guard",
+      "prompt": "What is the best guardrail for this bug?",
+      "helperText": "Pick the check that would catch row identity drifting after list inserts or reorders.",
+      "options": [
+        {
+          "id": "component-row-identity-test",
+          "label": "Add a component test that edits row B, inserts a new row at the top, and asserts the draft still belongs to row B.",
+          "points": 25,
+          "feedback": "Correct. This directly guards the identity bug users felt.",
+          "isHarmful": false
+        },
+        {
+          "id": "screenshot-after-refresh",
+          "label": "Take a screenshot after a refresh and compare it with the expected list order.",
+          "points": 5,
+          "feedback": "That can miss the bug because refresh is one of the things that resets the wrong local row state.",
+          "isHarmful": false
+        },
+        {
+          "id": "monitor-api-insert-time",
+          "label": "Track insert API timing because slower inserts make row drift more likely.",
+          "points": 0,
+          "feedback": "The core bug is local list identity, not network timing.",
+          "isHarmful": false
+        },
+        {
+          "id": "avoid-inline-editing",
+          "label": "Avoid inline editing in all Vue lists so key bugs can never happen again.",
+          "points": -5,
+          "feedback": "Inline editing is not the problem. The wrong key is.",
+          "isHarmful": true
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "scoreBands": [
+      {
+        "min": 0,
+        "max": 39,
+        "label": "You saw the wrong row update, but not the identity bug",
+        "summary": "The UI looked flaky, but the real issue was still how the list keyed item identity."
+      },
+      {
+        "min": 40,
+        "max": 69,
+        "label": "Good instincts, but one fix still treated the symptom",
+        "summary": "You connected the bug to list rendering, but one step still leaned on resets or remounts."
+      },
+      {
+        "min": 70,
+        "max": 100,
+        "label": "You diagnosed the row-identity bug clearly",
+        "summary": "You found the unstable key, chose a stable identity fix, and protected the exact user-facing failure."
+      }
+    ],
+    "idealRunbook": [
+      "Reproduce the bug with one row in edit mode and one insert at the top.",
+      "Check whether the list is keyed by position or by stable item id.",
+      "Switch to stable keys and keep longer-lived row state tied to item ids.",
+      "Lock the fix with a test that inserts or reorders while one row is being edited."
+    ],
+    "teachingBlocks": [
+      {
+        "type": "callout",
+        "title": "Vue shortcut",
+        "text": "When row state jumps after insert, reorder, or filter, ask immediately whether the key represents identity or only position.",
+        "variant": "info"
+      },
+      {
+        "type": "checklist",
+        "title": "Strong answer signals",
+        "items": [
+          "You explain that keys represent identity, not order.",
+          "You mention local row state and DOM reuse, not just 'Vue rerendered weirdly'.",
+          "You fix the key instead of forcing remounts."
+        ]
+      }
+    ],
+    "optionalReflectionPrompt": "When is using `index` as a key actually safe, and why is that rare in real apps?"
+  },
+  "relatedPractice": [
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-v-for-keys-why-not-index"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-todo-list"
+    }
+  ]
+}

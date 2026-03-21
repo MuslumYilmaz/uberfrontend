@@ -589,6 +589,9 @@
     <loc>https://frontendatlas.com/incidents</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/incidents/angular-duplicate-cart-service</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/incidents/angular-onpush-stale-row</loc>
   </url>
   <url>
@@ -605,6 +608,12 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/incidents/stale-search-race</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/incidents/vue-index-key-wrong-row-state</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/incidents/vue-pinia-destructure-stale-filter</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/incidents/websocket-memory-leak</loc>
@@ -1435,7 +1444,22 @@
     <loc>https://frontendatlas.com/tradeoffs</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/tradeoffs/computed-vs-watch-vue-catalog</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/tradeoffs/context-vs-zustand-vs-redux</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/debounce-vs-throttle-live-search</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/event-delegation-vs-direct-listeners</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/feature-service-vs-ngrx-angular</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/reactive-forms-vs-template-driven-angular</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/tradeoffs/sse-vs-websocket-live-dashboard</loc>

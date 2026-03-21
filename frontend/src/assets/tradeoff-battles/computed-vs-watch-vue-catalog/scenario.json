@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "computed-vs-watch-vue-catalog",
+    "title": "Computed vs watch for a filterable Vue catalog",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue catalog page needs filtered results, a count badge, and a URL-sync side effect. Which approach would you defend for derived UI state?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-21"
+  },
+  "scenario": "You are building a Vue 3 catalog page with a search box, category filter, active-only toggle, result count badge, and a summary line like “12 matching products”. The same page also syncs filters to the URL so the state can be shared. In the interview, the panel asks whether you would model the filtered list and summary mostly with computed properties or mostly with watch-based syncing into extra refs.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option becomes the better answer?",
+  "options": [
+    {
+      "id": "computed",
+      "label": "Computed-first approach",
+      "summary": "Usually the stronger answer when the UI state is purely derived from other reactive inputs and should stay declarative.",
+      "whenItWins": [
+        "The filtered list, badge count, and summary text are all direct derivations of reactive inputs like query, category, and source data.",
+        "You want the UI to stay declarative, easy to read, and free of duplicate state that can drift out of sync.",
+        "The main job is to derive display state, not to run external side effects."
+      ],
+      "watchOutFor": [
+        "Computed is the wrong tool once you need to perform side effects such as URL sync, localStorage writes, analytics, or data fetching.",
+        "A weak answer says computed should handle everything, even when the real need is a side effect."
+      ]
+    },
+    {
+      "id": "watch",
+      "label": "Watch-based syncing",
+      "summary": "The better answer when the job is to react to state changes by causing effects, not just to derive display values.",
+      "whenItWins": [
+        "You need to sync filters into the URL, localStorage, analytics, or some other external system.",
+        "The important behavior is an effect that happens when state changes, not just a value shown in the template.",
+        "You need explicit control over timing, cleanup, or exactly which source triggers the effect."
+      ],
+      "watchOutFor": [
+        "Using watch to copy filtered results and summary strings into extra refs often creates duplicate state and makes the UI harder to reason about.",
+        "A weak answer treats watch as a replacement for computed even when the data is simply derived display state."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "pure-derived-ui",
+      "title": "Mostly derived UI state",
+      "prompt": "The page mainly needs filtered items, a count, and a summary string based on existing reactive inputs.",
+      "cells": [
+        {
+          "optionId": "computed",
+          "verdict": "best-fit",
+          "note": "This is the clearest answer when the job is to derive display state without introducing duplicate refs."
+        },
+        {
+          "optionId": "watch",
+          "verdict": "stretch",
+          "note": "Possible, but it adds manual syncing and state drift risk for something that should stay declarative."
+        }
+      ]
+    },
+    {
+      "id": "current-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "The UI has derived state, but the page also syncs filter choices to the URL.",
+      "cells": [
+        {
+          "optionId": "computed",
+          "verdict": "best-fit",
+          "note": "The filtered results and summary should still stay computed-first, even if one narrow watch handles the URL sync effect."
+        },
+        {
+          "optionId": "watch",
+          "verdict": "reasonable",
+          "note": "Watch is absolutely appropriate for the URL sync part, but weaker if it owns all the derived display state too."
+        }
+      ]
+    },
+    {
+      "id": "effect-heavy-flow",
+      "title": "Heavier side-effect flow",
+      "prompt": "Changing filters now triggers fetches, aborts, analytics, URL sync, and local persistence.",
+      "cells": [
+        {
+          "optionId": "computed",
+          "verdict": "reasonable",
+          "note": "Still right for pure display derivation, but no longer enough for the effectful parts by itself."
+        },
+        {
+          "optionId": "watch",
+          "verdict": "best-fit",
+          "note": "This is where explicit watches or watchEffect-style effects become much easier to defend for the side-effect path."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "derived-vs-effect",
+      "title": "Is this derived state or a real side effect?",
+      "description": "The first question is whether you are just computing UI from inputs or reacting by changing something outside that UI."
+    },
+    {
+      "id": "state-duplication",
+      "title": "Will this create duplicate state?",
+      "description": "A strong answer avoids copying derived values into extra refs unless there is a clear reason."
+    },
+    {
+      "id": "timing-control",
+      "title": "Do you need explicit timing and cleanup?",
+      "description": "Watches become more valuable when you care about exactly when an effect runs and how it is cleaned up."
+    },
+    {
+      "id": "template-clarity",
+      "title": "Which choice keeps the component easiest to read?",
+      "description": "A senior answer also considers whether the component will stay declarative or become a web of sync code."
+    },
+    {
+      "id": "interview-balance",
+      "title": "Can you defend both tools without overusing either one?",
+      "description": "A strong answer explains where each tool is the right fit instead of trying to crown one universal winner."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean computed for the derived UI and watch only for the real side effect",
+    "summary": "This prompt has two different jobs: derive UI state and sync filters to the URL. The filtered list, count, and summary should stay computed-first, while the URL sync is a narrow watch use case.",
+    "reasoning": [
+      "The filtered items, result count, and summary text are classic derived state. Computed keeps that logic declarative and avoids duplicate refs that can drift.",
+      "The URL sync is different because it is a side effect. That is exactly where a watch becomes the cleaner tool.",
+      "So the strongest answer is not computed or watch everywhere. It is computed for derived UI, watch for external synchronization."
+    ],
+    "recommendation": "For this exact prompt, I would keep the display state computed-first and add a focused watch only for syncing the filters into the URL."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not just use watch for everything so the logic is all in one place?",
+      "answer": "Because then I start copying derived values into extra refs and managing synchronization by hand. That increases drift risk for no real gain when the UI state is already a clean function of other reactive inputs."
+    },
+    {
+      "question": "What would make watch the stronger answer?",
+      "answer": "If the main behavior were effectful rather than purely derived, such as fetching, aborting, analytics, local persistence, or URL synchronization, then watch becomes the better tool for that part of the flow."
+    },
+    {
+      "question": "Would you ever use both together?",
+      "answer": "Yes, and that is usually the strongest answer. I would use computed for derived UI and a narrow watch only where the component needs to cause an external effect."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use watch because it is more powerful than computed.",
+      "whyItWorks": "It does not. This sounds generic and ignores the difference between derived state and side effects."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use computed for the filtered list, but watch could also work if the team prefers it.",
+      "whyItWorks": "This is directionally correct, but it still needs a sharper explanation of why watch is weaker for derived UI and stronger for effects."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would keep the filtered list, count, and summary as computed values because they are purely derived from reactive inputs. I would only add a focused watch for the URL sync, because that part is a real side effect. That keeps the UI declarative without pretending watch is the wrong tool everywhere.",
+      "whyItWorks": "This sounds stronger because it separates two jobs clearly and uses each Vue tool where it fits best."
+    }
+  ],
+  "answerFramework": [
+    "Start by separating derived UI state from real side effects.",
+    "State which tool you would use for the display state in this prompt.",
+    "Explain where the other tool still belongs and why.",
+    "Keep the answer tied to this scenario instead of treating one API as universally better.",
+    "End with a clean boundary such as: computed for UI derivation, watch for external sync."
+  ],
+  "antiPatterns": [
+    "Using watch to copy every derived value into extra refs by default.",
+    "Claiming computed should also own URL sync, analytics, or fetch side effects.",
+    "Talking about these APIs as if the choice is mostly style.",
+    "Ignoring the risk of duplicate state drifting out of sync."
+  ]
+}

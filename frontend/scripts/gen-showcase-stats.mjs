@@ -11,6 +11,7 @@ const projectRoot = path.resolve(__dirname, '..');
 const QUESTION_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'questions');
 const INCIDENT_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'incidents');
 const TRADEOFF_BATTLES_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'tradeoff-battles');
+const CDN_QUESTION_ASSETS_DIR = path.resolve(projectRoot, '..', 'cdn', 'questions');
 const FRAMEWORK_FAMILIES_PATH = path.join(
   projectRoot,
   'src',
@@ -18,7 +19,10 @@ const FRAMEWORK_FAMILIES_PATH = path.join(
   'shared',
   'framework-families.ts',
 );
-const OUTPUT_PATH = path.join(QUESTION_ASSETS_DIR, 'showcase-stats.json');
+const OUTPUT_PATHS = [
+  path.join(QUESTION_ASSETS_DIR, 'showcase-stats.json'),
+  path.join(CDN_QUESTION_ASSETS_DIR, 'showcase-stats.json'),
+];
 
 const TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
 const KINDS = ['coding', 'trivia'];
@@ -166,10 +170,13 @@ async function main() {
     companyCounts: collectCompanyCounts(allLists, frameworkFamilyById),
   };
 
-  await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
-  await fs.writeFile(OUTPUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  const serializedPayload = `${JSON.stringify(payload, null, 2)}\n`;
+  for (const outputPath of OUTPUT_PATHS) {
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.writeFile(outputPath, serializedPayload, 'utf8');
+    console.log(`[gen-showcase-stats] wrote ${path.relative(projectRoot, outputPath)}`);
+  }
 
-  console.log(`[gen-showcase-stats] wrote ${path.relative(projectRoot, OUTPUT_PATH)}`);
   console.log(
     `[gen-showcase-stats] totalQuestions=${payload.totalQuestions} companies=${Object.keys(payload.companyCounts).length}`,
   );
