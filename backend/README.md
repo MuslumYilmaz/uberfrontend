@@ -26,7 +26,7 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `JWT_SECRET`: JWT signing secret (32+ chars required in production).
 - `ACCESS_TOKEN_EXPIRES_IN`: short access-token lifetime (recommended: `15m`).
 - `REFRESH_SESSION_TTL_DAYS`: rolling refresh-session lifetime in days (recommended: `90`).
-- `FRONTEND_ORIGINS`: Comma-separated allowed CORS origins (e.g. `http://localhost:4200,https://frontendatlas.com`).
+- `FRONTEND_ORIGINS`: Comma-separated allowed CORS origins (e.g. `http://localhost:4200,http://127.0.0.1:4310,https://frontendatlas.com`).
 - `FRONTEND_ORIGIN`: Single allowed CORS origin (legacy fallback).
 - `COOKIE_SAMESITE`: `lax` (default), `strict`, or `none`.
 - `COOKIE_DOMAIN`: optional, e.g. `.frontendatlas.com` to share cookies across subdomains.
@@ -95,6 +95,7 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - The frontend uses `environment.apiBase` for API calls (default: `/api` with `frontend/proxy.conf.json`).
 - If you prefer a full URL, set `apiBase` to `http://localhost:3001`.
 - When using a full `apiBase` URL from the browser, set `FRONTEND_ORIGINS` to include your frontend origin and keep `credentials: true` requests enabled on the frontend.
+- In local development, the backend also tolerates the repo's common frontend ports (`4200`, `4310`, `4173`) on `localhost` and `127.0.0.1` to reduce noisy CORS rejects during Playwright and preview runs.
 
 ## Deployment (recommended: Vercel serverless)
 

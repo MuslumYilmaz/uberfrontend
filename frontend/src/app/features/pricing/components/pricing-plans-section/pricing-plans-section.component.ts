@@ -318,7 +318,7 @@ export class PricingPlansSectionComponent implements OnInit, OnDestroy {
       {
         id: 'lifetime',
         title: 'Lifetime',
-        price: '$149',
+        price: '$199',
         priceSuffix: '',
         features: ['One-time payment', 'Premium access forever'],
         badge: 'Lifetime access',

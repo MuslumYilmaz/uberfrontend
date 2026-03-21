@@ -62,6 +62,19 @@ for (const warning of authRuntimeValidation.warnings) {
     console.warn(`⚠️ Auth config: ${warning}`);
 }
 
+const seenRejectedCorsOrigins = new Set();
+
+function warnRejectedCorsOrigin(origin, normalizedOrigin) {
+    const key = String(normalizedOrigin || origin || '').trim() || '(unknown)';
+    if (seenRejectedCorsOrigins.has(key)) return;
+    seenRejectedCorsOrigins.add(key);
+
+    const allowedOrigins = ALLOWED_FRONTEND_ORIGINS.join(', ') || '(none)';
+    console.warn(
+        `⚠️ CORS blocked origin: ${origin || '(missing)'}${normalizedOrigin ? ` -> ${normalizedOrigin}` : ''}. Allowed frontend origins: ${allowedOrigins}`
+    );
+}
+
 // ---- Middleware ----
 // Behind proxies (Vercel/Render/etc), set TRUST_PROXY=true so req.ip is accurate and secure cookies work.
 if (String(process.env.TRUST_PROXY || '').toLowerCase() === 'true') {
@@ -77,7 +90,8 @@ app.use(
             if (!origin) return cb(null, true);
             const normalized = normalizeOrigin(origin);
             if (ALLOWED_FRONTEND_ORIGINS.includes(normalized)) return cb(null, true);
-            return cb(new Error('CORS origin not allowed'));
+            warnRejectedCorsOrigin(origin, normalized);
+            return cb(null, false);
         },
         credentials: true,
     })

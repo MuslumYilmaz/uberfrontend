@@ -1,5 +1,13 @@
 const DEFAULT_SERVER_BASE = 'http://localhost:3001';
 const DEFAULT_FRONTEND_BASE = 'http://localhost:4200';
+const LOCAL_DEV_FRONTEND_ORIGINS = [
+  'http://localhost:4200',
+  'http://127.0.0.1:4200',
+  'http://localhost:4310',
+  'http://127.0.0.1:4310',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
+];
 
 function hasScheme(value) {
   return /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(value);
@@ -40,6 +48,10 @@ function resolveFrontendBase() {
   return normalizeBaseUrl(process.env.FRONTEND_BASE, DEFAULT_FRONTEND_BASE);
 }
 
+function isProductionRuntime() {
+  return String(process.env.NODE_ENV || '').trim().toLowerCase() === 'production';
+}
+
 function resolveAllowedFrontendOrigins() {
   const raw = String(process.env.FRONTEND_ORIGINS || '').trim();
   const list = raw
@@ -50,6 +62,9 @@ function resolveAllowedFrontendOrigins() {
   if (!list.length && fallbackOrigin) list.push(fallbackOrigin);
 
   const normalized = list.map((entry) => normalizeOrigin(entry)).filter(Boolean);
+  if (!isProductionRuntime()) {
+    normalized.push(...LOCAL_DEV_FRONTEND_ORIGINS);
+  }
   return Array.from(new Set(normalized));
 }
 
