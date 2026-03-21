@@ -290,25 +290,32 @@ export class IncidentDetailComponent {
 
   relatedPracticeLabel(item: IncidentRelatedPractice): string {
     if (item.kind === 'system-design') return 'System design follow-up';
-    const tech = item.tech === 'javascript'
-      ? 'JavaScript'
-      : item.tech === 'react'
-        ? 'React'
-        : item.tech === 'html'
-          ? 'HTML'
-          : item.tech === 'css'
-            ? 'CSS'
-            : item.tech === 'angular'
-              ? 'Angular'
-              : item.tech === 'vue'
-                ? 'Vue'
-                : 'Frontend';
+    const tech = this.techLabel(item.tech);
     const kind = item.kind === 'trivia'
       ? 'Trivia'
       : item.kind === 'coding'
         ? 'Coding'
         : 'Debug';
     return `${tech} ${kind}`;
+  }
+
+  techLabel(tech: string): string {
+    switch (tech) {
+      case 'javascript':
+        return 'JavaScript';
+      case 'react':
+        return 'React';
+      case 'angular':
+        return 'Angular';
+      case 'vue':
+        return 'Vue';
+      case 'html':
+        return 'HTML';
+      case 'css':
+        return 'CSS';
+      default:
+        return 'Frontend';
+    }
   }
 
   goToAdjacentIncident(target: IncidentListItem | null): void {
@@ -367,19 +374,7 @@ export class IncidentDetailComponent {
 
   private updateSeo(scenario: IncidentScenario): void {
     const meta = scenario.meta;
-    const techLabel = meta.tech === 'javascript'
-      ? 'JavaScript'
-      : meta.tech === 'react'
-        ? 'React'
-        : meta.tech === 'angular'
-          ? 'Angular'
-          : meta.tech === 'vue'
-            ? 'Vue'
-            : meta.tech === 'html'
-              ? 'HTML'
-              : meta.tech === 'css'
-                ? 'CSS'
-                : 'Frontend';
+    const techLabel = this.techLabel(meta.tech);
     const canonicalPath = `/incidents/${meta.id}`;
     const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
     const incidentsHubUrl = this.seo.buildCanonicalUrl('/incidents');

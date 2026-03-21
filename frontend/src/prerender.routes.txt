@@ -214,6 +214,7 @@
 /html/trivia/html-vs-xhtml
 /html/trivia/web-accessibility-make-page-accessible
 /incidents
+/incidents/angular-onpush-stale-row
 /incidents/autosave-overwrites-latest-edit
 /incidents/context-rerender-storm
 /incidents/modal-screen-reader-failure

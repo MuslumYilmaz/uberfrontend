@@ -1,6 +1,9 @@
 .tradeoff-list {
   display: grid;
   gap: 1.5rem;
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 6rem;
 }
 
 .tradeoff-hero,
@@ -16,7 +19,13 @@
 .tradeoff-hero {
   padding: 1.75rem;
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
+}
+
+.tradeoff-hero__copy {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 64rem;
 }
 
 .tradeoff-hero__eyebrow {
@@ -28,14 +37,14 @@
 
 .tradeoff-hero h1 {
   margin: 0;
-  max-width: 16ch;
+  max-width: none;
   font-size: clamp(2rem, 4vw, 3.25rem);
-  line-height: 0.98;
+  line-height: 1.02;
 }
 
 .tradeoff-hero__summary {
   margin: 0;
-  max-width: 60rem;
+  max-width: 48rem;
   font-size: 1.02rem;
   line-height: 1.65;
   color: rgba(255, 255, 255, 0.74);
@@ -43,26 +52,35 @@
 
 .tradeoff-hero__meta {
   display: flex;
-  gap: 0.9rem;
+  gap: 1.25rem;
   flex-wrap: wrap;
+  align-items: baseline;
+  padding-top: 0.35rem;
 }
 
 .tradeoff-hero__stat {
-  min-width: 8.5rem;
-  padding: 0.9rem 1rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0;
 }
 
 .tradeoff-hero__stat-value {
   display: block;
   font-size: 1.7rem;
   font-weight: 700;
+  line-height: 1;
 }
 
 .tradeoff-hero__stat-label {
   color: rgba(255, 255, 255, 0.64);
+  font-size: 0.98rem;
+}
+
+.tradeoff-hero__stat + .tradeoff-hero__stat {
+  padding-left: 1.1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .tradeoff-search {
@@ -148,6 +166,10 @@
 }
 
 @media (max-width: 720px) {
+  .tradeoff-list {
+    padding: 1rem 0.8rem 5.5rem;
+  }
+
   .tradeoff-hero,
   .tradeoff-search,
   .tradeoff-card {
@@ -156,5 +178,17 @@
 
   .tradeoff-card__header {
     flex-direction: column;
+  }
+
+  .tradeoff-hero__meta {
+    gap: 0.75rem;
+  }
+
+  .tradeoff-hero__stat + .tradeoff-hero__stat {
+    padding-left: 0.75rem;
+  }
+
+  .tradeoff-hero h1 {
+    max-width: 14ch;
   }
 }

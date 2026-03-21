@@ -94,5 +94,21 @@
     "tags": ["autosave", "async", "state-consistency"],
     "updatedAt": "2026-03-19",
     "access": "free"
+  },
+  {
+    "id": "angular-onpush-stale-row",
+    "title": "OnPush order row stays stale after a live update",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "A live order update arrives, but the row keeps showing the old status until the user clicks, sorts, or filters the table.",
+    "signals": [
+      "The socket event arrives, but the row still shows the old status",
+      "Sorting or filtering suddenly makes the right status appear",
+      "The service mutates the existing order object in place"
+    ],
+    "estimatedMinutes": 15,
+    "tags": ["angular", "onpush", "change-detection", "immutability"],
+    "updatedAt": "2026-03-21",
+    "access": "free"
   }
 ]

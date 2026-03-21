@@ -589,6 +589,9 @@
     <loc>https://frontendatlas.com/incidents</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/incidents/angular-onpush-stale-row</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/incidents/autosave-overwrites-latest-edit</loc>
   </url>
   <url>
