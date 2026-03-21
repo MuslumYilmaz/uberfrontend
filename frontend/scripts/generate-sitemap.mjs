@@ -4,6 +4,7 @@ import path from 'path';
 const BASE_URL = (process.env.SITEMAP_BASE_URL || 'https://frontendatlas.com').replace(/\/+$/, '');
 const SRC_DIR = path.resolve('src');
 const ASSETS_DIR = path.join(SRC_DIR, 'assets');
+const PRACTICE_REGISTRY = path.join(ASSETS_DIR, 'practice', 'registry.json');
 const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
 const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
 const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
@@ -87,6 +88,7 @@ function buildUrls() {
     '/changelog',
     '/pricing',
     '/coding',
+    '/incidents',
     '/interview-questions',
     '/javascript/interview-questions',
     '/react/interview-questions',
@@ -113,6 +115,16 @@ function buildUrls() {
   ];
 
   staticPaths.forEach((p) => urls.add(toUrl(p)));
+
+  if (fs.existsSync(PRACTICE_REGISTRY)) {
+    const items = readJson(PRACTICE_REGISTRY);
+    if (Array.isArray(items)) {
+      items.forEach((item) => {
+        if (!item?.route) return;
+        urls.add(toUrl(item.route));
+      });
+    }
+  }
 
   listTechDirs().forEach((tech) => {
     const codingPath = path.join(QUESTIONS_DIR, tech, 'coding.json');

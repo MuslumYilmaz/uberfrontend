@@ -210,6 +210,49 @@ describe('POST /api/activity/complete', () => {
         );
     });
 
+    test('incident completion awards xp and weekly credit without mutating solvedQuestionIds', async () => {
+        const user = await User.create({
+            email: 'incident-complete@example.com',
+            username: 'incident_complete_user',
+            passwordHash: 'hash',
+            solvedQuestionIds: ['react-counter'],
+        });
+
+        const res = await request(app)
+            .post('/api/activity/complete')
+            .set('Authorization', authHeader(user._id))
+            .send({
+                kind: 'incident',
+                tech: 'react',
+                itemId: 'search-typing-lag',
+                difficulty: 'easy',
+            });
+
+        expect(res.status).toBe(200);
+        expect(Number(res.body?.xpAwarded || 0)).toBe(10);
+        expect(res.body?.logicalCompletionCreated).toBe(true);
+        expect(res.body?.solvedQuestionIds).toEqual(['react-counter']);
+
+        const [reloaded, dashboardRes, summaryRes] = await Promise.all([
+            User.findById(user._id).lean(),
+            request(app)
+                .get('/api/dashboard')
+                .set('Authorization', authHeader(user._id)),
+            request(app)
+                .get('/api/activity/summary')
+                .set('Authorization', authHeader(user._id)),
+        ]);
+
+        expect(reloaded?.solvedQuestionIds).toEqual(['react-counter']);
+        expect(reloaded?.stats?.xpTotal).toBe(10);
+        expect(reloaded?.stats?.completedTotal).toBe(1);
+        expect(dashboardRes.status).toBe(200);
+        expect(dashboardRes.body?.weeklyGoal?.completed).toBe(1);
+        expect(summaryRes.status).toBe(200);
+        expect(summaryRes.body?.today?.completed).toBe(1);
+        expect(summaryRes.body?.today?.total).toBe(4);
+    });
+
     test('completion level-up is reflected end-to-end in dashboard xp level', async () => {
         const user = await User.create({
             email: 'levelup@example.com',

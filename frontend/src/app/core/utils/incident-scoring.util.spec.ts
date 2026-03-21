@@ -26,6 +26,26 @@ describe('incident-scoring.util', () => {
     expect(result.optionFeedback[0]?.feedback).toBe('correct');
   });
 
+  it('treats the highest-value single-select option as the full-credit ceiling even when distractors get partial points', () => {
+    const stage: IncidentSingleSelectStage = {
+      id: 'root-cause',
+      type: 'single-select',
+      title: 'Root cause',
+      prompt: 'Pick one',
+      options: [
+        { id: 'best', label: 'Best', points: 25, feedback: 'best' },
+        { id: 'partial', label: 'Partial', points: 5, feedback: 'partial' },
+        { id: 'wrong', label: 'Wrong', points: 0, feedback: 'wrong' },
+      ],
+    };
+
+    const result = evaluateIncidentStage(stage, 'best');
+
+    expect(result.rawScore).toBe(25);
+    expect(result.maxScore).toBe(25);
+    expect(result.scorePercent).toBe(100);
+  });
+
   it('applies harmful multi-select choices and clamps the stage score at zero', () => {
     const stage: IncidentMultiSelectStage = {
       id: 'fix-set',

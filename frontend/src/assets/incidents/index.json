@@ -4,11 +4,11 @@
     "title": "Search box typing lag under product-card load",
     "tech": "react",
     "difficulty": "easy",
-    "summary": "Typing feels sticky after the third character because urgent render work and search requests both fire on every keystroke.",
+    "summary": "Typing gets laggy after the third character because every keypress does too much work and also triggers a request.",
     "signals": [
-      "Input delay spikes after 3+ characters",
-      "Large CPU cost in render and highlight logic",
-      "Every keystroke also triggers network work"
+      "Typing gets much slower after 3+ characters",
+      "Most time is spent filtering and highlighting before the screen updates",
+      "Every keypress also sends a network request"
     ],
     "estimatedMinutes": 12,
     "tags": ["performance", "search", "react"],
@@ -20,11 +20,11 @@
     "title": "Latest query loses to stale search results",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "A shared results bucket mixes cache hydrate and network commits, so an older slow query can still repaint the list after the user has moved on.",
+    "summary": "Cached results and slower network results both update the same list, so an older query can briefly show up again.",
     "signals": [
-      "Cards briefly flash back to an older query",
-      "Cache hydrate and network response both write into one results store",
-      "Debounce reduced traffic but stale UI still appears on slow network"
+      "Results briefly jump back to an older query",
+      "Cached and network results both update the same results list",
+      "Debounce reduced traffic, but the stale flash is still there"
     ],
     "estimatedMinutes": 14,
     "tags": ["async", "race-condition", "search"],
@@ -36,11 +36,11 @@
     "title": "Modal opens visually but fails screen-reader users",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "A custom modal looks fine, but focus escapes behind it and screen readers announce an unnamed generic region.",
+    "summary": "The modal looks fine on screen, but keyboard focus escapes behind it and screen readers do not announce it properly.",
     "signals": [
-      "Tab moves into background page",
-      "Screen reader does not announce modal name",
-      "Closing the modal loses the original trigger focus"
+      "Tab moves behind the modal",
+      "Screen reader does not announce the modal title",
+      "Focus does not return to the button that opened it"
     ],
     "estimatedMinutes": 15,
     "tags": ["accessibility", "modal", "focus-management"],
@@ -52,11 +52,11 @@
     "title": "Realtime feed leaks sockets and listeners",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Route mounts and filter changes both create overlapping feed subscriptions, while stale handlers and unclear socket ownership leave old work alive.",
+    "summary": "Route changes and filter changes keep adding listeners, so old listeners stay alive and still use old filter values.",
     "signals": [
-      "Duplicate events grow after route changes and filter tweaks",
-      "Some duplicate logs still mention old filter values",
-      "Connection and listener counts keep climbing in dev tools"
+      "Events start showing up more than once after route or filter changes",
+      "Some duplicates still mention old filter values",
+      "Listener and subscription counts keep growing"
     ],
     "estimatedMinutes": 14,
     "tags": ["memory", "websocket", "effects"],
@@ -68,11 +68,11 @@
     "title": "Context update causes rerender storm",
     "tech": "react",
     "difficulty": "hard",
-    "summary": "One provider holds too much frequently changing state, so unrelated consumers rerender on every tiny update.",
+    "summary": "One big shared context holds too much fast-changing state, so typing in one place rerenders parts of the page that did not actually change.",
     "signals": [
-      "Unrelated panels rerender during typing",
-      "Profiler shows broad context fan-out",
-      "Provider value identity changes every update"
+      "Typing rerenders parts of the page that did not change",
+      "One context update rerenders lots of components",
+      "The provider creates a new value object on every update"
     ],
     "estimatedMinutes": 16,
     "tags": ["react", "context", "rendering"],
@@ -84,11 +84,11 @@
     "title": "Autosave overwrites the latest draft",
     "tech": "react",
     "difficulty": "hard",
-    "summary": "Rapid edits plus flaky network produce out-of-order autosave acknowledgements that replace newer text with stale content.",
+    "summary": "If the network is slow, an older autosave response can still overwrite what the user typed a moment later.",
     "signals": [
-      "Textarea jumps back to older content",
-      "Dirty badge clears too early",
-      "Slow-network replay reproduces the overwrite"
+      "Text jumps back to an older version",
+      "Saved state clears too early",
+      "Easy to reproduce on a slow network"
     ],
     "estimatedMinutes": 18,
     "tags": ["autosave", "async", "state-consistency"],

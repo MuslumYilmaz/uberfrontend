@@ -52,6 +52,10 @@ function calculateMaxOptionScore(options: IncidentOption[]): number {
   return options.reduce((sum, option) => sum + Math.max(0, option.points), 0);
 }
 
+function calculateSingleSelectMaxScore(options: IncidentOption[]): number {
+  return options.reduce((max, option) => Math.max(max, Math.max(0, option.points)), 0);
+}
+
 function optionFeedbackForSelection(
   options: IncidentOption[],
   selectedIds: string[],
@@ -74,7 +78,7 @@ function evaluateSingleSelectStage(
 ): IncidentStageEvaluation {
   const selectedId = typeof answer === 'string' ? answer : '';
   const selectedOption = stage.options.find((option) => option.id === selectedId) ?? null;
-  const maxScore = calculateMaxOptionScore(stage.options);
+  const maxScore = calculateSingleSelectMaxScore(stage.options);
   const rawScore = clampScore(selectedOption?.points ?? 0, maxScore);
 
   return {

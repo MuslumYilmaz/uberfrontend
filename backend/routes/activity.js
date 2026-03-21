@@ -22,6 +22,7 @@ const { countTodayCompletedKinds, countWeeklySolvedUnique } = require('../servic
 const { currentWeekBounds, dayKeyInTimezone, dayDiffByKey } = require('../services/gamification/timezone');
 const { awardWeeklyGoalBonusIfEligible } = require('../services/gamification/weekly-goal');
 const { ensureCurrentWeeklyGoalState } = require('../services/gamification/weekly-goal-state');
+const { SOLVE_KINDS } = require('../services/gamification/constants');
 
 const VALID_TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'];
 const DEFAULT_RECENT_LIMIT = 20;
@@ -81,7 +82,7 @@ router.post('/complete', requireAuth, async (req, res) => {
     try {
         const { kind, tech, itemId, requestId, source = 'tech', durationMin = 0, difficulty } = req.body || {};
         if (!kind || !tech) return res.status(400).json({ error: 'Missing kind or tech' });
-        if (!['coding', 'trivia', 'debug'].includes(kind)) return res.status(400).json({ error: 'Invalid kind' });
+        if (!['coding', 'trivia', 'debug', 'incident'].includes(kind)) return res.status(400).json({ error: 'Invalid kind' });
         if (!VALID_TECHS.includes(tech)) return res.status(400).json({ error: 'Invalid tech' });
 
         const durationMinSafe = Math.min(Math.max(Number(durationMin) || 0, 0), 24 * 60);
@@ -115,6 +116,7 @@ router.post('/complete', requireAuth, async (req, res) => {
 
             const prevLevel = computeLevel(user.stats?.xpTotal || 0).level;
             const completionFilter = { userId: user._id, kind, itemId: itemIdText };
+            const shouldTrackSolvedQuestions = kind !== 'incident';
             let completion = null;
             let firstLogicalCompletion = false;
             let awardedXp = 0;
@@ -228,7 +230,7 @@ router.post('/complete', requireAuth, async (req, res) => {
                 await touchQuery;
             }
 
-            if (firstLogicalCompletion) {
+            if (firstLogicalCompletion && shouldTrackSolvedQuestions) {
                 try {
                     const firstCredit = { userId: user._id, kind, itemId: itemIdText, firstCompletedAt: completedAt };
                     if (session) {
@@ -302,8 +304,10 @@ router.post('/complete', requireAuth, async (req, res) => {
                         'stats.streak.longest': user.stats.streak.longest || 0,
                         'stats.streak.lastActiveUTCDate': activityDayKey,
                     },
-                    $addToSet: { solvedQuestionIds: itemIdText },
                 };
+                if (shouldTrackSolvedQuestions) {
+                    aggregateUpdate.$addToSet = { solvedQuestionIds: itemIdText };
+                }
                 const aggregateUpdateQuery = User.updateOne({ _id: user._id }, aggregateUpdate);
                 if (session) aggregateUpdateQuery.session(session);
                 await aggregateUpdateQuery;
@@ -600,7 +604,7 @@ router.get('/summary', requireAuth, async (req, res) => {
 
         // Today credits (0..3)
         const todayCompleted = await countTodayCompletedKinds(req.auth.userId, todayStr);
-        const todayTotal = 3; // coding + trivia + debug
+        const todayTotal = Array.from(SOLVE_KINDS).length;
         const todayProgress = Math.min(1, todayTotal ? todayCompleted / todayTotal : 1);
 
         const { settings: weeklyGoalSettings, weekBounds } = await ensureCurrentWeeklyGoalState(user);

@@ -185,19 +185,55 @@
           </article>
 
           <article faCard class="widget widget--mini" *ngIf="progressSummary() as progress; else progressMiniFallback">
-            <div class="widget-kicker">Progress snapshot</div>
-            <h3 class="widget-title widget-title--mini">{{ formatPercentLabel(overallSolvedPercent(progress)) }} overall solved</h3>
-            <p class="widget-copy widget-copy--mini fa-meta-text">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
+            <div class="widget-kicker">Question coverage</div>
+            <h3 class="widget-title widget-title--mini">{{ formatPercentLabel(overallSolvedPercent(progress)) }} solved</h3>
+            <p class="widget-copy widget-copy--mini fa-meta-text">{{ progress.questions.solvedCount }} solved out of {{ progress.questions.totalCount }} total questions.</p>
           </article>
 
           <ng-template #progressMiniFallback>
             <article faCard class="widget widget--mini" [class.widget--guest]="!auth.isLoggedIn()">
-              <div class="widget-kicker">Progress snapshot</div>
-              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Progress snapshot unavailable' : 'Sign in to unlock progress snapshot' }}</h3>
+              <div class="widget-kicker">Question coverage</div>
+              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Question coverage unavailable' : 'Sign in to unlock question coverage' }}</h3>
               <p class="widget-copy widget-copy--mini fa-meta-text">
                 {{ auth.isLoggedIn()
-                  ? 'Your solved coverage is temporarily unavailable. Check profile again shortly.'
-                  : 'Your solved coverage appears after a few completed questions.' }}
+                  ? 'Your question coverage is temporarily unavailable. Check profile again shortly.'
+                  : 'Your question coverage appears after a few completed questions.' }}
+              </p>
+            </article>
+          </ng-template>
+
+          <article faCard class="widget widget--mini" *ngIf="progressSummary() as progress; else incidentMiniFallback">
+            <div class="widget-kicker">Debug scenarios</div>
+            <h3 class="widget-title widget-title--mini">{{ progress.incidents.passedCount }} passed</h3>
+            <p class="widget-copy widget-copy--mini fa-meta-text">{{ formatPercentLabel(progress.incidents.passedPercent) }} of the incident catalog is cleared.</p>
+          </article>
+
+          <ng-template #incidentMiniFallback>
+            <article faCard class="widget widget--mini" [class.widget--guest]="!auth.isLoggedIn()">
+              <div class="widget-kicker">Debug scenarios</div>
+              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Incident progress unavailable' : 'Sign in to track debug scenarios' }}</h3>
+              <p class="widget-copy widget-copy--mini fa-meta-text">
+                {{ auth.isLoggedIn()
+                  ? 'Your incident passes are temporarily unavailable.'
+                  : 'Passed debug scenarios appear here after you clear an incident.' }}
+              </p>
+            </article>
+          </ng-template>
+
+          <article faCard class="widget widget--mini" *ngIf="progressSummary() as progress; else practiceMiniFallback">
+            <div class="widget-kicker">Practice completed</div>
+            <h3 class="widget-title widget-title--mini">{{ formatPercentLabel(practiceCompletedPercent(progress)) }} completed</h3>
+            <p class="widget-copy widget-copy--mini fa-meta-text">{{ progress.practice.completedCount }} completed out of {{ progress.practice.totalCount }} total practice units.</p>
+          </article>
+
+          <ng-template #practiceMiniFallback>
+            <article faCard class="widget widget--mini" [class.widget--guest]="!auth.isLoggedIn()">
+              <div class="widget-kicker">Practice completed</div>
+              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Practice total unavailable' : 'Sign in to track total practice' }}</h3>
+              <p class="widget-copy widget-copy--mini fa-meta-text">
+                {{ auth.isLoggedIn()
+                  ? 'Your combined practice total is temporarily unavailable.'
+                  : 'Questions and passed debug scenarios roll up into one combined total here.' }}
               </p>
             </article>
           </ng-template>

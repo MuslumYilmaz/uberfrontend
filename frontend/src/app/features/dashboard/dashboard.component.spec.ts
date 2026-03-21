@@ -53,13 +53,25 @@ describe('DashboardComponent', () => {
       progress: 0.1,
     },
     progress: {
-      solvedCount: 12,
-      totalCount: 60,
-      solvedPercent: 20,
-      topTopics: [
-        { topic: 'state', label: 'State', solved: 4, total: 8, percent: 50 },
-        { topic: 'events', label: 'Events', solved: 3, total: 9, percent: 33 },
-      ],
+      questions: {
+        solvedCount: 12,
+        totalCount: 60,
+        solvedPercent: 20,
+        topTopics: [
+          { topic: 'state', label: 'State', solved: 4, total: 8, percent: 50 },
+          { topic: 'events', label: 'Events', solved: 3, total: 9, percent: 33 },
+        ],
+      },
+      incidents: {
+        passedCount: 2,
+        totalCount: 6,
+        passedPercent: 33,
+      },
+      practice: {
+        completedCount: 14,
+        totalCount: 66,
+        completedPercent: 21,
+      },
     },
     settings: {
       weeklyGoalEnabled: true,
@@ -156,7 +168,9 @@ describe('DashboardComponent', () => {
     const pageText = fixture.nativeElement.textContent || '';
     expect(pageText).toContain('Next best action');
     expect(pageText).toContain('Daily challenge');
-    expect(pageText).toContain('Progress snapshot');
+    expect(pageText).toContain('Question coverage');
+    expect(pageText).toContain('Debug scenarios');
+    expect(pageText).toContain('Practice completed');
     expect(pageText).toContain('Profile activity');
     expect(pageText).toContain('Show full details');
   });
@@ -240,10 +254,22 @@ describe('DashboardComponent', () => {
   it('derives precise overall solved percent from solved/total counts', () => {
     const component = fixture.componentInstance;
     const percent = component.overallSolvedPercent({
-      solvedCount: 2,
-      totalCount: 417,
-      solvedPercent: 0,
-      topTopics: [],
+      questions: {
+        solvedCount: 2,
+        totalCount: 417,
+        solvedPercent: 0,
+        topTopics: [],
+      },
+      incidents: {
+        passedCount: 0,
+        totalCount: 6,
+        passedPercent: 0,
+      },
+      practice: {
+        completedCount: 2,
+        totalCount: 423,
+        completedPercent: 0,
+      },
     });
 
     expect(percent).toBeCloseTo(0.4796, 4);

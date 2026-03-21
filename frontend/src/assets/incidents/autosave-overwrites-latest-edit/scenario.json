@@ -4,11 +4,11 @@
     "title": "Autosave overwrites the latest draft",
     "tech": "react",
     "difficulty": "hard",
-    "summary": "Rapid edits plus flaky network produce out-of-order autosave acknowledgements that replace newer text with stale content.",
+    "summary": "If the network is slow, an older autosave response can still overwrite what the user typed a moment later.",
     "signals": [
-      "Textarea jumps back to older content",
-      "Dirty badge clears too early",
-      "Slow-network replay reproduces the overwrite"
+      "Text jumps back to an older version",
+      "Saved state clears too early",
+      "Easy to reproduce on a slow network"
     ],
     "estimatedMinutes": 18,
     "tags": ["autosave", "async", "state-consistency"],
@@ -16,14 +16,14 @@
     "access": "free"
   },
   "context": {
-    "symptom": "A user types a paragraph, pauses briefly, continues typing, then sees the textarea revert to an older partial draft once the network catches up.",
+    "symptom": "A user types, pauses, keeps typing, and then sees the text jump back to an older draft when an earlier save finally finishes.",
     "userImpact": "Users stop trusting autosave because it can delete or overwrite their most recent work.",
-    "environment": "React form with autosave every few seconds, optimistic local state, and a server endpoint that returns the saved draft payload.",
+    "environment": "React form that autosaves every few seconds. The text updates immediately in the UI, and the server sends the saved draft back in the response.",
     "evidence": [
       {
         "type": "log",
         "title": "Request sequence",
-        "body": "Draft version 12 is sent after version 11, but version 11 resolves later and still replaces the editor state."
+        "body": "Save 12 is sent after save 11, but save 11 finishes later and still replaces the editor text."
       },
       {
         "type": "snippet",
@@ -34,7 +34,7 @@
       {
         "type": "note",
         "title": "Product behavior",
-        "body": "Offline retry plus quick edits reproduces the overwrite almost every time."
+        "body": "If you keep editing on a slow or flaky network, the text jumps backward almost every time."
       }
     ]
   },
@@ -43,35 +43,35 @@
       "id": "root-cause",
       "type": "single-select",
       "title": "Stage 1: likely root cause",
-      "prompt": "What is the main failure mode?",
-      "helperText": "Focus on why old data is allowed to become source of truth again.",
+      "prompt": "What is actually going wrong here?",
+      "helperText": "Focus on why old text is still allowed to win.",
       "options": [
         {
           "id": "server-needs-more-ram",
           "label": "The backend is slow because the save endpoint needs more memory.",
           "points": 5,
-          "feedback": "Backend latency can trigger the timing, but it does not justify applying stale responses.",
+          "feedback": "Slow backend timing can trigger the bug, but it is not the reason old text is allowed to overwrite new text.",
           "isHarmful": false
         },
         {
           "id": "stale-ack-overwrites",
-          "label": "Autosave acknowledgements are applied without version checks, so stale responses can overwrite newer local edits.",
+          "label": "The app applies old save responses without checking whether the user has already typed something newer.",
           "points": 25,
-          "feedback": "Correct. The broken part is commit logic around out-of-order save responses.",
+          "feedback": "Correct. The app accepts an old save response even after the user has already typed something newer.",
           "isHarmful": false
         },
         {
           "id": "always-trust-server",
           "label": "The client should always replace local state with the latest server payload, regardless of local edits.",
           "points": -5,
-          "feedback": "That policy is exactly what makes stale acknowledgements destructive here.",
+          "feedback": "That is exactly the rule causing the bug.",
           "isHarmful": true
         },
         {
           "id": "textarea-too-fast",
           "label": "The textarea updates too quickly for the autosave loop to keep up.",
           "points": 0,
-          "feedback": "Typing speed is not the core issue. The app lacks conflict handling for async saves.",
+          "feedback": "Typing speed is not the real problem. The app does not protect the latest draft when saves finish out of order.",
           "isHarmful": false
         }
       ]
@@ -80,12 +80,12 @@
       "id": "debug-order",
       "type": "priority-order",
       "title": "Stage 2: debug priority order",
-      "prompt": "Rank the three most useful debug steps first.",
-      "helperText": "Start by proving the ordering and commit mismatch, not by redesigning the full editor.",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "First prove that an older save is still allowed to win. Do not redesign the editor yet.",
       "candidates": [
         {
           "id": "log-draft-version",
-          "label": "Log local draft version, request id, and response id for each autosave cycle."
+          "label": "Log the local draft version, request id, and response id for each autosave."
         },
         {
           "id": "reproduce-out-of-order",
@@ -93,7 +93,7 @@
         },
         {
           "id": "inspect-commit-policy",
-          "label": "Inspect when the UI clears dirty state and whether stale acknowledgements can still commit."
+          "label": "Check when the UI clears the dirty state and whether an older save can still update the editor."
         },
         {
           "id": "increase-save-interval",
@@ -115,26 +115,26 @@
       "id": "fix-set",
       "type": "multi-select",
       "title": "Stage 3: best fix set",
-      "prompt": "Which changes belong in a robust autosave fix?",
-      "helperText": "Select the options that preserve local intent when responses arrive out of order.",
+      "prompt": "Which changes should be part of the real fix?",
+      "helperText": "Pick the changes that keep the newest draft safe when responses arrive out of order.",
       "options": [
         {
           "id": "version-token",
-          "label": "Send a version token or draft revision and ignore acknowledgements that no longer match the current revision.",
+          "label": "Give each save a version and ignore any response that no longer matches the latest draft.",
           "points": 10,
-          "feedback": "Correct. Save responses need a freshness contract before they can update state.",
+          "feedback": "Correct. Each save needs a clear version so old responses can be ignored.",
           "isHarmful": false
         },
         {
           "id": "trust-client-timestamp",
-          "label": "Use the local wall-clock timestamp only and assume whichever timestamp is larger is correct.",
+          "label": "Use only the local timestamp and assume the larger timestamp is always correct.",
           "points": 0,
-          "feedback": "Timestamps can help, but alone they are weaker than explicit draft versions and commit guards.",
+          "feedback": "A timestamp can help, but by itself it is weaker than a real version or request id.",
           "isHarmful": false
         },
         {
           "id": "dirty-only-on-match",
-          "label": "Clear dirty state only when the acknowledgement matches the current local draft revision.",
+          "label": "Only clear the dirty state when the save response matches the latest local draft.",
           "points": 10,
           "feedback": "Correct. This prevents the UI from falsely claiming the latest text is safely persisted.",
           "isHarmful": false
@@ -148,9 +148,9 @@
         },
         {
           "id": "abort-or-supersede",
-          "label": "Abort or supersede older in-flight saves when a newer draft replaces them.",
+          "label": "Cancel or supersede older saves when the user has already typed a newer draft.",
           "points": 5,
-          "feedback": "Correct. This reduces overlap and supports a take-latest autosave policy.",
+          "feedback": "Correct. This lowers overlap and supports a latest-save-wins policy.",
           "isHarmful": false
         }
       ]
@@ -159,8 +159,8 @@
       "id": "guardrail",
       "type": "single-select",
       "title": "Stage 4: regression guard",
-      "prompt": "What is the strongest follow-up guardrail?",
-      "helperText": "Pick the guard that proves stale saves cannot overwrite the newest draft anymore.",
+      "prompt": "What is the best way to make sure this does not happen again?",
+      "helperText": "Pick the check that proves old saves can no longer overwrite new text.",
       "options": [
         {
           "id": "longer-interval-only",
@@ -185,9 +185,9 @@
         },
         {
           "id": "autosave-race-test",
-          "label": "Add an out-of-order autosave integration test and surface a conflict-safe status signal in the UI.",
+          "label": "Add a test for out-of-order saves and show a clear UI state when the latest draft is not fully synced yet.",
           "points": 25,
-          "feedback": "Correct. You want both a regression test and a product-level signal that the latest draft is or is not safely persisted.",
+          "feedback": "Correct. You want a test for out-of-order saves and a UI state that shows whether the newest draft is safely saved.",
           "isHarmful": false
         }
       ]
@@ -198,47 +198,47 @@
       {
         "min": 0,
         "max": 39,
-        "label": "Draft consistency still fragile",
-        "summary": "You saw the overwrite, but not the freshness contract needed between local draft state and save acknowledgements."
+        "label": "You saw the overwrite, but the safety rule is still missing",
+        "summary": "The latest draft still is not protected from older save responses."
       },
       {
         "min": 40,
         "max": 69,
-        "label": "Correct direction, weak guardrail",
-        "summary": "You identified stale acknowledgements, but one part of the fix or regression plan still relied on hope."
+        "label": "Right bug, softer fix",
+        "summary": "You found the ordering issue, but part of the fix or guardrail still leaves room for old saves to win."
       },
       {
         "min": 70,
         "max": 100,
-        "label": "State-consistency thinking",
-        "summary": "You protected local intent with versions, commit guards, and a test that reproduces the real race."
+        "label": "Latest draft stays protected",
+        "summary": "You protected the newest draft with versions, guarded updates, and a test that reproduces the real race."
       }
     ],
     "idealRunbook": [
-      "Log draft revisions and request order.",
-      "Reproduce overlapping saves while the user keeps editing.",
-      "Guard commits with explicit revision matching.",
-      "Test out-of-order acknowledgements before shipping."
+      "Log save order and draft versions.",
+      "Reproduce the bug while the user keeps typing during in-flight saves.",
+      "Only apply a save if it still matches the latest draft.",
+      "Test out-of-order save responses before shipping."
     ],
     "teachingBlocks": [
       {
         "type": "callout",
         "title": "Autosave rule of thumb",
-        "text": "Never let the server payload blindly replace local text unless you know it still corresponds to the current draft.",
+        "text": "Do not let a save response blindly replace what is in the editor unless you know it still belongs to the latest draft.",
         "variant": "warning"
       },
       {
         "type": "checklist",
         "title": "Strong answer signals",
         "items": [
-          "Explicit version or request identity",
-          "Take-latest commit policy",
-          "Dirty-state rules tied to the current revision",
-          "Regression test for out-of-order acknowledgements"
+          "A version number or request id on each save",
+          "A latest-draft-wins update rule",
+          "Dirty or saved state tied to the current draft",
+          "A test for out-of-order save responses"
         ]
       }
     ],
-    "optionalReflectionPrompt": "What product signal would you show if the latest draft is only partially synced?"
+    "optionalReflectionPrompt": "What would you show in the UI when the newest draft is still not safely saved?"
   },
   "relatedPractice": [
     {

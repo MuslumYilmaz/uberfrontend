@@ -13,7 +13,7 @@ import { UserProgressService } from './user-progress.service';
 export interface ActivityEvent {
   _id: string;
   userId: string;
-  kind: 'coding' | 'trivia' | 'debug';
+  kind: 'coding' | 'trivia' | 'debug' | 'incident';
   tech: Tech | 'system-design';
   itemId?: string;
   source: 'tech' | 'company' | 'course' | 'system';
@@ -74,7 +74,7 @@ export interface ActivityUncompleteResponse {
 
 export type ActivityCompletedEvent = {
   stats?: any;
-  kind?: 'coding' | 'trivia' | 'debug';
+  kind?: 'coding' | 'trivia' | 'debug' | 'incident';
   tech?: Tech | 'system-design';
   itemId?: string;
   xpAwarded?: number;
@@ -87,7 +87,7 @@ type PendingActivityCompletion = {
   key: string;
   userId: string;
   requestId: string;
-  kind: 'coding' | 'trivia' | 'debug';
+  kind: 'coding' | 'trivia' | 'debug' | 'incident';
   tech: Tech | 'system-design';
   itemId: string;
   source: 'tech' | 'company' | 'course' | 'system';
@@ -98,6 +98,8 @@ type PendingActivityCompletion = {
 };
 
 const LS_PENDING_COMPLETIONS = 'fa:activity:pending:v1';
+const QUESTION_ACTIVITY_KINDS = new Set(['coding', 'trivia', 'debug']);
+const ACTIVITY_KINDS = new Set(['coding', 'trivia', 'debug', 'incident']);
 
 @Injectable({ providedIn: 'root' })
 export class ActivityService {
@@ -266,7 +268,7 @@ export class ActivityService {
   }
 
   complete(payload: {
-    kind: 'coding' | 'trivia' | 'debug';
+    kind: 'coding' | 'trivia' | 'debug' | 'incident';
     tech: Tech | 'system-design';
     itemId?: string;
     source?: 'tech' | 'company' | 'course' | 'system';
@@ -303,7 +305,7 @@ export class ActivityService {
   }
 
   isCompletionPending(
-    kind: 'coding' | 'trivia' | 'debug',
+    kind: 'coding' | 'trivia' | 'debug' | 'incident',
     itemId?: string | null,
     userId: string | null = this.auth.user()?._id ?? null,
   ): boolean {
@@ -345,7 +347,7 @@ export class ActivityService {
     );
   }
 
-  private pendingKey(userId: string, kind: 'coding' | 'trivia' | 'debug', itemId: string): string {
+  private pendingKey(userId: string, kind: 'coding' | 'trivia' | 'debug' | 'incident', itemId: string): string {
     return `${userId}:${kind}:${itemId}`;
   }
 
@@ -383,7 +385,7 @@ export class ActivityService {
     const tech = value?.tech;
     const source = value?.source;
     if (!userId || !itemId || !requestId) return null;
-    if (!['coding', 'trivia', 'debug'].includes(kind)) return null;
+    if (!ACTIVITY_KINDS.has(kind)) return null;
     if (!['tech', 'company', 'course', 'system'].includes(source)) return null;
     return {
       key: this.pendingKey(userId, kind, itemId),
@@ -412,7 +414,7 @@ export class ActivityService {
 
   private upsertPendingCompletion(payload: {
     userId: string;
-    kind: 'coding' | 'trivia' | 'debug';
+    kind: 'coding' | 'trivia' | 'debug' | 'incident';
     tech: Tech | 'system-design';
     itemId: string;
     source: 'tech' | 'company' | 'course' | 'system';
@@ -564,7 +566,7 @@ export class ActivityService {
 
     if (Array.isArray(res?.solvedQuestionIds)) {
       this.progress.setSolvedIds(res.solvedQuestionIds);
-    } else {
+    } else if (QUESTION_ACTIVITY_KINDS.has(entry.kind)) {
       this.progress.markSolvedLocal(entry.itemId);
     }
 
@@ -581,7 +583,7 @@ export class ActivityService {
 
     if (xpAwarded > 0) {
       this.analytics.track('xp_awarded', {
-        source: 'question_complete',
+        source: entry.kind === 'incident' ? 'incident_complete' : 'question_complete',
         kind: entry.kind,
         tech: entry.tech,
         item_id: entry.itemId,
@@ -602,7 +604,7 @@ export class ActivityService {
     }
 
     if (res?.levelUp) {
-      this.analytics.track('level_up', { source: 'question_complete' });
+      this.analytics.track('level_up', { source: entry.kind === 'incident' ? 'incident_complete' : 'question_complete' });
     }
   }
 

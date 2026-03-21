@@ -263,6 +263,7 @@ app.use('/api/trivia', require('./routes/trivia-incident'));
 
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));
+app.use('/api/practice-progress', require('./routes/practice-progress'));
 // ---- Admin routes (protected) ----
 app.use('/api/admin', requireAuth, requireAdmin, require('./routes/admin'));
 

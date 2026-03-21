@@ -4,11 +4,11 @@
     "title": "Realtime feed leaks sockets and listeners",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Route mounts and filter changes both create overlapping feed subscriptions, while stale handlers and unclear socket ownership leave old work alive.",
+    "summary": "Route changes and filter changes keep adding listeners, so old listeners stay alive and still use old filter values.",
     "signals": [
-      "Duplicate events grow after route changes and filter tweaks",
-      "Some duplicate logs still mention old filter values",
-      "Connection and listener counts keep climbing in dev tools"
+      "Events start showing up more than once after route or filter changes",
+      "Some duplicates still mention old filter values",
+      "Listener and subscription counts keep growing"
     ],
     "estimatedMinutes": 14,
     "tags": ["memory", "websocket", "effects"],
@@ -16,19 +16,19 @@
     "access": "free"
   },
   "context": {
-    "symptom": "A trading feed works at first, but after switching dashboards and tweaking filters a few times, each incoming event appears multiple times and some duplicates use old filter logic.",
+    "symptom": "The feed looks fine at first, but after opening and closing dashboards and changing filters a few times, each event appears multiple times.",
     "userImpact": "The page becomes noisy and slower over time, especially for users who navigate between dashboards.",
-    "environment": "React route mounts a feed component that subscribes to a shared socket helper, while an effect reruns whenever the filters object identity changes.",
+    "environment": "React page subscribes to a shared socket. The effect runs again whenever a new filters object is created.",
     "evidence": [
       {
         "type": "metric",
-        "title": "Heap growth",
-        "body": "Heap grows by roughly 8MB after each open-close cycle and never returns to baseline."
+        "title": "Memory use",
+        "body": "Every open-close cycle adds about 8MB of memory, and it never fully drops back."
       },
       {
         "type": "log",
         "title": "Duplicate handler clues",
-        "body": "After switching from 'all' to 'critical', some duplicate events still log the old 'all' filter value from a stale handler closure."
+        "body": "After switching from 'all' to 'critical', some duplicate events still print the old 'all' filter value, which means an old handler is still alive."
       },
       {
         "type": "snippet",
@@ -39,7 +39,7 @@
       {
         "type": "note",
         "title": "Connection count",
-        "body": "Dev tools sometimes show one long-lived socket, but listener count and server subscriptions still climb after each route revisit."
+        "body": "Sometimes there is only one socket connection, but the number of listeners and server subscriptions keeps climbing."
       }
     ]
   },
@@ -48,14 +48,14 @@
       "id": "root-cause",
       "type": "single-select",
       "title": "Stage 1: likely root cause",
-      "prompt": "What explains the leak most directly?",
-      "helperText": "Choose the explanation that fits duplicate events, stale filter closures, and confused connection ownership.",
+      "prompt": "What is most likely causing the leak?",
+      "helperText": "Look for why old listeners and subscriptions are still alive.",
       "options": [
         {
           "id": "payload-volume-only",
           "label": "The feed volume is just high enough that repeated messages look like a leak.",
           "points": 5,
-          "feedback": "High volume can make the page noisy, but it does not explain retained handlers using old filter values.",
+          "feedback": "High traffic can look noisy, but it does not explain old handlers using the wrong filter value.",
           "isHarmful": false
         },
         {
@@ -67,16 +67,16 @@
         },
         {
           "id": "missing-cleanup",
-          "label": "Socket and listener ownership is unclear: the effect reruns on filter changes, adds new handlers and subscriptions, and cleanup never fully tears down the old work.",
+          "label": "Socket ownership is blurry: the effect reruns on filter changes, adds new listeners and subscriptions, and never fully tears down the old ones.",
           "points": 25,
-          "feedback": "Correct. This is broader than 'forgot cleanup once'. The design allows overlapping listeners, stale closures, and sometimes overlapping subscriptions.",
+          "feedback": "Correct. The main problem is ownership and cleanup, not just 'too many messages'.",
           "isHarmful": false
         },
         {
           "id": "server-duplicates-only",
           "label": "The server is probably sending duplicates, so the client lifecycle is mostly fine.",
           "points": 5,
-          "feedback": "Server duplicates are possible in real life, but the stale filter closures and rising listener count point back to client-side subscription ownership too.",
+          "feedback": "Server duplicates are possible in real life, but old handlers using old filter values and the rising listener count still point back to the client.",
           "isHarmful": false
         }
       ]
@@ -85,20 +85,20 @@
       "id": "debug-order",
       "type": "priority-order",
       "title": "Stage 2: debug priority order",
-      "prompt": "Rank the three most effective debug steps first.",
-      "helperText": "Start by proving what stays alive across both route churn and filter churn.",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "First prove what stays alive after route changes and filter changes.",
       "candidates": [
         {
           "id": "reproduce-route-filter-churn",
-          "label": "Repeat route mount-unmount cycles and filter changes while counting active listeners or subscriptions after each pass."
+          "label": "Open and close the page, then change filters, while counting active listeners or subscriptions after each pass."
         },
         {
           "id": "inspect-owner-cleanup",
-          "label": "Inspect connection ownership, effect dependencies, and whether cleanup unsubscribes and removes the exact handler it created."
+          "label": "Check who owns the connection, what the effect depends on, and whether cleanup removes the exact handler it created."
         },
         {
           "id": "confirm-stale-closures",
-          "label": "Use logs to confirm old handlers still receive events with previous filter values after the UI has moved on."
+          "label": "Use logs to prove that old handlers still receive events with old filter values."
         },
         {
           "id": "compress-messages",
@@ -120,8 +120,8 @@
       "id": "fix-set",
       "type": "multi-select",
       "title": "Stage 3: best fix set",
-      "prompt": "Which changes belong in the first reliable fix?",
-      "helperText": "Choose the options that make connection ownership explicit and stop handler accumulation.",
+      "prompt": "Which changes should be part of the first reliable fix?",
+      "helperText": "Pick the changes that make ownership clear and stop listeners from piling up.",
       "options": [
         {
           "id": "hide-warnings",
@@ -132,16 +132,16 @@
         },
         {
           "id": "cleanup-exact-subscription",
-          "label": "Return cleanup that unsubscribes and removes the exact handler created by the effect before filters or route state change.",
+          "label": "Return cleanup that unsubscribes and removes the exact handler the effect created before filters or route state changes.",
           "points": 10,
-          "feedback": "Correct. External subscriptions must be torn down with the same identity they were created with.",
+          "feedback": "Correct. Cleanup must remove the exact handler that was added.",
           "isHarmful": false
         },
         {
           "id": "split-connection-owner",
-          "label": "Separate long-lived socket ownership from per-view listeners so one layer owns the connection and views only subscribe or unsubscribe.",
+          "label": "Separate long-lived socket ownership from per-screen listeners so one layer owns the connection and screens only subscribe or unsubscribe.",
           "points": 10,
-          "feedback": "Correct. Shared connections are safer when one owner manages lifecycle and children do not reopen the world.",
+          "feedback": "Correct. One layer should own the socket. Screens should only subscribe and unsubscribe.",
           "isHarmful": false
         },
         {
@@ -153,9 +153,9 @@
         },
         {
           "id": "stabilize-filter-deps",
-          "label": "Narrow or stabilize dependencies so harmless filter object churn does not recreate listeners or subscriptions.",
+          "label": "Narrow or stabilize dependencies so harmless filter object churn does not keep recreating listeners or subscriptions.",
           "points": 5,
-          "feedback": "Correct. Broad dependency churn often turns an ordinary feed into a subscription storm.",
+          "feedback": "Correct. If the filters object becomes a new object for no real reason, the effect keeps rebuilding listeners.",
           "isHarmful": false
         }
       ]
@@ -164,12 +164,12 @@
       "id": "guardrail",
       "type": "single-select",
       "title": "Stage 4: regression guard",
-      "prompt": "What is the best follow-up guardrail?",
-      "helperText": "Pick the safeguard that catches leaks before users notice them.",
+      "prompt": "What is the best way to catch this again early?",
+      "helperText": "Pick the safeguard that exposes leaked listeners before users feel the slowdown.",
       "options": [
         {
           "id": "connection-count-guard",
-          "label": "Add a route-plus-filter churn regression test and listener or subscription-count instrumentation so stale handlers become obvious immediately.",
+          "label": "Add a test that repeatedly opens and closes the page and changes filters, plus listener or subscription counts so leaks show up immediately.",
           "points": 25,
           "feedback": "Correct. It protects the exact messy path that caused the bug, not just memory in the abstract.",
           "isHarmful": false
@@ -203,42 +203,42 @@
       {
         "min": 0,
         "max": 39,
-        "label": "Leak identified too vaguely",
-        "summary": "You saw slowness, but not the retained subscription lifecycle behind it."
+        "label": "You saw the slowdown, but not what stayed alive",
+        "summary": "The app was slowing down, but the real problem was old listeners and subscriptions sticking around."
       },
       {
         "min": 40,
         "max": 69,
-        "label": "Correct diagnosis, softer guardrail",
-        "summary": "You found the cleanup issue, but the debug order or long-term guard missed one lever."
+        "label": "Right diagnosis, softer guardrail",
+        "summary": "You found the cleanup issue, but the debug order or long-term guard still missed one important lever."
       },
       {
         "min": 70,
         "max": 100,
-        "label": "Lifecycle ownership mindset",
-        "summary": "You named the ownership problem, removed stale subscriptions, and protected both route churn and filter churn."
+        "label": "You fixed the ownership problem",
+        "summary": "You named what stayed alive, removed the stale subscriptions, and protected both route changes and filter changes."
       }
     ],
     "idealRunbook": [
-      "Reproduce route churn and filter churn together.",
-      "Measure active listeners, subscriptions, and stale handler behavior.",
-      "Clarify who owns the socket versus who only subscribes.",
-      "Add instrumentation that makes duplicate listeners impossible to miss."
+      "Reproduce route changes and filter changes together.",
+      "Measure active listeners, subscriptions, and whether old handlers still fire.",
+      "Clarify who owns the socket and who only subscribes.",
+      "Add checks that make duplicate listeners impossible to miss."
     ],
     "teachingBlocks": [
       {
         "type": "callout",
         "title": "Common interview trap",
-        "text": "Many candidates say 'memory leak' and stop. The stronger answer names what stayed alive, who owned it, and why the lifecycle let it survive.",
+        "text": "Do not stop at saying 'memory leak'. Name what stayed alive, who owned it, and why cleanup did not remove it.",
         "variant": "warning"
       },
       {
         "type": "checklist",
         "title": "Stronger explanation",
         "items": [
-          "External resource ownership is explicit.",
-          "Cleanup removes the same handler identity that subscribed.",
-          "Dependencies reflect connection identity, not every render-shaped object."
+          "Make it clear who owns the socket.",
+          "Cleanup removes the same handler that was added.",
+          "Dependencies are based on real connection changes, not every new object."
         ]
       }
     ],

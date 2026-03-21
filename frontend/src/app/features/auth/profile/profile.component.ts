@@ -103,18 +103,50 @@ type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
               </ng-template>
 
               <article class="activity-detail-card" *ngIf="progressSummary() as progress; else progressDetailFallback">
-                <p class="detail-kicker">Overall solved</p>
+                <p class="detail-kicker">Question coverage</p>
                 <h4>{{ formatPercentLabel(overallSolvedPercent(progress)) }}</h4>
                 <div class="detail-bar" role="presentation">
                   <span [style.width.%]="overallSolvedPercent(progress)"></span>
                 </div>
-                <p class="muted">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
+                <p class="muted">{{ progress.questions.solvedCount }} solved out of {{ progress.questions.totalCount }} total questions.</p>
               </article>
               <ng-template #progressDetailFallback>
                 <article class="activity-detail-card">
-                  <p class="detail-kicker">Overall solved</p>
+                  <p class="detail-kicker">Question coverage</p>
                   <h4>Unavailable</h4>
-                  <p class="muted">We could not load solved coverage right now.</p>
+                  <p class="muted">We could not load question coverage right now.</p>
+                </article>
+              </ng-template>
+
+              <article class="activity-detail-card" *ngIf="progressSummary() as progress; else incidentProgressFallback">
+                <p class="detail-kicker">Debug scenarios</p>
+                <h4>{{ progress.incidents.passedCount }} passed</h4>
+                <div class="detail-bar" role="presentation">
+                  <span [style.width.%]="progress.incidents.passedPercent"></span>
+                </div>
+                <p class="muted">{{ progress.incidents.totalCount }} total scenarios in the catalog.</p>
+              </article>
+              <ng-template #incidentProgressFallback>
+                <article class="activity-detail-card">
+                  <p class="detail-kicker">Debug scenarios</p>
+                  <h4>Unavailable</h4>
+                  <p class="muted">We could not load incident passes right now.</p>
+                </article>
+              </ng-template>
+
+              <article class="activity-detail-card" *ngIf="progressSummary() as progress; else practiceProgressFallback">
+                <p class="detail-kicker">Practice completed</p>
+                <h4>{{ formatPercentLabel(practiceCompletedPercent(progress)) }}</h4>
+                <div class="detail-bar" role="presentation">
+                  <span [style.width.%]="practiceCompletedPercent(progress)"></span>
+                </div>
+                <p class="muted">{{ progress.practice.completedCount }} completed out of {{ progress.practice.totalCount }} total practice units.</p>
+              </article>
+              <ng-template #practiceProgressFallback>
+                <article class="activity-detail-card">
+                  <p class="detail-kicker">Practice completed</p>
+                  <h4>Unavailable</h4>
+                  <p class="muted">We could not load total practice progress right now.</p>
                 </article>
               </ng-template>
             </div>
@@ -426,13 +458,25 @@ export class ProfileComponent implements OnInit {
   }
 
   overallSolvedPercent(progress: DashboardProgress | null | undefined): number {
-    const solvedCount = Number(progress?.solvedCount ?? 0);
-    const totalCount = Number(progress?.totalCount ?? 0);
+    const solvedCount = Number(progress?.questions?.solvedCount ?? 0);
+    const totalCount = Number(progress?.questions?.totalCount ?? 0);
     if (Number.isFinite(totalCount) && totalCount > 0 && Number.isFinite(solvedCount) && solvedCount >= 0) {
       const precise = (solvedCount / totalCount) * 100;
       return Math.max(0, Math.min(100, precise));
     }
-    const fallback = Number(progress?.solvedPercent ?? 0);
+    const fallback = Number(progress?.questions?.solvedPercent ?? 0);
+    if (!Number.isFinite(fallback)) return 0;
+    return Math.max(0, Math.min(100, fallback));
+  }
+
+  practiceCompletedPercent(progress: DashboardProgress | null | undefined): number {
+    const completedCount = Number(progress?.practice?.completedCount ?? 0);
+    const totalCount = Number(progress?.practice?.totalCount ?? 0);
+    if (Number.isFinite(totalCount) && totalCount > 0 && Number.isFinite(completedCount) && completedCount >= 0) {
+      const precise = (completedCount / totalCount) * 100;
+      return Math.max(0, Math.min(100, precise));
+    }
+    const fallback = Number(progress?.practice?.completedPercent ?? 0);
     if (!Number.isFinite(fallback)) return 0;
     return Math.max(0, Math.min(100, fallback));
   }

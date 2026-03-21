@@ -4,11 +4,11 @@
     "title": "Modal opens visually but fails screen-reader users",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "A custom modal looks fine, but focus escapes behind it and screen readers announce an unnamed generic region.",
+    "summary": "The modal looks fine on screen, but keyboard focus escapes behind it and screen readers do not announce it properly.",
     "signals": [
-      "Tab moves into background page",
-      "Screen reader does not announce modal name",
-      "Closing the modal loses the original trigger focus"
+      "Tab moves behind the modal",
+      "Screen reader does not announce the modal title",
+      "Focus does not return to the button that opened it"
     ],
     "estimatedMinutes": 15,
     "tags": ["accessibility", "modal", "focus-management"],
@@ -16,9 +16,9 @@
     "access": "free"
   },
   "context": {
-    "symptom": "A billing confirmation modal overlays the page, but keyboard users can still tab behind it and VoiceOver announces only 'group'.",
-    "userImpact": "Assistive-technology users lose orientation and cannot complete a destructive action with confidence.",
-    "environment": "Custom React portal modal rendered with divs, close button, and CSS overlay, no dialog primitive underneath.",
+    "symptom": "A billing confirmation modal opens, but keyboard users can tab into the page behind it and the screen reader says only 'group' instead of the dialog title.",
+    "userImpact": "Screen-reader and keyboard users lose track of where they are and may hesitate to confirm a destructive action.",
+    "environment": "Custom React portal modal built from divs and an overlay, not from a real dialog component.",
     "evidence": [
       {
         "type": "note",
@@ -27,8 +27,8 @@
       },
       {
         "type": "log",
-        "title": "Accessibility tree note",
-        "body": "The modal root has no accessible name and no dialog semantics."
+        "title": "Screen reader check",
+        "body": "The modal root has no dialog role and no accessible name."
       },
       {
         "type": "snippet",
@@ -43,21 +43,21 @@
       "id": "root-cause",
       "type": "single-select",
       "title": "Stage 1: likely root cause",
-      "prompt": "Which diagnosis best fits the accessibility failure?",
-      "helperText": "Look for the missing semantics and focus behavior, not just visual polish.",
+      "prompt": "What is actually broken here?",
+      "helperText": "Look for the missing dialog behavior, not just the visuals.",
       "options": [
         {
           "id": "button-copy-only",
           "label": "The only issue is that the confirm button text is too short.",
           "points": 5,
-          "feedback": "Clear copy helps, but it does not explain unnamed dialog output or escaped focus.",
+          "feedback": "Clearer button text helps, but it does not explain why the modal has no name or why focus escapes behind it.",
           "isHarmful": false
         },
         {
           "id": "z-index-only",
           "label": "The modal needs a higher z-index so screen readers can detect it.",
           "points": 0,
-          "feedback": "Z-index is visual. It does not create semantics or keyboard containment.",
+          "feedback": "Z-index changes what people see, not what a screen reader understands.",
           "isHarmful": false
         },
         {
@@ -69,9 +69,9 @@
         },
         {
           "id": "missing-dialog-contract",
-          "label": "The custom modal is missing the dialog accessibility contract: naming, focus entry, focus return, and background isolation.",
+          "label": "The custom modal is missing the basics of a real dialog: a name, correct focus handling, and blocking the background.",
           "points": 25,
-          "feedback": "Correct. The bug is broader than one aria attribute; the modal never behaves like an actual dialog.",
+          "feedback": "Correct. This modal is missing the basic behavior of a real dialog.",
           "isHarmful": false
         }
       ]
@@ -80,8 +80,8 @@
       "id": "debug-order",
       "type": "priority-order",
       "title": "Stage 2: debug priority order",
-      "prompt": "Rank the three highest-priority debug checks.",
-      "helperText": "You need to validate semantics and keyboard behavior before debating implementation details.",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "Check keyboard and screen-reader behavior before debating implementation details.",
       "candidates": [
         {
           "id": "keyboard-walkthrough",
@@ -89,11 +89,11 @@
         },
         {
           "id": "inspect-dialog-semantics",
-          "label": "Inspect the dialog semantics, accessible name, and aria-modal state."
+          "label": "Check whether the modal has dialog semantics, a clear name, and the right aria-modal value."
         },
         {
           "id": "verify-focus-lifecycle",
-          "label": "Verify focus enters the modal on open and returns to the trigger on close."
+          "label": "Check that focus moves into the modal on open and returns to the trigger on close."
         },
         {
           "id": "animate-overlay",
@@ -115,14 +115,14 @@
       "id": "fix-set",
       "type": "multi-select",
       "title": "Stage 3: best fix set",
-      "prompt": "Which changes belong in the production fix?",
-      "helperText": "Choose the updates that make the modal behave like a real dialog for assistive tech and keyboard users.",
+      "prompt": "Which changes should be in the real fix?",
+      "helperText": "Pick the updates that make this behave like a real dialog for keyboard and screen-reader users.",
       "options": [
         {
           "id": "dialog-semantics",
-          "label": "Use a dialog primitive or add the correct dialog semantics with an accessible name.",
+          "label": "Use a real dialog primitive, or add proper dialog semantics and a clear accessible name.",
           "points": 10,
-          "feedback": "Correct. The modal needs a recognizable dialog role and naming relationship.",
+          "feedback": "Correct. The modal needs a real dialog role and a name the screen reader can announce.",
           "isHarmful": false
         },
         {
@@ -159,8 +159,8 @@
       "id": "guardrail",
       "type": "single-select",
       "title": "Stage 4: regression guard",
-      "prompt": "What is the strongest guardrail after the fix?",
-      "helperText": "Pick the safeguard that checks behavior, not just markup presence.",
+      "prompt": "What is the best way to make sure this does not break again?",
+      "helperText": "Pick the safeguard that checks real behavior, not just markup.",
       "options": [
         {
           "id": "lint-aria-only",
@@ -171,7 +171,7 @@
         },
         {
           "id": "keyboard-a11y-test",
-          "label": "Add an automated modal test that checks keyboard flow, focus return, and accessibility assertions.",
+          "label": "Add an automated test for keyboard flow, focus return, and accessibility assertions.",
           "points": 25,
           "feedback": "Correct. This protects the actual behavior users depend on.",
           "isHarmful": false
@@ -198,25 +198,25 @@
       {
         "min": 0,
         "max": 39,
-        "label": "Semantics and focus got blurred together",
-        "summary": "You saw a visual overlay, but not the full dialog contract required for accessibility."
+        "label": "You saw the overlay, but not the real dialog behavior",
+        "summary": "The modal still needs the basic accessibility behavior that makes it act like a dialog."
       },
       {
         "min": 40,
         "max": 69,
-        "label": "Partial accessibility fix",
-        "summary": "You found key dialog behaviors, but the debug order or guardrail missed one essential behavior."
+        "label": "Good direction, but one key behavior is still missing",
+        "summary": "You found most of the fix, but the debug order or guardrail still missed an essential modal behavior."
       },
       {
         "min": 70,
         "max": 100,
-        "label": "Accessible modal mindset",
-        "summary": "You treated the modal as a behavioral contract: semantics, focus lifecycle, and background isolation."
+        "label": "You treated the modal like a real dialog",
+        "summary": "You covered semantics, focus behavior, and keeping the background inactive while the modal is open."
       }
     ],
     "idealRunbook": [
       "Walk the flow with keyboard first.",
-      "Inspect semantics and accessible naming next.",
+      "Check dialog semantics and naming next.",
       "Verify focus entry and return behavior.",
       "Lock the behavior with an automated accessibility regression."
     ],
@@ -224,7 +224,7 @@
       {
         "type": "callout",
         "title": "Modal interview shortcut",
-        "text": "A modal is never just a box on top of the screen. It is a focus-management and semantics problem first.",
+        "text": "A modal is not just a box on the screen. It needs the right semantics and focus behavior.",
         "variant": "info"
       },
       {
@@ -239,7 +239,7 @@
         ]
       }
     ],
-    "optionalReflectionPrompt": "If you had to choose one manual verification tool here, which one would give the fastest confidence boost?"
+    "optionalReflectionPrompt": "If you could do only one manual check here, which tool would give you confidence fastest?"
   },
   "relatedPractice": [
     {

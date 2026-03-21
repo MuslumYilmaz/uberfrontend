@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ActivityEventSchema = new mongoose.Schema(
     {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true, required: true },
-        kind: { type: String, enum: ['coding', 'trivia', 'debug'], required: true },
+        kind: { type: String, enum: ['coding', 'trivia', 'debug', 'incident'], required: true },
         tech: {
             type: String,
             enum: ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'],

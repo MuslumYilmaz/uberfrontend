@@ -990,7 +990,7 @@ export class DashboardComponent {
         next: (rows) => {
           const uniqueCompleted = new Set<string>();
           for (const row of rows ?? []) {
-            if (row.kind !== 'coding' && row.kind !== 'trivia' && row.kind !== 'debug') continue;
+            if (row.kind !== 'coding' && row.kind !== 'trivia' && row.kind !== 'debug' && row.kind !== 'incident') continue;
             const fallback = `${row.kind}:${row.tech}:${row.dayUTC}:${row.completedAt}`;
             uniqueCompleted.add(row.itemId?.trim() ? `${row.kind}:${row.itemId}` : fallback);
           }
@@ -1208,13 +1208,25 @@ export class DashboardComponent {
   }
 
   overallSolvedPercent(progress: DashboardProgress | null | undefined): number {
-    const solvedCount = Number(progress?.solvedCount ?? 0);
-    const totalCount = Number(progress?.totalCount ?? 0);
+    const solvedCount = Number(progress?.questions?.solvedCount ?? 0);
+    const totalCount = Number(progress?.questions?.totalCount ?? 0);
     if (Number.isFinite(totalCount) && totalCount > 0 && Number.isFinite(solvedCount) && solvedCount >= 0) {
       const precise = (solvedCount / totalCount) * 100;
       return Math.max(0, Math.min(100, precise));
     }
-    const fallback = Number(progress?.solvedPercent ?? 0);
+    const fallback = Number(progress?.questions?.solvedPercent ?? 0);
+    if (!Number.isFinite(fallback)) return 0;
+    return Math.max(0, Math.min(100, fallback));
+  }
+
+  practiceCompletedPercent(progress: DashboardProgress | null | undefined): number {
+    const completedCount = Number(progress?.practice?.completedCount ?? 0);
+    const totalCount = Number(progress?.practice?.totalCount ?? 0);
+    if (Number.isFinite(totalCount) && totalCount > 0 && Number.isFinite(completedCount) && completedCount >= 0) {
+      const precise = (completedCount / totalCount) * 100;
+      return Math.max(0, Math.min(100, precise));
+    }
+    const fallback = Number(progress?.practice?.completedPercent ?? 0);
     if (!Number.isFinite(fallback)) return 0;
     return Math.max(0, Math.min(100, fallback));
   }

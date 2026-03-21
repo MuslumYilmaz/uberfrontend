@@ -9,6 +9,7 @@ jest.setTimeout(120000);
 let app;
 let User;
 let DailyChallengeAssignment;
+let PracticeProgress;
 let connectToMongo;
 let disconnectMongo;
 let mongoServer;
@@ -30,6 +31,7 @@ beforeAll(async () => {
   ({ connectToMongo, disconnectMongo } = require('../config/mongo'));
   User = require('../models/User');
   DailyChallengeAssignment = require('../models/DailyChallengeAssignment');
+  PracticeProgress = require('../models/PracticeProgress');
 
   await connectToMongo(process.env.MONGO_URL_TEST);
 });
@@ -42,6 +44,7 @@ afterAll(async () => {
 beforeEach(async () => {
   await User.deleteMany({});
   await DailyChallengeAssignment.deleteMany({});
+  await PracticeProgress.deleteMany({});
 });
 
 describe('GET /api/dashboard', () => {
@@ -89,9 +92,22 @@ describe('GET /api/dashboard', () => {
           nextLevelXp: expect.any(Number),
         }),
         progress: expect.objectContaining({
-          solvedCount: expect.any(Number),
-          totalCount: expect.any(Number),
-          solvedPercent: expect.any(Number),
+          questions: expect.objectContaining({
+            solvedCount: expect.any(Number),
+            totalCount: expect.any(Number),
+            solvedPercent: expect.any(Number),
+            topTopics: expect.any(Array),
+          }),
+          incidents: expect.objectContaining({
+            passedCount: expect.any(Number),
+            totalCount: expect.any(Number),
+            passedPercent: expect.any(Number),
+          }),
+          practice: expect.objectContaining({
+            completedCount: expect.any(Number),
+            totalCount: expect.any(Number),
+            completedPercent: expect.any(Number),
+          }),
         }),
         settings: expect.objectContaining({
           showStreakWidget: expect.any(Boolean),
@@ -146,11 +162,60 @@ describe('GET /api/dashboard', () => {
       .set('Authorization', authHeader(user._id));
 
     expect(res.status).toBe(200);
-    expect(res.body?.progress?.solvedCount).toBe(1);
-    expect(res.body?.progress?.totalCount).toBeGreaterThan(1);
-    expect(res.body?.progress?.solvedPercent).toBe(
-      Math.round((1 / Number(res.body?.progress?.totalCount || 1)) * 100)
+    expect(res.body?.progress?.questions?.solvedCount).toBe(1);
+    expect(res.body?.progress?.questions?.totalCount).toBeGreaterThan(1);
+    expect(res.body?.progress?.questions?.solvedPercent).toBe(
+      Math.round((1 / Number(res.body?.progress?.questions?.totalCount || 1)) * 100)
     );
-    expect(Array.isArray(res.body?.progress?.topTopics)).toBe(true);
+    expect(Array.isArray(res.body?.progress?.questions?.topTopics)).toBe(true);
+  });
+
+  test('includes incident pass counts separately from question coverage', async () => {
+    const user = await User.create({
+      email: 'incident-progress@example.com',
+      username: 'incident_progress_user',
+      passwordHash: 'hash',
+      solvedQuestionIds: ['react-counter'],
+      stats: { xpTotal: 120, completedTotal: 2 },
+    });
+
+    await PracticeProgress.create([
+      {
+        userId: user._id,
+        family: 'incident',
+        itemId: 'search-typing-lag',
+        started: true,
+        completed: true,
+        passed: true,
+        bestScore: 84,
+        lastPlayedAt: new Date('2026-03-20T10:00:00.000Z'),
+        extension: { reflectionNote: 'Throttle the expensive render path.' },
+      },
+      {
+        userId: user._id,
+        family: 'incident',
+        itemId: 'stale-search-race',
+        started: true,
+        completed: true,
+        passed: false,
+        bestScore: 62,
+        lastPlayedAt: new Date('2026-03-20T11:00:00.000Z'),
+        extension: {},
+      },
+    ]);
+
+    const res = await request(app)
+      .get('/api/dashboard')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body?.progress?.questions?.solvedCount).toBe(1);
+    expect(res.body?.progress?.incidents?.passedCount).toBe(1);
+    expect(res.body?.progress?.incidents?.totalCount).toBeGreaterThanOrEqual(6);
+    expect(res.body?.progress?.practice?.completedCount).toBe(2);
+    expect(res.body?.progress?.practice?.totalCount).toBe(
+      Number(res.body?.progress?.questions?.totalCount || 0)
+      + Number(res.body?.progress?.incidents?.totalCount || 0)
+    );
   });
 });

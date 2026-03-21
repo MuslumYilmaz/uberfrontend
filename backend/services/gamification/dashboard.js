@@ -1,4 +1,5 @@
 const ActivityCompletion = require('../../models/ActivityCompletion');
+const PracticeProgress = require('../../models/PracticeProgress');
 const WeeklyGoalBonusCredit = require('../../models/WeeklyGoalBonusCredit');
 const { APP_TIMEZONE, SOLVE_KINDS, WEEKLY_GOAL_BONUS_XP } = require('./constants');
 const {
@@ -9,6 +10,7 @@ const {
 } = require('./engine');
 const { currentWeekBounds, dayKeyInTimezone } = require('./timezone');
 const { loadQuestionCatalog } = require('./question-catalog');
+const { loadPracticeCatalog } = require('./practice-catalog');
 const { ensureCurrentWeeklyGoalState } = require('./weekly-goal-state');
 
 function toTitleCase(input) {
@@ -66,7 +68,7 @@ async function countTodayCompletedKinds(userId, dayKey, { timeZone = APP_TIMEZON
   return uniqueKinds.size;
 }
 
-function buildProgressSummary(user) {
+function buildQuestionProgressSummary(user) {
   const catalog = loadQuestionCatalog();
   const solvedIds = new Set(Array.isArray(user?.solvedQuestionIds) ? user.solvedQuestionIds : []);
 
@@ -115,6 +117,53 @@ function buildProgressSummary(user) {
   };
 }
 
+async function buildIncidentProgressSummary(userId) {
+  const catalog = loadPracticeCatalog();
+  const incidentEntries = Array.isArray(catalog.byFamily.get('incident')) ? catalog.byFamily.get('incident') : [];
+  const totalCount = incidentEntries.length;
+  const incidentIds = incidentEntries.map((entry) => entry.id);
+
+  if (!incidentIds.length) {
+    return {
+      passedCount: 0,
+      totalCount: 0,
+      passedPercent: 0,
+    };
+  }
+
+  const passedCount = await PracticeProgress.countDocuments({
+    userId,
+    family: 'incident',
+    passed: true,
+    itemId: { $in: incidentIds },
+  });
+
+  return {
+    passedCount,
+    totalCount,
+    passedPercent: totalCount > 0 ? Math.round((passedCount / totalCount) * 100) : 0,
+  };
+}
+
+async function buildProgressSummary(user) {
+  const questions = buildQuestionProgressSummary(user);
+  const incidents = await buildIncidentProgressSummary(user?._id);
+  const practiceCompletedCount = questions.solvedCount + incidents.passedCount;
+  const practiceTotalCount = questions.totalCount + incidents.totalCount;
+
+  return {
+    questions,
+    incidents,
+    practice: {
+      completedCount: practiceCompletedCount,
+      totalCount: practiceTotalCount,
+      completedPercent: practiceTotalCount > 0
+        ? Math.round((practiceCompletedCount / practiceTotalCount) * 100)
+        : 0,
+    },
+  };
+}
+
 function deriveNextBestAction({ dailyChallengeCompleted, weeklyGoal, progress, challenge }) {
   if (challenge?.questionId && !dailyChallengeCompleted && challenge?.route) {
     return {
@@ -136,7 +185,7 @@ function deriveNextBestAction({ dailyChallengeCompleted, weeklyGoal, progress, c
     };
   }
 
-  if (progress.solvedPercent < 30) {
+  if ((progress?.questions?.solvedPercent || 0) < 30) {
     return {
       id: 'foundation',
       title: 'Build core interview coverage',
@@ -168,7 +217,7 @@ async function buildDashboardPayload(user, { challenge, challengeCompletion, tim
   });
 
   const xpLevel = computeLevel(user?.stats?.xpTotal || 0);
-  const progress = buildProgressSummary(user);
+  const progress = await buildProgressSummary(user);
   const preferenceSettings = readWeeklyGoalSettings(user);
 
   const dailyChallenge = challenge
@@ -236,6 +285,7 @@ async function buildDashboardPayload(user, { challenge, challengeCompletion, tim
 module.exports = {
   countWeeklySolvedUnique,
   countTodayCompletedKinds,
+  buildQuestionProgressSummary,
   buildProgressSummary,
   deriveNextBestAction,
   buildDashboardPayload,

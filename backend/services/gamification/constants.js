@@ -9,7 +9,7 @@ const WEEKLY_GOAL_MAX_TARGET = 50;
 const WEEKLY_GOAL_BONUS_XP = 50;
 const LEVEL_STEP_XP = 200;
 
-const SOLVE_KINDS = new Set(['coding', 'trivia', 'debug']);
+const SOLVE_KINDS = new Set(['coding', 'trivia', 'debug', 'incident']);
 
 const DIFFICULTY_XP = {
   easy: 10,

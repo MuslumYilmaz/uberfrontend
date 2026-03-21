@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { IncidentListItem, IncidentTech } from '../../core/models/incident.model';
 import { IncidentListResolved } from '../../core/resolvers/incident.resolver';
 import { IncidentProgressService } from '../../core/services/incident-progress.service';
+import { SeoService } from '../../core/services/seo.service';
 
 type IncidentFilterValue = 'all' | IncidentTech;
 type IncidentFilterOption = {
@@ -21,6 +22,9 @@ const INCIDENT_TECH_LABELS: Record<IncidentTech, string> = {
 };
 
 const INCIDENT_TECH_ORDER: IncidentTech[] = ['javascript', 'react', 'angular', 'vue'];
+const INCIDENTS_SEO_TITLE = 'Frontend Debugging Interview Questions and Debug Scenarios';
+const INCIDENTS_SEO_DESCRIPTION =
+  'Practice frontend debugging interview questions with guided debug scenarios for React and JavaScript. Work through root cause analysis, debug steps, fixes, and regression guards.';
 
 @Component({
   standalone: true,
@@ -31,6 +35,7 @@ const INCIDENT_TECH_ORDER: IncidentTech[] = ['javascript', 'react', 'angular', '
 })
 export class IncidentListComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly seo = inject(SeoService);
   readonly progress = inject(IncidentProgressService);
 
   readonly items = signal<IncidentListItem[]>(
@@ -91,6 +96,10 @@ export class IncidentListComponent {
     return Math.round((this.passedCount() / total) * 100);
   });
 
+  constructor() {
+    this.publishSeo();
+  }
+
   setSearchTerm(value: string): void {
     this.searchTerm.set(value);
   }
@@ -117,5 +126,62 @@ export class IncidentListComponent {
 
   trackById(_: number, item: IncidentListItem): string {
     return item.id;
+  }
+
+  private publishSeo(): void {
+    const canonicalPath = '/incidents';
+    const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
+    const itemListElement = this.items().map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.title,
+      url: this.seo.buildCanonicalUrl(`/incidents/${item.id}`),
+    }));
+
+    const collectionPage: Record<string, any> = {
+      '@type': 'CollectionPage',
+      '@id': canonicalUrl,
+      url: canonicalUrl,
+      name: INCIDENTS_SEO_TITLE,
+      description: INCIDENTS_SEO_DESCRIPTION,
+      inLanguage: 'en',
+      about: [
+        { '@type': 'Thing', name: 'Frontend debugging interview questions' },
+        { '@type': 'Thing', name: 'React debug scenarios' },
+        { '@type': 'Thing', name: 'JavaScript debug scenarios' },
+      ],
+    };
+
+    if (itemListElement.length) {
+      collectionPage['mainEntity'] = {
+        '@type': 'ItemList',
+        itemListElement,
+      };
+    }
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Debug Scenarios',
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    this.seo.updateTags({
+      title: INCIDENTS_SEO_TITLE,
+      description: INCIDENTS_SEO_DESCRIPTION,
+      canonical: canonicalPath,
+      jsonLd: [collectionPage, breadcrumb],
+    });
   }
 }

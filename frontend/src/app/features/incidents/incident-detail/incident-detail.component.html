@@ -12,14 +12,21 @@
           <span class="incident-chip" *ngIf="progressRecord().bestScore > 0">Best {{ progressRecord().bestScore }}/100</span>
         </div>
       </div>
-
-      <aside class="incident-hero__panel">
-        <p class="incident-hero__panel-title">Failure signals</p>
-        <ul>
-          <li *ngFor="let signal of scenario.meta.signals; trackBy: trackByString">{{ signal }}</li>
-        </ul>
-      </aside>
     </header>
+
+    <section class="incident-signal-strip" *ngIf="scenario.meta.signals.length">
+      <div class="incident-signal-strip__head">
+        <p class="incident-signal-strip__eyebrow">Failure signals</p>
+        <h2>The clues you start with</h2>
+      </div>
+
+      <div class="incident-signal-grid">
+        <article class="incident-signal-card" *ngFor="let signal of scenario.meta.signals; let index = index; trackBy: trackByString">
+          <span class="incident-signal-card__index">{{ index + 1 < 10 ? '0' + (index + 1) : index + 1 }}</span>
+          <p>{{ signal }}</p>
+        </article>
+      </div>
+    </section>
 
     <nav class="incident-step-nav" aria-label="Incident steps">
       <button type="button" class="incident-step-nav__item" [class.is-active]="activeStepIndex() === 0"
@@ -201,15 +208,24 @@
       </div>
 
       <div class="incident-debrief-grid">
-        <article class="incident-debrief-card">
-          <h3>Ideal runbook</h3>
-          <ol>
-            <li *ngFor="let item of scenario.debrief.idealRunbook; trackBy: trackByString">{{ item }}</li>
+        <article class="incident-debrief-card incident-debrief-card--runbook">
+          <div class="incident-debrief-card__head">
+            <p class="incident-debrief-card__eyebrow">Ideal runbook</p>
+            <h3>How a strong answer should flow</h3>
+          </div>
+          <ol class="incident-runbook">
+            <li class="incident-runbook__item" *ngFor="let item of scenario.debrief.idealRunbook; let index = index; trackBy: trackByString">
+              <span class="incident-runbook__index">{{ index + 1 }}</span>
+              <div class="incident-runbook__text">{{ item }}</div>
+            </li>
           </ol>
         </article>
 
         <article class="incident-debrief-card">
-          <h3>Reflection note</h3>
+          <div class="incident-debrief-card__head">
+            <p class="incident-debrief-card__eyebrow">Reflection</p>
+            <h3>Reflection note</h3>
+          </div>
           <p *ngIf="scenario.debrief.optionalReflectionPrompt">{{ scenario.debrief.optionalReflectionPrompt }}</p>
           <textarea
             [ngModel]="reflectionNote()"
@@ -234,17 +250,23 @@
               <p>{{ $any(block).text }}</p>
             </div>
 
-            <div *ngSwitchCase="'checklist'">
+            <div *ngSwitchCase="'checklist'" class="incident-checklist-card">
               <h3 *ngIf="$any(block).title">{{ $any(block).title }}</h3>
-              <ul>
+              <ul class="incident-checklist">
                 <li *ngFor="let item of $any(block).items; trackBy: trackByString">{{ item }}</li>
               </ul>
             </div>
 
-            <div *ngSwitchCase="'steps'">
-              <h3 *ngIf="$any(block).title">{{ $any(block).title }}</h3>
-              <ol>
-                <li *ngFor="let item of $any(block).items; trackBy: trackByString">{{ item }}</li>
+            <div *ngSwitchCase="'steps'" class="incident-steps-card">
+              <div class="incident-steps-card__head">
+                <p class="incident-teaching-block__eyebrow">Interview lens</p>
+                <h3 *ngIf="$any(block).title">{{ $any(block).title }}</h3>
+              </div>
+              <ol class="incident-steps">
+                <li class="incident-steps__item" *ngFor="let item of $any(block).items; let index = index; trackBy: trackByString">
+                  <span class="incident-steps__index">{{ index + 1 }}</span>
+                  <div class="incident-steps__text">{{ item }}</div>
+                </li>
               </ol>
             </div>
           </ng-container>

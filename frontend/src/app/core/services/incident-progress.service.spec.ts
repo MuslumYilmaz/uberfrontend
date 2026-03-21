@@ -1,26 +1,46 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpHeaders } from '@angular/common/http';
+import { computed, signal } from '@angular/core';
+import { AuthService } from './auth.service';
 import { IncidentProgressService } from './incident-progress.service';
 
-const PROGRESS_KEY = 'fa:practice:progress:v2';
-const SESSION_KEY = 'fa:practice:session:v2:incident:incident-1';
+const PROGRESS_KEY = 'fa:practice:progress:v3:guest';
+const SESSION_KEY = 'fa:practice:session:v3:guest:incident:incident-1';
 
 describe('IncidentProgressService', () => {
   let service: IncidentProgressService;
+  let httpMock: HttpTestingController;
+  let authUser: ReturnType<typeof signal<any>>;
 
   beforeEach(() => {
+    authUser = signal<any>(null);
     localStorage.removeItem(PROGRESS_KEY);
     localStorage.removeItem(SESSION_KEY);
 
     TestBed.configureTestingModule({
-      providers: [IncidentProgressService],
+      imports: [HttpClientTestingModule],
+      providers: [
+        IncidentProgressService,
+        {
+          provide: AuthService,
+          useValue: {
+            user: authUser,
+            isLoggedIn: computed(() => !!authUser()),
+            headers: () => new HttpHeaders(),
+          } satisfies Partial<AuthService>,
+        },
+      ],
     });
 
     service = TestBed.inject(IncidentProgressService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
     localStorage.removeItem(PROGRESS_KEY);
     localStorage.removeItem(SESSION_KEY);
+    httpMock.verify();
   });
 
   it('marks the first start and persists it', () => {

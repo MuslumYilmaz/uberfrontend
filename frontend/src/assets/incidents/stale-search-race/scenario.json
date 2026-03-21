@@ -4,11 +4,11 @@
     "title": "Latest query loses to stale search results",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "A shared results bucket mixes cache hydrate and network commits, so an older slow query can still repaint the list after the user has moved on.",
+    "summary": "Cached results and slower network results both update the same list, so an older query can briefly show up again.",
     "signals": [
-      "Cards briefly flash back to an older query",
-      "Cache hydrate and network response both write into one results store",
-      "Debounce reduced traffic but stale UI still appears on slow network"
+      "Results briefly jump back to an older query",
+      "Cached and network results both update the same results list",
+      "Debounce reduced traffic, but the stale flash is still there"
     ],
     "estimatedMinutes": 14,
     "tags": ["async", "race-condition", "search"],
@@ -16,14 +16,14 @@
     "access": "free"
   },
   "context": {
-    "symptom": "A user types 'react', then quickly deletes to 're'. The UI shows the latest query, then flashes older 'react' cards because an older commit path still wins briefly.",
+    "symptom": "A user types 'react', quickly deletes back to 're', and briefly sees old 'react' results again.",
     "userImpact": "Search feels unreliable because the interface does not reflect the most recent intent.",
-    "environment": "Vanilla JS search flow with a 250ms debounce, a recent-query cache, and one shared results store reused by every query path.",
+    "environment": "Plain JavaScript search with a 250ms debounce, a small cache of recent queries, and one shared results list used by both cached and network results.",
     "evidence": [
       {
         "type": "log",
-        "title": "Network timeline",
-        "body": "Request 17 for 'react' resolves after request 18 for 're', and both end up calling the same commit path for the shared results store."
+        "title": "Request order",
+        "body": "The request for 'react' finishes after the request for 're', and both update the same results list."
       },
       {
         "type": "snippet",
@@ -34,7 +34,7 @@
       {
         "type": "note",
         "title": "Observed behavior",
-        "body": "Adding a 250ms debounce reduced traffic, but stale flashes still appear on throttled 3G when backspacing quickly."
+        "body": "A 250ms debounce reduced the number of requests, but the stale flash still appears on a slow network when you backspace quickly."
       }
     ]
   },
@@ -43,21 +43,21 @@
       "id": "root-cause",
       "type": "single-select",
       "title": "Stage 1: likely root cause",
-      "prompt": "What is the main failure mode?",
-      "helperText": "Pick the explanation that matches the stale repaint itself, not just request count or cache presence.",
+      "prompt": "What is actually going wrong?",
+      "helperText": "Look for why old results are still allowed to replace the current list.",
       "options": [
         {
           "id": "debounce-too-short",
           "label": "The debounce window is too short, so the UI ends up showing the wrong query.",
           "points": 5,
-          "feedback": "A longer debounce might reduce overlap, but it does not fix a commit path that still lets stale work paint the screen.",
+          "feedback": "A longer debounce might reduce overlap, but it does not fix a shared update path that still lets old results replace the screen.",
           "isHarmful": false
         },
         {
           "id": "stale-response-wins",
-          "label": "Both cache hydrate and network responses write into one shared results bucket without an active-query guard, so older work can still repaint the list.",
+          "label": "Cached results and network responses both write into the same shared list with no check for the active query, so older work can replace the screen again.",
           "points": 25,
-          "feedback": "Correct. This is a take-latest bug in the commit path, not just a traffic problem.",
+          "feedback": "Correct. Cached and network data can both update the same list without checking whether the query is still current.",
           "isHarmful": false
         },
         {
@@ -69,9 +69,9 @@
         },
         {
           "id": "cache-only-problem",
-          "label": "The main issue is simply that the cache sometimes has old data for the query.",
+          "label": "The main issue is just that the cache sometimes has old data for the query.",
           "points": 5,
-          "feedback": "Cache staleness can contribute to the flash, but the deeper bug is that multiple sources can still commit blindly into one live bucket.",
+          "feedback": "Old cache data can contribute, but the deeper bug is that multiple sources can still update the same visible list with no guard.",
           "isHarmful": false
         }
       ]
@@ -80,20 +80,20 @@
       "id": "debug-order",
       "type": "priority-order",
       "title": "Stage 2: debug priority order",
-      "prompt": "Rank the three most useful debug steps first.",
-      "helperText": "You are trying to prove exactly where stale work is still allowed to repaint the current query.",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "You want to prove exactly where old results are still allowed to replace the visible list.",
       "candidates": [
         {
           "id": "reproduce-source-timeline",
-          "label": "Reproduce on slow network while logging query text, source type (cache or network), and request ids together."
+          "label": "Reproduce on a slow network while logging the query text, whether data came from cache or network, and the request ids."
         },
         {
           "id": "inspect-shared-commit-path",
-          "label": "Inspect whether cache hydrate and network response paths both write into the same shared results store."
+          "label": "Check whether cached results and network responses both write into the same shared results list."
         },
         {
           "id": "confirm-query-mismatch",
-          "label": "Confirm that the committed payload query differs from the currently active query when the flash happens."
+          "label": "Confirm that the data being rendered belongs to an older query when the flash happens."
         },
         {
           "id": "rewrite-endpoint",
@@ -115,21 +115,21 @@
       "id": "fix-set",
       "type": "multi-select",
       "title": "Stage 3: best fix set",
-      "prompt": "Which changes belong in the first robust fix?",
-      "helperText": "Choose the options that make every commit query-aware instead of last-writer-wins.",
+      "prompt": "Which changes should be part of the first robust fix?",
+      "helperText": "Pick the changes that make every update respect the latest query.",
       "options": [
         {
           "id": "query-aware-commit",
-          "label": "Route cache hydrate and network responses through one query-aware commit helper that refuses stale writes.",
+          "label": "Send cached results and network responses through one update function that first checks whether this is still the active query.",
           "points": 10,
-          "feedback": "Correct. The fix needs one guarded commit path instead of multiple blind writers.",
+          "feedback": "Correct. One guarded update path is safer than multiple blind writers.",
           "isHarmful": false
         },
         {
           "id": "latest-id-guard",
           "label": "Track a request id or query version and ignore responses that are no longer current.",
           "points": 10,
-          "feedback": "Correct. This protects you even if abort is not honored all the way down.",
+          "feedback": "Correct. A request id or query version can stop older responses from winning.",
           "isHarmful": false
         },
         {
@@ -143,7 +143,7 @@
           "id": "abort-previous",
           "label": "Abort or supersede older in-flight requests when a newer query starts.",
           "points": 5,
-          "feedback": "Correct. This reduces overlap, though the real guarantee still comes from guarded commits.",
+          "feedback": "Correct. This reduces overlap, but the real guarantee still comes from checking before you update the UI.",
           "isHarmful": false
         },
         {
@@ -159,8 +159,8 @@
       "id": "guardrail",
       "type": "single-select",
       "title": "Stage 4: regression guard",
-      "prompt": "What is the strongest guardrail for this class of bug?",
-      "helperText": "Think about something that proves stale responses cannot overwrite fresh intent anymore.",
+      "prompt": "What is the best way to keep this from coming back?",
+      "helperText": "Pick the check that proves older results can no longer overwrite the latest query.",
       "options": [
         {
           "id": "faster-api-only",
@@ -173,7 +173,7 @@
           "id": "cache-everything",
           "label": "Cache every result forever so the client no longer needs to issue new searches.",
           "points": -5,
-          "feedback": "That changes product behavior and still does not solve stale commit logic.",
+          "feedback": "That changes product behavior and still does not solve the stale update logic.",
           "isHarmful": true
         },
         {
@@ -185,7 +185,7 @@
         },
         {
           "id": "delayed-response-test",
-          "label": "Add an integration test that mixes cached hydrate and delayed network responses, then asserts only the active query can repaint the list.",
+          "label": "Add an integration test with cached results plus delayed network responses, and assert that only the active query can update the list.",
           "points": 25,
           "feedback": "Correct. That covers the real messy flow here: multiple sources trying to write into one visible list.",
           "isHarmful": false
@@ -198,46 +198,46 @@
       {
         "min": 0,
         "max": 39,
-        "label": "Race condition not yet contained",
-        "summary": "You treated overlap as a traffic problem instead of a correctness problem."
+        "label": "You treated it like a traffic problem, not a correctness problem",
+        "summary": "The real issue was who is allowed to update the visible list, not only how many requests were sent."
       },
       {
         "min": 40,
         "max": 69,
-        "label": "Mostly correct, missing one safeguard",
-        "summary": "You saw the race, but the debug order or regression guard did not fully lock it down."
+        "label": "Mostly right, but one safety check is still missing",
+        "summary": "You saw the race, but the debug order or guardrail did not fully lock it down."
       },
       {
         "min": 70,
         "max": 100,
-        "label": "Take-latest thinking",
-        "summary": "You proved the stale repaint, guarded the shared commit path, and tested the exact cache plus network race."
+        "label": "You kept the latest query in charge",
+        "summary": "You proved the stale flash, guarded the shared update path, and tested the exact cache-plus-network race."
       }
     ],
     "idealRunbook": [
-      "Reproduce with throttled timing and log cache plus network sources together.",
-      "Prove that one shared commit path accepts stale work after newer intent.",
-      "Add query-aware guards plus request supersession.",
-      "Protect the flow with a mixed cache and delayed-response integration test."
+      "Reproduce the bug and log cached and network results together.",
+      "Prove that one shared update path accepts old data after a newer query.",
+      "Add guards so only the current query can update the list.",
+      "Protect the flow with a cache-plus-delayed-response test."
     ],
     "teachingBlocks": [
       {
         "type": "callout",
         "title": "The easy trap",
-        "text": "Once cache hydrate and network response share the same commit sink, this stops being only a request-volume problem. It becomes a state-ownership problem too.",
+        "text": "Once cached and network data both write into the same list, this is no longer just a 'too many requests' problem. It is also a 'who is allowed to update the UI' problem.",
         "variant": "warning"
       },
       {
         "type": "steps",
         "title": "Stronger interview framing",
         "items": [
-          "Name the bug as an async race condition.",
-          "Point out the shared commit path instead of only blaming request overlap.",
-          "Explain why latest intent must win across both cache and network sources."
+          "Name it as an async race condition.",
+          "Point out that both sources write into the same list.",
+          "Explain why the latest query must always win."
         ]
       }
     ],
-    "optionalReflectionPrompt": "If you kept the cache, what single commit invariant would you enforce before anything can repaint the result list?"
+    "optionalReflectionPrompt": "If you keep the cache, what one rule must be true before anything is allowed to update the results list?"
   },
   "relatedPractice": [
     {

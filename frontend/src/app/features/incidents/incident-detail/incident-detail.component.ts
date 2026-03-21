@@ -23,6 +23,8 @@ import {
 } from '../../../core/utils/incident-scoring.util';
 import { IncidentProgressService } from '../../../core/services/incident-progress.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { ActivityService } from '../../../core/services/activity.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 type FeedbackStatus = 'correct' | 'partial' | 'review';
 
@@ -38,6 +40,8 @@ export class IncidentDetailComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly seo = inject(SeoService);
+  private readonly activity = inject(ActivityService);
+  private readonly auth = inject(AuthService);
   readonly progress = inject(IncidentProgressService);
 
   readonly incident = signal<IncidentScenario | null>(null);
@@ -348,6 +352,14 @@ export class IncidentDetailComponent {
         return acc;
       }, {}),
     );
+
+    if (this.submittedStageIds().length === scenario.stages.length) {
+      const rescoredAttempt = evaluateIncidentAttempt(scenario.stages, session.answers);
+      if (rescoredAttempt.score > record.bestScore) {
+        this.progress.completeAttempt(scenario.meta.id, rescoredAttempt.score, this.reflectionNote());
+      }
+    }
+
     const maxStep = this.allStagesSubmitted() ? this.debriefStepIndex() : this.submittedStageIds().length + 1;
     const desiredStep = Math.min(Math.max(session.activeStepIndex, 0), maxStep);
     this.activeStepIndex.set(desiredStep);
@@ -355,11 +367,95 @@ export class IncidentDetailComponent {
 
   private updateSeo(scenario: IncidentScenario): void {
     const meta = scenario.meta;
+    const techLabel = meta.tech === 'javascript'
+      ? 'JavaScript'
+      : meta.tech === 'react'
+        ? 'React'
+        : meta.tech === 'angular'
+          ? 'Angular'
+          : meta.tech === 'vue'
+            ? 'Vue'
+            : meta.tech === 'html'
+              ? 'HTML'
+              : meta.tech === 'css'
+                ? 'CSS'
+                : 'Frontend';
+    const canonicalPath = `/incidents/${meta.id}`;
+    const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
+    const incidentsHubUrl = this.seo.buildCanonicalUrl('/incidents');
+    const imageUrl = this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
+    const detailDescription = `Practice this ${techLabel.toLowerCase()} debugging interview question. ${meta.summary} Work through the root cause, the first debug steps, the best fix, and the regression guard.`;
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Debug Scenarios',
+          item: incidentsHubUrl,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: meta.title,
+          item: canonicalUrl,
+        },
+      ],
+    };
+    const learningResource = {
+      '@type': 'LearningResource',
+      '@id': canonicalUrl,
+      name: meta.title,
+      headline: meta.title,
+      description: detailDescription,
+      url: canonicalUrl,
+      mainEntityOfPage: canonicalUrl,
+      inLanguage: 'en',
+      learningResourceType: 'Debug scenario',
+      educationalUse: 'Interview practice',
+      timeRequired: `PT${meta.estimatedMinutes}M`,
+      isAccessibleForFree: meta.access !== 'premium',
+      keywords: meta.tags.join(', '),
+      dateModified: `${meta.updatedAt}T00:00:00Z`,
+      author: { '@type': 'Organization', name: 'FrontendAtlas' },
+      publisher: {
+        '@type': 'Organization',
+        name: 'FrontendAtlas',
+        logo: {
+          '@type': 'ImageObject',
+          url: imageUrl,
+        },
+      },
+      isPartOf: {
+        '@type': 'CollectionPage',
+        '@id': incidentsHubUrl,
+        url: incidentsHubUrl,
+        name: 'Frontend Debugging Interview Questions and Debug Scenarios',
+      },
+      about: [
+        { '@type': 'Thing', name: `${techLabel} debugging interview question` },
+        { '@type': 'Thing', name: 'Frontend debug scenario' },
+      ],
+    };
     this.seo.updateTags({
-      title: meta.title,
-      description: meta.summary,
-      canonical: `/incidents/${meta.id}`,
-      keywords: [...meta.tags, 'frontend incident practice', `${meta.tech} production incident`],
+      title: `${meta.title} - ${techLabel} Debug Scenario`,
+      description: detailDescription,
+      canonical: canonicalPath,
+      keywords: [
+        ...meta.tags,
+        'frontend debug scenario',
+        'frontend debugging interview questions',
+        `${techLabel.toLowerCase()} debugging interview question`,
+        `${techLabel.toLowerCase()} debug scenario`,
+      ],
+      ogType: 'article',
+      jsonLd: [breadcrumb, learningResource],
     });
   }
 
@@ -367,7 +463,24 @@ export class IncidentDetailComponent {
     const incident = this.incident();
     if (!incident || !this.allStagesSubmitted()) return;
     const score = this.attemptEvaluation().score;
-    this.progress.completeAttempt(incident.meta.id, score, this.reflectionNote());
+    const previous = this.progress.getRecord(incident.meta.id);
+    const record = this.progress.completeAttempt(incident.meta.id, score, this.reflectionNote());
+    if (!previous.passed && record.passed && this.auth.isLoggedIn()) {
+      this.activity.complete({
+        kind: 'incident',
+        tech: incident.meta.tech,
+        itemId: incident.meta.id,
+        source: 'tech',
+        durationMin: incident.meta.estimatedMinutes,
+        difficulty: incident.meta.difficulty,
+      })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          error: () => {
+            // Keep the local pass even if sync credit fails.
+          },
+        });
+    }
     this.activeStepIndex.set(this.debriefStepIndex());
     this.persistSession();
   }

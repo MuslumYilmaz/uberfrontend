@@ -1,14 +1,24 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpHeaders } from '@angular/common/http';
+import { computed, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, of } from 'rxjs';
 import { IncidentProgressService } from '../../../core/services/incident-progress.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { IncidentDetailComponent } from './incident-detail.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { ActivityService } from '../../../core/services/activity.service';
 
 describe('IncidentDetailComponent', () => {
+  const PRACTICE_PROGRESS_KEY = 'fa:practice:progress:v3:guest';
+  const INCIDENT_SESSION_KEY = 'fa:practice:session:v3:guest:incident:incident-1';
   let routeData$: ReplaySubject<any>;
   let seo: jasmine.SpyObj<SeoService>;
+  let activity: jasmine.SpyObj<ActivityService>;
+  let authUser: ReturnType<typeof signal<any>>;
+  let httpMock: HttpTestingController;
 
   const resolvedDetail = {
     id: 'incident-1',
@@ -68,7 +78,7 @@ describe('IncidentDetailComponent', () => {
           prompt: 'Pick root cause',
           options: [
             { id: 'correct', label: 'Correct cause', points: 25, feedback: 'Correct diagnosis.' },
-            { id: 'wrong', label: 'Wrong cause', points: 0, feedback: 'Wrong diagnosis.' },
+            { id: 'wrong', label: 'Wrong cause', points: 5, feedback: 'Partly relevant, but incomplete.' },
           ],
         },
         {
@@ -126,23 +136,53 @@ describe('IncidentDetailComponent', () => {
 
   beforeEach(async () => {
     routeData$ = new ReplaySubject<any>(1);
-    seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags']);
+    seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
+    seo.buildCanonicalUrl.and.callFake((value: string) => {
+      const raw = String(value || '').trim();
+      if (!raw) return 'https://frontendatlas.com/';
+      if (/^https?:\/\//i.test(raw)) return raw;
+      return raw.startsWith('/')
+        ? `https://frontendatlas.com${raw}`
+        : `https://frontendatlas.com/${raw}`;
+    });
+    activity = jasmine.createSpyObj<ActivityService>('ActivityService', ['complete']);
+    activity.complete.and.returnValue(of({ stats: null }));
+    authUser = signal<any>(null);
+    localStorage.removeItem(PRACTICE_PROGRESS_KEY);
+    localStorage.removeItem(INCIDENT_SESSION_KEY);
     localStorage.removeItem('fa:incidents:progress:v1');
     localStorage.removeItem('fa:incidents:session:v1:incident-1');
+    localStorage.removeItem('fa:practice:progress:v2');
+    localStorage.removeItem('fa:practice:session:v2:incident:incident-1');
 
     await TestBed.configureTestingModule({
-      imports: [IncidentDetailComponent, RouterTestingModule],
+      imports: [IncidentDetailComponent, RouterTestingModule, HttpClientTestingModule],
       providers: [
         IncidentProgressService,
+        { provide: ActivityService, useValue: activity },
+        {
+          provide: AuthService,
+          useValue: {
+            user: authUser,
+            isLoggedIn: computed(() => !!authUser()),
+            headers: () => new HttpHeaders(),
+          } satisfies Partial<AuthService>,
+        },
         { provide: SeoService, useValue: seo },
         { provide: ActivatedRoute, useValue: { data: routeData$.asObservable() } },
       ],
     }).compileComponents();
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
+    localStorage.removeItem(PRACTICE_PROGRESS_KEY);
+    localStorage.removeItem(INCIDENT_SESSION_KEY);
     localStorage.removeItem('fa:incidents:progress:v1');
     localStorage.removeItem('fa:incidents:session:v1:incident-1');
+    localStorage.removeItem('fa:practice:progress:v2');
+    localStorage.removeItem('fa:practice:session:v2:incident:incident-1');
+    httpMock.verify();
   });
 
   it('shows stage feedback after submitting a response', async () => {
@@ -171,7 +211,30 @@ describe('IncidentDetailComponent', () => {
     fixture.detectChanges();
 
     const feedback = fixture.nativeElement.querySelector('[data-testid="incident-feedback-root-cause"]') as HTMLElement | null;
+    expect(feedback?.textContent || '').toContain('Strong call');
+    expect(feedback?.textContent || '').toContain('25/25');
     expect(feedback?.textContent || '').toContain('Correct diagnosis.');
+  });
+
+  it('publishes LearningResource schema through seo tags', async () => {
+    routeData$.next({ incidentDetail: resolvedDetail });
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+    const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(resource).toBeTruthy();
+    expect(resource?.url || '').toContain('/incidents/incident-1');
+    expect(resource?.isPartOf?.url || '').toContain('/incidents');
+    expect(resource?.learningResourceType).toBe('Debug scenario');
   });
 
   it('reorders priority candidates with keyboard controls', async () => {
@@ -230,5 +293,66 @@ describe('IncidentDetailComponent', () => {
     const relatedLink = fixture.nativeElement.querySelector('[data-testid="incident-related-react-debounced-search"]') as HTMLAnchorElement | null;
     expect(relatedLink).toBeTruthy();
     expect(relatedLink?.getAttribute('href') || '').toContain('/react/coding/react-debounced-search');
+  });
+
+  it('credits activity only when an incident becomes passed for the first time', async () => {
+    authUser.set({
+      _id: 'user-1',
+      username: 'user1',
+      email: 'user1@example.com',
+      prefs: { tz: 'Europe/Istanbul', theme: 'dark', defaultTech: 'javascript', keyboard: 'default', marketingEmails: false },
+      createdAt: new Date().toISOString(),
+    });
+    routeData$.next({ incidentDetail: resolvedDetail });
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    TestBed.flushEffects();
+    const loadReq = httpMock.expectOne('/api/practice-progress?family=incident');
+    loadReq.flush({ records: [] });
+    const flushIncidentSyncs = () => {
+      httpMock
+        .match((req) => req.method === 'PUT' && req.url === '/api/practice-progress/incident/incident-1')
+        .forEach((req) => req.flush({
+          record: {
+            family: 'incident',
+            itemId: 'incident-1',
+            ...req.request.body,
+          },
+        }));
+    };
+    flushIncidentSyncs();
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    const answers = {
+      'root-cause': 'correct',
+      'debug-order': ['check-logs', 'profile-ui', 'inspect-code'],
+      'fix-set': ['fix-a', 'fix-b', 'fix-c'],
+      'guardrail': 'guard',
+    };
+
+    component.startIncident();
+    component.answers.set(answers);
+    component.submittedStageIds.set(['root-cause', 'debug-order', 'fix-set', 'guardrail']);
+    component.goToStep(component.debriefStepIndex());
+    flushIncidentSyncs();
+
+    expect(activity.complete).toHaveBeenCalledTimes(1);
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      kind: 'incident',
+      tech: 'react',
+      itemId: 'incident-1',
+      difficulty: 'easy',
+    }));
+
+    component.restartIncident();
+    flushIncidentSyncs();
+    component.answers.set(answers);
+    component.submittedStageIds.set(['root-cause', 'debug-order', 'fix-set', 'guardrail']);
+    component.goToStep(component.debriefStepIndex());
+    flushIncidentSyncs();
+
+    expect(activity.complete).toHaveBeenCalledTimes(1);
   });
 });

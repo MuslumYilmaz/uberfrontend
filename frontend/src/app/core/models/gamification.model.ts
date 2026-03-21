@@ -22,6 +22,25 @@ export interface DashboardDailyChallenge {
   };
 }
 
+export interface DashboardQuestionProgress {
+  solvedCount: number;
+  totalCount: number;
+  solvedPercent: number;
+  topTopics: DashboardTopicProgress[];
+}
+
+export interface DashboardIncidentProgress {
+  passedCount: number;
+  totalCount: number;
+  passedPercent: number;
+}
+
+export interface DashboardPracticeProgress {
+  completedCount: number;
+  totalCount: number;
+  completedPercent: number;
+}
+
 export interface DashboardWeeklyGoal {
   enabled: boolean;
   target: number;
@@ -50,10 +69,9 @@ export interface DashboardTopicProgress {
 }
 
 export interface DashboardProgress {
-  solvedCount: number;
-  totalCount: number;
-  solvedPercent: number;
-  topTopics: DashboardTopicProgress[];
+  questions: DashboardQuestionProgress;
+  incidents: DashboardIncidentProgress;
+  practice: DashboardPracticeProgress;
 }
 
 export interface DashboardGamificationSettings {

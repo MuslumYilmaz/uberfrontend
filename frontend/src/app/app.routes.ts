@@ -991,9 +991,9 @@ export const routes: Routes = [
     },
     data: {
       seo: {
-        title: 'Production incidents for frontend interview preparation',
+        title: 'Frontend Debugging Interview Questions and Debug Scenarios',
         description:
-          'Practice frontend production incidents with guided simulators covering root cause analysis, debug plans, fixes, and regression guards.',
+          'Practice frontend debugging interview questions with guided debug scenarios for React and JavaScript. Work through root cause analysis, debug steps, fixes, and regression guards.',
       },
     },
   },
@@ -1009,9 +1009,9 @@ export const routes: Routes = [
     },
     data: {
       seo: {
-        title: 'Frontend production incident simulator',
+        title: 'Frontend Debug Scenario for Interview Practice',
         description:
-          'Guided frontend incident drill covering likely root cause, debug order, fixes, and guardrails.',
+          'Practice a frontend debugging interview question with a guided debug scenario covering the root cause, debug order, fix, and regression guard.',
       },
     },
   },

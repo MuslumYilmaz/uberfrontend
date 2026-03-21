@@ -4,11 +4,11 @@
     "title": "Context update causes rerender storm",
     "tech": "react",
     "difficulty": "hard",
-    "summary": "One provider holds too much frequently changing state, so unrelated consumers rerender on every tiny update.",
+    "summary": "One big shared context holds too much fast-changing state, so typing in one place rerenders parts of the page that did not actually change.",
     "signals": [
-      "Unrelated panels rerender during typing",
-      "Profiler shows broad context fan-out",
-      "Provider value identity changes every update"
+      "Typing rerenders parts of the page that did not change",
+      "One context update rerenders lots of components",
+      "The provider creates a new value object on every update"
     ],
     "estimatedMinutes": 16,
     "tags": ["react", "context", "rendering"],
@@ -22,8 +22,8 @@
     "evidence": [
       {
         "type": "log",
-        "title": "Profiler fan-out",
-        "body": "One provider update fans out to 47 consumers; most render outputs are identical."
+        "title": "Profiler result",
+        "body": "One context update rerenders 47 components, and most of them end up showing the same UI as before."
       },
       {
         "type": "snippet",
@@ -43,35 +43,35 @@
       "id": "root-cause",
       "type": "single-select",
       "title": "Stage 1: likely root cause",
-      "prompt": "What is the main issue?",
-      "helperText": "Choose the explanation that matches broad rerender fan-out, not one specific child component.",
+      "prompt": "Why is so much of the page rerendering?",
+      "helperText": "Look for the one thing forcing lots of components to update together.",
       "options": [
         {
           "id": "missing-reactmemo-everywhere",
-          "label": "The issue is simply that every consumer forgot to use React.memo.",
+          "label": "Maybe the page just needs React.memo in more places.",
           "points": 5,
-          "feedback": "Memo can help local props, but it does not stop context updates from reaching consumers.",
+          "feedback": "Memo can help with props, but it does not stop a context update from reaching every consumer.",
           "isHarmful": false
         },
         {
           "id": "deep-compare-context",
-          "label": "React should deep-compare the provider value, so the real issue is a framework bug.",
+          "label": "Maybe React should compare the whole context object for us, and this is mainly a framework issue.",
           "points": -5,
-          "feedback": "React context does not work that way. Designing narrower update boundaries is the application responsibility.",
+          "feedback": "React does not do that for context. The app needs better state boundaries.",
           "isHarmful": true
         },
         {
           "id": "broad-provider-value",
-          "label": "A broad provider value is recreated on every change, so all consumers observing that context rerender together.",
+          "label": "One big context value changes all the time, so every consumer rerenders together.",
           "points": 25,
-          "feedback": "Correct. Context propagation and unstable provider identity are the core problem here.",
+          "feedback": "Correct. The provider is too broad, and it keeps creating a new value that wakes up every consumer.",
           "isHarmful": false
         },
         {
           "id": "browser-layout-thrash",
-          "label": "The main bottleneck is browser layout thrash, not React updates.",
+          "label": "The main problem is browser layout work, not React rerenders.",
           "points": 0,
-          "feedback": "Layout can matter, but the profiler already shows broad React rerender fan-out as the immediate issue.",
+          "feedback": "Layout can matter, but the profiler already shows the first problem: too many React rerenders.",
           "isHarmful": false
         }
       ]
@@ -80,24 +80,24 @@
       "id": "debug-order",
       "type": "priority-order",
       "title": "Stage 2: debug priority order",
-      "prompt": "Rank the three most useful debug steps first.",
-      "helperText": "You need to prove where the fan-out starts before choosing a state architecture.",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "First prove where the broad rerender starts.",
       "candidates": [
         {
           "id": "profile-consumers",
-          "label": "Profile the interaction and identify which consumers rerender after a provider update."
+          "label": "Profile the interaction and see which consumers rerender after the provider updates."
         },
         {
           "id": "inspect-provider-identity",
-          "label": "Inspect the provider value shape and whether its identity changes on unrelated updates."
+          "label": "Check how big the provider value is and whether it becomes a new object on unrelated updates."
         },
         {
           "id": "isolate-unrelated-consumers",
-          "label": "Verify that consumers reading stable slices still rerender because they subscribe to the broad context."
+          "label": "Confirm that components reading stable data still rerender because they subscribe to the giant context."
         },
         {
           "id": "memo-everything-first",
-          "label": "Wrap every consumer in React.memo before you confirm the source of the fan-out."
+          "label": "Wrap everything in React.memo before you confirm where the rerenders start."
         },
         {
           "id": "swap-css-framework",
@@ -115,40 +115,40 @@
       "id": "fix-set",
       "type": "multi-select",
       "title": "Stage 3: best fix set",
-      "prompt": "Which changes belong in a real fix?",
-      "helperText": "Select the changes that reduce update scope, not just the ones that hide symptoms.",
+      "prompt": "Which changes should actually be in the fix?",
+      "helperText": "Pick the changes that reduce unnecessary rerenders, not just hide them.",
       "options": [
         {
           "id": "memo-all-consumers",
-          "label": "Rely only on React.memo around consumers to stop context rerenders.",
+          "label": "Rely only on React.memo around consumers and hope that stops the rerenders.",
           "points": 0,
-          "feedback": "Memo alone does not solve broad context propagation.",
+          "feedback": "Memo alone does not fix a giant context.",
           "isHarmful": false
         },
         {
           "id": "split-contexts",
-          "label": "Split the broad provider into narrower contexts based on update frequency and responsibility.",
+          "label": "Split the giant provider into smaller contexts based on what changes together.",
           "points": 10,
-          "feedback": "Correct. Narrower subscription boundaries reduce unnecessary consumer updates.",
+          "feedback": "Correct. Smaller contexts create smaller rerender boundaries.",
           "isHarmful": false
         },
         {
           "id": "selector-store",
-          "label": "Move frequently changing shared state to a selector-based store or equivalent subscription model.",
+          "label": "Move fast-changing shared state to a store where components subscribe only to the piece they use.",
           "points": 10,
-          "feedback": "Correct. Selector-based reads can prevent unrelated consumers from rerendering.",
+          "feedback": "Correct. Selector-based subscriptions keep unrelated components asleep.",
           "isHarmful": false
         },
         {
           "id": "stabilize-value",
-          "label": "Stabilize provider values and callbacks where the architecture still uses context.",
+          "label": "Keep the provider value and callbacks stable anywhere you still use context.",
           "points": 5,
           "feedback": "Correct. Stable identities matter, though they are not enough alone if the provider stays too broad.",
           "isHarmful": false
         },
         {
           "id": "deep-compare-provider",
-          "label": "Deep-compare the provider value on every render so React can skip updates.",
+          "label": "Deep-compare the whole provider value on every render and hope React skips updates.",
           "points": -5,
           "feedback": "Deep comparison is expensive and still misses the structural issue of overly broad subscription scope.",
           "isHarmful": true
@@ -159,19 +159,19 @@
       "id": "guardrail",
       "type": "single-select",
       "title": "Stage 4: regression guard",
-      "prompt": "What is the best regression guard after the fix?",
-      "helperText": "Pick something that protects rerender scope instead of relying on intuition.",
+      "prompt": "How would you make sure this does not come back?",
+      "helperText": "Pick a guard that checks how far rerenders spread.",
       "options": [
         {
           "id": "render-count-guard",
-          "label": "Add a focused render-count or profiler-based regression around an unrelated consumer during draft updates.",
+          "label": "Add a render-count or profiler-based check around a component that should stay stable during draft updates.",
           "points": 25,
-          "feedback": "Correct. This guards the exact fan-out problem that hurt the interaction.",
+          "feedback": "Correct. This guards the exact 'too many parts of the page rerender' problem that hurt the interaction.",
           "isHarmful": false
         },
         {
           "id": "manual-profiler-sometimes",
-          "label": "Open the profiler once before major releases and trust the architecture.",
+          "label": "Open the profiler once in a while before big releases and trust that the architecture is still fine.",
           "points": 5,
           "feedback": "Manual profiling helps, but it is too weak as the primary guardrail.",
           "isHarmful": false
@@ -198,42 +198,42 @@
       {
         "min": 0,
         "max": 39,
-        "label": "Fan-out not fully isolated",
-        "summary": "You saw slow renders, but not the subscription-boundary problem inside the provider."
+        "label": "You noticed slowness, but not why it spread so widely",
+        "summary": "The page was rerendering too much, but the provider boundaries were still the real problem."
       },
       {
         "min": 40,
         "max": 69,
-        "label": "Good direction, incomplete boundary fix",
-        "summary": "You identified context as the issue, but one step still leaned on symptom-level fixes."
+        "label": "Right direction, incomplete structural fix",
+        "summary": "You identified context as the problem, but one step still leaned on surface-level fixes."
       },
       {
         "min": 70,
         "max": 100,
-        "label": "State-boundary reasoning",
-        "summary": "You diagnosed the broad provider, chose structural fixes, and guarded rerender scope directly."
+        "label": "You fixed the rerender boundary problem",
+        "summary": "You diagnosed the giant provider, chose structural fixes, and guarded rerender scope directly."
       }
     ],
     "idealRunbook": [
-      "Profile the interaction and count affected consumers.",
-      "Inspect provider identity and value scope.",
-      "Reduce subscription breadth with narrower contexts or selectors.",
-      "Protect the fix with a rerender-scope regression."
+      "Profile the interaction and count how many consumers rerender.",
+      "Check how broad the provider is and when it creates a new value object.",
+      "Reduce the subscription scope with smaller contexts or selectors.",
+      "Protect the fix with a rerender-scope regression check."
     ],
     "teachingBlocks": [
       {
         "type": "callout",
         "title": "Interview shortcut",
-        "text": "When context performance comes up, talk about subscription boundaries first. Memoization is secondary.",
+        "text": "When context performance comes up, talk about update boundaries first. Memoization is secondary.",
         "variant": "info"
       },
       {
         "type": "steps",
         "title": "Better answer framing",
         "items": [
-          "Name the broad provider and unstable identity.",
-          "Describe narrower ownership boundaries.",
-          "Explain why React.memo alone is insufficient."
+          "Name the giant provider.",
+          "Explain why stable parts of the page still rerender.",
+          "Describe how you would split the state or use selectors."
         ]
       }
     ],

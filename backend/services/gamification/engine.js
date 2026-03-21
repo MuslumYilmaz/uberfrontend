@@ -16,7 +16,7 @@ function normalizeDifficulty(value) {
 
 function xpForCompletion({ kind, difficulty }) {
   if (kind === 'trivia') return 5;
-  if (kind === 'coding' || kind === 'debug') {
+  if (kind === 'coding' || kind === 'debug' || kind === 'incident') {
     return DIFFICULTY_XP[normalizeDifficulty(difficulty)] || DIFFICULTY_XP.intermediate;
   }
   return 0;

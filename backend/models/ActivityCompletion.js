@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 const ActivityCompletionSchema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-        kind: { type: String, enum: ['coding', 'trivia', 'debug'], required: true },
+        kind: { type: String, enum: ['coding', 'trivia', 'debug', 'incident'], required: true },
         itemId: { type: String, required: true, trim: true },
         tech: { type: String, required: true, trim: true },
         source: { type: String, default: 'tech', trim: true },

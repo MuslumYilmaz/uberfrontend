@@ -586,6 +586,27 @@
     <loc>https://frontendatlas.com/html/trivia/web-accessibility-make-page-accessible</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/incidents</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/incidents/autosave-overwrites-latest-edit</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/incidents/context-rerender-storm</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/incidents/modal-screen-reader-failure</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/incidents/search-typing-lag</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/incidents/stale-search-race</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/incidents/websocket-memory-leak</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/interview-questions</loc>
   </url>
   <url>
