@@ -565,12 +565,20 @@
             <div class="contact-form-actions">
               <button type="submit" class="sk-btn sk-btn-primary" [disabled]="f.invalid || contactSubmitting">
                 <i class="pi pi-send" aria-hidden="true"></i>
-                <span>Send message</span>
+                <span>{{ contactSubmitting ? 'Sending...' : 'Send message' }}</span>
               </button>
 
               <div class="contact-actions-note muted">
-                This opens your email client.
+                Messages go straight to our support inbox.
               </div>
+            </div>
+            <div
+              class="contact-form-status"
+              *ngIf="contactStatus as status"
+              [attr.data-status]="status.tone"
+              [attr.role]="status.tone === 'error' ? 'alert' : 'status'"
+              [attr.aria-live]="status.tone === 'error' ? 'assertive' : 'polite'">
+              {{ status.text }}
             </div>
             <div class="contact-shortcuts" aria-label="Quick links">
               <a class="contact-pill" routerLink="/guides" aria-label="Open guides">
@@ -587,7 +595,8 @@
         </div>
 
         <p class="contact-meta">
-          Typical response: <strong>1–2 business days</strong>.
+          Typical response: <strong>1–2 business days</strong>. Prefer email?
+          <a [href]="'mailto:' + supportEmail">{{ supportEmail }}</a>
         </p>
       </div>
 

@@ -128,8 +128,16 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 - If your frontend + backend share the same site (recommended, e.g. `frontendatlas.com` and `api.frontendatlas.com`), keep `COOKIE_SAMESITE=lax` and consider `COOKIE_DOMAIN=.frontendatlas.com` if you set cookies from different subdomains.
 - If your frontend is on a different site (different eTLD+1), use `COOKIE_SAMESITE=none` (enables CSRF double-submit; the frontend already sends `X-CSRF-Token` when the `csrf_token` cookie exists).
 
-**Bug report email (optional)**
+**Support email (optional)**
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`
+- `SUPPORT_EMAIL` (defaults to `support@frontendatlas.com`)
+- Contact form knobs (optional):
+  - `CONTACT_BURST_WINDOW_MS` (default `60000`)
+  - `CONTACT_BURST_MAX` (default `2`)
+  - `CONTACT_WINDOW_MS` (default `3600000`)
+  - `CONTACT_MAX` (default `5`)
+  - `CONTACT_MIN_MESSAGE_CHARS` (default `10`)
+  - `CONTACT_MAX_MESSAGE_CHARS` (default `4000`)
 - Spam guard knobs (optional):
   - `BUG_REPORT_BURST_WINDOW_MS` (default `60000`)
   - `BUG_REPORT_BURST_MAX` (default `2`)
@@ -141,6 +149,8 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 ### Quick verification checklist
 
 - Health: `GET /api/hello`
+- Contact:
+  - `POST /api/contact` returns `204` and delivers an email
 - Auth:
   - `POST /api/auth/signup` sets `access_token` + `refresh_token` cookies
   - `POST /api/auth/refresh` rotates the refresh session and reissues `access_token`

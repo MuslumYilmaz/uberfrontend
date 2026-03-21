@@ -366,5 +366,5 @@ export class PrivacyComponent {
   readonly companyName = 'FrontendAtlas';
   /** Prefer a fixed, explicit date for compliance/versioning. */
   readonly effectiveDate = 'October 6, 2025';
-  readonly contactEmail = 'legal@frontendatlas.com';
+  readonly contactEmail = 'support@frontendatlas.com';
 }

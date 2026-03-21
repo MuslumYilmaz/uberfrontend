@@ -148,7 +148,7 @@ import { RouterModule } from '@angular/router';
         </p>
         <p>
           Email:
-          <a href="mailto:legal&#64;frontendatlas.com">legal&#64;frontendatlas.com</a><br>
+          <a href="mailto:support&#64;frontendatlas.com">support&#64;frontendatlas.com</a><br>
           Subject line: “Cookie Policy Inquiry”
         </p>
       </section>

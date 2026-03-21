@@ -1,4 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
@@ -14,7 +15,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, firstValueFrom, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
@@ -25,11 +26,14 @@ import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { PlanId } from '../../core/utils/payments-provider.util';
+import { apiUrl } from '../../core/utils/api-base';
 import showcaseStatsJson from '../../../assets/questions/showcase-stats.json';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
 type LibraryLane = 'skills' | 'tech' | 'format';
+type ContactTopic = 'general' | 'billing' | 'bug' | 'feature';
+type ContactStatus = { tone: 'success' | 'error'; text: string };
 type CompanyQuestionCard = {
   name: string;
   slug: string;
@@ -51,6 +55,7 @@ const SHOWCASE_STATIC_STATS = showcaseStatsJson as ShowcaseStatsPayload;
 })
 
 export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly http = inject(HttpClient);
   @ViewChildren('observeSection', { read: ElementRef }) observeSections!: QueryList<
     ElementRef<HTMLElement>
   >;
@@ -68,11 +73,13 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   contact = {
     name: '',
     email: '',
-    topic: 'general' as 'general' | 'billing' | 'bug' | 'feature',
+    topic: 'general' as ContactTopic,
     message: '',
   };
 
   contactSubmitting = false;
+  contactStatus: ContactStatus | null = null;
+  readonly supportEmail = 'support@frontendatlas.com';
 
   readonly reduceMotion =
     typeof window !== 'undefined' &&
@@ -824,8 +831,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     });
   }
 
-  submitContact() {
-    // basic client-side guard (keep it simple)
+  async submitContact(): Promise<void> {
     const name = this.contact.name.trim();
     const email = this.contact.email.trim();
     const message = this.contact.message.trim();
@@ -834,26 +840,44 @@ You can also reset any task back to the starter whenever you want to re-practice
     if (!name || !email || !message) return;
 
     this.contactSubmitting = true;
+    this.contactStatus = null;
 
-    const to = 'support@frontendatlas.com'; // TODO: replace
-    const subject = `[FrontendAtlas] ${topic} — ${name}`;
-    const body =
-      `Name: ${name}\n` +
-      `Email: ${email}\n` +
-      `Topic: ${topic}\n\n` +
-      `${message}\n`;
+    try {
+      await firstValueFrom(this.http.post(apiUrl('/contact'), {
+        name,
+        email,
+        topic,
+        message,
+        url: typeof window !== 'undefined' ? window.location.href : '',
+      }, { responseType: 'text' }));
 
-    const href =
-      `mailto:${encodeURIComponent(to)}` +
-      `?subject=${encodeURIComponent(subject)}` +
-      `&body=${encodeURIComponent(body)}`;
+      this.contact = { name: '', email: '', topic: 'general', message: '' };
+      this.contactStatus = {
+        tone: 'success',
+        text: 'Message sent. We will reply to the email address you provided.',
+      };
+    } catch (err) {
+      this.contactStatus = {
+        tone: 'error',
+        text: this.mapContactError(err),
+      };
+    } finally {
+      this.contactSubmitting = false;
+    }
+  }
 
-    // open email client
-    window.location.href = href;
-
-    // optional: reset
-    this.contact = { name: '', email: '', topic: 'general', message: '' };
-    this.contactSubmitting = false;
+  private mapContactError(err: unknown): string {
+    if (err instanceof HttpErrorResponse) {
+      const apiMessage =
+        typeof err.error === 'string'
+          ? err.error
+          : (typeof err.error?.error === 'string' ? err.error.error : '');
+      if (apiMessage) return apiMessage;
+      if (err.status === 429) {
+        return `Too many messages right now. Please wait a bit or email ${this.supportEmail} directly.`;
+      }
+    }
+    return `We could not send your message right now. Please email ${this.supportEmail} directly.`;
   }
 
   setActiveLane(lane: LibraryLane) {

@@ -1979,6 +1979,16 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
 }
 
+.contact-meta a{
+  color: var(--uf-accent);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.contact-meta a:hover{
+  text-decoration: underline;
+}
+
 .contact-side{
   display: grid;
   gap: 12px;
@@ -2115,6 +2125,28 @@
 
 .contact-actions-note{
   font-size: 13px;
+}
+
+.contact-form-status{
+  margin-top: 2px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.contact-form-status[data-status='success']{
+  border-color: color-mix(in srgb, #4ade80 45%, var(--uf-border-subtle));
+  background: color-mix(in srgb, #4ade80 10%, var(--uf-surface));
+  color: color-mix(in srgb, #4ade80 65%, var(--uf-text-primary));
+}
+
+.contact-form-status[data-status='error']{
+  border-color: color-mix(in srgb, #f87171 45%, var(--uf-border-subtle));
+  background: color-mix(in srgb, #f87171 10%, var(--uf-surface));
+  color: color-mix(in srgb, #f87171 62%, var(--uf-text-primary));
 }
 
 .library-card{

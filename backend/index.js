@@ -27,6 +27,13 @@ if (isTest && !process.env.MONGO_URL_TEST) {
 }
 const SERVER_BASE = resolveServerBase();
 const ALLOWED_FRONTEND_ORIGINS = resolveAllowedFrontendOrigins();
+const SUPPORT_EMAIL = String(process.env.SUPPORT_EMAIL || 'support@frontendatlas.com').trim() || 'support@frontendatlas.com';
+const CONTACT_BURST_WINDOW_MS = Number(process.env.CONTACT_BURST_WINDOW_MS || 60 * 1000); // 1m
+const CONTACT_BURST_MAX = Number(process.env.CONTACT_BURST_MAX || 2);
+const CONTACT_WINDOW_MS = Number(process.env.CONTACT_WINDOW_MS || 60 * 60 * 1000); // 1h
+const CONTACT_MAX = Number(process.env.CONTACT_MAX || 5);
+const CONTACT_MIN_MESSAGE_CHARS = Number(process.env.CONTACT_MIN_MESSAGE_CHARS || 10);
+const CONTACT_MAX_MESSAGE_CHARS = Number(process.env.CONTACT_MAX_MESSAGE_CHARS || 4000);
 const BUG_REPORT_BURST_WINDOW_MS = Number(process.env.BUG_REPORT_BURST_WINDOW_MS || 60 * 1000); // 1m
 const BUG_REPORT_BURST_MAX = Number(process.env.BUG_REPORT_BURST_MAX || 2);
 const BUG_REPORT_WINDOW_MS = Number(process.env.BUG_REPORT_WINDOW_MS || 60 * 60 * 1000); // 1h
@@ -89,7 +96,7 @@ app.use(express.urlencoded({
 app.use(cookieParser());
 
 // ---- DB (lazy for serverless, fail-fast for local server) ----
-const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/bug-report', '/api/health']);
+const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/contact', '/api/bug-report', '/api/health']);
 app.use(async (req, res, next) => {
     try {
         if (SKIP_DB_PATHS.has(req.path) || req.path.startsWith('/api/tools/') || req.path.startsWith('/api/trivia/')) return next();
@@ -156,10 +163,118 @@ function rememberBugFingerprint(key, now = Date.now()) {
     }
 }
 
+function createSupportTransporter() {
+    return nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: Number(process.env.SMTP_PORT || 465),
+        secure: String(process.env.SMTP_SECURE || 'true') === 'true', // true for 465
+        auth: {
+            user: process.env.SMTP_USER, // e.g. yourgmail@gmail.com
+            pass: process.env.SMTP_PASS, // Gmail App Password
+        },
+    });
+}
+
+function isValidEmailAddress(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+}
+
+/**
+ * POST /api/contact
+ * body: { name: string, email: string, topic?: string, message: string, url?: string }
+ * Sends an email to the FrontendAtlas support inbox
+ */
+app.post(
+    '/api/contact',
+    rateLimit({
+        windowMs: CONTACT_BURST_WINDOW_MS,
+        max: CONTACT_BURST_MAX,
+        message: 'Please wait a moment before sending another message.',
+    }),
+    rateLimit({
+        windowMs: CONTACT_WINDOW_MS,
+        max: CONTACT_MAX,
+        message: 'Too many messages, please try again later.',
+    }),
+    async (req, res) => {
+        try {
+            const { name, email, topic, message, url } = req.body || {};
+            const safeName = typeof name === 'string' ? name.trim() : '';
+            const safeEmail = typeof email === 'string' ? email.trim() : '';
+            const safeTopic = ['general', 'billing', 'bug', 'feature'].includes(String(topic || '').trim())
+                ? String(topic).trim()
+                : 'general';
+            const safeMessage = typeof message === 'string' ? message.trim() : '';
+            const safeUrl = typeof url === 'string' ? url.trim() : '';
+
+            if (!safeName) {
+                return res.status(400).json({ error: 'Missing "name"' });
+            }
+            if (!safeEmail || !isValidEmailAddress(safeEmail)) {
+                return res.status(400).json({ error: 'Please provide a valid email address.' });
+            }
+            if (!safeMessage) {
+                return res.status(400).json({ error: 'Missing "message"' });
+            }
+            if (safeName.length > 120) {
+                return res.status(413).json({ error: 'Contact name too long' });
+            }
+            if (safeEmail.length > 320) {
+                return res.status(413).json({ error: 'Contact email too long' });
+            }
+            if (safeMessage.length < CONTACT_MIN_MESSAGE_CHARS) {
+                return res.status(400).json({ error: `Contact message must be at least ${CONTACT_MIN_MESSAGE_CHARS} characters` });
+            }
+            if (safeMessage.length > CONTACT_MAX_MESSAGE_CHARS) {
+                return res.status(413).json({ error: 'Contact message too long' });
+            }
+            if (safeUrl.length > BUG_REPORT_MAX_URL_CHARS) {
+                return res.status(413).json({ error: 'Contact url too long' });
+            }
+
+            const transporter = createSupportTransporter();
+            const sentAt = new Date().toISOString();
+            const subject = `Contact form from FrontendAtlas: ${safeTopic} - ${safeName}`;
+            const html = `
+      <h2 style="margin:0 0 8px">New Contact Message</h2>
+      <p><strong>Name:</strong> ${escapeHtml(safeName)}</p>
+      <p><strong>Email:</strong> <a href="mailto:${escapeAttr(safeEmail)}">${escapeHtml(safeEmail)}</a></p>
+      <p><strong>Topic:</strong> ${escapeHtml(safeTopic)}</p>
+      ${safeUrl ? `<p><strong>Page:</strong> <a href="${escapeAttr(safeUrl)}">${escapeHtml(safeUrl)}</a></p>` : ''}
+      <hr style="border:none;border-top:1px solid #eee;margin:12px 0"/>
+      <p style="white-space:pre-wrap;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto">${escapeHtml(safeMessage)}</p>
+      <hr style="border:none;border-top:1px solid #eee;margin:12px 0"/>
+      <p style="color:#64748b;font-size:12px;margin:0">Sent ${sentAt}</p>
+    `;
+
+            await transporter.sendMail({
+                from: `"FrontendAtlas Contact" <${process.env.SMTP_USER}>`,
+                to: SUPPORT_EMAIL,
+                replyTo: safeEmail,
+                subject,
+                text:
+                    `New contact message\n\n` +
+                    `Name: ${safeName}\n` +
+                    `Email: ${safeEmail}\n` +
+                    `Topic: ${safeTopic}\n` +
+                    `Page: ${safeUrl || '(none)'}\n` +
+                    `Sent: ${sentAt}\n\n` +
+                    `${safeMessage}`,
+                html,
+            });
+
+            return res.status(204).end();
+        } catch (err) {
+            console.error('Contact email send failed:', err);
+            return res.status(500).json({ error: 'Email send failed' });
+        }
+    }
+);
+
 /**
  * POST /api/bug-report
  * body: { note: string, url?: string }
- * Sends an email to mslmyilmaz34@gmail.com
+ * Sends an email to the FrontendAtlas support inbox
  */
 app.post(
     '/api/bug-report',
@@ -200,16 +315,7 @@ app.post(
                 return res.status(429).json({ error: 'Duplicate bug report detected. Please wait before sending again.' });
             }
 
-            // Create transporter (Gmail SMTP with App Password, or any SMTP creds)
-            const transporter = nodemailer.createTransport({
-                host: process.env.SMTP_HOST || 'smtp.gmail.com',
-                port: Number(process.env.SMTP_PORT || 465),
-                secure: String(process.env.SMTP_SECURE || 'true') === 'true', // true for 465
-                auth: {
-                    user: process.env.SMTP_USER, // e.g. yourgmail@gmail.com
-                    pass: process.env.SMTP_PASS, // Gmail App Password
-                },
-            });
+            const transporter = createSupportTransporter();
 
             const html = `
       <h2 style="margin:0 0 8px">New Bug Report</h2>
@@ -223,7 +329,7 @@ app.post(
 
             await transporter.sendMail({
                 from: `"Bug Reporter" <${process.env.SMTP_USER}>`,
-                to: 'mslmyilmaz34@gmail.com',
+                to: SUPPORT_EMAIL,
                 subject: 'Bug report from FrontendAtlas',
                 text: `Bug report:\n\n${safeText}\n\nPage: ${safeUrl || '(none)'}\nSent ${new Date().toISOString()}`,
                 html,

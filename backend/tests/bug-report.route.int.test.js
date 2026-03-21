@@ -16,6 +16,7 @@ beforeAll(() => {
   process.env.JWT_SECRET = process.env.JWT_SECRET || 'test_jwt_secret_bug_report_route';
   process.env.SMTP_USER = process.env.SMTP_USER || 'noreply@example.com';
   process.env.SMTP_PASS = process.env.SMTP_PASS || 'test-pass';
+  process.env.SUPPORT_EMAIL = 'support@frontendatlas.com';
   process.env.BUG_REPORT_BURST_WINDOW_MS = '60000';
   process.env.BUG_REPORT_BURST_MAX = '10';
   process.env.BUG_REPORT_WINDOW_MS = '3600000';
@@ -30,7 +31,7 @@ beforeAll(() => {
 beforeEach(() => {
   mockSendMail.mockReset();
   mockCreateTransport.mockClear();
-  mockSendMail.mockResolvedValue({ accepted: ['mslmyilmaz34@gmail.com'] });
+  mockSendMail.mockResolvedValue({ accepted: ['support@frontendatlas.com'] });
 });
 
 describe('POST /api/bug-report anti-spam protections', () => {
@@ -44,6 +45,9 @@ describe('POST /api/bug-report anti-spam protections', () => {
 
     expect(res.status).toBe(204);
     expect(mockSendMail).toHaveBeenCalledTimes(1);
+    expect(mockSendMail).toHaveBeenCalledWith(expect.objectContaining({
+      to: 'support@frontendatlas.com',
+    }));
   });
 
   test('rejects duplicate bug report payload from same client in dedupe window', async () => {
