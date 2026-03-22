@@ -7,7 +7,11 @@ import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { GamificationService } from '../../core/services/gamification.service';
+import { IncidentProgressService } from '../../core/services/incident-progress.service';
+import { IncidentService } from '../../core/services/incident.service';
 import { QuestionService } from '../../core/services/question.service';
+import { TradeoffBattleProgressService } from '../../core/services/tradeoff-battle-progress.service';
+import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
 import { UserProgressService } from '../../core/services/user-progress.service';
 import { DashboardComponent } from './dashboard.component';
 
@@ -118,6 +122,78 @@ describe('DashboardComponent', () => {
       getSummary: jasmine.createSpy('getSummary').and.returnValue(of(null)),
       getRecent: jasmine.createSpy('getRecent').and.returnValue(of([])),
     };
+    const incidentServiceStub = {
+      loadIncidentIndex: jasmine.createSpy('loadIncidentIndex').and.returnValue(of([
+        {
+          id: 'stale-search-race',
+          title: 'Stale search race',
+          tech: 'react',
+          difficulty: 'intermediate',
+          summary: 'Race condition in live search results.',
+          signals: ['stale-results'],
+          estimatedMinutes: 12,
+          tags: ['race-condition'],
+          updatedAt: '2026-02-01T00:00:00.000Z',
+          access: 'free',
+        },
+        {
+          id: 'websocket-memory-leak',
+          title: 'WebSocket memory leak',
+          tech: 'javascript',
+          difficulty: 'hard',
+          summary: 'Leaking listeners and sockets.',
+          signals: ['memory-growth'],
+          estimatedMinutes: 15,
+          tags: ['memory'],
+          updatedAt: '2026-02-02T00:00:00.000Z',
+          access: 'free',
+        },
+      ])),
+    };
+    const incidentProgressServiceStub = {
+      getRecord: jasmine.createSpy('getRecord').and.callFake((id: string) => ({
+        started: id === 'stale-search-race',
+        completed: id === 'stale-search-race',
+        passed: id === 'stale-search-race',
+        bestScore: id === 'stale-search-race' ? 90 : 0,
+        lastPlayedAt: null,
+        reflectionNote: '',
+      })),
+    };
+    const tradeoffBattleServiceStub = {
+      loadIndex: jasmine.createSpy('loadIndex').and.returnValue(of([
+        {
+          id: 'context-vs-zustand-vs-redux',
+          title: 'Context vs Zustand vs Redux',
+          tech: 'react',
+          difficulty: 'intermediate',
+          summary: 'Choose the right state layer for a growing app.',
+          tags: ['state-management'],
+          access: 'free',
+          estimatedMinutes: 10,
+          updatedAt: '2026-02-01',
+        },
+        {
+          id: 'sse-vs-websocket-live-dashboard',
+          title: 'SSE vs WebSocket for live dashboard',
+          tech: 'system-design',
+          difficulty: 'intermediate',
+          summary: 'Defend the transport choice for a realtime dashboard.',
+          tags: ['realtime'],
+          access: 'free',
+          estimatedMinutes: 11,
+          updatedAt: '2026-02-02',
+        },
+      ])),
+    };
+    const tradeoffBattleProgressServiceStub = {
+      getRecord: jasmine.createSpy('getRecord').and.callFake((id: string) => ({
+        started: id === 'context-vs-zustand-vs-redux',
+        completed: id === 'context-vs-zustand-vs-redux',
+        lastPlayedAt: null,
+        selectedOptionId: '',
+      })),
+    };
 
     gamification = jasmine.createSpyObj<GamificationService>('GamificationService', [
       'getDashboard',
@@ -157,6 +233,10 @@ describe('DashboardComponent', () => {
         { provide: ActivityService, useValue: activityServiceStub },
         { provide: GamificationService, useValue: gamification },
         { provide: AnalyticsService, useValue: analytics },
+        { provide: IncidentService, useValue: incidentServiceStub },
+        { provide: IncidentProgressService, useValue: incidentProgressServiceStub },
+        { provide: TradeoffBattleService, useValue: tradeoffBattleServiceStub },
+        { provide: TradeoffBattleProgressService, useValue: tradeoffBattleProgressServiceStub },
       ],
     }).compileComponents();
 
@@ -190,7 +270,7 @@ describe('DashboardComponent', () => {
     expect(cvCard?.route).toEqual(['/tools', 'cv']);
   });
 
-  it('shows solved trivia progress in question formats', async () => {
+  it('shows solved trivia progress in practice formats', async () => {
     const progressService = TestBed.inject(UserProgressService) as any;
     progressService.solvedIds.and.returnValue(['react-closures']);
 
@@ -199,10 +279,22 @@ describe('DashboardComponent', () => {
 
     const component = localFixture.componentInstance;
     const stats = await firstValueFrom(component.stats$);
-    const triviaCard = component.questionFormats.find((card) => card.kindKey === 'trivia');
+    const triviaCard = component.practiceFormats.find((card) => card.kindKey === 'trivia');
 
     expect(triviaCard).toBeTruthy();
-    expect(component.getFormatSubtitle(triviaCard!, stats)).toBe('1/1 questions');
+    expect(component.getPracticeFormatSubtitle(triviaCard!, stats)).toBe('1/1 questions');
+  });
+
+  it('shows incident and tradeoff progress in practice formats', async () => {
+    const component = fixture.componentInstance;
+    const stats = await firstValueFrom(component.stats$);
+    const incidentCard = component.practiceFormats.find((card) => card.kindKey === 'incident');
+    const tradeoffCard = component.practiceFormats.find((card) => card.kindKey === 'tradeoff-battle');
+
+    expect(incidentCard).toBeTruthy();
+    expect(tradeoffCard).toBeTruthy();
+    expect(component.getPracticeFormatSubtitle(incidentCard!, stats)).toBe('1/2 passed');
+    expect(component.getPracticeFormatSubtitle(tradeoffCard!, stats)).toBe('1/2 completed');
   });
 
   it('marks daily challenge complete from dashboard card', () => {

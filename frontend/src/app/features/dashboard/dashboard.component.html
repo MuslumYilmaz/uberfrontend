@@ -202,14 +202,27 @@
             </article>
           </ng-template>
 
-          <article faCard class="widget widget--mini" *ngIf="progressSummary() as progress; else incidentMiniFallback">
+          <a
+            faCard
+            interactive
+            class="widget widget--mini widget--actionable"
+            *ngIf="progressSummary() as progress; else incidentMiniFallback"
+            [routerLink]="['/incidents']"
+          >
             <div class="widget-kicker">Debug scenarios</div>
             <h3 class="widget-title widget-title--mini">{{ progress.incidents.passedCount }} passed</h3>
             <p class="widget-copy widget-copy--mini fa-meta-text">{{ formatPercentLabel(progress.incidents.passedPercent) }} of the incident catalog is cleared.</p>
-          </article>
+            <span class="widget-inline-link">Open simulators →</span>
+          </a>
 
           <ng-template #incidentMiniFallback>
-            <article faCard class="widget widget--mini" [class.widget--guest]="!auth.isLoggedIn()">
+            <a
+              faCard
+              interactive
+              class="widget widget--mini widget--actionable"
+              [class.widget--guest]="!auth.isLoggedIn()"
+              [routerLink]="['/incidents']"
+            >
               <div class="widget-kicker">Debug scenarios</div>
               <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Incident progress unavailable' : 'Sign in to track debug scenarios' }}</h3>
               <p class="widget-copy widget-copy--mini fa-meta-text">
@@ -217,7 +230,8 @@
                   ? 'Your incident passes are temporarily unavailable.'
                   : 'Passed debug scenarios appear here after you clear an incident.' }}
               </p>
-            </article>
+              <span class="widget-inline-link">{{ auth.isLoggedIn() ? 'Open simulators →' : 'Browse scenarios →' }}</span>
+            </a>
           </ng-template>
 
           <article faCard class="widget widget--mini" *ngIf="progressSummary() as progress; else practiceMiniFallback">
@@ -552,18 +566,19 @@
       </ng-container>
     </section>
 
-    <!-- Question formats -->
+    <!-- Practice formats -->
     <section class="block block--formats">
       <div class="block-head">
-        <h2 class="block-title fa-section-title">Question formats</h2>
+        <h2 class="block-title fa-section-title">Practice formats</h2>
+        <p class="block-subtitle fa-meta-text">Coding, trivia, simulators, and decision drills in one place.</p>
       </div>
 
       <ng-container *ngIf="stats$ | async as stats">
         <div class="section-grid">
           <a
-            *ngFor="let card of questionFormats; trackBy: trackByTitle"
+            *ngFor="let card of practiceFormats; trackBy: trackByTitle"
             faCard interactive class="row format-row"
-            [attr.data-tone]="getFormatTone(card)"
+            [attr.data-tone]="getPracticeFormatTone(card)"
             [routerLink]="card.route"
             [queryParams]="card.queryParams"
           >
@@ -574,10 +589,10 @@
               <div class="row-body format-row__body">
                 <div class="row-title fa-card-title format-row__title-row">
                   <span>{{ card.title }}</span>
-                  <span class="format-row__kind-pill">{{ getFormatKindLabel(card) }}</span>
+                  <span class="format-row__kind-pill">{{ getPracticeFormatKindLabel(card) }}</span>
                 </div>
                 <div class="row-sub fa-meta-text format-row__meta">
-                  <span class="format-row__count-pill">{{ getFormatSubtitle(card, stats) }}</span>
+                  <span class="format-row__count-pill">{{ getPracticeFormatSubtitle(card, stats) }}</span>
                 </div>
               </div>
             </div>

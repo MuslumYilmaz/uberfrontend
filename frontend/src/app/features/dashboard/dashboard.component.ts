@@ -10,10 +10,14 @@ import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AttemptInsightsService } from '../../core/services/attempt-insights.service';
 import { AuthService } from '../../core/services/auth.service';
+import { IncidentService } from '../../core/services/incident.service';
+import { IncidentProgressService } from '../../core/services/incident-progress.service';
 import { DashboardGamificationResponse, DashboardProgress } from '../../core/models/gamification.model';
 import { GamificationService } from '../../core/services/gamification.service';
 import { MixedQuestion, QuestionService } from '../../core/services/question.service';
 import { PrepIntent, PrepLauncherEventPayload } from '../../core/models/prep-intent.model';
+import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
+import { TradeoffBattleProgressService } from '../../core/services/tradeoff-battle-progress.service';
 import { UserProgressService } from '../../core/services/user-progress.service';
 import { deriveTopicIdsFromTags, loadTopics, TopicDefinition } from '../../core/utils/topics.util';
 import { collectCompanyCounts } from '../../shared/company-counts.util';
@@ -23,7 +27,23 @@ import { FaCardComponent } from '../../shared/ui/card/fa-card.component';
 import { FaDialogComponent } from '../../shared/ui/dialog/fa-dialog.component';
 import { TRACKS } from '../tracks/track.data';
 
-type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
+type IconKey =
+  | 'book'
+  | 'grid'
+  | 'list'
+  | 'cap'
+  | 'building'
+  | 'bolt'
+  | 'star'
+  | 'clock'
+  | 'search'
+  | 'desktop'
+  | 'code'
+  | 'sitemap'
+  | 'question'
+  | 'directions'
+  | 'database'
+  | 'comments';
 type DailyChallengeTech = 'auto' | 'javascript' | 'react' | 'angular' | 'vue' | 'html' | 'css';
 
 type FormatCounts = Record<CategoryKeyInternal, number>;
@@ -40,6 +60,10 @@ type Stats = {
   triviaQuestionIds: string[];
   systemDesignTotal: number;
   systemDesignQuestionIds: string[];
+  incidentTotal: number;
+  incidentIds: string[];
+  tradeoffBattleTotal: number;
+  tradeoffBattleIds: string[];
   topics: TopicDefinition[];
   topicCounts: TopicCounts;
 };
@@ -67,7 +91,7 @@ type Card = {
   companyNote?: string;
   techKey?: 'javascript' | 'react' | 'angular' | 'vue' | 'css' | 'html';
   formatKey?: CategoryKeyInternal;
-  kindKey?: 'coding' | 'trivia' | 'system-design' | 'behavioral';
+  kindKey?: 'coding' | 'trivia' | 'system-design' | 'behavioral' | 'incident' | 'tradeoff-battle';
 };
 
 type QuickWinQuestion = {
@@ -94,6 +118,10 @@ export class DashboardComponent {
   private readonly gamification = inject(GamificationService);
   private readonly analytics = inject(AnalyticsService);
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
+  private readonly incidentService = inject(IncidentService);
+  private readonly incidentProgress = inject(IncidentProgressService);
+  private readonly tradeoffBattleService = inject(TradeoffBattleService);
+  private readonly tradeoffBattleProgress = inject(TradeoffBattleProgressService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly focusIntensityCache = new WeakMap<Stats, Record<string, FocusIntensity>>();
   private readonly emptyTrackProgress: TrackProgress = { solved: 0, total: 0, pct: 0 };
@@ -229,6 +257,14 @@ export class DashboardComponent {
     bolt: 'bolt',
     star: 'star',
     clock: 'clock',
+    search: 'search',
+    desktop: 'desktop',
+    code: 'code',
+    sitemap: 'sitemap',
+    question: 'question-circle',
+    directions: 'directions-alt',
+    database: 'database',
+    comments: 'comments',
   };
 
   private readonly ALGO_TAGS = new Set<string>([
@@ -489,9 +525,11 @@ export class DashboardComponent {
     coding: this.questions.loadAllQuestionSummaries('coding', { transferState: false }),
     trivia: this.questions.loadAllQuestionSummaries('trivia', { transferState: false }),
     system: this.questions.loadSystemDesign({ transferState: false }),
+    incidents: this.incidentService.loadIncidentIndex({ transferState: false }),
+    tradeoffBattles: this.tradeoffBattleService.loadIndex({ transferState: false }),
     topics: from(loadTopics()),
   }).pipe(
-    map(({ coding, trivia, system, topics }) => {
+    map(({ coding, trivia, system, incidents, tradeoffBattles, topics }) => {
       const companyCounts: Record<string, number> = {};
       const techCounts: Record<string, number> = {};
       const formatCounts: FormatCounts = {
@@ -564,6 +602,8 @@ export class DashboardComponent {
       formatQuestionIds.system = [...systemDesignQuestionIds];
 
       const triviaTotal = trivia.length;
+      const incidentIds = (incidents ?? []).map((item) => item.id).filter(Boolean);
+      const tradeoffBattleIds = (tradeoffBattles ?? []).map((item) => item.id).filter(Boolean);
 
       const companyBuckets = collectCompanyCounts({ coding, trivia, system });
       Object.entries(companyBuckets).forEach(([slug, bucket]) => {
@@ -579,6 +619,10 @@ export class DashboardComponent {
         triviaQuestionIds,
         systemDesignTotal,
         systemDesignQuestionIds,
+        incidentTotal: incidentIds.length,
+        incidentIds,
+        tradeoffBattleTotal: tradeoffBattleIds.length,
+        tradeoffBattleIds,
         topics: topics.topics ?? [],
         topicCounts,
       };
@@ -691,11 +735,11 @@ export class DashboardComponent {
 
 
   /** ===== Practice: formats ===== */
-  questionFormats: Card[] = [
+  practiceFormats: Card[] = [
     {
       title: 'User Interface',
       subtitle: '0 questions',
-      icon: 'grid',
+      icon: 'desktop',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'ui', reset: 1 },       // 👈
       formatKey: 'ui',
@@ -704,7 +748,7 @@ export class DashboardComponent {
     {
       title: 'JavaScript / Typescript',
       subtitle: '0 questions',
-      icon: 'bolt',
+      icon: 'code',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'js-fn', reset: 1 },    // 👈
       formatKey: 'js-fn',
@@ -713,7 +757,7 @@ export class DashboardComponent {
     {
       title: 'Front End System Design',
       subtitle: '0 questions',
-      icon: 'building',
+      icon: 'sitemap',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'system', kind: 'coding', reset: 1 }, // 👈
       formatKey: 'system',
@@ -722,15 +766,29 @@ export class DashboardComponent {
     {
       title: 'Trivia',
       subtitle: '0 questions',
-      icon: 'book',
+      icon: 'question',
       route: ['/coding'],
       queryParams: { kind: 'trivia', reset: 1 },       // 👈
       kindKey: 'trivia',
     },
     {
+      title: 'Debug Scenarios',
+      subtitle: '0/0 passed',
+      icon: 'search',
+      route: ['/incidents'],
+      kindKey: 'incident',
+    },
+    {
+      title: 'Tradeoff Battles',
+      subtitle: '0/0 completed',
+      icon: 'directions',
+      route: ['/tradeoffs'],
+      kindKey: 'tradeoff-battle',
+    },
+    {
       title: 'Data Structures & Algorithms',
       subtitle: '0 questions',
-      icon: 'star',
+      icon: 'database',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'algo', reset: 1 },     // 👈
       formatKey: 'algo',
@@ -739,7 +797,7 @@ export class DashboardComponent {
     {
       title: 'Behavioral Interviews',
       subtitle: '0/8 articles',
-      icon: 'clock',
+      icon: 'comments',
       route: ['/guides', 'behavioral'],
       kindKey: 'behavioral',
     },
@@ -886,7 +944,7 @@ export class DashboardComponent {
     return card.techKey;
   }
 
-  getFormatSubtitle(card: Card, stats: Stats | null | undefined): string {
+  getPracticeFormatSubtitle(card: Card, stats: Stats | null | undefined): string {
     if (!stats) {
       return card.subtitle ?? '';
     }
@@ -907,6 +965,18 @@ export class DashboardComponent {
       return `${solved}/${total} questions`;
     }
 
+    if (card.kindKey === 'incident') {
+      const total = stats.incidentTotal ?? 0;
+      const passed = this.countPassedIncidentIds(stats.incidentIds);
+      return `${passed}/${total} passed`;
+    }
+
+    if (card.kindKey === 'tradeoff-battle') {
+      const total = stats.tradeoffBattleTotal ?? 0;
+      const completed = this.countCompletedTradeoffBattleIds(stats.tradeoffBattleIds);
+      return `${completed}/${total} completed`;
+    }
+
     if (card.formatKey) {
       const total = stats.formatCounts[card.formatKey] ?? 0;
       const solved = this.countSolvedQuestionIds(stats.formatQuestionIds[card.formatKey] ?? []);
@@ -916,12 +986,16 @@ export class DashboardComponent {
     return card.subtitle ?? '';
   }
 
-  getFormatKindLabel(card: Card): string {
+  getPracticeFormatKindLabel(card: Card): string {
     switch (card.kindKey) {
       case 'trivia':
         return 'Trivia';
+      case 'incident':
+        return 'Simulator';
       case 'system-design':
         return 'System design';
+      case 'tradeoff-battle':
+        return 'Decision drill';
       case 'behavioral':
         return 'Behavioral';
       default:
@@ -929,8 +1003,10 @@ export class DashboardComponent {
     }
   }
 
-  getFormatTone(card: Card): string {
+  getPracticeFormatTone(card: Card): string {
     if (card.kindKey === 'behavioral') return 'behavioral';
+    if (card.kindKey === 'incident') return 'incident';
+    if (card.kindKey === 'tradeoff-battle') return 'tradeoff-battle';
     if (card.kindKey === 'trivia') return 'trivia';
     if (card.kindKey === 'system-design') return 'system-design';
     if (card.formatKey === 'ui') return 'ui';
@@ -973,6 +1049,30 @@ export class DashboardComponent {
       if (!id || seen.has(id)) continue;
       seen.add(id);
       if (solved.has(id)) count += 1;
+    }
+    return count;
+  }
+
+  private countPassedIncidentIds(ids: readonly string[]): number {
+    if (!ids?.length) return 0;
+    const seen = new Set<string>();
+    let count = 0;
+    for (const id of ids) {
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      if (this.incidentProgress.getRecord(id).passed) count += 1;
+    }
+    return count;
+  }
+
+  private countCompletedTradeoffBattleIds(ids: readonly string[]): number {
+    if (!ids?.length) return 0;
+    const seen = new Set<string>();
+    let count = 0;
+    for (const id of ids) {
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      if (this.tradeoffBattleProgress.getRecord(id).completed) count += 1;
     }
     return count;
   }

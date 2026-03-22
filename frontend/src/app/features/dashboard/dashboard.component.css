@@ -221,6 +221,11 @@
   gap: 8px;
 }
 
+.widget--actionable {
+  text-decoration: none;
+  color: inherit;
+}
+
 .widget-kicker {
   font-size: 11px;
   text-transform: uppercase;
@@ -821,9 +826,19 @@
   border-color: color-mix(in srgb, #56e6b3 45%, var(--fa-border-subtle) 55%);
 }
 
+.format-row[data-tone="incident"] .format-row__icon {
+  background: linear-gradient(145deg, rgba(255, 158, 95, 0.24), rgba(255, 158, 95, 0.08));
+  border-color: color-mix(in srgb, #ff9e5f 48%, var(--fa-border-subtle) 52%);
+}
+
 .format-row[data-tone="system-design"] .format-row__icon {
   background: linear-gradient(145deg, rgba(115, 145, 255, 0.24), rgba(115, 145, 255, 0.08));
   border-color: color-mix(in srgb, #7391ff 46%, var(--fa-border-subtle) 54%);
+}
+
+.format-row[data-tone="tradeoff-battle"] .format-row__icon {
+  background: linear-gradient(145deg, rgba(var(--fa-accent-rgb), 0.24), rgba(var(--fa-accent-rgb), 0.08));
+  border-color: color-mix(in srgb, var(--fa-accent) 46%, var(--fa-border-subtle) 54%);
 }
 
 .format-row[data-tone="behavioral"] .format-row__icon {
