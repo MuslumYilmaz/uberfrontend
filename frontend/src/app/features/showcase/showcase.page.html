@@ -257,6 +257,84 @@
   </div>
 </section>
 
+<section class="section reveal" #observeSection aria-labelledby="reasoning-title" data-load="reasoning">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Reasoning practice</p>
+        <h2 id="reasoning-title">Diagnose bugs. Defend decisions.</h2>
+      </div>
+      <p class="muted">A compact look at the two interview modes that test how you think under pressure, not just how you code.</p>
+    </div>
+
+    <div class="reasoning-grid" *ngIf="sectionVisible.reasoning; else reasoningPlaceholder">
+      <article class="reasoning-card glass" data-family="incident">
+        <div class="reasoning-card__top">
+          <div>
+            <p class="reasoning-card__eyebrow">Debug scenarios</p>
+            <h3>{{ incidentPreview.title }}</h3>
+          </div>
+          <span class="reasoning-card__count" *ngIf="reasoningCounts.incidents > 0">{{ reasoningCounts.incidents }} scenarios</span>
+        </div>
+
+        <p class="reasoning-card__summary">{{ incidentPreview.summary }}</p>
+
+        <div class="reasoning-meta">
+          <span>{{ incidentPreview.techLabel }}</span>
+          <span>{{ incidentPreview.difficulty | titlecase }}</span>
+          <span>{{ incidentPreview.estimatedMinutes }} min</span>
+        </div>
+
+        <div class="reasoning-strip">
+          <span class="reasoning-strip__label">Signals</span>
+          <div class="reasoning-pill-list">
+            <span class="reasoning-pill" *ngFor="let signal of incidentPreview.signalTeasers">{{ signal }}</span>
+          </div>
+        </div>
+
+        <a class="reasoning-link" [routerLink]="incidentPreview.route" aria-label="Open the full debug scenario">
+          Open simulator
+          <i class="pi pi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </article>
+
+      <article class="reasoning-card glass" data-family="tradeoff">
+        <div class="reasoning-card__top">
+          <div>
+            <p class="reasoning-card__eyebrow">Tradeoff battles</p>
+            <h3>{{ tradeoffPreview.title }}</h3>
+          </div>
+          <span class="reasoning-card__count" *ngIf="reasoningCounts.tradeoffBattles > 0">{{ reasoningCounts.tradeoffBattles }} battles</span>
+        </div>
+
+        <p class="reasoning-card__summary">{{ tradeoffPreview.summary }}</p>
+
+        <div class="reasoning-meta">
+          <span>{{ tradeoffPreview.techLabel }}</span>
+          <span>{{ tradeoffPreview.difficulty | titlecase }}</span>
+          <span>{{ tradeoffPreview.estimatedMinutes }} min</span>
+        </div>
+
+        <div class="reasoning-strip">
+          <span class="reasoning-strip__label">Options on the table</span>
+          <div class="reasoning-pill-list">
+            <span class="reasoning-pill reasoning-pill--tradeoff" *ngFor="let option of tradeoffPreview.optionTeasers">{{ option }}</span>
+          </div>
+        </div>
+
+        <a class="reasoning-link" [routerLink]="tradeoffPreview.route" aria-label="Open the full tradeoff battle">
+          Open battle
+          <i class="pi pi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </article>
+    </div>
+
+    <ng-template #reasoningPlaceholder>
+      <div class="preview-placeholder">Loading reasoning practice…</div>
+    </ng-template>
+  </div>
+</section>
+
 <section class="section reveal" #observeSection aria-labelledby="library-title" data-load="library">
   <div class="shell">
     <div class="section-head">

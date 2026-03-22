@@ -55,6 +55,20 @@
   overflow:hidden;
   text-overflow:ellipsis;
 }
+.left-head .title-row{
+  display: grid;
+  gap: 12px;
+  align-items: flex-start;
+}
+.left-head .title{
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+}
+.left-head .report-issue-btn{
+  justify-self: start;
+}
 .report-issue-btn {
   display: inline-flex;
   align-items: center;

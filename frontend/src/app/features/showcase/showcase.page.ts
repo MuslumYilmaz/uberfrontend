@@ -15,14 +15,16 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
-import { Observable, firstValueFrom, of } from 'rxjs';
+import { Observable, firstValueFrom, forkJoin, of } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { IncidentService } from '../../core/services/incident.service';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService, ShowcaseStatsPayload } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
+import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { PlanId } from '../../core/utils/payments-provider.util';
@@ -43,6 +45,17 @@ type CompanyQuestionCard = {
   note: string;
   link: any[];
 };
+type ReasoningPreviewCard = {
+  id: string;
+  title: string;
+  summary: string;
+  techLabel: string;
+  difficulty: string;
+  estimatedMinutes: number;
+  route: any[];
+  signalTeasers?: string[];
+  optionTeasers?: string[];
+};
 
 const SHOWCASE_STATIC_STATS = showcaseStatsJson as ShowcaseStatsPayload;
 
@@ -56,6 +69,8 @@ const SHOWCASE_STATIC_STATS = showcaseStatsJson as ShowcaseStatsPayload;
 
 export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly http = inject(HttpClient);
+  private readonly incidentService = inject(IncidentService);
+  private readonly tradeoffBattleService = inject(TradeoffBattleService);
   @ViewChildren('observeSection', { read: ElementRef }) observeSections!: QueryList<
     ElementRef<HTMLElement>
   >;
@@ -439,12 +454,41 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   companyCounts: ShowcaseStatsPayload['companyCounts'] = SHOWCASE_STATIC_STATS.companyCounts || {};
   heroQuestionCount = SHOWCASE_STATIC_STATS.totalQuestions || 0;
+  reasoningCounts = {
+    incidents: 0,
+    tradeoffBattles: 0,
+  };
+  incidentPreview: ReasoningPreviewCard = {
+    id: 'stale-search-race',
+    title: 'Latest query loses to stale search results',
+    summary: 'Cached results and slower network results both update the same list, so an older query can briefly show up again.',
+    techLabel: 'JavaScript',
+    difficulty: 'intermediate',
+    estimatedMinutes: 14,
+    route: ['/incidents', 'stale-search-race'],
+    signalTeasers: [
+      'Older results flash back in',
+      'Cache and network both write into one list',
+      'Debounce reduced traffic, not the stale update',
+    ],
+  };
+  tradeoffPreview: ReasoningPreviewCard = {
+    id: 'context-vs-zustand-vs-redux',
+    title: 'Context vs Zustand vs Redux for a growing React dashboard',
+    summary: 'Pick the state layer you would defend once shared filters, optimistic updates, and multiple teams all touch the same surface.',
+    techLabel: 'React',
+    difficulty: 'intermediate',
+    estimatedMinutes: 14,
+    route: ['/tradeoffs', 'context-vs-zustand-vs-redux'],
+    optionTeasers: ['Context + useReducer', 'Zustand', 'Redux Toolkit'],
+  };
 
   explanationVisible = false;
   readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly MOBILE_DEMO_GUARD_BREAKPOINT = 768;
   showMobileCodingGuard = false;
   sectionVisible = {
+    reasoning: false,
     library: false,
     company: false,
     capabilities: false,
@@ -454,6 +498,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   };
 
   private readonly LP_SRC_PATTERN = /^[a-z0-9_-]{1,64}$/;
+  private reasoningPreviewLoaded = false;
 
   constructor(
     private injector: Injector,
@@ -584,6 +629,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.activateDemo();
     this.loadTriviaPreview();
     this.loadSystemPreview();
+    this.loadReasoningPreview();
     void this.loadCheckoutConfig();
     (Object.keys(this.sectionVisible) as Array<keyof typeof this.sectionVisible>)
       .forEach((key) => { this.sectionVisible[key] = true; });
@@ -605,6 +651,11 @@ You can also reset any task back to the starter whenever you want to re-practice
     }
     if (key === 'system') {
       this.loadSystemPreview();
+      return;
+    }
+    if (key === 'reasoning') {
+      this.sectionVisible.reasoning = true;
+      this.loadReasoningPreview();
       return;
     }
     if (key === 'company') {
@@ -910,6 +961,88 @@ You can also reset any task back to the starter whenever you want to re-practice
     import('../system-design-list/system-design-detail/system-design-detail.component').then((m) => {
       this.systemDesignDetailComponent = m.SystemDesignDetailComponent;
     });
+  }
+
+  private loadReasoningPreview() {
+    if (!this.isBrowser || this.reasoningPreviewLoaded) return;
+    this.reasoningPreviewLoaded = true;
+
+    firstValueFrom(
+      forkJoin({
+        incidents: this.incidentService.loadIncidentIndex({ transferState: false }),
+        tradeoffBattles: this.tradeoffBattleService.loadIndex({ transferState: false }),
+      }),
+    )
+      .then(({ incidents, tradeoffBattles }) => {
+        this.reasoningCounts = {
+          incidents: incidents.length,
+          tradeoffBattles: tradeoffBattles.length,
+        };
+
+        const incident = incidents.find((item) => item.id === this.incidentPreview.id) ?? incidents[0] ?? null;
+        if (incident) {
+          this.incidentPreview = {
+            ...this.incidentPreview,
+            id: incident.id,
+            title: incident.title,
+            summary: incident.summary,
+            techLabel: this.formatTechLabel(incident.tech),
+            difficulty: incident.difficulty,
+            estimatedMinutes: incident.estimatedMinutes,
+            route: ['/incidents', incident.id],
+            signalTeasers: incident.signals.slice(0, 3),
+          };
+        }
+
+        const battle = tradeoffBattles.find((item) => item.id === this.tradeoffPreview.id) ?? tradeoffBattles[0] ?? null;
+        if (!battle) return;
+
+        this.tradeoffPreview = {
+          ...this.tradeoffPreview,
+          id: battle.id,
+          title: battle.title,
+          summary: battle.summary,
+          techLabel: this.formatTechLabel(battle.tech as Tech | 'system-design'),
+          difficulty: battle.difficulty,
+          estimatedMinutes: battle.estimatedMinutes,
+          route: ['/tradeoffs', battle.id],
+        };
+
+        this.tradeoffBattleService
+          .loadScenario(battle.id, { transferState: false })
+          .pipe(take(1))
+          .subscribe((scenario) => {
+            if (!scenario?.options?.length) return;
+            this.tradeoffPreview = {
+              ...this.tradeoffPreview,
+              optionTeasers: scenario.options.slice(0, 3).map((option) => option.label),
+            };
+          });
+      })
+      .catch(() => {
+        // Keep curated fallback previews when live data is unavailable.
+      });
+  }
+
+  private formatTechLabel(value: Tech | 'system-design'): string {
+    switch (value) {
+      case 'javascript':
+        return 'JavaScript';
+      case 'react':
+        return 'React';
+      case 'angular':
+        return 'Angular';
+      case 'vue':
+        return 'Vue';
+      case 'html':
+        return 'HTML';
+      case 'css':
+        return 'CSS';
+      case 'system-design':
+        return 'System design';
+      default:
+        return 'Frontend';
+    }
   }
 
   private refreshShowcaseStats() {

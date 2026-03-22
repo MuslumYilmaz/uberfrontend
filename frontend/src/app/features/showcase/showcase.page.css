@@ -745,6 +745,146 @@
   background: linear-gradient(180deg, transparent 65%, rgba(0, 0, 0, 0.08));
 }
 
+.reasoning-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.reasoning-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 100%;
+  padding: 18px;
+  overflow: hidden;
+  position: relative;
+}
+
+.reasoning-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.reasoning-card[data-family='incident'] {
+  border-color: color-mix(in srgb, #6cc2ff 40%, var(--uf-border-subtle) 60%);
+  background:
+    radial-gradient(260px at 100% 0%, rgba(108, 194, 255, 0.14), transparent 64%),
+    color-mix(in srgb, var(--uf-surface) 92%, var(--uf-accent) 8%);
+}
+
+.reasoning-card[data-family='tradeoff'] {
+  border-color: color-mix(in srgb, var(--uf-accent) 46%, var(--uf-border-subtle) 54%);
+  background:
+    radial-gradient(260px at 100% 0%, rgba(244, 193, 93, 0.16), transparent 64%),
+    color-mix(in srgb, var(--uf-surface) 92%, var(--uf-accent) 8%);
+}
+
+.reasoning-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.reasoning-card__eyebrow {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+}
+
+.reasoning-card__top h3 {
+  margin: 8px 0 0;
+  font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+.reasoning-card__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 56%, var(--uf-accent) 44%);
+  background: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-text-primary) 14%);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.reasoning-card__summary {
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+  line-height: 1.58;
+}
+
+.reasoning-meta,
+.reasoning-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reasoning-meta span,
+.reasoning-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 76%, transparent);
+  background: color-mix(in srgb, var(--uf-bg) 68%, var(--uf-surface));
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 12px;
+}
+
+.reasoning-pill {
+  background: color-mix(in srgb, var(--uf-surface-alt) 84%, var(--uf-bg));
+}
+
+.reasoning-pill--tradeoff {
+  border-color: color-mix(in srgb, var(--uf-accent) 36%, var(--uf-border-subtle) 64%);
+}
+
+.reasoning-strip {
+  display: grid;
+  gap: 8px;
+}
+
+.reasoning-strip__label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);
+}
+
+.reasoning-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  width: fit-content;
+  color: var(--uf-text-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.reasoning-link .pi {
+  font-size: 12px;
+  transition: transform 140ms ease;
+}
+
+.reasoning-link:hover .pi {
+  transform: translateX(2px);
+}
+
 .section {
   padding: 60px 0;
   position: relative;
@@ -1009,6 +1149,10 @@
 
 @media (max-width: 980px) {
   .demo-frame { height: 780px; }
+
+  .reasoning-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
