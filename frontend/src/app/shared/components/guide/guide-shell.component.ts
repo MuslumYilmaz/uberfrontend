@@ -488,7 +488,20 @@ type LeftNav = {
     font-size:13.5px;
   }
   .table-scroll table{
-    min-width:520px;
+    min-width:max(100%, 560px);
+  }
+  .table-scroll th,
+  .table-scroll td{
+    min-width: 12rem;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+  .table-scroll td > *,
+  .table-scroll th > *{
+    white-space: inherit;
+    overflow-wrap: normal;
+    word-break: normal;
   }
 }
 
@@ -530,9 +543,24 @@ type LeftNav = {
   border-radius:12px; overflow:auto; background:var(--uf-surface);
   box-shadow:var(--uf-card-shadow);
   max-width:100%;
+  -webkit-overflow-scrolling: touch;
 }
-.table-scroll table{ width:100%; border-collapse:collapse; min-width:640px; }
-.table-scroll th,.table-scroll td{ border-bottom:1px solid var(--uf-border-subtle); padding:12px 14px; text-align:left; color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent); }
+.table-scroll table{ width:max-content; border-collapse:collapse; min-width:max(100%, 640px); table-layout:auto; }
+.table-scroll th,.table-scroll td{
+  border-bottom:1px solid var(--uf-border-subtle);
+  padding:12px 14px;
+  text-align:left;
+  color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+  white-space:normal;
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+.table-scroll td > *,
+.table-scroll th > *{
+  white-space:normal;
+  overflow-wrap:break-word;
+  word-break:normal;
+}
 .table-scroll thead th{ position:sticky; top:0; background:var(--uf-surface-alt); z-index:1; color: var(--uf-text-primary); }
 
 /* rails (left / right) */

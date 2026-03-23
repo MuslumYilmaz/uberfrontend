@@ -100,16 +100,22 @@
     </section>
   </details>
 
-  <div class="fa-questions-layout">
-    <aside class="fa-filter-panel" aria-label="Filters" data-testid="coding-list-filters">
-      <div faCard elevated class="fa-filter-panel__surface">
+  <ng-template #filterPanelTpl let-drawer="drawer">
+      <div faCard elevated class="fa-filter-panel__surface" [class.fa-filter-panel__surface--drawer]="drawer">
         <div class="fa-filter-panel__header">
           <div>
             <p class="fa-filter-panel__eyebrow fa-meta-label">All Questions</p>
             <h2 class="fa-filter-panel__title fa-section-title">Refine the list</h2>
           </div>
-          <div class="fa-filter-panel__count">
-            <span class="pill fa-chip fa-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
+          <div class="fa-filter-panel__header-actions">
+            <div class="fa-filter-panel__count">
+              <span class="pill fa-chip fa-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
+            </div>
+            <button *ngIf="drawer" type="button" faButton variant="ghost" class="fa-filter-panel__close"
+              data-testid="coding-list-mobile-filter-close" (click)="closeMobileFilters()">
+              <i class="pi pi-times" aria-hidden="true"></i>
+              <span>Close</span>
+            </button>
           </div>
         </div>
 
@@ -192,6 +198,11 @@
           </div>
         </div>
       </div>
+  </ng-template>
+
+  <div class="fa-questions-layout">
+    <aside class="fa-filter-panel" aria-label="Filters" data-testid="coding-list-filters">
+      <ng-container [ngTemplateOutlet]="filterPanelTpl" [ngTemplateOutletContext]="{ drawer: false }"></ng-container>
     </aside>
 
     <section class="fa-question-list" data-testid="coding-list-results">
@@ -204,6 +215,13 @@
         </div>
 
         <div class="fa-question-list__actions">
+          <button type="button" faButton variant="ghost" class="fa-mobile-filter-trigger"
+            [class.is-active]="hasAppliedFilters" data-testid="coding-list-mobile-filter-trigger"
+            [attr.aria-expanded]="mobileFiltersOpen" aria-controls="coding-list-mobile-filters"
+            (click)="toggleMobileFilters()">
+            <i class="pi pi-sliders-h" aria-hidden="true"></i>
+            <span>Filters</span>
+          </button>
           <div class="fa-count-badge">
             {{ (filteredCount$ | async) || 0 }} matches
           </div>
@@ -333,5 +351,13 @@
 
       <app-offline-banner></app-offline-banner>
     </section>
+  </div>
+
+  <div class="fa-filter-drawer" *ngIf="mobileFiltersOpen" data-testid="coding-list-mobile-filter-drawer">
+    <div class="fa-filter-drawer__backdrop" (click)="closeMobileFilters()" aria-hidden="true"></div>
+    <aside id="coding-list-mobile-filters" class="fa-filter-drawer__panel" role="dialog" aria-modal="true"
+      aria-label="Coding filters">
+      <ng-container [ngTemplateOutlet]="filterPanelTpl" [ngTemplateOutletContext]="{ drawer: true }"></ng-container>
+    </aside>
   </div>
 </div>

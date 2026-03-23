@@ -6,6 +6,7 @@ import { defaultPrefs, Tech } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
+import { AppSidebarDrawerService } from '../../../core/services/app-sidebar-drawer.service';
 
 type Mode =
   | 'dashboard'
@@ -36,6 +37,18 @@ type VisibleEntry = {
       <!-- LEFT (brand) -->
       <div class="fah-left">
         <a class="fah-brand" routerLink="/">FrontendAtlas</a>
+        <button
+          type="button"
+          #mobileStudyTrigger
+          class="fah-iconbtn fah-mobile-study"
+          data-testid="header-mobile-study-button"
+          (click)="toggleMega($event)"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="megaOpen()"
+          aria-controls="prepare-mega"
+          aria-label="Open study menu">
+          <i class="pi pi-book"></i>
+        </button>
       </div>
 
       <!-- CENTER (Prepare trigger) -->
@@ -102,91 +115,32 @@ type VisibleEntry = {
 
         <div class="fah-mobile-actions">
           <a
-            class="fah-iconbtn fah-iconbtn--hub"
-            routerLink="/interview-questions"
-            data-testid="header-mobile-interview-hub"
-            aria-label="Open interview warm-up hub">
-            <i class="pi pi-list"></i>
+            *ngIf="!auth.isLoggedIn() && !isPro()"
+            class="fah-btn fah-mobile-quicklink"
+            routerLink="/pricing"
+            data-testid="header-mobile-pricing-button">
+            Pricing
           </a>
-          <button
-            type="button"
-            #mobileStudyTrigger
-            class="fah-iconbtn"
-            data-testid="header-mobile-study-button"
-            (click)="toggleMega($event)"
-            aria-haspopup="menu"
-            [attr.aria-expanded]="megaOpen()"
-            aria-controls="prepare-mega"
-            aria-label="Open study menu">
-            <i class="pi pi-book"></i>
-          </button>
+          <a *ngIf="auth.isLoggedIn()"
+             class="fah-avatar fah-profile--mobile-link"
+             data-testid="header-mobile-profile-button"
+             routerLink="/profile"
+             aria-label="Open profile">
+              <i class="pi pi-user"></i>
+          </a>
           <button
             type="button"
             class="fah-iconbtn"
             data-testid="header-mobile-menu-button"
-            (click)="toggleMobileMenu()"
-            aria-haspopup="menu"
-            [attr.aria-expanded]="mobileNavOpen()"
-            aria-controls="header-mobile-menu"
-            aria-label="Open navigation menu">
-            <i class="pi" [ngClass]="mobileNavOpen() ? 'pi-times' : 'pi-bars'"></i>
+            (click)="toggleSidebarDrawer($event)"
+            [attr.aria-expanded]="sidebarDrawerOpen()"
+            aria-controls="app-sidebar-drawer"
+            [attr.aria-label]="sidebarDrawerOpen() ? 'Close sidebar' : 'Open sidebar'">
+            <i class="pi" [ngClass]="sidebarDrawerOpen() ? 'pi-times' : 'pi-bars'"></i>
           </button>
         </div>
       </div>
     </div>
-
-    <!-- MOBILE NAV PANEL -->
-    <ng-container *ngIf="mobileNavOpen()">
-      <div class="fah-backdrop" (click)="closeAll()"></div>
-      <div id="header-mobile-menu" class="fah-mobile-panel" role="menu" (click)="$event.stopPropagation()"
-           data-testid="header-mobile-menu">
-        <a class="fah-mobile-item" routerLink="/dashboard" (click)="closeAll()" data-testid="header-mobile-dashboard">
-          <i class="pi pi-home"></i>
-          <span>Dashboard</span>
-        </a>
-        <a
-          class="fah-mobile-item fah-mobile-item--hub"
-          routerLink="/interview-questions"
-          (click)="closeAll()"
-          data-testid="header-mobile-interview-hub-row">
-          <i class="pi pi-list"></i>
-          <span>Interview warm-up</span>
-        </a>
-        <a *ngIf="!isPro()" class="fah-mobile-item" routerLink="/pricing" (click)="closeAll()" data-testid="header-mobile-pricing">
-          <i class="pi pi-tag"></i>
-          <span>Pricing</span>
-        </a>
-        <a *ngIf="!isPro()" class="fah-mobile-item fah-mobile-item--accent" [routerLink]="ctaLink()" (click)="closeAll()" data-testid="header-mobile-cta">
-          <i class="pi pi-star"></i>
-          <span>{{ ctaLabel() }}</span>
-        </a>
-        <div class="fah-divider"></div>
-        <ng-container *ngIf="auth.isLoggedIn(); else mobileGuest">
-          <a class="fah-mobile-item" routerLink="/profile" (click)="closeAll()" data-testid="header-mobile-profile">
-            <i class="pi pi-user"></i>
-            <span>My profile</span>
-          </a>
-          <a *ngIf="isAdmin()" class="fah-mobile-item" routerLink="/admin/users" (click)="closeAll()" data-testid="header-mobile-admin-users">
-            <i class="pi pi-shield"></i>
-            <span>Admin: Users</span>
-          </a>
-          <button type="button" class="fah-mobile-item" (click)="logout()" data-testid="header-mobile-logout">
-            <i class="pi pi-sign-out"></i>
-            <span>Log out</span>
-          </button>
-        </ng-container>
-        <ng-template #mobileGuest>
-          <button type="button" class="fah-mobile-item" routerLink="/auth/signup" (click)="closeAll()" data-testid="header-mobile-signup">
-            <i class="pi pi-user-plus"></i>
-            <span>Sign up</span>
-          </button>
-          <button type="button" class="fah-mobile-item" routerLink="/auth/login" (click)="closeAll()" data-testid="header-mobile-login">
-            <i class="pi pi-sign-in"></i>
-            <span>Log in</span>
-          </button>
-        </ng-template>
-      </div>
-    </ng-container>
 
     <!-- STUDY PANEL -->
     <ng-container *ngIf="megaOpen()">
@@ -368,6 +322,7 @@ export class HeaderComponent implements OnInit {
   private doc = inject(DOCUMENT);
   private router = inject(Router);
   private hostEl = inject(ElementRef<HTMLElement>);
+  private drawerState = inject(AppSidebarDrawerService);
 
   // route state
   mode = signal<Mode>('dashboard');
@@ -387,7 +342,7 @@ export class HeaderComponent implements OnInit {
   megaOpen = signal(false);
   megaAnchorX = signal<number | null>(null);
   profileOpen = signal(false);
-  mobileNavOpen = signal(false);
+  sidebarDrawerOpen = this.drawerState.isOpen;
 
   topPicks(): PrepareItem[] {
     if (this.isSearching()) return [];
@@ -418,6 +373,7 @@ export class HeaderComponent implements OnInit {
       .subscribe(() => {
         this.parseUrl(this.router.url);
         this.closeAll();
+        this.drawerState.close();
         this.updateSafeTop();
         this.loadRecents();
       });
@@ -663,10 +619,9 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  private openOnly(which: 'mega' | 'profile' | 'mobile' | null) {
+  private openOnly(which: 'mega' | 'profile' | null) {
     this.megaOpen.set(which === 'mega');
     this.profileOpen.set(which === 'profile');
-    this.mobileNavOpen.set(which === 'mobile');
     if (which === 'mega') {
       this.syncMegaAnchor();
       this.activeIndex.set(-1);
@@ -678,6 +633,7 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleMega(ev?: Event) {
+    this.drawerState.close();
     if (this.megaOpen()) {
       this.openOnly(null);
       return;
@@ -687,9 +643,14 @@ export class HeaderComponent implements OnInit {
   }
   toggleProfileMenu(event?: Event) {
     event?.stopPropagation();
+    this.drawerState.close();
     this.openOnly(this.profileOpen() ? null : 'profile');
   }
-  toggleMobileMenu() { this.openOnly(this.mobileNavOpen() ? null : 'mobile'); }
+  toggleSidebarDrawer(event?: Event) {
+    event?.stopPropagation();
+    this.openOnly(null);
+    this.drawerState.toggle();
+  }
 
   closeAll() { this.openOnly(null); }
 

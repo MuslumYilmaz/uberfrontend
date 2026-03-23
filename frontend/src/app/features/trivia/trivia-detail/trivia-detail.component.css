@@ -519,14 +519,15 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 .table th > * {
   max-width: 100%;
   white-space: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 :host ::ng-deep .table td > *,
 :host ::ng-deep .table th > * {
   max-width: 100%;
   white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 .table tbody tr:hover td { background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt)); }
 .tbl-caption { margin-top: 8px; color: var(--uf-text-secondary); font-size: 12.6px; text-align: center; }
@@ -835,19 +836,28 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   }
   .table-scroll {
     margin-inline: -2px;
-    overflow-x: hidden;
+    overflow-x: auto;
   }
   .table {
-    width: 100%;
-    min-width: 0;
-    table-layout: fixed;
+    width: max-content;
+    min-width: max(100%, 560px);
+    table-layout: auto;
   }
   .table thead th,
   .table tbody td {
     padding: 8px 9px;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
+    min-width: 12rem;
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+  .table td > *,
+  .table th > *,
+  :host ::ng-deep .table td > *,
+  :host ::ng-deep .table th > * {
+    white-space: inherit;
+    overflow-wrap: normal;
+    word-break: normal;
   }
 }
 

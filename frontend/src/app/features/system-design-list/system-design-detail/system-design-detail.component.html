@@ -244,18 +244,20 @@
                         <!-- TABLE -->
                         <div *ngIf="b.type === 'table'" class="sd-table">
                             <div class="sd-table-title" *ngIf="b.title">{{ b.title }}</div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th *ngFor="let col of b.columns; trackBy: trackByStringValue">{{ col }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let row of b.rows; trackBy: trackByTableRow">
-                                        <td *ngFor="let cell of row; trackBy: trackByTableCell">{{ cell }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="sd-table-scroll">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th *ngFor="let col of b.columns; trackBy: trackByStringValue">{{ col }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let row of b.rows; trackBy: trackByTableRow">
+                                            <td *ngFor="let cell of row; trackBy: trackByTableCell">{{ cell }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <!-- COLUMNS -->

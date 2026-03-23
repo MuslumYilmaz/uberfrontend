@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnDestroy, OnInit, effect, inject, signal } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit, computed, effect, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
@@ -8,6 +8,9 @@ import { filter } from 'rxjs/operators';
 import { BugReportService } from '../../core/services/bug-report.service';
 import { PracticeCatalogEntry } from '../../core/models/practice.model';
 import { PracticeRegistryService } from '../../core/services/practice-registry.service';
+import { AppSidebarDrawerService } from '../../core/services/app-sidebar-drawer.service';
+import { AuthService } from '../../core/services/auth.service';
+import { isProActive } from '../../core/utils/entitlements.util';
 
 interface LinkItem {
   key: string;
@@ -40,7 +43,7 @@ type NavItem = LinkItem | GroupItem;
 })
 export class AppSidebarComponent implements OnInit, OnDestroy {
   @Input() collapsed = false;
-  drawerOpen = signal(false);
+  @Input() drawerOnly = false;
 
   private navSub?: Subscription;
   private currentPath = '/';
@@ -48,6 +51,10 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly bugReport = inject(BugReportService);
   private readonly practiceRegistry = inject(PracticeRegistryService);
+  private readonly drawerState = inject(AppSidebarDrawerService);
+  readonly auth = inject(AuthService);
+  readonly isPro = computed(() => isProActive(this.auth.user()));
+  readonly drawerOpen = this.drawerState.isOpen;
 
   isLink = (i: NavItem): i is LinkItem => i.type === 'link';
   isGroup = (i: NavItem): i is GroupItem => i.type === 'group';
@@ -75,13 +82,22 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleDrawer() { this.drawerOpen.update(v => !v); }
+  toggleDrawer() {
+    this.drawerState.toggle();
+  }
+
+  closeDrawer() {
+    this.drawerState.close();
+  }
 
   ngOnInit(): void {
     this.applyDefaultOpen(this.router.url);
     this.navSub = this.router.events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-      .subscribe((e) => this.applyDefaultOpen(e.urlAfterRedirects || e.url));
+      .subscribe((e) => {
+        this.applyDefaultOpen(e.urlAfterRedirects || e.url);
+        this.closeDrawer();
+      });
   }
 
   ngOnDestroy(): void {
@@ -94,16 +110,24 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:keydown.escape') onEsc() {
-    if (this.drawerOpen()) this.drawerOpen.set(false);
+    if (this.drawerOpen()) this.closeDrawer();
   }
 
   // --- Bug modal actions ---
   openBugModal() {
+    this.closeDrawer();
     this.bugReport.open({
       source: 'sidebar',
       url: typeof window !== 'undefined' ? window.location.href : this.router.url,
       route: this.router.url,
     });
+  }
+
+  shouldCollapseRail(): boolean {
+    if (this.drawerOnly) return false;
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return this.collapsed;
+    if (window.matchMedia('(max-width: 980px)').matches) return false;
+    return this.collapsed;
   }
 
   isLinkActive(item: LinkItem): boolean {

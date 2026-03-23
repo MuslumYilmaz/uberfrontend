@@ -336,6 +336,12 @@
   border-radius: 10px;
 }
 
+.sd-table-scroll{
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
 .sd-table-title {
   font-size: 13px;
   font-weight: 600;
@@ -344,10 +350,11 @@
 }
 
 .sd-table table {
-  min-width: 0;
-  max-width: 100%;
-  width: 100%;
+  min-width: max(100%, 640px);
+  max-width: none;
+  width: max-content;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 .sd-table th {
@@ -831,14 +838,14 @@
     flex-basis: auto;
   }
   .sd-table table{
-    width: 100%;
-    table-layout: fixed;
+    min-width: max(100%, 720px);
   }
   .sd-table th,
   .sd-table td{
-    white-space: normal;
-    overflow-wrap:anywhere;
-    word-break:break-word;
+    min-width: 12rem;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
   }
   .sd-code{
     min-width: 0;

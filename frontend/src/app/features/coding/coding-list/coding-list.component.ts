@@ -245,6 +245,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private readonly practiceRegistry = inject(PracticeRegistryService);
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
+  mobileFiltersOpen = false;
   solvedIds = this.progress.solvedIds;
   solvedSet = computed(() => new Set(this.progress.solvedIds()));
   solvedIds$ = toObservable(this.progress.solvedIds);
@@ -644,6 +645,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return FRAMEWORK_PREP_LINKS.find((entry) => entry.tech === selectedTech) ?? null;
   }
 
+  get hasAppliedFilters(): boolean {
+    return this.diffs$.value.length > 0
+      || this.impTiers$.value.length > 0
+      || this.selectedTags$.value.length > 0
+      || (this.source === 'global-coding' && !this.isFormatsMode() && !!this.selectedTech$.value);
+  }
+
   isUnsupportedPrepTechSelected(): boolean {
     const selectedTech = this.selectedTech$.value;
     return selectedTech === 'html' || selectedTech === 'css';
@@ -675,6 +683,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.sort$.next(k);
     this.closeSort();
     this.saveFiltersTo(this.getActiveViewKey());
+  }
+  toggleMobileFilters() {
+    if (this.mobileFiltersOpen) {
+      this.closeMobileFilters();
+      return;
+    }
+    this.closeSort();
+    this.mobileFiltersOpen = true;
+  }
+  closeMobileFilters() {
+    this.mobileFiltersOpen = false;
   }
 
   isSolved(id: string): boolean {
@@ -1710,6 +1729,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.closeMobileFilters();
 
     // Global /coding listesi için, çıkarken son filtre durumunu kaydet
     if (this.source === 'global-coding' && this.hydrated) {

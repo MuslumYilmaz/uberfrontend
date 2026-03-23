@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BugReportService } from '../../core/services/bug-report.service';
 import { PracticeRegistryService } from '../../core/services/practice-registry.service';
+import { AppSidebarDrawerService } from '../../core/services/app-sidebar-drawer.service';
+import { AuthService } from '../../core/services/auth.service';
 import { AppSidebarComponent } from './app-sidebar.component';
 
 @Component({
@@ -13,7 +15,9 @@ import { AppSidebarComponent } from './app-sidebar.component';
 class DummyPageComponent {}
 
 describe('AppSidebarComponent', () => {
-  async function configureTestingModule() {
+  async function configureTestingModule(options?: { isLoggedIn?: boolean; isPro?: boolean }) {
+    const isLoggedIn = options?.isLoggedIn ?? false;
+    const isPro = options?.isPro ?? false;
     const bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     const practiceRegistry = {
       catalogEntries: signal([
@@ -77,6 +81,23 @@ describe('AppSidebarComponent', () => {
       providers: [
         { provide: BugReportService, useValue: bugReport },
         { provide: PracticeRegistryService, useValue: practiceRegistry },
+        {
+          provide: AuthService,
+          useValue: {
+            user: signal(
+              isLoggedIn
+                ? {
+                  _id: 'user_1',
+                  username: 'sidebar_user',
+                  email: 'sidebar@example.com',
+                  role: 'user',
+                  accessTier: isPro ? 'premium' : 'free',
+                }
+                : null,
+            ),
+            isLoggedIn: signal(isLoggedIn),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -162,5 +183,46 @@ describe('AppSidebarComponent', () => {
 
     expect(questionLibraryLink.classList.contains('is-active')).toBeTrue();
     expect(practiceCatalog.classList.contains('open')).toBeTrue();
+  });
+
+  it('opens the drawer when the shared drawer service is toggled', async () => {
+    await configureTestingModule();
+    const drawer = TestBed.inject(AppSidebarDrawerService);
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    drawer.open();
+    fixture.detectChanges();
+
+    const sidebar = fixture.nativeElement.querySelector('#app-sidebar-drawer') as HTMLElement;
+    expect(sidebar.classList.contains('is-open')).toBeTrue();
+  });
+
+  it('renders guest auth actions in the mobile drawer footer', async () => {
+    await configureTestingModule();
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-signup"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-login"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-pricing"]')).toBeTruthy();
+  });
+
+  it('renders a profile shortcut for signed-in users in the mobile drawer footer', async () => {
+    await configureTestingModule({ isLoggedIn: true });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    const profileLink = fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-profile"]') as HTMLAnchorElement;
+    expect(profileLink).toBeTruthy();
+    expect(profileLink.getAttribute('href') || '').toContain('/profile');
+  });
+
+  it('hides the pricing shortcut for premium users in the mobile drawer footer', async () => {
+    await configureTestingModule({ isLoggedIn: true, isPro: true });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-pricing"]')).toBeFalsy();
   });
 });

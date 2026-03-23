@@ -1,7 +1,7 @@
 .track-preview {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 12px 0 28px;
+  padding: 12px clamp(16px, 4vw, 20px) 28px;
   display: grid;
   gap: 16px;
 }

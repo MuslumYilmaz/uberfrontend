@@ -1,18 +1,10 @@
-<button
-    class="sidebar-toggle"
-    type="button"
-    (click)="toggleDrawer()"
-    [attr.aria-label]="drawerOpen() ? 'Close sidebar' : 'Open sidebar'">
-    <i class="pi" [ngClass]="drawerOpen() ? 'pi-times' : 'pi-bars'" aria-hidden="true"></i>
-</button>
-
-<aside class="sidebar" [class.is-collapsed]="collapsed" [class.is-open]="drawerOpen()">
+<aside id="app-sidebar-drawer" class="sidebar" [class.is-collapsed]="shouldCollapseRail()" [class.is-open]="drawerOpen()" [class.sidebar--drawer-only]="drawerOnly">
     <nav class="nav">
         <div class="nav-section nav-section--top" *ngIf="isLink(nav[0])">
             <ul>
                 <li>
                     <a class="nav-link" [routerLink]="$any(nav[0]).to" [queryParams]="$any(nav[0]).query || null"
-                        [class.is-active]="isLinkActive($any(nav[0]))"
+                        [class.is-active]="isLinkActive($any(nav[0]))" (click)="closeDrawer()"
                         aria-label="Home">
                         <i class="pi nav-ic pi-compass"></i>
                         <span class="label">Home base</span>
@@ -36,7 +28,7 @@
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[1]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
-                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label">
+                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label" (click)="closeDrawer()">
                                     <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
                                     <span class="label">{{ c.label }}</span>
                                 </a>
@@ -63,7 +55,7 @@
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[2]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
-                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label">
+                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label" (click)="closeDrawer()">
                                     <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
                                     <span class="label">{{ c.label }}</span>
                                 </a>
@@ -86,7 +78,7 @@
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[3]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
-                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label">
+                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label" (click)="closeDrawer()">
                                     <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
                                     <span class="label">{{ c.label }}</span>
                                 </a>
@@ -112,7 +104,7 @@
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[4]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
-                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label">
+                                    [class.is-active]="isLinkActive(c)" [attr.aria-label]="c.label" (click)="closeDrawer()">
                                     <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
                                     <span class="label">{{ c.label }}</span>
                                 </a>
@@ -135,11 +127,11 @@
 
             <!-- Legal -->
             <button pButton type="button" icon="pi pi-shield" class="p-button-text p-button-icon-only legal-btn"
-                [routerLink]="['/legal']" pTooltip="Legal" tooltipPosition="right" aria-label="Legal">
+                [routerLink]="['/legal']" (click)="closeDrawer()" pTooltip="Legal" tooltipPosition="right" aria-label="Legal">
             </button>
         </div>
 
-        <div class="tools-right">
+        <div class="tools-right" *ngIf="!drawerOnly">
             <button pButton type="button" [icon]="collapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"
                 class="p-button-rounded p-button-text p-button-icon-only" (click)="toggleCollapsed()"
                 pTooltip="{{ collapsed ? 'Expand sidebar' : 'Collapse sidebar' }}" tooltipPosition="right"
@@ -147,6 +139,24 @@
             </button>
         </div>
     </div>
+
+    <div class="mobile-auth-actions" *ngIf="auth.isLoggedIn() || !isPro()">
+        <a *ngIf="auth.isLoggedIn()" class="mobile-auth-btn mobile-auth-btn--profile" [routerLink]="['/profile']" (click)="closeDrawer()" data-testid="sidebar-mobile-profile">
+            <i class="pi pi-user" aria-hidden="true"></i>
+            <span>Profile</span>
+        </a>
+        <div class="mobile-auth-row" *ngIf="!auth.isLoggedIn()">
+            <a class="mobile-auth-btn mobile-auth-btn--primary" [routerLink]="['/auth/signup']" (click)="closeDrawer()" data-testid="sidebar-mobile-signup">
+                Sign up
+            </a>
+            <a class="mobile-auth-btn" [routerLink]="['/auth/login']" (click)="closeDrawer()" data-testid="sidebar-mobile-login">
+                Log in
+            </a>
+        </div>
+        <a *ngIf="!isPro()" class="mobile-auth-btn mobile-auth-btn--pricing" [routerLink]="['/pricing']" (click)="closeDrawer()" data-testid="sidebar-mobile-pricing">
+            Pricing
+        </a>
+    </div>
 </aside>
 
-<div class="backdrop" *ngIf="drawerOpen()" (click)="toggleDrawer()" aria-hidden="true"></div>
+<div class="backdrop" *ngIf="drawerOpen()" (click)="closeDrawer()" aria-hidden="true"></div>

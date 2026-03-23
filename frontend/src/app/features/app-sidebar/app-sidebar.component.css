@@ -35,6 +35,9 @@
   line-height: 1.35;
   display: block;
 }
+.sidebar.sidebar--drawer-only {
+  display: none;
+}
 .sidebar.is-collapsed { width: 60px; }
 
 /* ---- nav ---- */
@@ -178,6 +181,48 @@
   gap: 8px;
 }
 
+.mobile-auth-actions {
+  display: none;
+}
+
+.mobile-auth-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.mobile-auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 0.95rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--sb-border);
+  background: color-mix(in srgb, var(--sb-surface-alt) 92%, black);
+  color: var(--sb-text);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.mobile-auth-btn--primary {
+  border-color: color-mix(in srgb, var(--sb-accent) 42%, var(--sb-border));
+  background: color-mix(in srgb, var(--sb-accent) 16%, var(--sb-surface-alt));
+}
+
+.mobile-auth-btn--profile {
+  gap: 0.55rem;
+}
+
+.mobile-auth-btn--pricing {
+  width: 100%;
+  margin-top: 0.65rem;
+  border-color: color-mix(in srgb, var(--sb-accent) 46%, var(--sb-border));
+  background: color-mix(in srgb, var(--sb-accent) 22%, var(--sb-surface-alt));
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
+}
+
 /* ---- Bug & Legal buttons ---- */
 .tool-icon-btn,
 .legal-btn {
@@ -315,29 +360,6 @@
   padding: 5px 7px;
 }
 
-/* ---- mobile drawer ---- */
-.sidebar-toggle {
-  position: fixed;
-  top: calc(var(--app-safe-top) + 12px);
-  left: 12px;
-  z-index: 41;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid var(--sb-border);
-  background: color-mix(in srgb, var(--sb-surface-alt) 92%, black);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  color: var(--sb-text);
-}
-.sidebar-toggle .pi {
-  font-size: 0.98rem;
-}
-.sidebar-toggle:hover {
-  background: color-mix(in srgb, var(--sb-surface-alt) 84%, white);
-}
 .backdrop {
   position: fixed;
   inset: 0;
@@ -362,5 +384,15 @@
     pointer-events: auto;
     transition: transform .2s ease;
   }
-  .sidebar-toggle { display: inline-flex; }
+  .sidebar.sidebar--drawer-only {
+    display: grid;
+  }
+  .tools-right {
+    display: none;
+  }
+  .mobile-auth-actions {
+    display: grid;
+    gap: 0.65rem;
+    padding: 0 10px 10px;
+  }
 }

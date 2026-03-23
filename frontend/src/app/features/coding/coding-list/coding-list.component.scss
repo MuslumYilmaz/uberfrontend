@@ -283,9 +283,7 @@ app-coding-tech-kind-tabs {
 
 @media (max-width: 900px) {
   .fa-filter-panel {
-    position: static;
-    top: auto;
-    z-index: auto;
+    display: none;
   }
 
   .fa-filter-panel__surface {
@@ -303,10 +301,23 @@ app-coding-tech-kind-tabs {
   border-bottom: 1px solid var(--border-weak);
 }
 
+.fa-filter-panel__header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .fa-filter-panel__count .pill {
   padding: 6px 10px;
   font-size: 12px;
   font-weight: 600;
+}
+
+.fa-filter-panel__close {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .fa-filter-section {
@@ -457,6 +468,11 @@ app-coding-tech-kind-tabs {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .fa-question-list__actions {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
 }
 
 .fa-question-list__search {
@@ -471,6 +487,22 @@ app-coding-tech-kind-tabs {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+}
+
+.fa-mobile-filter-trigger {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.fa-mobile-filter-trigger.is-active {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--fa-accent) 68%, var(--border));
+  background: color-mix(in srgb, var(--surface-2) 84%, rgba(var(--fa-accent-rgb), 0.18));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--fa-accent) 30%, transparent),
+    0 14px 30px rgba(0, 0, 0, 0.28);
 }
 
 .fa-count-badge {
@@ -537,6 +569,49 @@ app-coding-tech-kind-tabs {
 
 .fa-sort__item.active .fa-sort__check {
   opacity: 1;
+}
+
+.fa-filter-drawer {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .fa-mobile-filter-trigger {
+    display: inline-flex;
+  }
+
+  .fa-filter-drawer {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 72;
+  }
+
+  .fa-filter-drawer__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 10, 20, 0.68);
+    backdrop-filter: blur(6px);
+  }
+
+  .fa-filter-drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(420px, 100vw);
+    padding: 12px;
+  }
+
+  .fa-filter-panel__surface--drawer {
+    height: calc(100dvh - 24px);
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+    border-radius: 18px;
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.48),
+      0 0 0 1px rgba(var(--fa-text-rgb), 0.04);
+  }
 }
 
 .list {
