@@ -283,13 +283,14 @@ app-coding-tech-kind-tabs {
 
 @media (max-width: 900px) {
   .fa-filter-panel {
-    top: calc(var(--app-safe-top, 56px) + 10px);
-    z-index: 14;
+    position: static;
+    top: auto;
+    z-index: auto;
   }
 
   .fa-filter-panel__surface {
-    max-height: calc(100vh - (var(--app-safe-top, 56px) + 20px));
-    overflow: auto;
+    max-height: none;
+    overflow: visible;
   }
 }
 

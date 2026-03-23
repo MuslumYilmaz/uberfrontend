@@ -44,7 +44,7 @@ type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
 
       max-width: 1120px;
       margin: 0 auto;
-      padding: 24px 0 48px;
+      padding: 24px clamp(18px, 4vw, 28px) 48px;
       display: grid;
       gap: 16px;
     }

@@ -25,6 +25,7 @@ import { IncidentProgressService } from '../../../core/services/incident-progres
 import { SeoService } from '../../../core/services/seo.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { buildIncidentSeoMeta, incidentTechLabel } from '../../../core/utils/incident-seo.util';
 
 type FeedbackStatus = 'correct' | 'partial' | 'review';
 
@@ -300,22 +301,7 @@ export class IncidentDetailComponent {
   }
 
   techLabel(tech: string): string {
-    switch (tech) {
-      case 'javascript':
-        return 'JavaScript';
-      case 'react':
-        return 'React';
-      case 'angular':
-        return 'Angular';
-      case 'vue':
-        return 'Vue';
-      case 'html':
-        return 'HTML';
-      case 'css':
-        return 'CSS';
-      default:
-        return 'Frontend';
-    }
+    return incidentTechLabel(tech);
   }
 
   goToAdjacentIncident(target: IncidentListItem | null): void {
@@ -373,85 +359,9 @@ export class IncidentDetailComponent {
   }
 
   private updateSeo(scenario: IncidentScenario): void {
-    const meta = scenario.meta;
-    const techLabel = this.techLabel(meta.tech);
-    const canonicalPath = `/incidents/${meta.id}`;
-    const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
-    const incidentsHubUrl = this.seo.buildCanonicalUrl('/incidents');
-    const imageUrl = this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
-    const detailDescription = `Practice this ${techLabel.toLowerCase()} debugging interview question. ${meta.summary} Work through the root cause, the first debug steps, the best fix, and the regression guard.`;
-    const breadcrumb = {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'FrontendAtlas',
-          item: this.seo.buildCanonicalUrl('/'),
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: 'Debug Scenarios',
-          item: incidentsHubUrl,
-        },
-        {
-          '@type': 'ListItem',
-          position: 3,
-          name: meta.title,
-          item: canonicalUrl,
-        },
-      ],
-    };
-    const learningResource = {
-      '@type': 'LearningResource',
-      '@id': canonicalUrl,
-      name: meta.title,
-      headline: meta.title,
-      description: detailDescription,
-      url: canonicalUrl,
-      mainEntityOfPage: canonicalUrl,
-      inLanguage: 'en',
-      learningResourceType: 'Debug scenario',
-      educationalUse: 'Interview practice',
-      timeRequired: `PT${meta.estimatedMinutes}M`,
-      isAccessibleForFree: meta.access !== 'premium',
-      keywords: meta.tags.join(', '),
-      dateModified: `${meta.updatedAt}T00:00:00Z`,
-      author: { '@type': 'Organization', name: 'FrontendAtlas' },
-      publisher: {
-        '@type': 'Organization',
-        name: 'FrontendAtlas',
-        logo: {
-          '@type': 'ImageObject',
-          url: imageUrl,
-        },
-      },
-      isPartOf: {
-        '@type': 'CollectionPage',
-        '@id': incidentsHubUrl,
-        url: incidentsHubUrl,
-        name: 'Frontend Debugging Interview Questions and Debug Scenarios',
-      },
-      about: [
-        { '@type': 'Thing', name: `${techLabel} debugging interview question` },
-        { '@type': 'Thing', name: 'Frontend debug scenario' },
-      ],
-    };
-    this.seo.updateTags({
-      title: `${meta.title} - ${techLabel} Debug Scenario`,
-      description: detailDescription,
-      canonical: canonicalPath,
-      keywords: [
-        ...meta.tags,
-        'frontend debug scenario',
-        'frontend debugging interview questions',
-        `${techLabel.toLowerCase()} debugging interview question`,
-        `${techLabel.toLowerCase()} debug scenario`,
-      ],
-      ogType: 'article',
-      jsonLd: [breadcrumb, learningResource],
-    });
+    this.seo.updateTags(
+      buildIncidentSeoMeta(scenario, (value) => this.seo.buildCanonicalUrl(value)),
+    );
   }
 
   private enterDebrief(): void {

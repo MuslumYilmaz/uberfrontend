@@ -23,7 +23,7 @@ import { incidentExistsGuard } from './core/guards/incident-exists.guard';
 import { tradeoffBattleExistsGuard } from './core/guards/tradeoff-battle-exists.guard';
 import { interviewQuestionsHubResolver } from './core/resolvers/interview-questions.resolver';
 import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
-import { incidentDetailResolver, incidentListResolver } from './core/resolvers/incident.resolver';
+import { incidentDetailResolver, incidentListResolver, incidentSeoResolver } from './core/resolvers/incident.resolver';
 import {
   tradeoffBattleDetailResolver,
   tradeoffBattleListResolver,
@@ -1011,13 +1011,7 @@ export const routes: Routes = [
       ),
     resolve: {
       incidentDetail: incidentDetailResolver,
-    },
-    data: {
-      seo: {
-        title: 'Frontend Debug Scenario for Interview Practice',
-        description:
-          'Practice a frontend debugging interview question with a guided debug scenario covering the root cause, debug order, fix, and regression guard.',
-      },
+      seo: incidentSeoResolver,
     },
   },
   {

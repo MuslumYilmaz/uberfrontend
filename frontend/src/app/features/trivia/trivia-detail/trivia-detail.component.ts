@@ -226,9 +226,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   });
 
   // footer helpers
-  readonly progressText = computed(() =>
-    this.practice ? `${this.practice.index + 1} / ${this.practice.items.length}` : '—'
-  );
+  progressText(): string {
+    return this.practice ? `${this.practice.index + 1} / ${this.practice.items.length}` : '—';
+  }
   hasPrev() { return !!this.practice && this.practice.index > 0; }
   hasNext() { return !!this.practice && this.practice.index + 1 < this.practice.items.length; }
   trackByQuestionId = (_: number, q: Question): string => q.id;

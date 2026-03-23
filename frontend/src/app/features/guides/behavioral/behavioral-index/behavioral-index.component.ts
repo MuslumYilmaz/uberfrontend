@@ -8,7 +8,7 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
   imports: [CommonModule, RouterModule, OfflineBannerComponent],
   styles: [`
     :host { display:block; color: var(--uf-text-primary); background: var(--uf-bg); }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 24px 0 48px; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 24px clamp(18px, 4vw, 28px) 48px; }
     .hero-title { font-size: 28px; font-weight: 800; margin: 6px 0 6px; color: var(--uf-text-primary); }
     .hero-sub { color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent); margin-bottom: 18px; }
     .pill-row { display:flex; gap:10px; flex-wrap:wrap; margin:12px 0 18px; }

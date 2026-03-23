@@ -1,17 +1,24 @@
-<footer class="footer fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
+<footer
+    class="footer fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10"
+    [class.footer--practice]="isPractice"
+    [class.footer--course]="isCourse"
+    [attr.data-testid]="isPractice ? 'practice-footer' : 'course-footer'">
     <!-- 3-col grid: left (outline) | center (cluster) | right (submit) -->
     <div class="bar">
         <!-- LEFT -->
         <div class="left">
             <a *ngIf="isPractice && practiceLeftLabel && practiceLeftRoute" class="left-trigger left-trigger--link"
-                [routerLink]="practiceLeftRoute">
+                [routerLink]="practiceLeftRoute"
+                [attr.aria-label]="practiceLeftLabel"
+                [attr.title]="practiceLeftLabel"
+                data-testid="footer-left">
                 <span class="icon">↗</span>
-                <span class="truncate">{{ practiceLeftLabel }}</span>
+                <span class="truncate left-trigger__label">{{ practiceLeftLabel }}</span>
             </a>
             <button *ngIf="isCourse && hasOutline && leftCourseLabel" class="left-trigger" type="button"
-                (click)="openMenu()" aria-label="Open course outline">
+                (click)="openMenu()" aria-label="Open course outline" data-testid="footer-left">
                 <span class="icon">☰</span>
-                <span class="truncate">{{ leftCourseLabel }}</span>
+                <span class="truncate left-trigger__label">{{ leftCourseLabel }}</span>
             </button>
         </div>
 
@@ -19,12 +26,18 @@
         <div class="center">
             <!-- Practice cluster -->
             <div class="cluster" *ngIf="isPractice">
-                <button class="pbtn-sm" type="button" (click)="prev.emit()" [disabled]="prevDisabled">← Prev</button>
-                <span class="progress" *ngIf="progressText">{{ progressText }}</span>
-                <button class="pbtn-sm" type="button" (click)="next.emit()" [disabled]="nextDisabled"
+                <button class="pbtn-sm pbtn-sm--nav" type="button" (click)="prev.emit()" [disabled]="prevDisabled"
+                    aria-label="Previous practice item" data-testid="footer-prev">
+                    <span class="pbtn-sm__full">← Prev</span>
+                    <span class="pbtn-sm__compact" aria-hidden="true">←</span>
+                </button>
+                <span class="progress" *ngIf="progressText" data-testid="footer-progress">{{ progressText }}</span>
+                <button class="pbtn-sm pbtn-sm--nav" type="button" (click)="next.emit()" [disabled]="nextDisabled"
+                    aria-label="Next practice item" data-testid="footer-next"
                     [pTooltip]="nextDisabled ? (nextDisabledTooltip || '') : ''"
                     [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
-                    Next →
+                    <span class="pbtn-sm__full">Next →</span>
+                    <span class="pbtn-sm__compact" aria-hidden="true">→</span>
                 </button>
             </div>
 
@@ -55,7 +68,7 @@
         <!-- RIGHT -->
         <div class="right">
             <button *ngIf="showSubmit" class="pbtn-sm primary" type="button" [disabled]="submitDisabled"
-                (click)="submit.emit()">
+                (click)="submit.emit()" data-testid="footer-submit">
                 {{ submitLabel }}
             </button>
         </div>

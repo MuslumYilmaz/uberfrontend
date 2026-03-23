@@ -16,7 +16,7 @@ type FrameworkPathCard = {
   imports: [CommonModule, RouterModule, OfflineBannerComponent, PrepSignalGridComponent],
   styles: [`
     :host { display:block; color: var(--uf-text-primary); background: var(--uf-bg); }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 0 48px; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px clamp(18px, 4vw, 28px) 48px; }
     .hero-title { margin: 6px 0 6px; }
     .hero-sub { color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent); margin-bottom: 14px; max-width: 860px; }
 

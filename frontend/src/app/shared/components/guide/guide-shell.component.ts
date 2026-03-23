@@ -39,10 +39,15 @@ type LeftNav = {
   grid-template-columns: minmax(0,1fr) var(--right-toc-w);
   gap:28px;
   align-items:start;
-  padding:12px 16px 40px;
+  padding:16px clamp(18px, 3vw, 28px) 44px;
+  min-width:0;
+  max-width:100%;
 }
 .wrap.has-left{
   grid-template-columns: var(--left-nav-w) minmax(0,1fr) var(--right-toc-w);
+}
+.wrap > *{
+  min-width:0;
 }
 
 @media (max-width:1500px){
@@ -54,11 +59,16 @@ type LeftNav = {
 
 @media (max-width:1100px){
   .wrap{ grid-template-columns:1fr; }
+  .wrap.has-left{ grid-template-columns:1fr; }
   .left, .toc { display:none; }
-  .mobile-panels{ display:grid; }
 }
 
-.wrap > .main{ max-width: 920px; }
+.wrap > .main{
+  min-width:0;
+  width:100%;
+  max-width:920px;
+  margin-inline:auto;
+}
 
 /* mobile/tablet: collapsible menu + toc */
 .mobile-panels{
@@ -66,6 +76,9 @@ type LeftNav = {
   grid-template-columns: 1fr;
   gap: 12px;
   margin: 6px 0 16px;
+}
+@media (max-width:1100px){
+  .mobile-panels{ display:grid; }
 }
 .mp{
   border:1px solid var(--uf-border-subtle);
@@ -93,6 +106,7 @@ type LeftNav = {
   padding:10px 12px;
   max-height: 52vh;
   overflow:auto;
+  min-width:0;
 }
 .mp .sec{ margin:10px 0 6px; padding:0 6px; font-size:12px; opacity:.7; }
 .mp a{
@@ -109,7 +123,7 @@ type LeftNav = {
 .mp .dot{ width:6px; height:6px; border-radius:999px; background:color-mix(in srgb, var(--uf-text-primary) 40%, transparent); }
 
 @media (max-width:720px){
-  .wrap{ padding:10px 14px 36px; }
+  .wrap{ padding:14px 18px 36px; }
   .wrap .title{ font-size:24px; }
   .wrap .content{ font-size:var(--uf-body-size); line-height:var(--uf-body-line); }
 }
@@ -136,16 +150,39 @@ type LeftNav = {
 
 /* article body readability */
 .content{
+  min-width:0;
+  max-width:100%;
   line-height:var(--uf-body-line);
   font-size:var(--uf-body-size);
   letter-spacing:.01em;
   color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
-.content > *{ max-width: 76ch; }
+.content > *{
+  min-width:0;
+  max-width: 76ch;
+}
 .content .code-wrap,
 .content .table-scroll,
-.content app-faq-section{ max-width: none; }
+.content app-faq-section{
+  width:100%;
+  max-width: none;
+}
 .content>p:first-of-type{ font-size:var(--uf-body-size); color: color-mix(in srgb, var(--uf-text-secondary) 94%, transparent); }
+.content p,
+.content ul,
+.content ol,
+.content li,
+.content blockquote,
+.content h2,
+.content h3,
+.content h4,
+.content td,
+.content th{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
 .content h2{
   font-size:var(--uf-section-title-size); font-weight:700;
   margin:34px 0 14px; padding:10px 12px;
@@ -179,6 +216,8 @@ type LeftNav = {
   text-underline-offset: 2px;
   text-decoration-thickness: 1px;
   transition: color .15s ease, text-decoration-color .15s ease;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 .content a:hover{
   color: var(--uf-accent-strong);
@@ -196,13 +235,43 @@ type LeftNav = {
   padding:.5px 6px; border-radius:6px;
   color: var(--uf-text-primary);
 }
+.content p code,
+.content li code,
+.content td code,
+.content th code,
+.content h2 code,
+.content h3 code,
+.content a code{
+  white-space: break-spaces;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+.content img,
+.content svg,
+.content canvas,
+.content video,
+.content picture{
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+.content iframe{
+  display:block;
+  width:100%;
+  max-width:100%;
+}
 .content app-faq-section{
   display:block;
   margin: 8px 0 14px;
 }
 .content .jp-layout{
   display:grid;
+  grid-template-columns:minmax(0, 1fr);
   gap:18px;
+  min-width:0;
+}
+.content .jp-layout > *{
+  min-width:0;
 }
 .content .jp-section{
   border:1px solid var(--uf-border-subtle);
@@ -431,6 +500,7 @@ type LeftNav = {
   background:linear-gradient(180deg, color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-surface)), color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt)));
   overflow:hidden;
   box-shadow: var(--uf-card-shadow);
+  max-width:100%;
 }
 .code-wrap pre{
   margin:0; padding:14px;
@@ -438,6 +508,11 @@ type LeftNav = {
   font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size:13px; line-height:1.6;
   color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+}
+.code-wrap pre code{
+  white-space: inherit;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 .code-copy{
   position:absolute; top:8px; right:8px; cursor:pointer;
@@ -454,6 +529,7 @@ type LeftNav = {
   margin:14px 0; border:1px solid var(--uf-border-subtle);
   border-radius:12px; overflow:auto; background:var(--uf-surface);
   box-shadow:var(--uf-card-shadow);
+  max-width:100%;
 }
 .table-scroll table{ width:100%; border-collapse:collapse; min-width:640px; }
 .table-scroll th,.table-scroll td{ border-bottom:1px solid var(--uf-border-subtle); padding:12px 14px; text-align:left; color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent); }

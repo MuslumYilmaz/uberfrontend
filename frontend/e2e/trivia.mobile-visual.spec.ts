@@ -105,6 +105,58 @@ async function assertNoTriviaOverflow(page: import('@playwright/test').Page) {
   await assertContentNoOverflow(page);
 }
 
+async function assertMobilePracticeFooterFits(page: import('@playwright/test').Page) {
+  const footer = page.getByTestId('practice-footer');
+  await expect(footer).toBeVisible();
+  await expect(page.getByTestId('footer-left')).toBeVisible();
+  await expect(page.getByTestId('footer-prev')).toBeVisible();
+  await expect(page.getByTestId('footer-progress')).toBeVisible();
+  await expect(page.getByTestId('footer-next')).toBeVisible();
+  await expect(page.getByTestId('footer-submit')).toBeVisible();
+
+  const metrics = await page.evaluate(() => {
+    const footer = document.querySelector('[data-testid="practice-footer"]') as HTMLElement | null;
+    const progress = document.querySelector('[data-testid="footer-progress"]') as HTMLElement | null;
+    const targets = [
+      '[data-testid="footer-left"]',
+      '[data-testid="footer-prev"]',
+      '[data-testid="footer-progress"]',
+      '[data-testid="footer-next"]',
+      '[data-testid="footer-submit"]',
+    ];
+
+    if (!footer || !progress) return null;
+
+    const footerRect = footer.getBoundingClientRect();
+    const outside = targets.some((selector) => {
+      const el = document.querySelector(selector) as HTMLElement | null;
+      if (!el) return true;
+      const rect = el.getBoundingClientRect();
+      return rect.left < footerRect.left - 1
+        || rect.right > footerRect.right + 1
+        || rect.top < footerRect.top - 1
+        || rect.bottom > footerRect.bottom + 1;
+    });
+
+    return {
+      footerHeight: Math.round(footerRect.height),
+      footerScrollWidth: footer.scrollWidth,
+      footerClientWidth: footer.clientWidth,
+      progressHeight: Math.round(progress.getBoundingClientRect().height),
+      progressScrollWidth: progress.scrollWidth,
+      progressClientWidth: progress.clientWidth,
+      outside,
+    };
+  });
+
+  expect(metrics).not.toBeNull();
+  expect(metrics!.footerHeight, 'mobile practice footer should stay compact').toBeLessThanOrEqual(64);
+  expect(metrics!.footerScrollWidth, 'mobile practice footer should not overflow horizontally').toBeLessThanOrEqual(metrics!.footerClientWidth + 1);
+  expect(metrics!.progressHeight, 'footer progress should stay on a single compact row').toBeLessThanOrEqual(40);
+  expect(metrics!.progressScrollWidth, 'footer progress should fit without clipping').toBeLessThanOrEqual(metrics!.progressClientWidth + 1);
+  expect(metrics!.outside, 'mobile footer controls should stay inside the footer bounds').toBe(false);
+}
+
 test.describe('trivia mobile visual guardrail', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'Visual baselines are chromium-only.');
   test.use({
@@ -194,5 +246,36 @@ test.describe('trivia mobile visual guardrail', () => {
       await stabilize(page);
       await assertNoTriviaOverflow(page);
     }
+  });
+
+  test('trivia detail mobile - footer stays compact and readable', async ({ page }) => {
+    await page.setViewportSize(MOBILE_VIEWPORT);
+    await page.goto('/javascript/trivia/js-event-loop');
+
+    await expect(page.getByTestId('trivia-detail-main')).toBeVisible();
+    await stabilize(page);
+    await assertMobilePracticeFooterFits(page);
+  });
+
+  test('trivia detail mobile - footer progress updates on next and prev', async ({ page }) => {
+    await page.setViewportSize(MOBILE_VIEWPORT);
+    await page.goto('/javascript/trivia/js-event-loop');
+
+    const progress = page.getByTestId('footer-progress');
+    const initialUrl = page.url();
+    const initialText = (await progress.textContent())?.trim() ?? '';
+    const initialMatch = initialText.match(/^(\d+)\s*\/\s*(\d+)$/);
+    expect(initialMatch, `unexpected initial footer progress: ${initialText}`).not.toBeNull();
+
+    const initialIndex = Number(initialMatch![1]);
+    const total = Number(initialMatch![2]);
+
+    await page.getByTestId('footer-next').click();
+    await expect(page).not.toHaveURL(initialUrl);
+    await expect(progress).toHaveText(`${initialIndex + 1} / ${total}`);
+
+    await page.getByTestId('footer-prev').click();
+    await expect(page).toHaveURL(initialUrl);
+    await expect(progress).toHaveText(`${initialIndex} / ${total}`);
   });
 });
