@@ -7,6 +7,7 @@ import { BugReportService } from './core/services/bug-report.service';
 import { DailyService } from './core/services/daily.service';
 import { PremiumGateService } from './core/services/premium-gate.service';
 import { AnalyticsService } from './core/services/analytics.service';
+import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
 import { BugReportDialogComponent } from './shared/components/bug-report-dialog/bug-report-dialog.component';
 import { PremiumRequiredDialogComponent } from './shared/components/premium-required-dialog/premium-required-dialog.component';
@@ -35,6 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
   premiumGateState = this.premiumGate.dialogState;
   private readonly analytics = inject(AnalyticsService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  readonly sidebarDrawerOpen = inject(AppSidebarDrawerService).isOpen;
 
   // hide header on /auth/*
   isAuthRoute = computed(() => this.currentUrl().startsWith('/auth'));

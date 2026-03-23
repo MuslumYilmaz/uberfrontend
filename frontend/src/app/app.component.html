@@ -6,7 +6,7 @@
     <main class="main main--full">
       <router-outlet></router-outlet>
     </main>
-    <app-sidebar *ngIf="showHeader()" [drawerOnly]="true"></app-sidebar>
+    <app-sidebar *ngIf="showHeader() && sidebarDrawerOpen()" [drawerOnly]="true"></app-sidebar>
   </ng-container>
 
   <!-- Regular app pages -->

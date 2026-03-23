@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
+import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
 import { BugReportService } from './core/services/bug-report.service';
 
 describe('AppComponent', () => {
@@ -35,5 +36,18 @@ describe('AppComponent', () => {
     bugReport.open({ source: 'spec', url: '/spec' });
     fixture.detectChanges();
     expect(bugReport.visible()).toBeTrue();
+  });
+
+  it('mounts the drawer sidebar only after the mobile drawer is opened', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-sidebar')).toBeNull();
+
+    const drawer = TestBed.inject(AppSidebarDrawerService);
+    drawer.open();
+    fixture.detectChanges();
+
+    expect(compiled.querySelector('app-sidebar')).not.toBeNull();
   });
 });
