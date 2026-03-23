@@ -1,7 +1,11 @@
 .incident-detail-shell {
   max-width: 78rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem 7rem;
+  padding: 1.5rem 1rem 1.5rem;
+}
+
+.incident-detail-body {
+  padding-bottom: 7rem;
 }
 
 .incident-hero {
@@ -585,6 +589,7 @@
   border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, transparent);
   background: color-mix(in srgb, var(--uf-bg) 88%, black);
+  scroll-margin-top: calc(var(--app-safe-top, 56px) + 12px);
 }
 
 .incident-feedback__head {
@@ -858,7 +863,7 @@
 }
 
 @media (max-width: 640px) {
-  .incident-detail-shell {
+  .incident-detail-body {
     padding-bottom: calc(9rem + env(safe-area-inset-bottom, 0px));
   }
 

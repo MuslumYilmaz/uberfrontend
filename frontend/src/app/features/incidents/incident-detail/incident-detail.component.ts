@@ -251,6 +251,7 @@ export class IncidentDetailComponent {
     });
     this.submittedStageIds.set(Array.from(new Set([...this.submittedStageIds(), stage.id])));
     this.persistSession();
+    this.scrollToFeedback(stage.id);
   }
 
   stageFeedbackStatus(stageId: string): FeedbackStatus {
@@ -398,6 +399,30 @@ export class IncidentDetailComponent {
       answers: this.answers(),
       submittedStageIds: this.submittedStageIds(),
     });
+  }
+
+  private scrollToFeedback(stageId: string): void {
+    if (!this.shouldAutoScrollToFeedback()) return;
+
+    const runScroll = () => {
+      const target = document.querySelector<HTMLElement>(`[data-testid="incident-feedback-${stageId}"]`);
+      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    if (typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(() => runScroll());
+      return;
+    }
+
+    window.setTimeout(runScroll, 0);
+  }
+
+  private shouldAutoScrollToFeedback(): boolean {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return false;
+    if (typeof window.matchMedia === 'function') {
+      return window.matchMedia('(max-width: 640px)').matches;
+    }
+    return window.innerWidth <= 640;
   }
 
   private getMultiSelection(stageId: string): string[] {

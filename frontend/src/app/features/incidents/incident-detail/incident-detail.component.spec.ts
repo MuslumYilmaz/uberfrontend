@@ -216,6 +216,69 @@ describe('IncidentDetailComponent', () => {
     expect(feedback?.textContent || '').toContain('Correct diagnosis.');
   });
 
+  it('scrolls mobile users to feedback after submitting a response', async () => {
+    routeData$.next({ incidentDetail: resolvedDetail });
+
+    const scrollIntoView = (HTMLElement.prototype as HTMLElement & { scrollIntoView?: () => void; }).scrollIntoView;
+    if (!scrollIntoView) {
+      Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+        value: () => undefined,
+        configurable: true,
+        writable: true,
+      });
+    }
+
+    const matchMediaSpy = spyOn(window, 'matchMedia').and.callFake((query: string) => ({
+      matches: query === '(max-width: 640px)',
+      media: query,
+      onchange: null,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      dispatchEvent: () => false,
+    }));
+    let scheduledFrame: ((time: number) => void) | null = null;
+    spyOn(window, 'requestAnimationFrame').and.callFake((callback: FrameRequestCallback): number => {
+      scheduledFrame = callback;
+      return 1;
+    });
+    const scrollSpy = spyOn(HTMLElement.prototype, 'scrollIntoView').and.stub();
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const startButton = (Array.from(
+      fixture.nativeElement.querySelectorAll('button'),
+    ) as HTMLButtonElement[])
+      .find((button) => (button.textContent || '').includes('Begin simulator')) as HTMLButtonElement;
+    startButton.click();
+    fixture.detectChanges();
+
+    const option = fixture.nativeElement.querySelector('[data-testid="incident-option-root-cause-correct"]') as HTMLButtonElement;
+    option.click();
+    fixture.detectChanges();
+
+    const submitButton = (Array.from(
+      fixture.nativeElement.querySelectorAll('button'),
+    ) as HTMLButtonElement[])
+      .find((button) => (button.textContent || '').includes('Submit response')) as HTMLButtonElement;
+    submitButton.click();
+    fixture.detectChanges();
+
+    expect(matchMediaSpy).toHaveBeenCalledWith('(max-width: 640px)');
+    expect(scheduledFrame).not.toBeNull();
+    expect(scrollSpy).not.toHaveBeenCalled();
+
+    const runScheduledFrame = scheduledFrame as any;
+    runScheduledFrame(0);
+
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    const scrolledElement = scrollSpy.calls.mostRecent().object as HTMLElement;
+    expect(scrolledElement.getAttribute('data-testid')).toBe('incident-feedback-root-cause');
+  });
+
   it('publishes LearningResource schema through seo tags', async () => {
     routeData$.next({ incidentDetail: resolvedDetail });
 
