@@ -136,6 +136,64 @@ describe('POST /api/activity/complete', () => {
         expect(firstCompletionCount).toBe(1);
     });
 
+    test('awards XP only once for concurrent reactivation of the same item', async () => {
+        const user = await User.create({
+            email: 'reactivation-race@example.com',
+            username: 'reactivation_race_user',
+            passwordHash: 'hash',
+        });
+
+        const now = new Date();
+        await ActivityCompletion.create({
+            userId: user._id,
+            kind: 'coding',
+            tech: 'javascript',
+            itemId: 'same-reactivation-id',
+            source: 'tech',
+            durationMin: 5,
+            difficultySnapshot: 'easy',
+            xpAwarded: 10,
+            completedAt: now,
+            dayUTC: now.toISOString().slice(0, 10),
+            active: false,
+            lastAttemptAt: now,
+        });
+
+        const body = {
+            kind: 'coding',
+            tech: 'javascript',
+            itemId: 'same-reactivation-id',
+            difficulty: 'hard',
+        };
+
+        const [first, second] = await Promise.all([
+            request(app)
+                .post('/api/activity/complete')
+                .set('Authorization', authHeader(user._id))
+                .send(body),
+            request(app)
+                .post('/api/activity/complete')
+                .set('Authorization', authHeader(user._id))
+                .send(body),
+        ]);
+
+        expect(first.status).toBe(200);
+        expect(second.status).toBe(200);
+
+        const awards = [Number(first.body?.xpAwarded || 0), Number(second.body?.xpAwarded || 0)].sort((a, b) => a - b);
+        expect(awards).toEqual([0, 10]);
+
+        const [reloaded, eventCount] = await Promise.all([
+            User.findById(user._id).lean(),
+            ActivityEvent.countDocuments({ userId: user._id, kind: 'coding', itemId: 'same-reactivation-id' }),
+        ]);
+
+        expect(reloaded?.stats?.xpTotal).toBe(10);
+        expect(reloaded?.stats?.completedTotal).toBe(1);
+        expect(reloaded?.solvedQuestionIds || []).toContain('same-reactivation-id');
+        expect(eventCount).toBe(1);
+    });
+
     test('replays a known requestId without re-counting the same logical completion', async () => {
         const user = await User.create({
             email: 'replay@example.com',

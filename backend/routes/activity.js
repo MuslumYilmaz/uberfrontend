@@ -120,97 +120,21 @@ router.post('/complete', requireAuth, async (req, res) => {
             let completion = null;
             let firstLogicalCompletion = false;
             let awardedXp = 0;
+            const loadCompletion = async () => {
+                const query = ActivityCompletion.findOne(completionFilter);
+                if (session) query.session(session);
+                return query;
+            };
 
-            const completionQuery = ActivityCompletion.findOne(completionFilter);
-            if (session) completionQuery.session(session);
-            completion = await completionQuery;
-
-            if (!completion) {
-                const legacyFirstQuery = FirstCompletionCredit.findOne(completionFilter);
-                if (session) legacyFirstQuery.session(session);
-                const legacyFirstCredit = await legacyFirstQuery;
-
-                if (legacyFirstCredit) {
-                    const legacyCompletedAt = legacyFirstCredit.firstCompletedAt || completedAt;
-                    const legacyUpsert = ActivityCompletion.findOneAndUpdate(
-                        completionFilter,
-                        {
-                            $setOnInsert: {
-                                userId: user._id,
-                                kind,
-                                itemId: itemIdText,
-                                tech,
-                                source,
-                                durationMin: durationMinSafe,
-                                difficultySnapshot: resolvedDifficulty,
-                                xpAwarded: 0,
-                                completedAt: legacyCompletedAt,
-                                dayUTC: utcDayStr(legacyCompletedAt),
-                                active: true,
-                                createdFromLegacyCredit: true,
-                            },
-                            $set: {
-                                lastAttemptAt: completedAt,
-                            },
-                        },
-                        { upsert: true, new: true, setDefaultsOnInsert: true, session }
-                    );
-                    completion = await legacyUpsert;
-                } else {
-                    awardedXp = xpForCompletion({ kind, difficulty: resolvedDifficulty });
-                    try {
-                        if (session) {
-                            [completion] = await ActivityCompletion.create([{
-                                userId: user._id,
-                                kind,
-                                itemId: itemIdText,
-                                tech,
-                                source,
-                                durationMin: durationMinSafe,
-                                difficultySnapshot: resolvedDifficulty,
-                                xpAwarded: awardedXp,
-                                completedAt,
-                                dayUTC,
-                                active: true,
-                                lastAttemptAt: completedAt,
-                            }], { session });
-                        } else {
-                            completion = await ActivityCompletion.create({
-                                userId: user._id,
-                                kind,
-                                itemId: itemIdText,
-                                tech,
-                                source,
-                                durationMin: durationMinSafe,
-                                difficultySnapshot: resolvedDifficulty,
-                                xpAwarded: awardedXp,
-                                completedAt,
-                                dayUTC,
-                                active: true,
-                                lastAttemptAt: completedAt,
-                            });
-                        }
-                        firstLogicalCompletion = true;
-                    } catch (error) {
-                        if (!isDuplicateKeyError(error)) throw error;
-                        const existingCompletionQuery = ActivityCompletion.findOne(completionFilter);
-                        if (session) existingCompletionQuery.session(session);
-                        completion = await existingCompletionQuery;
-                        awardedXp = 0;
-                    }
-                }
-            } else if (completion.active === false) {
-                awardedXp = Number(completion.xpAwarded || xpForCompletion({ kind, difficulty: resolvedDifficulty }));
-                const reactivationQuery = ActivityCompletion.findOneAndUpdate(
-                    completionFilter,
+            const reactivateCompletion = async () => {
+                const query = ActivityCompletion.findOneAndUpdate(
+                    { ...completionFilter, active: false },
                     {
                         $set: {
                             active: true,
                             tech,
                             source,
                             durationMin: durationMinSafe,
-                            // Completion difficulty is a historical snapshot, not live catalog metadata.
-                            difficultySnapshot: completion.difficultySnapshot || resolvedDifficulty,
                             completedAt,
                             dayUTC,
                             lastAttemptAt: completedAt,
@@ -218,16 +142,84 @@ router.post('/complete', requireAuth, async (req, res) => {
                     },
                     { new: true, session }
                 );
-                completion = await reactivationQuery;
+                return query;
+            };
+
+            const upsertCompletion = async (setOnInsert) => {
+                try {
+                    const result = await ActivityCompletion.updateOne(
+                        completionFilter,
+                        {
+                            $setOnInsert: setOnInsert,
+                            $set: { lastAttemptAt: completedAt },
+                        },
+                        session ? { upsert: true, session } : { upsert: true }
+                    );
+                    return Boolean(result?.upsertedCount);
+                } catch (error) {
+                    if (!isDuplicateKeyError(error)) throw error;
+                    return false;
+                }
+            };
+
+            completion = await reactivateCompletion();
+            if (completion) {
+                awardedXp = Number(completion.xpAwarded || xpForCompletion({ kind, difficulty: resolvedDifficulty }));
                 firstLogicalCompletion = true;
             } else {
-                const touchQuery = ActivityCompletion.updateOne(
-                    completionFilter,
-                    { $set: { lastAttemptAt: completedAt } },
-                    session ? { session } : {}
-                );
-                if (session) touchQuery.session(session);
-                await touchQuery;
+                completion = await loadCompletion();
+
+                if (!completion) {
+                    const legacyFirstQuery = FirstCompletionCredit.findOne(completionFilter);
+                    if (session) legacyFirstQuery.session(session);
+                    const legacyFirstCredit = await legacyFirstQuery;
+
+                    if (legacyFirstCredit) {
+                        const legacyCompletedAt = legacyFirstCredit.firstCompletedAt || completedAt;
+                        await upsertCompletion({
+                            userId: user._id,
+                            kind,
+                            itemId: itemIdText,
+                            tech,
+                            source,
+                            durationMin: durationMinSafe,
+                            difficultySnapshot: resolvedDifficulty,
+                            xpAwarded: 0,
+                            completedAt: legacyCompletedAt,
+                            dayUTC: utcDayStr(legacyCompletedAt),
+                            active: true,
+                            createdFromLegacyCredit: true,
+                        });
+                        completion = await loadCompletion();
+                    } else {
+                        awardedXp = xpForCompletion({ kind, difficulty: resolvedDifficulty });
+                        firstLogicalCompletion = await upsertCompletion({
+                            userId: user._id,
+                            kind,
+                            itemId: itemIdText,
+                            tech,
+                            source,
+                            durationMin: durationMinSafe,
+                            difficultySnapshot: resolvedDifficulty,
+                            xpAwarded: awardedXp,
+                            completedAt,
+                            dayUTC,
+                            active: true,
+                        });
+                        completion = await loadCompletion();
+                        if (!firstLogicalCompletion) {
+                            awardedXp = 0;
+                        }
+                    }
+                } else {
+                    const touchQuery = ActivityCompletion.updateOne(
+                        completionFilter,
+                        { $set: { lastAttemptAt: completedAt } },
+                        session ? { session } : {}
+                    );
+                    if (session) touchQuery.session(session);
+                    await touchQuery;
+                }
             }
 
             if (firstLogicalCompletion && shouldTrackSolvedQuestions) {
