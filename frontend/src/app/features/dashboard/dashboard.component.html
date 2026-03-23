@@ -3,21 +3,27 @@
     <section faCard elevated class="command-center">
       <div class="command-center__grid">
         <div class="command-center__intro">
-          <p class="fa-page-kicker">Command center</p>
-          <h1 class="fa-page-title">Prepare with intent</h1>
+          <p class="fa-page-kicker">Prep operating system</p>
+          <h1 class="fa-page-title">Run tight prep loops</h1>
           <p class="hero-copy fa-body">
-            Build daily momentum, focus on high-signal interview areas, and keep your prep loop tight.
+            Diagnose gaps, drill the right format, pressure-test with scenarios, and review what changed.
           </p>
+          <div class="hero-loop" aria-label="FrontendAtlas prep loop">
+            <span class="hero-loop__item">Diagnose</span>
+            <span class="hero-loop__item">Drill</span>
+            <span class="hero-loop__item">Simulate</span>
+            <span class="hero-loop__item">Review</span>
+          </div>
           <div class="hero-actions">
             <a faButton variant="primary" [routerLink]="continueCta.route">{{ continueCta.label }}</a>
-            <a faButton variant="ghost" [routerLink]="['/guides', 'interview-blueprint']">Review blueprint</a>
+            <a faButton variant="ghost" [routerLink]="['/guides', 'interview-blueprint']">See the prep system</a>
           </div>
           <p class="hero-hint fa-meta-text" *ngIf="!auth.isLoggedIn()">
-            Sign in to track streaks and weekly completions.
+            Guest mode stays open. Sign in to save loop history, streaks, weekly goals, and coverage.
           </p>
         </div>
 
-        <div class="command-center__stats progress-snapshot" aria-live="polite">
+        <div *ngIf="auth.isLoggedIn(); else guestProgressPrompt" class="command-center__stats progress-snapshot" aria-live="polite">
           <article class="hero-stat snapshot-card">
             <div class="hero-stat__label">Streak</div>
             <div class="hero-stat__value" *ngIf="auth.isLoggedIn() && shouldShowStreak(); else streakSnapshotFallback">
@@ -55,6 +61,53 @@
             </ng-template>
           </article>
         </div>
+
+        <ng-template #guestProgressPrompt>
+          <article class="guest-progress-card" data-testid="dashboard-guest-progress-card" aria-labelledby="dashboard-guest-progress-title">
+            <div class="guest-progress-card__preview" aria-hidden="true">
+              <div class="guest-progress-card__eyebrow">What unlocks</div>
+              <div class="guest-progress-row" *ngFor="let item of guestProgressPreview">
+                <div class="guest-progress-row__badge">{{ item.progress }}%</div>
+                <div class="guest-progress-row__body">
+                  <div class="guest-progress-row__title">{{ item.label }}</div>
+                  <div class="guest-progress-row__detail">{{ item.detail }}</div>
+                  <div class="guest-progress-row__bar">
+                    <span [style.width.%]="item.progress"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="guest-progress-card__content">
+              <h2 class="guest-progress-card__title" id="dashboard-guest-progress-title">Sign in to save your prep loop</h2>
+              <p class="guest-progress-card__copy fa-meta-text">
+                Keep streaks, weekly goals, coverage, and your next recommended rep in one dashboard.
+              </p>
+              <div class="guest-progress-card__actions">
+                <a
+                  faButton
+                  variant="primary"
+                  data-testid="dashboard-guest-progress-signup"
+                  [routerLink]="['/auth/signup']"
+                  [queryParams]="{ redirectTo: '/dashboard' }"
+                  (click)="trackGuestProgressPromptClick('signup')"
+                >
+                  Create free account
+                </a>
+                <a
+                  faButton
+                  variant="ghost"
+                  data-testid="dashboard-guest-progress-login"
+                  [routerLink]="['/auth/login']"
+                  [queryParams]="{ redirectTo: '/dashboard' }"
+                  (click)="trackGuestProgressPromptClick('login')"
+                >
+                  Sign in
+                </a>
+              </div>
+            </div>
+          </article>
+        </ng-template>
       </div>
 
     </section>
@@ -62,8 +115,8 @@
     <section class="block block--gamification">
       <div class="block-head block-head--with-action">
         <div class="block-head__content">
-          <h2 class="block-title fa-section-title">Daily momentum</h2>
-          <p class="block-subtitle fa-meta-text">Keep one action in focus. Full activity details now live in your profile.</p>
+          <h2 class="block-title fa-section-title">Today’s prep loop</h2>
+          <p class="block-subtitle fa-meta-text">Start one focused rep, keep the next move visible, and review the loop in one place.</p>
         </div>
         <div class="progress-head-actions">
           <a
@@ -73,7 +126,7 @@
             [queryParams]="{ tab: 'activity' }"
             (click)="trackProfileDetailsClick()"
           >
-            Show details
+            Open history
           </a>
           <button
             *ngIf="auth.isLoggedIn()"
@@ -81,23 +134,24 @@
             type="button"
             (click)="openManageProgress()"
           >
-            Manage progress
+            Tune loop
           </button>
           <a
             *ngIf="!auth.isLoggedIn()"
             faButton variant="ghost"
             class="block-toggle-btn"
+            data-testid="dashboard-loop-signin-cta"
             [routerLink]="['/auth/login']"
             [queryParams]="{ redirectTo: '/dashboard' }"
           >
-            Sign in to personalize
+            Sign in to save your loop
           </a>
         </div>
       </div>
 
-      <div class="gamification-stack">
+      <div class="gamification-stack" *ngIf="auth.isLoggedIn()">
         <article faCard class="widget widget--daily widget--primary" *ngIf="dailyChallenge() as daily; else dailyChallengeFallback">
-          <div class="widget-kicker">Daily challenge</div>
+          <div class="widget-kicker">Today’s rep</div>
           <h3 class="widget-title">{{ daily.title }}</h3>
           <div class="widget-meta-chips" *ngIf="daily.available !== false; else challengeUnavailable">
             <span class="meta-chip">{{ daily.tech | titlecase }}</span>
@@ -110,7 +164,7 @@
             </ng-template>
           </div>
           <ng-template #challengeUnavailable>
-            <p class="widget-copy fa-meta-text">Could not load today’s challenge. You can still continue normal practice.</p>
+            <p class="widget-copy fa-meta-text">Could not load today’s rep. You can still keep practicing normally.</p>
           </ng-template>
           <div class="widget-actions widget-actions--challenge">
             <a
@@ -119,7 +173,7 @@
               [routerLink]="daily.route"
               (click)="trackDailyChallengeOpened(daily.questionId, daily.dayKey)"
             >
-              {{ daily.available === false ? 'Continue practice' : 'Open challenge' }}
+              {{ daily.available === false ? 'Start a rep' : 'Start rep' }}
             </a>
             <button
               *ngIf="auth.isLoggedIn() && !daily.completed && daily.available !== false"
@@ -131,7 +185,7 @@
             >
               {{ dailyCompletePending() ? 'Completing…' : 'Mark complete' }}
             </button>
-            <span *ngIf="daily.completed && daily.available !== false" class="status-chip status-chip--ok">Completed today</span>
+            <span *ngIf="daily.completed && daily.available !== false" class="status-chip status-chip--ok">Cleared today</span>
           </div>
           <p class="widget-feedback widget-feedback--ok" *ngIf="dailyCompleteMessage()">{{ dailyCompleteMessage() }}</p>
           <p class="widget-feedback widget-feedback--warn" *ngIf="dailyCompleteError()">{{ dailyCompleteError() }}</p>
@@ -139,16 +193,16 @@
 
         <ng-template #dailyChallengeFallback>
           <article faCard class="widget widget--daily widget--primary" [class.widget--guest]="!auth.isLoggedIn()">
-            <div class="widget-kicker">Daily challenge</div>
-            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Could not load daily challenge' : 'Sign in to get today’s challenge' }}</h3>
+            <div class="widget-kicker">Today’s rep</div>
+            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Could not load today’s rep' : 'Sign in to unlock today’s rep' }}</h3>
             <p class="widget-copy fa-meta-text">
               {{ auth.isLoggedIn()
-                ? 'Progress widgets are temporarily unavailable. You can continue practicing normally.'
-                : 'The challenge is deterministic per day and powers optional streak tracking.' }}
+                ? 'Loop widgets are temporarily unavailable. You can still keep practicing normally.'
+                : 'The daily rep rotates predictably and plugs into streak tracking when you save activity.' }}
             </p>
             <div class="widget-actions widget-actions--guest">
               <a *ngIf="auth.isLoggedIn()" faButton variant="ghost" [routerLink]="['/coding']">
-                Continue practice
+                Start a rep
               </a>
               <a
                 *ngIf="!auth.isLoggedIn()"
@@ -164,7 +218,7 @@
                 [routerLink]="['/auth/signup']"
                 [queryParams]="{ redirectTo: '/dashboard' }"
               >
-                Create account
+                Create free account
               </a>
             </div>
           </article>
@@ -172,7 +226,7 @@
 
         <div class="progress-mini-grid">
           <article faCard class="widget widget--mini">
-            <div class="widget-kicker">Next best action</div>
+            <div class="widget-kicker">Next rep</div>
             <h3 class="widget-title widget-title--mini">{{ nextBestAction().title }}</h3>
             <p class="widget-copy widget-copy--mini fa-meta-text">{{ nextBestAction().description }}</p>
             <a
@@ -185,19 +239,19 @@
           </article>
 
           <article faCard class="widget widget--mini" *ngIf="progressSummary() as progress; else progressMiniFallback">
-            <div class="widget-kicker">Question coverage</div>
+            <div class="widget-kicker">Coverage map</div>
             <h3 class="widget-title widget-title--mini">{{ formatPercentLabel(overallSolvedPercent(progress)) }} solved</h3>
             <p class="widget-copy widget-copy--mini fa-meta-text">{{ progress.questions.solvedCount }} solved out of {{ progress.questions.totalCount }} total questions.</p>
           </article>
 
           <ng-template #progressMiniFallback>
             <article faCard class="widget widget--mini" [class.widget--guest]="!auth.isLoggedIn()">
-              <div class="widget-kicker">Question coverage</div>
-              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Question coverage unavailable' : 'Sign in to unlock question coverage' }}</h3>
+              <div class="widget-kicker">Coverage map</div>
+              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Coverage map unavailable' : 'Sign in to unlock your coverage map' }}</h3>
               <p class="widget-copy widget-copy--mini fa-meta-text">
                 {{ auth.isLoggedIn()
-                  ? 'Your question coverage is temporarily unavailable. Check profile again shortly.'
-                  : 'Your question coverage appears after a few completed questions.' }}
+                  ? 'Your solved coverage is temporarily unavailable. Check loop history again shortly.'
+                  : 'Solved coverage appears once you start logging reps.' }}
               </p>
             </article>
           </ng-template>
@@ -209,10 +263,10 @@
             *ngIf="progressSummary() as progress; else incidentMiniFallback"
             [routerLink]="['/incidents']"
           >
-            <div class="widget-kicker">Debug scenarios</div>
+            <div class="widget-kicker">Debug drills</div>
             <h3 class="widget-title widget-title--mini">{{ progress.incidents.passedCount }} passed</h3>
             <p class="widget-copy widget-copy--mini fa-meta-text">{{ formatPercentLabel(progress.incidents.passedPercent) }} of the incident catalog is cleared.</p>
-            <span class="widget-inline-link">Open simulators →</span>
+            <span class="widget-inline-link">Run drills →</span>
           </a>
 
           <ng-template #incidentMiniFallback>
@@ -223,31 +277,31 @@
               [class.widget--guest]="!auth.isLoggedIn()"
               [routerLink]="['/incidents']"
             >
-              <div class="widget-kicker">Debug scenarios</div>
-              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Incident progress unavailable' : 'Sign in to track debug scenarios' }}</h3>
+              <div class="widget-kicker">Debug drills</div>
+              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Debug drill progress unavailable' : 'Sign in to track debug drills' }}</h3>
               <p class="widget-copy widget-copy--mini fa-meta-text">
                 {{ auth.isLoggedIn()
                   ? 'Your incident passes are temporarily unavailable.'
-                  : 'Passed debug scenarios appear here after you clear an incident.' }}
+                  : 'Passed debug drills appear here after you clear an incident.' }}
               </p>
-              <span class="widget-inline-link">{{ auth.isLoggedIn() ? 'Open simulators →' : 'Browse scenarios →' }}</span>
+              <span class="widget-inline-link">{{ auth.isLoggedIn() ? 'Run drills →' : 'Browse drills →' }}</span>
             </a>
           </ng-template>
 
           <article faCard class="widget widget--mini" *ngIf="progressSummary() as progress; else practiceMiniFallback">
-            <div class="widget-kicker">Practice completed</div>
+            <div class="widget-kicker">Reps completed</div>
             <h3 class="widget-title widget-title--mini">{{ formatPercentLabel(practiceCompletedPercent(progress)) }} completed</h3>
             <p class="widget-copy widget-copy--mini fa-meta-text">{{ progress.practice.completedCount }} completed out of {{ progress.practice.totalCount }} total practice units.</p>
           </article>
 
           <ng-template #practiceMiniFallback>
             <article faCard class="widget widget--mini" [class.widget--guest]="!auth.isLoggedIn()">
-              <div class="widget-kicker">Practice completed</div>
-              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Practice total unavailable' : 'Sign in to track total practice' }}</h3>
+              <div class="widget-kicker">Reps completed</div>
+              <h3 class="widget-title widget-title--mini">{{ auth.isLoggedIn() ? 'Completed reps unavailable' : 'Sign in to track completed reps' }}</h3>
               <p class="widget-copy widget-copy--mini fa-meta-text">
                 {{ auth.isLoggedIn()
                   ? 'Your combined practice total is temporarily unavailable.'
-                  : 'Questions and passed debug scenarios roll up into one combined total here.' }}
+                  : 'Questions and passed debug drills roll up into one combined total here.' }}
               </p>
             </article>
           </ng-template>
@@ -261,12 +315,12 @@
             [queryParams]="weaknessQueryParams(weakness)"
             (click)="trackWeaknessDrillClick(weakness)"
           >
-            <div class="widget-kicker">Weakness spotlight</div>
+            <div class="widget-kicker">Pressure point</div>
             <h3 class="widget-title widget-title--mini">{{ weakness.topicOrTag }}</h3>
             <p class="widget-copy widget-copy--mini fa-meta-text">
               {{ weakness.failCount }} recent fails · {{ weakness.category }} · {{ weaknessLastSeenLabel(weakness.lastSeenTs) }}
             </p>
-            <span class="widget-inline-link">Practice now →</span>
+            <span class="widget-inline-link">Drill now →</span>
           </a>
 
           <a
@@ -276,19 +330,19 @@
             [queryParams]="auth.isLoggedIn() ? { tab: 'activity' } : { redirectTo: '/profile' }"
             (click)="trackProfileDetailsClick()"
           >
-            <div class="widget-kicker">{{ auth.isLoggedIn() ? 'Profile activity' : 'Sign in for full details' }}</div>
+            <div class="widget-kicker">{{ auth.isLoggedIn() ? 'Loop history' : 'Sign in to save loop history' }}</div>
             <h3 class="widget-title widget-title--mini widget-cta-title">
               {{ auth.isLoggedIn()
-                ? 'Review weekly goal, XP, and full progress details in one place.'
-                : 'Create an account to track weekly goal, XP, and solved coverage.' }}
+                ? 'Review streaks, XP, weekly goals, and recent reps in one place.'
+                : 'Create an account to save streaks, next reps, and coverage in one place.' }}
             </h3>
-            <span class="widget-cta-link">{{ auth.isLoggedIn() ? 'Show full details →' : 'Sign in →' }}</span>
+            <span class="widget-cta-link">{{ auth.isLoggedIn() ? 'Open history →' : 'Sign in →' }}</span>
           </a>
         </div>
       </div>
 
-      <p *ngIf="gamificationLoading()" class="fa-meta-text widget-status">Refreshing progress widgets…</p>
-      <p *ngIf="gamificationError()" class="widget-feedback widget-feedback--warn">{{ gamificationError() }}</p>
+      <p *ngIf="auth.isLoggedIn() && gamificationLoading()" class="fa-meta-text widget-status">Refreshing prep loop…</p>
+      <p *ngIf="auth.isLoggedIn() && gamificationError()" class="widget-feedback widget-feedback--warn">{{ gamificationError() }}</p>
     </section>
 
     <fa-dialog
@@ -305,10 +359,10 @@
     >
       <div class="progress-manage-panel" role="dialog" aria-labelledby="progress-manage-title" aria-describedby="progress-manage-desc">
         <div class="progress-manage-head">
-          <p class="progress-manage-kicker">Progress settings</p>
-          <h3 class="progress-manage-title" id="progress-manage-title">Manage progress widgets</h3>
+          <p class="progress-manage-kicker">Loop settings</p>
+          <h3 class="progress-manage-title" id="progress-manage-title">Tune your prep loop</h3>
           <p class="progress-manage-copy fa-meta-text" id="progress-manage-desc">
-            Tune weekly goal, daily challenge tech, and streak visibility without expanding the dashboard.
+            Adjust weekly goal, today’s rep tech, and streak visibility without leaving the dashboard.
           </p>
         </div>
 
@@ -334,8 +388,8 @@
             </select>
           </label>
           <label class="settings-item settings-item--field settings-item--daily-tech">
-            <span class="settings-label">Daily challenge tech</span>
-            <select [value]="dailyChallengeTech()" (change)="onDailyChallengeTechChange($event)" aria-label="Daily challenge framework">
+            <span class="settings-label">Today’s rep tech</span>
+            <select [value]="dailyChallengeTech()" (change)="onDailyChallengeTechChange($event)" aria-label="Today's rep framework">
               <option value="auto">Auto (based on progress)</option>
               <option value="javascript">JavaScript</option>
               <option value="react">React</option>
@@ -372,17 +426,202 @@
             [disabled]="settingsSaving()"
             (click)="saveGamificationSettings()"
           >
-            {{ settingsSaving() ? 'Saving…' : 'Save settings' }}
+            {{ settingsSaving() ? 'Saving…' : 'Save loop settings' }}
           </button>
         </div>
       </div>
     </fa-dialog>
 
-    <!-- Recommended -->
+    <!-- Guided sprints -->
+    <section class="block block--tracks">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Guided sprints</h2>
+        <p class="block-subtitle fa-meta-text">Short, structured paths when you want momentum without choosing every next step yourself.</p>
+      </div>
+
+      <div class="track-list">
+        <a
+          *ngFor="let card of tracks; trackBy: trackByTitle"
+          faCard interactive class="track-row"
+          [routerLink]="card.route"
+          [queryParams]="card.queryParams"
+        >
+          <ng-container *ngIf="trackProgress(card) as progress">
+            <div class="track-row__main">
+              <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
+              <div class="track-row__body">
+                <div class="row-title fa-card-title">{{ card.title }}</div>
+                <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
+                <div class="track-meta">
+                  <span class="meta-pill">{{ card.durationLabel }}</span>
+                  <span class="meta-pill">{{ card.focusCount || 0 }} focus areas</span>
+                  <span class="meta-pill">{{ card.featuredTotal || 0 }} featured reps</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="track-row__progress">
+              <div class="track-progress__label">
+                <span>{{ progress.solved }} / {{ progress.total }} complete</span>
+                <span>{{ progress.pct }}%</span>
+              </div>
+              <div class="track-progress__bar">
+                <span [style.width.%]="progress.pct"></span>
+              </div>
+            </div>
+          </ng-container>
+        </a>
+      </div>
+    </section>
+
+    <!-- Drill modes -->
+    <section class="block block--formats">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Drill modes</h2>
+        <p class="block-subtitle fa-meta-text">Move between coding, trivia, simulators, and tradeoff drills depending on what you need to sharpen.</p>
+      </div>
+
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="section-grid">
+          <a
+            *ngFor="let card of practiceFormats; trackBy: trackByTitle"
+            faCard interactive class="row format-row"
+            [attr.data-tone]="getPracticeFormatTone(card)"
+            [routerLink]="card.route"
+            [queryParams]="card.queryParams"
+          >
+            <div class="row-main format-row__main">
+              <div class="row-icon format-row__icon">
+                <i [ngClass]="piIcon(card.icon)"></i>
+              </div>
+              <div class="row-body format-row__body">
+                <div class="row-title fa-card-title format-row__title-row">
+                  <span>{{ card.title }}</span>
+                  <span class="format-row__kind-pill">{{ getPracticeFormatKindLabel(card) }}</span>
+                </div>
+                <div class="row-sub fa-meta-text format-row__meta">
+                  <span class="format-row__count-pill">{{ getPracticeFormatSubtitle(card, stats) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="row-arrow format-row__cta">Drill</div>
+          </a>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- Skill map -->
+    <section class="block block--focus">
+      <div class="block-head block-head--with-action">
+        <div class="block-head__content">
+          <h2 class="block-title fa-section-title">Skill map</h2>
+          <p class="block-subtitle fa-meta-text">Scan the topic surface before choosing the next rep you want to tighten up.</p>
+        </div>
+        <a
+          faButton variant="ghost" class="block-head__action"
+          [routerLink]="['/focus-areas']"
+          data-testid="dashboard-focus-areas-link"
+        >
+          Browse the full map
+        </a>
+      </div>
+
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="focus-chip-grid">
+          <a
+            *ngFor="let topic of stats.topics; trackBy: trackByTopicId"
+            faCard interactive class="focus-chip"
+            [attr.data-intensity]="focusAreaIntensity(stats, topic.id)"
+            [routerLink]="['/coding']"
+            [queryParams]="{ topic: topic.id, reset: 1 }"
+          >
+            <span class="focus-chip__title">{{ topic.title }}</span>
+            <span class="focus-chip__count">{{ stats.topicCounts[topic.id] || 0 }} questions</span>
+          </a>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- Company target packs -->
+    <section class="block block--companies">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Company target packs</h2>
+        <p class="block-subtitle fa-meta-text">Company-shaped reps and interview banks when you want to bias the loop toward one hiring bar.</p>
+      </div>
+
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="company-showcase-grid">
+          <a
+            *ngFor="let card of companyGuides; trackBy: trackByTitle"
+            faCard interactive class="company-showcase-card"
+            [routerLink]="card.route"
+          >
+            <div
+              class="company-showcase__logo"
+              [style.background]="card.companyColor || '#1f2937'"
+              [style.color]="card.companyFg || '#ffffff'"
+            >
+              <i *ngIf="card.companyIconClass" [class]="'company-showcase__icon ' + card.companyIconClass" aria-hidden="true"></i>
+              <span *ngIf="!card.companyIconClass" class="company-showcase__glyph" aria-hidden="true">{{ card.companyGlyph || card.title[0] }}</span>
+              <span class="sr-only">{{ card.title }}</span>
+            </div>
+            <div class="company-showcase__meta">
+              <div class="company-showcase__title-row">
+                <div class="company-showcase__name fa-card-title">{{ card.title }}</div>
+                <span class="company-showcase__count">{{ getCompanyCountLabel(card, stats.companyCounts) }}</span>
+              </div>
+              <div class="company-showcase__note fa-meta-text">{{ card.companyNote || 'Interview-focused question bank' }}</div>
+              <span class="company-showcase__cta">
+                Open pack
+                <i class="pi pi-arrow-right" aria-hidden="true"></i>
+              </span>
+            </div>
+          </a>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- Tech lanes -->
+    <section class="block block--frameworks">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Tech lanes</h2>
+        <p class="block-subtitle fa-meta-text">Stay inside one stack when you want cleaner repetition and less context switching.</p>
+      </div>
+
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="section-grid">
+          <a
+            *ngFor="let card of frameworks; trackBy: trackByTitle"
+            faCard interactive class="row framework-row"
+            [attr.data-tone]="getFrameworkTone(card)"
+            [routerLink]="card.route"
+            [queryParams]="card.queryParams"
+          >
+            <div class="row-main framework-row__main">
+              <div class="row-icon framework-row__icon" [attr.data-tone]="getFrameworkTone(card)">
+                <span class="framework-row__logo" aria-hidden="true">{{ getFrameworkLogo(card) }}</span>
+              </div>
+              <div class="row-body framework-row__body">
+                <div class="row-title fa-card-title framework-row__title-row">
+                  <span>{{ card.title }}</span>
+                  <span class="framework-row__type-pill">{{ getFrameworkTypeLabel(card) }}</span>
+                </div>
+                <div class="row-sub fa-meta-text framework-row__meta">
+                  <span class="framework-row__count-pill">{{ getFrameworkSubtitle(card, stats.techCounts) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="row-arrow framework-row__cta">Open lane</div>
+          </a>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- Playbooks and tools -->
     <section class="block block--guides">
       <div class="block-head">
-        <h2 class="block-title fa-section-title">Recommended preparation</h2>
-        <p class="block-subtitle fa-meta-text">Start with structured guides and practical tools, then drill deeper by practice type.</p>
+        <h2 class="block-title fa-section-title">Playbooks and tools</h2>
+        <p class="block-subtitle fa-meta-text">Use structured guides and utilities when you need a system reset or a sharper reference.</p>
       </div>
 
       <div class="recommended-layout" *ngIf="recommendedPrimary as primary">
@@ -398,7 +637,7 @@
           </div>
           <div class="row-title fa-card-title">{{ primary.title }}</div>
           <div class="row-sub fa-meta-text">{{ primary.subtitle }}</div>
-          <div class="spotlight-cta">Open guide →</div>
+          <div class="spotlight-cta">Read playbook →</div>
         </a>
 
         <ng-template #primaryDisabled>
@@ -452,190 +691,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Learning tracks -->
-    <section class="block block--tracks">
-      <div class="block-head">
-        <h2 class="block-title fa-section-title">Learning tracks</h2>
-        <p class="block-subtitle fa-meta-text">Progress-style view for guided paths and completion momentum.</p>
-      </div>
-
-      <div class="track-list">
-        <a
-          *ngFor="let card of tracks; trackBy: trackByTitle"
-          faCard interactive class="track-row"
-          [routerLink]="card.route"
-          [queryParams]="card.queryParams"
-        >
-          <ng-container *ngIf="trackProgress(card) as progress">
-            <div class="track-row__main">
-              <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-              <div class="track-row__body">
-                <div class="row-title fa-card-title">{{ card.title }}</div>
-                <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
-                <div class="track-meta">
-                  <span class="meta-pill">{{ card.durationLabel }}</span>
-                  <span class="meta-pill">{{ card.focusCount || 0 }} focus areas</span>
-                  <span class="meta-pill">{{ card.featuredTotal || 0 }} featured questions</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="track-row__progress">
-              <div class="track-progress__label">
-                <span>{{ progress.solved }} / {{ progress.total }} complete</span>
-                <span>{{ progress.pct }}%</span>
-              </div>
-              <div class="track-progress__bar">
-                <span [style.width.%]="progress.pct"></span>
-              </div>
-            </div>
-          </ng-container>
-        </a>
-      </div>
-    </section>
-
-    <!-- Company guides -->
-    <section class="block block--companies">
-      <div class="block-head">
-        <h2 class="block-title fa-section-title">Company guides</h2>
-        <p class="block-subtitle fa-meta-text">Targeted practice sets and interview-style question banks by company.</p>
-      </div>
-
-      <ng-container *ngIf="stats$ | async as stats">
-        <div class="company-showcase-grid">
-          <a
-            *ngFor="let card of companyGuides; trackBy: trackByTitle"
-            faCard interactive class="company-showcase-card"
-            [routerLink]="card.route"
-          >
-            <div
-              class="company-showcase__logo"
-              [style.background]="card.companyColor || '#1f2937'"
-              [style.color]="card.companyFg || '#ffffff'"
-            >
-              <i *ngIf="card.companyIconClass" [class]="'company-showcase__icon ' + card.companyIconClass" aria-hidden="true"></i>
-              <span *ngIf="!card.companyIconClass" class="company-showcase__glyph" aria-hidden="true">{{ card.companyGlyph || card.title[0] }}</span>
-              <span class="sr-only">{{ card.title }}</span>
-            </div>
-            <div class="company-showcase__meta">
-              <div class="company-showcase__title-row">
-                <div class="company-showcase__name fa-card-title">{{ card.title }}</div>
-                <span class="company-showcase__count">{{ getCompanyCountLabel(card, stats.companyCounts) }}</span>
-              </div>
-              <div class="company-showcase__note fa-meta-text">{{ card.companyNote || 'Interview-focused question bank' }}</div>
-              <span class="company-showcase__cta">
-                View set
-                <i class="pi pi-arrow-right" aria-hidden="true"></i>
-              </span>
-            </div>
-          </a>
-        </div>
-      </ng-container>
-    </section>
-
-    <!-- Focus areas -->
-    <section class="block block--focus">
-      <div class="block-head block-head--with-action">
-        <div class="block-head__content">
-          <h2 class="block-title fa-section-title">Focus areas</h2>
-          <p class="block-subtitle fa-meta-text">Compact map of topic density to steer what to practice next.</p>
-        </div>
-        <a
-          faButton variant="ghost" class="block-head__action"
-          [routerLink]="['/focus-areas']"
-          data-testid="dashboard-focus-areas-link"
-        >
-          Browse all focus areas
-        </a>
-      </div>
-
-      <ng-container *ngIf="stats$ | async as stats">
-        <div class="focus-chip-grid">
-          <a
-            *ngFor="let topic of stats.topics; trackBy: trackByTopicId"
-            faCard interactive class="focus-chip"
-            [attr.data-intensity]="focusAreaIntensity(stats, topic.id)"
-            [routerLink]="['/coding']"
-            [queryParams]="{ topic: topic.id, reset: 1 }"
-          >
-            <span class="focus-chip__title">{{ topic.title }}</span>
-            <span class="focus-chip__count">{{ stats.topicCounts[topic.id] || 0 }} questions</span>
-          </a>
-        </div>
-      </ng-container>
-    </section>
-
-    <!-- Practice formats -->
-    <section class="block block--formats">
-      <div class="block-head">
-        <h2 class="block-title fa-section-title">Practice formats</h2>
-        <p class="block-subtitle fa-meta-text">Coding, trivia, simulators, and decision drills in one place.</p>
-      </div>
-
-      <ng-container *ngIf="stats$ | async as stats">
-        <div class="section-grid">
-          <a
-            *ngFor="let card of practiceFormats; trackBy: trackByTitle"
-            faCard interactive class="row format-row"
-            [attr.data-tone]="getPracticeFormatTone(card)"
-            [routerLink]="card.route"
-            [queryParams]="card.queryParams"
-          >
-            <div class="row-main format-row__main">
-              <div class="row-icon format-row__icon">
-                <i [ngClass]="piIcon(card.icon)"></i>
-              </div>
-              <div class="row-body format-row__body">
-                <div class="row-title fa-card-title format-row__title-row">
-                  <span>{{ card.title }}</span>
-                  <span class="format-row__kind-pill">{{ getPracticeFormatKindLabel(card) }}</span>
-                </div>
-                <div class="row-sub fa-meta-text format-row__meta">
-                  <span class="format-row__count-pill">{{ getPracticeFormatSubtitle(card, stats) }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="row-arrow format-row__cta">Open</div>
-          </a>
-        </div>
-      </ng-container>
-    </section>
-
-    <!-- Frameworks & languages -->
-    <section class="block block--frameworks">
-      <div class="block-head">
-        <h2 class="block-title fa-section-title">Frameworks and languages</h2>
-      </div>
-
-      <ng-container *ngIf="stats$ | async as stats">
-        <div class="section-grid">
-          <a
-            *ngFor="let card of frameworks; trackBy: trackByTitle"
-            faCard interactive class="row framework-row"
-            [attr.data-tone]="getFrameworkTone(card)"
-            [routerLink]="card.route"
-            [queryParams]="card.queryParams"
-          >
-            <div class="row-main framework-row__main">
-              <div class="row-icon framework-row__icon" [attr.data-tone]="getFrameworkTone(card)">
-                <span class="framework-row__logo" aria-hidden="true">{{ getFrameworkLogo(card) }}</span>
-              </div>
-              <div class="row-body framework-row__body">
-                <div class="row-title fa-card-title framework-row__title-row">
-                  <span>{{ card.title }}</span>
-                  <span class="framework-row__type-pill">{{ getFrameworkTypeLabel(card) }}</span>
-                </div>
-                <div class="row-sub fa-meta-text framework-row__meta">
-                  <span class="framework-row__count-pill">{{ getFrameworkSubtitle(card, stats.techCounts) }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="row-arrow framework-row__cta">Open</div>
-          </a>
-        </div>
-      </ng-container>
-    </section>
   </div>
 
   <div class="prep-launcher" data-testid="dashboard-prep-launcher">
@@ -650,13 +705,13 @@
         aria-label="Dismiss launcher for this session">
         ×
       </button>
-      <p class="prep-launcher__bubble-title">Need a clear start now?</p>
-      <p class="prep-launcher__bubble-copy">Pick one interview path in 10 seconds.</p>
+      <p class="prep-launcher__bubble-title">Need a tighter loop now?</p>
+      <p class="prep-launcher__bubble-copy">Pick the next rep in 10 seconds.</p>
       <button
         type="button"
         class="prep-launcher__bubble-action"
         (click)="openPrepLauncher('bubble')">
-        Show options
+        Show next options
       </button>
     </div>
 
@@ -684,9 +739,9 @@
     [contentStyle]="{ padding: '0' }">
     <div class="prep-launcher-modal" role="dialog" aria-labelledby="prep-launcher-title" aria-describedby="prep-launcher-desc">
       <p class="prep-launcher-modal__kicker">Start here</p>
-      <h3 class="prep-launcher-modal__title" id="prep-launcher-title">Pick one prep direction</h3>
+      <h3 class="prep-launcher-modal__title" id="prep-launcher-title">Pick the next rep direction</h3>
       <p class="prep-launcher-modal__desc" id="prep-launcher-desc">
-        One decision now. You can switch paths later without losing progress.
+        One decision now. You can switch paths later without losing momentum.
       </p>
 
       <div class="prep-launcher-modal__actions">

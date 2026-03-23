@@ -246,13 +246,41 @@ describe('DashboardComponent', () => {
 
   it('renders compact momentum widgets with profile details CTA', () => {
     const pageText = fixture.nativeElement.textContent || '';
-    expect(pageText).toContain('Next best action');
-    expect(pageText).toContain('Daily challenge');
-    expect(pageText).toContain('Question coverage');
-    expect(pageText).toContain('Debug scenarios');
-    expect(pageText).toContain('Practice completed');
-    expect(pageText).toContain('Profile activity');
-    expect(pageText).toContain('Show full details');
+    expect(pageText).toContain('Next rep');
+    expect(pageText).toContain('Today’s rep');
+    expect(pageText).toContain('Coverage map');
+    expect(pageText).toContain('Debug drills');
+    expect(pageText).toContain('Reps completed');
+    expect(pageText).toContain('Loop history');
+    expect(pageText).toContain('Open history');
+  });
+
+  it('renders guest prep-loop teaser with auth CTAs when logged out', () => {
+    const authService = TestBed.inject(AuthService) as any;
+    authService.isLoggedIn.and.returnValue(false);
+    authService.user.and.returnValue(null);
+
+    const guestFixture = TestBed.createComponent(DashboardComponent);
+    guestFixture.detectChanges();
+
+    const page: HTMLElement = guestFixture.nativeElement;
+    const teaser = page.querySelector('[data-testid="dashboard-guest-progress-card"]');
+    const signupLink = page.querySelector('[data-testid="dashboard-guest-progress-signup"]') as HTMLAnchorElement | null;
+    const loginLink = page.querySelector('[data-testid="dashboard-guest-progress-login"]') as HTMLAnchorElement | null;
+    const loopSigninCta = page.querySelector('[data-testid="dashboard-loop-signin-cta"]') as HTMLAnchorElement | null;
+    const hiddenLoopWidgets = page.querySelector('.gamification-stack');
+
+    expect(teaser).toBeTruthy();
+    expect(page.textContent || '').toContain('Today’s prep loop');
+    expect(page.textContent || '').toContain('Sign in to save your prep loop');
+    expect(page.textContent || '').toContain('Keep streaks, weekly goals, coverage, and your next recommended rep in one dashboard.');
+    expect(hiddenLoopWidgets).toBeFalsy();
+    expect(loopSigninCta?.getAttribute('href') || '').toContain('/auth/login');
+    expect(loopSigninCta?.getAttribute('href') || '').toContain('redirectTo=%2Fdashboard');
+    expect(signupLink?.getAttribute('href') || '').toContain('/auth/signup');
+    expect(signupLink?.getAttribute('href') || '').toContain('redirectTo=%2Fdashboard');
+    expect(loginLink?.getAttribute('href') || '').toContain('/auth/login');
+    expect(loginLink?.getAttribute('href') || '').toContain('redirectTo=%2Fdashboard');
   });
 
   it('renders focus areas browse action linking to /focus-areas', () => {
@@ -310,7 +338,7 @@ describe('DashboardComponent', () => {
     component.markDailyChallengeComplete();
     fixture.detectChanges();
 
-    expect(component.dailyCompleteMessage()).toBe('Daily challenge completed.');
+    expect(component.dailyCompleteMessage()).toBe('Today’s rep completed.');
     expect(component.dailyCompleteError()).toBeNull();
   });
 
@@ -330,8 +358,8 @@ describe('DashboardComponent', () => {
     const localFixture = TestBed.createComponent(DashboardComponent);
     localFixture.detectChanges();
 
-    expect(localFixture.nativeElement.textContent || '').toContain('Keep your preparation momentum');
-    expect(localFixture.nativeElement.textContent || '').toContain('Continue practice');
+    expect(localFixture.nativeElement.textContent || '').toContain('Keep the loop moving');
+    expect(localFixture.nativeElement.textContent || '').toContain('Start a rep');
   });
 
   it('formats global progress percentage without trailing zeros and with detail for small values', () => {

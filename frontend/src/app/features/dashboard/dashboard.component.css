@@ -43,6 +43,27 @@
   max-width: 56ch;
 }
 
+.hero-loop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hero-loop__item {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--fa-accent) 34%, var(--fa-border-subtle) 66%);
+  background: rgba(var(--fa-text-rgb), 0.035);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fa-text) 88%, var(--fa-accent) 12%);
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -56,6 +77,118 @@
 .command-center__stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.guest-progress-card {
+  position: relative;
+  min-height: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--fa-border-subtle) 58%, var(--fa-accent) 42%);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(var(--fa-accent-rgb), 0.12), transparent 36%),
+    linear-gradient(160deg, rgba(var(--fa-accent-rgb), 0.08), rgba(var(--fa-text-rgb), 0.025)),
+    rgba(var(--fa-surface-alt-rgb), 0.72);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  overflow: hidden;
+}
+
+.guest-progress-card__eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: color-mix(in srgb, var(--fa-text-muted) 86%, var(--fa-accent) 14%);
+}
+
+.guest-progress-card__preview {
+  display: grid;
+  gap: 10px;
+}
+
+.guest-progress-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--fa-border-subtle) 70%, rgba(var(--fa-accent-rgb), 0.32) 30%);
+  background: rgba(var(--fa-text-rgb), 0.035);
+}
+
+.guest-progress-row__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--fa-accent) 44%, var(--fa-border-subtle) 56%);
+  background: rgba(var(--fa-bg-rgb), 0.28);
+  color: var(--fa-text);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.guest-progress-row__body {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.guest-progress-row__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fa-text);
+}
+
+.guest-progress-row__detail {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--fa-text-muted);
+}
+
+.guest-progress-row__bar {
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(var(--fa-text-rgb), 0.08);
+}
+
+.guest-progress-row__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--fa-accent) 82%, #ffffff 18%), color-mix(in srgb, var(--fa-accent) 52%, transparent));
+}
+
+.guest-progress-card__content {
+  display: grid;
+  gap: 10px;
+}
+
+.guest-progress-card__title {
+  margin: 0;
+  max-width: 18ch;
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--fa-text);
+}
+
+.guest-progress-card__copy {
+  margin: 0;
+  max-width: 38ch;
+}
+
+.guest-progress-card__actions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -1160,10 +1293,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
+  min-width: 32px;
+  width: auto;
   height: 32px;
+  padding: 0 10px;
   border-radius: var(--fa-radius-8);
-  font-size: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
   color: rgba(var(--fa-text-rgb), 0.72);
   background: rgba(var(--fa-text-rgb), 0.04);
   border: 1px solid transparent;
@@ -1376,6 +1513,10 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .guest-progress-card__title {
+    max-width: none;
+  }
+
   .recommended-layout {
     grid-template-columns: 1fr;
   }
@@ -1430,6 +1571,27 @@
 
   .command-center__stats {
     grid-template-columns: 1fr;
+  }
+
+  .hero-loop {
+    gap: 6px;
+  }
+
+  .guest-progress-card {
+    padding: 14px;
+  }
+
+  .guest-progress-row {
+    grid-template-columns: 1fr;
+  }
+
+  .guest-progress-row__badge {
+    min-width: 0;
+    width: fit-content;
+  }
+
+  .guest-progress-card__title {
+    font-size: 24px;
   }
 
   .block-head--collapsible {

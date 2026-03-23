@@ -50,6 +50,11 @@ type FormatCounts = Record<CategoryKeyInternal, number>;
 type TopicCounts = Record<string, number>;
 type FocusIntensity = 'core' | 'rising' | 'light';
 type TrackProgress = { solved: number; total: number; pct: number };
+type GuestProgressPreview = {
+  label: string;
+  progress: number;
+  detail: string;
+};
 
 type Stats = {
   companyCounts: Record<string, number>;
@@ -142,9 +147,21 @@ export class DashboardComponent {
   auth = this.authService;
 
   readonly continueCta = {
-    label: 'Continue practice',
+    label: 'Start today’s loop',
     route: ['/coding'] as any[],
   };
+  readonly guestProgressPreview: GuestProgressPreview[] = [
+    {
+      label: 'Coverage map',
+      progress: 53,
+      detail: 'See solved coverage across coding, trivia, and drills',
+    },
+    {
+      label: 'Loop history',
+      progress: 18,
+      detail: 'Keep streaks, weekly goals, and next reps in sync',
+    },
+  ];
 
   solvedTotal = computed(() => this.progress.solvedIds().length);
   streakCurrent = computed(() => {
@@ -178,10 +195,10 @@ export class DashboardComponent {
     return (
       payload?.nextBestAction ?? {
         id: 'fallback_continue',
-        title: 'Keep your preparation momentum',
-        description: 'Continue with one focused coding question and build consistency.',
+        title: 'Keep the loop moving',
+        description: 'Take one focused coding rep, then review what changed.',
         route: '/coding',
-        cta: 'Continue practice',
+        cta: 'Start a rep',
       }
     );
   });
@@ -195,7 +212,7 @@ export class DashboardComponent {
     return !!flags.weaknessRadar && this.weaknesses().length > 0;
   });
   prepLauncherLabel = computed(() => (
-    this.prepLauncherDismissed() ? 'Start' : 'Not sure where to start?'
+    this.prepLauncherDismissed() ? 'Start a loop' : 'Need a tight loop?'
   ));
 
   private solvedSet = computed(() => new Set(this.progress.solvedIds()));
@@ -1149,7 +1166,7 @@ export class DashboardComponent {
         },
         error: () => {
           this.gamificationLoading.set(false);
-          this.gamificationError.set('Unable to load progress widgets right now.');
+          this.gamificationError.set('Unable to load loop widgets right now.');
         },
       });
   }
@@ -1169,7 +1186,7 @@ export class DashboardComponent {
         next: (res) => {
           this.dailyCompletePending.set(false);
           this.dailyCompleteMessage.set(
-            res.alreadyCompleted ? 'Already completed for today.' : 'Daily challenge completed.'
+            res.alreadyCompleted ? 'Already cleared for today.' : 'Today’s rep completed.'
           );
           this.analytics.track('daily_challenge_completed', {
             day_key: res.dayKey,
@@ -1202,7 +1219,7 @@ export class DashboardComponent {
         error: (err) => {
           this.dailyCompletePending.set(false);
           this.dailyCompleteError.set(
-            err?.error?.error || 'Complete the challenge question first, then mark it complete.'
+            err?.error?.error || 'Complete the rep first, then mark it complete.'
           );
         },
       });
@@ -1291,6 +1308,13 @@ export class DashboardComponent {
 
   trackProfileDetailsClick() {
     this.analytics.track('progress_details_redirected', { destination: 'profile' });
+  }
+
+  trackGuestProgressPromptClick(destination: 'login' | 'signup') {
+    this.analytics.track('guest_progress_prompt_clicked', {
+      destination,
+      surface: 'dashboard',
+    });
   }
 
   openManageProgress() {
