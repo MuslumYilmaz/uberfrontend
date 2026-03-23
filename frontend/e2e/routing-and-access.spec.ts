@@ -123,7 +123,7 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByTestId('dashboard-page')).toBeVisible();
 
     await page.getByTestId('dashboard-daily-complete').click();
-    await expect(page.getByText(/Daily challenge completed\.|Already completed for today\./)).toBeVisible();
+    await expect(page.getByText(/Today’s rep completed\.|Already cleared for today\./)).toBeVisible();
 
     await page.getByTestId('dashboard-focus-areas-link').click();
     await expect(page).toHaveURL('/focus-areas');

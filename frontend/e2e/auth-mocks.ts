@@ -36,6 +36,17 @@ type AuthMockOptions = {
   changePasswordSequence?: Array<{ status: number; error?: string }>;
 };
 
+type MockPracticeProgressRecord = {
+  family: string;
+  itemId: string;
+  started: boolean;
+  completed: boolean;
+  passed: boolean;
+  bestScore: number;
+  lastPlayedAt: string | null;
+  extension: Record<string, unknown>;
+};
+
 function buildDashboardProgress(user: MockUser) {
   const solvedCount = Array.isArray(user.solvedQuestionIds) ? user.solvedQuestionIds.length : 0;
   const questionTotalCount = 0;
@@ -156,6 +167,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
   const signupSequence = Array.isArray(opts.signupSequence) ? [...opts.signupSequence] : [];
   const refreshSequence = Array.isArray(opts.refreshSequence) ? [...opts.refreshSequence] : [];
   const changePasswordSequence = Array.isArray(opts.changePasswordSequence) ? [...opts.changePasswordSequence] : [];
+  const practiceProgressRecords = new Map<string, MockPracticeProgressRecord>();
   let currentToken = opts.token;
 
   const isAuthorized = (req: Request) => {
@@ -165,7 +177,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
   };
 
   // Activity + dashboard endpoints hit after auth redirects; mock them to avoid noisy 401s in E2E.
-  await page.route(/\/api\/(activity\/.*|dashboard$|daily\/complete$|weekly-goal$).*/, async (route) => {
+  await page.route(/\/api\/(activity\/.*|dashboard$|daily\/complete$|weekly-goal$|practice-progress(?:\/.*)?$).*/, async (route) => {
     const req = route.request();
     const url = new URL(req.url());
     const path = url.pathname;
@@ -176,6 +188,43 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
 
     if (!isAuthorized(req)) {
       return jsonResponse(route, req, 401, { error: 'Invalid or expired token' });
+    }
+
+    if (req.method() === 'GET' && path.endsWith('/practice-progress')) {
+      return jsonResponse(route, req, 200, {
+        records: Array.from(practiceProgressRecords.values()),
+      });
+    }
+
+    if (req.method() === 'PUT' && path.includes('/practice-progress/')) {
+      const match = path.match(/\/practice-progress\/([^/]+)\/(.+)$/);
+      if (!match) {
+        return jsonResponse(route, req, 400, { error: 'Invalid practice progress path' });
+      }
+
+      const [, family, encodedItemId] = match;
+      const itemId = decodeURIComponent(encodedItemId);
+      const body = parseJsonBody(req) || {};
+      const key = `${family}:${itemId}`;
+      const previous = practiceProgressRecords.get(key);
+      const nextRecord: MockPracticeProgressRecord = {
+        family,
+        itemId,
+        started: body.started === true,
+        completed: body.completed === true,
+        passed: body.passed === true,
+        bestScore: typeof body.bestScore === 'number'
+          ? body.bestScore
+          : previous?.bestScore ?? 0,
+        lastPlayedAt: typeof body.lastPlayedAt === 'string'
+          ? body.lastPlayedAt
+          : previous?.lastPlayedAt ?? null,
+        extension: body.extension && typeof body.extension === 'object'
+          ? body.extension as Record<string, unknown>
+          : previous?.extension ?? {},
+      };
+      practiceProgressRecords.set(key, nextRecord);
+      return jsonResponse(route, req, 200, { record: nextRecord });
     }
 
     if (req.method() === 'GET' && path.endsWith('/activity/summary')) {
