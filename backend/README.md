@@ -23,6 +23,7 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 ### Required env vars
 
+- `MONGO_TARGET`: Mongo selection target. Use `test` for local development, and reserve `production` for explicit production-local maintenance only.
 - `JWT_SECRET`: JWT signing secret (32+ chars required in production).
 - `ACCESS_TOKEN_EXPIRES_IN`: short access-token lifetime (recommended: `15m`).
 - `REFRESH_SESSION_TTL_DAYS`: rolling refresh-session lifetime in days (recommended: `90`).
@@ -92,6 +93,9 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 ## Local development notes
 
+- Local backend runs default to `MONGO_TARGET=test`. With the repo's local env, both `npm start` and `npm run dev` connect to `mongodb://127.0.0.1:27017/test`.
+- `mongodb://127.0.0.1:27017/frontendatlas` is production-only on this machine and must not be used for routine local development or testing.
+- Set `MONGO_TARGET=production` only when you explicitly intend to work against the production-local database.
 - The frontend uses `environment.apiBase` for API calls (default: `/api` with `frontend/proxy.conf.json`).
 - If you prefer a full URL, set `apiBase` to `http://localhost:3001`.
 - When using a full `apiBase` URL from the browser, set `FRONTEND_ORIGINS` to include your frontend origin and keep `credentials: true` requests enabled on the frontend.

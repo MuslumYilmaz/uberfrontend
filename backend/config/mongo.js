@@ -31,12 +31,50 @@ function attachListenersOnce() {
   mongoose.connection.on('error', (err) => console.error('❌ MongoDB error:', err));
 }
 
-function isTestEnv() {
+function isAutomatedTestRuntime() {
   return process.env.NODE_ENV === 'test' || !!process.env.JEST_WORKER_ID;
 }
 
+function isProductionRuntime() {
+  return String(process.env.NODE_ENV || '').trim().toLowerCase() === 'production';
+}
+
+function normalizeMongoTarget(value) {
+  const raw = String(value || '').trim().toLowerCase();
+  if (!raw) return null;
+  if (['test', 'testing', 'local-test', 'localtest', 'sandbox'].includes(raw)) return 'test';
+  if (['production', 'prod', 'live', 'primary'].includes(raw)) return 'production';
+  return null;
+}
+
+function resolveMongoTarget() {
+  const explicitTarget = normalizeMongoTarget(process.env.MONGO_TARGET || process.env.LOCAL_MONGO_TARGET);
+  if (explicitTarget) return explicitTarget;
+  if (isProductionRuntime()) return 'production';
+  if (isAutomatedTestRuntime()) return 'test';
+  if (String(process.env.MONGO_URL_TEST || '').trim()) return 'test';
+  return 'production';
+}
+
+function resolveMongoConnectionConfig() {
+  const target = resolveMongoTarget();
+
+  if (target === 'test') {
+    const uri = String(process.env.MONGO_URL_TEST || '').trim();
+    if (!uri) {
+      throw new Error(
+        'MONGO_URL_TEST is required when MongoDB target is "test". Set MONGO_URL_TEST or explicitly use MONGO_TARGET=production.'
+      );
+    }
+    return { target, uri };
+  }
+
+  const uri = String(process.env.MONGO_URL || '').trim() || 'mongodb://127.0.0.1:27017/myapp';
+  return { target, uri };
+}
+
 function getExpectedMongoDbName() {
-  const scoped = isTestEnv()
+  const scoped = resolveMongoTarget() === 'test'
     ? process.env.EXPECTED_MONGO_DB_NAME_TEST || process.env.EXPECTED_MONGO_DB_NAME
     : process.env.EXPECTED_MONGO_DB_NAME;
   const value = String(scoped || '').trim();
@@ -122,6 +160,7 @@ async function connectToMongo(uri) {
   cache.conn = connection;
   if (!cache.logged) {
     cache.logged = true;
+    console.log(`🧭 MongoDB target: ${resolveMongoTarget()}`);
     console.log(`🧭 MongoDB host: ${mongoose.connection.host || '(unknown)'}`);
     console.log(`🧭 MongoDB name: ${mongoose.connection.name || '(unknown)'}`);
     console.log(`🧭 MongoDB URI: ${maskMongoUri(uri) || '(empty)'}`);
@@ -150,4 +189,6 @@ module.exports = {
   disconnectMongo,
   getMongoDiagnostics,
   getExpectedMongoDbName,
+  resolveMongoConnectionConfig,
+  resolveMongoTarget,
 };

@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
 const { rateLimit, getClientIp } = require('./middleware/rateLimit');
-const { connectToMongo } = require('./config/mongo');
+const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
 
@@ -18,13 +18,7 @@ const app = express();
 
 // ---- Config ----
 const PORT = process.env.PORT || 3001;
-const isTest = process.env.NODE_ENV === 'test' || !!process.env.JEST_WORKER_ID;
-const MONGO_URL = isTest
-    ? process.env.MONGO_URL_TEST
-    : (process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/myapp');
-if (isTest && !process.env.MONGO_URL_TEST) {
-    throw new Error('MONGO_URL_TEST is required when running tests');
-}
+const { uri: MONGO_URL } = resolveMongoConnectionConfig();
 const SERVER_BASE = resolveServerBase();
 const ALLOWED_FRONTEND_ORIGINS = resolveAllowedFrontendOrigins();
 const SUPPORT_EMAIL = String(process.env.SUPPORT_EMAIL || 'support@frontendatlas.com').trim() || 'support@frontendatlas.com';

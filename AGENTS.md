@@ -20,6 +20,7 @@
 - Test: `npm test`
 - Focused test: `npm run test:cv-calibration`
 - Lint: no npm lint script is defined in `backend/package.json`.
+- Environment safety: if startup logs `MongoDB URI: mongodb://127.0.0.1:27017/frontendatlas`, treat `frontendatlas` as the production environment/database for this machine. Do not use it for local testing, do not switch local test work onto it, and do not override this rule unless the user explicitly instructs otherwise. Use the test environment/database for local work by default.
 
 ### Frontend (`cd frontend`)
 - Install: `npm install`
