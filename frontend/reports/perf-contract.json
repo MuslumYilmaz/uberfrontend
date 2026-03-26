@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-26T21:57:29.811Z",
+  "generatedAt": "2026-03-26T22:07:37.701Z",
   "strictMode": false,
   "buildDir": "dist/frontendatlas/browser",
   "thresholds": {
@@ -11,16 +11,16 @@
     "showcaseLazyHeavyBytes": 620000
   },
   "metrics": {
-    "initialBytes": 807440,
-    "modulePreloadBytes": 496397,
+    "initialBytes": 807387,
+    "modulePreloadBytes": 496285,
     "modulePreloadCount": 25,
-    "entryScriptBytes": 213133,
+    "entryScriptBytes": 213192,
     "entryScriptCount": 2,
     "stylesheetBytes": 97910,
     "stylesheetCount": 2,
-    "totalHtmlBytes": 62638489,
+    "totalHtmlBytes": 62637750,
     "htmlFileCount": 573,
-    "codingHtmlBytes": 406381,
+    "codingHtmlBytes": 406298,
     "sentryLazyChunkBytes": 0,
     "sentryLazyChunkFile": null,
     "showcaseLazyHeavyBytes": 0,
@@ -30,7 +30,7 @@
     {
       "route": "/coding",
       "file": "dist/frontendatlas/browser/coding/index.html",
-      "bytes": 406381
+      "bytes": 406298
     },
     {
       "route": "/guides/framework-prep/angular-prep-path",

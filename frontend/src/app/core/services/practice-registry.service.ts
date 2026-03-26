@@ -25,7 +25,6 @@ const DEFAULT_CATALOG: PracticeCatalogEntry[] = [
     query: { view: 'formats', category: 'system' },
     family: 'question',
   },
-  { key: 'code-reviews', label: 'Code review interviews', icon: 'pi pi-eye', route: '/code-reviews', family: 'code-review' },
   { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle' },
   { key: 'tracks', label: 'Interview prep tracks', icon: 'pi pi-directions', route: '/tracks', isSupplemental: true },
   {

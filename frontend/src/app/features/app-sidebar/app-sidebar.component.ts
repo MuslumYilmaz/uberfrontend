@@ -149,8 +149,6 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         return path === '/system-design'
           || path.startsWith('/system-design/')
           || (path === '/coding' && view === 'formats' && category === 'system');
-      case 'code-reviews':
-        return path === '/code-reviews' || path.startsWith('/code-reviews/');
       case 'tradeoff-battles':
         return path === '/tradeoffs' || path.startsWith('/tradeoffs/');
       case 'tracks':

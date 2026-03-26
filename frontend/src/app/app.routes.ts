@@ -147,6 +147,11 @@ export const routes: Routes = [
     pathMatch: 'full',
     redirectTo: 'javascript/coding/js-safe-json-parse',
   },
+  {
+    path: 'code-reviews',
+    pathMatch: 'full',
+    redirectTo: 'coding',
+  },
 
   // Auth
   {
