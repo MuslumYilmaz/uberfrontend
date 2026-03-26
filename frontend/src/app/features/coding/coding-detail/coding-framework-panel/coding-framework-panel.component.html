@@ -21,10 +21,10 @@
     <div class="file-drawer" [class.open]="showFileDrawer()">
         <div class="backdrop" (click)="closeFiles()"></div>
         <div class="panel">
-            <div class="panel-header">
-                <div>Files</div>
-                <button class="icon-btn" title="Close" (click)="closeFiles()">
-                    <i class="pi pi-times"></i>
+                <div class="panel-header">
+                    <div>Files</div>
+                    <button class="icon-btn" title="Close" (click)="closeFiles()">
+                    <app-fa-glyph class="icon-btn__glyph" icon="pi pi-times"></app-fa-glyph>
                 </button>
             </div>
 
@@ -36,8 +36,8 @@
                             <div *ngIf="n.type === 'dir'" class="tree-row folder-row"
                                 [style.paddingLeft.px]="depth * 12 + 8" (click)="toggleDir(n.path)"
                                 [class.open]="isOpen(n.path)">
-                                <i class="pi pi-chevron-right caret"></i>
-                                <i class="pi pi-folder folder-ico"></i>
+                                <app-fa-glyph class="caret" icon="pi pi-chevron-right"></app-fa-glyph>
+                                <app-fa-glyph class="folder-ico" icon="pi pi-folder"></app-fa-glyph>
                                 <span class="name" [title]="n.path">{{ n.name }}</span>
                             </div>
 
@@ -53,7 +53,7 @@
                                 [class.active]="(openPath()||frameworkEntryFile)===n.path"
                                 [style.paddingLeft.px]="depth * 12 + 28" (click)="openFile(n.path); closeFiles()"
                                 [title]="n.path">
-                                <i class="pi pi-file file-ico"></i>
+                                <app-fa-glyph class="file-ico" icon="pi pi-file"></app-fa-glyph>
                                 <span class="name">{{ n.name }}</span>
                             </div>
                         </li>
@@ -74,7 +74,7 @@
             <div class="flex items-center justify-between border-b border-white/10 px-2 py-1">
                 <div class="flex items-center gap-3 min-w-0">
                     <button type="button" class="icon-btn" title="File tree" (click)="toggleFiles()">
-                        <i class="pi pi-bars"></i>
+                        <app-fa-glyph class="icon-btn__glyph" icon="pi pi-bars"></app-fa-glyph>
                     </button>
                     <div class="min-w-0 leading-tight">
                         <div class="text-xs text-white truncate" [title]="currentPath() || 'Select a file'">
@@ -98,21 +98,23 @@
                         [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions"
                         (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()">
                     </app-monaco-editor>
-                    <textarea
+                    <app-code-snapshot
                         *ngIf="!editorReady()"
-                        class="lite-editor editor-fill lite-overlay"
-                        aria-label="Framework code editor"
-                        [value]="editorContent()"
-                        [attr.spellcheck]="false"
-                        (input)="onFrameworkCodeChange($any($event.target).value)"></textarea>
+                        class="editor-fill lite-overlay"
+                        [testId]="'framework-code-editor'"
+                        [ariaLabel]="'Framework code editor preview'"
+                        [code]="editorContent()"
+                        [language]="langFromPath(currentPath())"
+                        (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-container>
                 <ng-template #liteFrameworkEditor>
-                    <textarea
-                        class="lite-editor editor-fill"
-                        aria-label="Framework code editor"
-                        [value]="editorContent()"
-                        [attr.spellcheck]="false"
-                        (input)="onFrameworkCodeChange($any($event.target).value)"></textarea>
+                    <app-code-snapshot
+                        class="editor-fill"
+                        [testId]="'framework-code-editor'"
+                        [ariaLabel]="'Framework code editor preview'"
+                        [code]="editorContent()"
+                        [language]="langFromPath(currentPath())"
+                        (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-template>
             </section>
         </div>

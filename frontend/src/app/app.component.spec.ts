@@ -1,15 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
-import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
 import { BugReportService } from './core/services/bug-report.service';
+
+@Component({
+  standalone: true,
+  template: '',
+})
+class DummyDashboardComponent {}
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, RouterTestingModule, NoopAnimationsModule, HttpClientTestingModule],
+      imports: [
+        AppComponent,
+        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DummyDashboardComponent }]),
+        NoopAnimationsModule,
+        HttpClientTestingModule,
+      ],
     }).compileComponents();
   });
 
@@ -38,16 +50,18 @@ describe('AppComponent', () => {
     expect(bugReport.visible()).toBeTrue();
   });
 
-  it('mounts the drawer sidebar only after the mobile drawer is opened', () => {
+  it('switches from marketing header to app header on non-marketing routes', async () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('app-sidebar')).toBeNull();
+    let compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-marketing-header')).not.toBeNull();
+    expect(compiled.querySelector('app-header')).toBeNull();
 
-    const drawer = TestBed.inject(AppSidebarDrawerService);
-    drawer.open();
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/dashboard');
     fixture.detectChanges();
-
-    expect(compiled.querySelector('app-sidebar')).not.toBeNull();
+    compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-marketing-header')).toBeNull();
+    expect(compiled.querySelector('app-header')).not.toBeNull();
   });
 });

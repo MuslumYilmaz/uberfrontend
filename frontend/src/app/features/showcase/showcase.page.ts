@@ -30,6 +30,7 @@ import { PricingPlansSectionComponent } from '../pricing/components/pricing-plan
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { apiUrl } from '../../core/utils/api-base';
 import showcaseStatsJson from '../../../assets/questions/showcase-stats.json';
+import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
@@ -40,7 +41,6 @@ type CompanyQuestionCard = {
   name: string;
   slug: string;
   icon: string;
-  iconClass?: string;
   color: string;
   note: string;
   link: any[];
@@ -61,7 +61,7 @@ const SHOWCASE_STATIC_STATS = showcaseStatsJson as ShowcaseStatsPayload;
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent],
   selector: 'app-showcase-page',
   templateUrl: './showcase.page.html',
   styleUrls: ['./showcase.page.css'],
@@ -196,10 +196,10 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
   heroFlowSteps = [
-    { key: 'editor', title: 'Editor', subtitle: 'Code in a real IDE with files, tabs, and split panes', icon: 'pi pi-code', status: 'active' },
-    { key: 'tests', title: 'Checks', subtitle: 'Run deterministic tests and fix exact failures fast', icon: 'pi pi-check', status: 'idle' },
-    { key: 'preview', title: 'Preview', subtitle: 'Validate real UI output and interaction behavior instantly', icon: 'pi pi-eye', status: 'idle' },
-    { key: 'review', title: 'Review', subtitle: 'Strengthen edge cases, tradeoffs, and interview explanations', icon: 'pi pi-clone', status: 'idle' },
+    { key: 'editor', title: 'Editor', subtitle: 'Code in a real IDE with files, tabs, and split panes', icon: 'editor' as ShowcaseIconName, status: 'active' },
+    { key: 'tests', title: 'Checks', subtitle: 'Run deterministic tests and fix exact failures fast', icon: 'checks' as ShowcaseIconName, status: 'idle' },
+    { key: 'preview', title: 'Preview', subtitle: 'Validate real UI output and interaction behavior instantly', icon: 'preview' as ShowcaseIconName, status: 'idle' },
+    { key: 'review', title: 'Review', subtitle: 'Strengthen edge cases, tradeoffs, and interview explanations', icon: 'review' as ShowcaseIconName, status: 'idle' },
   ];
 
   activeFlowIndex = 0;
@@ -251,9 +251,9 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   systemDesignDetailComponent?: Type<unknown>;
   systemInjector!: Injector;
 
-  capabilities = [
+  capabilities: Array<{ icon: ShowcaseIconName; title: string; copy: string }> = [
     { icon: 'stack', title: 'Framework-aware questions', copy: 'Angular, React, Vue, JS, HTML/CSS: prompts and starters tailored to each tech.' },
-    { icon: 'editor', title: 'Real editors', copy: 'A full coding workspace with file trees, tabs, and split panes — not a textarea demo.' },
+    { icon: 'editor', title: 'Real editors', copy: 'A full coding workspace with file trees, tabs, and split panes - not a textarea demo.' },
     { icon: 'grid', title: 'Frontend system design', copy: 'UI architecture, caching, pagination, state, performance budgets, and tradeoffs.' },
     { icon: 'cloud', title: 'Offline-first persistence', copy: 'Local-first progress plus code restore (IndexedDB). Works even when the network is flaky.' },
     { icon: 'shield', title: 'Practical testing', copy: 'Built-in deterministic tests and DOM-safe runners with clear pass/fail output.' },
@@ -449,7 +449,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     { name: 'Google', slug: 'google', icon: 'G', color: '#4285F4', note: 'UI, JS, systems', link: ['/companies', 'google', 'preview'] },
     { name: 'Amazon', slug: 'amazon', icon: 'A', color: '#232F3E', note: 'Scaling lists, auth, UX', link: ['/companies', 'amazon', 'preview'] },
     { name: 'Netflix', slug: 'netflix', icon: 'N', color: '#E50914', note: 'UI architecture, state', link: ['/companies', 'netflix', 'preview'] },
-    { name: 'Apple', slug: 'apple', icon: 'A', iconClass: 'fa-brands fa-apple', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
+    { name: 'Apple', slug: 'apple', icon: 'A', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
   ];
 
   companyCounts: ShowcaseStatsPayload['companyCounts'] = SHOWCASE_STATIC_STATS.companyCounts || {};

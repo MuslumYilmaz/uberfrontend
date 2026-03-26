@@ -146,7 +146,7 @@
   color: #e5e7eb;
   transition: background .15s ease, border-color .15s ease, transform .02s ease;
 }
-.icon-btn i {
+.icon-btn__glyph {
   font-size: 12px;
 }
 .icon-btn:hover {

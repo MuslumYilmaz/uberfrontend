@@ -57,6 +57,7 @@ import { PreviewBuilderService } from '../../../core/services/preview-builder.se
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
+import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
@@ -126,6 +127,7 @@ const SEO_DESCRIPTION_MAX_LEN = 155;
     LoginRequiredDialogComponent,
     FaButtonComponent,
     FaDialogComponent,
+    FaGlyphComponent,
     SafeHtmlPipe,
   ],
   templateUrl: './coding-detail.component.html',
@@ -881,6 +883,16 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   private configureLiteEditors() {
+    if (this.liteUpgradeTimer) {
+      clearTimeout(this.liteUpgradeTimer);
+      this.liteUpgradeTimer = undefined;
+    }
+    if (this.liteReadyPollTimer) {
+      clearInterval(this.liteReadyPollTimer);
+      this.liteReadyPollTimer = undefined;
+    }
+    this.liteUpgradeScheduled = false;
+
     if (!this.isBrowser || !this.liteMode) {
       this.liteEditors.set(false);
       this.litePreloadActive.set(false);
@@ -891,6 +903,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!this.demoMode) {
       this.scheduleLiteUpgrade();
     }
+  }
+
+  requestLiteUpgrade() {
+    this.activateLiteUpgrade();
   }
 
   private onViewportResize = () => {
@@ -906,15 +922,23 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!this.isBrowser || this.liteUpgradeScheduled) return;
     this.liteUpgradeScheduled = true;
     const upgrade = () => {
-      if (!this.liteMode) return;
-      this.litePreloadActive.set(true);
-      this.startMonacoReadyPolling();
+      this.activateLiteUpgrade();
     };
     if (typeof (window as any).requestIdleCallback === 'function') {
       (window as any).requestIdleCallback(upgrade, { timeout: 1200 });
     } else {
       this.liteUpgradeTimer = window.setTimeout(upgrade, 900);
     }
+  }
+
+  private activateLiteUpgrade() {
+    if (!this.isBrowser || !this.liteMode || !this.liteEditors() || this.litePreloadActive()) return;
+    if (this.liteUpgradeTimer) {
+      clearTimeout(this.liteUpgradeTimer);
+      this.liteUpgradeTimer = undefined;
+    }
+    this.litePreloadActive.set(true);
+    this.startMonacoReadyPolling();
   }
 
   private startMonacoReadyPolling() {
@@ -925,6 +949,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       if ((window as any).__faMonacoReady) {
         clearInterval(this.liteReadyPollTimer);
         this.liteReadyPollTimer = undefined;
+        this.liteUpgradeScheduled = false;
         if (this.liteMode) {
           this.liteEditors.set(false);
           this.litePreloadActive.set(false);
@@ -934,6 +959,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       if (this.liteReadyAttempts > 80) {
         clearInterval(this.liteReadyPollTimer);
         this.liteReadyPollTimer = undefined;
+        this.liteUpgradeScheduled = false;
       }
     }, 150);
   }

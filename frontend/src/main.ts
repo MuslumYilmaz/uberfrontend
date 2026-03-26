@@ -51,44 +51,8 @@ function installChunkLoadRecovery(): void {
   }, true);
 }
 
-function schedulePostLoad(task: () => void): void {
-  if (typeof window === 'undefined') return;
-  const win = window as Window & {
-    requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
-  };
-  if (typeof win.requestIdleCallback === 'function') {
-    win.requestIdleCallback(task, { timeout: 6500 });
-    return;
-  }
-  window.setTimeout(task, 2600);
-}
-
-function initSentryLazily(): void {
-  if (typeof window === 'undefined') return;
-  if (!environment.production) return;
-  if (!environment.sentryDsn) return;
-
-  schedulePostLoad(() => {
-    import('@sentry/browser')
-      .then(({ browserTracingIntegration, init }) => {
-        init({
-          dsn: environment.sentryDsn,
-          release: environment.sentryRelease || undefined,
-          environment: environment.production ? 'production' : 'development',
-          integrations: [browserTracingIntegration()],
-          tracePropagationTargets: [environment.apiBase, /^\//],
-          tracesSampleRate: environment.sentryTracesSampleRate,
-        });
-      })
-      .catch(() => {
-        // Monitoring should never block app startup.
-      });
-  });
-}
-
 enforceCanonicalOrigin();
 installChunkLoadRecovery();
 
 bootstrapApplication(AppComponent, appConfig)
-  .then(() => initSentryLazily())
   .catch((err) => console.error(err));

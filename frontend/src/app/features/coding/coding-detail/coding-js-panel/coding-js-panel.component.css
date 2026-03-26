@@ -56,7 +56,7 @@ app-monaco-editor {
 .results-panel .summary { font-size: var(--fa-runner-title); }
 .results-panel .test-card { padding: 10px; }
 .results-panel .test-name { display:flex; align-items:center; gap:6px; font-weight:500; font-size: var(--fa-runner-font); }
-.results-panel .test-name i { font-size: var(--fa-runner-font); }
+.results-panel .test-name .test-status-icon { font-size: var(--fa-runner-font); }
 .results-panel .test-error { margin-top:4px; font-size: var(--fa-runner-font-sm); }
 
 /* ===== Smaller Console typography ===== */

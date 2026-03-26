@@ -4,11 +4,13 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
+  Output,
   PLATFORM_ID,
   SimpleChanges,
   ViewChild,
@@ -34,6 +36,8 @@ import {
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
 import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
+import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
+import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
 
 type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
@@ -42,7 +46,7 @@ type TreeNode =
 @Component({
   selector: 'app-coding-framework-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent],
+  imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
   templateUrl: './coding-framework-panel.component.html',
   styleUrls: ['./coding-framework-panel.component.css'],
 })
@@ -56,6 +60,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Input() disablePersistence = false;
   @Input() liteMode = false;
   @Input() deferPreview = false;
+  @Output() requestEditorUpgrade = new EventEmitter<void>();
 
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
 

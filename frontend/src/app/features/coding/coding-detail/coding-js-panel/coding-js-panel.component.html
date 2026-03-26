@@ -5,7 +5,7 @@
             <button class="px-4 py-2" [class.opacity-100]="topTab()==='code'" [class.opacity-60]="topTab()!=='code'"
                 (click)="topTab.set('code')">&lt;/&gt; Code</button>
             <button *ngIf="!interviewModeEnabled()" class="px-4 py-2" [class.opacity-100]="topTab()==='tests'" [class.opacity-60]="topTab()!=='tests'"
-                (click)="topTab.set('tests')"><i class="pi pi-clipboard mr-2"></i> Test cases</button>
+                (click)="topTab.set('tests')"><app-fa-glyph class="mr-2" icon="pi pi-clipboard"></app-fa-glyph> Test cases</button>
         </div>
 
         <div class="ml-auto panel-header-actions py-2">
@@ -22,7 +22,7 @@
                     [attr.aria-expanded]="interviewSetupOpen()"
                     (click)="toggleInterviewSetupPanel()"
                 >
-                    <i class="pi pi-clock" aria-hidden="true"></i>
+                    <app-fa-glyph icon="pi pi-clock" aria-hidden="true"></app-fa-glyph>
                     <span>Interview {{ interviewDurationMin() }}m</span>
                 </button>
                 <div *ngIf="interviewSetupOpen()" class="interview-setup__panel" data-testid="interview-mode-setup-panel">
@@ -52,7 +52,7 @@
             </span>
 
             <div class="lang-compact">
-                <i class="pi pi-code lang-compact__icon" aria-hidden="true"></i>
+                <app-fa-glyph class="lang-compact__icon" icon="pi pi-code" aria-hidden="true"></app-fa-glyph>
                 <div class="lang-wrap">
                     <select #langSel class="lang-select" data-testid="js-language-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
                         aria-label="Editor language">
@@ -94,22 +94,23 @@
                         [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()"
                         (lineClick)="onCodeEditorLineClick($event)">
                     </app-monaco-editor>
-                    <textarea
+                    <app-code-snapshot
                         *ngIf="!codeEditorReady()"
-                        class="lite-editor editor-fill lite-overlay"
-                        data-testid="js-code-editor-lite"
-                        aria-label="Code editor"
-                        [value]="editorContent()"
-                        [attr.spellcheck]="false"
-                        (input)="onCodeChange($any($event.target).value)"></textarea>
+                        class="editor-fill lite-overlay"
+                        [testId]="'js-code-editor-lite'"
+                        [ariaLabel]="'Code editor preview'"
+                        [code]="editorContent()"
+                        [language]="jsLang()==='ts' ? 'typescript':'javascript'"
+                        (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-container>
                 <ng-template #liteCodeEditor>
-                    <textarea
-                        class="lite-editor editor-fill"
-                        aria-label="Code editor"
-                        [value]="editorContent()"
-                        [attr.spellcheck]="false"
-                        (input)="onCodeChange($any($event.target).value)"></textarea>
+                    <app-code-snapshot
+                        class="editor-fill"
+                        [testId]="'js-code-editor'"
+                        [ariaLabel]="'Code editor preview'"
+                        [code]="editorContent()"
+                        [language]="jsLang()==='ts' ? 'typescript':'javascript'"
+                        (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-template>
             </div>
 
@@ -120,23 +121,23 @@
                         [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
                         [options]="editorOptions" (codeChange)="onTestsChange($event)" (ready)="onTestsEditorReady()">
                     </app-monaco-editor>
-                    <textarea
+                    <app-code-snapshot
                         *ngIf="!testsEditorReady()"
-                        class="lite-editor editor-fill lite-overlay"
-                        data-testid="js-tests-editor-lite"
-                        aria-label="Tests editor"
-                        [value]="testCode()"
-                        [attr.spellcheck]="false"
-                        (input)="onTestsChange($any($event.target).value)"></textarea>
+                        class="editor-fill lite-overlay"
+                        [testId]="'js-tests-editor-lite'"
+                        [ariaLabel]="'Tests editor preview'"
+                        [code]="testCode()"
+                        [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
+                        (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-container>
                 <ng-template #liteTestsEditor>
-                    <textarea
-                        class="lite-editor editor-fill"
-                        data-testid="js-tests-editor"
-                        aria-label="Tests editor"
-                        [value]="testCode()"
-                        [attr.spellcheck]="false"
-                        (input)="onTestsChange($any($event.target).value)"></textarea>
+                    <app-code-snapshot
+                        class="editor-fill"
+                        [testId]="'js-tests-editor'"
+                        [ariaLabel]="'Tests editor preview'"
+                        [code]="testCode()"
+                        [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
+                        (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-template>
             </div>
 
@@ -202,7 +203,7 @@
                                     (keydown.space)="onDecisionBranchSpace($event, 'why')"
                                 >
                                     <span>Why this choice?</span>
-                                    <i class="pi pi-chevron-down editor-branch__caret" aria-hidden="true"></i>
+                                    <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
                                 <p *ngIf="isDecisionBranchExpanded('why')" class="editor-branch__copy">{{ active.node.why }}</p>
                             </article>
@@ -217,7 +218,7 @@
                                     (keydown.space)="onDecisionBranchSpace($event, 'alternative')"
                                 >
                                     <span>Alternative</span>
-                                    <i class="pi pi-chevron-down editor-branch__caret" aria-hidden="true"></i>
+                                    <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
                                 <p *ngIf="isDecisionBranchExpanded('alternative')" class="editor-branch__copy">{{ active.node.alternative }}</p>
                             </article>
@@ -232,7 +233,7 @@
                                     (keydown.space)="onDecisionBranchSpace($event, 'tradeoff')"
                                 >
                                     <span>Tradeoff</span>
-                                    <i class="pi pi-chevron-down editor-branch__caret" aria-hidden="true"></i>
+                                    <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
                                 <p *ngIf="isDecisionBranchExpanded('tradeoff')" class="editor-branch__copy">{{ active.node.tradeoff }}</p>
                             </article>
@@ -254,7 +255,7 @@
                         [attr.aria-expanded]="hintExpanded()"
                         (click)="toggleHintExpanded()"
                     >
-                        <i class="pi pi-info-circle" aria-hidden="true"></i>
+                        <app-fa-glyph icon="pi pi-info-circle" aria-hidden="true"></app-fa-glyph>
                         <span>Hint</span>
                     </button>
                     <div class="assist-chip__panel">
@@ -277,7 +278,7 @@
                         [attr.aria-expanded]="explainExpanded()"
                         (click)="toggleExplainExpanded()"
                     >
-                        <i class="pi pi-search" aria-hidden="true"></i>
+                        <app-fa-glyph icon="pi pi-search" aria-hidden="true"></app-fa-glyph>
                         <span>Explain failure</span>
                     </button>
                     <div class="assist-chip__panel">
@@ -369,7 +370,7 @@
                         <div *ngFor="let t of testResults()" class="test-card" data-testid="test-result"
                             [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
                             <div class="test-name">
-                                <i [ngClass]="t.passed ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+                                <app-fa-glyph class="test-status-icon" [icon]="t.passed ? 'pi pi-check-circle' : 'pi pi-times-circle'"></app-fa-glyph>
                                 <span class="sr-only" data-testid="test-status">{{ t.passed ? 'PASS' : 'FAIL' }}</span>
                                 <span>{{ t.name }}</span>
                             </div>

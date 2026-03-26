@@ -57,13 +57,19 @@
 }
 
 .faq-icon {
-  font-size: 12px;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-right: 2px solid color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
+  border-bottom: 2px solid color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
+  transform: rotate(45deg);
+  transform-origin: center;
   opacity: 0.9;
   transition: transform 180ms ease;
 }
 
 .faq-icon.open {
-  transform: rotate(180deg);
+  transform: rotate(225deg);
 }
 
 .faq-a {

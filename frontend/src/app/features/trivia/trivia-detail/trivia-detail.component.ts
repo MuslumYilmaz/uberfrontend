@@ -35,6 +35,7 @@ import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
+import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { seoDescriptionForQuestion, seoTitleForQuestion } from './trivia-seo.util';
 import {
   freeChallengeForFramework,
@@ -124,6 +125,7 @@ function buildTagRegex(tag: string): RegExp {
     LockedPreviewComponent,
     PrismHighlightDirective,
     SafeHtmlPipe,
+    FaGlyphComponent,
   ],
   templateUrl: './trivia-detail.component.html',
   styleUrls: ['./trivia-detail.component.css'],

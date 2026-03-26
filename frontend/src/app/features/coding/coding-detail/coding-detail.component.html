@@ -8,16 +8,22 @@
     <!-- Collapsed rail -->
     <div *ngIf="descCollapsed()" class="h-full w-full flex flex-col items-center justify-between py-2">
       <div class="flex flex-col items-center gap-2">
-        <button faButton type="button" variant="ghost" [iconOnly]="true" icon="pi pi-chevron-right" class="p-button-rounded p-button-text"
-          (click)="toggleDescription()" aria-label="Expand description"></button>
+        <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text"
+          (click)="toggleDescription()" aria-label="Expand description">
+          <app-fa-glyph class="fa-btn__icon" icon="pi pi-chevron-right"></app-fa-glyph>
+        </button>
 
-        <button faButton type="button" variant="ghost" [iconOnly]="true" icon="pi pi-file" class="p-button-rounded p-button-text"
+        <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text"
           [ngClass]="{ 'text-white': activePanel()===0, 'opacity-60': activePanel()!==0 }"
-          (click)="activePanel.set(0); toggleDescription()" aria-label="Description"></button>
+          (click)="activePanel.set(0); toggleDescription()" aria-label="Description">
+          <app-fa-glyph class="fa-btn__icon" icon="pi pi-file"></app-fa-glyph>
+        </button>
 
-        <button faButton type="button" variant="ghost" [iconOnly]="true" icon="pi pi-code" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
+        <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
           [ngClass]="{ 'text-white': activePanel()===1, 'opacity-60': activePanel()!==1 }"
-          (click)="onSolutionTabClick()" aria-label="Solution"></button>
+          (click)="onSolutionTabClick()" aria-label="Solution">
+          <app-fa-glyph class="fa-btn__icon" icon="pi pi-code"></app-fa-glyph>
+        </button>
       </div>
       <div></div>
     </div>
@@ -36,7 +42,9 @@
         </div>
 
         <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" faButton variant="ghost" [iconOnly]="true"
-          icon="pi pi-chevron-left" type="button" (click)="toggleDescription()" aria-label="Hide description"></button>
+          type="button" (click)="toggleDescription()" aria-label="Hide description">
+          <app-fa-glyph class="fa-btn__icon" icon="pi pi-chevron-left"></app-fa-glyph>
+        </button>
       </div>
 
       <div class="flex-1 overflow-auto p-6 font-sm">
@@ -46,7 +54,7 @@
             <div class="detail-title-row">
               <h1 class="text-xl font-bold" data-testid="question-title">{{ question()?.title }}</h1>
               <span class="detail-solved" *ngIf="uiSolved()" aria-label="Solved">
-                <i class="pi pi-check"></i>
+                <app-fa-glyph class="detail-solved__icon" icon="pi pi-check"></app-fa-glyph>
                 Solved
               </span>
               <button
@@ -55,7 +63,7 @@
                 data-testid="coding-report-issue-btn"
                 (click)="reportIssue()"
                 aria-label="Report issue on this question">
-                <i class="fa-solid fa-bug" aria-hidden="true"></i>
+                <app-fa-glyph class="report-issue-btn__icon" icon="fa-solid fa-bug" aria-hidden="true"></app-fa-glyph>
                 <span class="report-issue-btn__label">Report issue</span>
               </button>
             </div>
@@ -78,7 +86,7 @@
                   class="quick-win-next__dismiss"
                   aria-label="Dismiss quick-win next steps for this session"
                   (click)="dismissQuickWinNextStep($event)">
-                  <i class="pi pi-times" aria-hidden="true"></i>
+                  <app-fa-glyph icon="pi pi-times" aria-hidden="true"></app-fa-glyph>
                 </button>
               </div>
               <p class="quick-win-next__title">
@@ -140,7 +148,7 @@
                 <button
                   class="bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-2 hover:bg-yellow-400 transition"
                   (click)="openFrameworkSolutionPreview()">
-                  <i class="pi pi-eye text-sm"></i>
+                  <app-fa-glyph class="text-sm" icon="pi pi-eye"></app-fa-glyph>
                   <span class="font-medium">Preview what you need to build</span>
                 </button>
               </div>
@@ -189,8 +197,8 @@
                     <pre class="lite-code">{{ combinedExamples() }}</pre>
                   </ng-template>
 
-                  <button class="copy-fab" aria-label="Copy examples" title="Copy" (click)="copyExamples()">
-                    <i class="pi" [ngClass]="copiedExamples() ? 'pi-check' : 'pi-copy'"></i>
+                  <button class="copy-fab" [class.copied]="copiedExamples()" aria-label="Copy examples" title="Copy" (click)="copyExamples()">
+                    <app-fa-glyph class="copy-fab__icon" [icon]="copiedExamples() ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
                   </button>
                 </div>
               </div>
@@ -226,7 +234,7 @@
                 class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
                 (click)="similarOpen.set(!similarOpen())">
                 <h3 class="text-sm font-semibold">Similar questions</h3>
-                <i class="pi" [ngClass]="similarOpen() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                <app-fa-glyph [icon]="similarOpen() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></app-fa-glyph>
               </div>
 
               <div *ngIf="similarOpen()" class="mt-1 rounded border border-white/10 overflow-hidden">
@@ -286,7 +294,7 @@
             <ng-container *ngIf="showSolutionWarning(); else solBody">
               <div class="solution-warning" data-testid="solution-warning">
                 <div class="flex items-start gap-3">
-                  <div class="icon-warning"><i class="pi pi-exclamation-triangle"></i></div>
+                  <div class="icon-warning"><app-fa-glyph icon="pi pi-exclamation-triangle"></app-fa-glyph></div>
                   <div class="flex-1">
                     <div class="font-medium mb-1">Are you sure you want to view the solution?</div>
                     <div class="text-sm opacity-80 mb-3">
@@ -345,9 +353,9 @@
                     <ng-template #liteHtmlBlock>
                       <pre class="lite-code">{{ prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')) }}</pre>
                     </ng-template>
-                    <button class="copy-fab" aria-label="Copy HTML" title="Copy HTML"
+                    <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy HTML" title="Copy HTML"
                       (click)="onCopyApproach(i, prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')))">
-                      <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
+                      <app-fa-glyph class="copy-fab__icon" [icon]="copiedIdx===i ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
                     </button>
                   </div>
 
@@ -363,9 +371,9 @@
                     <ng-template #liteCssBlock>
                       <pre class="lite-code">{{ prettifyCss(unescapeJsLiterals(ap.codeCss || '')) }}</pre>
                     </ng-template>
-                    <button class="copy-fab" aria-label="Copy CSS" title="Copy CSS"
+                    <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy CSS" title="Copy CSS"
                       (click)="onCopyApproach(i, prettifyCss(unescapeJsLiterals(ap.codeCss || '')))">
-                      <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
+                      <app-fa-glyph class="copy-fab__icon" [icon]="copiedIdx===i ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
                     </button>
                   </div>
                 </ng-container>
@@ -384,9 +392,9 @@
                     <ng-template #liteApproachBlock>
                       <pre class="lite-code">{{ codeFor(ap) }}</pre>
                     </ng-template>
-                    <button class="copy-fab" aria-label="Copy code" title="Copy"
+                    <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy code" title="Copy"
                       (click)="onCopyApproach(i, codeFor(ap))">
-                      <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
+                      <app-fa-glyph class="copy-fab__icon" [icon]="copiedIdx===i ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
                     </button>
                   </div>
                 </ng-template>
@@ -423,9 +431,9 @@
                       <pre class="lite-code">{{ solutionFilesMap()[solutionCurrentPath()] || '' }}</pre>
                     </ng-template>
 
-                    <button class="copy-fab" aria-label="Copy file" title="Copy"
+                    <button class="copy-fab" [class.copied]="copiedSolutionFile()" aria-label="Copy file" title="Copy"
                       (click)="copyText(solutionFilesMap()[solutionCurrentPath()] || '')">
-                      <i class="pi" [ngClass]="copiedSolutionFile() ? 'pi-check' : 'pi-copy'"></i>
+                      <app-fa-glyph class="copy-fab__icon" [icon]="copiedSolutionFile() ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
                     </button>
                   </div>
                 </section>
@@ -468,7 +476,7 @@
                   class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
                   (click)="similarOpen.set(!similarOpen())">
                   <h3 class="text-sm font-semibold">Similar questions</h3>
-                  <i class="pi" [ngClass]="similarOpen() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  <app-fa-glyph [icon]="similarOpen() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></app-fa-glyph>
                 </div>
 
                 <div *ngIf="similarOpen()" class="mt-1 rounded border border-white/10 overflow-hidden">
@@ -511,7 +519,8 @@
     <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"
       [tech]="tech" [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [deferPreview]="demoMode"
       [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
-      [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="solutionFilesMap()">
+      [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="solutionFilesMap()"
+      (requestEditorUpgrade)="requestLiteUpgrade()">
     </app-coding-framework-panel>
 
     <!-- NON-FRAMEWORK: WEB or JS -->
@@ -520,7 +529,8 @@
         [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [deferPreview]="demoMode"
         [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
         [hideRestoreBanner]="demoMode || hideRestoreBanner"
-        [disablePersistence]="disablePersistence || demoMode" class="flex-1 min-h-0 flex">
+        [disablePersistence]="disablePersistence || demoMode" class="flex-1 min-h-0 flex"
+        (requestEditorUpgrade)="requestLiteUpgrade()">
       </app-coding-web-panel>
 
       <!-- JS / TS EDITOR stays the same -->
@@ -529,6 +539,7 @@
           [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
           [solutionPanelOpen]="activePanel()===1"
           [hideRestoreBanner]="demoMode || hideRestoreBanner" [disablePersistence]="disablePersistence || demoMode"
+          (requestEditorUpgrade)="requestLiteUpgrade()"
           (langChange)="onChildLang($event)"
           (testResultsChange)="testResults.set($event)" (consoleEntriesChange)="consoleEntries.set($event)"
           (codeChange)="onChildCode($event)">
@@ -603,7 +614,9 @@
   [resizable]="false" width="90vw" maxWidth="1400px" [contentStyle]="{ padding: '0', height: '80vh' }">
   <div faDialogHeader class="flex items-center justify-between w-full">
     <div class="font-semibold">Preview</div>
-    <button faButton variant="ghost" [iconOnly]="true" icon="pi pi-times" class="p-button-text" (click)="closePreview()"></button>
+    <button faButton variant="ghost" [iconOnly]="true" class="p-button-text" (click)="closePreview()">
+      <app-fa-glyph class="fa-btn__icon" icon="pi pi-times"></app-fa-glyph>
+    </button>
   </div>
   <div class="w-full h-full preview-only-shell">
     <div
@@ -613,7 +626,7 @@
       aria-live="polite"
       data-testid="angular-preview-loading"
     >
-      <i class="pi pi-spinner pi-spin" aria-hidden="true"></i>
+      <app-fa-glyph class="preview-only-loading__icon" icon="pi pi-spinner pi-spin" aria-hidden="true"></app-fa-glyph>
       <div class="preview-only-loading__copy">
         <div class="preview-only-loading__title">Loading preview...</div>
         <div class="preview-only-loading__sub">Angular sandbox is starting.</div>
@@ -734,7 +747,7 @@
           [queryParams]="path.queryParams"
           (click)="trackLockedPathClick(path.id)">
           <span>{{ path.label }}</span>
-          <i class="pi pi-arrow-right"></i>
+          <app-fa-glyph class="locked-paths__icon" icon="pi pi-arrow-right"></app-fa-glyph>
         </a>
       </div>
       <p class="locked-copy">

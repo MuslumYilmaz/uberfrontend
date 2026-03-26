@@ -28,6 +28,8 @@ import {
 import { MonacoEditorComponent, type MonacoLineClickEvent } from '../../../../monaco-editor.component';
 import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
+import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
+import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
 
 declare const monaco: any;
@@ -69,7 +71,7 @@ const DEFAULT_ASSIST_FLAGS: AssistFlags = {
 @Component({
   selector: 'app-coding-js-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent],
+  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
   templateUrl: './coding-js-panel.component.html',
   styleUrls: ['./coding-js-panel.component.css']
 })
@@ -119,6 +121,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Output() consoleEntriesChange = new EventEmitter<ConsoleEntry[]>();
   @Output() codeChange = new EventEmitter<{ lang: JsLang, code: string }>();
   @Output() langChange = new EventEmitter<JsLang>();
+  @Output() requestEditorUpgrade = new EventEmitter<void>();
 
   /* ---------- Local state ---------- */
   jsLang = signal<JsLang>('js');                       // 'js' | 'ts'

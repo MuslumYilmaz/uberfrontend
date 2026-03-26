@@ -46,7 +46,7 @@ html, body { height: 100%; background: var(--uf-bg); }
 .side-item-title { font-weight: 800; font-size: 13.75px; line-height: 1.25; }
 .side-item-desc { font-size: 11.5px; color: var(--uf-text-tertiary); margin-top: 4px; }
 .side-item-tail { display:flex; align-items:center; }
-.side-item-tail i { font-size: 14px; color: var(--uf-text-secondary); }
+.side-item-tail__icon { font-size: 14px; color: var(--uf-text-secondary); }
 @media (max-width: 1200px) { .side { display: none; } }
 
 /* Main */
@@ -79,7 +79,7 @@ html, body { height: 100%; background: var(--uf-bg); }
   font-weight: 800;
 }
 .mobile-qnav__hint{ font-size: 12px; opacity: .8; }
-.mobile-qnav__trigger i{ transition: transform .14s ease; }
+.mobile-qnav__icon{ transition: transform .14s ease; }
 .mobile-qnav__backdrop{
   display: none;
   position: fixed;
@@ -155,6 +155,9 @@ html, body { height: 100%; background: var(--uf-bg); }
   font-weight: 700;
   font-size: 12px;
 }
+.solved-pill__icon {
+  font-size: 12px;
+}
 .report-issue-btn {
   display: inline-flex;
   align-items: center;
@@ -181,7 +184,7 @@ html, body { height: 100%; background: var(--uf-bg); }
   outline: none;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 55%, transparent);
 }
-.report-issue-btn i {
+.report-issue-btn__icon {
   font-size: 12px;
 }
 .complete-btn {
@@ -267,7 +270,7 @@ html, body { height: 100%; background: var(--uf-bg); }
 .guide-links a:hover {
   text-decoration: underline;
 }
-.card-head-toggle i { font-size: 12px; }
+.card-head-toggle__icon { font-size: 12px; }
 
 .prep-bridge__body {
   display: grid;
@@ -428,7 +431,7 @@ html, body { height: 100%; background: var(--uf-bg); }
 .code-head .lang { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--uf-text-secondary); }
 .code-actions{ position: relative; display:flex; align-items:center; justify-content:flex-end; height:28px; min-width:110px; }
 .code-head .btn-copy{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; }
-.code-head .btn-copy i{ line-height:1; vertical-align:middle; font-size:1rem; }
+.code-head .btn-copy__icon{ line-height:1; vertical-align:middle; font-size:1rem; }
 .copied-pill{
   right: 36px; top: 50%;
   display: inline-flex; align-items: center; gap: 6px;
@@ -664,7 +667,7 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 .locked-paths__item:hover{
   border-color: color-mix(in srgb, var(--uf-accent) 45%, var(--uf-border-subtle));
 }
-.locked-paths__item i{
+.locked-paths__icon{
   color: var(--uf-accent);
   font-size: 12px;
 }

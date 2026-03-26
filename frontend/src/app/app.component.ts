@@ -7,11 +7,15 @@ import { BugReportService } from './core/services/bug-report.service';
 import { DailyService } from './core/services/daily.service';
 import { PremiumGateService } from './core/services/premium-gate.service';
 import { AnalyticsService } from './core/services/analytics.service';
+import { TelemetryBootstrapService } from './core/services/telemetry-bootstrap.service';
+import { AppUiStylesService } from './core/services/app-ui-styles.service';
 import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
+import { isMarketingPath, normalizePathname } from './core/utils/marketing-route.util';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
 import { BugReportDialogComponent } from './shared/components/bug-report-dialog/bug-report-dialog.component';
 import { PremiumRequiredDialogComponent } from './shared/components/premium-required-dialog/premium-required-dialog.component';
 import { HeaderComponent } from './shared/components/header/header.component';
+import { MarketingHeaderComponent } from './shared/components/marketing-header/marketing-header.component';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +25,7 @@ import { HeaderComponent } from './shared/components/header/header.component';
     RouterOutlet,
     RouterModule,
     HeaderComponent,
+    MarketingHeaderComponent,
     AppSidebarComponent,
     BugReportDialogComponent,
     PremiumRequiredDialogComponent,
@@ -35,12 +40,16 @@ export class AppComponent implements OnInit, OnDestroy {
   premiumGate = inject(PremiumGateService);
   premiumGateState = this.premiumGate.dialogState;
   private readonly analytics = inject(AnalyticsService);
+  private readonly telemetry = inject(TelemetryBootstrapService);
+  private readonly appUiStyles = inject(AppUiStylesService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   readonly sidebarDrawerOpen = inject(AppSidebarDrawerService).isOpen;
 
   // hide header on /auth/*
   isAuthRoute = computed(() => this.currentUrl().startsWith('/auth'));
-  showHeader = computed(() => !this.isAuthRoute());
+  isMarketingRoute = computed(() => isMarketingPath(this.currentUrl()));
+  showAppHeader = computed(() => !this.isAuthRoute() && !this.isMarketingRoute());
+  showMarketingHeader = computed(() => !this.isAuthRoute() && this.isMarketingRoute());
 
   // --- HIDE SIDEBAR on guide detail routes ---
   // any of: /guides/interview-blueprint/*, /guides/system-design-blueprint/*, /guides/behavioral/*
@@ -78,11 +87,13 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe((e: any) => {
         const url = e.urlAfterRedirects || e.url;
         this.currentUrl.set(url);
+        this.configureRouteRuntime(url);
         this.analytics.trackPageView(url);
       });
 
     if (!this.isBrowser) return;
 
+    this.configureRouteRuntime(this.router.url || '/');
     this.analytics.trackPageView(this.router.url || '/');
     this.daily.ensureTodaySet();
     this.scheduleToNextMidnight();
@@ -112,5 +123,13 @@ export class AppComponent implements OnInit, OnDestroy {
       this.daily.ensureTodaySet();
       this.scheduleToNextMidnight();
     }, next.getTime() - now.getTime());
+  }
+
+  private configureRouteRuntime(url: string) {
+    const path = normalizePathname(url);
+    if (!isMarketingPath(path)) {
+      this.appUiStyles.ensureLoaded();
+    }
+    this.telemetry.armForUrl(path);
   }
 }

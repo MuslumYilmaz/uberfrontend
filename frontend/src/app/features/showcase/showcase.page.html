@@ -21,9 +21,24 @@
         </div>
       </div>
       <div class="proof-row" aria-label="Platform proof points">
-        <span class="proof-chip"><i class="pi pi-sitemap"></i>Real workflow</span>
-        <span class="proof-chip"><i class="pi pi-eye"></i>UI-first problems</span>
-        <span class="proof-chip"><i class="pi pi-check-circle"></i>Fast feedback</span>
+        <span class="proof-chip">
+          <span class="proof-chip__mark" aria-hidden="true">
+            <app-showcase-icon name="editor" [size]="12"></app-showcase-icon>
+          </span>
+          Real workflow
+        </span>
+        <span class="proof-chip">
+          <span class="proof-chip__mark" aria-hidden="true">
+            <app-showcase-icon name="preview" [size]="12"></app-showcase-icon>
+          </span>
+          UI-first problems
+        </span>
+        <span class="proof-chip">
+          <span class="proof-chip__mark" aria-hidden="true">
+            <app-showcase-icon name="checks" [size]="12"></app-showcase-icon>
+          </span>
+          Fast feedback
+        </span>
       </div>
       <div class="hero-actions">
         <a
@@ -56,7 +71,7 @@
           <div class="flow-step" *ngFor="let step of heroFlowSteps; let i = index"
             [class.active]="i === activeFlowIndex" [attr.data-status]="step.status">
             <div class="flow-icon" aria-hidden="true">
-              <i class="{{ step.icon }}"></i>
+              <app-showcase-icon [name]="step.icon" [size]="18"></app-showcase-icon>
             </div>
             <div class="flow-meta">
               <div class="flow-title">{{ step.title }}</div>
@@ -177,7 +192,7 @@
       aria-label="Open the live editor for this demo question" data-testid="showcase-demo-open-live">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Try the {{ activeDemo.label }} demo in the live editor</span>
-      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+      <span class="demo-banner__arrow" aria-hidden="true">→</span>
     </a>
   </div>
 </section>
@@ -221,7 +236,7 @@
       [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' trivia question'">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Read the rest in the app →</span>
-      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+      <span class="demo-banner__arrow" aria-hidden="true">→</span>
     </a>
   </div>
 </section>
@@ -252,7 +267,7 @@
       aria-label="Open the full system design scenario">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Open the full system design scenario →</span>
-      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+      <span class="demo-banner__arrow" aria-hidden="true">→</span>
     </a>
   </div>
 </section>
@@ -294,7 +309,7 @@
 
         <a class="reasoning-link" [routerLink]="incidentPreview.route" aria-label="Open the full debug scenario">
           Open simulator
-          <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          <span class="inline-arrow" aria-hidden="true">→</span>
         </a>
       </article>
 
@@ -324,7 +339,7 @@
 
         <a class="reasoning-link" [routerLink]="tradeoffPreview.route" aria-label="Open the full tradeoff battle">
           Open battle
-          <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          <span class="inline-arrow" aria-hidden="true">→</span>
         </a>
       </article>
     </div>
@@ -347,7 +362,7 @@
       </div>
 
       <a class="sk-btn sk-btn-ghost" routerLink="/coding" aria-label="Open the full library">
-        Open full library <i class="pi pi-arrow-right" aria-hidden="true"></i>
+        Open full library <span class="inline-arrow" aria-hidden="true">→</span>
       </a>
     </div>
 
@@ -371,7 +386,7 @@
       <a class="demo-banner library-cta" routerLink="/coding" role="button" aria-label="Open the full library">
         <span class="dot" aria-hidden="true"></span>
         <span class="text">Open the full coding library →</span>
-        <i class="pi pi-arrow-right" aria-hidden="true"></i>
+        <span class="demo-banner__arrow" aria-hidden="true">→</span>
       </a>
     </div>
     <ng-template #libraryPlaceholder>
@@ -391,15 +406,14 @@
         </p>
       </div>
       <a class="sk-btn sk-btn-ghost" routerLink="/companies" aria-label="Browse company sets">
-        Browse companies <i class="pi pi-arrow-right" aria-hidden="true"></i>
+        Browse companies <span class="inline-arrow" aria-hidden="true">→</span>
       </a>
     </div>
 
     <div class="company-grid" *ngIf="sectionVisible.company; else companyPlaceholder">
       <article class="company-card glass" *ngFor="let c of companyQuestions">
         <div class="company-logo" [style.background]="c.color" [attr.data-slug]="c.slug">
-          <i *ngIf="c.iconClass" [class]="'company-logo__icon ' + c.iconClass" aria-hidden="true"></i>
-          <span *ngIf="!c.iconClass" class="company-logo__glyph" aria-hidden="true">{{ c.icon }}</span>
+          <span class="company-logo__glyph" aria-hidden="true">{{ c.icon }}</span>
           <span class="sr-only">{{ c.name }}</span>
         </div>
         <div class="company-meta">
@@ -411,7 +425,7 @@
             <span class="company-count" *ngIf="cc[c.slug]">{{ cc[c.slug].all }} questions</span>
           </ng-container>
           <a class="company-link" [routerLink]="c.link">
-            View {{ c.name }} preview <i class="pi pi-arrow-right" aria-hidden="true"></i>
+            View {{ c.name }} preview <span class="inline-arrow" aria-hidden="true">→</span>
           </a>
         </div>
       </article>
@@ -436,7 +450,9 @@
     <div class="cap-grid" *ngIf="sectionVisible.capabilities; else capabilitiesPlaceholder">
       <article class="cap-card glass" *ngFor="let cap of capabilities; let i = index" [attr.data-icon]="cap.icon"
         [style.animationDelay]="(i * 60) + 'ms'">
-        <div class="cap-icon" aria-hidden="true"></div>
+        <div class="cap-icon" aria-hidden="true">
+          <app-showcase-icon [name]="cap.icon" [size]="22"></app-showcase-icon>
+        </div>
         <h3>{{ cap.title }}</h3>
         <p>{{ cap.copy }}</p>
       </article>
@@ -541,7 +557,7 @@
     <a class="demo-banner" routerLink="/tools/cv" role="button" aria-label="Open the CV Linter tool">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Scan your CV in the full tool →</span>
-      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+      <span class="demo-banner__arrow" aria-hidden="true">→</span>
     </a>
   </div>
 </section>
@@ -642,7 +658,7 @@
 
             <div class="contact-form-actions">
               <button type="submit" class="sk-btn sk-btn-primary" [disabled]="f.invalid || contactSubmitting">
-                <i class="pi pi-send" aria-hidden="true"></i>
+                <span class="contact-action-mark" aria-hidden="true">→</span>
                 <span>{{ contactSubmitting ? 'Sending...' : 'Send message' }}</span>
               </button>
 
@@ -660,12 +676,12 @@
             </div>
             <div class="contact-shortcuts" aria-label="Quick links">
               <a class="contact-pill" routerLink="/guides" aria-label="Open guides">
-                <i class="pi pi-book" aria-hidden="true"></i>
+                <span class="contact-pill__mark" aria-hidden="true">G</span>
                 <span>Guides</span>
               </a>
 
               <a class="contact-pill" routerLink="/pricing" aria-label="View pricing plans">
-                <i class="pi pi-tag" aria-hidden="true"></i>
+                <span class="contact-pill__mark" aria-hidden="true">$</span>
                 <span>Pricing plans</span>
               </a>
             </div>

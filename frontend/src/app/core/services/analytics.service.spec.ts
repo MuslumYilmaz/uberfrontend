@@ -56,9 +56,14 @@ describe('AnalyticsService', () => {
     TestBed.resetTestingModule();
   });
 
-  it('injects gtag and queues page views in normal browser contexts', () => {
+  it('queues page views until analytics is explicitly initialized', () => {
     const service = TestBed.inject(AnalyticsService);
     service.trackPageView('/pricing');
+
+    expect(doc.getElementById('ga4-gtag-script')).toBeNull();
+    expect(win.dataLayer).toBeUndefined();
+
+    service.ensureInitialized();
 
     const script = doc.getElementById('ga4-gtag-script') as HTMLScriptElement | null;
     expect(script).not.toBeNull();
@@ -79,6 +84,7 @@ describe('AnalyticsService', () => {
     win.__playwright__binding__ = {};
 
     const service = TestBed.inject(AnalyticsService);
+    service.ensureInitialized();
     service.trackPageView('/pricing');
 
     expect(doc.getElementById('ga4-gtag-script')).toBeNull();

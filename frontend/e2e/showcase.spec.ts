@@ -19,11 +19,10 @@ test('showcase: demo CTA routes to the correct question pages', async ({ page })
 
   const openLive = page.getByTestId('showcase-demo-open-live');
 
-  // Default (UI → React)
+  // Default (React)
   await expect(openLive).toHaveAttribute('href', '/react/coding/react-counter');
 
   // UI → Angular
-  await page.getByTestId('showcase-demo-tab-ui').click();
   await page.getByTestId('showcase-demo-tab-angular').click();
   await expect(openLive).toHaveAttribute('href', '/angular/coding/angular-counter-starter');
 

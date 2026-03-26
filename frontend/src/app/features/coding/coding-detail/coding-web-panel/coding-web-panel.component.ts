@@ -3,10 +3,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   NgZone,
   OnChanges,
   OnDestroy,
+  Output,
   PLATFORM_ID,
   SimpleChanges,
   ViewChild,
@@ -31,12 +33,13 @@ import {
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
 import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
+import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../../console-logger/console-logger.component';
 
 @Component({
   selector: 'app-coding-web-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent, DraftUpdateBannerComponent],
+  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent],
   styles: [`
   :host {
     color: var(--uf-text-primary);
@@ -69,6 +72,12 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
     background: var(--uf-surface);
     border: 0;
     outline: none;
+  }
+
+  .lite-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
   }
 
   .panel-label {
@@ -213,47 +222,65 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 	        <div #splitContainer class="flex-1 min-h-0 flex flex-col">
 	          <div class="panel-label muted">&lt;html&gt; HTML</div>
 
-          <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
+          <div class="overflow-hidden relative" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
             <ng-container *ngIf="useMonaco(); else liteHtmlEditor">
               <app-monaco-editor class="h-full editor-fill" data-testid="web-html-editor"
                                  [modelKey]="question ? 'q-' + question.id + '-html' : undefined"
                                  [code]="webHtml()" [language]="'html'"
                                  [options]="editorOptions"
-                                 (codeChange)="onHtmlChange($event)">
+                                 (codeChange)="onHtmlChange($event)"
+                                 (ready)="onHtmlEditorReady()">
               </app-monaco-editor>
+              <app-code-snapshot
+                *ngIf="!htmlEditorReady()"
+                class="editor-fill lite-overlay"
+                [testId]="'web-html-editor'"
+                [ariaLabel]="'HTML editor preview'"
+                [code]="webHtml()"
+                [language]="'html'"
+                (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
             </ng-container>
             <ng-template #liteHtmlEditor>
-              <textarea
-                class="lite-editor editor-fill"
-                data-testid="web-html-editor"
-                aria-label="HTML editor"
-                [value]="webHtml()"
-                [attr.spellcheck]="false"
-                (input)="onHtmlChange($any($event.target).value)"></textarea>
+              <app-code-snapshot
+                class="editor-fill"
+                [testId]="'web-html-editor'"
+                [ariaLabel]="'HTML editor preview'"
+                [code]="webHtml()"
+                [language]="'html'"
+                (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
             </ng-template>
           </div>
 
           <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()"
                (pointerdown)="startDrag($event)"></div>
 
-          <div class="flex-1 min-h-0 flex flex-col">
+          <div class="flex-1 min-h-0 flex flex-col relative">
             <div class="panel-label muted"># CSS</div>
             <ng-container *ngIf="useMonaco(); else liteCssEditor">
               <app-monaco-editor class="flex-1 editor-fill" data-testid="web-css-editor"
                                  [modelKey]="question ? 'q-' + question.id + '-css' : undefined"
                                  [code]="webCss()" [language]="'css'"
                                  [options]="editorOptions"
-                                 (codeChange)="onCssChange($event)">
+                                 (codeChange)="onCssChange($event)"
+                                 (ready)="onCssEditorReady()">
               </app-monaco-editor>
+              <app-code-snapshot
+                *ngIf="!cssEditorReady()"
+                class="editor-fill lite-overlay"
+                [testId]="'web-css-editor'"
+                [ariaLabel]="'CSS editor preview'"
+                [code]="webCss()"
+                [language]="'css'"
+                (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
             </ng-container>
             <ng-template #liteCssEditor>
-              <textarea
-                class="lite-editor editor-fill"
-                data-testid="web-css-editor"
-                aria-label="CSS editor"
-                [value]="webCss()"
-                [attr.spellcheck]="false"
-                (input)="onCssChange($any($event.target).value)"></textarea>
+              <app-code-snapshot
+                class="editor-fill"
+                [testId]="'web-css-editor'"
+                [ariaLabel]="'CSS editor preview'"
+                [code]="webCss()"
+                [language]="'css'"
+                (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
             </ng-template>
           </div>
         </div>
@@ -309,6 +336,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   @Input() hideRestoreBanner = false;
   @Input() liteMode = false;
   @Input() deferPreview = false;
+  @Output() requestEditorUpgrade = new EventEmitter<void>();
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -380,6 +408,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   previewReady = signal(false);
 
   useMonaco = signal(true);
+  htmlEditorReady = signal(false);
+  cssEditorReady = signal(false);
 
   showingSolutionPreview = false;
   showRestoreBanner = signal(false);
@@ -440,9 +470,21 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private configureLiteEditors() {
     if (!this.isBrowser) {
       this.useMonaco.set(false);
+      this.htmlEditorReady.set(false);
+      this.cssEditorReady.set(false);
       return;
     }
     this.useMonaco.set(!this.liteMode);
+    this.htmlEditorReady.set(false);
+    this.cssEditorReady.set(false);
+  }
+
+  onHtmlEditorReady() {
+    this.htmlEditorReady.set(true);
+  }
+
+  onCssEditorReady() {
+    this.cssEditorReady.set(true);
   }
 
   // -------- init from question (unchanged logic) --------

@@ -20,8 +20,8 @@
             [attr.aria-expanded]="isOpen(getId(item, i, getGroupKey(group, gi)))"
             [attr.aria-controls]="'faq-a-' + getId(item, i, getGroupKey(group, gi))">
             <span class="faq-q-text">{{ item.q }}</span>
-            <i class="pi pi-chevron-down faq-icon" aria-hidden="true"
-              [class.open]="isOpen(getId(item, i, getGroupKey(group, gi)))"></i>
+            <span class="faq-icon" aria-hidden="true"
+              [class.open]="isOpen(getId(item, i, getGroupKey(group, gi)))"></span>
           </button>
 
           <div
@@ -46,7 +46,7 @@
           [attr.aria-expanded]="isOpen(getId(item, i))"
           [attr.aria-controls]="'faq-a-' + getId(item, i)">
           <span class="faq-q-text">{{ item.q }}</span>
-          <i class="pi pi-chevron-down faq-icon" aria-hidden="true" [class.open]="isOpen(getId(item, i))"></i>
+          <span class="faq-icon" aria-hidden="true" [class.open]="isOpen(getId(item, i))"></span>
         </button>
 
         <div

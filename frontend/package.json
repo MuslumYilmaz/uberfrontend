@@ -2,7 +2,7 @@
   "name": "frontendatlas",
   "version": "0.0.0",
   "scripts": {
-    "gen:data": "node scripts/gen-sentry-env.mjs && node scripts/generate-practice-registry.mjs && node scripts/gen-data-version.mjs && node scripts/gen-showcase-stats.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-prerender-routes.mjs && node scripts/prerender-sitemap-diff.mjs",
+    "gen:data": "node scripts/sync-app-ui-assets.mjs && node scripts/gen-sentry-env.mjs && node scripts/generate-practice-registry.mjs && node scripts/gen-data-version.mjs && node scripts/gen-showcase-stats.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-prerender-routes.mjs && node scripts/prerender-sitemap-diff.mjs",
     "check:prerender-sitemap": "node scripts/prerender-sitemap-diff.mjs",
     "gen:prerender": "node scripts/generate-practice-registry.mjs && node scripts/generate-prerender-routes.mjs",
     "lint:tags": "node scripts/lint-tags.mjs",
@@ -32,7 +32,7 @@
     "e2e:full": "npm run test:e2e:full",
     "e2e:ui": "PLAYWRIGHT_WEB_SERVER=1 playwright test --ui",
     "e2e:perf": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/perf --project=chromium",
-    "postinstall": "patch-package",
+    "postinstall": "node scripts/sync-app-ui-assets.mjs && patch-package",
     "postbuild": "node scripts/sentry-release.mjs",
     "seo:sitemap-sample": "node scripts/sitemap-sample-audit.mjs",
     "seo:meta-check": "node scripts/seo-meta-check.mjs",

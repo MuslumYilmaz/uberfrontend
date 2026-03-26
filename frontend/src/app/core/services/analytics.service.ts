@@ -19,29 +19,64 @@ export class AnalyticsService {
   private readonly analyticsEnabled = this.isBrowser && !!this.measurementId && !this.detectAutomationContext();
   private readonly scriptId = 'ga4-gtag-script';
   private lastTrackedPath: string | null = null;
-
-  constructor() {
-    this.init();
-  }
+  private initialized = false;
+  private pendingEvents: Array<{ name: string; params?: Record<string, unknown> }> = [];
+  private pendingPageViews: string[] = [];
 
   track(name: string, params?: Record<string, unknown>) {
     if (!this.analyticsEnabled) return;
+    if (!this.initialized) {
+      this.pendingEvents.push({ name, params });
+      return;
+    }
+
+    this.dispatchEvent(name, params);
+  }
+
+  trackPageView(path?: string) {
+    if (!this.analyticsEnabled) return;
+
+    const pagePath = this.normalizePath(path);
+    if (this.lastTrackedPath === pagePath) return;
+    this.lastTrackedPath = pagePath;
+
+    if (!this.initialized) {
+      this.pendingPageViews.push(pagePath);
+      return;
+    }
+
+    this.dispatchPageView(pagePath);
+  }
+
+  ensureInitialized() {
+    if (!this.analyticsEnabled || this.initialized) return;
     const gtag = this.getGtag();
     if (!gtag) return;
+
+    this.injectScriptTag();
+    gtag('js', new Date());
+    gtag('config', this.measurementId, { send_page_view: false });
+    this.initialized = true;
+    this.flushPending();
+  }
+
+  isInitialized(): boolean {
+    return this.initialized;
+  }
+
+  private dispatchEvent(name: string, params?: Record<string, unknown>) {
+    const gtag = this.getGtag();
+    if (!gtag) return;
+
     gtag('event', name, {
       ...(params || {}),
       ...(this.measurementId ? { send_to: this.measurementId } : {}),
     });
   }
 
-  trackPageView(path?: string) {
-    if (!this.analyticsEnabled) return;
+  private dispatchPageView(pagePath: string) {
     const gtag = this.getGtag();
     if (!gtag) return;
-
-    const pagePath = this.normalizePath(path);
-    if (this.lastTrackedPath === pagePath) return;
-    this.lastTrackedPath = pagePath;
 
     gtag('event', 'page_view', {
       page_path: pagePath,
@@ -51,14 +86,14 @@ export class AnalyticsService {
     });
   }
 
-  private init() {
-    if (!this.analyticsEnabled) return;
-    const gtag = this.getGtag();
-    if (!gtag) return;
+  private flushPending() {
+    const pendingEvents = [...this.pendingEvents];
+    const pendingPageViews = [...this.pendingPageViews];
+    this.pendingEvents.length = 0;
+    this.pendingPageViews.length = 0;
 
-    this.injectScriptTag();
-    gtag('js', new Date());
-    gtag('config', this.measurementId, { send_page_view: false });
+    pendingEvents.forEach((event) => this.dispatchEvent(event.name, event.params));
+    pendingPageViews.forEach((pagePath) => this.dispatchPageView(pagePath));
   }
 
   private getGtag(): GtagFn | null {
