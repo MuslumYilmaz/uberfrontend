@@ -28,6 +28,10 @@ await copyFile(
   path.join(nodeModulesRoot, 'primeng', 'resources', 'themes', 'lara-dark-amber', 'theme.css'),
   path.join(outputRoot, 'primeng', 'resources', 'themes', 'lara-dark-amber', 'theme.css'),
 );
+await copyDir(
+  path.join(nodeModulesRoot, 'primeng', 'resources', 'themes', 'lara-dark-amber', 'fonts'),
+  path.join(outputRoot, 'primeng', 'resources', 'themes', 'lara-dark-amber', 'fonts'),
+);
 await copyFile(
   path.join(nodeModulesRoot, 'primeng', 'resources', 'primeng.min.css'),
   path.join(outputRoot, 'primeng', 'resources', 'primeng.min.css'),

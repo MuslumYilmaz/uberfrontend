@@ -130,6 +130,7 @@ describe('PracticeProgressService', () => {
         extension: { reflectionNote: 'Watch the async boundary.' },
       },
     }));
+    const existingUserScopedProgress = localStorage.getItem('fa:practice:progress:v3:user:user-1');
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -154,7 +155,7 @@ describe('PracticeProgressService', () => {
     expect(record.passed).toBeTrue();
     expect(record.bestScore).toBe(88);
     expect(localStorage.getItem(PRACTICE_PROGRESS_KEY)).toContain('incident:incident-1');
-    expect(localStorage.getItem('fa:practice:progress:v3:user:user-1')).toBeNull();
+    expect(localStorage.getItem('fa:practice:progress:v3:user:user-1')).toBe(existingUserScopedProgress);
   });
 
   it('hydrates signed-in practice progress from the backend and syncs later updates back', () => {
