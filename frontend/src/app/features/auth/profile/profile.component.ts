@@ -419,7 +419,7 @@ export class ProfileComponent implements OnInit {
     this.loadActivityDetails(false);
 
     // Load profile
-    this.auth.fetchMe().pipe(take(1)).subscribe((u) => {
+    this.auth.ensureMe().pipe(take(1)).subscribe((u) => {
       if (u) this.resetForm(u);
       this.refreshSolved(Array.isArray(u?.solvedQuestionIds) ? u!.solvedQuestionIds : undefined);
       this.loadActivityDetails(true);

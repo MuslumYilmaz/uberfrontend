@@ -190,4 +190,25 @@ describe('AuthService', () => {
     expect(firstResult.email).toBe('test@example.com');
     expect(secondResult.email).toBe('test@example.com');
   });
+
+  it('dedupes concurrent /me hydration requests and applies the shared user once', async () => {
+    authority.noteSessionHintPresent();
+
+    const first = firstValueFrom(service.fetchMe());
+    const second = firstValueFrom(service.ensureMe());
+
+    const meRequests = httpMock.match((request) =>
+      request.method === 'GET' &&
+      request.url.endsWith('/api/auth/me')
+    );
+    expect(meRequests.length).toBe(1);
+    meRequests[0].flush(sampleUser);
+
+    const [firstResult, secondResult] = await Promise.all([first, second]);
+    expect(firstResult?.email).toBe('test@example.com');
+    expect(secondResult?.email).toBe('test@example.com');
+    expect(service.user()?.email).toBe('test@example.com');
+    expect(authority.state()).toBe('authenticated');
+    expect(authority.hasSessionHint()).toBeTrue();
+  });
 });

@@ -122,6 +122,8 @@ export class AuthService {
 
   /** Used to ignore stale in-flight /me responses when newer /me calls complete first. */
   private meSeq = 0;
+  private pendingMeRequest$: Observable<User | null> | null = null;
+  private pendingMeBroadcast = false;
   private readonly pendingLoginAttempts = new Map<string, Observable<User>>();
   private readonly pendingSignupAttempts = new Map<string, Observable<User>>();
 
@@ -202,16 +204,21 @@ export class AuthService {
 
   /** GET /api/auth/me */
   fetchMe(options?: { broadcastLogin?: boolean }): Observable<User | null> {
+    this.pendingMeBroadcast = this.pendingMeBroadcast || options?.broadcastLogin === true;
+
+    const existing = this.pendingMeRequest$;
+    if (existing) return existing;
+
     const seq = ++this.meSeq;
     const authEpoch = this.authAuthority.captureEpoch();
 
-    return this.http
+    const request$ = this.http
       .get<User>(`${this.base}/me`, { withCredentials: true })
       .pipe(
         map((u) => {
           if (!this.canApplyAuthResponse(seq, authEpoch)) return null;
           const cloned = this.cloneUser(u);
-          this.authAuthority.commitAuthenticated({ broadcast: options?.broadcastLogin === true });
+          this.authAuthority.commitAuthenticated({ broadcast: this.pendingMeBroadcast });
           this.user.set(cloned);
           this.attemptInsights?.notifyAuthSessionStarted();
           return cloned;
@@ -224,8 +231,18 @@ export class AuthService {
             return of(null);
           }
           return throwError(() => err);
-        })
+        }),
+        finalize(() => {
+          if (this.pendingMeRequest$ === request$) {
+            this.pendingMeRequest$ = null;
+            this.pendingMeBroadcast = false;
+          }
+        }),
+        shareReplay(1)
       );
+
+    this.pendingMeRequest$ = request$;
+    return request$;
   }
 
   /** GET /api/auth/me with status (used by billing success polling). */
