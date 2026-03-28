@@ -14,7 +14,7 @@
     "lint:design-system:strict": "node scripts/lint-design-system.mjs --strict",
     "lint:questions": "node scripts/generate-practice-registry.mjs && node scripts/lint-practice-registry.mjs && node scripts/lint-questions.mjs && node scripts/lint-incidents.mjs && node scripts/lint-tradeoff-battles.mjs && node scripts/validate-trivia-incident-balance.mjs && node scripts/validate-question-identities.mjs",
     "lint:questions:fix": "node scripts/generate-practice-registry.mjs && node scripts/lint-practice-registry.mjs && node scripts/lint-questions.mjs --fix && node scripts/lint-incidents.mjs && node scripts/lint-tradeoff-battles.mjs && node scripts/validate-trivia-incident-balance.mjs && node scripts/validate-question-identities.mjs",
-    "start:e2e": "npm run gen:data && ng serve --configuration development --port 4200 --host 127.0.0.1",
+    "start:e2e": "node scripts/start-e2e-server.mjs",
     "start:prod": "npm run gen:data && ng serve --configuration production",
     "build:prod": "npm run gen:data && ng build --configuration production",
     "build": "npm run gen:data && ng build --configuration production",
