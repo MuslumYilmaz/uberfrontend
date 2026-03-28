@@ -86,6 +86,7 @@ type Card = {
   queryParams?: Params;
   disabled?: boolean;
   badge?: string | null;
+  ctaLabel?: string;
   metaLeft?: string;
   metaRight?: string;
   companyKey?: string;
@@ -650,28 +651,40 @@ export class DashboardComponent {
   /** ===== Recommended preparation ===== */
   recommended: Card[] = [
     {
-      title: 'FrontendAtlas Interview Blueprint',
-      subtitle: 'A starter guide to preparing for front end interviews.',
+      title: 'How to Prepare for Frontend Interviews',
+      subtitle: 'Start with the interview blueprint: prep order, round types, and a cleaner study sequence.',
       icon: 'cap',
+      badge: 'Start here',
+      ctaLabel: 'Open guide',
       route: ['/guides', 'interview-blueprint'],
     },
     {
-      title: 'CV Linter',
-      subtitle: 'ATS-style resume scan with severity-based fixes.',
-      icon: 'list',
-      route: ['/tools', 'cv'],
+      title: 'Behavioral Interview Blueprint',
+      subtitle: 'Prepare stories, trade-offs, and concise answers for behavioral rounds.',
+      icon: 'comments',
+      badge: 'Blueprint',
+      route: ['/guides', 'behavioral'],
+    },
+    {
+      title: 'Frontend Interview Questions Hub',
+      subtitle: 'Open the must-know questions first, then branch by JavaScript, React, Angular, Vue, HTML, and CSS.',
+      icon: 'question',
+      badge: 'Question hub',
+      route: ['/interview-questions'],
+    },
+    {
+      title: 'Framework Prep Paths',
+      subtitle: 'Choose JavaScript, React, Angular, or Vue and follow a focused study route.',
+      icon: 'directions',
+      badge: 'Prep path',
+      route: ['/guides', 'framework-prep'],
     },
     {
       title: 'Frontend System Design Blueprint',
-      subtitle: 'Core techniques and deep dives (guide).',
-      icon: 'grid',
+      subtitle: 'Learn caching, performance, state, and UI architecture for frontend design rounds.',
+      icon: 'sitemap',
+      badge: 'Blueprint',
       route: ['/guides', 'system-design-blueprint'],
-    },
-    {
-      title: 'Behavioral Interview Blueprint',
-      subtitle: 'STAR method, stories, and high-signal answers.',
-      icon: 'star',
-      route: ['/guides', 'behavioral'],
     },
   ];
   recommendedPrimary: Card | null = this.recommended[0] ?? null;
@@ -888,8 +901,12 @@ export class DashboardComponent {
   trackByTitle = (_: number, it: Card) => it.title;
   trackByTopicId = (_: number, it: TopicDefinition) => it.id;
 
-  recommendedBadgeForIndex(index: number): string {
-    return index === 0 ? 'Best next step' : 'Interview-ready';
+  recommendedBadge(card: Card, index: number): string {
+    return card.badge || (index === 0 ? 'Start here' : 'Guide');
+  }
+
+  recommendedCta(card: Card): string {
+    return card.ctaLabel || 'Open route';
   }
 
   trackProgress(card: Card): TrackProgress {

@@ -226,6 +226,39 @@
     <loc>https://frontendatlas.com/companies</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/companies/airbnb/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/amazon/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/apple/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/bytedance/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/google/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/meta/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/microsoft/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/netflix/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/openai/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/stripe/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/companies/uber/preview</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/css/coding/css-box-model-margin-padding-border</loc>
   </url>
   <url>
@@ -1439,6 +1472,15 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/tracks</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tracks/crash-7d/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tracks/foundations-30d/preview</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tracks/javascript-prep-path/mastery</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/tradeoffs</loc>

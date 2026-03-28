@@ -91,6 +91,8 @@
 }
 
 .company-link--hub { --company-chip-tone: #6cc2ff; }
+.company-link--tracks { --company-chip-tone: #7d93ff; }
+.company-link--focus { --company-chip-tone: #ff9b6a; }
 .company-link--react { --company-chip-tone: #79b2ff; }
 .company-link--angular { --company-chip-tone: #ef6f7d; }
 .company-link--vue { --company-chip-tone: #5fd6b5; }

@@ -46,6 +46,11 @@
   max-width: 72ch;
 }
 
+.preview-summary {
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+}
+
 .preview-meta {
   display: flex;
   flex-wrap: wrap;
@@ -98,6 +103,47 @@
   display: grid;
   gap: 6px;
   color: var(--uf-text-secondary);
+}
+
+.roadmap-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.roadmap-head h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.roadmap-head p {
+  margin: 4px 0 0;
+  color: var(--uf-text-secondary);
+}
+
+.roadmap-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  color: var(--uf-text-secondary);
+}
+
+.roadmap-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.roadmap-links a,
+.sample-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--uf-text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .sample-card {

@@ -6,6 +6,7 @@ const SRC_DIR = path.resolve('src');
 const ASSETS_DIR = path.join(SRC_DIR, 'assets');
 const PRACTICE_REGISTRY = path.join(ASSETS_DIR, 'practice', 'registry.json');
 const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
+const TRACK_REGISTRY = path.join(QUESTIONS_DIR, 'track-registry.json');
 const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
 const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
 const MASTERY_PATHS_DIR = path.join(SRC_DIR, 'app', 'shared', 'mastery', 'paths');
@@ -46,6 +47,21 @@ function addQuestionUrls(urls, tech, kind, list) {
   });
 }
 
+function addCompanySlugs(slugs, list) {
+  if (!Array.isArray(list)) return;
+  list.forEach((q) => {
+    const companies = Array.isArray(q?.companies)
+      ? q.companies
+      : Array.isArray(q?.companyTags)
+        ? q.companyTags
+        : [];
+    companies.forEach((company) => {
+      const slug = String(company || '').trim().toLowerCase();
+      if (slug) slugs.add(slug);
+    });
+  });
+}
+
 function extractGuideSlugs(content, exportName) {
   const marker = `export const ${exportName}`;
   const start = content.indexOf(marker);
@@ -80,8 +96,19 @@ function readActiveMasterySlugs() {
   return Array.from(slugs).sort((a, b) => a.localeCompare(b));
 }
 
+function readPublicTrackSlugs() {
+  if (!fs.existsSync(TRACK_REGISTRY)) return [];
+  const registry = readJson(TRACK_REGISTRY);
+  const tracks = Array.isArray(registry?.tracks) ? registry.tracks : [];
+  return tracks
+    .filter((track) => track?.slug && !track?.hidden)
+    .map((track) => track.slug)
+    .sort((a, b) => a.localeCompare(b));
+}
+
 function buildUrls() {
   const urls = new Set();
+  const companySlugs = new Set();
 
   const staticPaths = [
     '/',
@@ -133,13 +160,19 @@ function buildUrls() {
     const debugPath = path.join(QUESTIONS_DIR, tech, 'debug.json');
 
     if (fs.existsSync(codingPath)) {
-      addQuestionUrls(urls, tech, 'coding', readJson(codingPath));
+      const coding = readJson(codingPath);
+      addQuestionUrls(urls, tech, 'coding', coding);
+      addCompanySlugs(companySlugs, coding);
     }
     if (fs.existsSync(triviaPath)) {
-      addQuestionUrls(urls, tech, 'trivia', readJson(triviaPath));
+      const trivia = readJson(triviaPath);
+      addQuestionUrls(urls, tech, 'trivia', trivia);
+      addCompanySlugs(companySlugs, trivia);
     }
     if (fs.existsSync(debugPath)) {
-      addQuestionUrls(urls, tech, 'debug', readJson(debugPath));
+      const debug = readJson(debugPath);
+      addQuestionUrls(urls, tech, 'debug', debug);
+      addCompanySlugs(companySlugs, debug);
     }
   });
 
@@ -150,6 +183,7 @@ function buildUrls() {
         if (!q?.id) return;
         urls.add(toUrl(`/system-design/${q.id}`));
       });
+      addCompanySlugs(companySlugs, items);
     }
   }
 
@@ -169,7 +203,18 @@ function buildUrls() {
 
   readActiveMasterySlugs().forEach((slug) => {
     urls.add(toUrl(`/guides/framework-prep/${slug}/mastery`));
+    urls.add(toUrl(`/tracks/${slug}/mastery`));
   });
+
+  readPublicTrackSlugs().forEach((slug) => {
+    urls.add(toUrl(`/tracks/${slug}/preview`));
+  });
+
+  Array.from(companySlugs)
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((slug) => {
+      urls.add(toUrl(`/companies/${slug}/preview`));
+    });
 
   return Array.from(urls).sort();
 }

@@ -273,7 +273,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Foundations Track (30 days)',
       bullets: [
         '113-question progression from fundamentals to medium-level concepts.',
-        'Framework coding drills in React/Angular/Vue with framework-agnostic trivia.',
+        'Framework coding drills in React/Angular/Vue with framework-agnostic concept questions.',
         'Includes 5 frontend system design scenarios for architecture tradeoffs.',
       ],
     },
@@ -429,7 +429,7 @@ You can also reset any task back to the starter whenever you want to re-practice
         hint: 'How it’s evaluated',
         options: [
           { key: 'ui', label: 'UI Coding', count: 90 },
-          { key: 'trivia', label: 'Trivia', count: 110 },
+          { key: 'trivia', label: 'Concepts', count: 110 },
           { key: 'sd', label: 'System Design', count: 32 },
         ],
       },
@@ -441,7 +441,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   libraryHighlights = [
     { no: 'Q-101', title: 'React Counter', desc: 'Guarded decrement + UI state.', tags: ['UI coding', 'React'], meta: { difficulty: 'Easy', minutes: 15 }, link: ['/react', 'coding', 'react-counter'] },
     { no: 'Q-142', title: 'HTML Links & Images', desc: 'Accessible anchors + alt text.', tags: ['HTML/CSS', 'Semantics'], meta: { difficulty: 'Beginner', minutes: 10 }, link: ['/html', 'coding', 'html-links-and-images'] },
-    { no: 'Q-188', title: 'JS Event Loop', desc: 'Microtasks, macrotasks, render ticks.', tags: ['Trivia', 'Async'], meta: { difficulty: 'Medium', minutes: 15 }, link: ['/javascript', 'trivia', 'js-event-loop'] },
+    { no: 'Q-188', title: 'JS Event Loop', desc: 'Microtasks, macrotasks, render ticks.', tags: ['Concepts', 'Async'], meta: { difficulty: 'Medium', minutes: 15 }, link: ['/javascript', 'trivia', 'js-event-loop'] },
     { no: 'Q-240', title: 'Infinite Scroll List', desc: 'Cache, pagination, and perf budgets.', tags: ['System design', 'Performance'], meta: { difficulty: 'Medium', minutes: 45 }, link: ['/system-design', 'infinite-scroll-list'] },
   ];
 

@@ -272,9 +272,9 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Company Frontend Interview Questions',
+            title: 'Company Frontend Interview Sets',
             description:
-              'Explore frontend interview questions grouped by company, then follow an interview roadmap across coding, trivia, and system design coverage.',
+              'Explore frontend interview questions grouped by company, then follow an interview roadmap across coding, concept questions, and system design coverage.',
             robots: 'index,follow',
           },
         },
@@ -306,7 +306,7 @@ export const routes: Routes = [
           premiumGate: 'company',
           seo: {
             title: 'Company front-end interview questions',
-            description: 'Focused coding, trivia, and system design practice for a specific company.',
+            description: 'Focused coding, concept questions, and system design practice for a specific company.',
             robots: 'noindex,nofollow',
           },
         },
@@ -354,8 +354,8 @@ export const routes: Routes = [
               source: 'company',
               kind: 'trivia',
               seo: {
-                title: 'Company trivia questions',
-                description: 'Quick front-end trivia to mirror this company’s interview screens.',
+                title: 'Company concept questions',
+                description: 'Quick front-end concept questions to mirror this company’s interview screens.',
                 robots: 'noindex,nofollow',
               },
             },
@@ -496,7 +496,7 @@ export const routes: Routes = [
           seo: {
             title: 'Framework mastery crash track',
             description:
-              'Follow a guided 0 to 100 mastery track with trivia, output prediction, coding drills, and checkpoint gates.',
+              'Follow a guided 0 to 100 mastery track with concept questions, output prediction, coding drills, and checkpoint gates.',
             robots: 'index,follow',
           },
         },
@@ -655,7 +655,7 @@ export const routes: Routes = [
           seo: {
             title: 'Framework mastery crash track',
             description:
-              'Follow a guided 0 to 100 mastery track with trivia, output prediction, coding drills, and checkpoint gates.',
+              'Follow a guided 0 to 100 mastery track with concept questions, output prediction, coding drills, and checkpoint gates.',
           },
         },
       },
@@ -1314,8 +1314,8 @@ export const routes: Routes = [
         },
         data: {
           seo: {
-            title: 'Front-end trivia question',
-            description: 'Quick front-end trivia with concise explanations.',
+            title: 'Front-end interview concept question',
+            description: 'Quick front-end concept explanation for interview prep.',
           },
         },
       },

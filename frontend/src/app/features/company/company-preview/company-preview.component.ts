@@ -84,7 +84,7 @@ export class CompanyPreviewComponent implements OnInit {
 
   displayKind(kind: CompanyPreviewQuestion['kind']): string {
     if (kind === 'system-design') return 'System design';
-    return kind === 'coding' ? 'Coding' : 'Trivia';
+    return kind === 'coding' ? 'Coding' : 'Concept question';
   }
 
   private buildSamples(

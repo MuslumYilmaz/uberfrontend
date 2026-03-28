@@ -432,6 +432,81 @@
       </div>
     </fa-dialog>
 
+    <!-- Study routes -->
+    <section class="block block--guides">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">What to study next</h2>
+        <p class="block-subtitle fa-meta-text">Open the clearest learning route for right now: prep blueprint, question hubs, framework paths, system design, or behavioral rounds.</p>
+      </div>
+
+      <div class="recommended-layout" *ngIf="recommendedPrimary as primary">
+        <a
+          *ngIf="primary.route && !primary.disabled; else primaryDisabled"
+          faCard interactive class="recommend-spotlight"
+          [routerLink]="primary.route"
+          [queryParams]="primary.queryParams"
+        >
+          <div class="spotlight-head">
+            <div class="row-icon row-icon--lg"><i [ngClass]="piIcon(primary.icon)"></i></div>
+            <span class="recommend-chip">{{ recommendedBadge(primary, 0) }}</span>
+          </div>
+          <div class="row-title fa-card-title">{{ primary.title }}</div>
+          <div class="row-sub fa-meta-text">{{ primary.subtitle }}</div>
+          <div class="spotlight-cta">{{ recommendedCta(primary) }} →</div>
+        </a>
+
+        <ng-template #primaryDisabled>
+          <div faCard class="recommend-spotlight disabled">
+            <div class="spotlight-head">
+              <div class="row-icon row-icon--lg"><i [ngClass]="piIcon(primary.icon)"></i></div>
+              <span class="recommend-chip">{{ recommendedBadge(primary, 0) }}</span>
+            </div>
+            <div class="row-title fa-card-title">{{ primary.title }}</div>
+            <div class="row-sub fa-meta-text">{{ primary.subtitle }}</div>
+          </div>
+        </ng-template>
+
+        <div class="recommended-stack">
+          <ng-container *ngFor="let card of recommendedSecondary; let i = index; trackBy: trackByTitle">
+            <a
+              *ngIf="card.route && !card.disabled; else recDisabled"
+              faCard interactive class="row"
+              [routerLink]="card.route"
+              [queryParams]="card.queryParams"
+            >
+              <div class="row-main">
+                <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
+                <div class="row-body">
+                  <div class="row-title fa-card-title">
+                    {{ card.title }}
+                    <span class="badge">{{ recommendedBadge(card, i + 1) }}</span>
+                  </div>
+                  <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
+                </div>
+              </div>
+              <div class="row-arrow">→</div>
+            </a>
+
+            <ng-template #recDisabled>
+              <div faCard class="row disabled">
+                <div class="row-main">
+                  <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
+                  <div class="row-body">
+                    <div class="row-title fa-card-title">
+                      {{ card.title }}
+                      <span *ngIf="card.badge" class="badge">{{ card.badge }}</span>
+                    </div>
+                    <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
+                  </div>
+                </div>
+                <div class="row-arrow">→</div>
+              </div>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+    </section>
+
     <!-- Guided sprints -->
     <section class="block block--tracks">
       <div class="block-head">
@@ -617,80 +692,6 @@
       </ng-container>
     </section>
 
-    <!-- Playbooks and tools -->
-    <section class="block block--guides">
-      <div class="block-head">
-        <h2 class="block-title fa-section-title">Playbooks and tools</h2>
-        <p class="block-subtitle fa-meta-text">Use structured guides and utilities when you need a system reset or a sharper reference.</p>
-      </div>
-
-      <div class="recommended-layout" *ngIf="recommendedPrimary as primary">
-        <a
-          *ngIf="primary.route && !primary.disabled; else primaryDisabled"
-          faCard interactive class="recommend-spotlight"
-          [routerLink]="primary.route"
-          [queryParams]="primary.queryParams"
-        >
-          <div class="spotlight-head">
-            <div class="row-icon row-icon--lg"><i [ngClass]="piIcon(primary.icon)"></i></div>
-            <span class="recommend-chip">{{ recommendedBadgeForIndex(0) }}</span>
-          </div>
-          <div class="row-title fa-card-title">{{ primary.title }}</div>
-          <div class="row-sub fa-meta-text">{{ primary.subtitle }}</div>
-          <div class="spotlight-cta">Read playbook →</div>
-        </a>
-
-        <ng-template #primaryDisabled>
-          <div faCard class="recommend-spotlight disabled">
-            <div class="spotlight-head">
-              <div class="row-icon row-icon--lg"><i [ngClass]="piIcon(primary.icon)"></i></div>
-              <span class="recommend-chip">{{ recommendedBadgeForIndex(0) }}</span>
-            </div>
-            <div class="row-title fa-card-title">{{ primary.title }}</div>
-            <div class="row-sub fa-meta-text">{{ primary.subtitle }}</div>
-          </div>
-        </ng-template>
-
-        <div class="recommended-stack">
-          <ng-container *ngFor="let card of recommendedSecondary; let i = index; trackBy: trackByTitle">
-            <a
-              *ngIf="card.route && !card.disabled; else recDisabled"
-              faCard interactive class="row"
-              [routerLink]="card.route"
-              [queryParams]="card.queryParams"
-            >
-              <div class="row-main">
-                <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                <div class="row-body">
-                  <div class="row-title fa-card-title">
-                    {{ card.title }}
-                    <span class="badge">{{ recommendedBadgeForIndex(i + 1) }}</span>
-                  </div>
-                  <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
-                </div>
-              </div>
-              <div class="row-arrow">→</div>
-            </a>
-
-            <ng-template #recDisabled>
-              <div faCard class="row disabled">
-                <div class="row-main">
-                  <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                  <div class="row-body">
-                    <div class="row-title fa-card-title">
-                      {{ card.title }}
-                      <span *ngIf="card.badge" class="badge">{{ card.badge }}</span>
-                    </div>
-                    <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
-                  </div>
-                </div>
-                <div class="row-arrow">→</div>
-              </div>
-            </ng-template>
-          </ng-container>
-        </div>
-      </div>
-    </section>
   </div>
 
   <div class="prep-launcher" data-testid="dashboard-prep-launcher">

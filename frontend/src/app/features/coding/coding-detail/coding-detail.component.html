@@ -93,14 +93,14 @@
                 {{ quickWinCompleted() ? 'Great start. Next: one explanation check.' : 'Nice progress. Pick your next move.' }}
               </p>
               <p class="quick-win-next__copy">
-                Move to one high-importance trivia prompt, or switch to a guided multi-day track.
+                Move to one high-importance concept question, or switch to a guided study plan.
               </p>
               <div class="quick-win-next__actions">
                 <button type="button" faButton variant="primary" (click)="continueQuickWinWithTrivia()">
-                  Open 1 trivia check
+                  Open 1 concept check
                 </button>
                 <button type="button" faButton variant="ghost" (click)="continueQuickWinWithTrack()">
-                  Switch to guided track
+                  Switch to study plan
                 </button>
               </div>
             </section>
@@ -272,12 +272,12 @@
 
             <section class="detail-prep-bridge" data-testid="coding-prep-entry">
               <p class="detail-prep-bridge__text">
-                Preparing for interviews? Use guided tracks for structure, then drill company-specific question sets when you need targeted practice.
+                Preparing for interviews? Use the relevant interview-question hub, then move into a concrete study plan before targeted company sets.
               </p>
               <div class="detail-prep-bridge__links">
                 <a [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
-                <a [routerLink]="['/interview-questions']">Open frontend interview warm-up hub</a>
-                <a [routerLink]="['/tracks']">Explore interview tracks</a>
+                <a [routerLink]="['/interview-questions']">Open frontend interview questions hub</a>
+                <a [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
                 <a [routerLink]="['/companies']">Browse company questions</a>
                 <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
               </div>

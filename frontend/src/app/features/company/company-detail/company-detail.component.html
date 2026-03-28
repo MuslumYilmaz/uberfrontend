@@ -15,7 +15,7 @@
             {{ (counts$ | async)?.all }} known questions
         </span>
         <span class="fa-chip fa-chip--label">
-            Coding: {{ (counts$ | async)?.coding }} • Trivia: {{ (counts$ | async)?.trivia }} • System: {{ (counts$ | async)?.system }}
+            Coding: {{ (counts$ | async)?.coding }} • Concepts: {{ (counts$ | async)?.trivia }} • System: {{ (counts$ | async)?.system }}
         </span>
     </div>
 </div>
@@ -80,7 +80,7 @@
                 <li>Implement UI-related utilities (debounce, memoization, pub/sub)</li>
             </ul>
             <p>
-                Pure algorithm trivia without frontend relevance is rare, but algorithmic thinking is still expected.
+                Pure algorithm-only questions without frontend relevance are rare, but algorithmic thinking is still expected.
             </p>
             <p class="signal"><strong>Signal being tested:</strong> Can you apply algorithmic thinking to real frontend problems, not just theoretical ones?</p>
         </article>
@@ -821,7 +821,7 @@
     </fa-chip>
 
     <fa-chip class="company-chip fa-chip--label"
-             label="Trivia"
+             label="Concepts"
              [routerLink]="['trivia']"
              [toggle]="false"
              size="md"

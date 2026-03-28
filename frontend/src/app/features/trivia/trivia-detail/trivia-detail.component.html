@@ -245,11 +245,11 @@
                 <div class="card-head">Preparing for interviews?</div>
                 <div class="card-body prep-bridge__body">
                     <p class="prep-bridge__text">
-                        Use guided tracks for structured prep, then practice company-specific question sets when you want targeted interview coverage.
+                        Use the relevant interview-question hub first, then move into a concrete study plan before targeted company sets.
                     </p>
                     <div class="prep-bridge__links">
                         <a [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
-                        <a [routerLink]="['/tracks']">Explore interview tracks</a>
+                        <a [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
                         <a [routerLink]="['/companies']">Browse company questions</a>
                         <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
                     </div>

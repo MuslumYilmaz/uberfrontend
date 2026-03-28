@@ -699,9 +699,9 @@
 
 .recommended-layout {
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 12px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .recommend-spotlight {
@@ -709,6 +709,7 @@
   flex-direction: column;
   gap: 10px;
   padding: 16px;
+  min-height: 0;
   text-decoration: none;
   color: inherit;
 }
@@ -745,7 +746,7 @@
 }
 
 .spotlight-cta {
-  margin-top: auto;
+  margin-top: 4px;
   font-size: 13px;
   font-weight: 700;
   color: var(--fa-text-muted);

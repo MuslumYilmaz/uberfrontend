@@ -58,6 +58,13 @@
   flex-wrap: wrap;
 }
 
+.hero-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .stat {
   min-width: 150px;
   border-radius: 12px;
@@ -98,10 +105,68 @@
   background: color-mix(in srgb, var(--uf-accent) 28%, var(--uf-surface));
 }
 
+.hero-cta--secondary {
+  border-color: var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+}
+
 .container {
   max-width: 1040px;
   margin: 0 auto;
   padding: 20px 24px 64px;
+}
+
+.prep-guide {
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  border-radius: var(--uf-card-radius);
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+  box-shadow: var(--uf-card-shadow);
+}
+
+.prep-guide__kicker {
+  margin: 0 0 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+}
+
+.prep-guide h2 {
+  margin: 0 0 10px;
+  font-size: clamp(22px, 2.6vw, 28px);
+  color: var(--uf-text-primary);
+}
+
+.prep-guide__steps {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+}
+
+.prep-guide__links {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.prep-guide__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 42%, var(--uf-border-subtle) 58%);
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+  color: var(--uf-text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .grid {

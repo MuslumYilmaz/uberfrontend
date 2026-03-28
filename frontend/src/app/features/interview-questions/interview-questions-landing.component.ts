@@ -36,6 +36,7 @@ type QuestionSummaryRow = {
 
 type RawQuestionSummaryRow = QuestionListItem & { tech: Tech };
 type SchemaQuestionLink = { title: string; path: string };
+type PrepPlanLink = { label: string; route: any[]; summary: string };
 
 const DEFAULT_CONFIG: InterviewQuestionsLandingConfig = {
   keyword: 'javascript interview questions',
@@ -85,6 +86,24 @@ const INTERVIEW_HUB_LINKS: HubLink[] = [
     label: 'HTML CSS interview questions',
     route: ['/html-css/interview-questions'],
     path: '/html-css/interview-questions',
+  },
+];
+
+const PREP_PLAN_LINKS: PrepPlanLink[] = [
+  {
+    label: 'JavaScript mastery crash track',
+    route: ['/tracks', 'javascript-prep-path', 'mastery'],
+    summary: 'Deep JavaScript path with checkpoints, output prediction, and coding drills.',
+  },
+  {
+    label: 'Crash Track (7 days)',
+    route: ['/tracks', 'crash-7d', 'preview'],
+    summary: 'High-yield 7-day sprint for short interview timelines.',
+  },
+  {
+    label: 'Foundations Track (30 days)',
+    route: ['/tracks', 'foundations-30d', 'preview'],
+    summary: '30-day study plan for fundamentals, framework practice, and architecture coverage.',
   },
 ];
 
@@ -160,10 +179,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   introLead(): string {
     if (this.isMasterHub()) {
-      return 'Warm-up index for fast frontend interview prep: start with the most crucial JavaScript coding and concept prompts, then branch into full technology hubs for broader coverage.';
+      return 'Interview-questions hub for fast frontend interview prep: start with the most crucial JavaScript coding and concept prompts, then branch into full technology hubs for broader coverage.';
     }
 
-    return `Technology warm-up index for ${this.keywordSentenceCase()}: tackle the most crucial coding and concept questions first, then expand into full interview platform flows.`;
+    return `Technology interview-questions hub for ${this.keywordSentenceCase()}: tackle the most crucial coding and concept questions first, then expand into study plans, guides, and company-specific prep flows.`;
   }
 
   listIntentItems(): string[] {
@@ -209,6 +228,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   masterTechHubLinks(): HubLink[] {
     return INTERVIEW_HUB_LINKS.filter((hub) => PRIMARY_TECH_HUB_PATHS.has(hub.path));
+  }
+
+  prepPlanLinks(): PrepPlanLink[] {
+    return PREP_PLAN_LINKS;
   }
 
   supportsMultipleTechs(): boolean {

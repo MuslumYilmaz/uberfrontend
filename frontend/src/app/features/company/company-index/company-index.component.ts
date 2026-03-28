@@ -1,11 +1,12 @@
 // src/app/features/company/company-index/company-index.component.ts
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
+import { SeoService } from '../../../core/services/seo.service';
 import { collectCompanyCounts } from '../../../shared/company-counts.util';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
@@ -23,6 +24,9 @@ const SEED: ReadonlyArray<Pick<CompanyCard, 'slug' | 'label'>> = [
   { slug: 'netflix', label: 'Netflix' },
 ];
 
+const COMPANY_INDEX_TITLE = 'Company Frontend Interview Sets';
+const COMPANY_INDEX_DESCRIPTION =
+  'Use company-specific frontend interview sets after your baseline prep is stable, then compare prompt style and round emphasis before final interviews.';
 
 @Component({
   standalone: true,
@@ -31,25 +35,26 @@ const SEED: ReadonlyArray<Pick<CompanyCard, 'slug' | 'label'>> = [
   templateUrl: './company-index.component.html',
   styleUrls: ['./company-index.component.css']
 })
-export class CompanyIndexComponent {
+export class CompanyIndexComponent implements OnInit {
   companies: CompanyCard[] = [];
   loading = true;
   private qs = inject(QuestionService);
+  private seo = inject(SeoService);
 
   companyPrepOutcomes: PrepSignalItem[] = [
-    'Understand interview style differences across companies.',
-    'Use framework prep paths before company-specific drills.',
+    'Compare interview style differences after your baseline prep is stable.',
+    'Use company sets to rehearse the final week, not to discover fundamentals.',
   ];
 
   companyPrepMistakes: PrepSignalItem[] = [
-    'Jumping into company sets without a baseline interview roadmap.',
-    'Practicing one question type only and missing full-round readiness.',
+    'Starting with company sets before identifying your weak topics.',
+    'Treating company prompts as a full prep system instead of a targeting layer.',
   ];
 
   companyPrepSequence: PrepSignalItem[] = [
-    { text: 'Interview blueprint', route: ['/guides/interview-blueprint'] },
-    { text: 'Framework path', route: ['/guides/framework-prep'] },
-    { text: 'Guided tracks', route: ['/tracks'] },
+    { text: 'Interview questions hub', route: ['/interview-questions'] },
+    { text: 'Focus areas', route: ['/focus-areas'] },
+    { text: 'Guided study plans', route: ['/tracks'] },
     { text: 'Company-specific practice', route: ['/companies'] },
   ];
 
@@ -89,6 +94,66 @@ export class CompanyIndexComponent {
       .subscribe(list => {
         this.companies = list;
         this.loading = false;
+        this.publishSeo(list);
       });
+  }
+
+  private publishSeo(companies: CompanyCard[]): void {
+    const canonicalPath = '/companies';
+    const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
+    const collectionPage: Record<string, any> = {
+      '@type': 'CollectionPage',
+      '@id': canonicalUrl,
+      url: canonicalUrl,
+      name: COMPANY_INDEX_TITLE,
+      description: COMPANY_INDEX_DESCRIPTION,
+      inLanguage: 'en',
+      about: [
+        { '@type': 'Thing', name: 'Company frontend interview sets' },
+        { '@type': 'Thing', name: 'Frontend interview preparation' },
+      ],
+      mentions: [
+        { '@type': 'WebPage', name: 'Frontend interview questions hub', url: this.seo.buildCanonicalUrl('/interview-questions') },
+        { '@type': 'WebPage', name: 'Frontend interview study plans', url: this.seo.buildCanonicalUrl('/tracks') },
+        { '@type': 'WebPage', name: 'Framework prep hub', url: this.seo.buildCanonicalUrl('/guides/framework-prep') },
+      ],
+    };
+
+    if (companies.length) {
+      collectionPage['mainEntity'] = {
+        '@type': 'ItemList',
+        itemListElement: companies.slice(0, 24).map((company, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: company.label,
+          url: this.seo.buildCanonicalUrl(`/companies/${company.slug}/preview`),
+        })),
+      };
+    }
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: COMPANY_INDEX_TITLE,
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    this.seo.updateTags({
+      title: COMPANY_INDEX_TITLE,
+      description: COMPANY_INDEX_DESCRIPTION,
+      canonical: canonicalPath,
+      jsonLd: [collectionPage, breadcrumb],
+    });
   }
 }

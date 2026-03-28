@@ -1154,6 +1154,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const dateModified = this.resolveUpdatedIso(q);
     const datePublished = this.resolvePublishedIso(dateModified);
     const imageUrl = this.structuredDataImageUrl();
+    const interviewHubUrl = this.seo.buildCanonicalUrl(this.interviewQuestionsHubPath());
+    const interviewHubLabel = this.interviewQuestionsHubLabel();
+    const studyPlanUrl = this.seo.buildCanonicalUrl(this.studyPlanPath());
+    const companiesUrl = this.seo.buildCanonicalUrl('/companies');
+    const frameworkPrepUrl = this.hasFrameworkPrepPath()
+      ? this.seo.buildCanonicalUrl(this.frameworkPrepPath())
+      : null;
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -1167,8 +1174,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         {
           '@type': 'ListItem',
           position: 2,
-          name: 'Practice',
-          item: this.seo.buildCanonicalUrl('/coding'),
+          name: interviewHubLabel,
+          item: interviewHubUrl,
         },
         {
           '@type': 'ListItem',
@@ -1198,6 +1205,24 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
           url: imageUrl,
         },
       },
+      isPartOf: {
+        '@type': 'CollectionPage',
+        '@id': interviewHubUrl,
+        url: interviewHubUrl,
+        name: interviewHubLabel,
+      },
+      about: [
+        { '@type': 'Thing', name: `${interviewHubLabel} practice` },
+        { '@type': 'Thing', name: 'Frontend interview preparation' },
+      ],
+      mentions: [
+        { '@type': 'WebPage', name: interviewHubLabel, url: interviewHubUrl },
+        { '@type': 'WebPage', name: this.studyPlanLabel(), url: studyPlanUrl },
+        { '@type': 'WebPage', name: 'Company frontend interview sets', url: companiesUrl },
+        ...(frameworkPrepUrl
+          ? [{ '@type': 'WebPage', name: `${this.frameworkPrepLabel()} prep path`, url: frameworkPrepUrl }]
+          : []),
+      ],
       isAccessibleForFree: q.access !== 'premium',
       keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
@@ -1834,7 +1859,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       action: 'guided_plan',
       question_id: this.quickWinQuestionId,
     });
-    this.router.navigate(['/tracks'], {
+    this.router.navigate(this.studyPlanRoute(), {
       queryParams: { entry: 'dashboard_launcher' },
     });
   }
@@ -2449,6 +2474,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
   }
 
+  studyPlanRoute(): any[] {
+    const tech = (this.tech || '').toLowerCase();
+    if (tech === 'javascript') return ['/tracks', 'javascript-prep-path', 'mastery'];
+    if (tech === 'html' || tech === 'css') return ['/tracks', 'crash-7d', 'preview'];
+    return ['/tracks', 'foundations-30d', 'preview'];
+  }
+
+  studyPlanLabel(): string {
+    const tech = (this.tech || '').toLowerCase();
+    if (tech === 'javascript') return 'JavaScript mastery study plan';
+    if (tech === 'html' || tech === 'css') return '7-day crash study plan';
+    return '30-day foundations study plan';
+  }
+
   frameworkPrepRoute(): any[] {
     const slug = this.frameworkPrepSlugForTech();
     return slug ? ['/guides/framework-prep', slug] : ['/guides/framework-prep'];
@@ -2471,6 +2510,18 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       default:
         return 'Framework';
     }
+  }
+
+  private studyPlanPath(): string {
+    const tech = (this.tech || '').toLowerCase();
+    if (tech === 'javascript') return '/tracks/javascript-prep-path/mastery';
+    if (tech === 'html' || tech === 'css') return '/tracks/crash-7d/preview';
+    return '/tracks/foundations-30d/preview';
+  }
+
+  private frameworkPrepPath(): string {
+    const slug = this.frameworkPrepSlugForTech();
+    return slug ? `/guides/framework-prep/${slug}` : '/guides/framework-prep';
   }
 
   private frameworkPrepSlugForTech(): string | null {

@@ -1,14 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { forkJoin, map, Observable, shareReplay } from 'rxjs';
+import { forkJoin, map, Observable, shareReplay, tap } from 'rxjs';
 import { QuestionService } from '../../../core/services/question.service';
+import { SeoService } from '../../../core/services/seo.service';
 import {
   deriveTopicIdsFromTags,
   TopicDefinition,
   TopicsRegistry,
 } from '../../../core/utils/topics.util';
 import topicRegistryJson from '../../../../assets/questions/topic-registry.json';
+
+const FOCUS_AREAS_TITLE = 'Frontend Interview Focus Areas';
+const FOCUS_AREAS_DESCRIPTION =
+  'Use focus areas to diagnose weak spots, then move into the interview questions hub, study plans, and company-specific practice with the right topic context.';
 
 type FocusAreaRow = {
   id: string;
@@ -30,7 +35,10 @@ type FocusAreaStats = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FocusAreasComponent {
-  constructor(private readonly questions: QuestionService) {}
+  constructor(
+    private readonly questions: QuestionService,
+    private readonly seo: SeoService,
+  ) {}
 
   private readonly topicsRegistry: TopicsRegistry = topicRegistryJson as TopicsRegistry;
 
@@ -39,6 +47,7 @@ export class FocusAreasComponent {
     trivia: this.questions.loadAllQuestionSummaries('trivia', { transferState: false }),
   }).pipe(
     map(({ coding, trivia }) => this.buildStats(coding, trivia, this.topicsRegistry.topics ?? [])),
+    tap((stats) => this.publishSeo(stats)),
     shareReplay(1),
   );
 
@@ -73,5 +82,63 @@ export class FocusAreasComponent {
       rows,
       totalQuestions: allQuestions.length,
     };
+  }
+
+  private publishSeo(stats: FocusAreaStats): void {
+    const canonicalPath = '/focus-areas';
+    const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
+    const collectionPage: Record<string, any> = {
+      '@type': 'CollectionPage',
+      '@id': canonicalUrl,
+      url: canonicalUrl,
+      name: FOCUS_AREAS_TITLE,
+      description: FOCUS_AREAS_DESCRIPTION,
+      inLanguage: 'en',
+      about: [
+        { '@type': 'Thing', name: 'Frontend interview focus areas' },
+        { '@type': 'Thing', name: 'Frontend interview study plans' },
+      ],
+      mentions: [
+        { '@type': 'WebPage', name: 'Frontend interview questions hub', url: this.seo.buildCanonicalUrl('/interview-questions') },
+        { '@type': 'WebPage', name: 'Foundations Track (30 days)', url: this.seo.buildCanonicalUrl('/tracks/foundations-30d/preview') },
+        { '@type': 'WebPage', name: 'Company frontend interview sets', url: this.seo.buildCanonicalUrl('/companies') },
+      ],
+    };
+
+    if (stats.rows.length) {
+      collectionPage['mainEntity'] = {
+        '@type': 'ItemList',
+        itemListElement: stats.rows.slice(0, 24).map((row, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: row.title,
+        })),
+      };
+    }
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: FOCUS_AREAS_TITLE,
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    this.seo.updateTags({
+      title: FOCUS_AREAS_TITLE,
+      description: FOCUS_AREAS_DESCRIPTION,
+      canonical: canonicalPath,
+      jsonLd: [collectionPage, breadcrumb],
+    });
   }
 }

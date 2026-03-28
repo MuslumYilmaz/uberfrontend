@@ -537,7 +537,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const raw = this.descText(q.description || '');
     const plain = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     if (plain) return plain;
-    return `Front-end trivia question for ${this.tech}.`;
+    return `Front-end interview concept question for ${this.tech}.`;
   }
 
   private seoTitle(q: Question): string {
@@ -551,7 +551,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   private questionKeywords(q: Question): string[] {
     const tags = Array.isArray(q.tags) ? q.tags : [];
     const companies: string[] = (q as any).companies ?? (q as any).companyTags ?? [];
-    const base = ['front end trivia', `${this.tech} interview trivia`];
+    const base = ['front end interview concepts', `${this.tech} interview concepts`];
 
     return Array.from(
       new Set([...base, ...tags, ...companies].map(k => String(k || '').trim()).filter(Boolean))
@@ -594,8 +594,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.suppressSeo) return;
     if (!q) {
       this.seo.updateTags({
-        title: 'Front-end trivia question',
-        description: 'Quick front-end trivia with concise explanations.',
+        title: 'Front-end interview concept question',
+        description: 'Quick front-end concept explanation for interview prep.',
       });
       return;
     }
@@ -611,7 +611,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const imageUrl = this.structuredDataImageUrl();
     const interviewHubUrl = this.interviewQuestionsHubUrl();
     const interviewHubLabel = this.interviewQuestionsHubLabel();
-    const tracksUrl = this.seo.buildCanonicalUrl('/tracks');
+    const studyPlanUrl = this.seo.buildCanonicalUrl(this.studyPlanPath());
     const companiesUrl = this.seo.buildCanonicalUrl('/companies');
 
     const breadcrumb = {
@@ -626,8 +626,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         {
           '@type': 'ListItem',
           position: 2,
-          name: 'Practice',
-          item: this.seo.buildCanonicalUrl('/coding'),
+          name: interviewHubLabel,
+          item: interviewHubUrl,
         },
         {
           '@type': 'ListItem',
@@ -669,7 +669,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       ],
       mentions: [
         { '@type': 'WebPage', name: interviewHubLabel, url: interviewHubUrl },
-        { '@type': 'WebPage', name: 'Frontend interview tracks', url: tracksUrl },
+        { '@type': 'WebPage', name: this.studyPlanLabel(), url: studyPlanUrl },
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ],
       isAccessibleForFree: q.access !== 'premium',
@@ -746,6 +746,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return slug ? ['/guides/framework-prep', slug] : ['/guides/framework-prep'];
   }
 
+  studyPlanRoute(): any[] {
+    const tech = (this.tech || '').toLowerCase();
+    if (tech === 'javascript') return ['/tracks', 'javascript-prep-path', 'mastery'];
+    if (tech === 'html' || tech === 'css') return ['/tracks', 'crash-7d', 'preview'];
+    return ['/tracks', 'foundations-30d', 'preview'];
+  }
+
   interviewQuestionsHubRoute(): any[] {
     return [this.interviewQuestionsHubPath()];
   }
@@ -767,6 +774,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       default:
         return 'Frontend interview questions';
     }
+  }
+
+  studyPlanLabel(): string {
+    const tech = (this.tech || '').toLowerCase();
+    if (tech === 'javascript') return 'JavaScript mastery study plan';
+    if (tech === 'html' || tech === 'css') return '7-day crash study plan';
+    return '30-day foundations study plan';
   }
 
   hasFrameworkPrepPath(): boolean {
@@ -801,6 +815,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       default:
         return null;
     }
+  }
+
+  private studyPlanPath(): string {
+    const tech = (this.tech || '').toLowerCase();
+    if (tech === 'javascript') return '/tracks/javascript-prep-path/mastery';
+    if (tech === 'html' || tech === 'css') return '/tracks/crash-7d/preview';
+    return '/tracks/foundations-30d/preview';
   }
 
   private interviewQuestionsHubPath(): string {

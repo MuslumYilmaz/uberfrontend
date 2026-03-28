@@ -8,7 +8,7 @@ import { SeoService } from '../../../core/services/seo.service';
 
 const TRACKS_PLATFORM_TITLE = 'Frontend Interview Prep Platform and Tracks';
 const TRACKS_PLATFORM_DESCRIPTION =
-  'Use the frontend interview prep platform to run a structured multi-day interview sequence, then connect each track with frontend interview warm-up hubs by technology.';
+  'Use the frontend interview prep platform to run structured study plans, then connect each track with frontend interview question hubs by technology.';
 
 type MasteryTrackCard = {
   slug: string;
@@ -68,7 +68,7 @@ export class TrackListComponent implements OnInit {
       questionCountLabel: '40+ drills',
       title: 'JavaScript Mastery Crash Track',
       subtitle:
-        'Structured module board with trivia, output prediction, coding drills, and checkpoint gates.',
+        'Structured module board with concept questions, output prediction, coding drills, and checkpoint gates.',
       focus: [
         'Foundations: values, coercion, control flow',
         'Functions + scope: closures, TDZ, this',
@@ -87,13 +87,13 @@ export class TrackListComponent implements OnInit {
     queryParams: { entry: 'tracks_role_contract' } as Record<string, string>,
   };
   routeRoleSecondary = {
-    label: 'Open warm-up hub',
+    label: 'Open interview questions hub',
     route: ['/interview-questions'] as any[],
     queryParams: { entry: 'tracks_role_contract' } as Record<string, string>,
   };
   interviewHubQuickLinks: HubQuickLink[] = [
     {
-      label: 'Frontend interview warm-up hub',
+      label: 'Frontend interview questions hub',
       route: ['/interview-questions'],
       toneClass: 'hero-link--iq-master',
     },
@@ -141,12 +141,12 @@ export class TrackListComponent implements OnInit {
 
   trackPrepMistakes: PrepSignalItem[] = [
     'Switching between stacks every day without finishing one path.',
-    'Focusing only on trivia instead of mixed interview signal areas.',
+    'Focusing only on concept recall instead of mixed interview signal areas.',
   ];
 
   trackPrepSequence: PrepSignalItem[] = [
     { text: 'Interview blueprint', route: ['/guides/interview-blueprint'] },
-    { text: 'Interview warm-up hub', route: ['/interview-questions'] },
+    { text: 'Interview questions hub', route: ['/interview-questions'] },
     { text: 'Framework prep path', route: ['/guides/framework-prep'] },
     { text: 'Guided tracks', route: ['/tracks'] },
     { text: 'Company question sets', route: ['/companies'] },
@@ -154,17 +154,17 @@ export class TrackListComponent implements OnInit {
   platformSteps: PlatformStep[] = [
     {
       kicker: 'Step 1',
-      title: 'Choose your interview warm-up hub',
+      title: 'Choose your interview questions hub',
       description:
-        'Start from the frontend interview warm-up hub, then narrow to the stack you are interviewing for this month.',
+        'Start from the frontend interview questions hub, then narrow to the stack you are interviewing for this month.',
       route: ['/interview-questions'],
-      ctaLabel: 'Open warm-up hub',
+      ctaLabel: 'Open interview questions hub',
     },
     {
       kicker: 'Step 2',
       title: 'Run one track end-to-end',
       description:
-        'Use a guided track to sequence coding, trivia, and system design practice instead of switching context every day.',
+        'Use a guided track to sequence coding, concept questions, and system design practice instead of switching context every day.',
       route: ['/tracks'],
       ctaLabel: 'Browse tracks',
     },
@@ -190,7 +190,7 @@ export class TrackListComponent implements OnInit {
       title: 'Week 1: Foundation and speed',
       points: [
         'Prioritize JavaScript and browser fundamentals before framework-specific drills.',
-        'Alternate implementation questions with trivia explanations so speed and clarity improve together.',
+        'Alternate implementation questions with concept explanations so speed and clarity improve together.',
         'Track missed topics and carry them into your next practice cycle.',
       ],
     },
@@ -213,9 +213,9 @@ export class TrackListComponent implements OnInit {
   ];
   faqEntries: TrackFaqEntry[] = [
     {
-      question: 'Should I use tracks before or after the interview warm-up hub?',
+      question: 'Should I use tracks before or after the interview questions hub?',
       answer:
-        'Start with the interview warm-up hub to identify your weak areas, then use tracks to execute a fixed sequence that removes random practice. Most candidates get better outcomes when tracks are used as the weekly execution layer.',
+        'Start with the interview questions hub to identify your weak areas, then use tracks to execute a fixed sequence that removes random practice. Most candidates get better outcomes when tracks are used as the weekly execution layer.',
     },
     {
       question: 'How many tracks should I run at the same time?',
@@ -225,7 +225,7 @@ export class TrackListComponent implements OnInit {
     {
       question: 'Do tracks cover coding and explanation rounds together?',
       answer:
-        'Yes. The platform combines coding implementation practice with trivia recall and system-design prompts so you can practice both delivery speed and technical depth in the same prep loop.',
+        'Yes. The platform combines coding implementation practice with concept questions and system-design prompts so you can practice both delivery speed and technical depth in the same prep loop.',
     },
     {
       question: 'When should I move from tracks to company question sets?',
@@ -265,7 +265,7 @@ export class TrackListComponent implements OnInit {
 
     if (track.slug === 'foundations-30d') {
       return {
-        note: '30-day progression from fundamentals to medium concepts, with framework coding drills and framework-agnostic trivia.',
+        note: '30-day progression from fundamentals to medium concepts, with framework coding drills and framework-agnostic concept questions.',
         badges: [frameworkBadge, systemBadge],
       };
     }

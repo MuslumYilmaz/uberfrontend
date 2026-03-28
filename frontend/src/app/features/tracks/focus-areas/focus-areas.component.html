@@ -1,11 +1,10 @@
 <div class="focus-page">
   <div class="hero">
     <div class="hero-inner">
-      <p class="eyebrow">Dashboard</p>
+      <p class="eyebrow">Prep planning</p>
       <h1>Frontend Interview Focus Areas</h1>
       <p class="lede">
-        Same focus areas you see on the Dashboard, now in one page. Pick a focus area and jump
-        straight to the all-questions page with that topic filter applied.
+        Use topic coverage to find weak areas fast, then jump into the interview questions hub or a study plan with the right context.
       </p>
       <ng-container *ngIf="stats$ | async as stats">
         <div class="hero-stats">
@@ -15,16 +14,35 @@
           </div>
           <div class="stat">
             <span class="stat-value">{{ stats.totalQuestions }}</span>
-            <span class="stat-label">Coding + trivia questions</span>
+            <span class="stat-label">Coding + concept questions</span>
           </div>
         </div>
       </ng-container>
-      <a class="hero-cta" [routerLink]="['/coding']">Browse all questions</a>
+      <div class="hero-actions">
+        <a class="hero-cta" [routerLink]="['/interview-questions']">Open interview questions hub</a>
+        <a class="hero-cta hero-cta--secondary" [routerLink]="['/tracks', 'foundations-30d', 'preview']">Open 30-day study plan</a>
+        <a class="hero-cta hero-cta--secondary" [routerLink]="['/companies']">Target company sets</a>
+      </div>
     </div>
   </div>
 
   <div class="container">
     <ng-container *ngIf="stats$ | async as stats; else loading">
+      <section class="prep-guide fa-card">
+        <p class="prep-guide__kicker">How to use this page</p>
+        <h2>Turn topic counts into a prep sequence</h2>
+        <ul class="prep-guide__steps">
+          <li>Find the topics where your coverage is thin or inconsistent.</li>
+          <li>Open the matching interview questions hub or filtered question list for fast repetition.</li>
+          <li>Move into one study plan, then finish with company sets in your final week.</li>
+        </ul>
+        <div class="prep-guide__links">
+          <a [routerLink]="['/interview-questions']">Frontend interview questions hub</a>
+          <a [routerLink]="['/guides/framework-prep']">Framework prep paths</a>
+          <a [routerLink]="['/tracks', 'crash-7d', 'preview']">7-day crash study plan</a>
+        </div>
+      </section>
+
       <div class="grid" *ngIf="stats.rows.length; else emptyState">
         <a
           *ngFor="let row of stats.rows"
@@ -37,7 +55,7 @@
             <div class="row-icon"><i class="pi pi-th-large"></i></div>
             <div class="row-body">
               <div class="row-title">{{ row.title }}</div>
-              <div class="row-sub">{{ row.questionCount }} questions</div>
+              <div class="row-sub">{{ row.questionCount }} questions across coding and concept practice</div>
             </div>
           </div>
           <div class="row-arrow">→</div>

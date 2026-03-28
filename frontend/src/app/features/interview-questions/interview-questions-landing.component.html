@@ -1,6 +1,6 @@
 <div class="iq-wrap">
   <header class="fa-page-header iq-header">
-    <p class="fa-page-kicker">{{ isMasterHub() ? 'Warm-up index and SEO discovery' : 'Technology warm-up index' }}</p>
+    <p class="fa-page-kicker">{{ isMasterHub() ? 'Interview questions hub' : 'Technology interview hub' }}</p>
     <h1 class="fa-page-title">{{ config.title }}</h1>
     <p class="fa-page-subtitle">
       {{ introLead() }}
@@ -12,14 +12,14 @@
       <p class="iq-start__eyebrow">Start here</p>
       <h2 class="iq-start__title">Start interview prep in 30 seconds</h2>
       <p class="iq-start__text">
-        Warm up with one crucial question first, then expand into full libraries once momentum is established.
+        Start with one crucial question first, then move into study plans and deeper prep routes once momentum is established.
       </p>
       <div class="iq-start__actions">
         <a class="iq-cta iq-cta--primary" [routerLink]="['/coding']" [queryParams]="{ kind: 'coding' }">
           Start one crucial coding question
         </a>
-        <a class="iq-cta iq-cta--secondary" [routerLink]="['/coding']">
-          Open full coding library
+        <a class="iq-cta iq-cta--secondary" [routerLink]="['/tracks']">
+          Open study plans
         </a>
       </div>
       <div class="iq-tech-pills">
@@ -66,11 +66,21 @@
                 Open {{ link.label | lowercase }}
                 <span class="iq-link-badge" *ngIf="link.badge">{{ link.badge }}</span>
               </a>
-              <a [routerLink]="['/tracks']">Open interview practice platform (/tracks)</a>
+              <a [routerLink]="['/tracks']">Open study plans and tracks</a>
               <a [routerLink]="['/guides']">Open guides hub</a>
-              <a *ngIf="!isMasterHub()" [routerLink]="['/interview-questions']">Open frontend interview warm-up hub</a>
+              <a [routerLink]="['/focus-areas']">Open focus areas</a>
+              <a *ngIf="!isMasterHub()" [routerLink]="['/interview-questions']">Open frontend interview questions hub</a>
             </div>
           </div>
+
+          <details class="iq-hub-details">
+            <summary>Explore public study plans</summary>
+            <div class="iq-links iq-links--hubs">
+              <a *ngFor="let plan of prepPlanLinks()" [routerLink]="plan.route">
+                {{ plan.label }}: {{ plan.summary }}
+              </a>
+            </div>
+          </details>
 
           <details class="iq-hub-details" *ngIf="!isMasterHub() && featuredLinks.length">
             <summary>Explore recommended deep-dive leaves</summary>
@@ -80,14 +90,14 @@
           </details>
 
           <details class="iq-hub-details" *ngIf="isMasterHub()">
-            <summary>Explore technology interview warm-up hubs</summary>
+            <summary>Explore technology interview-question hubs</summary>
             <div class="iq-links iq-links--hubs">
               <a *ngFor="let hub of masterTechHubLinks()" [routerLink]="hub.route">{{ hub.label }}</a>
             </div>
           </details>
 
           <details class="iq-hub-details" *ngIf="!isMasterHub()">
-            <summary>Explore related interview warm-up hubs</summary>
+            <summary>Explore related interview-question hubs</summary>
             <div class="iq-links iq-links--hubs">
               <a *ngFor="let hub of relatedHubLinks" [routerLink]="hub.route">{{ hub.label }}</a>
             </div>
@@ -149,11 +159,11 @@
     <h2 class="fa-section-title">Complete the prep loop</h2>
     <p>
       After these {{ config.title }} drills, continue with
-      <a [routerLink]="['/interview-questions']">frontend interview warm-up hub</a>,
+      <a [routerLink]="['/interview-questions']">frontend interview questions hub</a>,
       then
       <a [routerLink]="['/guides']">frontend interview preparation guides</a>
       and
-      <a [routerLink]="['/tracks']">frontend interview preparation tracks</a>
+      <a [routerLink]="['/tracks']">frontend interview study plans</a>
       to keep your weekly plan structured.
     </p>
   </section>
