@@ -16,7 +16,7 @@
             <span class="hero-db-impact__plus">+</span>
           </div>
           <p class="hero-db-impact__copy">
-            Interview questions and debug scenarios across UI coding, trivia, frontend system design, and real-world frontend incidents.
+            Interview questions and debug scenarios across UI coding, interview concepts, frontend system design, and real-world frontend incidents.
           </p>
         </div>
       </div>
@@ -48,7 +48,7 @@
           aria-label="Start with a free React challenge">
           {{ heroPrimaryCtaLabel }}
         </a>
-        <a class="sk-btn sk-btn-ghost" routerLink="/coding" aria-label="Browse coding challenges">Browse challenges</a>
+        <a class="sk-btn sk-btn-ghost" routerLink="/interview-questions" aria-label="Browse frontend interview questions">Browse interview questions</a>
       </div>
       <div class="chip-cloud" aria-hidden="true">
         <span class="floating-chip" *ngFor="let chip of heroBadges; let i = index" [attr.data-tone]="chip.tone"
@@ -201,13 +201,13 @@
   <div class="shell">
     <div class="section-head">
       <div>
-        <p class="eyebrow">Trivia snapshot</p>
-        <h2 id="trivia-preview-title">See a real quiz slice.</h2>
+        <p class="eyebrow">Interview question snapshot</p>
+        <h2 id="trivia-preview-title">See a real interview answer breakdown.</h2>
       </div>
-      <p class="muted">Cropped from the live trivia detail page.</p>
+      <p class="muted">Pulled from a live interview question page.</p>
     </div>
 
-    <div class="demo-tabs" role="tablist" aria-label="Pick a trivia question preview">
+    <div class="demo-tabs" role="tablist" aria-label="Pick an interview question preview">
       <button type="button" class="demo-tab" *ngFor="let tab of triviaTabs" role="tab"
         [attr.id]="'trivia-tab-' + tab.key" [class.active]="tab.key === activeTriviaKey"
         [attr.data-testid]="'showcase-trivia-tab-' + tab.key"
@@ -218,7 +218,7 @@
       </button>
     </div>
 
-    <div class="trivia-preview-card glass" role="region" aria-label="Trivia question preview">
+    <div class="trivia-preview-card glass" role="region" aria-label="Interview question preview">
       <div class="trivia-frame" role="tabpanel" id="trivia-pane"
         [attr.aria-labelledby]="'trivia-tab-' + activeTriviaTab.key">
         <ng-container *ngIf="triviaDetailComponent; else triviaPlaceholder">
@@ -233,9 +233,9 @@
 
     <a class="demo-banner" [routerLink]="triviaPreviewLink" role="button"
       data-testid="showcase-trivia-open"
-      [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' trivia question'">
+      [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' interview question'">
       <span class="dot" aria-hidden="true"></span>
-      <span class="text">Read the rest in the app →</span>
+      <span class="text">Open full interview question →</span>
       <span class="demo-banner__arrow" aria-hidden="true">→</span>
     </a>
   </div>

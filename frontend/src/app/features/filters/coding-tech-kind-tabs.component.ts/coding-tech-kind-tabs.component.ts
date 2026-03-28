@@ -63,7 +63,7 @@ export class CodingTechKindTabsComponent {
     if (this.source === 'global-coding') {
       const k: SelectedKind = this.selectedKind ?? 'coding';
       const kindLabel =
-        k === 'trivia' ? 'Quiz' : 'Coding';
+        k === 'trivia' ? 'Concept' : 'Coding';
 
       if (this.viewMode === 'formats') {
         const cat = this.selectedCategory;
@@ -83,7 +83,7 @@ export class CodingTechKindTabsComponent {
 
     const t = this.tech ?? 'javascript';
     const what =
-      this.kind === 'coding' ? 'Coding Challenges' : 'Trivia Questions';
+      this.kind === 'coding' ? 'Coding Challenges' : 'Interview Concept Questions';
 
     return `${this.capitalize(t)} ${what}`;
   }

@@ -160,17 +160,17 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   introLead(): string {
     if (this.isMasterHub()) {
-      return 'Warm-up index for fast frontend interview prep: start with the most crucial JavaScript coding and trivia prompts, then branch into full technology hubs for broader coverage.';
+      return 'Warm-up index for fast frontend interview prep: start with the most crucial JavaScript coding and concept prompts, then branch into full technology hubs for broader coverage.';
     }
 
-    return `Technology warm-up index for ${this.keywordSentenceCase()}: tackle the most crucial coding and trivia questions first, then expand into full interview platform flows.`;
+    return `Technology warm-up index for ${this.keywordSentenceCase()}: tackle the most crucial coding and concept questions first, then expand into full interview platform flows.`;
   }
 
   listIntentItems(): string[] {
     if (this.isMasterHub()) {
       return [
         'Start with curated JavaScript essentials to warm up interview execution speed.',
-        'Mix coding implementation drills with trivia explanation checks in one short loop.',
+        'Mix coding implementation drills with concept explanation checks in one short loop.',
         'Expand to framework hubs, guides, and tracks once your baseline is stable.',
       ];
     }
@@ -178,7 +178,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const techName = this.currentHubTechLabel();
     return [
       `Prioritize high-impact ${techName} coding prompts first.`,
-      `Use ${techName} trivia rounds to sharpen explanation speed.`,
+      `Use ${techName} concept rounds to sharpen explanation speed.`,
       'Escalate into the frontend interview prep platform for guided sequencing.',
     ];
   }
@@ -196,13 +196,13 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   triviaSectionTitle(): string {
-    if (this.isMasterHub()) return 'Most crucial JavaScript trivia interview questions';
-    return `Most crucial ${this.currentHubTechDisplay()} trivia interview questions`;
+    if (this.isMasterHub()) return 'Most crucial JavaScript concept questions for interviews';
+    return `Most crucial ${this.currentHubTechDisplay()} concept questions for interviews`;
   }
 
   triviaSectionSubtitle(): string {
     if (this.isMasterHub()) {
-      return 'Use these high-importance explanation checks to tighten your fundamentals before deeper rounds.';
+      return 'Use these high-importance concept checks to tighten your fundamentals before deeper rounds.';
     }
     return 'Ranked by interview importance to strengthen your explanation speed where it matters most.';
   }
@@ -409,7 +409,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const companiesUrl = this.seo.buildCanonicalUrl('/companies');
     const description = String(
       routeSeo.description
-      || `${this.config.title} with coding and trivia prompts for frontend interview preparation.`,
+      || `${this.config.title} with coding and concept prompts for frontend interview preparation.`,
     );
 
     const schemaLinks = this.schemaQuestionLinks();

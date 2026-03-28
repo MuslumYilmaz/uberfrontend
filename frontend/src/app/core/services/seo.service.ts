@@ -26,7 +26,7 @@ export class SeoService {
     siteName: 'FrontendAtlas',
     title: 'High-signal frontend interview preparation platform.',
     description:
-      'FrontendAtlas helps you prepare for frontend interviews with structured coding, trivia, system design practice, and practical guides.',
+      'FrontendAtlas helps you prepare for frontend interviews with structured interview questions, coding challenges, system design drills, and practical guides.',
     keywords: [
       'front end interview prep',
       'javascript interview questions',

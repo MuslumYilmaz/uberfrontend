@@ -16,7 +16,7 @@ import { isProActive } from '../../../core/utils/entitlements.util';
 
         <nav class="famh-nav" aria-label="Primary">
           <a class="famh-link" routerLink="/coding">Browse coding</a>
-          <a class="famh-link" routerLink="/interview-questions">Interview Warm-up</a>
+          <a class="famh-link" routerLink="/interview-questions">Interview Questions</a>
           <a class="famh-link" *ngIf="!isPro()" routerLink="/pricing">Pricing</a>
         </nav>
 

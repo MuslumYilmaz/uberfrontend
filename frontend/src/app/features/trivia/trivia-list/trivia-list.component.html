@@ -1,8 +1,8 @@
 <div class="fa-page-shell trivia-list-page" data-testid="trivia-list-page">
     <header class="fa-page-header">
-        <p class="fa-page-kicker">Quiz practice</p>
-        <h1 class="fa-page-title">{{ tech | titlecase }} Trivia Questions</h1>
-        <p class="fa-page-subtitle">Filter by difficulty and importance to train faster before interviews.</p>
+        <p class="fa-page-kicker">Interview concept practice</p>
+        <h1 class="fa-page-title">{{ tech | titlecase }} Interview Concept Questions</h1>
+        <p class="fa-page-subtitle">Filter by difficulty and importance to sharpen interview explanations faster.</p>
     </header>
 
     <div class="trivia-filter-bar fa-section-shell">
@@ -41,14 +41,14 @@
         <ng-container *ngIf="(rawQuestions$ | async) === null; else loaded">
             <div class="trivia-loading" role="status" aria-live="polite" data-testid="trivia-list-loading">
                 <p-progressSpinner></p-progressSpinner>
-                <div class="trivia-loading-text">Loading trivia questions…</div>
+                <div class="trivia-loading-text">Loading interview concept questions…</div>
             </div>
         </ng-container>
 
         <ng-template #loaded>
             <ng-container *ngIf="filtered$ | async as questions">
                 <div *ngIf="questions.length === 0" class="fa-empty-state">
-                    No trivia questions match your filters.
+                    No interview concept questions match your filters.
                 </div>
 
                 <div *ngFor="let q of questions"

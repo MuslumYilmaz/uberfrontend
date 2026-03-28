@@ -635,7 +635,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   kindTabs: Array<{ key: QuestionKind; label: string }> = [
     { key: 'coding', label: 'Coding' },
-    { key: 'trivia', label: 'Quiz' }
+    { key: 'trivia', label: 'Concepts' }
   ];
 
   currentFrameworkPrep(): FrameworkPrepLink | null {
@@ -1274,7 +1274,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
             ? 'All formats'
             : 'All questions'
           : `${this.capitalize(this.tech ?? 'javascript')} ${this.kind === 'trivia'
-            ? 'Quiz'
+            ? 'Concepts'
             : this.kind === 'coding'
               ? 'Coding'
               : 'Questions'
@@ -1299,7 +1299,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       const k = this.selectedKind$.value;
       const kindLabel =
-        k === 'trivia' ? 'Quiz' : 'Coding';
+        k === 'trivia' ? 'Concept' : 'Coding';
 
       if (this.isFormatsMode()) {
         const cat = this.selectedCategory$.value;
@@ -1318,7 +1318,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const t = this.tech ?? 'javascript';
     const what =
       this.kind === 'coding' ? 'Coding Challenges'
-        : this.kind === 'trivia' ? 'Trivia Questions'
+        : this.kind === 'trivia' ? 'Interview Concept Questions'
           : 'All Questions';
     return `${this.capitalize(t)} ${what}`;
   }

@@ -69,7 +69,7 @@ type VisibleEntry = {
         <div class="fah-desktop-actions">
           <a class="fah-btn" routerLink="/dashboard">Dashboard</a>
           <a class="fah-btn fah-btn--hub" routerLink="/interview-questions" data-testid="header-interview-hub">
-            Interview Warm-up
+            Interview Questions
           </a>
           <a *ngIf="!isPro()" class="fah-btn" routerLink="/pricing">Pricing</a>
 

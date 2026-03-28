@@ -243,7 +243,7 @@ export const PLAYBOOK_GROUPS: Array<{ key: string; title: string; items: Array<{
         ]
     },
     { key: 'system', title: 'System design', items: [{ slug: 'system-design' }] },
-    { key: 'quiz', title: 'Quiz interviews', items: [{ slug: 'quiz' }] },
+    { key: 'quiz', title: 'Fundamentals', items: [{ slug: 'quiz' }] },
     { key: 'resume', title: 'Resume preparation', items: [{ slug: 'resume' }] },
 ];
 
