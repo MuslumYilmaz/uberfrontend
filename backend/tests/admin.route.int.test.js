@@ -131,12 +131,26 @@ describe('Admin billing simulator', () => {
         projects: { status: 'none', validUntil: null },
       },
     });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_sim_activate_123',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'created',
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_sim_activate_123',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_sim_activate_123',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+    });
 
     const activate = await request(app)
       .post('/api/admin/billing/simulate/lemonsqueezy')
       .set('Authorization', authHeader(admin._id))
       .send({
         userId: user._id.toString(),
+        attemptId: 'chk_sim_activate_123',
         scenario: 'activate',
         validUntil: '2026-05-01T00:00:00.000Z',
         startedAt: '2026-04-01T00:00:00.000Z',
@@ -153,6 +167,15 @@ describe('Admin billing simulator', () => {
     expect(activate.body.user.billing.providers.lemonsqueezy.customerId).toBe('cust_sim');
     expect(activate.body.user.billing.providers.lemonsqueezy.subscriptionId).toBe('sub_sim');
     expect(activate.body.user.billing.providers.lemonsqueezy.manageUrl).toBe('https://example.com/manage');
+    const activatedAttempt = await CheckoutAttempt.findOne({ attemptId: 'chk_sim_activate_123' }).lean();
+    expect(activatedAttempt).toEqual(expect.objectContaining({
+      status: 'applied',
+      billingEventId: activate.body.eventId,
+      providerSubscriptionId: 'sub_sim',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+    }));
+    expect(activatedAttempt.completedAt).toBeTruthy();
 
     const renew = await request(app)
       .post('/api/admin/billing/simulate/lemonsqueezy')

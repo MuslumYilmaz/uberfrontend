@@ -18,4 +18,18 @@ describe('external-window util', () => {
 
     expect(openExternalWindow('https://example.com/manage')).toBe('blocked');
   });
+
+  it('opens a placeholder tab, nulls the opener, and then navigates it', () => {
+    const fakeWindow = {
+      opener: window,
+      location: { href: '' },
+      close: jasmine.createSpy('close'),
+    } as unknown as Window;
+    const openSpy = spyOn(window, 'open').and.returnValue(fakeWindow);
+
+    expect(openExternalWindow('https://example.com/manage')).toBe('opened');
+    expect(openSpy).toHaveBeenCalledWith('', '_blank');
+    expect((fakeWindow as any).opener).toBeNull();
+    expect(fakeWindow.location.href).toBe('https://example.com/manage');
+  });
 });

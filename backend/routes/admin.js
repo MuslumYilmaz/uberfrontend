@@ -122,6 +122,16 @@ function serializeReconciliationBillingEvent(event) {
     };
 }
 
+async function updateCheckoutAttempt(attemptId, updates = {}) {
+    const normalizedAttemptId = String(attemptId || '').trim();
+    if (!normalizedAttemptId) return;
+    const patch = Object.fromEntries(
+        Object.entries({ ...updates }).filter(([, value]) => value !== undefined)
+    );
+    if (!patch.updatedAt) patch.updatedAt = new Date();
+    await CheckoutAttempt.updateOne({ attemptId: normalizedAttemptId }, { $set: patch });
+}
+
 // GET /api/admin/diagnostics/db
 router.get('/diagnostics/db', (_req, res) => {
     try {
@@ -223,6 +233,17 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
             { provider: 'lemonsqueezy', eventId },
             { $set: { processingStatus: 'processed_simulated', processedAt: new Date(), userId: user._id } }
         );
+        await updateCheckoutAttempt(normalized.attemptId, {
+            status: 'applied',
+            billingEventId: eventId,
+            providerOrderId: normalized.orderId || undefined,
+            providerSubscriptionId: normalized.subscriptionId || undefined,
+            completedAt: new Date(),
+            customerEmail: user.email,
+            customerUserId: String(user._id),
+            lastErrorCode: null,
+            lastErrorMessage: null,
+        });
 
         const safeUser = await User.findById(user._id).select('-passwordHash').lean();
         return res.json({

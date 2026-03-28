@@ -9,6 +9,23 @@ export function openExternalWindow(url: string): ExternalWindowOpenResult {
     return 'hooked';
   }
 
-  const opened = window.open(url, '_blank', 'noopener');
-  return opened ? 'opened' : 'blocked';
+  // Open a same-origin placeholder first so the browser gives us a handle.
+  // Some browsers return `null` for `window.open(..., 'noopener')` even when the tab opens,
+  // which makes hosted checkout and billing portal launches look falsely blocked.
+  const opened = window.open('', '_blank');
+  if (!opened) return 'blocked';
+
+  try {
+    opened.opener = null;
+  } catch { }
+
+  try {
+    opened.location.href = url;
+    return 'opened';
+  } catch {
+    try {
+      opened.close();
+    } catch { }
+    return 'blocked';
+  }
 }

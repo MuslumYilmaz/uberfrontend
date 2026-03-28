@@ -91,6 +91,7 @@ function buildLemonSqueezySimulationPayload({ user, input = {} }) {
   const eventType = readTrimmed(input.eventType).toLowerCase() || defaults.eventType;
   const status = readTrimmed(input.status).toLowerCase() || defaults.status;
   const externalId = readTrimmed(input.externalId) || `sim_${crypto.randomUUID()}`;
+  const attemptId = readTrimmed(input.attemptId);
   const customerId = readTrimmed(input.customerId);
   const subscriptionId = readTrimmed(input.subscriptionId);
   const orderId = readTrimmed(input.orderId);
@@ -111,6 +112,10 @@ function buildLemonSqueezySimulationPayload({ user, input = {} }) {
       fa_user_email: customEmail,
     },
   };
+
+  if (attemptId) {
+    attributes.custom_data.fa_checkout_attempt_id = attemptId;
+  }
 
   if (startedAt) attributes.created_at = startedAt;
   if (manageUrl) attributes.manage_url = manageUrl;
