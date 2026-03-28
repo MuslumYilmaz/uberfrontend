@@ -33,6 +33,7 @@
     <a
       *ngFor="let item of filteredItems(); trackBy: trackById"
       class="tradeoff-card"
+      [class.is-premium]="item.access === 'premium'"
       [routerLink]="['/tradeoffs', item.id]"
     >
       <div class="tradeoff-card__header">
@@ -40,7 +41,10 @@
           <p class="tradeoff-card__status">{{ statusLabel(item.id) }}</p>
           <h2>{{ item.title }}</h2>
         </div>
-        <span class="tradeoff-card__minutes">{{ item.estimatedMinutes }} min</span>
+        <div class="tradeoff-card__header-meta">
+          <span class="tradeoff-card__access" *ngIf="item.access === 'premium'">Premium</span>
+          <span class="tradeoff-card__minutes">{{ item.estimatedMinutes }} min</span>
+        </div>
       </div>
 
       <p class="tradeoff-card__summary">{{ item.summary }}</p>

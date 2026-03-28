@@ -112,12 +112,28 @@ export class PracticeRegistryService {
     const hasSystemDesign = items.some((item) => item.family === 'question' && item.tech === 'system-design');
     const families = new Set(items.map((item) => item.family));
 
-    return DEFAULT_CATALOG.filter((entry) => {
-      if (entry.isSupplemental) return true;
-      if (entry.key === 'question-library') return hasQuestionLibrary;
-      if (entry.key === 'system-design') return hasSystemDesign;
-      return entry.family ? families.has(entry.family) : true;
-    });
+    return DEFAULT_CATALOG
+      .filter((entry) => {
+        if (entry.isSupplemental) return true;
+        if (entry.key === 'question-library') return hasQuestionLibrary;
+        if (entry.key === 'system-design') return hasSystemDesign;
+        return entry.family ? families.has(entry.family) : true;
+      })
+      .map((entry) => ({
+        ...entry,
+        badge: this.resolveCatalogBadge(entry, items),
+      }));
+  }
+
+  private resolveCatalogBadge(entry: PracticeCatalogEntry, items: PracticeRegistryItem[]): string | null {
+    switch (entry.key) {
+      case 'incidents':
+        return items.some((item) => item.family === 'incident' && item.access === 'premium') ? 'Premium' : null;
+      case 'tradeoff-battles':
+        return items.some((item) => item.family === 'tradeoff-battle' && item.access === 'premium') ? 'Premium' : null;
+      default:
+        return null;
+    }
   }
 
   private normalizeRegistry(payload: unknown): PracticeRegistryItem[] {

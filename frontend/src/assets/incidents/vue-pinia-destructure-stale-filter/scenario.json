@@ -13,7 +13,7 @@
     "estimatedMinutes": 14,
     "tags": ["vue", "pinia", "reactivity", "state-management"],
     "updatedAt": "2026-03-21",
-    "access": "free"
+    "access": "premium"
   },
   "context": {
     "symptom": "A user changes the product filter from All to On sale. The grid updates correctly, but the pill at the top still says All until the user refreshes or leaves and comes back.",

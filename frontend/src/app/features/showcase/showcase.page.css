@@ -1628,6 +1628,39 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
 }
 
+.cv-social-proof {
+  display: grid;
+  gap: 8px;
+}
+
+.cv-social-proof__label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--uf-text-secondary);
+}
+
+.cv-social-proof__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.cv-social-proof__badge {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cv-social-proof__badge img {
+  display: block;
+  height: 54px;
+  width: auto;
+  max-width: 100%;
+}
+
 .cv-linter-showcase__panel {
   border-radius: 14px;
   border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 68%, var(--uf-accent) 32%);
@@ -2683,6 +2716,12 @@
   }
   .cv-scan-stats {
     grid-template-columns: 1fr;
+  }
+  .cv-social-proof__badges {
+    gap: 8px;
+  }
+  .cv-social-proof__badge img {
+    height: 48px;
   }
   .cv-mock-window__body {
     grid-template-columns: 1fr;

@@ -133,6 +133,31 @@
   transition: border-color .15s, background .15s;
 }
 
+.nav-sublink__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--sb-accent) 42%, var(--sb-border));
+  background: color-mix(in srgb, var(--sb-accent) 16%, var(--sb-surface-alt));
+  color: var(--sb-text);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex: 0 0 auto;
+}
+
 /* ---- groups ---- */
 .nav-group { margin-bottom: 6px; }
 .group-list {

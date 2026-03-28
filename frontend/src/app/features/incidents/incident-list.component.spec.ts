@@ -84,4 +84,30 @@ describe('IncidentListComponent', () => {
     expect(collection?.mainEntity?.itemListElement?.[0]?.url || '').toContain('/incidents/search-typing-lag');
     expect(breadcrumb).toBeTruthy();
   });
+
+  it('renders a premium chip and preview copy for premium incidents', async () => {
+    const fixture = TestBed.createComponent(IncidentListComponent);
+    fixture.componentInstance.items.set([
+      {
+        id: 'context-rerender-storm',
+        title: 'Context update causes rerender storm',
+        tech: 'react',
+        difficulty: 'hard',
+        summary: 'One big shared context wakes up too much UI.',
+        signals: ['Typing rerenders unrelated UI'],
+        estimatedMinutes: 16,
+        tags: ['react', 'context'],
+        updatedAt: '2026-03-19',
+        access: 'premium',
+      } as any,
+    ]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent || '').toContain('Premium');
+    expect(fixture.nativeElement.textContent || '').toContain('View preview');
+    const card = fixture.nativeElement.querySelector('[data-testid="incident-card-context-rerender-storm"]') as HTMLElement | null;
+    expect(card?.classList.contains('is-premium')).toBeTrue();
+  });
 });

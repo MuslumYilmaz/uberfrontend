@@ -13,7 +13,7 @@
     "estimatedMinutes": 15,
     "tags": ["angular", "onpush", "change-detection", "immutability"],
     "updatedAt": "2026-03-21",
-    "access": "free"
+    "access": "premium"
   },
   "context": {
     "symptom": "Support sees an order move from Pending to Shipped in the event log, but the status badge in that row stays old until someone clicks sort, changes a filter, or reopens the page.",

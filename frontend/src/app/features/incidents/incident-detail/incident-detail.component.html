@@ -1,7 +1,8 @@
 <ng-container *ngIf="incident() as scenario; else missingIncident">
-  <div class="incident-detail-shell">
-    <div class="incident-detail-body">
-      <header class="incident-hero">
+  <ng-container *ngIf="!locked(); else lockedView">
+    <div class="incident-detail-shell">
+      <div class="incident-detail-body">
+        <header class="incident-hero">
         <div class="incident-hero__copy">
           <a class="incident-hero__back" [routerLink]="['/incidents']">← Back to incidents</a>
           <p class="incident-hero__eyebrow">{{ techLabel(scenario.meta.tech) }} incident</p>
@@ -362,8 +363,52 @@
           </button>
         </div>
       </ng-template>
+      </div>
     </div>
-  </div>
+  </ng-container>
+
+  <ng-template #lockedView>
+    <div class="locked-shell">
+      <div class="locked-card">
+        <div class="locked-pill">Premium</div>
+        <h1 class="locked-title">{{ lockedTitle() }}</h1>
+        <div class="locked-meta">
+          Guided debug scenario
+          <ng-container *ngIf="updatedLabel(scenario.meta.updatedAt) as updated"> · Updated {{ updated }}</ng-container>
+        </div>
+        <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
+          <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
+          <ul class="locked-preview__list" *ngIf="lockedBullets().length">
+            <li *ngFor="let item of lockedBullets(); trackBy: trackByString">{{ item }}</li>
+          </ul>
+        </div>
+        <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
+        <div class="locked-paths" *ngIf="lockedPaths().length">
+          <a
+            class="locked-paths__item"
+            *ngFor="let path of lockedPaths(); trackBy: trackByLockedPath"
+            [routerLink]="path.route"
+            [queryParams]="path.queryParams">
+            <span>{{ path.label }}</span>
+            <i class="pi pi-arrow-right"></i>
+          </a>
+        </div>
+        <p class="locked-copy">
+          <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
+            {{ lockedMemberCopy() }}
+          </ng-container>
+          <ng-template #lockedGuest>
+            {{ lockedGuestCopy() }}
+          </ng-template>
+        </p>
+        <div class="locked-actions">
+          <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricingFromLocked()">View pricing</button>
+          <button class="fa-btn fa-btn--ghost" type="button" data-testid="incident-report-access-issue-btn" (click)="reportAccessIssue()">Report access issue</button>
+          <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLoginFromLocked()">Sign in</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 </ng-container>
 
 <ng-template #missingIncident>

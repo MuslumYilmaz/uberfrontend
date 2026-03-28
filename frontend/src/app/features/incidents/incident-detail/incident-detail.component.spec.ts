@@ -10,6 +10,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { IncidentDetailComponent } from './incident-detail.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { ActivityService } from '../../../core/services/activity.service';
+import { BugReportService } from '../../../core/services/bug-report.service';
 
 describe('IncidentDetailComponent', () => {
   const PRACTICE_PROGRESS_KEY = 'fa:practice:progress:v3:guest';
@@ -168,6 +169,7 @@ describe('IncidentDetailComponent', () => {
             headers: () => new HttpHeaders(),
           } satisfies Partial<AuthService>,
         },
+        { provide: BugReportService, useValue: jasmine.createSpyObj<BugReportService>('BugReportService', ['open']) },
         { provide: SeoService, useValue: seo },
         { provide: ActivatedRoute, useValue: { data: routeData$.asObservable() } },
       ],
@@ -298,6 +300,23 @@ describe('IncidentDetailComponent', () => {
     expect(resource?.url || '').toContain('/incidents/incident-1');
     expect(resource?.isPartOf?.url || '').toContain('/incidents');
     expect(resource?.learningResourceType).toBe('Debug scenario');
+  });
+
+  it('renders the locked premium preview on premium incidents', async () => {
+    const premiumDetail = JSON.parse(JSON.stringify(resolvedDetail));
+    premiumDetail.list[0].access = 'premium';
+    premiumDetail.incident.meta.access = 'premium';
+    routeData$.next({ incidentDetail: premiumDetail });
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent || '').toContain('Premium');
+    expect(fixture.nativeElement.textContent || '').toContain('View pricing');
+    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeTruthy();
+    expect(fixture.nativeElement.textContent || '').not.toContain('Begin simulator');
   });
 
   it('reorders priority candidates with keyboard controls', async () => {

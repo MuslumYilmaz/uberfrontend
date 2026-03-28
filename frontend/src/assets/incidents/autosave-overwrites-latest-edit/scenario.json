@@ -13,7 +13,7 @@
     "estimatedMinutes": 18,
     "tags": ["autosave", "async", "state-consistency"],
     "updatedAt": "2026-03-19",
-    "access": "free"
+    "access": "premium"
   },
   "context": {
     "symptom": "A user types, pauses, keeps typing, and then sees the text jump back to an older draft when an earlier save finally finishes.",

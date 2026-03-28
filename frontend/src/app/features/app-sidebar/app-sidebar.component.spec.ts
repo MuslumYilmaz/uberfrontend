@@ -22,7 +22,7 @@ describe('AppSidebarComponent', () => {
     const practiceRegistry = {
       catalogEntries: signal([
         { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
-        { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
+        { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident', badge: 'Premium' },
         {
           key: 'system-design',
           label: 'System design',
@@ -31,7 +31,7 @@ describe('AppSidebarComponent', () => {
           query: { view: 'formats', category: 'system' },
           family: 'question',
         },
-        { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle' },
+        { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle', badge: 'Premium' },
         { key: 'tracks', label: 'Interview prep tracks', icon: 'pi pi-directions', route: '/tracks', isSupplemental: true },
         {
           key: 'question-formats',
@@ -153,6 +153,22 @@ describe('AppSidebarComponent', () => {
 
     expect(tradeoffLink.classList.contains('is-active')).toBeTrue();
     expect(practiceCatalog.classList.contains('open')).toBeTrue();
+  });
+
+  it('renders premium badges for debug scenarios and tradeoff battles in the practice catalog', async () => {
+    await configureTestingModule();
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    const badges = Array
+      .from(fixture.nativeElement.querySelectorAll('.nav-badge') as NodeListOf<HTMLElement>)
+      .map((node) => node.textContent?.trim());
+    expect(badges).toContain('Premium');
+
+    const incidentsLink = fixture.nativeElement.querySelector('a[aria-label="Debug scenarios"]') as HTMLAnchorElement;
+    const tradeoffLink = fixture.nativeElement.querySelector('a[aria-label="Tradeoff battles"]') as HTMLAnchorElement;
+    expect(incidentsLink.textContent || '').toContain('Premium');
+    expect(tradeoffLink.textContent || '').toContain('Premium');
   });
 
   it('marks system design active for coding format routes with the system category', async () => {

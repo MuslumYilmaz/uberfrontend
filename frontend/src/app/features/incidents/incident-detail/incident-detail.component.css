@@ -4,6 +4,123 @@
   padding: 1.5rem 1rem 1.5rem;
 }
 
+.locked-shell{
+  height: calc(100vh - var(--app-safe-top, 64px) - 56px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 32px 16px 64px;
+  overflow: auto;
+}
+
+.locked-card{
+  max-width: 520px;
+  width: min(520px, 100%);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-text-primary) 8%);
+  box-shadow: var(--uf-card-shadow);
+  text-align: center;
+  display: grid;
+  gap: 12px;
+}
+
+.locked-pill{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-accent) 25%, transparent);
+  color: var(--uf-text-primary);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 auto;
+}
+
+.locked-title{
+  margin: 4px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.locked-meta{
+  font-size: 12px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+}
+
+.locked-copy{
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.locked-preview{
+  text-align: left;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-text-primary) 6%);
+  display: grid;
+  gap: 8px;
+}
+
+.locked-preview__summary{
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.locked-preview__list{
+  margin: 0;
+  padding-left: 18px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.locked-preview__list li{
+  margin: 0 0 4px;
+}
+
+.locked-paths{
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.locked-paths__item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 10px;
+  padding: 9px 10px;
+  text-decoration: none;
+  color: var(--uf-text-primary);
+  background: color-mix(in srgb, var(--uf-surface) 90%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.locked-paths__item:hover{
+  border-color: color-mix(in srgb, var(--uf-accent) 45%, var(--uf-border-subtle));
+}
+
+.locked-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
 .incident-detail-body {
   padding-bottom: 7rem;
 }

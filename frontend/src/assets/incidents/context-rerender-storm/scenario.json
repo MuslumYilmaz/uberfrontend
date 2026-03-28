@@ -13,7 +13,7 @@
     "estimatedMinutes": 16,
     "tags": ["react", "context", "rendering"],
     "updatedAt": "2026-03-19",
-    "access": "free"
+    "access": "premium"
   },
   "context": {
     "symptom": "Typing in a filter field causes chart legends, notification badges, and sidebar widgets to rerender even though their visible data did not change.",

@@ -39,6 +39,7 @@ export interface PracticeCatalogEntry {
   icon: string;
   route: string;
   query?: Record<string, string>;
+  badge?: string | null;
   family?: PracticeFamily;
   isSupplemental?: boolean;
 }

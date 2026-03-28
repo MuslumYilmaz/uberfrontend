@@ -19,6 +19,7 @@ interface LinkItem {
   to: string;
   icon?: string;
   query?: Record<string, any>;
+  badge?: string | null;
 }
 interface GroupItem {
   type: 'group';
@@ -226,6 +227,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
           to: entry.route,
           icon: entry.icon,
           query: entry.query,
+          badge: entry.badge ?? null,
         })),
       },
       {

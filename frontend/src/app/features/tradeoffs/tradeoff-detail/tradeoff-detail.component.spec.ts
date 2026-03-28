@@ -5,11 +5,15 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SeoService } from '../../../core/services/seo.service';
 import { TradeoffBattleProgressService } from '../../../core/services/tradeoff-battle-progress.service';
 import { TradeoffDetailComponent } from './tradeoff-detail.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { BugReportService } from '../../../core/services/bug-report.service';
+import { computed, signal } from '@angular/core';
 
 describe('TradeoffDetailComponent', () => {
   let routeData$: ReplaySubject<any>;
   let seo: jasmine.SpyObj<SeoService>;
   let progress: jasmine.SpyObj<TradeoffBattleProgressService>;
+  let authUser: ReturnType<typeof signal<any>>;
 
   const resolvedDetail = {
     id: 'context-vs-zustand-vs-redux',
@@ -119,6 +123,7 @@ describe('TradeoffDetailComponent', () => {
 
   beforeEach(async () => {
     routeData$ = new ReplaySubject<any>(1);
+    authUser = signal<any>(null);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
     seo.buildCanonicalUrl.and.callFake((value: string) => {
       const raw = String(value || '').trim();
@@ -156,6 +161,14 @@ describe('TradeoffDetailComponent', () => {
       providers: [
         { provide: SeoService, useValue: seo },
         { provide: TradeoffBattleProgressService, useValue: progress },
+        {
+          provide: AuthService,
+          useValue: {
+            user: authUser,
+            isLoggedIn: computed(() => !!authUser()),
+          } satisfies Partial<AuthService>,
+        },
+        { provide: BugReportService, useValue: jasmine.createSpyObj<BugReportService>('BugReportService', ['open']) },
         { provide: ActivatedRoute, useValue: { data: routeData$.asObservable() } },
       ],
     }).compileComponents();
@@ -199,5 +212,22 @@ describe('TradeoffDetailComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('STRONG ANSWER');
     expect(fixture.nativeElement.textContent || '').toContain('Decision matrix');
     expect(fixture.nativeElement.textContent || '').toContain('Interviewer pushback');
+  });
+
+  it('renders the locked premium preview on premium tradeoff battles', async () => {
+    const premiumDetail = JSON.parse(JSON.stringify(resolvedDetail));
+    premiumDetail.list[0].access = 'premium';
+    premiumDetail.battle.meta.access = 'premium';
+    routeData$.next({ tradeoffBattleDetail: premiumDetail });
+
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent || '').toContain('Premium');
+    expect(fixture.nativeElement.textContent || '').toContain('View pricing');
+    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeTruthy();
+    expect(fixture.nativeElement.textContent || '').not.toContain('Reveal analysis');
   });
 });

@@ -25,14 +25,104 @@ import { IncidentProgressService } from '../../../core/services/incident-progres
 import { SeoService } from '../../../core/services/seo.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { BugReportService } from '../../../core/services/bug-report.service';
 import { buildIncidentSeoMeta, incidentTechLabel } from '../../../core/utils/incident-seo.util';
+import { LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
+import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
+import { isProActive } from '../../../core/utils/entitlements.util';
 
 type FeedbackStatus = 'correct' | 'partial' | 'review';
+type LockedPath = {
+  id: string;
+  label: string;
+  route: any[];
+  queryParams?: Record<string, string>;
+};
+
+function normalizePreviewText(value: string): string {
+  return String(value || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function trimWords(value: string, maxWords: number): string {
+  const normalized = normalizePreviewText(value);
+  if (!normalized) return '';
+  const words = normalized.split(/\s+/);
+  if (words.length <= maxWords) return normalized;
+  return `${words.slice(0, maxWords).join(' ')}…`;
+}
+
+function updatedLabel(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function buildIncidentLockedPreview(
+  scenario: IncidentScenario,
+  candidates: IncidentListItem[],
+): LockedPreviewData {
+  const techLabel = incidentTechLabel(scenario.meta.tech);
+  const evidenceSnippet = scenario.context.evidence.find((item) => item.type === 'snippet');
+  const related = candidates
+    .filter((item) => item.id !== scenario.meta.id && item.tech === scenario.meta.tech)
+    .slice(0, 4)
+    .map((item) => ({
+      title: item.title,
+      to: ['/incidents', item.id],
+      premium: item.access === 'premium',
+    }));
+
+  return {
+    what: `This premium ${techLabel} debug scenario focuses on ${scenario.meta.title}. Read the failure signals, choose the highest-signal debug order, and defend the fix plus regression guard.`,
+    keyDecisions: [
+      'Separate symptom from root cause before touching code.',
+      'Choose the smallest debug step that removes the most ambiguity.',
+      'Prefer a durable fix over a UI-only patch.',
+      'Define the regression guard you would add after the fix.',
+    ],
+    rubric: [
+      'Strong answers prioritize evidence instead of guessing.',
+      'Good debug order reduces search space quickly.',
+      'The final fix should match the actual failure mode.',
+      'A senior answer closes with a guardrail or test plan.',
+    ],
+    learningGoals: scenario.stages
+      .map((stage) => trimWords(stage.prompt || stage.title, 14))
+      .filter(Boolean)
+      .slice(0, 4),
+    constraints: [
+      trimWords(scenario.context.environment, 16),
+      ...scenario.meta.signals.slice(0, 3).map((signal) => trimWords(signal, 16)),
+    ].filter(Boolean),
+    snippet: evidenceSnippet
+      ? {
+          title: evidenceSnippet.title,
+          language: evidenceSnippet.language,
+          lines: String(evidenceSnippet.body || '').split('\n').slice(0, 8),
+        }
+      : {
+          title: 'Failure signals',
+          lines: scenario.meta.signals.slice(0, 4).map((signal) => `- ${signal}`),
+        },
+    pitfalls: [
+      'Jumping to the fix before proving the root cause.',
+      'Treating every symptom as equally important.',
+      'Stopping at the first plausible explanation.',
+      'Skipping the regression guard after the fix.',
+    ],
+    related,
+  };
+}
 
 @Component({
   standalone: true,
   selector: 'app-incident-detail',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, LockedPreviewComponent],
   templateUrl: './incident-detail.component.html',
   styleUrls: ['./incident-detail.component.css'],
 })
@@ -42,7 +132,8 @@ export class IncidentDetailComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly seo = inject(SeoService);
   private readonly activity = inject(ActivityService);
-  private readonly auth = inject(AuthService);
+  readonly auth = inject(AuthService);
+  private readonly bugReport = inject(BugReportService);
   readonly progress = inject(IncidentProgressService);
 
   readonly incident = signal<IncidentScenario | null>(null);
@@ -80,6 +171,49 @@ export class IncidentDetailComponent {
     const incident = this.incident();
     const score = this.attemptEvaluation().score;
     return incident?.debrief.scoreBands.find((band) => score >= band.min && score <= band.max) ?? null;
+  });
+  readonly locked = computed(() => {
+    const scenario = this.incident();
+    return scenario ? scenario.meta.access === 'premium' && !isProActive(this.auth.user()) : false;
+  });
+  readonly lockedTitle = computed(() => this.incident()?.meta.title || 'Premium debug scenario');
+  readonly lockedMemberCopy = computed(() => "You're on the free tier. Upgrade to access this premium debug scenario.");
+  readonly lockedGuestCopy = computed(() => 'Upgrade to FrontendAtlas Premium to access this debug scenario. Already upgraded? Sign in to continue.');
+  readonly lockedSummary = computed(() => trimWords(this.incident()?.meta.summary || '', 45));
+  readonly lockedBullets = computed(() =>
+    (this.incident()?.meta.signals ?? [])
+      .map((signal) => trimWords(signal, 12))
+      .filter(Boolean)
+      .slice(0, 2),
+  );
+  readonly lockedPreview = computed<LockedPreviewData | null>(() => {
+    const scenario = this.incident();
+    if (!scenario) return null;
+    return buildIncidentLockedPreview(scenario, this.incidentList());
+  });
+  readonly lockedPaths = computed<LockedPath[]>(() => {
+    const tech = this.incident()?.meta.tech || 'javascript';
+    const challenge = freeChallengeForFramework(frameworkFromTech(tech));
+    return [
+      {
+        id: 'free_challenge',
+        label: challenge.label,
+        route: challenge.route,
+        queryParams: { src: 'incident_locked' },
+      },
+      {
+        id: 'track_previews',
+        label: 'Open track previews',
+        route: ['/tracks'],
+        queryParams: { src: 'incident_locked' },
+      },
+      {
+        id: 'company_previews',
+        label: 'Browse company previews',
+        route: ['/companies'],
+        queryParams: { src: 'incident_locked' },
+      },
+    ];
   });
 
   constructor() {
@@ -314,6 +448,38 @@ export class IncidentDetailComponent {
     return value;
   }
 
+  trackByLockedPath(_: number, path: LockedPath): string {
+    return path.id;
+  }
+
+  updatedLabel(value: string | null | undefined): string | null {
+    return updatedLabel(value);
+  }
+
+  goToPricingFromLocked(): void {
+    this.router.navigate(['/pricing'], {
+      queryParams: { src: 'incident_locked' },
+    });
+  }
+
+  goToLoginFromLocked(): void {
+    this.router.navigate(['/auth/login'], {
+      queryParams: { redirectTo: this.router.url || '/' },
+    });
+  }
+
+  reportAccessIssue(): void {
+    const scenario = this.incident();
+    this.bugReport.open({
+      source: 'incident_locked',
+      url: typeof window !== 'undefined' ? window.location.href : this.router.url,
+      route: this.router.url,
+      tech: scenario?.meta.tech,
+      questionId: scenario?.meta.id,
+      questionTitle: scenario?.meta.title,
+    });
+  }
+
   private hydrateFromResolved(resolved: IncidentDetailResolved | undefined): void {
     const scenario = resolved?.incident ?? null;
     this.incident.set(scenario);
@@ -324,6 +490,14 @@ export class IncidentDetailComponent {
     if (!scenario) return;
 
     this.updateSeo(scenario);
+    if (scenario.meta.access === 'premium' && !isProActive(this.auth.user())) {
+      this.answers.set({});
+      this.submittedStageIds.set([]);
+      this.stageResults.set({});
+      this.activeStepIndex.set(0);
+      this.reflectionNote.set('');
+      return;
+    }
     this.progress.markStarted(scenario.meta.id);
     const record = this.progress.getRecord(scenario.meta.id);
     this.reflectionNote.set(record.reflectionNote);

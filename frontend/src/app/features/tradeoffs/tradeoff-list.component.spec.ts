@@ -79,4 +79,26 @@ describe('TradeoffListComponent', () => {
     expect(collection?.mainEntity?.itemListElement?.[0]?.url || '').toContain('/tradeoffs/context-vs-zustand-vs-redux');
     expect(breadcrumb).toBeTruthy();
   });
+
+  it('renders a premium badge for locked battles', async () => {
+    const fixture = TestBed.createComponent(TradeoffListComponent);
+    fixture.componentInstance.items.set([
+      {
+        id: 'sse-vs-websocket-live-dashboard',
+        title: 'SSE vs WebSocket for a live operations dashboard',
+        tech: 'javascript',
+        difficulty: 'intermediate',
+        summary: 'Live transport tradeoff question.',
+        tags: ['javascript', 'tradeoffs'],
+        access: 'premium',
+        estimatedMinutes: 13,
+        updatedAt: '2026-03-21',
+      } as any,
+    ]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent || '').toContain('Premium');
+  });
 });

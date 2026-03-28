@@ -254,12 +254,25 @@
   transition: background-color var(--uf-motion-fast) ease;
 }
 
+.incident-row.is-premium {
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--uf-accent) 18%, transparent), transparent 32%),
+    color-mix(in srgb, var(--uf-accent) 6%, var(--uf-surface));
+  border-bottom-color: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-border-subtle));
+}
+
 .incident-row:last-child {
   border-bottom: none;
 }
 
 .incident-row:hover {
   background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+}
+
+.incident-row.is-premium:hover {
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--uf-accent) 24%, transparent), transparent 34%),
+    color-mix(in srgb, var(--uf-accent) 9%, var(--uf-surface));
 }
 
 .incident-row__main,
@@ -296,6 +309,13 @@
   font-size: 0.78rem;
   border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, transparent);
   background: color-mix(in srgb, var(--uf-bg) 82%, var(--uf-surface));
+}
+
+.incident-chip--premium {
+  border-color: color-mix(in srgb, var(--uf-accent) 46%, transparent);
+  background: color-mix(in srgb, var(--uf-accent) 16%, var(--uf-surface));
+  color: color-mix(in srgb, var(--uf-accent) 82%, white);
+  font-weight: 700;
 }
 
 .incident-row__summary {

@@ -64,6 +64,7 @@
             <div class="iq-links iq-links--primary">
               <a *ngFor="let link of practiceRouteLinks()" [routerLink]="link.route" [queryParams]="link.query || null">
                 Open {{ link.label | lowercase }}
+                <span class="iq-link-badge" *ngIf="link.badge">{{ link.badge }}</span>
               </a>
               <a [routerLink]="['/tracks']">Open interview practice platform (/tracks)</a>
               <a [routerLink]="['/guides']">Open guides hub</a>

@@ -82,6 +82,7 @@
       <article
         class="incident-row"
         *ngFor="let item of filteredItems(); trackBy: trackById"
+        [class.is-premium]="item.access === 'premium'"
         [attr.data-testid]="'incident-card-' + item.id">
         <div class="incident-row__main">
           <h2 class="incident-row__title">{{ item.title }}</h2>
@@ -89,6 +90,7 @@
           <div class="incident-row__chips">
             <span class="incident-chip">{{ techLabel(item) }}</span>
             <span class="incident-chip">{{ item.difficulty | titlecase }}</span>
+            <span class="incident-chip incident-chip--premium" *ngIf="item.access === 'premium'">Premium</span>
             <span class="incident-chip">{{ item.estimatedMinutes }} min</span>
           </div>
           <div class="incident-row__tags">
@@ -109,7 +111,7 @@
           </span>
           <span class="incident-updated">Updated {{ item.updatedAt | date: 'mediumDate' }}</span>
           <a class="incident-open" [routerLink]="['/incidents', item.id]">
-            Open simulator →
+            {{ item.access === 'premium' ? 'View preview →' : 'Open simulator →' }}
           </a>
         </div>
       </article>

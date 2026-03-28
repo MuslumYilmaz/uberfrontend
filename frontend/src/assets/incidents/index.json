@@ -61,7 +61,7 @@
     "estimatedMinutes": 14,
     "tags": ["memory", "websocket", "effects"],
     "updatedAt": "2026-03-20",
-    "access": "free"
+    "access": "premium"
   },
   {
     "id": "context-rerender-storm",
@@ -77,7 +77,7 @@
     "estimatedMinutes": 16,
     "tags": ["react", "context", "rendering"],
     "updatedAt": "2026-03-19",
-    "access": "free"
+    "access": "premium"
   },
   {
     "id": "autosave-overwrites-latest-edit",
@@ -93,7 +93,7 @@
     "estimatedMinutes": 18,
     "tags": ["autosave", "async", "state-consistency"],
     "updatedAt": "2026-03-19",
-    "access": "free"
+    "access": "premium"
   },
   {
     "id": "angular-onpush-stale-row",
@@ -109,7 +109,7 @@
     "estimatedMinutes": 15,
     "tags": ["angular", "onpush", "change-detection", "immutability"],
     "updatedAt": "2026-03-21",
-    "access": "free"
+    "access": "premium"
   },
   {
     "id": "angular-duplicate-cart-service",
@@ -141,7 +141,7 @@
     "estimatedMinutes": 14,
     "tags": ["vue", "pinia", "reactivity", "state-management"],
     "updatedAt": "2026-03-21",
-    "access": "free"
+    "access": "premium"
   },
   {
     "id": "vue-index-key-wrong-row-state",

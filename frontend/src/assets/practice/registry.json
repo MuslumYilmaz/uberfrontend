@@ -33,7 +33,7 @@
       "change-detection",
       "immutability"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 15,
     "updatedAt": "2026-03-21",
     "schemaVersion": "incident.v1",
@@ -71,7 +71,7 @@
       "async",
       "state-consistency"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 18,
     "updatedAt": "2026-03-19",
     "schemaVersion": "incident.v1",
@@ -90,7 +90,7 @@
       "context",
       "rendering"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 16,
     "updatedAt": "2026-03-19",
     "schemaVersion": "incident.v1",
@@ -128,7 +128,7 @@
       "websocket",
       "effects"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 14,
     "updatedAt": "2026-03-20",
     "schemaVersion": "incident.v1",
@@ -187,7 +187,7 @@
       "reactivity",
       "state-management"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 14,
     "updatedAt": "2026-03-21",
     "schemaVersion": "incident.v1",
@@ -10116,7 +10116,7 @@
       "architecture",
       "tradeoffs"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 14,
     "updatedAt": "2026-03-21",
     "schemaVersion": "tradeoff-battle.v1",
@@ -10196,7 +10196,7 @@
       "networking",
       "tradeoffs"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 13,
     "updatedAt": "2026-03-21",
     "schemaVersion": "tradeoff-battle.v1",

@@ -13,7 +13,7 @@
     "estimatedMinutes": 14,
     "tags": ["memory", "websocket", "effects"],
     "updatedAt": "2026-03-20",
-    "access": "free"
+    "access": "premium"
   },
   "context": {
     "symptom": "The feed looks fine at first, but after opening and closing dashboards and changing filters a few times, each event appears multiple times.",

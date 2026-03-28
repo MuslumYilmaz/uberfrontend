@@ -254,6 +254,7 @@
 .iq-links--primary a {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   min-height: 32px;
   padding: 0 12px;
   border-radius: 999px;
@@ -264,6 +265,22 @@
   font-weight: 600;
   text-decoration: none;
   transition: transform 120ms ease, border-color 120ms ease;
+}
+
+.iq-link-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 42%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface-alt));
+  color: var(--uf-text-primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .iq-links--primary a:hover {
