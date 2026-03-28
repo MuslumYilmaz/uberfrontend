@@ -14,11 +14,7 @@ describe('PracticeProgressService', () => {
   let authUser: ReturnType<typeof signal<any>>;
   let httpMock: HttpTestingController;
 
-  beforeEach(() => {
-    authUser = signal<any>(null);
-  });
-
-  afterEach(() => {
+  function clearPracticeProgressStorage(): void {
     localStorage.removeItem(PRACTICE_PROGRESS_KEY);
     localStorage.removeItem('fa:practice:progress:v3:user:user-1');
     localStorage.removeItem(`${PRACTICE_SESSION_PREFIX}incident:incident-1`);
@@ -28,6 +24,15 @@ describe('PracticeProgressService', () => {
     localStorage.removeItem('fa:practice:session:v2:incident:incident-1');
     localStorage.removeItem(LEGACY_INCIDENT_PROGRESS_KEY);
     localStorage.removeItem(LEGACY_INCIDENT_SESSION_KEY);
+  }
+
+  beforeEach(() => {
+    authUser = signal<any>(null);
+    clearPracticeProgressStorage();
+  });
+
+  afterEach(() => {
+    clearPracticeProgressStorage();
     httpMock?.verify();
     TestBed.resetTestingModule();
   });

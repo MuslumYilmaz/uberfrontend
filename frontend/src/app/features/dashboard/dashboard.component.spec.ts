@@ -290,12 +290,15 @@ describe('DashboardComponent', () => {
     expect(link?.getAttribute('href') || '').toContain('/focus-areas');
   });
 
-  it('includes CV Linter in recommended preparation cards', () => {
+  it('surfaces the prep-first recommended cards in the new order', () => {
     const component = fixture.componentInstance;
-    const cvCard = component.recommended.find((card) => card.title === 'CV Linter');
+    const prepGuideCard = component.recommended.find((card) => card.title === 'How to Prepare for Frontend Interviews');
+    const behavioralCard = component.recommended.find((card) => card.title === 'Behavioral Interview Blueprint');
 
-    expect(cvCard).toBeTruthy();
-    expect(cvCard?.route).toEqual(['/tools', 'cv']);
+    expect(prepGuideCard).toBeTruthy();
+    expect(prepGuideCard?.route).toEqual(['/guides', 'interview-blueprint']);
+    expect(component.recommended[1]?.title).toBe('Behavioral Interview Blueprint');
+    expect(behavioralCard?.route).toEqual(['/guides', 'behavioral']);
   });
 
   it('shows solved trivia progress in practice formats', async () => {
