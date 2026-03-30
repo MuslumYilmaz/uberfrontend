@@ -9,7 +9,7 @@ import {
   TopicDefinition,
   TopicsRegistry,
 } from '../../../core/utils/topics.util';
-import topicRegistryJson from '../../../../assets/questions/topic-registry.json';
+import { TOPIC_REGISTRY } from '../../../generated/content-metadata';
 
 const FOCUS_AREAS_TITLE = 'Frontend Interview Focus Areas';
 const FOCUS_AREAS_DESCRIPTION =
@@ -40,7 +40,7 @@ export class FocusAreasComponent {
     private readonly seo: SeoService,
   ) {}
 
-  private readonly topicsRegistry: TopicsRegistry = topicRegistryJson as TopicsRegistry;
+  private readonly topicsRegistry: TopicsRegistry = TOPIC_REGISTRY as TopicsRegistry;
 
   readonly stats$: Observable<FocusAreaStats> = forkJoin({
     coding: this.questions.loadAllQuestionSummaries('coding', { transferState: false }),

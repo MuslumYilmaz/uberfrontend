@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 import {
   TECHS,
-  arraysEqual,
-  buildQuestionMap,
   buildTargetPositions,
   formatCounts,
+  getTriviaPath,
   getCorrectIndex,
-  getTriviaPaths,
   optionIds,
   readJson,
   relToRepo,
@@ -27,7 +25,7 @@ Usage:
   node scripts/rebalance-trivia-incident-options.mjs
   node scripts/rebalance-trivia-incident-options.mjs --write
 
-Default mode is report-only. --write rewrites frontend + cdn trivia option order.`);
+Default mode is report-only. --write rewrites CDN trivia option order.`);
 }
 
 function fail(message) {
@@ -40,68 +38,33 @@ function ensureArray(filePath, value) {
   }
 }
 
-function sortedList(items) {
-  return items.slice().sort();
-}
+function validateQuestion(tech, question) {
+  const label = `${tech}/${question.id}`;
+  const card = question.incidentCard;
+  if (!card) return false;
 
-function validateQuestionParity(tech, frontendQuestion, cdnQuestion) {
-  const label = `${tech}/${frontendQuestion.id}`;
-  if (!cdnQuestion) {
-    fail(`Missing CDN trivia question for ${label}.`);
-  }
-
-  const frontendHasCard = !!frontendQuestion.incidentCard;
-  const cdnHasCard = !!cdnQuestion.incidentCard;
-  if (frontendHasCard !== cdnHasCard) {
-    fail(`incidentCard presence mismatch for ${label}.`);
+  if (!Array.isArray(card.options) || card.options.length !== 3) {
+    fail(`${label} incidentCard must contain exactly 3 options.`);
   }
 
-  if (!frontendHasCard) return false;
-
-  const frontendCard = frontendQuestion.incidentCard;
-  const cdnCard = cdnQuestion.incidentCard;
-
-  if (!Array.isArray(frontendCard.options) || frontendCard.options.length !== 3) {
-    fail(`${label} frontend incidentCard must contain exactly 3 options.`);
-  }
-  if (!Array.isArray(cdnCard.options) || cdnCard.options.length !== 3) {
-    fail(`${label} CDN incidentCard must contain exactly 3 options.`);
+  const currentOptionIds = optionIds(card);
+  if (new Set(currentOptionIds).size !== 3 || currentOptionIds.some((id) => typeof id !== 'string' || !id)) {
+    fail(`${label} incidentCard options must have 3 unique ids.`);
   }
 
-  const frontendOptionIds = optionIds(frontendCard);
-  const cdnOptionIds = optionIds(cdnCard);
-  if (new Set(frontendOptionIds).size !== 3 || frontendOptionIds.some((id) => typeof id !== 'string' || !id)) {
-    fail(`${label} frontend incidentCard options must have 3 unique ids.`);
-  }
-  if (new Set(cdnOptionIds).size !== 3 || cdnOptionIds.some((id) => typeof id !== 'string' || !id)) {
-    fail(`${label} CDN incidentCard options must have 3 unique ids.`);
-  }
-  if (!arraysEqual(sortedList(frontendOptionIds), sortedList(cdnOptionIds))) {
-    fail(`${label} frontend/CDN option ids differ.`);
+  if (typeof card.correctOptionId !== 'string' || !card.correctOptionId) {
+    fail(`${label} incidentCard is missing correctOptionId.`);
   }
 
-  if (typeof frontendCard.correctOptionId !== 'string' || !frontendCard.correctOptionId) {
-    fail(`${label} frontend incidentCard is missing correctOptionId.`);
-  }
-  if (typeof cdnCard.correctOptionId !== 'string' || !cdnCard.correctOptionId) {
-    fail(`${label} CDN incidentCard is missing correctOptionId.`);
-  }
-  if (frontendCard.correctOptionId !== cdnCard.correctOptionId) {
-    fail(`${label} frontend/CDN correctOptionId mismatch.`);
-  }
-
-  if (getCorrectIndex(frontendCard) === -1) {
-    fail(`${label} frontend correctOptionId is not present in options.`);
-  }
-  if (getCorrectIndex(cdnCard) === -1) {
-    fail(`${label} CDN correctOptionId is not present in options.`);
+  if (getCorrectIndex(card) === -1) {
+    fail(`${label} correctOptionId is not present in options.`);
   }
 
   return true;
 }
 
-function applyFrontendOrders(frontendQuestions, nextOptionsById) {
-  return frontendQuestions.map((question) => {
+function applyOrders(questions, nextOptionsById) {
+  return questions.map((question) => {
     const nextOptions = nextOptionsById.get(question.id);
     if (!nextOptions) return question;
     return {
@@ -109,23 +72,6 @@ function applyFrontendOrders(frontendQuestions, nextOptionsById) {
       incidentCard: {
         ...question.incidentCard,
         options: nextOptions.map((option) => ({ ...option })),
-      },
-    };
-  });
-}
-
-function applyCdnOrders(cdnQuestions, frontendById, nextOptionsById) {
-  return cdnQuestions.map((question) => {
-    const nextOptions = nextOptionsById.get(question.id);
-    if (!nextOptions) return question;
-
-    const frontendQuestion = frontendById.get(question.id);
-    return {
-      ...question,
-      incidentCard: {
-        ...question.incidentCard,
-        options: nextOptions.map((option) => ({ ...option })),
-        correctOptionId: frontendQuestion.incidentCard.correctOptionId,
       },
     };
   });
@@ -146,31 +92,13 @@ async function main() {
   console.log(`Mode: ${WRITE ? 'write' : 'report'}`);
 
   for (const tech of TECHS) {
-    const { frontend, cdn } = getTriviaPaths(tech);
-    const frontendQuestions = await readJson(frontend);
-    const cdnQuestions = await readJson(cdn);
-
-    ensureArray(frontend, frontendQuestions);
-    ensureArray(cdn, cdnQuestions);
-
-    const frontendById = buildQuestionMap(frontendQuestions);
-    const cdnById = buildQuestionMap(cdnQuestions);
-
-    const frontendIds = frontendQuestions.map((question) => question.id).filter(Boolean);
-    const cdnIds = cdnQuestions.map((question) => question.id).filter(Boolean);
-    const missingInCdn = frontendIds.filter((id) => !cdnById.has(id));
-    const missingInFrontend = cdnIds.filter((id) => !frontendById.has(id));
-    if (missingInCdn.length || missingInFrontend.length) {
-      fail(
-        `${tech} trivia id mismatch. Missing in CDN: ${missingInCdn.join(', ') || 'none'}. Missing in frontend: ${
-          missingInFrontend.join(', ') || 'none'
-        }.`,
-      );
-    }
+    const triviaPath = getTriviaPath(tech);
+    const questions = await readJson(triviaPath);
+    ensureArray(triviaPath, questions);
 
     const incidentQuestions = [];
-    for (const question of frontendQuestions) {
-      const hasIncidentCard = validateQuestionParity(tech, question, cdnById.get(question.id));
+    for (const question of questions) {
+      const hasIncidentCard = validateQuestion(tech, question);
       if (hasIncidentCard) incidentQuestions.push(question);
     }
 
@@ -193,7 +121,7 @@ async function main() {
       );
       nextOptionsById.set(question.id, nextOptions);
 
-      if (!arraysEqual(optionIds(question.incidentCard), nextOptions.map((option) => option.id))) {
+      if (optionIds(question.incidentCard).join('|') !== nextOptions.map((option) => option.id).join('|')) {
         changedForTech += 1;
       }
     });
@@ -213,10 +141,8 @@ async function main() {
     );
 
     if (WRITE && changedForTech > 0) {
-      const nextFrontendQuestions = applyFrontendOrders(frontendQuestions, nextOptionsById);
-      const nextCdnQuestions = applyCdnOrders(cdnQuestions, frontendById, nextOptionsById);
-      await writeJson(frontend, nextFrontendQuestions);
-      await writeJson(cdn, nextCdnQuestions);
+      const nextQuestions = applyOrders(questions, nextOptionsById);
+      await writeJson(triviaPath, nextQuestions);
     }
   }
 

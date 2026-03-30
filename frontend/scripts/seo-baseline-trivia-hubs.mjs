@@ -2,12 +2,12 @@
 
 import fs from 'fs';
 import path from 'path';
+import { cdnQuestionsDir as QUESTIONS_DIR } from './content-paths.mjs';
 
 const BASE_URL = (process.env.SEO_BASE_URL || 'https://frontendatlas.com').replace(/\/+$/, '');
 const BASELINE_FROM = process.env.BASELINE_FROM || '2026-02-26';
 const BASELINE_TO = process.env.BASELINE_TO || '2026-03-10';
 const OUT_DIR = path.resolve(process.env.SEO_BASELINE_OUT_DIR || 'reports/seo-baseline');
-const QUESTIONS_DIR = path.resolve('src/assets/questions');
 const TECHS = ['javascript', 'react', 'angular', 'vue', 'html', 'css'];
 const BASE_HOST = (() => {
   try {

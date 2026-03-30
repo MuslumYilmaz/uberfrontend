@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-
-const ROOT = path.resolve('./frontend/src/assets/questions');
+import { cdnQuestionsDir as ROOT } from './content-paths.mjs';
 
 const FILES = [
   ['javascript', 'coding'],

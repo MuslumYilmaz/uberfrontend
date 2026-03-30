@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 import {
   buildManifest,
+  cdnQuestionsRoot,
   collectQuestionIdentities,
-  frontendQuestionsRoot,
   manifestPath,
   relToRepo,
   writeJson,
 } from './question-identity-lib.mjs';
 
 async function main() {
-  const identities = await collectQuestionIdentities(frontendQuestionsRoot);
+  const identities = await collectQuestionIdentities(cdnQuestionsRoot);
   const manifest = buildManifest(identities);
   await writeJson(manifestPath, manifest);
   console.log(`Wrote ${identities.length} question identities to ${relToRepo(manifestPath)}.`);

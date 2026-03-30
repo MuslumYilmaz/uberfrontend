@@ -43,8 +43,7 @@ import {
   preferredFramework,
   timelineLabel,
 } from '../../../core/utils/onboarding-personalization.util';
-import tagRegistry from '../../../../assets/questions/tag-registry.json';
-import topicRegistry from '../../../../assets/questions/topic-registry.json';
+import { TAG_REGISTRY, TOPIC_REGISTRY } from '../../../generated/content-metadata';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -85,8 +84,8 @@ type LockedPath = {
 };
 
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
-  ...(Array.isArray(tagRegistry?.tags) ? tagRegistry.tags : []),
-  ...((Array.isArray(topicRegistry?.topics) ? topicRegistry.topics : [])
+  ...(Array.isArray((TAG_REGISTRY as any)?.tags) ? (TAG_REGISTRY as any).tags : []),
+  ...((Array.isArray((TOPIC_REGISTRY as any)?.topics) ? (TOPIC_REGISTRY as any).topics : [])
     .flatMap((topic: any) => Array.isArray(topic?.tags) ? topic.tags : [])),
 ]);
 

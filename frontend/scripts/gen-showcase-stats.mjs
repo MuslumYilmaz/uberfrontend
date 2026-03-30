@@ -2,16 +2,15 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {
+  cdnIncidentsDir as INCIDENT_ASSETS_DIR,
+  cdnQuestionsDir as QUESTION_ASSETS_DIR,
+  cdnQuestionShowcaseStatsPath,
+  cdnTradeoffBattlesDir as TRADEOFF_BATTLES_ASSETS_DIR,
+  frontendRoot as projectRoot,
+  repoRoot,
+} from './content-paths.mjs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, '..');
-
-const QUESTION_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'questions');
-const INCIDENT_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'incidents');
-const TRADEOFF_BATTLES_ASSETS_DIR = path.join(projectRoot, 'src', 'assets', 'tradeoff-battles');
-const CDN_QUESTION_ASSETS_DIR = path.resolve(projectRoot, '..', 'cdn', 'questions');
 const FRAMEWORK_FAMILIES_PATH = path.join(
   projectRoot,
   'src',
@@ -19,10 +18,7 @@ const FRAMEWORK_FAMILIES_PATH = path.join(
   'shared',
   'framework-families.ts',
 );
-const OUTPUT_PATHS = [
-  path.join(QUESTION_ASSETS_DIR, 'showcase-stats.json'),
-  path.join(CDN_QUESTION_ASSETS_DIR, 'showcase-stats.json'),
-];
+const OUTPUT_PATHS = [cdnQuestionShowcaseStatsPath];
 
 const TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
 const KINDS = ['coding', 'trivia'];
@@ -174,7 +170,7 @@ async function main() {
   for (const outputPath of OUTPUT_PATHS) {
     await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, serializedPayload, 'utf8');
-    console.log(`[gen-showcase-stats] wrote ${path.relative(projectRoot, outputPath)}`);
+    console.log(`[gen-showcase-stats] wrote ${path.relative(repoRoot, outputPath)}`);
   }
 
   console.log(

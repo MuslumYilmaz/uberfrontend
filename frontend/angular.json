@@ -34,7 +34,43 @@
                 "input": "src",
                 "output": "/"
               },
-              "src/assets"
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets",
+                "ignore": [
+                  "questions/**",
+                  "incidents/**",
+                  "tradeoff-battles/**",
+                  "practice/**",
+                  "data-version.json"
+                ]
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/questions",
+                "output": "assets/questions"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/incidents",
+                "output": "assets/incidents"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/tradeoff-battles",
+                "output": "assets/tradeoff-battles"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/practice",
+                "output": "assets/practice"
+              },
+              {
+                "glob": "data-version.json",
+                "input": "../cdn",
+                "output": "assets"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -182,7 +218,43 @@
                 "input": "src",
                 "output": "/"
               },
-              "src/assets"
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets",
+                "ignore": [
+                  "questions/**",
+                  "incidents/**",
+                  "tradeoff-battles/**",
+                  "practice/**",
+                  "data-version.json"
+                ]
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/questions",
+                "output": "assets/questions"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/incidents",
+                "output": "assets/incidents"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/tradeoff-battles",
+                "output": "assets/tradeoff-battles"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/practice",
+                "output": "assets/practice"
+              },
+              {
+                "glob": "data-version.json",
+                "input": "../cdn",
+                "output": "assets"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -265,7 +337,43 @@
                 "input": "src",
                 "output": "/"
               },
-              "src/assets"
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets",
+                "ignore": [
+                  "questions/**",
+                  "incidents/**",
+                  "tradeoff-battles/**",
+                  "practice/**",
+                  "data-version.json"
+                ]
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/questions",
+                "output": "assets/questions"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/incidents",
+                "output": "assets/incidents"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/tradeoff-battles",
+                "output": "assets/tradeoff-battles"
+              },
+              {
+                "glob": "**/*",
+                "input": "../cdn/practice",
+                "output": "assets/practice"
+              },
+              {
+                "glob": "data-version.json",
+                "input": "../cdn",
+                "output": "assets"
+              }
             ],
             "styles": [
               "src/styles.scss"

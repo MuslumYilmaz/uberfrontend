@@ -17,6 +17,7 @@ export class ServerAssetReader implements AssetReader {
     const normalized = String(relativePath || '').replace(/^\/+/, '');
     const cwd = process.cwd();
     const serverDir = path.dirname(fileURLToPath(import.meta.url));
+    const repoContentPaths = this.resolveRepoContentPaths(normalized, cwd);
     const candidates = [
       path.resolve(cwd, normalized),
       path.resolve(cwd, 'src', normalized),
@@ -26,6 +27,7 @@ export class ServerAssetReader implements AssetReader {
       path.resolve(cwd, '..', 'dist', 'frontendatlas', 'browser', normalized),
       path.resolve(serverDir, '..', 'browser', normalized),
       path.resolve(serverDir, '../../browser', normalized),
+      ...repoContentPaths,
     ];
 
     for (const candidate of candidates) {
@@ -34,6 +36,38 @@ export class ServerAssetReader implements AssetReader {
       return JSON.parse(raw);
     }
 
+    return null;
+  }
+
+  private resolveRepoContentPaths(relativePath: string, cwd: string): string[] {
+    const cdnRoots = [
+      path.resolve(cwd, 'cdn'),
+      path.resolve(cwd, '..', 'cdn'),
+      path.resolve(cwd, 'frontend', '..', 'cdn'),
+    ];
+
+    const subPath = this.resolveContentSubPath(relativePath);
+    if (!subPath) return [];
+
+    return cdnRoots.map((cdnRoot) => path.join(cdnRoot, subPath));
+  }
+
+  private resolveContentSubPath(relativePath: string): string | null {
+    if (relativePath.startsWith('assets/questions/')) {
+      return path.join('questions', relativePath.slice('assets/questions/'.length));
+    }
+    if (relativePath.startsWith('assets/incidents/')) {
+      return path.join('incidents', relativePath.slice('assets/incidents/'.length));
+    }
+    if (relativePath.startsWith('assets/tradeoff-battles/')) {
+      return path.join('tradeoff-battles', relativePath.slice('assets/tradeoff-battles/'.length));
+    }
+    if (relativePath.startsWith('assets/practice/')) {
+      return path.join('practice', relativePath.slice('assets/practice/'.length));
+    }
+    if (relativePath === 'assets/data-version.json') {
+      return 'data-version.json';
+    }
     return null;
   }
 }

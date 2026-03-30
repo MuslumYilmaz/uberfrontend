@@ -1,26 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-
-const SRC_DIR = path.resolve('src');
-const ASSETS_DIR = path.join(SRC_DIR, 'assets');
-const PRACTICE_DIR = path.join(ASSETS_DIR, 'practice');
-const PRACTICE_REGISTRY = path.join(PRACTICE_DIR, 'registry.json');
-const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
-const INCIDENTS_DIR = path.join(ASSETS_DIR, 'incidents');
-const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
-const INCIDENTS_INDEX = path.join(INCIDENTS_DIR, 'index.json');
-const TRACK_REGISTRY = path.join(QUESTIONS_DIR, 'track-registry.json');
-const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
-const MASTERY_PATHS_DIR = path.join(SRC_DIR, 'app', 'shared', 'mastery', 'paths');
-const COMPANY_INDEX_COMPONENT = path.join(
-  SRC_DIR,
-  'app',
-  'features',
-  'company',
-  'company-index',
-  'company-index.component.ts',
-);
-const OUT_PATH = path.join(SRC_DIR, 'prerender.routes.txt');
+import {
+  cdnIncidentsIndexPath as INCIDENTS_INDEX,
+  cdnPracticeRegistryPath as PRACTICE_REGISTRY,
+  cdnQuestionTrackRegistryPath as TRACK_REGISTRY,
+  cdnQuestionsDir as QUESTIONS_DIR,
+  cdnSystemDesignIndexPath as SYSTEM_DESIGN_INDEX,
+  companyIndexComponentPath as COMPANY_INDEX_COMPONENT,
+  guideRegistryPath as GUIDE_REGISTRY,
+  masteryPathsDir as MASTERY_PATHS_DIR,
+  srcPrerenderRoutesPath as OUT_PATH,
+} from './content-paths.mjs';
 
 function normalizeRoute(route) {
   const raw = String(route || '').trim();

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import { cdnQuestionsDir as ROOT } from './content-paths.mjs';
 
-const ROOT = path.resolve('./frontend/src/assets/questions');
 const TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
 const KINDS = ['coding', 'trivia'];
 const ACCESS_VALUES = new Set(['free', 'premium']);

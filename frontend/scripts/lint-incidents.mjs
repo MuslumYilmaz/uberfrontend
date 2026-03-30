@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import {
+  cdnIncidentsDir as ROOT,
+  cdnIncidentsIndexPath as INDEX_PATH,
+} from './content-paths.mjs';
 
-const ROOT = path.resolve('src', 'assets', 'incidents');
-const INDEX_PATH = path.join(ROOT, 'index.json');
-const CDN_ROOT = path.resolve('../cdn', 'incidents');
-const CDN_INDEX_PATH = path.join(CDN_ROOT, 'index.json');
 const VALID_TECH = new Set(['javascript', 'react', 'angular', 'vue']);
 const VALID_DIFFICULTY = new Set(['easy', 'intermediate', 'hard']);
 const VALID_ACCESS = new Set(['free', 'premium']);
@@ -27,15 +27,6 @@ function assert(condition, message) {
 
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0;
-}
-
-function assertMirrorMatches(sourcePath, mirrorPath, label) {
-  assert(fs.existsSync(mirrorPath), `${label}: missing CDN mirror file ${path.relative(process.cwd(), mirrorPath)}`);
-  if (!fs.existsSync(mirrorPath)) return;
-
-  const source = fs.readFileSync(sourcePath, 'utf8');
-  const mirror = fs.readFileSync(mirrorPath, 'utf8');
-  assert(source === mirror, `${label}: CDN mirror is out of sync for ${path.basename(sourcePath)}`);
 }
 
 function validateMeta(meta, sourceLabel) {
@@ -108,7 +99,6 @@ function validateScenarioFile(indexItem) {
   const filePath = path.join(ROOT, indexItem.id, 'scenario.json');
   assert(fs.existsSync(filePath), `missing scenario file for ${indexItem.id}`);
   if (!fs.existsSync(filePath)) return;
-  assertMirrorMatches(filePath, path.join(CDN_ROOT, indexItem.id, 'scenario.json'), indexItem.id);
 
   const scenario = readJson(filePath);
   validateMeta(scenario.meta, `${indexItem.id}: meta`);
@@ -146,7 +136,6 @@ function validateScenarioFile(indexItem) {
 if (!fs.existsSync(INDEX_PATH)) {
   fail('index.json not found');
 } else {
-  assertMirrorMatches(INDEX_PATH, CDN_INDEX_PATH, 'index');
   const index = readJson(INDEX_PATH);
   assert(Array.isArray(index), 'index.json must be an array');
 

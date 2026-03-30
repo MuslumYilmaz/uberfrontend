@@ -2,9 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { buildTradeoffBattleAccessMap } from './tradeoff-battle-access-policy.mjs';
-
-const ROOT = path.resolve('src', 'assets', 'tradeoff-battles');
-const INDEX_PATH = path.join(ROOT, 'index.json');
+import { cdnTradeoffBattlesDir as ROOT, cdnTradeoffBattlesIndexPath as INDEX_PATH } from './content-paths.mjs';
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));

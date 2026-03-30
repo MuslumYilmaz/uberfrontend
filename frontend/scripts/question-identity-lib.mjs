@@ -1,15 +1,13 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {
+  cdnQuestionsDir,
+  frontendRoot,
+  repoRoot,
+} from './content-paths.mjs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export const frontendProjectRoot = path.resolve(__dirname, '..');
-export const repoRoot = path.resolve(frontendProjectRoot, '..');
-export const frontendQuestionsRoot = path.join(frontendProjectRoot, 'src', 'assets', 'questions');
-export const cdnQuestionsRoot = path.join(repoRoot, 'cdn', 'questions');
-export const manifestPath = path.join(frontendProjectRoot, 'scripts', 'question-id-manifest.json');
+export const cdnQuestionsRoot = cdnQuestionsDir;
+export const manifestPath = path.join(frontendRoot, 'scripts', 'question-id-manifest.json');
 export const TECHS = ['angular', 'css', 'html', 'javascript', 'react', 'vue'];
 export const KINDS = ['coding', 'trivia', 'debug'];
 

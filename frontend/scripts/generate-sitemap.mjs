@@ -1,17 +1,18 @@
 import fs from 'fs';
 import path from 'path';
+import {
+  cdnPracticeRegistryPath as PRACTICE_REGISTRY,
+  cdnQuestionTrackRegistryPath as TRACK_REGISTRY,
+  cdnQuestionsDir as QUESTIONS_DIR,
+  cdnSystemDesignIndexPath as SYSTEM_DESIGN_INDEX,
+  guideRegistryPath as GUIDE_REGISTRY,
+  masteryPathsDir as MASTERY_PATHS_DIR,
+  srcDir,
+  srcSitemapIndexPath as INDEX_PATH,
+  srcSitemapPath as OUT_PATH,
+} from './content-paths.mjs';
 
 const BASE_URL = (process.env.SITEMAP_BASE_URL || 'https://frontendatlas.com').replace(/\/+$/, '');
-const SRC_DIR = path.resolve('src');
-const ASSETS_DIR = path.join(SRC_DIR, 'assets');
-const PRACTICE_REGISTRY = path.join(ASSETS_DIR, 'practice', 'registry.json');
-const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
-const TRACK_REGISTRY = path.join(QUESTIONS_DIR, 'track-registry.json');
-const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
-const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
-const MASTERY_PATHS_DIR = path.join(SRC_DIR, 'app', 'shared', 'mastery', 'paths');
-const OUT_PATH = path.join(SRC_DIR, 'sitemap.xml');
-const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
 const MAX_URLS = 50000;
 
 function normalizePath(p) {
@@ -261,10 +262,10 @@ function chunkUrls(urls, size) {
 }
 
 function clearOldSitemaps() {
-  const files = fs.readdirSync(SRC_DIR);
+  const files = fs.readdirSync(srcDir);
   files.forEach((file) => {
     if (/^sitemap-\d+\.xml$/.test(file) || file === 'sitemap-index.xml') {
-      fs.unlinkSync(path.join(SRC_DIR, file));
+      fs.unlinkSync(path.join(srcDir, file));
     }
   });
 }
@@ -276,7 +277,7 @@ clearOldSitemaps();
 const sitemapFiles = [];
 chunks.forEach((chunk, index) => {
   const fileName = `sitemap-${index + 1}.xml`;
-  const outFile = path.join(SRC_DIR, fileName);
+  const outFile = path.join(srcDir, fileName);
   fs.writeFileSync(outFile, buildXml(chunk), 'utf8');
   sitemapFiles.push(fileName);
 });

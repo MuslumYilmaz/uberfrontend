@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
+import {
+  cdnQuestionTrackRegistryPath as trackRegistryPath,
+  cdnQuestionsDir as questionsRoot,
+  frontendRoot as projectRoot,
+} from "./content-paths.mjs";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// project root = one level up from /scripts
-const projectRoot = path.resolve(__dirname, "..");
-const questionsRoot = path.join(projectRoot, "src", "assets", "questions");
-const trackRegistryPath = path.join(questionsRoot, "track-registry.json");
 const systemDesignRoot = path.join(questionsRoot, "system-design");
 const systemDesignIndexPath = path.join(systemDesignRoot, "index.json");
 const trackRegistryRel = path.relative(projectRoot, trackRegistryPath);
@@ -23,15 +20,15 @@ function printUsage() {
 Usage:
   node scripts/lint-tracks.mjs
 
-Validates that every question id referenced by tracks exists in assets/questions.
+Validates that every question id referenced by tracks exists in cdn/questions.
 Tracks are read from:
   - ${path.relative(projectRoot, trackRegistryPath)}
 
 Rules:
   - track ids (slugs) must be kebab-case
   - featured refs must have id/kind (and tech for coding/trivia)
-  - coding/trivia: must exist in assets/questions/<tech>/<kind>.json
-  - system-design: must exist in assets/questions/system-design/index.json AND <id>/meta.json
+  - coding/trivia: must exist in cdn/questions/<tech>/<kind>.json
+  - system-design: must exist in cdn/questions/system-design/index.json AND <id>/meta.json
 `);
 }
 

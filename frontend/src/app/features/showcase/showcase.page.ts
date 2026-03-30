@@ -29,7 +29,7 @@ import { FaqSectionComponent } from '../../shared/faq-section/faq-section.compon
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { apiUrl } from '../../core/utils/api-base';
-import showcaseStatsJson from '../../../assets/questions/showcase-stats.json';
+import { SHOWCASE_STATS } from '../../generated/content-metadata';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
@@ -57,7 +57,7 @@ type ReasoningPreviewCard = {
   optionTeasers?: string[];
 };
 
-const SHOWCASE_STATIC_STATS = showcaseStatsJson as ShowcaseStatsPayload;
+const SHOWCASE_STATIC_STATS = SHOWCASE_STATS as ShowcaseStatsPayload;
 
 @Component({
   standalone: true,

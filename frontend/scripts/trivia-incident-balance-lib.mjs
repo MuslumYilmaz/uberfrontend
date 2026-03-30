@@ -1,14 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { cdnQuestionsDir as cdnQuestionsRoot, repoRoot } from './content-paths.mjs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export const frontendProjectRoot = path.resolve(__dirname, '..');
-export const repoRoot = path.resolve(frontendProjectRoot, '..');
-export const frontendQuestionsRoot = path.join(frontendProjectRoot, 'src', 'assets', 'questions');
-export const cdnQuestionsRoot = path.join(repoRoot, 'cdn', 'questions');
 export const TECHS = ['angular', 'css', 'html', 'javascript', 'react', 'vue'];
 
 export function relToRepo(filePath) {
@@ -24,11 +17,8 @@ export async function writeJson(filePath, value) {
   await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-export function getTriviaPaths(tech) {
-  return {
-    frontend: path.join(frontendQuestionsRoot, tech, 'trivia.json'),
-    cdn: path.join(cdnQuestionsRoot, tech, 'trivia.json'),
-  };
+export function getTriviaPath(tech) {
+  return path.join(cdnQuestionsRoot, tech, 'trivia.json');
 }
 
 export function buildQuestionMap(questions) {

@@ -3,20 +3,16 @@ import crypto from "crypto";
 import fg from "fast-glob";
 import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
+import { cdnDataVersionPath, frontendRoot, repoRoot } from "./content-paths.mjs";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// project root = one level up from /scripts
-const projectRoot = path.resolve(__dirname, "..");
+const projectRoot = frontendRoot;
 
 // pick the files that should bump the data version when they change
 const globs = [
-    "src/assets/questions/**/*.{json,md}",
-    "src/assets/incidents/**/*.{json,md}",
-    "src/assets/tradeoff-battles/**/*.{json,md}",
-    "src/assets/practice/**/*.{json,md}",
+    "../cdn/questions/**/*.{json,md}",
+    "../cdn/incidents/**/*.{json,md}",
+    "../cdn/tradeoff-battles/**/*.{json,md}",
+    "../cdn/practice/**/*.{json,md}",
     "src/app/**/*.ts",
     "package.json",
     "angular.json"
@@ -36,9 +32,8 @@ for (const rel of files.sort()) {
 }
 const dataVersion = h.digest("hex").slice(0, 12);
 
-// write to the **correct** location in THIS app
-const dest = path.join(projectRoot, "src", "assets", "data-version.json");
+const dest = cdnDataVersionPath;
 await fs.mkdir(path.dirname(dest), { recursive: true });
 await fs.writeFile(dest, JSON.stringify({ dataVersion }, null, 2) + "\n");
 
-console.log(`[gen-data] wrote ${path.relative(projectRoot, dest)} = ${dataVersion}`);
+console.log(`[gen-data] wrote ${path.relative(repoRoot, dest)} = ${dataVersion}`);

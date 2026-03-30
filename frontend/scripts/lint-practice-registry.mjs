@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import {
+  cdnPracticeRegistryPath as REGISTRY_PATH,
+  cdnRoot,
+} from './content-paths.mjs';
 
-const REGISTRY_PATH = path.resolve('src', 'assets', 'practice', 'registry.json');
 const VALID_FAMILIES = new Set(['question', 'incident', 'code-review', 'tradeoff-battle']);
 const VALID_TECH = new Set(['javascript', 'react', 'angular', 'vue', 'html', 'css', 'system-design']);
 const VALID_DIFFICULTY = new Set(['easy', 'intermediate', 'hard']);
@@ -52,7 +55,7 @@ if (!fs.existsSync(REGISTRY_PATH)) {
       assert(isNonEmptyString(item.assetRef), `entry[${index}].assetRef is required`);
 
       const assetPath = String(item.assetRef).split('#')[0];
-      assert(fs.existsSync(path.resolve('src', 'assets', assetPath)), `entry[${index}] assetRef does not exist: ${assetPath}`);
+      assert(fs.existsSync(path.join(cdnRoot, assetPath)), `entry[${index}] assetRef does not exist: ${assetPath}`);
     });
   }
 }

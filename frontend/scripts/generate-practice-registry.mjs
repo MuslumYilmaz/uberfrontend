@@ -1,16 +1,14 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
-
-const SRC_DIR = path.resolve('src');
-const ASSETS_DIR = path.join(SRC_DIR, 'assets');
-const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
-const INCIDENTS_DIR = path.join(ASSETS_DIR, 'incidents');
-const TRADEOFF_BATTLES_DIR = path.join(ASSETS_DIR, 'tradeoff-battles');
-const OUT_DIR = path.join(ASSETS_DIR, 'practice');
-const OUT_PATH = path.join(OUT_DIR, 'registry.json');
-const CDN_OUT_DIR = path.resolve('../cdn/practice');
-const CDN_OUT_PATH = path.join(CDN_OUT_DIR, 'registry.json');
+import {
+  cdnIncidentsDir as INCIDENTS_DIR,
+  cdnPracticeDir as OUT_DIR,
+  cdnPracticeRegistryPath as OUT_PATH,
+  cdnQuestionsDir as QUESTIONS_DIR,
+  cdnTradeoffBattlesDir as TRADEOFF_BATTLES_DIR,
+  relFromFrontend,
+} from './content-paths.mjs';
 
 const QUESTION_KINDS = ['coding', 'trivia', 'debug'];
 const QUESTION_DEFAULT_MINUTES = {
@@ -212,7 +210,4 @@ const registry = sortEntries([
 
 ensureDir(OUT_DIR);
 fs.writeFileSync(OUT_PATH, `${JSON.stringify(registry, null, 2)}\n`);
-ensureDir(CDN_OUT_DIR);
-fs.writeFileSync(CDN_OUT_PATH, `${JSON.stringify(registry, null, 2)}\n`);
-console.log(`[gen:practice-registry] wrote ${path.relative(process.cwd(), OUT_PATH)} (${registry.length} entries)`);
-console.log(`[gen:practice-registry] wrote ${path.relative(process.cwd(), CDN_OUT_PATH)} (${registry.length} entries)`);
+console.log(`[gen:practice-registry] wrote ${relFromFrontend(OUT_PATH)} (${registry.length} entries)`);

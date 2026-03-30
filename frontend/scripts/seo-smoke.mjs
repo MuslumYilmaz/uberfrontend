@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import { cdnSystemDesignIndexPath } from './content-paths.mjs';
 import { startSeoStaticServer } from './seo-static-server.mjs';
 
 const BUILD_DIR = path.resolve(process.env.SEO_BUILD_DIR || 'dist/frontendatlas/browser');
@@ -13,7 +14,7 @@ const SAMPLE_GUIDE_ROUTE = '/guides/interview-blueprint/intro';
 const execFileAsync = promisify(execFile);
 
 function pickSystemDesignSampleId() {
-  const filePath = path.resolve('src/assets/questions/system-design/index.json');
+  const filePath = cdnSystemDesignIndexPath;
   if (!fs.existsSync(filePath)) return '';
   try {
     const list = JSON.parse(fs.readFileSync(filePath, 'utf8'));

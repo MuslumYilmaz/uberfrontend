@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
+import {
+  cdnQuestionsDir as questionsRoot,
+  frontendRoot as projectRoot,
+} from "./content-paths.mjs";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// project root = one level up from /scripts
-const projectRoot = path.resolve(__dirname, "..");
-const questionsRoot = path.join(projectRoot, "src", "assets", "questions");
 const tagRegistryPath = path.join(questionsRoot, "tag-registry.json");
 const topicRegistryPath = path.join(questionsRoot, "topic-registry.json");
 
@@ -175,4 +172,3 @@ if (errors.length) {
 }
 
 console.log("Topic lint passed.");
-

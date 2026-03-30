@@ -1,6 +1,6 @@
 import { QuestionKind } from '../../core/models/question.model';
 import { Tech } from '../../core/models/user.model';
-import trackRegistry from '../../../assets/questions/track-registry.json';
+import { TRACK_REGISTRY } from '../../generated/content-metadata';
 
 export type TrackSlug = string;
 export type TrackQuestionKind = QuestionKind | 'system-design';
@@ -27,7 +27,7 @@ type TrackRegistry = {
   tracks: TrackConfig[];
 };
 
-export const TRACKS: TrackConfig[] = (trackRegistry as TrackRegistry).tracks;
+export const TRACKS: TrackConfig[] = (TRACK_REGISTRY as TrackRegistry).tracks;
 
 export const TRACK_LOOKUP = new Map<TrackSlug, TrackConfig>(
   TRACKS.map((t) => [t.slug, t]),
