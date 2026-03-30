@@ -1,0 +1,216 @@
+{
+  "meta": {
+    "id": "csr-vs-ssr-vs-rsc-react-rendering",
+    "title": "CSR vs SSR vs RSC for a React product experience",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "A React commerce page needs SEO, fast first render, large product data, faceted filters, and client-side interactions. Would you defend CSR, SSR, or RSC?",
+    "tags": [
+      "react",
+      "rendering",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 16,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are designing a React commerce experience in a framework that supports client-side rendering, server-side rendering, and React Server Components. The page is SEO-sensitive, should load category content and product data quickly, includes faceted filters and add-to-cart interactions, and may show some user-specific recommendations after login. The team also cares about keeping client JavaScript and hydration cost under control. In the interview, the panel asks which primary rendering direction you would defend: CSR-first, SSR-first, or RSC-first with client components only where interactivity is needed.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other options still become the better answer?",
+  "options": [
+    {
+      "id": "csr",
+      "label": "CSR-first",
+      "summary": "Keeps most UI logic on the client and can work well when the experience behaves more like an app than a crawlable content surface.",
+      "whenItWins": [
+        "SEO and first HTML content are not major concerns, such as in an authenticated dashboard or internal tool.",
+        "The page is highly personalized and most meaningful data only appears after the user is already interacting on the client.",
+        "The team values one client-heavy execution model and the product can tolerate more JavaScript and delayed data after boot."
+      ],
+      "watchOutFor": [
+        "For SEO-sensitive pages with large initial content, CSR pushes more work onto the client and often delays meaningful content behind download, parse, and hydration.",
+        "A weak answer picks CSR because it feels simpler without discussing crawler behavior, first render, or client bundle cost."
+      ]
+    },
+    {
+      "id": "ssr",
+      "label": "SSR-first",
+      "summary": "Delivers HTML from the server for a stronger first render and SEO story while still hydrating the page into a client React app afterward.",
+      "whenItWins": [
+        "The page is crawlable, the first render matters, and the team needs a mature server-rendering model without adopting RSC-specific boundaries yet.",
+        "The initial content should appear quickly in HTML, but much of the page will still become a normal client component tree after hydration.",
+        "Framework or team constraints make RSC adoption risky right now, yet pure CSR would be too expensive for SEO and initial performance."
+      ],
+      "watchOutFor": [
+        "SSR still hydrates the rendered client tree, so it does not automatically solve client JavaScript cost for heavy pages.",
+        "A weak answer treats SSR as the universal safe middle without asking whether the page has large server-owned regions that should never become client code."
+      ]
+    },
+    {
+      "id": "rsc",
+      "label": "RSC-first with client islands",
+      "summary": "Keeps server-owned UI and data fetching on the server, then introduces client components only for the interactive parts that truly need them.",
+      "whenItWins": [
+        "Large parts of the page are mostly data-driven or content-driven and do not need to ship as interactive client code.",
+        "You want a better boundary between server-owned data work and client-only interactive islands like filters, carts, or controls.",
+        "The product cares about SEO, first render, and reducing client bundle and hydration cost without giving up targeted interactivity."
+      ],
+      "watchOutFor": [
+        "RSC adds architectural complexity, framework coupling, and new mental models around boundaries, caching, and client/server splits.",
+        "A weak answer says RSC is the future and should replace everything, without explaining what still must remain client-side or how team maturity affects the choice."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "seo-light-app",
+      "title": "Highly interactive app, low SEO pressure",
+      "prompt": "Most value appears after login, content is user-specific, and the page behaves more like a client application than a crawlable public surface.",
+      "cells": [
+        {
+          "optionId": "csr",
+          "verdict": "best-fit",
+          "note": "This is easier to defend when client interactivity dominates and the product is not paying for slower public first render."
+        },
+        {
+          "optionId": "ssr",
+          "verdict": "reasonable",
+          "note": "Still possible, but the server-rendered shell may not buy much if the meaningful content appears only after client-side app logic."
+        },
+        {
+          "optionId": "rsc",
+          "verdict": "reasonable",
+          "note": "Viable if there is still meaningful server-owned data, but not automatically the most valuable complexity for this shape of product."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "SEO matters, first content matters, product data is large, and only parts of the page truly need client interactivity.",
+      "cells": [
+        {
+          "optionId": "csr",
+          "verdict": "stretch",
+          "note": "Harder to defend because it pushes too much initial work and JavaScript onto the client for a page that should show real content early."
+        },
+        {
+          "optionId": "ssr",
+          "verdict": "reasonable",
+          "note": "A solid fallback if the team wants a mature server-rendered path, but it still hydrates more client code than the page may actually need."
+        },
+        {
+          "optionId": "rsc",
+          "verdict": "best-fit",
+          "note": "This is easiest to defend when most of the page is server-owned and only selected islands need client behavior."
+        }
+      ]
+    },
+    {
+      "id": "team-platform-constraints",
+      "title": "Strong platform constraints or immature RSC adoption",
+      "prompt": "The team is not ready for RSC boundaries yet, or deployment and caching complexity make the newer model risky in the short term.",
+      "cells": [
+        {
+          "optionId": "csr",
+          "verdict": "stretch",
+          "note": "Still hard to justify if public SEO and first render remain important."
+        },
+        {
+          "optionId": "ssr",
+          "verdict": "best-fit",
+          "note": "This becomes the pragmatic answer when RSC would introduce more organizational risk than value right now."
+        },
+        {
+          "optionId": "rsc",
+          "verdict": "reasonable",
+          "note": "Technically attractive, but weaker if the team cannot operate the boundary model confidently yet."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "seo-first-render",
+      "title": "How important are SEO and first HTML content?",
+      "description": "This is often the first split. Public category and product pages usually care more about crawlability and early content than authenticated app surfaces do."
+    },
+    {
+      "id": "js-hydration-budget",
+      "title": "How expensive is client JavaScript and hydration?",
+      "description": "SSR improves first HTML delivery, but it can still hydrate a large client tree. RSC becomes more compelling when that client cost is the real bottleneck."
+    },
+    {
+      "id": "server-owned-vs-client-owned-ui",
+      "title": "Which parts of the UI really need to be client components?",
+      "description": "If large parts of the page are mainly data and markup, shipping them as client code may be unnecessary work."
+    },
+    {
+      "id": "personalization-and-caching",
+      "title": "Where do caching and personalization boundaries sit?",
+      "description": "A strong answer should separate globally cacheable content from user-specific islands and explain how that affects rendering strategy."
+    },
+    {
+      "id": "team-maturity",
+      "title": "Can the team operate the architecture well?",
+      "description": "The technically strongest model is not always the operationally strongest model if the team cannot reason about server/client boundaries, caching, and debugging yet."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean RSC-first, but only with explicit client boundaries",
+    "summary": "This page has strong SEO and first-render requirements, plus large server-owned data, but only parts of it truly need client interactivity. That makes an RSC-first approach the most defensible for this exact prompt.",
+    "reasoning": [
+      "Pure CSR is hard to justify because the page should show meaningful content early and should not force the client to do all the initial data and rendering work.",
+      "SSR is a respectable fallback and still much easier to defend than CSR here, but it often hydrates more of the page than necessary if large regions are mostly server-owned content and data.",
+      "RSC gives a stronger boundary for this prompt: keep product content, data fetching, and server-owned layout on the server, then introduce client components only for faceted filters, cart controls, and other interactive islands."
+    ],
+    "recommendation": "For this exact prompt, I would defend an RSC-first page with explicit client islands for the interactive parts. If team or platform constraints made that risky right now, I would fall back to SSR before I would fall back to CSR."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not just use SSR and keep the architecture simpler?",
+      "answer": "That is a very fair fallback, and I would absolutely choose it over CSR here if the team is not ready for RSC. I would still lean RSC for this prompt because large parts of the page look server-owned, so reducing client bundle and hydration cost is part of the value, not just getting initial HTML out quickly."
+    },
+    {
+      "question": "Is RSC replacing SSR?",
+      "answer": "Not really. I would explain it as a boundary model rather than a total replacement story. You still care about server delivery and streaming, but RSC changes which parts of the tree stay server-owned and which parts become client components."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the page became far more app-like, heavily personalized, and less SEO-sensitive, I would move closer to CSR. If the product shape stayed the same but the team could not operate RSC well yet, I would move toward SSR as the more pragmatic choice."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use RSC because it is the newest and best React model now.",
+      "whyItWorks": "It does not. This sounds trend-driven, ignores team and product constraints, and teaches no boundary for when SSR or CSR still fit better."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use SSR or RSC because SEO matters and CSR would be weaker.",
+      "whyItWorks": "This is directionally fine, but it still needs a sharper explanation of hydration cost, server-owned UI, and why RSC beats SSR specifically for this exact prompt."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would lean RSC-first with explicit client islands. The page is SEO-sensitive and content-heavy, so pure CSR would push too much initial work to the browser. SSR is a solid fallback, but it still hydrates more of the page than needed if large product and content regions are mainly server-owned. I would keep data fetching and server-owned layout in RSC, then use client components only for the interactive parts like faceted filters and cart controls. If the team could not operate that boundary model confidently yet, I would fall back to SSR.",
+      "whyItWorks": "This sounds strong because it ties the rendering choice to product shape, JavaScript cost, and team maturity instead of treating the newest model as an automatic winner."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming the product shape: public SEO-sensitive surface, authenticated app surface, or a hybrid.",
+    "Explain where the page's server-owned and client-owned boundaries probably belong.",
+    "State which rendering direction you would choose for this prompt and why.",
+    "Compare the other options in terms of first render, hydration cost, and operational complexity.",
+    "End with a pragmatic fallback, for example: RSC if the boundary model is worth it, SSR if the team is not ready, CSR only if the product is truly client-app shaped."
+  ],
+  "antiPatterns": [
+    "Treating RSC as a universal replacement for SSR and CSR without discussing boundaries or team readiness.",
+    "Saying SSR solves everything while ignoring hydration and client JavaScript cost.",
+    "Picking CSR for a public content-heavy page without addressing SEO and first render.",
+    "Talking only about framework trends instead of product shape, cacheability, and operational tradeoffs."
+  ]
+}

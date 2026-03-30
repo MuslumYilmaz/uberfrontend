@@ -229,6 +229,10 @@
   gap: 1.05rem;
 }
 
+.tradeoff-detail__examples {
+  align-items: start;
+}
+
 .tradeoff-option,
 .tradeoff-detail__panel,
 .tradeoff-dimension {
@@ -317,6 +321,11 @@
   border-radius: 999px;
   padding: 0.8rem 1.1rem;
   font: inherit;
+}
+
+.tradeoff-detail__cta--secondary {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .tradeoff-detail__cta[disabled],
@@ -441,9 +450,36 @@
 }
 
 .tradeoff-example {
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+}
+
+.tradeoff-example__head {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  align-items: center;
+  min-height: 1.2rem;
+}
+
+.tradeoff-example__answer-shell {
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.tradeoff-example__feedback {
+  display: grid;
+  gap: 0.35rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tradeoff-example__feedback-label {
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
 }
 
 .tradeoff-pushback {
@@ -460,16 +496,27 @@
 }
 
 .tradeoff-example__why {
-  margin-top: auto !important;
-  padding-top: 0.3rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.62;
 }
 
 .tradeoff-example.is-weak {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
+.tradeoff-example.is-weak .tradeoff-example__answer-shell {
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
 .tradeoff-example.is-decent {
   border-color: rgba(230, 186, 95, 0.32);
+}
+
+.tradeoff-example.is-decent .tradeoff-example__answer-shell {
+  border-color: rgba(230, 186, 95, 0.18);
+  background:
+    linear-gradient(135deg, rgba(230, 186, 95, 0.05), transparent 60%),
+    rgba(255, 255, 255, 0.025);
 }
 
 .tradeoff-example.is-strong {
@@ -477,6 +524,17 @@
   background:
     linear-gradient(135deg, rgba(75, 211, 126, 0.12), transparent 58%),
     rgba(255, 255, 255, 0.04);
+}
+
+.tradeoff-example.is-strong .tradeoff-example__answer-shell {
+  border-color: rgba(75, 211, 126, 0.22);
+  background:
+    linear-gradient(135deg, rgba(75, 211, 126, 0.08), transparent 60%),
+    rgba(255, 255, 255, 0.03);
+}
+
+.tradeoff-example.is-strong .tradeoff-example__feedback-label {
+  color: rgba(110, 231, 163, 0.76);
 }
 
 .tradeoff-detail__panel h3,

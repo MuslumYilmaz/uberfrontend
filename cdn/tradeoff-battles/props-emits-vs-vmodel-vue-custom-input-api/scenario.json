@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "props-emits-vs-vmodel-vue-custom-input-api",
+    "title": "Props and emits vs v-model for a Vue custom input API",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue custom form component needs to send value changes back to its parent. Would you design it around explicit props and emits or expose a v-model API?",
+    "tags": [
+      "vue",
+      "components",
+      "forms",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30"
+  },
+  "scenario": "You are building a Vue 3 billing form with a reusable `PriceRangePicker` component. The parent page owns the committed filter value and wants the picker to behave like a normal form field inside larger forms. The picker lets users adjust a min and max amount, validates basic bounds, and sends the chosen range back to the parent. One teammate wants to expose a standard `v-model` API so the component feels like a normal input. Another teammate wants to keep the public API fully explicit with named props and emits such as `:value`, `@change`, `@apply`, and `@reset`. In the interview, the panel asks which direction you would defend.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "v-model",
+      "label": "Design the component around v-model",
+      "summary": "Fits best when the component behaves like a form control with one primary editable value that should sync naturally with the parent.",
+      "whenItWins": [
+        "The component's main job is to edit one committed value and send updates back to the parent like a normal input field.",
+        "You want the API to feel consistent with other form controls so parent components can wire it up predictably.",
+        "Most of the interaction is still about one editable value rather than a long list of distinct commands."
+      ],
+      "watchOutFor": [
+        "v-model becomes weaker when the component is really a small workflow with draft, apply, cancel, preview, and multiple event semantics that deserve explicit names.",
+        "A weak answer picks v-model only because it is shorter, without checking whether the component really behaves like one form field."
+      ]
+    },
+    {
+      "id": "props-emits",
+      "label": "Use explicit props and emits",
+      "summary": "Fits best when the public API needs several distinct interaction events and not just one two-way value contract.",
+      "whenItWins": [
+        "The component has multiple meaningful events such as open, close, apply, cancel, clear, or preview that should stay explicit.",
+        "The parent should distinguish between draft interaction and committed value changes rather than treat everything as one model update.",
+        "The component behaves more like a mini workflow or control surface than like a simple input."
+      ],
+      "watchOutFor": [
+        "An explicit API can become noisy if the component really is just a form control with one primary value and standard update behavior.",
+        "A weak answer avoids v-model on principle even when the component should simply plug into forms like any other input."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "one-primary-value",
+      "title": "One primary editable value",
+      "prompt": "The component behaves like a normal form field and mainly needs to keep one value in sync with the parent.",
+      "cells": [
+        {
+          "optionId": "v-model",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the component's public contract is essentially 'edit this value'."
+        },
+        {
+          "optionId": "props-emits",
+          "verdict": "reasonable",
+          "note": "Still possible, but now you should explain why explicit event naming adds clarity instead of just extra ceremony around a form-control pattern."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "A reusable range picker should plug into forms as one value editor, while basic validation still stays within the field.",
+      "cells": [
+        {
+          "optionId": "v-model",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer because the component behaves like a custom input with one primary committed value."
+        },
+        {
+          "optionId": "props-emits",
+          "verdict": "reasonable",
+          "note": "Possible, but harder to defend if the explicit API mostly recreates a form-control contract that v-model already expresses well."
+        }
+      ]
+    },
+    {
+      "id": "mini-workflow-component",
+      "title": "Component acts like a mini workflow",
+      "prompt": "The component has draft editing, apply versus cancel semantics, preview state, and several distinct interaction events the parent should understand separately.",
+      "cells": [
+        {
+          "optionId": "v-model",
+          "verdict": "reasonable",
+          "note": "You can still use it for the committed value, but the answer weakens if the whole interaction surface gets flattened into a generic update channel."
+        },
+        {
+          "optionId": "props-emits",
+          "verdict": "best-fit",
+          "note": "This becomes easier to defend because the component API is now describing several behaviors, not just one model value."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "component-role",
+      "title": "Is this really a form control or more of a mini workflow?",
+      "description": "This is the first question. v-model is strongest when the component behaves like an input, while explicit props and emits become more valuable when the component exposes richer behavior."
+    },
+    {
+      "id": "api-clarity",
+      "title": "What should the parent understand from the API?",
+      "description": "A strong answer should care about whether the parent mainly needs a value contract or needs to distinguish several different events and intentions."
+    },
+    {
+      "id": "parent-ergonomics",
+      "title": "How naturally does this component fit into larger forms?",
+      "description": "If the component is meant to plug into many form flows, a familiar input-style contract can reduce friction."
+    },
+    {
+      "id": "event-semantics",
+      "title": "Do interaction events carry different meanings?",
+      "description": "When draft changes, apply, cancel, reset, and preview all mean different things, flattening them into one value update can hide important intent."
+    },
+    {
+      "id": "contract-overdesign",
+      "title": "Are you adding API surface the component does not need?",
+      "description": "A balanced answer should avoid both extremes: forcing v-model onto a workflow component or inventing many explicit events for a component that is really just a field."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean v-model because the prompt describes a custom form field with one primary committed value",
+    "summary": "This range picker is meant to plug into forms and behave like an input that edits one value owned by the parent. That makes v-model the easier answer to defend for the exact prompt.",
+    "reasoning": [
+      "The key clue is component role. The parent owns one committed range value, and the picker's main job is to edit that value the way a custom input would.",
+      "That makes `v-model` a strong fit because the API communicates the same contract the rest of the form already expects: here is the current value, and here is how it updates.",
+      "I would move back toward explicit props and emits when the component stops acting like one field and starts acting like a mini workflow with apply, cancel, preview, or other event semantics that the parent should understand separately."
+    ],
+    "recommendation": "For this exact prompt, I would expose the range picker as a `v-model`-driven custom input and keep explicit extra emits only for truly separate events. I would choose a more explicit props-and-emits API if the component evolved into a richer interaction workflow rather than a straightforward value editor."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not keep everything explicit with props and emits so the API is clearer?",
+      "answer": "I would do that if the component had several distinct behaviors the parent needed to reason about separately. In this prompt, though, the primary contract is still 'edit this value', so v-model expresses the intent more directly and fits better with larger form usage."
+    },
+    {
+      "question": "When would explicit props and emits clearly be the better answer?",
+      "answer": "When the component has meaningful event semantics beyond one value update, such as draft versus apply, cancel, preview, or reset, and the parent needs to respond differently to each one."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the picker grew into a panel with draft state, explicit apply and cancel buttons, and richer event semantics, I would move toward a more explicit props-and-emits contract or combine v-model with a few carefully named extra events."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use v-model because that is the Vue way.",
+      "whyItWorks": "It does not. This sounds generic and teaches no boundary for when an explicit event API is actually the better design."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use v-model because the component is a form field and the parent mainly needs the current value.",
+      "whyItWorks": "This is directionally fine, but it still needs a sharper explanation of component role and when richer event semantics justify explicit props and emits."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would design the range picker around `v-model` because it behaves like a custom form field with one primary committed value owned by the parent. I want the parent to use it the same way it uses other inputs, instead of recreating an explicit props-and-events contract for what is still mostly one value editor. I would switch toward a more explicit API if the component grew into a mini workflow with apply, cancel, preview, or other event semantics that the parent should respond to separately.",
+      "whyItWorks": "This sounds strong because it starts from the role of the component, explains why input-style ergonomics matter here, and still gives a clear boundary for when explicit props and emits become the better contract."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking whether the component is mainly a value editor or a richer interaction workflow.",
+    "Check whether the parent mostly needs one model value or several distinct event meanings.",
+    "Choose v-model or explicit props and emits based on that contract.",
+    "Explain the cost of the other option, either flattening important events or overdesigning a simple form field.",
+    "End with a simple rule of thumb, for example: v-model for custom inputs with one primary value, explicit props and emits for components with richer event semantics."
+  ],
+  "antiPatterns": [
+    "Using v-model only because it is shorter.",
+    "Avoiding v-model on principle even when the component is clearly a form control.",
+    "Flattening apply, cancel, preview, and reset semantics into one generic model update.",
+    "Designing a large explicit event API for a component that is really just editing one value."
+  ]
+}

@@ -70,9 +70,20 @@
           >
             {{ analysisRevealed() ? 'Analysis revealed' : 'Reveal analysis' }}
           </button>
+          <button
+            *ngIf="analysisRevealed()"
+            type="button"
+            class="tradeoff-detail__cta tradeoff-detail__cta--secondary"
+            [disabled]="completed()"
+            (click)="markComplete()"
+          >
+            {{ completionLabel() }}
+          </button>
         </div>
         <p class="tradeoff-detail__decision-note">
-          Strong answers are scenario-specific, not universal.
+          {{ analysisRevealed()
+            ? 'Review the breakdown, then mark the battle completed when you are done.'
+            : 'Strong answers are scenario-specific, not universal.' }}
         </p>
       </div>
     </section>
@@ -188,9 +199,18 @@
             class="tradeoff-detail__panel tradeoff-example"
             [ngClass]="answerExampleTone(example)"
           >
-            <p class="tradeoff-detail__comparison-kicker">{{ example.title }}</p>
-            <blockquote>{{ example.answer }}</blockquote>
-            <p class="tradeoff-example__why">{{ example.whyItWorks }}</p>
+            <div class="tradeoff-example__head">
+              <p class="tradeoff-detail__comparison-kicker">{{ example.title }}</p>
+            </div>
+            <div class="tradeoff-example__answer-shell">
+              <blockquote>{{ example.answer }}</blockquote>
+            </div>
+            <div class="tradeoff-example__feedback">
+              <p class="tradeoff-example__feedback-label">
+                {{ example.level === 'strong' ? 'Why it works' : 'What it is missing' }}
+              </p>
+              <p class="tradeoff-example__why">{{ example.whyItWorks }}</p>
+            </div>
           </article>
         </div>
       </section>
@@ -236,6 +256,14 @@
     </footer>
   </section>
   </ng-container>
+
+  <app-login-required-dialog
+    [(visible)]="loginPromptOpen"
+    [title]="loginPromptTitle"
+    [body]="loginPromptBody"
+    [ctaLabel]="loginPromptCta"
+    [redirectTo]="router.url || '/'">
+  </app-login-required-dialog>
 
   <ng-template #lockedView>
     <div class="locked-shell">

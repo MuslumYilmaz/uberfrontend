@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "useeffect-vs-event-handler-logic",
+    "title": "useEffect vs event-handler logic in React",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React save flow needs a request, success toast, analytics event, and modal close after the user clicks Save. Would you run that logic in useEffect or keep it in the event handler?",
+    "tags": [
+      "react",
+      "effects",
+      "events",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building a React profile modal. When the user clicks Save, the app should send the request, track an analytics event, show a success toast, and close the modal if the request succeeds. A teammate suggests storing `isSaved` in state and using `useEffect` to watch it so the toast and close logic run there. In the interview, the panel asks whether you would keep that workflow in the click handler or move the side-effect logic into `useEffect`.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "event-handler",
+      "label": "Keep it in the event handler",
+      "summary": "Keeps user-triggered workflows close to the action that caused them.",
+      "whenItWins": [
+        "The side effect happens because of one clear user event, such as clicking Save, Submit, Delete, or Retry.",
+        "You want the request, analytics, toast, and follow-up UI actions to stay together in one readable flow.",
+        "The behavior should only happen for that specific action, not every time some related state happens to change."
+      ],
+      "watchOutFor": [
+        "If the same follow-up behavior must run no matter how the state changes, a handler alone can become too narrow.",
+        "A weak answer says 'never use useEffect' instead of noticing that some side effects really are about syncing to state or external systems."
+      ]
+    },
+    {
+      "id": "use-effect",
+      "label": "Move it into useEffect",
+      "summary": "Fits best when the effect should run because state changed, not because one specific event handler ran.",
+      "whenItWins": [
+        "You need to synchronize React state with an external system such as the document title, a subscription, localStorage, or the browser itself.",
+        "The behavior should run whenever some state changes, regardless of whether the cause was a click, initial load, websocket update, retry, or some other path.",
+        "The real trigger is 'state is now X' rather than 'the user clicked this button just now.'"
+      ],
+      "watchOutFor": [
+        "If the logic is only a direct consequence of one button click, effect-based orchestration can spread the workflow across state and watchers for no real gain.",
+        "A weak answer moves everything into useEffect just because side effects sound like they belong there, even when the code becomes harder to trace."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "single-user-action",
+      "title": "Single user-triggered workflow",
+      "prompt": "A button click should request, toast, track analytics, and close a modal after success.",
+      "cells": [
+        {
+          "optionId": "event-handler",
+          "verdict": "best-fit",
+          "note": "This is usually the clearest answer because the workflow belongs to one action and reads well as one sequence."
+        },
+        {
+          "optionId": "use-effect",
+          "verdict": "stretch",
+          "note": "You can make it work, but now you are splitting one action across state flags and an observer that is not really needed."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Save is a user action, and the follow-up behavior belongs specifically to that save flow.",
+      "cells": [
+        {
+          "optionId": "event-handler",
+          "verdict": "best-fit",
+          "note": "This keeps the success logic next to the request logic and avoids inventing extra watcher state just to coordinate one event."
+        },
+        {
+          "optionId": "use-effect",
+          "verdict": "reasonable",
+          "note": "Possible, but you would need a stronger reason than 'side effects belong in useEffect' to justify the extra indirection."
+        }
+      ]
+    },
+    {
+      "id": "state-driven-sync",
+      "title": "State-driven synchronization",
+      "prompt": "The effect should run whenever state changes from any source, not only from one click handler.",
+      "cells": [
+        {
+          "optionId": "event-handler",
+          "verdict": "reasonable",
+          "note": "Fine only if one handler truly owns every possible path, which stops being true once more sources exist."
+        },
+        {
+          "optionId": "use-effect",
+          "verdict": "best-fit",
+          "note": "This is where effect logic becomes easier to defend because the real trigger is state synchronization, not one specific button press."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "true-trigger",
+      "title": "What is the real trigger?",
+      "description": "The first question is whether the behavior happens because the user performed one action or because some piece of state became true."
+    },
+    {
+      "id": "workflow-locality",
+      "title": "Should the full workflow stay in one place?",
+      "description": "If request, analytics, toast, and close all belong to one save flow, keeping them together often makes the code easier for juniors to follow."
+    },
+    {
+      "id": "external-sync",
+      "title": "Are you syncing with something outside React?",
+      "description": "Effects are especially useful when React must synchronize with the browser, storage, subscriptions, timers, or another external system."
+    },
+    {
+      "id": "multi-source-updates",
+      "title": "Can the same state change from multiple paths?",
+      "description": "If several paths can lead to the same state transition, reacting to the state change itself may be cleaner than attaching logic to one handler."
+    },
+    {
+      "id": "indirection-cost",
+      "title": "Are you adding watcher state without real benefit?",
+      "description": "A strong answer notices when effect code adds extra flags and more moving parts to coordinate a workflow that was already simple."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean event-handler logic because the whole flow belongs to one user action",
+    "summary": "This prompt describes a save workflow that starts from one clear event. That makes the event handler easier to defend than introducing `isSaved` and watching it from `useEffect`.",
+    "reasoning": [
+      "The request, analytics event, success toast, and modal close all belong to the Save action itself, so keeping them together makes the flow easier to read.",
+      "If I move that into `useEffect`, I usually need extra state like `isSaved` or `status`, and now the reader has to jump between the handler and the watcher to understand one user action.",
+      "I would reach for `useEffect` when the real requirement is synchronizing with external systems or reacting to state changes that can happen from several sources, not just this one click path."
+    ],
+    "recommendation": "For this exact prompt, I would keep the workflow in the save handler and only use `useEffect` later if the product introduces a true state-driven synchronization requirement beyond this single action."
+  },
+  "interviewerPushback": [
+    {
+      "question": "But isn't showing a toast a side effect, so shouldn't it go in useEffect?",
+      "answer": "It is a side effect, but that does not automatically mean it belongs in `useEffect`. Here it is still part of one save workflow, so keeping it in the handler keeps the cause and the consequence together."
+    },
+    {
+      "question": "When would you actually prefer useEffect?",
+      "answer": "When the effect should happen because state changed regardless of how it changed. Good examples are syncing the document title, localStorage, subscriptions, or reacting to state that can be updated from several paths."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If success state could be reached from multiple sources like initial load, retry, websocket data, or some other non-click path, I would be more open to `useEffect` because the real trigger would then be the state change itself rather than one event handler."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use useEffect because side effects belong in useEffect.",
+      "whyItWorks": "It does not. This treats `useEffect` like a rule instead of asking what actually caused the workflow and whether the watcher adds useful clarity."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably keep it in the handler because it feels simpler, but useEffect could also work.",
+      "whyItWorks": "This is directionally fine, but it still needs a stronger explanation of why one user-triggered flow is clearer in the handler and when effect-based sync becomes the better model."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would keep the request, analytics, toast, and modal close inside the save handler because they are all consequences of one user action. I would avoid introducing `isSaved` plus a watcher just to orchestrate that flow. I would use `useEffect` when the real requirement is to synchronize with external systems or react to state changes that can happen from multiple sources, not only from this one click path.",
+      "whyItWorks": "This sounds strong because it identifies the real trigger, keeps the workflow local to the action that caused it, and still gives a clear boundary for when `useEffect` is actually the better choice."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming the real trigger: one user action or a state change that may come from many places.",
+    "State which model you would choose for this prompt.",
+    "Explain whether keeping the workflow in one place improves clarity for request, success, analytics, and follow-up UI work.",
+    "Show when the other option becomes stronger, especially for external synchronization or multi-source state changes.",
+    "End with a clean rule of thumb, for example: handlers for direct workflows, effects for state-driven synchronization."
+  ],
+  "antiPatterns": [
+    "Treating `useEffect` as the default home for every side effect without checking what actually triggered it.",
+    "Creating state flags only to watch them and reconstruct a simple button-click workflow in another part of the file.",
+    "Saying 'never use useEffect' instead of recognizing real synchronization needs.",
+    "Ignoring the difference between one event-driven workflow and a true state-driven effect."
+  ]
+}

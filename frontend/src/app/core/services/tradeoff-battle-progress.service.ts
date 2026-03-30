@@ -1,7 +1,6 @@
 import { Injectable, computed, inject } from '@angular/core';
 import {
   TradeoffBattleProgressRecord,
-  createEmptyTradeoffBattleProgressRecord,
 } from '../models/tradeoff-battle.model';
 import { PracticeProgressCoreRecord } from '../models/practice.model';
 import { PracticeProgressService } from './practice-progress.service';
@@ -37,6 +36,21 @@ export class TradeoffBattleProgressService {
     );
   }
 
+  revealAnalysis(id: string, payload: { selectedOptionId?: string }): TradeoffBattleProgressRecord {
+    return this.fromCore(
+      this.coreProgress.updateRecord('tradeoff-battle', id, (current) => ({
+        ...current,
+        started: true,
+        lastPlayedAt: new Date().toISOString(),
+        extension: {
+          ...(current.extension ?? {}),
+          selectedOptionId: payload.selectedOptionId ?? this.selectedOptionId(current.extension),
+          revealed: true,
+        },
+      })),
+    );
+  }
+
   markCompleted(id: string, payload: { selectedOptionId?: string }): TradeoffBattleProgressRecord {
     return this.fromCore(
       this.coreProgress.updateRecord('tradeoff-battle', id, (current) => ({
@@ -57,9 +71,15 @@ export class TradeoffBattleProgressService {
     return {
       started: record.started,
       completed: record.completed,
+      analysisRevealed: this.analysisRevealed(record.extension, record.completed),
       lastPlayedAt: record.lastPlayedAt,
       selectedOptionId: this.selectedOptionId(record.extension),
     };
+  }
+
+  private analysisRevealed(extension: Record<string, unknown> | undefined, completed: boolean): boolean {
+    if (completed) return true;
+    return extension?.['revealed'] === true;
   }
 
   private selectedOptionId(extension: Record<string, unknown> | undefined): string {

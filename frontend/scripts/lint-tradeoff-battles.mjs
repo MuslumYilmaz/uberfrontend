@@ -5,6 +5,8 @@ import { buildTradeoffBattleAccessMap } from './tradeoff-battle-access-policy.mj
 
 const ROOT = path.resolve('src', 'assets', 'tradeoff-battles');
 const INDEX_PATH = path.join(ROOT, 'index.json');
+const CDN_ROOT = path.resolve('../cdn', 'tradeoff-battles');
+const CDN_INDEX_PATH = path.join(CDN_ROOT, 'index.json');
 
 function fail(message) {
   console.error(`[lint-tradeoff-battles] ${message}`);
@@ -27,9 +29,19 @@ function assertString(value, message) {
   assert(typeof value === 'string' && value.trim().length > 0, message);
 }
 
+function assertMirrorMatches(sourcePath, mirrorPath, label) {
+  assert(fs.existsSync(mirrorPath), `${label}: missing CDN mirror file ${path.relative(process.cwd(), mirrorPath)}`);
+  if (!fs.existsSync(mirrorPath)) return;
+
+  const source = fs.readFileSync(sourcePath, 'utf8');
+  const mirror = fs.readFileSync(mirrorPath, 'utf8');
+  assert(source === mirror, `${label}: CDN mirror is out of sync for ${path.basename(sourcePath)}`);
+}
+
 if (!fs.existsSync(INDEX_PATH)) {
   fail('missing tradeoff-battles/index.json');
 } else {
+  assertMirrorMatches(INDEX_PATH, CDN_INDEX_PATH, 'index');
   const index = readJson(INDEX_PATH);
   assert(Array.isArray(index), 'index.json must be an array');
   const expectedAccess = buildTradeoffBattleAccessMap(index);
@@ -53,6 +65,7 @@ if (!fs.existsSync(INDEX_PATH)) {
     const scenarioPath = path.join(ROOT, id, 'scenario.json');
     assert(fs.existsSync(scenarioPath), `${label}: missing scenario.json for "${id}"`);
     if (!fs.existsSync(scenarioPath)) return;
+    assertMirrorMatches(scenarioPath, path.join(CDN_ROOT, id, 'scenario.json'), id);
 
     const scenario = readJson(scenarioPath);
     assertString(scenario?.meta?.id, `${id}: meta.id is required`);

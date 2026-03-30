@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "sse-vs-websocket-live-dashboard",
+    "title": "SSE vs WebSocket for a live operations dashboard",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A support dashboard needs live status updates, but most user actions are still normal HTTP writes. Which transport would you defend in an interview?",
+    "tags": [
+      "realtime",
+      "architecture",
+      "networking",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-21"
+  },
+  "scenario": "You are designing a browser-based operations dashboard for support agents. They watch order status changes, fraud flags, and queue counts in near real time. Most user actions are still normal HTTP requests such as approve, refund, escalate, and add notes. The interviewer asks whether you would use Server-Sent Events or WebSockets for the live update channel.",
+  "prompt": "Which transport would you defend for this prompt, and how would you explain when the other choice becomes the better answer?",
+  "options": [
+    {
+      "id": "sse",
+      "label": "Server-Sent Events (SSE)",
+      "summary": "Usually the cleaner answer when updates mostly flow from server to browser and user writes can stay on normal HTTP endpoints.",
+      "whenItWins": [
+        "The traffic is mostly one-way: the server pushes updates and the browser mainly listens.",
+        "User actions such as approve, save, or retry can stay on regular HTTP requests without hurting the product flow.",
+        "You want the simpler operational story for reconnects, proxies, auth, and observability."
+      ],
+      "watchOutFor": [
+        "It becomes a weaker answer if the browser also needs to send lots of low-latency events over the same channel.",
+        "It is not the best fit when you need a rich two-way protocol, custom acknowledgements, or very interactive collaboration."
+      ]
+    },
+    {
+      "id": "websocket",
+      "label": "WebSocket",
+      "summary": "The stronger answer once the problem becomes truly two-way, highly interactive, or protocol-heavy.",
+      "whenItWins": [
+        "Clients need to send frequent low-latency events, not just occasional normal HTTP writes.",
+        "The product starts to look more like collaboration, presence, multiplayer state, or continuous command exchange.",
+        "You want a persistent bidirectional channel and are willing to own the heavier connection lifecycle."
+      ],
+      "watchOutFor": [
+        "It is often overkill for dashboards that mostly consume server updates and only send ordinary mutations.",
+        "A weak answer picks WebSocket for 'future proofing' without explaining why the current prompt already needs the extra complexity."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "one-way-dashboard",
+      "title": "Mostly one-way live dashboard",
+      "prompt": "The browser mainly listens, while writes stay as regular HTTP actions.",
+      "cells": [
+        {
+          "optionId": "sse",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer when the real-time path is mainly server to client."
+        },
+        {
+          "optionId": "websocket",
+          "verdict": "reasonable",
+          "note": "It can work, but you need to justify why the extra connection complexity is worth it."
+        }
+      ]
+    },
+    {
+      "id": "interactive-two-way",
+      "title": "Heavier two-way interaction",
+      "prompt": "The browser now sends frequent low-latency events such as typing presence, live cursor movement, or rapid control messages.",
+      "cells": [
+        {
+          "optionId": "sse",
+          "verdict": "stretch",
+          "note": "At this point the answer starts to fight the shape of the problem."
+        },
+        {
+          "optionId": "websocket",
+          "verdict": "best-fit",
+          "note": "This is where a persistent bidirectional channel becomes much easier to defend."
+        }
+      ]
+    },
+    {
+      "id": "future-proofing-only",
+      "title": "Same product, but someone says 'let's future-proof it'",
+      "prompt": "The current use case is still mostly server updates, but the team wants room for future features.",
+      "cells": [
+        {
+          "optionId": "sse",
+          "verdict": "best-fit",
+          "note": "A strong answer does not pay protocol complexity early unless the roadmap is concrete and near-term."
+        },
+        {
+          "optionId": "websocket",
+          "verdict": "stretch",
+          "note": "Future-proofing alone is usually not a strong reason to add more moving parts today."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "traffic-direction",
+      "title": "What is the dominant direction of traffic?",
+      "description": "The first question is whether the browser mainly listens or whether both sides are constantly talking."
+    },
+    {
+      "id": "interaction-shape",
+      "title": "Are normal HTTP writes still enough?",
+      "description": "If user actions can stay on ordinary request-response flows, that often changes the transport decision."
+    },
+    {
+      "id": "connection-cost",
+      "title": "How much connection lifecycle complexity do you really need?",
+      "description": "Reconnection, heartbeats, server fan-out, auth refresh, and backpressure matter once you choose a heavier transport."
+    },
+    {
+      "id": "operational-story",
+      "title": "How easy is the operational story?",
+      "description": "A senior answer also talks about proxies, load balancing, monitoring, and failure behavior, not just API syntax."
+    },
+    {
+      "id": "future-pressure",
+      "title": "Is the future roadmap concrete or hypothetical?",
+      "description": "Strong answers adapt to the real roadmap instead of paying upfront complexity for vague future possibilities."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean SSE, not because WebSocket is bad, but because the prompt is mostly one-way",
+    "summary": "This dashboard mainly consumes live updates, while user mutations still fit ordinary HTTP requests. That makes SSE the easier answer to defend for the current problem.",
+    "reasoning": [
+      "The prompt describes a dashboard that mostly listens to server-side updates rather than sending a constant stream of client events.",
+      "If normal writes such as approve, refund, or escalate can stay on ordinary HTTP endpoints, a bidirectional channel is harder to justify right now.",
+      "WebSocket becomes stronger once the product truly needs low-latency two-way interaction, collaboration, or richer connection semantics."
+    ],
+    "recommendation": "For this exact prompt, I would use SSE for the read path and keep user actions on regular HTTP requests. I would only switch to WebSocket when the product shape becomes meaningfully more interactive."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not just choose WebSocket now so you do not have to migrate later?",
+      "answer": "I would not pay connection lifecycle complexity early unless the roadmap is concrete. If the current problem is still mostly one-way, I would keep the simpler fit now and revisit when the product genuinely needs low-latency client-to-server traffic."
+    },
+    {
+      "question": "How would you handle writes if you pick SSE?",
+      "answer": "I would keep writes on ordinary HTTP requests. The read path and the write path do not need to use the same transport if the product does not benefit from that coupling."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the browser started sending frequent low-latency events, if we added collaboration or presence, or if the protocol needed richer two-way semantics, I would move the answer toward WebSocket."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use WebSocket because real-time apps should use WebSocket.",
+      "whyItWorks": "It does not. This sounds generic and skips the actual shape of the prompt."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use SSE because the dashboard mainly receives updates, but WebSocket could work too.",
+      "whyItWorks": "This is directionally correct, but it still needs sharper reasoning about when WebSocket becomes necessary."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would lean SSE because the dashboard mainly listens to server-side updates and normal user actions can stay on regular HTTP requests. I would only move to WebSocket if the browser also needed to send frequent low-latency events or the product became more collaborative.",
+      "whyItWorks": "This sounds stronger because it explains the current choice, the boundary of that choice, and the condition that would flip the answer."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming the shape of traffic: mostly one-way or truly two-way.",
+    "Tie the transport choice to the current prompt, not to generic best practices.",
+    "Explain what stays on normal HTTP if you choose the lighter option.",
+    "State the trigger that would make you switch to the heavier option.",
+    "End with a calm boundary instead of pretending one transport wins every time."
+  ],
+  "antiPatterns": [
+    "Equating 'real time' with WebSocket without checking whether the traffic is mostly one-way.",
+    "Saying SSE is always simpler without acknowledging where it stops fitting.",
+    "Using future-proofing as the only argument for extra complexity.",
+    "Ignoring operational and failure behavior and talking only about API syntax."
+  ]
+}

@@ -190,6 +190,7 @@ describe('DashboardComponent', () => {
       getRecord: jasmine.createSpy('getRecord').and.callFake((id: string) => ({
         started: id === 'context-vs-zustand-vs-redux',
         completed: id === 'context-vs-zustand-vs-redux',
+        analysisRevealed: id === 'context-vs-zustand-vs-redux',
         lastPlayedAt: null,
         selectedOptionId: '',
       })),

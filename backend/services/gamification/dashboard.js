@@ -145,15 +145,45 @@ async function buildIncidentProgressSummary(userId) {
   };
 }
 
+async function buildTradeoffBattleProgressSummary(userId) {
+  const catalog = loadPracticeCatalog();
+  const tradeoffEntries = Array.isArray(catalog.byFamily.get('tradeoff-battle')) ? catalog.byFamily.get('tradeoff-battle') : [];
+  const totalCount = tradeoffEntries.length;
+  const tradeoffIds = tradeoffEntries.map((entry) => entry.id);
+
+  if (!tradeoffIds.length) {
+    return {
+      completedCount: 0,
+      totalCount: 0,
+      completedPercent: 0,
+    };
+  }
+
+  const completedCount = await PracticeProgress.countDocuments({
+    userId,
+    family: 'tradeoff-battle',
+    completed: true,
+    itemId: { $in: tradeoffIds },
+  });
+
+  return {
+    completedCount,
+    totalCount,
+    completedPercent: totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0,
+  };
+}
+
 async function buildProgressSummary(user) {
   const questions = buildQuestionProgressSummary(user);
   const incidents = await buildIncidentProgressSummary(user?._id);
-  const practiceCompletedCount = questions.solvedCount + incidents.passedCount;
-  const practiceTotalCount = questions.totalCount + incidents.totalCount;
+  const tradeoffBattles = await buildTradeoffBattleProgressSummary(user?._id);
+  const practiceCompletedCount = questions.solvedCount + incidents.passedCount + tradeoffBattles.completedCount;
+  const practiceTotalCount = questions.totalCount + incidents.totalCount + tradeoffBattles.totalCount;
 
   return {
     questions,
     incidents,
+    tradeoffBattles,
     practice: {
       completedCount: practiceCompletedCount,
       totalCount: practiceTotalCount,

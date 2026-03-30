@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "controlled-vs-uncontrolled-react-inputs",
+    "title": "Controlled vs uncontrolled inputs in React forms",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React form now needs instant validation, disabled submit rules, formatted input, and reset behavior. Would you keep inputs controlled or let the DOM manage them?",
+    "tags": [
+      "react",
+      "forms",
+      "inputs",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building a React profile form for username, email, and phone number. The product now wants inline validation while typing, a disabled Save button until the form is valid, phone formatting as the user types, a 'Reset changes' action, and a live summary panel that reflects the current draft immediately. In the interview, the panel asks whether you would make these inputs controlled in React or leave them uncontrolled and read values from the DOM when needed.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "controlled",
+      "label": "Use controlled inputs",
+      "summary": "Keeps React as the source of truth when the UI must react to every value change.",
+      "whenItWins": [
+        "The form needs instant validation, formatting, disabled-submit rules, or other UI that depends on the latest value while the user is typing.",
+        "Other parts of the component, such as a live preview or dirty-state warning, must stay in sync with the current draft.",
+        "You want one obvious place in React state to read, reset, compare, and submit the form values."
+      ],
+      "watchOutFor": [
+        "Controlled inputs add more wiring, so they are not always worth it for a tiny form with almost no live behavior.",
+        "A weak answer says controlled is always best without checking whether the product actually needs React to react on every keystroke."
+      ]
+    },
+    {
+      "id": "uncontrolled",
+      "label": "Keep inputs uncontrolled",
+      "summary": "Lets the browser own the input value when the form is simple and React does not need to track every change.",
+      "whenItWins": [
+        "The form is mostly plain HTML behavior and you only need the values at submit time.",
+        "You want the lightest setup for a small form without live formatting, instant validation, or synchronized preview UI.",
+        "You are working with browser-native patterns that already fit well with refs or form submission, such as simple search boxes or file inputs."
+      ],
+      "watchOutFor": [
+        "Once validation, formatting, reset rules, and cross-component sync show up, reading from the DOM starts to fight the product requirements.",
+        "A weak answer says uncontrolled is simpler without explaining how the rest of the UI will stay in sync with what the user is typing."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "plain-submit-form",
+      "title": "Simple submit-only form",
+      "prompt": "The form is small, validation mostly happens on submit, and no other UI depends on the current value while typing.",
+      "cells": [
+        {
+          "optionId": "controlled",
+          "verdict": "reasonable",
+          "note": "It still works, but you now need to justify the extra state wiring for a form that does not ask much from React."
+        },
+        {
+          "optionId": "uncontrolled",
+          "verdict": "best-fit",
+          "note": "This is easy to defend when the browser can own the values and React only cares at submit time."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Inline validation, live formatting, disabled-submit rules, reset behavior, and a live summary all depend on the current draft.",
+      "cells": [
+        {
+          "optionId": "controlled",
+          "verdict": "best-fit",
+          "note": "This is the easiest answer to defend because React needs the current value on every meaningful change."
+        },
+        {
+          "optionId": "uncontrolled",
+          "verdict": "stretch",
+          "note": "Possible only with extra refs and manual syncing, which makes the solution harder to explain for this prompt."
+        }
+      ]
+    },
+    {
+      "id": "browser-owned-field",
+      "title": "Browser-owned or special-case fields",
+      "prompt": "Some inputs fit native browser ownership better, or React only needs the value at a later event boundary.",
+      "cells": [
+        {
+          "optionId": "controlled",
+          "verdict": "reasonable",
+          "note": "Still possible, but not always the cleanest answer if React does not gain much from controlling the value."
+        },
+        {
+          "optionId": "uncontrolled",
+          "verdict": "best-fit",
+          "note": "This is where uncontrolled inputs stay useful: when the browser can do more of the work and React does not need every keystroke."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "source-of-truth",
+      "title": "Who should own the current value?",
+      "description": "If the rest of the React UI depends on the latest value, React usually needs to be the source of truth."
+    },
+    {
+      "id": "live-feedback",
+      "title": "How much should the UI react while typing?",
+      "description": "Inline validation, formatting, character counts, previews, and disabled buttons all push you toward controlled inputs."
+    },
+    {
+      "id": "form-complexity",
+      "title": "Is this a tiny form or a behavior-rich form?",
+      "description": "The more form rules and synchronized UI you add, the less natural uncontrolled inputs usually feel."
+    },
+    {
+      "id": "reset-and-compare",
+      "title": "Do you need easy reset, dirty checking, or draft comparison?",
+      "description": "These become easier when React already owns the current values instead of reading them back from the DOM later."
+    },
+    {
+      "id": "simplicity-boundary",
+      "title": "Is the extra React wiring paying off yet?",
+      "description": "A strong answer also knows when not to control everything. Small forms should stay small if the product requirements stay simple."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean controlled inputs because the rest of the UI depends on the live draft",
+    "summary": "This prompt is no longer a plain submit-only form. Validation, formatting, disabled-submit logic, reset behavior, and a live summary all depend on the current values while the user types.",
+    "reasoning": [
+      "If I only needed the values at submit time, I would be more open to uncontrolled inputs because the browser can own that simple flow just fine.",
+      "In this prompt, React needs the latest draft immediately so it can validate, format, enable or disable Save, and keep the summary panel in sync.",
+      "That makes controlled inputs easier to defend because there is one clear source of truth for the current form state instead of manual DOM reads and extra syncing."
+    ],
+    "recommendation": "For this exact prompt, I would use controlled inputs for the main fields and keep React state as the source of truth for the draft. I would still stay open to uncontrolled patterns for truly simple fields or browser-driven cases where React does not need every change."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not keep the inputs uncontrolled and just read the values on submit?",
+      "answer": "Because this prompt needs more than submit-time access. The UI must validate, format, disable Save, reset, and reflect the current draft while the user is typing, so React needs the latest values before submit."
+    },
+    {
+      "question": "Are controlled inputs always the React best practice?",
+      "answer": "No. They are the better answer when the React UI depends on live input state. If the form is small and React only needs the value at submit time, uncontrolled inputs can stay simpler."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the form lost the live validation, formatting, summary panel, and reset rules, I would move back toward uncontrolled inputs for a simpler setup because React would no longer need to react to every keystroke."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use controlled inputs because that is the React way.",
+      "whyItWorks": "It does not. This sounds like framework folklore, not reasoning about what the product actually needs."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use controlled inputs because there is validation and it may be easier to manage.",
+      "whyItWorks": "This is directionally fine, but it still needs a clearer explanation of why the rest of the UI depends on the live draft and why uncontrolled inputs become awkward here."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use controlled inputs because React needs the current values while the user types, not only at submit time. Inline validation, phone formatting, disabled-submit rules, reset behavior, and the live summary all depend on the latest draft. If the form were much simpler and React only cared at submit time, I would be comfortable with uncontrolled inputs to keep the setup lighter.",
+      "whyItWorks": "This sounds strong because it starts from the product behavior, makes the source-of-truth argument clearly, and still gives a fair boundary for when uncontrolled inputs are the simpler choice."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking whether React needs the current value while the user is typing or only at submit time.",
+    "Name which side should own the current form state for this prompt.",
+    "Explain which live behaviors depend on that choice, such as validation, formatting, preview, or reset.",
+    "Show when the other option is still the better answer so you do not sound dogmatic.",
+    "End with a simple boundary, for example: controlled for live UI feedback, uncontrolled for small submit-only forms."
+  ],
+  "antiPatterns": [
+    "Saying controlled inputs are always best because that is how React should be used.",
+    "Calling uncontrolled inputs simpler without explaining how validation, reset, and preview will stay in sync.",
+    "Controlling every field by habit even when the form has almost no live behavior.",
+    "Talking only about hook or DOM preference instead of who really needs to own the current value."
+  ]
+}

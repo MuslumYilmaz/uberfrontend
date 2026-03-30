@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "id": "websocket-memory-leak",
+    "title": "Realtime feed leaks sockets and listeners",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Route changes and filter changes keep adding listeners, so old listeners stay alive and still use old filter values.",
+    "signals": [
+      "Events start showing up more than once after route or filter changes",
+      "Some duplicates still mention old filter values",
+      "Listener and subscription counts keep growing"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["memory", "websocket", "effects"],
+    "updatedAt": "2026-03-20",
+    "access": "premium"
+  },
+  "context": {
+    "symptom": "The feed looks fine at first, but after opening and closing dashboards and changing filters a few times, each event appears multiple times.",
+    "userImpact": "The page becomes noisy and slower over time, especially for users who navigate between dashboards.",
+    "environment": "React page subscribes to a shared socket. The effect runs again whenever a new filters object is created.",
+    "evidence": [
+      {
+        "type": "metric",
+        "title": "Memory use",
+        "body": "Every open-close cycle adds about 8MB of memory, and it never fully drops back."
+      },
+      {
+        "type": "log",
+        "title": "Duplicate handler clues",
+        "body": "After switching from 'all' to 'critical', some duplicate events still print the old 'all' filter value, which means an old handler is still alive."
+      },
+      {
+        "type": "snippet",
+        "title": "Effect excerpt",
+        "language": "tsx",
+        "body": "useEffect(() => {\n  const socket = getFeedSocket(url);\n  const handler = (event: MessageEvent) => applyMessage(event, filters);\n  socket.addEventListener('message', handler);\n  socket.send(JSON.stringify({ type: 'subscribe', filters }));\n}, [url, filters]);"
+      },
+      {
+        "type": "note",
+        "title": "Connection count",
+        "body": "Sometimes there is only one socket connection, but the number of listeners and server subscriptions keeps climbing."
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "root-cause",
+      "type": "single-select",
+      "title": "Stage 1: likely root cause",
+      "prompt": "What is most likely causing the leak?",
+      "helperText": "Look for why old listeners and subscriptions are still alive.",
+      "options": [
+        {
+          "id": "payload-volume-only",
+          "label": "The feed volume is just high enough that repeated messages look like a leak.",
+          "points": 5,
+          "feedback": "High traffic can look noisy, but it does not explain old handlers using the wrong filter value.",
+          "isHarmful": false
+        },
+        {
+          "id": "turn-off-strictmode",
+          "label": "StrictMode double-invocation is the issue, so production cleanup does not matter.",
+          "points": -5,
+          "feedback": "StrictMode can reveal lifecycle issues, but the real problem is missing cleanup around external subscriptions.",
+          "isHarmful": true
+        },
+        {
+          "id": "missing-cleanup",
+          "label": "Socket ownership is blurry: the effect reruns on filter changes, adds new listeners and subscriptions, and never fully tears down the old ones.",
+          "points": 25,
+          "feedback": "Correct. The main problem is ownership and cleanup, not just 'too many messages'.",
+          "isHarmful": false
+        },
+        {
+          "id": "server-duplicates-only",
+          "label": "The server is probably sending duplicates, so the client lifecycle is mostly fine.",
+          "points": 5,
+          "feedback": "Server duplicates are possible in real life, but old handlers using old filter values and the rising listener count still point back to the client.",
+          "isHarmful": false
+        }
+      ]
+    },
+    {
+      "id": "debug-order",
+      "type": "priority-order",
+      "title": "Stage 2: debug priority order",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "First prove what stays alive after route changes and filter changes.",
+      "candidates": [
+        {
+          "id": "reproduce-route-filter-churn",
+          "label": "Open and close the page, then change filters, while counting active listeners or subscriptions after each pass."
+        },
+        {
+          "id": "inspect-owner-cleanup",
+          "label": "Check who owns the connection, what the effect depends on, and whether cleanup removes the exact handler it created."
+        },
+        {
+          "id": "confirm-stale-closures",
+          "label": "Use logs to prove that old handlers still receive events with old filter values."
+        },
+        {
+          "id": "compress-messages",
+          "label": "Compress socket payloads before checking lifecycle behavior."
+        },
+        {
+          "id": "increase-memory-limit",
+          "label": "Raise browser memory thresholds so the app stops slowing down."
+        }
+      ],
+      "expectedOrder": [
+        "reproduce-route-filter-churn",
+        "inspect-owner-cleanup",
+        "confirm-stale-closures"
+      ],
+      "slotWeights": [12, 8, 5]
+    },
+    {
+      "id": "fix-set",
+      "type": "multi-select",
+      "title": "Stage 3: best fix set",
+      "prompt": "Which changes should be part of the first reliable fix?",
+      "helperText": "Pick the changes that make ownership clear and stop listeners from piling up.",
+      "options": [
+        {
+          "id": "hide-warnings",
+          "label": "Suppress duplicate message warnings in the console to keep the UI calm.",
+          "points": 0,
+          "feedback": "That hides the signal instead of fixing the retained subscriptions.",
+          "isHarmful": false
+        },
+        {
+          "id": "cleanup-exact-subscription",
+          "label": "Return cleanup that unsubscribes and removes the exact handler the effect created before filters or route state changes.",
+          "points": 10,
+          "feedback": "Correct. Cleanup must remove the exact handler that was added.",
+          "isHarmful": false
+        },
+        {
+          "id": "split-connection-owner",
+          "label": "Separate long-lived socket ownership from per-screen listeners so one layer owns the connection and screens only subscribe or unsubscribe.",
+          "points": 10,
+          "feedback": "Correct. One layer should own the socket. Screens should only subscribe and unsubscribe.",
+          "isHarmful": false
+        },
+        {
+          "id": "socket-in-render",
+          "label": "Create the socket in render so React always keeps it in sync with props.",
+          "points": -10,
+          "feedback": "Opening sockets during render makes lifecycle bugs worse, not better.",
+          "isHarmful": true
+        },
+        {
+          "id": "stabilize-filter-deps",
+          "label": "Narrow or stabilize dependencies so harmless filter object churn does not keep recreating listeners or subscriptions.",
+          "points": 5,
+          "feedback": "Correct. If the filters object becomes a new object for no real reason, the effect keeps rebuilding listeners.",
+          "isHarmful": false
+        }
+      ]
+    },
+    {
+      "id": "guardrail",
+      "type": "single-select",
+      "title": "Stage 4: regression guard",
+      "prompt": "What is the best way to catch this again early?",
+      "helperText": "Pick the safeguard that exposes leaked listeners before users feel the slowdown.",
+      "options": [
+        {
+          "id": "connection-count-guard",
+          "label": "Add a test that repeatedly opens and closes the page and changes filters, plus listener or subscription counts so leaks show up immediately.",
+          "points": 25,
+          "feedback": "Correct. It protects the exact messy path that caused the bug, not just memory in the abstract.",
+          "isHarmful": false
+        },
+        {
+          "id": "monthly-manual-check",
+          "label": "Have someone manually refresh the page monthly to watch for memory growth.",
+          "points": 0,
+          "feedback": "Manual checks are too weak for a lifecycle leak that can recur with small code changes.",
+          "isHarmful": false
+        },
+        {
+          "id": "api-latency-only",
+          "label": "Track only feed latency because slower messages caused the duplicates.",
+          "points": 5,
+          "feedback": "Latency is useful, but it does not catch duplicate listeners or retained sockets.",
+          "isHarmful": false
+        },
+        {
+          "id": "reload-after-navigation",
+          "label": "Force a full page reload after every navigation away from the feed.",
+          "points": -5,
+          "feedback": "That hides the leak by resetting the app instead of fixing subscription ownership.",
+          "isHarmful": true
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "scoreBands": [
+      {
+        "min": 0,
+        "max": 39,
+        "label": "You saw the slowdown, but not what stayed alive",
+        "summary": "The app was slowing down, but the real problem was old listeners and subscriptions sticking around."
+      },
+      {
+        "min": 40,
+        "max": 69,
+        "label": "Right diagnosis, softer guardrail",
+        "summary": "You found the cleanup issue, but the debug order or long-term guard still missed one important lever."
+      },
+      {
+        "min": 70,
+        "max": 100,
+        "label": "You fixed the ownership problem",
+        "summary": "You named what stayed alive, removed the stale subscriptions, and protected both route changes and filter changes."
+      }
+    ],
+    "idealRunbook": [
+      "Reproduce route changes and filter changes together.",
+      "Measure active listeners, subscriptions, and whether old handlers still fire.",
+      "Clarify who owns the socket and who only subscribes.",
+      "Add checks that make duplicate listeners impossible to miss."
+    ],
+    "teachingBlocks": [
+      {
+        "type": "callout",
+        "title": "Common interview trap",
+        "text": "Do not stop at saying 'memory leak'. Name what stayed alive, who owned it, and why cleanup did not remove it.",
+        "variant": "warning"
+      },
+      {
+        "type": "checklist",
+        "title": "Stronger explanation",
+        "items": [
+          "Make it clear who owns the socket.",
+          "Cleanup removes the same handler that was added.",
+          "Dependencies are based on real connection changes, not every new object."
+        ]
+      }
+    ],
+    "optionalReflectionPrompt": "If one global socket stayed open for the whole app, where would you draw the boundary between connection ownership and per-screen subscriptions?"
+  },
+  "relatedPractice": [
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-useeffect-purpose"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-memory-leaks-common-sources"
+    }
+  ]
+}

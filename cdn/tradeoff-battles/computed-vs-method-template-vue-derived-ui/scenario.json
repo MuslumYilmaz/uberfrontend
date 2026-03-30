@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "computed-vs-method-template-vue-derived-ui",
+    "title": "Computed vs method in a Vue template for derived UI",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue template needs derived values like filtered rows, counts, and summary text from reactive state. Would you use computed properties or call methods in the template?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "templates",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30"
+  },
+  "scenario": "You are building a Vue 3 support queue page. The component has a search query, a status filter, an assigned-only toggle, and a source list of tickets. The template needs to show the visible ticket rows, a result count badge, and a summary line like '8 open tickets match'. The same derived values are used in the table area, the empty state, and a sticky mobile footer. One teammate wants to keep calling methods like `visibleTickets()`, `matchingCount()`, and `summaryText()` directly from the template because the logic is already in the component. Another teammate wants to move those values into computed properties so the UI reads from named derived state. In the interview, the panel asks which direction you would defend.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "computed",
+      "label": "Use computed properties",
+      "summary": "Fits best when the template reads pure derived values from reactive state and those values deserve clear names in the component model.",
+      "whenItWins": [
+        "The value is pure derived UI state, such as filtered rows, counts, labels, or summary text based on reactive inputs.",
+        "The same derived value is read in several places, so a named computed property keeps the component easier to read.",
+        "You want the component model to separate source state from display state without recomputing ad hoc through several template calls."
+      ],
+      "watchOutFor": [
+        "Computed is weaker if the logic is not really derived state and instead is just a tiny local helper or a parameterized function tied to one small template call.",
+        "A weak answer says computed is always better without checking whether the value actually represents reusable derived UI state."
+      ]
+    },
+    {
+      "id": "method",
+      "label": "Call a method from the template",
+      "summary": "Fits best when the logic is tiny, local, and not worth promoting into named component state.",
+      "whenItWins": [
+        "The method is a very small helper and the result is not a meaningful piece of reusable derived UI state.",
+        "The logic needs a parameter from one local template call rather than representing one shared derived value for the component.",
+        "You want to avoid creating a computed property for a one-off helper that does not improve the component model."
+      ],
+      "watchOutFor": [
+        "Method calls in hot template paths can hide repeated work, especially when the same derived result is read multiple times across the template.",
+        "A weak answer uses methods by habit even when the component already has stable derived values that deserve explicit names."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "shared-derived-ui",
+      "title": "Named derived UI state",
+      "prompt": "The template needs reusable derived values such as filtered lists, count badges, or summary text from the same source state.",
+      "cells": [
+        {
+          "optionId": "computed",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the values behave like real derived state, not just one-off helper calls."
+        },
+        {
+          "optionId": "method",
+          "verdict": "reasonable",
+          "note": "It can still work, but now you should explain why several repeated template reads are clearer as method calls than as named derived state."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "The same filtered rows, count, and summary text are read in multiple parts of the template from the same reactive inputs.",
+      "cells": [
+        {
+          "optionId": "computed",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer because the component has clear source state and clear derived display state."
+        },
+        {
+          "optionId": "method",
+          "verdict": "reasonable",
+          "note": "Possible, but harder to defend because the template keeps asking for the same derivations imperatively instead of exposing them as named state."
+        }
+      ]
+    },
+    {
+      "id": "tiny-parameterized-helper",
+      "title": "Small local helper with parameters",
+      "prompt": "The template needs a tiny one-off helper that depends on a local argument rather than one shared derived value.",
+      "cells": [
+        {
+          "optionId": "computed",
+          "verdict": "reasonable",
+          "note": "Possible only with a different shape, but it can add unnecessary ceremony if the value is not a stable derived property."
+        },
+        {
+          "optionId": "method",
+          "verdict": "best-fit",
+          "note": "This becomes easier to defend when the logic is just a small helper rather than a named piece of component-level derived state."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "derived-state-shape",
+      "title": "Is this a real derived value or just a tiny helper?",
+      "description": "This is the first question. Computed properties shine when the value deserves to exist as part of the component's derived state model."
+    },
+    {
+      "id": "reuse-in-template",
+      "title": "How many times does the template read this result?",
+      "description": "If several parts of the template depend on the same derived result, naming it once often makes the UI easier to reason about."
+    },
+    {
+      "id": "reactive-clarity",
+      "title": "Does the component clearly separate source state from derived display state?",
+      "description": "A strong answer should notice whether the component model communicates what is raw state and what is derived UI."
+    },
+    {
+      "id": "hot-path-cost",
+      "title": "Are method calls hiding repeated work in the template?",
+      "description": "The point is not that methods are forbidden. The question is whether repeated template calls are obscuring a stable derived value."
+    },
+    {
+      "id": "ceremony-balance",
+      "title": "Would a computed property clarify the design or just add extra structure?",
+      "description": "A balanced answer should not create computed properties for every tiny helper. The value should earn its place in the component model."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean computed because the prompt describes stable derived UI state, not tiny helper logic",
+    "summary": "This queue page has source state and then several derived UI values built from it: visible rows, a count badge, and summary text. Those values are read in multiple places, which makes computed properties the easier answer to defend for the exact prompt.",
+    "reasoning": [
+      "The key clue is that these are not just helper calls. They are meaningful derived values that shape the UI in several places.",
+      "Computed properties make that model explicit: the component keeps source state such as filters and tickets, then exposes named derived state such as `visibleTickets`, `matchingCount`, and `summaryText`.",
+      "I would still use a method for a small local helper, especially if it needs a parameter from one template call and does not really deserve to become part of the component's derived state."
+    ],
+    "recommendation": "For this exact prompt, I would use computed properties for the filtered list, count, and summary text, and reserve template methods for tiny local helpers rather than stable derived UI state."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Are methods in Vue templates always bad?",
+      "answer": "No. A small local helper can be completely fine. The problem is when the template keeps asking for the same meaningful derived values through methods instead of exposing them clearly as component state."
+    },
+    {
+      "question": "When would a method clearly be the better answer?",
+      "answer": "When the logic is tiny, one-off, or parameterized from a local template call and does not really represent a reusable derived value for the whole component."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the logic stopped being stable component-level derived state and became a small local helper with arguments, I would be more comfortable keeping it as a method."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use computed because methods in templates are bad for performance.",
+      "whyItWorks": "It does not. This sounds dogmatic and skips the real boundary between stable derived UI state and small local helper logic."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use computed because the filtered list and count are derived from state and show up in multiple places.",
+      "whyItWorks": "This is directionally fine, but it still needs a sharper explanation of why those values belong in the component's derived state model and when a method is still appropriate."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use computed properties because the visible tickets, matching count, and summary text are stable derived values built from the same reactive inputs, and the template reads them in several places. I want those values to be named derived state in the component rather than method calls scattered through the template. I would still use a method for a tiny local helper, especially if it needs a parameter from one template call and does not really belong in the component's shared derived state.",
+      "whyItWorks": "This sounds strong because it starts from the shape of the derived UI, not from a blanket rule, and it still gives a clear place for small template methods."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking whether the value is stable derived UI state or just a tiny local helper.",
+    "Check whether the same result is read in several parts of the template.",
+    "Choose computed or method based on that boundary.",
+    "Explain the main cost of the other option, either scattered repeated derivations or unnecessary extra structure.",
+    "End with a simple rule of thumb, for example: computed for named derived UI state, method for small local helpers."
+  ],
+  "antiPatterns": [
+    "Saying methods in templates are always bad.",
+    "Creating computed properties for every tiny helper regardless of value.",
+    "Keeping important derived UI state hidden behind repeated method calls in the template.",
+    "Talking only about performance and ignoring component readability and state shape."
+  ]
+}

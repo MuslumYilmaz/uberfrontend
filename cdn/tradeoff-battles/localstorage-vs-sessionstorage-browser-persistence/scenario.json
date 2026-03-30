@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "localstorage-vs-sessionstorage-browser-persistence",
+    "title": "localStorage vs sessionStorage for browser persistence",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A web app needs to remember some client-side UI state. Would you persist it in localStorage or sessionStorage?",
+    "tags": [
+      "javascript",
+      "browser",
+      "storage",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building a browser-based learning app. The team wants to remember a few client-side values such as the selected practice filter, whether the sidebar is collapsed, and a partially completed multi-step form. Some of these values should survive a browser restart, while others should disappear once the tab or session ends. In the interview, the panel asks whether you would use `localStorage` or `sessionStorage` for this kind of persistence.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "local-storage",
+      "label": "Use localStorage",
+      "summary": "Fits best when the user expects the preference or draft to survive beyond the current tab session.",
+      "whenItWins": [
+        "The value is a durable user preference, such as theme, collapsed sidebar state, or a filter the user expects to still see tomorrow.",
+        "The product wants the browser to remember something across page reloads, tab closes, and later returns to the app.",
+        "Losing the value when the session ends would feel surprising or frustrating to the user."
+      ],
+      "watchOutFor": [
+        "Keeping too much stale UI state forever can make the app feel haunted by old choices, so permanence should be intentional.",
+        "A weak answer stores everything in localStorage just because persistence sounds convenient, without asking whether the user actually wants long-lived memory."
+      ]
+    },
+    {
+      "id": "session-storage",
+      "label": "Use sessionStorage",
+      "summary": "Fits best when the value should survive reloads in the current tab but should disappear when that browsing session ends.",
+      "whenItWins": [
+        "The state is useful only for the current tab session, such as a temporary workflow draft, a one-session redirect target, or an in-progress wizard step.",
+        "You want a page refresh not to erase progress immediately, but you do not want the browser to remember the value forever.",
+        "The user expectation is 'keep this while I am working right now,' not 'remember this every time I come back.'"
+      ],
+      "watchOutFor": [
+        "If the product expects the value to survive a browser restart or a fully closed session, sessionStorage will disappear sooner than the user expects.",
+        "A weak answer picks sessionStorage only because it feels safer, without checking whether the user actually needs longer-lived persistence."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "durable-preference",
+      "title": "Durable user preference",
+      "prompt": "The user expects the app to remember the value on a later visit, even after closing the browser.",
+      "cells": [
+        {
+          "optionId": "local-storage",
+          "verdict": "best-fit",
+          "note": "This is easiest to defend when the product expectation is long-lived browser memory."
+        },
+        {
+          "optionId": "session-storage",
+          "verdict": "stretch",
+          "note": "It will feel too temporary if the user expects the setting to still exist next time they come back."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Some values behave like durable preferences, while others look more like temporary session drafts.",
+      "cells": [
+        {
+          "optionId": "local-storage",
+          "verdict": "reasonable",
+          "note": "Strong for true preferences like sidebar collapse state or a filter the app should remember over time."
+        },
+        {
+          "optionId": "session-storage",
+          "verdict": "reasonable",
+          "note": "Strong for temporary workflow state that should survive refresh but should not necessarily return days later."
+        }
+      ]
+    },
+    {
+      "id": "temporary-workflow",
+      "title": "Temporary in-session workflow",
+      "prompt": "The user should be protected from accidental refreshes, but the value should disappear once the session really ends.",
+      "cells": [
+        {
+          "optionId": "local-storage",
+          "verdict": "reasonable",
+          "note": "It still works, but the persistence may outlive the user's expectation and leave stale draft state behind."
+        },
+        {
+          "optionId": "session-storage",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the state is explicitly scoped to the current browsing session."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "user-expectation",
+      "title": "How long does the user expect this value to last?",
+      "description": "This is the most important question. Durable preferences and temporary session drafts usually want different storage lifetimes."
+    },
+    {
+      "id": "reload-vs-return",
+      "title": "Should it survive a refresh, a closed tab, or a later return?",
+      "description": "A strong answer should separate these lifetimes clearly instead of using the word 'persistent' in a vague way."
+    },
+    {
+      "id": "stale-state-risk",
+      "title": "What happens if the value lives too long?",
+      "description": "Long-lived storage can become stale and confusing if the product never meant to remember an old draft or old transient UI choice."
+    },
+    {
+      "id": "workflow-type",
+      "title": "Is this a preference or a temporary workflow state?",
+      "description": "Preferences often want longer memory. Temporary tasks often want protection during the current session, but not forever."
+    },
+    {
+      "id": "scope-discipline",
+      "title": "Can you choose storage per value instead of globally?",
+      "description": "Many real systems use both. A strong answer notices that different pieces of state can deserve different persistence scopes."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would separate durable preferences from temporary workflow state",
+    "summary": "This prompt should not end in one universal winner. Some values want long-lived browser memory, while others only need session-scoped protection.",
+    "reasoning": [
+      "If the value is a real preference like a collapsed sidebar or a long-lived filter choice, I would lean `localStorage` because the user expects it to still be there later.",
+      "If the value is a temporary wizard draft or one-session workflow state, I would lean `sessionStorage` because the user usually wants refresh protection, not permanent memory.",
+      "The important teaching point is not which API is more powerful. It is matching the storage lifetime to the product expectation for that specific value."
+    ],
+    "recommendation": "For this exact prompt, I would use `localStorage` for durable preferences such as sidebar collapse or a sticky study filter, and `sessionStorage` for temporary in-session workflow state such as a partially completed multi-step form."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not just use localStorage for everything so users never lose their work?",
+      "answer": "Because long-lived persistence can keep stale temporary state around far longer than the user expects. Some workflows should survive a refresh, but not come back days later as if the user never left."
+    },
+    {
+      "question": "When is sessionStorage clearly the better answer?",
+      "answer": "When the state belongs to the current tab session and should vanish once that session is over, such as a temporary wizard draft, a redirect target, or a one-session intermediate workflow."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the product expectation became more durable, I would move toward localStorage. If the value became more temporary and session-scoped, I would move toward sessionStorage. The key is the expected lifetime of that specific state."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use localStorage because it persists more.",
+      "whyItWorks": "It does not. This ignores whether the user actually wants that value to live longer and teaches no boundary for temporary session-scoped state."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use localStorage for preferences and sessionStorage for temporary drafts.",
+      "whyItWorks": "This is directionally good, but it still needs a clearer explanation of user expectation, state lifetime, and why the same app may intentionally use both."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would split the decision by state lifetime. I would use `localStorage` for durable preferences like a collapsed sidebar or a filter the user expects to still see on a later visit. I would use `sessionStorage` for a temporary multi-step workflow draft that should survive refresh during the current session but disappear after the session ends. The right answer depends on what the user expects that specific value to do over time.",
+      "whyItWorks": "This sounds strong because it frames the problem around user expectation and persistence scope instead of pretending one browser storage API should win for every value."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking how long the user expects this value to survive.",
+    "Separate durable preferences from temporary workflow state.",
+    "Choose the storage API whose lifetime matches that expectation.",
+    "Explain what goes wrong if the value lives too long or disappears too soon.",
+    "End with a clear boundary, for example: localStorage for durable preferences, sessionStorage for current-session workflow state."
+  ],
+  "antiPatterns": [
+    "Using localStorage for every client-side value just because persistence sounds safer.",
+    "Using sessionStorage for a preference the user expects to still exist on a later visit.",
+    "Talking only about API capability instead of talking about user expectation and lifetime.",
+    "Forgetting that one app can intentionally use both storage scopes for different kinds of state."
+  ]
+}

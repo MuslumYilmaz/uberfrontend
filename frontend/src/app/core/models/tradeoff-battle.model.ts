@@ -75,6 +75,7 @@ export interface TradeoffBattleScenario {
 export interface TradeoffBattleProgressRecord {
   started: boolean;
   completed: boolean;
+  analysisRevealed: boolean;
   lastPlayedAt: string | null;
   selectedOptionId: string;
 }
@@ -83,6 +84,7 @@ export function createEmptyTradeoffBattleProgressRecord(): TradeoffBattleProgres
   return {
     started: false,
     completed: false,
+    analysisRevealed: false,
     lastPlayedAt: null,
     selectedOptionId: '',
   };

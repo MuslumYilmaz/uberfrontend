@@ -52,6 +52,7 @@ describe('TradeoffListComponent', () => {
             getRecord: () => ({
               started: false,
               completed: false,
+              analysisRevealed: false,
               lastPlayedAt: null,
               selectedOptionId: '',
             }),

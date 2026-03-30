@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "promise-all-vs-sequential-awaits",
+    "title": "Promise.all vs sequential awaits in JavaScript",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A page needs several independent requests before it can render. Would you run them with Promise.all or await them one by one?",
+    "tags": [
+      "javascript",
+      "async",
+      "promises",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building a JavaScript dashboard page that needs a user profile, permissions, and notification preferences before the initial UI can render correctly. These requests go to different endpoints and do not depend on each other’s results. In the interview, the panel asks whether you would load them with `Promise.all` or await them sequentially one after another.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "promise-all",
+      "label": "Use Promise.all",
+      "summary": "Fits best when several async tasks are independent and the page can benefit from running them in parallel.",
+      "whenItWins": [
+        "The requests do not depend on each other, so waiting for one before starting the next only adds avoidable latency.",
+        "The page needs all results anyway, so parallel startup reduces total waiting time for the initial render.",
+        "You want the code to communicate clearly that these async tasks are independent work, not a step-by-step pipeline."
+      ],
+      "watchOutFor": [
+        "If one request fails, `Promise.all` rejects the whole group, so you still need to think about the product’s error behavior.",
+        "A weak answer says parallel is always faster without checking dependencies, rate limits, or whether partial results are acceptable."
+      ]
+    },
+    {
+      "id": "sequential-awaits",
+      "label": "Await sequentially",
+      "summary": "Fits best when later work depends on earlier results or when the product intentionally wants controlled ordering.",
+      "whenItWins": [
+        "Request B really needs data from request A, so the second task cannot start honestly until the first one finishes.",
+        "The workflow is intentionally step-by-step, such as authentication first, then user-specific data, then a follow-up action.",
+        "You need to control load, preserve order, or short-circuit early because later requests should not run after an earlier failure."
+      ],
+      "watchOutFor": [
+        "If the tasks are actually independent, sequential awaits make the page slower for no product benefit.",
+        "A weak answer says sequential code is simpler without noticing that it is accidentally serializing independent work."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "independent-requests",
+      "title": "Independent startup requests",
+      "prompt": "Several requests can start immediately and none of them needs the others to resolve first.",
+      "cells": [
+        {
+          "optionId": "promise-all",
+          "verdict": "best-fit",
+          "note": "This is easiest to defend because the work is independent and the page benefits from parallel startup."
+        },
+        {
+          "optionId": "sequential-awaits",
+          "verdict": "stretch",
+          "note": "You can do it, but you are paying extra waiting time without getting a real product benefit back."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Profile, permissions, and preferences are all needed, but none of them depends on another result.",
+      "cells": [
+        {
+          "optionId": "promise-all",
+          "verdict": "best-fit",
+          "note": "This is the clearest answer because the dependency graph is flat, not sequential."
+        },
+        {
+          "optionId": "sequential-awaits",
+          "verdict": "reasonable",
+          "note": "Possible, but weaker unless you can point to a real ordering or load-control reason that the prompt does not currently show."
+        }
+      ]
+    },
+    {
+      "id": "dependency-chain",
+      "title": "True dependency chain",
+      "prompt": "The second request needs an id, token, or result produced by the first request before it can even be built correctly.",
+      "cells": [
+        {
+          "optionId": "promise-all",
+          "verdict": "stretch",
+          "note": "Parallel startup no longer matches the real data dependency, so this becomes much harder to defend."
+        },
+        {
+          "optionId": "sequential-awaits",
+          "verdict": "best-fit",
+          "note": "This is where step-by-step awaits are honest and easier to explain because the workflow is actually sequential."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "dependency-graph",
+      "title": "Are the tasks truly independent?",
+      "description": "This is the first question. If nothing depends on anything else, serial execution is often just extra waiting."
+    },
+    {
+      "id": "latency-cost",
+      "title": "How much user-visible latency are you adding?",
+      "description": "Sequential awaits stack waiting time. Parallel work can reduce total startup time when the tasks are independent."
+    },
+    {
+      "id": "failure-shape",
+      "title": "What should happen if one request fails?",
+      "description": "A strong answer should mention whether the product needs all results, can tolerate partial failure, or should stop the workflow early."
+    },
+    {
+      "id": "load-control",
+      "title": "Do you need controlled ordering or throttled load?",
+      "description": "Sometimes slower is correct if the system or workflow intentionally wants one step at a time."
+    },
+    {
+      "id": "intent-clarity",
+      "title": "What story does the code tell the next developer?",
+      "description": "The structure should make it obvious whether the work is parallel by nature or truly a pipeline of dependent steps."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean Promise.all because the prompt describes independent work, not a dependency chain",
+    "summary": "The profile, permissions, and preferences requests are all needed for the page, but they do not rely on each other. That makes `Promise.all` the easiest answer to defend.",
+    "reasoning": [
+      "If I await them one by one, I turn independent work into artificial serial work and increase total startup time for the user.",
+      "The prompt says these requests are independent, so parallel execution better matches the real dependency graph of the problem.",
+      "I would switch back toward sequential awaits only when later work genuinely depends on earlier results or when the system intentionally wants ordered, controlled execution."
+    ],
+    "recommendation": "For this exact prompt, I would load the requests with `Promise.all`, then handle the combined success or failure path explicitly. I would only move back to sequential awaits if the workflow later gained a true step-by-step dependency."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not just keep it sequential because the code reads top to bottom more simply?",
+      "answer": "Because readability should not hide the actual dependency graph. If the requests are independent, serializing them makes the product slower and also tells a misleading story about how the workflow really behaves."
+    },
+    {
+      "question": "When would sequential awaits be the better answer?",
+      "answer": "When request B really needs request A to finish first, or when the product intentionally wants ordered, controlled execution instead of parallel startup."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If one call started depending on another result, or if the backend wanted stricter load control or fail-fast pipeline behavior, I would move toward sequential awaits because the workflow would no longer be truly parallel."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use Promise.all because it is faster.",
+      "whyItWorks": "It does not. This says the right tool name but does not explain why the requests are parallel-safe or when sequential awaits would still be correct."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use Promise.all because the requests seem independent.",
+      "whyItWorks": "This is directionally fine, but it still needs a clearer explanation of dependency shape, startup latency, and why serial awaits would be artificial here."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use `Promise.all` because profile, permissions, and preferences are all required but do not depend on each other. That means the user would only wait longer if I serialized them with sequential awaits. I would move back to sequential awaits only if the workflow became a true dependency chain or needed controlled ordered execution.",
+      "whyItWorks": "This sounds strong because it starts from the dependency graph, explains the latency impact, and still gives a clean boundary for when sequential awaits become the better answer."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking whether the async tasks are independent or form a real dependency chain.",
+    "State which execution model you would choose for this prompt.",
+    "Explain what that choice does to total waiting time and workflow clarity.",
+    "Mention how failure or ordering needs could change the answer.",
+    "End with a clear boundary, for example: Promise.all for independent work, sequential awaits for dependent steps."
+  ],
+  "antiPatterns": [
+    "Choosing Promise.all only because it sounds faster without checking whether the tasks are actually independent.",
+    "Using sequential awaits for independent requests just because the syntax looks simpler.",
+    "Ignoring how one failure should affect the rest of the workflow.",
+    "Talking about syntax preference instead of dependency shape and user-visible latency."
+  ]
+}

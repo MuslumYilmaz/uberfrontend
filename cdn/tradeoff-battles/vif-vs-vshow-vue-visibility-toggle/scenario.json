@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "vif-vs-vshow-vue-visibility-toggle",
+    "title": "v-if vs v-show for Vue visibility toggles",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue screen hides and shows UI sections based on user interaction. Would you use v-if or v-show?",
+    "tags": [
+      "vue",
+      "templates",
+      "rendering",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30"
+  },
+  "scenario": "You are building a Vue 3 operations dashboard. The page has a filter drawer that users open and close many times while they work through a queue. The drawer contains search inputs, checkboxes, and a small amount of local UI state that users expect to still be there when they reopen it a few seconds later. One teammate wants to use `v-if` because hidden UI should not stay in the DOM. Another teammate wants to use `v-show` because the drawer is toggled frequently and should stay mounted while only changing visibility. In the interview, the panel asks which direction you would defend.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "v-if",
+      "label": "Use v-if",
+      "summary": "Fits best when the content is not shown often, is expensive to keep mounted, or should not exist until it is actually needed.",
+      "whenItWins": [
+        "The section appears rarely, so paying mount and unmount cost only when needed is perfectly reasonable.",
+        "The hidden content is heavy enough that you do not want it sitting in the DOM all the time.",
+        "The UI should really disappear when hidden rather than stay mounted and only change visibility."
+      ],
+      "watchOutFor": [
+        "If the element is toggled constantly, repeated mount and unmount can be more awkward than simply showing and hiding it.",
+        "A weak answer chooses v-if just because 'less DOM is always better' without checking how often the user toggles the UI."
+      ]
+    },
+    {
+      "id": "v-show",
+      "label": "Use v-show",
+      "summary": "Fits best when the same UI is shown and hidden often and should stay mounted between quick toggles.",
+      "whenItWins": [
+        "The user opens and closes the same panel frequently during normal workflow.",
+        "You want the UI to preserve its local state and avoid remounting on every toggle.",
+        "The content is not so heavy that keeping it mounted becomes the bigger cost."
+      ],
+      "watchOutFor": [
+        "Keeping hidden content mounted can be wasteful if the section is rarely opened or much heavier than the current prompt suggests.",
+        "A weak answer says v-show is always faster without checking whether the content should really remain mounted."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "rare-heavy-section",
+      "title": "Rarely opened or heavy content",
+      "prompt": "The section appears infrequently or is expensive enough that keeping it mounted all the time is not attractive.",
+      "cells": [
+        {
+          "optionId": "v-if",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the content does not need to sit in the DOM between rare openings."
+        },
+        {
+          "optionId": "v-show",
+          "verdict": "reasonable",
+          "note": "Still possible, but now you should explain why preserving mount state matters more than the cost of keeping the section around."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Users repeatedly open and close the same filter drawer and expect its local state to still be there during the workflow.",
+      "cells": [
+        {
+          "optionId": "v-if",
+          "verdict": "reasonable",
+          "note": "Possible, but harder to defend because the repeated mount and unmount cycles fight the actual interaction pattern."
+        },
+        {
+          "optionId": "v-show",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer because the panel is toggled often and benefits from staying mounted."
+        }
+      ]
+    },
+    {
+      "id": "should-not-exist-when-hidden",
+      "title": "Hidden content should not stay mounted",
+      "prompt": "The section should only exist when active, either for lifecycle reasons or because hidden presence itself is undesirable.",
+      "cells": [
+        {
+          "optionId": "v-if",
+          "verdict": "best-fit",
+          "note": "This becomes easier to defend because conditional existence is part of the requirement, not just visibility."
+        },
+        {
+          "optionId": "v-show",
+          "verdict": "stretch",
+          "note": "At this point keeping the element mounted works against the shape of the requirement."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "toggle-frequency",
+      "title": "How often does the UI toggle during normal use?",
+      "description": "This is the first question. Frequent toggles often push the answer toward keeping the same mounted subtree around."
+    },
+    {
+      "id": "mount-cost",
+      "title": "How expensive is mounting and unmounting the content?",
+      "description": "If the component is heavy or rare, paying that cost only when needed can be the right tradeoff."
+    },
+    {
+      "id": "state-preservation",
+      "title": "Should local UI state survive quick hide and show cycles?",
+      "description": "A strong answer should notice when the user experience expects the hidden panel to come back exactly as it was."
+    },
+    {
+      "id": "semantic-existence",
+      "title": "Should the content still exist when hidden?",
+      "description": "Sometimes the real requirement is not just visual hiding. It is whether the subtree should remain mounted at all."
+    },
+    {
+      "id": "rule-of-thumb-balance",
+      "title": "Can you avoid oversimplified performance slogans?",
+      "description": "A strong answer should avoid turning this into 'one directive is always faster' and instead tie the choice to the actual interaction pattern."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean v-show because the prompt describes a frequently toggled panel that should stay mounted",
+    "summary": "This filter drawer is opened and closed repeatedly as part of normal work, and the user expects its local state to still be there. That makes `v-show` the easier answer to defend for the exact prompt.",
+    "reasoning": [
+      "The key clue is toggle frequency. This is not a rarely visited section. It is a panel the user keeps opening and closing during one workflow.",
+      "That makes `v-show` a better fit because the same mounted subtree can stay in place while only its visibility changes.",
+      "I would move toward `v-if` if the content were much heavier, opened rarely, or should truly not exist until the user activates it."
+    ],
+    "recommendation": "For this exact prompt, I would use `v-show` for the filter drawer and reserve `v-if` for sections that are infrequent, heavier, or semantically absent when hidden."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Isn't v-if better because hidden DOM should not stay around?",
+      "answer": "That can be true for rare or heavy content, but this prompt describes a panel that keeps toggling during the workflow. In that case keeping it mounted is part of the product experience, not waste by default."
+    },
+    {
+      "question": "When would v-if clearly be the better answer?",
+      "answer": "When the content is rarely shown, expensive to keep mounted, or should only exist when active instead of merely becoming invisible."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the drawer became a rarely opened advanced panel or a much heavier subtree, I would move back toward v-if because preserving mount state would no longer be the biggest value."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use v-show because it is faster than v-if.",
+      "whyItWorks": "It does not. This sounds like a slogan and skips the real questions of toggle frequency, mount cost, and state preservation."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use v-show because the drawer opens often and users may want the same state when they reopen it.",
+      "whyItWorks": "This is directionally fine, but it still needs a clearer boundary for when v-if becomes the stronger answer."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use `v-show` because the filter drawer is part of the user's active workflow and gets opened and closed repeatedly. I want the same mounted panel to stay available so its local state does not keep getting recreated on every toggle. I would use `v-if` instead for content that is rare, heavier, or should only exist when the user actually activates it.",
+      "whyItWorks": "This sounds strong because it starts from interaction pattern and state preservation instead of relying on a vague performance rule."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking how often the user will toggle the UI.",
+    "Check whether the hidden content should stay mounted or should disappear completely.",
+    "Choose the directive that matches that interaction pattern.",
+    "Explain the cost of the other option, either repeated remounting or unnecessary mounted content.",
+    "End with a simple rule of thumb, for example: v-show for frequent visibility toggles, v-if for rare or conditionally existing content."
+  ],
+  "antiPatterns": [
+    "Saying v-if is always better because it removes DOM.",
+    "Saying v-show is always faster without discussing toggle frequency or mount cost.",
+    "Ignoring whether the user expects hidden UI state to still be there when they reopen it.",
+    "Treating visibility and conditional existence as if they were the same requirement."
+  ]
+}

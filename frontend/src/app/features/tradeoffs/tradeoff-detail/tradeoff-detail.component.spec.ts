@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReplaySubject } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -135,29 +136,39 @@ describe('TradeoffDetailComponent', () => {
     });
     progress = jasmine.createSpyObj<TradeoffBattleProgressService>(
       'TradeoffBattleProgressService',
-      ['getRecord', 'saveDraft', 'markCompleted'],
+      ['getRecord', 'saveDraft', 'revealAnalysis', 'markCompleted'],
     );
     progress.getRecord.and.returnValue({
       started: false,
       completed: false,
+      analysisRevealed: false,
       lastPlayedAt: null,
       selectedOptionId: '',
     });
     progress.saveDraft.and.returnValue({
       started: true,
       completed: false,
+      analysisRevealed: false,
       lastPlayedAt: '2026-03-21T10:00:00.000Z',
+      selectedOptionId: 'zustand',
+    });
+    progress.revealAnalysis.and.returnValue({
+      started: true,
+      completed: false,
+      analysisRevealed: true,
+      lastPlayedAt: '2026-03-21T10:03:00.000Z',
       selectedOptionId: 'zustand',
     });
     progress.markCompleted.and.returnValue({
       started: true,
       completed: true,
+      analysisRevealed: true,
       lastPlayedAt: '2026-03-21T10:05:00.000Z',
       selectedOptionId: 'zustand',
     });
 
     await TestBed.configureTestingModule({
-      imports: [TradeoffDetailComponent, RouterTestingModule],
+      imports: [TradeoffDetailComponent, RouterTestingModule, NoopAnimationsModule],
       providers: [
         { provide: SeoService, useValue: seo },
         { provide: TradeoffBattleProgressService, useValue: progress },
@@ -208,10 +219,55 @@ describe('TradeoffDetailComponent', () => {
     fixture.detectChanges();
 
     expect(progress.saveDraft).toHaveBeenCalled();
-    expect(progress.markCompleted).toHaveBeenCalled();
+    expect(progress.revealAnalysis).toHaveBeenCalled();
+    expect(progress.markCompleted).not.toHaveBeenCalled();
     expect(fixture.nativeElement.textContent || '').toContain('STRONG ANSWER');
     expect(fixture.nativeElement.textContent || '').toContain('Decision matrix');
     expect(fixture.nativeElement.textContent || '').toContain('Interviewer pushback');
+    expect(fixture.nativeElement.textContent || '').toContain('Mark as completed');
+  });
+
+  it('marks the battle completed only after the explicit completion action', async () => {
+    authUser.set({
+      _id: 'user-1',
+      email: 'user@example.com',
+      username: 'user1',
+    });
+    routeData$.next({ tradeoffBattleDetail: resolvedDetail });
+
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    component.selectOption('zustand');
+    component.revealAnalysis();
+    component.markComplete();
+    fixture.detectChanges();
+
+    expect(progress.markCompleted).toHaveBeenCalled();
+    expect(component.completed()).toBeTrue();
+    expect(fixture.nativeElement.textContent || '').toContain('Completed');
+  });
+
+  it('opens the login prompt instead of completing for guests', async () => {
+    routeData$.next({ tradeoffBattleDetail: resolvedDetail });
+
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    component.selectOption('zustand');
+    component.revealAnalysis();
+    component.markComplete();
+    fixture.detectChanges();
+
+    expect(progress.markCompleted).not.toHaveBeenCalled();
+    expect(component.loginPromptOpen).toBeTrue();
+    expect(fixture.nativeElement.textContent || '').toContain('Sign in to save completed tradeoff battles');
   });
 
   it('renders the locked premium preview on premium tradeoff battles', async () => {

@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "id": "vue-pinia-destructure-stale-filter",
+    "title": "Pinia filter label stays stale after a store update",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "The product grid updates, but one filter label stays old because store state was destructured into plain values.",
+    "signals": [
+      "The list reacts, but the selected filter pill stays old",
+      "A page reload or remount suddenly shows the right value",
+      "The component destructures Pinia store state directly"
+    ],
+    "estimatedMinutes": 14,
+    "tags": ["vue", "pinia", "reactivity", "state-management"],
+    "updatedAt": "2026-03-21",
+    "access": "premium"
+  },
+  "context": {
+    "symptom": "A user changes the product filter from All to On sale. The grid updates correctly, but the pill at the top still says All until the user refreshes or leaves and comes back.",
+    "userImpact": "The page looks inconsistent, so users think the filter controls are half-broken.",
+    "environment": "Vue 3 storefront using Pinia. The component reads the current filter and result count from a store, then renders a summary header above the grid.",
+    "evidence": [
+      {
+        "type": "note",
+        "title": "What the user sees",
+        "body": "The grid and count react to the latest filter, but one small status label keeps showing the previous selection."
+      },
+      {
+        "type": "log",
+        "title": "Store debug output",
+        "body": "Pinia devtools show `selectedFilter = \"sale\"`, but the component log still prints the old destructured `selectedFilter` value."
+      },
+      {
+        "type": "snippet",
+        "title": "Current component setup",
+        "language": "ts",
+        "body": "const store = useCatalogStore();\nconst { selectedFilter, resultCount } = store;\n\nconst filterLabel = computed(() => {\n  if (selectedFilter === 'sale') return 'On sale';\n  if (selectedFilter === 'new') return 'New arrivals';\n  return 'All';\n});"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "root-cause",
+      "type": "single-select",
+      "title": "Stage 1: likely root cause",
+      "prompt": "Why does the filter label stay stale?",
+      "helperText": "Pick the explanation that matches Vue and Pinia reactivity, not just generic rendering lag.",
+      "options": [
+        {
+          "id": "computed-cache-bug",
+          "label": "Vue computed values probably cache too aggressively, so the label does not rerun after store changes.",
+          "points": 0,
+          "feedback": "Computed values are usually fine here. The bigger clue is that the component pulled plain values out of reactive store state.",
+          "isHarmful": false
+        },
+        {
+          "id": "pinia-destructure-breaks-reactivity",
+          "label": "The component destructured store state directly, so those fields stopped being reactive and the label kept reading stale values.",
+          "points": 25,
+          "feedback": "Correct. In Pinia, direct destructuring can break reactivity for state and getters. `storeToRefs()` is the usual fix.",
+          "isHarmful": false
+        },
+        {
+          "id": "template-needs-forceupdate",
+          "label": "Vue probably needs a manual force update after every filter change so small labels repaint correctly.",
+          "points": -5,
+          "feedback": "That treats Vue like the problem. The real issue is that the component disconnected itself from the reactive source.",
+          "isHarmful": true
+        },
+        {
+          "id": "pinia-only-updates-lists",
+          "label": "Pinia is good for lists but not for tiny derived labels, so the label should live in local state instead.",
+          "points": 5,
+          "feedback": "Local state is not the core problem. The label can work fine as long as it stays connected to reactive store values.",
+          "isHarmful": false
+        }
+      ]
+    },
+    {
+      "id": "debug-order",
+      "type": "priority-order",
+      "title": "Stage 2: debug priority order",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "First prove that the store updates, then prove whether the component stayed reactive.",
+      "candidates": [
+        {
+          "id": "confirm-store-state",
+          "label": "Confirm the Pinia store state changes to the new filter and count.",
+          "description": "Start with the source of truth."
+        },
+        {
+          "id": "inspect-destructuring",
+          "label": "Check whether the component destructures store state directly instead of using `storeToRefs()`.",
+          "description": "This is the most common way to disconnect from Pinia reactivity."
+        },
+        {
+          "id": "swap-to-storetorefs-repro",
+          "label": "Try a quick `storeToRefs(store)` repro to see whether the stale label starts updating immediately.",
+          "description": "A small change can confirm the root cause fast."
+        },
+        {
+          "id": "add-watchers-everywhere",
+          "label": "Add multiple `watchEffect()` calls before confirming the reactive source problem.",
+          "description": "Too noisy too early."
+        },
+        {
+          "id": "reload-route-on-filter",
+          "label": "Reload the route on every filter change to guarantee fresh state.",
+          "description": "Heavy workaround, weak first move."
+        }
+      ],
+      "expectedOrder": [
+        "confirm-store-state",
+        "inspect-destructuring",
+        "swap-to-storetorefs-repro"
+      ],
+      "slotWeights": [12, 8, 5]
+    },
+    {
+      "id": "fix-set",
+      "type": "multi-select",
+      "title": "Stage 3: best fix set",
+      "prompt": "Which changes belong in the actual fix?",
+      "helperText": "Pick the changes that keep the component connected to reactive store state.",
+      "options": [
+        {
+          "id": "use-storetorefs",
+          "label": "Use `storeToRefs(store)` when extracting reactive store fields into local variables.",
+          "points": 10,
+          "feedback": "Correct. This keeps the extracted fields reactive.",
+          "isHarmful": false
+        },
+        {
+          "id": "read-from-store-directly",
+          "label": "Or keep the values on `store.selectedFilter` / `store.resultCount` instead of destructuring them into plain variables.",
+          "points": 10,
+          "feedback": "Correct. Reading from the store directly also preserves the reactive connection.",
+          "isHarmful": false
+        },
+        {
+          "id": "copy-into-local-ref-once",
+          "label": "Copy the values into local refs once on mount and treat them as the display state.",
+          "points": -5,
+          "feedback": "That freezes the stale state problem in another form.",
+          "isHarmful": true
+        },
+        {
+          "id": "keep-derived-label-computed",
+          "label": "Keep the filter label derived in a computed value instead of syncing another manual label field.",
+          "points": 5,
+          "feedback": "Correct. Computed stays clean once its inputs are truly reactive.",
+          "isHarmful": false
+        },
+        {
+          "id": "force-component-remount",
+          "label": "Force the component to remount on filter changes with a changing `:key`.",
+          "points": 0,
+          "feedback": "That can hide the bug, but it is not the right fix for broken store reactivity.",
+          "isHarmful": false
+        }
+      ]
+    },
+    {
+      "id": "guardrail",
+      "type": "single-select",
+      "title": "Stage 4: regression guard",
+      "prompt": "What is the best guardrail for this bug?",
+      "helperText": "Pick the check that would catch a stale derived label after a store update.",
+      "options": [
+        {
+          "id": "component-store-sync-test",
+          "label": "Add a component test that updates the store and checks that both the grid summary and the filter label change together.",
+          "points": 25,
+          "feedback": "Correct. This guards the exact user-facing contract: derived UI should stay in sync with the store.",
+          "isHarmful": false
+        },
+        {
+          "id": "only-check-network",
+          "label": "Track only API timing because the main risk is probably a slow filter request.",
+          "points": 0,
+          "feedback": "The store already updates correctly. The bug is local reactivity, not network timing.",
+          "isHarmful": false
+        },
+        {
+          "id": "manual-refresh-smoke",
+          "label": "Ask QA to refresh the page after changing filters and confirm the correct label appears.",
+          "points": 5,
+          "feedback": "That can confirm the data, but it misses the real bug because refresh is one of the things that hides it.",
+          "isHarmful": false
+        },
+        {
+          "id": "ban-computed-labels",
+          "label": "Avoid computed labels entirely and keep every display string in local refs to stay safe.",
+          "points": -5,
+          "feedback": "Computed values are not the issue. The broken connection to the store is.",
+          "isHarmful": true
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "scoreBands": [
+      {
+        "min": 0,
+        "max": 39,
+        "label": "You saw the stale UI, but not the reactivity break",
+        "summary": "The store was updating, but the component had already disconnected itself from that state."
+      },
+      {
+        "min": 40,
+        "max": 69,
+        "label": "Good Vue instincts, but one step still treated the symptom",
+        "summary": "You connected the issue to reactivity, but one fix still leaned on remounts or local copies."
+      },
+      {
+        "min": 70,
+        "max": 100,
+        "label": "You diagnosed the broken reactive link clearly",
+        "summary": "You proved the store was healthy, fixed the destructuring mistake, and guarded the UI contract."
+      }
+    ],
+    "idealRunbook": [
+      "Confirm the store changes to the latest filter and count.",
+      "Check whether the component destructures store state directly.",
+      "Repair the reactive connection with `storeToRefs()` or direct store access.",
+      "Protect the fix with a test that updates the store and checks the derived UI together."
+    ],
+    "teachingBlocks": [
+      {
+        "type": "callout",
+        "title": "Vue shortcut",
+        "text": "When one Vue component goes stale while the store looks correct, ask whether the component pulled plain values out of a reactive source.",
+        "variant": "info"
+      },
+      {
+        "type": "checklist",
+        "title": "Strong answer signals",
+        "items": [
+          "You separate store correctness from component reactivity.",
+          "You mention `storeToRefs()` or direct store access quickly.",
+          "You avoid remounts and local copies as the main fix."
+        ]
+      }
+    ],
+    "optionalReflectionPrompt": "When would you prefer direct store access over `storeToRefs()` in a Vue component?"
+  },
+  "relatedPractice": [
+    {
+      "tech": "vue",
+      "kind": "trivia",
+      "id": "vue-destructuring-breaks-reactivity-torefs-toref"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-filterable-user-list"
+    }
+  ]
+}

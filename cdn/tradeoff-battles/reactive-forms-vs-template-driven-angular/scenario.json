@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "reactive-forms-vs-template-driven-angular",
+    "title": "Reactive forms vs template-driven forms for a growing Angular workflow",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "A small signup form turned into a dynamic multi-step workflow with validation rules, saved drafts, and tests. Which form approach would you defend?",
+    "tags": [
+      "angular",
+      "forms",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-21"
+  },
+  "scenario": "You are working on an Angular onboarding workflow that started as a basic signup form but now has dynamic address rows, cross-field validation, conditional enable or disable rules, draft restore, and unit tests around the form logic. In the interview, the panel asks whether you would keep it template-driven or move the workflow to reactive forms.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "template-driven",
+      "label": "Template-driven forms",
+      "summary": "Still a reasonable answer when the form is small, stable, and mostly about simple field binding with minimal logic.",
+      "whenItWins": [
+        "The form is genuinely small, such as a login, contact, or newsletter form with straightforward validation.",
+        "You want the lightest setup and do not need dynamic rows, rich cross-field rules, or much programmatic control.",
+        "The team is building a quick internal tool or prototype where form logic will stay simple."
+      ],
+      "watchOutFor": [
+        "Once dynamic controls, conditional logic, and test-heavy business rules pile up, templates get noisy and harder to reason about.",
+        "A weak answer treats template-driven forms as equally scalable for every workflow just because the form started small."
+      ]
+    },
+    {
+      "id": "reactive-forms",
+      "label": "Reactive forms",
+      "summary": "The easier answer to defend when the form model has become dynamic, validation-heavy, and important enough to test in code.",
+      "whenItWins": [
+        "The workflow has dynamic fields, cross-field validation, draft restore, conditional rules, or programmatic resets and patches.",
+        "The team wants the form model explicit in TypeScript so the behavior is easier to test, review, and refactor.",
+        "Interviewers care about scale, maintainability, and business-rule clarity as much as they care about the first version of the UI."
+      ],
+      "watchOutFor": [
+        "It can be more structure than you need for a tiny and stable form.",
+        "A weak answer says 'reactive forms always' without acknowledging when a simple template-driven form is still fine."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "small-simple-form",
+      "title": "Small and stable form",
+      "prompt": "A short form with a handful of fields, basic validators, and no dynamic sections.",
+      "cells": [
+        {
+          "optionId": "template-driven",
+          "verdict": "best-fit",
+          "note": "This is still very defendable when the form logic is modest and the cost of extra structure would not pay off."
+        },
+        {
+          "optionId": "reactive-forms",
+          "verdict": "reasonable",
+          "note": "Still valid, but it can sound heavier than the prompt really needs."
+        }
+      ]
+    },
+    {
+      "id": "current-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Dynamic rows, cross-field validation, saved drafts, conditional rules, and unit tests around the workflow.",
+      "cells": [
+        {
+          "optionId": "template-driven",
+          "verdict": "stretch",
+          "note": "Possible, but the answer becomes hard to defend once the form model is this dynamic and logic-heavy."
+        },
+        {
+          "optionId": "reactive-forms",
+          "verdict": "best-fit",
+          "note": "This is the clearest answer when the form model must be explicit, testable, and easier to change in code."
+        }
+      ]
+    },
+    {
+      "id": "even-heavier-workflow",
+      "title": "Even heavier form workflow",
+      "prompt": "The flow keeps growing, several engineers touch it, and more business rules arrive every quarter.",
+      "cells": [
+        {
+          "optionId": "template-driven",
+          "verdict": "stretch",
+          "note": "At this point it becomes harder to explain how the template will stay readable and testable."
+        },
+        {
+          "optionId": "reactive-forms",
+          "verdict": "best-fit",
+          "note": "The explicit TypeScript form model is much easier to defend as the workflow and team size grow."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "form-complexity",
+      "title": "How complex is the form model?",
+      "description": "The first question is whether this is still a small field-binding task or a real business workflow."
+    },
+    {
+      "id": "dynamic-behavior",
+      "title": "How dynamic are the controls and rules?",
+      "description": "Dynamic arrays, conditional enable or disable rules, and cross-field validation push the answer toward an explicit form model."
+    },
+    {
+      "id": "testability",
+      "title": "How much of the behavior should be tested in code?",
+      "description": "If the business rules matter enough to unit test heavily, the TypeScript model becomes much easier to defend."
+    },
+    {
+      "id": "team-readability",
+      "title": "Where will future engineers understand the rules faster?",
+      "description": "A strong answer considers whether the important logic lives clearly in code or gets scattered through the template."
+    },
+    {
+      "id": "answer-balance",
+      "title": "Can you say when the lighter option is still fine?",
+      "description": "A strong interview answer stays balanced and does not pretend one forms approach wins every time."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean reactive forms because the workflow already outgrew 'simple form' territory",
+    "summary": "This prompt describes a form workflow with dynamic structure, real validation logic, saved drafts, and tests. That makes reactive forms the easier answer to defend for the current problem.",
+    "reasoning": [
+      "The core difference is where the form model lives. In this prompt, the model and rules are important enough that they should be explicit in TypeScript.",
+      "Dynamic rows, cross-field validation, and conditional rules are exactly where reactive forms become easier to reason about and test.",
+      "Template-driven forms are still fine for small and stable forms, but this workflow is already beyond that line."
+    ],
+    "recommendation": "For this exact prompt, I would choose reactive forms for the main workflow. I would still happily use template-driven forms for smaller one-off forms elsewhere in the app."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not keep it template-driven if Angular still builds a form tree underneath?",
+      "answer": "That is true under the hood, but the real tradeoff is where the model is controlled. In this prompt, the behavior is complex enough that I want the structure and rules explicit in TypeScript, not inferred from a growing template."
+    },
+    {
+      "question": "What would make template-driven the better answer?",
+      "answer": "If this were still a short and stable form with basic validation and very little programmatic logic, I would be comfortable keeping it template-driven for lower ceremony."
+    },
+    {
+      "question": "Would you ever mix both patterns in one workflow?",
+      "answer": "I would avoid mixing them inside the same real workflow because it usually increases mental overhead. I would rather pick one clear model per form and keep the boundaries obvious."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use reactive forms because that is the best practice in Angular.",
+      "whyItWorks": "It does not. This sounds generic and does not explain why this specific prompt crossed the line into reactive-forms territory."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use reactive forms because the workflow is getting bigger, but template-driven could still work if the team prefers it.",
+      "whyItWorks": "This is directionally right, but it still needs sharper reasoning about dynamic rules and testability."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would move the workflow to reactive forms because the form is no longer just simple field binding. It now has dynamic rows, cross-field rules, draft restore, and tests around the behavior, so I want the form model explicit in TypeScript. Template-driven is still fine for smaller and calmer forms, but this one has outgrown that shape.",
+      "whyItWorks": "This sounds stronger because it starts from the workflow, explains the boundary, and still acknowledges where the lighter option wins."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming the current shape of the form: still small and stable, or now a real workflow.",
+    "State which form model you would choose for this prompt.",
+    "Explain two or three constraints that drive the choice, such as dynamic fields, cross-field rules, or tests.",
+    "Acknowledge when the other option is still the right answer.",
+    "End with a calm boundary instead of treating one forms approach as universally best."
+  ],
+  "antiPatterns": [
+    "Saying reactive forms are always better without checking whether the form is actually complex.",
+    "Claiming template-driven forms scale equally well for dynamic workflows just because the form started small.",
+    "Mixing both patterns in the same workflow as a default compromise.",
+    "Talking only about syntax and ignoring testability and rule complexity."
+  ]
+}

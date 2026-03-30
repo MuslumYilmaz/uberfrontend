@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "local-state-vs-extracted-composable-vue-feature-logic",
+    "title": "Local component state vs extracted composable for Vue feature logic",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue feature has search, selection, sorting, loading, and retry logic. Would you keep that state inside the component or extract it into a composable?",
+    "tags": [
+      "vue",
+      "composables",
+      "state",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30"
+  },
+  "scenario": "You are building a Vue 3 customer list screen. The page has a search query, filters, selected rows, sort order, loading state, error handling, retry behavior, and a few helper actions such as reset filters and refresh results. The same team now wants very similar list behavior on the orders page and the invoices page, with only small differences in fetch function and column setup. One teammate wants to keep all state and logic inside each component because that keeps the screen self-contained. Another teammate wants to extract the shared list behavior into a composable so several screens can reuse the same reactive logic. In the interview, the panel asks which direction you would defend.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "local-state",
+      "label": "Keep the state in the component",
+      "summary": "Fits best when the logic is still truly local to one screen and extraction would mostly move code without creating a better shared boundary.",
+      "whenItWins": [
+        "The state and actions belong to one component or one page and are unlikely to be reused in a meaningful way.",
+        "Most of the logic is tightly coupled to the template and page-specific behavior rather than forming a reusable feature pattern.",
+        "Extraction would mostly create indirection without giving another screen a clean shared contract."
+      ],
+      "watchOutFor": [
+        "As similar logic appears in multiple screens, copying the same reactive workflow into each component makes changes and bug fixes drift apart.",
+        "A weak answer keeps everything local just because fewer files feels simpler, even when real reuse and shared behavior already exist."
+      ]
+    },
+    {
+      "id": "composable",
+      "label": "Extract a composable",
+      "summary": "Fits best when several screens share the same reactive workflow and the extracted API can stay coherent and reusable.",
+      "whenItWins": [
+        "Several components need the same state model and actions, such as search, filters, loading, retry, and reset behavior.",
+        "The extracted API can stay focused and reusable instead of becoming a grab bag of one-off screen details.",
+        "You want bug fixes and feature changes to land in one shared reactive workflow rather than three drifting copies."
+      ],
+      "watchOutFor": [
+        "A composable becomes weaker when it is extracted too early and ends up full of component-specific flags or parameters just to feel reusable.",
+        "A weak answer extracts everything immediately without checking whether the shared logic is truly stable enough to deserve its own boundary."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "one-screen-only",
+      "title": "One screen with mostly local behavior",
+      "prompt": "The state is strongly tied to one page and there is no real second consumer yet.",
+      "cells": [
+        {
+          "optionId": "local-state",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because extraction would mostly add indirection without creating a meaningful reusable unit."
+        },
+        {
+          "optionId": "composable",
+          "verdict": "reasonable",
+          "note": "Still possible, but now you need to explain what real boundary the composable improves instead of just moving code around."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Several list screens now share the same search, filter, loading, retry, and reset workflow with only small page-specific differences.",
+      "cells": [
+        {
+          "optionId": "local-state",
+          "verdict": "reasonable",
+          "note": "Possible, but harder to defend because the same reactive workflow is starting to repeat across several screens."
+        },
+        {
+          "optionId": "composable",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer because the shared workflow has become real enough to deserve one reusable reactive boundary."
+        }
+      ]
+    },
+    {
+      "id": "overgeneralized-extraction",
+      "title": "Extraction is becoming too generic",
+      "prompt": "The composable starts taking many special-case options and screen-specific flags just to support different pages.",
+      "cells": [
+        {
+          "optionId": "local-state",
+          "verdict": "reasonable",
+          "note": "Local ownership becomes more attractive again if the shared abstraction is collapsing under too many one-off differences."
+        },
+        {
+          "optionId": "composable",
+          "verdict": "stretch",
+          "note": "At this point the answer starts to weaken unless the composable is narrowed or split into smaller reusable pieces."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "reuse-is-real",
+      "title": "Is the reuse real or only hypothetical?",
+      "description": "This is the first question. Extraction pays off when several screens truly share the same reactive workflow, not when reuse is only imagined."
+    },
+    {
+      "id": "api-coherence",
+      "title": "Can the composable expose one coherent API?",
+      "description": "A strong answer should care about whether the extracted API stays focused or starts becoming a bag of options for unrelated screens."
+    },
+    {
+      "id": "page-coupling",
+      "title": "How tied is the logic to one component's template and behavior?",
+      "description": "If most of the logic is page-specific, keeping it local may still be the clearest design."
+    },
+    {
+      "id": "maintenance-pressure",
+      "title": "How costly is duplication becoming?",
+      "description": "Repeated search, loading, retry, and reset flows across multiple screens often create real maintenance pressure that a composable can reduce."
+    },
+    {
+      "id": "abstraction-timing",
+      "title": "Are you extracting at the right time?",
+      "description": "A balanced answer should avoid both extremes: copying logic forever and extracting too early before the boundary is stable."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean composable because the prompt describes a repeated reactive workflow, not just one local screen",
+    "summary": "This customer list logic is no longer unique to one page. Search, filters, selection, loading, retry, and reset behavior are now showing up across several screens with only small differences. That makes an extracted composable the easier answer to defend for the exact prompt.",
+    "reasoning": [
+      "The key clue is that reuse is no longer hypothetical. There are now several pages with nearly the same reactive workflow and only small page-specific differences such as fetch function or column setup.",
+      "That makes a composable a good fit because the shared logic can live behind one focused API instead of drifting into slightly different copies across customer, order, and invoice screens.",
+      "I would still keep state local when the workflow is genuinely screen-specific or when the extraction starts needing too many special-case knobs. The goal is not to move code out of components automatically. The goal is to extract a stable reusable workflow."
+    ],
+    "recommendation": "For this exact prompt, I would extract the shared list workflow into a composable and keep only screen-specific concerns in each page component. I would stay local if the logic were still unique to one screen or if the composable started collapsing under too many page-specific exceptions."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not keep each screen self-contained and avoid indirection?",
+      "answer": "I would do that if the workflow were still unique to one page. Here the same search, filter, loading, and retry pattern already exists across several screens, so self-contained starts turning into duplicated maintenance rather than clarity."
+    },
+    {
+      "question": "When would local component state clearly be the better answer?",
+      "answer": "When the state really belongs to one screen, the logic is tightly tied to that page's template, or the extracted API would only be reusable through a growing list of special-case options."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the shared behavior shrank back to one real consumer, or if the composable had to absorb too many page-specific conditions to stay usable, I would move the logic back toward local ownership or split the abstraction into smaller pieces."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would always use a composable because reusable logic should never stay in components.",
+      "whyItWorks": "It does not. This sounds dogmatic and ignores the difference between real shared workflow logic and one-page local state."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably extract a composable because several pages now have similar list behavior and we can reuse the same logic.",
+      "whyItWorks": "This is directionally fine, but it still needs a sharper explanation of what boundary is becoming reusable and when local ownership is still the better choice."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would extract a composable because the search, filter, loading, retry, and reset workflow is now shared across several list screens with only small differences. That means the reuse is real enough to justify one focused reactive API instead of letting three copies drift apart. I would still keep page-specific concerns in each component, and I would avoid overgeneralizing the composable with a long list of one-off options. If the logic were still unique to one screen, I would keep it local.",
+      "whyItWorks": "This sounds strong because it explains why the workflow has crossed the line into real reuse, while still protecting against premature or overgeneralized extraction."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking whether reuse is real or still hypothetical.",
+    "Check whether the shared logic forms one coherent reactive workflow.",
+    "Choose local state or a composable based on that boundary.",
+    "Explain the cost of the other option, either duplication drift or premature abstraction.",
+    "End with a simple rule of thumb, for example: keep one-page state local, extract a composable when several screens truly share the same reactive workflow."
+  ],
+  "antiPatterns": [
+    "Extracting a composable just because code outside a component feels cleaner.",
+    "Keeping duplicated list workflow in several screens long after reuse is clearly real.",
+    "Building one giant composable with many screen-specific flags and options.",
+    "Talking only about file organization instead of state boundaries and maintenance pressure."
+  ]
+}

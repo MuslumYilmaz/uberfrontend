@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "watch-vs-watcheffect-vue-reactive-effects",
+    "title": "watch vs watchEffect for Vue reactive side effects",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue feature triggers side effects from several reactive inputs and needs cleanup for stale work. Would you use watch or watchEffect?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "side-effects",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30"
+  },
+  "scenario": "You are building a Vue 3 pricing configurator. The page has a selected plan, billing interval, seat count, region, and an optional coupon field. Whenever the currently relevant inputs change, the app should fetch a fresh quote preview and cancel the previous request if a newer change arrives first. Some dependencies are conditional: the coupon only matters when the coupon section is enabled, and some enterprise-only options only matter when the user picks the enterprise plan. In the interview, the panel asks whether you would model this effect with an explicit `watch(...)` or with `watchEffect(...)`.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "watch",
+      "label": "Use watch with explicit sources",
+      "summary": "Fits best when the effect should react only to a clearly chosen set of sources and you want tighter control over why it runs.",
+      "whenItWins": [
+        "You want an explicit dependency list so future developers can see exactly which reactive sources trigger the effect.",
+        "The effect needs old versus new values, selective branching, or tighter control over which changes should or should not trigger work.",
+        "The side effect is important enough that accidental dependency capture would be a real maintenance risk."
+      ],
+      "watchOutFor": [
+        "As the effect depends on more values or conditional branches, the explicit source list can become noisy and easier to forget to update.",
+        "A weak answer picks watch only because it feels more explicit, without checking whether the effect naturally wants to react to whatever reactive state it reads."
+      ]
+    },
+    {
+      "id": "watch-effect",
+      "label": "Use watchEffect with cleanup",
+      "summary": "Fits best when the effect should simply react to whatever reactive values it currently reads, especially when those dependencies can change by branch.",
+      "whenItWins": [
+        "The effect depends on several reactive inputs and should rerun whenever the values actually used inside the effect change.",
+        "Conditional dependencies matter, such as fields that only participate when a toggle is enabled or a plan type is selected.",
+        "You want a concise reactive effect with cleanup for stale requests, rather than maintaining a longer explicit source list by hand."
+      ],
+      "watchOutFor": [
+        "watchEffect can become harder to reason about if the effect body starts reading too many reactive values accidentally or mixes too many concerns together.",
+        "A weak answer says watchEffect is always shorter and therefore better, without discussing hidden dependencies or when explicit source control matters."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "strict-explicit-sources",
+      "title": "Effect should react only to a fixed source list",
+      "prompt": "The team wants a very explicit list of triggering sources, or the logic needs old and new values to decide what to do.",
+      "cells": [
+        {
+          "optionId": "watch",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the trigger set is part of the design and the effect needs tighter control."
+        },
+        {
+          "optionId": "watch-effect",
+          "verdict": "reasonable",
+          "note": "Still possible, but now you should explain why automatic dependency capture is safer than an explicit trigger list."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "A quote preview effect depends on several reactive inputs, some of them conditionally, and stale requests should be cleaned up automatically.",
+      "cells": [
+        {
+          "optionId": "watch",
+          "verdict": "reasonable",
+          "note": "Possible, but harder to defend because the effect naturally wants to follow the reactive values it actually reads, including branch-dependent ones."
+        },
+        {
+          "optionId": "watch-effect",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer because the effect is driven by whatever inputs are currently relevant, and cleanup fits the same reactive effect model."
+        }
+      ]
+    },
+    {
+      "id": "growing-effect-body",
+      "title": "Effect body is getting too broad",
+      "prompt": "The effect starts reading many unrelated values or mixing several responsibilities into one block.",
+      "cells": [
+        {
+          "optionId": "watch",
+          "verdict": "best-fit",
+          "note": "Explicit sources become easier to defend again when automatic dependency capture is getting too implicit for the size of the effect."
+        },
+        {
+          "optionId": "watch-effect",
+          "verdict": "stretch",
+          "note": "At this point the answer starts to sound weak unless the effect is narrowed or split up."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "dependency-explicitness",
+      "title": "Should the triggering sources be explicit or discovered from the effect body?",
+      "description": "This is the first question. Some effects benefit from a visible trigger list, while others naturally want to follow whatever they currently read."
+    },
+    {
+      "id": "conditional-dependencies",
+      "title": "Do dependencies change based on branches?",
+      "description": "watchEffect becomes more attractive when some reactive values only matter under certain conditions and the effect should follow that shape automatically."
+    },
+    {
+      "id": "cleanup-story",
+      "title": "How will stale work be canceled or ignored?",
+      "description": "A strong answer should talk about cleanup, especially when repeated changes can leave earlier async work stale."
+    },
+    {
+      "id": "effect-size",
+      "title": "Is the effect small and coherent enough to auto-track safely?",
+      "description": "watchEffect is strongest when the effect stays narrow. If the body grows into a grab bag of unrelated reads, explicit watch sources become more valuable."
+    },
+    {
+      "id": "maintainability",
+      "title": "What will be easier to maintain later?",
+      "description": "A senior answer should care about whether future developers will more likely forget a trigger source in a watch list or accidentally capture extra sources in an oversized watchEffect."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean watchEffect because the prompt describes one coherent effect with several conditional dependencies",
+    "summary": "This quote preview should rerun based on whichever reactive inputs are currently relevant, and some of those inputs only matter in certain branches. That makes watchEffect the easier answer to defend for the exact prompt.",
+    "reasoning": [
+      "The key clue is that the effect depends on several inputs, but not all of them matter all the time. Coupon state matters only when that section is enabled, and enterprise options matter only when the enterprise plan is selected.",
+      "That makes `watchEffect` a strong fit because the effect can react to the reactive values it actually reads in the current branch, instead of maintaining a longer explicit source list that may over-trigger or drift from the real logic.",
+      "I would still move toward `watch` when the trigger set must stay explicit, when I need previous and next values, or when the effect body grows enough that automatic dependency capture becomes too implicit."
+    ],
+    "recommendation": "For this exact prompt, I would use `watchEffect` with cleanup for stale quote requests, and I would switch to `watch` only if the team needed tighter explicit control over trigger sources or old-versus-new comparisons."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not just use watch so the dependencies are explicit?",
+      "answer": "That is a strong option when the trigger list is part of the design. In this prompt, though, the effect has conditional dependencies, so the values that matter change by branch. `watchEffect` follows the actual reads more naturally and keeps the effect closer to the real logic."
+    },
+    {
+      "question": "When would watch clearly be the better answer?",
+      "answer": "When I need strict control over which sources trigger the effect, when I need previous and next values, or when I want to avoid auto-tracking because the effect body is getting too broad."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the quote effect needed a very explicit trigger list, or if the body started reading many values that were not meant to drive the request, I would move back toward `watch` to keep the dependency boundary tighter."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use watchEffect because it is shorter than watch.",
+      "whyItWorks": "It does not. This sounds style-driven and ignores the real tradeoff around dependency control and conditional reactive reads."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use watchEffect because the quote depends on several fields and it can rerun when those values change.",
+      "whyItWorks": "This is directionally fine, but it still needs a sharper explanation of conditional dependencies, cleanup, and when explicit watch sources become more appropriate."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use `watchEffect` with cleanup because the quote preview depends on several reactive inputs and some of them only matter in certain branches, like coupon fields or enterprise-only options. I want the effect to rerun based on the reactive values it actually reads, and I want stale requests cleaned up when a newer change arrives. I would switch to `watch` if the trigger list needed to stay explicit, if I needed previous and next values, or if the effect body became too broad for auto-tracking to stay obvious.",
+      "whyItWorks": "This sounds strong because it explains why automatic dependency capture fits this exact effect shape, while still giving a clear boundary for when explicit watch sources are the better tool."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking whether the effect should follow an explicit trigger list or the reactive values it actually reads.",
+    "Check whether dependencies change by branch and whether cleanup for stale work is part of the flow.",
+    "Choose watch or watchEffect based on that dependency model.",
+    "Explain the cost of the other option, either manual source drift or hidden dependency capture.",
+    "End with a simple rule of thumb, for example: watch for explicit trigger control, watchEffect for small coherent effects that should follow current reactive reads."
+  ],
+  "antiPatterns": [
+    "Choosing watchEffect only because it is shorter.",
+    "Choosing watch only because explicitness sounds safer, even when the effect has branch-dependent inputs.",
+    "Letting a watchEffect body grow so large that it accidentally captures unrelated reactive reads.",
+    "Ignoring cleanup when repeated async work can become stale."
+  ]
+}

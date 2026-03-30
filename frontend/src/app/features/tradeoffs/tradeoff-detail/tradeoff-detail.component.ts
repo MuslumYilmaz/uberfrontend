@@ -16,6 +16,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import { LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
+import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
 
@@ -100,13 +101,13 @@ function buildTradeoffLockedPreview(
 @Component({
   standalone: true,
   selector: 'app-tradeoff-detail',
-  imports: [CommonModule, RouterModule, LockedPreviewComponent],
+  imports: [CommonModule, RouterModule, LockedPreviewComponent, LoginRequiredDialogComponent],
   templateUrl: './tradeoff-detail.component.html',
   styleUrls: ['./tradeoff-detail.component.css'],
 })
 export class TradeoffDetailComponent {
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly seo = inject(SeoService);
   readonly auth = inject(AuthService);
@@ -119,6 +120,11 @@ export class TradeoffDetailComponent {
   readonly nextBattle = signal<TradeoffBattleListItem | null>(null);
   readonly selectedOptionId = signal('');
   readonly analysisRevealed = signal(false);
+  readonly completed = signal(false);
+  loginPromptOpen = false;
+  readonly loginPromptTitle = 'Sign in to save completed tradeoff battles';
+  readonly loginPromptBody = 'To track completed tradeoff battles and keep your progress synced, sign in or create a free account.';
+  readonly loginPromptCta = 'Go to login';
 
   readonly selectedOption = computed<TradeoffBattleOption | null>(() => {
     const scenario = this.battle();
@@ -188,10 +194,31 @@ export class TradeoffDetailComponent {
   revealAnalysis(): void {
     const battle = this.battle();
     if (!battle) return;
-    this.analysisRevealed.set(true);
-    this.progress.markCompleted(battle.meta.id, {
+    const record = this.progress.revealAnalysis(battle.meta.id, {
       selectedOptionId: this.selectedOptionId(),
     });
+    this.selectedOptionId.set(record.selectedOptionId);
+    this.analysisRevealed.set(record.analysisRevealed);
+  }
+
+  markComplete(): void {
+    const battle = this.battle();
+    if (!battle || this.completed()) return;
+    if (!this.auth.isLoggedIn()) {
+      this.loginPromptOpen = true;
+      return;
+    }
+
+    const record = this.progress.markCompleted(battle.meta.id, {
+      selectedOptionId: this.selectedOptionId(),
+    });
+    this.selectedOptionId.set(record.selectedOptionId);
+    this.analysisRevealed.set(record.analysisRevealed);
+    this.completed.set(record.completed);
+  }
+
+  completionLabel(): string {
+    return this.completed() ? 'Completed' : 'Mark as completed';
   }
 
   goToAdjacentBattle(target: TradeoffBattleListItem | null): void {
@@ -263,10 +290,12 @@ export class TradeoffDetailComponent {
     if (scenario.meta.access === 'premium' && !isProActive(this.auth.user())) {
       this.selectedOptionId.set('');
       this.analysisRevealed.set(false);
+      this.completed.set(false);
       return;
     }
     this.selectedOptionId.set(record.selectedOptionId);
-    this.analysisRevealed.set(record.completed);
+    this.analysisRevealed.set(record.analysisRevealed);
+    this.completed.set(record.completed);
   }
 
   private updateSeo(scenario: TradeoffBattleScenario): void {

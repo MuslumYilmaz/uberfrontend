@@ -216,6 +216,43 @@ describe('GET /api/dashboard', () => {
     expect(res.body?.progress?.practice?.totalCount).toBe(
       Number(res.body?.progress?.questions?.totalCount || 0)
       + Number(res.body?.progress?.incidents?.totalCount || 0)
+      + Number(res.body?.progress?.tradeoffBattles?.totalCount || 0)
+    );
+  });
+
+  test('counts completed tradeoff battles inside overall practice progress', async () => {
+    const user = await User.create({
+      email: 'tradeoff-progress@example.com',
+      username: 'tradeoff_progress_user',
+      passwordHash: 'hash',
+      solvedQuestionIds: ['react-counter'],
+      stats: { xpTotal: 120, completedTotal: 2 },
+    });
+
+    await PracticeProgress.create({
+      userId: user._id,
+      family: 'tradeoff-battle',
+      itemId: 'context-vs-zustand-vs-redux',
+      started: true,
+      completed: true,
+      passed: false,
+      bestScore: 0,
+      lastPlayedAt: new Date('2026-03-20T10:00:00.000Z'),
+      extension: { selectedOptionId: 'zustand', revealed: true },
+    });
+
+    const res = await request(app)
+      .get('/api/dashboard')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body?.progress?.tradeoffBattles?.completedCount).toBe(1);
+    expect(res.body?.progress?.tradeoffBattles?.totalCount).toBeGreaterThanOrEqual(1);
+    expect(res.body?.progress?.practice?.completedCount).toBe(2);
+    expect(res.body?.progress?.practice?.totalCount).toBe(
+      Number(res.body?.progress?.questions?.totalCount || 0)
+      + Number(res.body?.progress?.incidents?.totalCount || 0)
+      + Number(res.body?.progress?.tradeoffBattles?.totalCount || 0)
     );
   });
 });

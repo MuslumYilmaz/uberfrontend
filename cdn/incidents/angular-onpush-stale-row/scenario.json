@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "id": "angular-onpush-stale-row",
+    "title": "OnPush order row stays stale after a live update",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "A live order update arrives, but the row keeps showing the old status until the user clicks, sorts, or filters the table.",
+    "signals": [
+      "The socket event arrives, but the row still shows the old status",
+      "Sorting or filtering suddenly makes the right status appear",
+      "The service mutates the existing order object in place"
+    ],
+    "estimatedMinutes": 15,
+    "tags": ["angular", "onpush", "change-detection", "immutability"],
+    "updatedAt": "2026-03-21",
+    "access": "premium"
+  },
+  "context": {
+    "symptom": "Support sees an order move from Pending to Shipped in the event log, but the status badge in that row stays old until someone clicks sort, changes a filter, or reopens the page.",
+    "userImpact": "The dashboard feels unreliable, so agents refresh manually or double-check orders in another tool.",
+    "environment": "Angular 17 admin table. Each row is an `OnPush` child component that receives `@Input() order`, and live updates patch the shared orders array when a socket event arrives.",
+    "evidence": [
+      {
+        "type": "note",
+        "title": "What users noticed",
+        "body": "If someone clicks Sort by Updated or toggles a filter, the row suddenly shows the correct status without another event arriving."
+      },
+      {
+        "type": "log",
+        "title": "Live event log",
+        "body": "The socket payload for order #1842 arrives on time, and the service logs `status: \"shipped\"`, but the row still shows `Pending`."
+      },
+      {
+        "type": "snippet",
+        "title": "Current update path",
+        "language": "ts",
+        "body": "@Component({\n  selector: 'app-order-row',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `{{ order.status }}`\n})\nexport class OrderRowComponent {\n  @Input({ required: true }) order!: Order;\n}\n\nconst target = this.orders.find(order => order.id === patch.id);\nif (target) {\n  target.status = patch.status;\n  target.updatedAt = patch.updatedAt;\n}"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "root-cause",
+      "type": "single-select",
+      "title": "Stage 1: likely root cause",
+      "prompt": "Why does the row stay stale?",
+      "helperText": "Pick the explanation that matches both `OnPush` and the fact that another interaction suddenly fixes the UI.",
+      "options": [
+        {
+          "id": "socket-outside-angular",
+          "label": "The socket library must be completely outside Angular, so change detection never runs anywhere in the page.",
+          "points": 5,
+          "feedback": "That can happen in some apps, but it does not fit the clue that a normal Angular interaction instantly reveals the already-updated value.",
+          "isHarmful": false
+        },
+        {
+          "id": "same-order-reference",
+          "label": "The live update mutates the same order object, so the `OnPush` row does not get a meaningful input change until another trigger happens.",
+          "points": 25,
+          "feedback": "Correct. The row uses `OnPush`, but the update keeps the same object reference, so the child can stay visually stale until another check happens.",
+          "isHarmful": false
+        },
+        {
+          "id": "trackby-forever-caches-dom",
+          "label": "The table probably uses `trackBy`, and that keeps Angular from ever repainting the row content.",
+          "points": 0,
+          "feedback": "`trackBy` can help reuse DOM nodes, but it is not the main reason an `OnPush` child stays stale after an in-place mutation.",
+          "isHarmful": false
+        },
+        {
+          "id": "async-pipe-cannot-render-nested-fields",
+          "label": "Angular templates cannot reliably react to nested object field updates, even when the data is correct.",
+          "points": -5,
+          "feedback": "Angular can render nested fields. The issue here is the trigger model around `OnPush` and object identity.",
+          "isHarmful": true
+        }
+      ]
+    },
+    {
+      "id": "debug-order",
+      "type": "priority-order",
+      "title": "Stage 2: debug priority order",
+      "prompt": "What would you check first? Put the best three at the top.",
+      "helperText": "First prove that the event arrives, then prove whether the update changes data identity or only mutates existing state.",
+      "candidates": [
+        {
+          "id": "confirm-event-arrives",
+          "label": "Confirm the live event arrives and the target order object really changes in the service.",
+          "description": "Start with the incoming patch and the exact object being updated."
+        },
+        {
+          "id": "compare-references",
+          "label": "Compare the order and orders-array references before and after the update.",
+          "description": "This tells you whether Angular sees a meaningful identity change."
+        },
+        {
+          "id": "force-immutable-repro",
+          "label": "Try one immutable replacement or `markForCheck()` path to see whether the stale row updates immediately.",
+          "description": "A small repro confirms the trigger model before a larger refactor."
+        },
+        {
+          "id": "remove-trackby-first",
+          "label": "Remove `trackBy` from the table before measuring anything else.",
+          "description": "Possible red herring, weak first move."
+        },
+        {
+          "id": "switch-default-globally",
+          "label": "Change the whole feature back to Default change detection first.",
+          "description": "Too broad before you prove the real boundary problem."
+        }
+      ],
+      "expectedOrder": [
+        "confirm-event-arrives",
+        "compare-references",
+        "force-immutable-repro"
+      ],
+      "slotWeights": [12, 8, 5]
+    },
+    {
+      "id": "fix-set",
+      "type": "multi-select",
+      "title": "Stage 3: best fix set",
+      "prompt": "Which changes belong in the real fix?",
+      "helperText": "Pick the changes that repair the update boundary instead of hiding the symptom.",
+      "options": [
+        {
+          "id": "drop-onpush-everywhere",
+          "label": "Remove `OnPush` from every row and parent component so the table always gets checked.",
+          "points": -5,
+          "feedback": "That can mask the symptom, but it throws away a useful performance boundary instead of fixing the stale-update path.",
+          "isHarmful": true
+        },
+        {
+          "id": "replace-order-immutably",
+          "label": "Replace the updated order with a new object and publish a new list reference instead of mutating in place.",
+          "points": 10,
+          "feedback": "Correct. This gives `OnPush` a real identity change to work with.",
+          "isHarmful": false
+        },
+        {
+          "id": "settimeout-around-mutation",
+          "label": "Wrap the mutation in `setTimeout` so Angular gets another chance to notice it later.",
+          "points": 0,
+          "feedback": "That may move timing around, but it is not a clean fix for stale identity.",
+          "isHarmful": false
+        },
+        {
+          "id": "reactive-row-state",
+          "label": "Keep live row state in a reactive stream or signal boundary that updates with new references instead of mutating service fields in place.",
+          "points": 10,
+          "feedback": "Correct. Reactive state boundaries work well with `OnPush` when updates are explicit and immutable.",
+          "isHarmful": false
+        },
+        {
+          "id": "mark-for-check-boundary",
+          "label": "If one mutable boundary must stay, trigger `markForCheck()` there instead of hoping a later click will repaint the row.",
+          "points": 5,
+          "feedback": "Correct. This is a reasonable fallback when you cannot make the whole path immutable immediately.",
+          "isHarmful": false
+        }
+      ]
+    },
+    {
+      "id": "guardrail",
+      "type": "single-select",
+      "title": "Stage 4: regression guard",
+      "prompt": "What is the best guardrail for this bug?",
+      "helperText": "Pick the guard that checks whether a live update repaints the row without a rescue click.",
+      "options": [
+        {
+          "id": "socket-health-only",
+          "label": "Monitor socket connection health and event delivery time, because the real problem was delayed live data.",
+          "points": 5,
+          "feedback": "Connection health matters, but it does not catch the UI staying stale after the event already arrives.",
+          "isHarmful": false
+        },
+        {
+          "id": "ui-live-update-test",
+          "label": "Add a component or integration test that pushes a live update and asserts the row text changes without any extra user interaction.",
+          "points": 25,
+          "feedback": "Correct. This checks the exact regression: event arrives, UI should repaint immediately.",
+          "isHarmful": false
+        },
+        {
+          "id": "manual-sort-qa",
+          "label": "Have QA sort the table once before release and verify the new status appears somewhere.",
+          "points": 0,
+          "feedback": "That can miss the real bug because sorting itself is one of the actions that hides it.",
+          "isHarmful": false
+        },
+        {
+          "id": "avoid-live-rows",
+          "label": "Avoid `OnPush` on any row that might ever receive a live update.",
+          "points": -5,
+          "feedback": "That is a blanket restriction, not a guardrail. The goal is to test the update path, not ban the strategy.",
+          "isHarmful": true
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "scoreBands": [
+      {
+        "min": 0,
+        "max": 39,
+        "label": "You saw the stale UI, but not the identity problem",
+        "summary": "The live data path was active, but the real issue was still the `OnPush` boundary not seeing a meaningful change."
+      },
+      {
+        "min": 40,
+        "max": 69,
+        "label": "Good Angular instincts, but the fix path was still mixed",
+        "summary": "You connected the bug to change detection, but one part of the answer still leaned on broad workarounds."
+      },
+      {
+        "min": 70,
+        "max": 100,
+        "label": "You diagnosed the `OnPush` boundary clearly",
+        "summary": "You proved the event path, found the in-place mutation, and chose a fix that makes live updates explicit again."
+      }
+    ],
+    "idealRunbook": [
+      "Confirm the live event arrives and the service really applies the patch.",
+      "Check whether the update creates a new order or only mutates the old one.",
+      "Prove the trigger model with one immutable replacement or a `markForCheck()` repro.",
+      "Lock the fix with a UI test that updates a row while the view stays otherwise idle."
+    ],
+    "teachingBlocks": [
+      {
+        "type": "callout",
+        "title": "Angular shortcut",
+        "text": "When an `OnPush` child looks stale, ask one question early: did we create a new reference, or did we only mutate the old object?",
+        "variant": "info"
+      },
+      {
+        "type": "checklist",
+        "title": "Strong answer signals",
+        "items": [
+          "You separate event delivery from UI repainting.",
+          "You talk about object identity, not just 'change detection is weird'.",
+          "You prefer immutable updates or a clear reactive boundary over timing hacks."
+        ]
+      }
+    ],
+    "optionalReflectionPrompt": "If the team insisted on mutating in place, where would you put `markForCheck()` and why?"
+  },
+  "relatedPractice": [
+    {
+      "tech": "angular",
+      "kind": "trivia",
+      "id": "angular-change-detection-strategies"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-shopping-cart-mini"
+    }
+  ]
+}
