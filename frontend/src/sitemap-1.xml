@@ -1486,28 +1486,103 @@
     <loc>https://frontendatlas.com/tradeoffs</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/tradeoffs/async-pipe-vs-manual-subscribe-angular</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/composable-vs-pinia-vue-shared-product-state</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/computed-vs-method-template-vue-derived-ui</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/tradeoffs/computed-vs-watch-vue-catalog</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/tradeoffs/context-vs-zustand-vs-redux</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/tradeoffs/controlled-vs-uncontrolled-react-inputs</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/csr-vs-ssr-vs-rsc-react-rendering</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/tradeoffs/debounce-vs-throttle-live-search</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/derive-in-render-vs-store-derived-state</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/tradeoffs/event-delegation-vs-direct-listeners</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/tradeoffs/feature-service-signals-rxjs-vs-ngrx-angular-platform</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/tradeoffs/feature-service-vs-ngrx-angular</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/input-output-vs-shared-service-angular-communication</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/lift-state-up-vs-keep-local-react</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/local-state-vs-extracted-composable-vue-feature-logic</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/localstorage-vs-sessionstorage-browser-persistence</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/mutation-vs-immutable-copy-shared-state</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/object-vs-map-keyed-collections</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/promise-all-vs-sequential-awaits</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/tradeoffs/props-drilling-vs-context-shared-ui</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/tradeoffs/props-emits-vs-provide-inject-vue-context</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/props-emits-vs-vmodel-vue-custom-input-api</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/pure-pipe-vs-component-method-template-angular</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/tradeoffs/reactive-forms-vs-template-driven-angular</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/tradeoffs/ref-vs-reactive-vue-state-shape</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/route-resolver-vs-fetch-in-ngoninit-angular</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/settimeout-vs-requestanimationframe-ui-updates</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/tradeoffs/sse-vs-websocket-live-dashboard</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/useeffect-vs-event-handler-logic</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/usestate-vs-usereducer-growing-state</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/vif-vs-vshow-vue-visibility-toggle</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/watch-vs-watcheffect-vue-reactive-effects</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/tradeoffs/web-worker-vs-main-thread-heavy-compute</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-accordion-faq</loc>

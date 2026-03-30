@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import { buildTradeoffBattleAccessMap } from './tradeoff-battle-access-policy.mjs';
 
 const ROOT = path.resolve('src', 'assets', 'tradeoff-battles');
 const INDEX_PATH = path.join(ROOT, 'index.json');
@@ -31,6 +32,7 @@ if (!fs.existsSync(INDEX_PATH)) {
 } else {
   const index = readJson(INDEX_PATH);
   assert(Array.isArray(index), 'index.json must be an array');
+  const expectedAccess = buildTradeoffBattleAccessMap(index);
 
   const seen = new Set();
   safeArray(index).forEach((item, indexPos) => {
@@ -43,6 +45,10 @@ if (!fs.existsSync(INDEX_PATH)) {
     const id = String(item.id || '').trim();
     assert(!seen.has(id), `${label}: duplicate id "${id}"`);
     seen.add(id);
+    assert(
+      String(item?.access || 'premium') === (expectedAccess.get(id) || 'premium'),
+      `${label}: access must match tradeoff access policy`,
+    );
 
     const scenarioPath = path.join(ROOT, id, 'scenario.json');
     assert(fs.existsSync(scenarioPath), `${label}: missing scenario.json for "${id}"`);
@@ -52,6 +58,10 @@ if (!fs.existsSync(INDEX_PATH)) {
     assertString(scenario?.meta?.id, `${id}: meta.id is required`);
     assert(String(scenario?.meta?.id || '') === id, `${id}: meta.id must match index id`);
     assertString(scenario?.meta?.title, `${id}: meta.title is required`);
+    assert(
+      String(scenario?.meta?.access || 'premium') === (expectedAccess.get(id) || 'premium'),
+      `${id}: meta.access must match tradeoff access policy`,
+    );
     assertString(scenario?.scenario, `${id}: scenario is required`);
     assertString(scenario?.prompt, `${id}: prompt is required`);
 

@@ -10103,6 +10103,46 @@
     "assetRef": "questions/vue/trivia.json#vue-why-declare-emits-type-safety-maintenance"
   },
   {
+    "id": "input-output-vs-shared-service-angular-communication",
+    "family": "tradeoff-battle",
+    "title": "@Input/@Output vs shared service for Angular component communication",
+    "route": "/tradeoffs/input-output-vs-shared-service-angular-communication",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular page has a parent container and a few child UI components that need to send user actions upward and receive current state downward. Would you use @Input/@Output or a shared service?",
+    "tags": [
+      "angular",
+      "components",
+      "communication",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/input-output-vs-shared-service-angular-communication/scenario.json"
+  },
+  {
+    "id": "async-pipe-vs-manual-subscribe-angular",
+    "family": "tradeoff-battle",
+    "title": "Async pipe vs manual subscribe for Angular UI data",
+    "route": "/tradeoffs/async-pipe-vs-manual-subscribe-angular",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular page needs to show live user data, loading states, and refreshed values from Observables. Would you bind with the async pipe or subscribe manually in the component?",
+    "tags": [
+      "angular",
+      "observables",
+      "templates",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/async-pipe-vs-manual-subscribe-angular/scenario.json"
+  },
+  {
     "id": "feature-service-vs-ngrx-angular",
     "family": "tradeoff-battle",
     "title": "Feature service state vs NgRx Store for a shared Angular workbench",
@@ -10121,6 +10161,46 @@
     "updatedAt": "2026-03-21",
     "schemaVersion": "tradeoff-battle.v1",
     "assetRef": "tradeoff-battles/feature-service-vs-ngrx-angular/scenario.json"
+  },
+  {
+    "id": "feature-service-signals-rxjs-vs-ngrx-angular-platform",
+    "family": "tradeoff-battle",
+    "title": "Feature service with signals or RxJS vs NgRx Store for a large Angular product surface",
+    "route": "/tradeoffs/feature-service-signals-rxjs-vs-ngrx-angular-platform",
+    "tech": "angular",
+    "difficulty": "hard",
+    "summary": "A multi-screen Angular product surface has optimistic updates, websocket refreshes, draft restore, route re-entry, and several teams touching the same state graph. Would you keep state in a feature service with signals…",
+    "tags": [
+      "angular",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 16,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/feature-service-signals-rxjs-vs-ngrx-angular-platform/scenario.json"
+  },
+  {
+    "id": "pure-pipe-vs-component-method-template-angular",
+    "family": "tradeoff-battle",
+    "title": "Pure pipe vs component method in an Angular template",
+    "route": "/tradeoffs/pure-pipe-vs-component-method-template-angular",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular list template needs to format and derive display values for many rows. Would you use a pure pipe or call a component method from the template?",
+    "tags": [
+      "angular",
+      "templates",
+      "performance",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/pure-pipe-vs-component-method-template-angular/scenario.json"
   },
   {
     "id": "reactive-forms-vs-template-driven-angular",
@@ -10143,6 +10223,26 @@
     "assetRef": "tradeoff-battles/reactive-forms-vs-template-driven-angular/scenario.json"
   },
   {
+    "id": "route-resolver-vs-fetch-in-ngoninit-angular",
+    "family": "tradeoff-battle",
+    "title": "Route resolver vs fetch in ngOnInit for Angular page data",
+    "route": "/tradeoffs/route-resolver-vs-fetch-in-ngoninit-angular",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular route needs page data before rendering some parts of the screen. Would you load it with a resolver or fetch it in ngOnInit?",
+    "tags": [
+      "angular",
+      "routing",
+      "data-loading",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/route-resolver-vs-fetch-in-ngoninit-angular/scenario.json"
+  },
+  {
     "id": "debounce-vs-throttle-live-search",
     "family": "tradeoff-battle",
     "title": "Debounce vs throttle for a live search box",
@@ -10156,7 +10256,7 @@
       "events",
       "tradeoffs"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 12,
     "updatedAt": "2026-03-21",
     "schemaVersion": "tradeoff-battle.v1",
@@ -10176,11 +10276,111 @@
       "events",
       "tradeoffs"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 12,
     "updatedAt": "2026-03-21",
     "schemaVersion": "tradeoff-battle.v1",
     "assetRef": "tradeoff-battles/event-delegation-vs-direct-listeners/scenario.json"
+  },
+  {
+    "id": "localstorage-vs-sessionstorage-browser-persistence",
+    "family": "tradeoff-battle",
+    "title": "localStorage vs sessionStorage for browser persistence",
+    "route": "/tradeoffs/localstorage-vs-sessionstorage-browser-persistence",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A web app needs to remember some client-side UI state. Would you persist it in localStorage or sessionStorage?",
+    "tags": [
+      "javascript",
+      "browser",
+      "storage",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/localstorage-vs-sessionstorage-browser-persistence/scenario.json"
+  },
+  {
+    "id": "mutation-vs-immutable-copy-shared-state",
+    "family": "tradeoff-battle",
+    "title": "Mutation vs immutable copy for shared JavaScript state",
+    "route": "/tradeoffs/mutation-vs-immutable-copy-shared-state",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A UI updates nested client-side state and also needs undo, predictable re-renders, and easy debugging. Would you mutate existing objects or create immutable copies?",
+    "tags": [
+      "javascript",
+      "state",
+      "data-flow",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/mutation-vs-immutable-copy-shared-state/scenario.json"
+  },
+  {
+    "id": "object-vs-map-keyed-collections",
+    "family": "tradeoff-battle",
+    "title": "Object vs Map for keyed JavaScript collections",
+    "route": "/tradeoffs/object-vs-map-keyed-collections",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A dashboard keeps adding, removing, counting, and iterating items by id. Would you store that data in a plain object or a Map?",
+    "tags": [
+      "javascript",
+      "data-structures",
+      "collections",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/object-vs-map-keyed-collections/scenario.json"
+  },
+  {
+    "id": "promise-all-vs-sequential-awaits",
+    "family": "tradeoff-battle",
+    "title": "Promise.all vs sequential awaits in JavaScript",
+    "route": "/tradeoffs/promise-all-vs-sequential-awaits",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A page needs several independent requests before it can render. Would you run them with Promise.all or await them one by one?",
+    "tags": [
+      "javascript",
+      "async",
+      "promises",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/promise-all-vs-sequential-awaits/scenario.json"
+  },
+  {
+    "id": "settimeout-vs-requestanimationframe-ui-updates",
+    "family": "tradeoff-battle",
+    "title": "setTimeout vs requestAnimationFrame for UI updates",
+    "route": "/tradeoffs/settimeout-vs-requestanimationframe-ui-updates",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A browser UI needs smooth visual updates while the user drags and scrolls. Would you schedule that work with setTimeout or requestAnimationFrame?",
+    "tags": [
+      "javascript",
+      "browser",
+      "rendering",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/settimeout-vs-requestanimationframe-ui-updates/scenario.json"
   },
   {
     "id": "sse-vs-websocket-live-dashboard",
@@ -10196,11 +10396,31 @@
       "networking",
       "tradeoffs"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 13,
     "updatedAt": "2026-03-21",
     "schemaVersion": "tradeoff-battle.v1",
     "assetRef": "tradeoff-battles/sse-vs-websocket-live-dashboard/scenario.json"
+  },
+  {
+    "id": "web-worker-vs-main-thread-heavy-compute",
+    "family": "tradeoff-battle",
+    "title": "Web Worker vs main thread for heavy browser compute",
+    "route": "/tradeoffs/web-worker-vs-main-thread-heavy-compute",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "A browser app parses large local data, builds a search index, and recomputes facets while the UI must stay responsive. Would you keep that work on the main thread or move it to a Web Worker?",
+    "tags": [
+      "javascript",
+      "browser",
+      "performance",
+      "architecture"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 15,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/web-worker-vs-main-thread-heavy-compute/scenario.json"
   },
   {
     "id": "context-vs-zustand-vs-redux",
@@ -10223,6 +10443,86 @@
     "assetRef": "tradeoff-battles/context-vs-zustand-vs-redux/scenario.json"
   },
   {
+    "id": "controlled-vs-uncontrolled-react-inputs",
+    "family": "tradeoff-battle",
+    "title": "Controlled vs uncontrolled inputs in React forms",
+    "route": "/tradeoffs/controlled-vs-uncontrolled-react-inputs",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React form now needs instant validation, disabled submit rules, formatted input, and reset behavior. Would you keep inputs controlled or let the DOM manage them?",
+    "tags": [
+      "react",
+      "forms",
+      "inputs",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/controlled-vs-uncontrolled-react-inputs/scenario.json"
+  },
+  {
+    "id": "csr-vs-ssr-vs-rsc-react-rendering",
+    "family": "tradeoff-battle",
+    "title": "CSR vs SSR vs RSC for a React product experience",
+    "route": "/tradeoffs/csr-vs-ssr-vs-rsc-react-rendering",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "A React commerce page needs SEO, fast first render, large product data, faceted filters, and client-side interactions. Would you defend CSR, SSR, or RSC?",
+    "tags": [
+      "react",
+      "rendering",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 16,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/csr-vs-ssr-vs-rsc-react-rendering/scenario.json"
+  },
+  {
+    "id": "derive-in-render-vs-store-derived-state",
+    "family": "tradeoff-battle",
+    "title": "Derive in render vs store derived state in React",
+    "route": "/tradeoffs/derive-in-render-vs-store-derived-state",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React filter panel needs visible results, a count badge, and a disabled Apply button. Would you compute these from current state or store them separately?",
+    "tags": [
+      "react",
+      "derived-state",
+      "state-management",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/derive-in-render-vs-store-derived-state/scenario.json"
+  },
+  {
+    "id": "lift-state-up-vs-keep-local-react",
+    "family": "tradeoff-battle",
+    "title": "Lift state up vs keep state local in React",
+    "route": "/tradeoffs/lift-state-up-vs-keep-local-react",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A filter drawer, results header, and product grid now need to reflect the same selection state. Would you lift state up or keep it local in each component?",
+    "tags": [
+      "react",
+      "state-sharing",
+      "component-design",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/lift-state-up-vs-keep-local-react/scenario.json"
+  },
+  {
     "id": "props-drilling-vs-context-shared-ui",
     "family": "tradeoff-battle",
     "title": "Props drilling vs Context for shared React UI state",
@@ -10243,6 +10543,86 @@
     "assetRef": "tradeoff-battles/props-drilling-vs-context-shared-ui/scenario.json"
   },
   {
+    "id": "useeffect-vs-event-handler-logic",
+    "family": "tradeoff-battle",
+    "title": "useEffect vs event-handler logic in React",
+    "route": "/tradeoffs/useeffect-vs-event-handler-logic",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React save flow needs a request, success toast, analytics event, and modal close after the user clicks Save. Would you run that logic in useEffect or keep it in the event handler?",
+    "tags": [
+      "react",
+      "effects",
+      "events",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/useeffect-vs-event-handler-logic/scenario.json"
+  },
+  {
+    "id": "usestate-vs-usereducer-growing-state",
+    "family": "tradeoff-battle",
+    "title": "useState vs useReducer for growing React component state",
+    "route": "/tradeoffs/usestate-vs-usereducer-growing-state",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React settings panel started simple, then gained validation, loading, error, reset, and success flows. Would you keep useState or move to useReducer?",
+    "tags": [
+      "react",
+      "hooks",
+      "state-management",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/usestate-vs-usereducer-growing-state/scenario.json"
+  },
+  {
+    "id": "composable-vs-pinia-vue-shared-product-state",
+    "family": "tradeoff-battle",
+    "title": "Composable vs Pinia store for a shared Vue product surface",
+    "route": "/tradeoffs/composable-vs-pinia-vue-shared-product-state",
+    "tech": "vue",
+    "difficulty": "hard",
+    "summary": "A multi-screen Vue product surface has optimistic updates, background refreshes, draft restore, and several teams touching the same shared state graph. Would you keep the core logic in composables or move it into a Pini…",
+    "tags": [
+      "vue",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 16,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/composable-vs-pinia-vue-shared-product-state/scenario.json"
+  },
+  {
+    "id": "computed-vs-method-template-vue-derived-ui",
+    "family": "tradeoff-battle",
+    "title": "Computed vs method in a Vue template for derived UI",
+    "route": "/tradeoffs/computed-vs-method-template-vue-derived-ui",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue template needs derived values like filtered rows, counts, and summary text from reactive state. Would you use computed properties or call methods in the template?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "templates",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/computed-vs-method-template-vue-derived-ui/scenario.json"
+  },
+  {
     "id": "computed-vs-watch-vue-catalog",
     "family": "tradeoff-battle",
     "title": "Computed vs watch for a filterable Vue catalog",
@@ -10256,10 +10636,130 @@
       "architecture",
       "tradeoffs"
     ],
-    "access": "free",
+    "access": "premium",
     "estimatedMinutes": 13,
     "updatedAt": "2026-03-21",
     "schemaVersion": "tradeoff-battle.v1",
     "assetRef": "tradeoff-battles/computed-vs-watch-vue-catalog/scenario.json"
+  },
+  {
+    "id": "local-state-vs-extracted-composable-vue-feature-logic",
+    "family": "tradeoff-battle",
+    "title": "Local component state vs extracted composable for Vue feature logic",
+    "route": "/tradeoffs/local-state-vs-extracted-composable-vue-feature-logic",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue feature has search, selection, sorting, loading, and retry logic. Would you keep that state inside the component or extract it into a composable?",
+    "tags": [
+      "vue",
+      "composables",
+      "state",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/local-state-vs-extracted-composable-vue-feature-logic/scenario.json"
+  },
+  {
+    "id": "props-emits-vs-provide-inject-vue-context",
+    "family": "tradeoff-battle",
+    "title": "Props and emits vs provide and inject for Vue component communication",
+    "route": "/tradeoffs/props-emits-vs-provide-inject-vue-context",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue page has nested UI wrappers and deep child components that need shared context and user actions. Would you use props and emits or switch to provide and inject?",
+    "tags": [
+      "vue",
+      "components",
+      "communication",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/props-emits-vs-provide-inject-vue-context/scenario.json"
+  },
+  {
+    "id": "props-emits-vs-vmodel-vue-custom-input-api",
+    "family": "tradeoff-battle",
+    "title": "Props and emits vs v-model for a Vue custom input API",
+    "route": "/tradeoffs/props-emits-vs-vmodel-vue-custom-input-api",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue custom form component needs to send value changes back to its parent. Would you design it around explicit props and emits or expose a v-model API?",
+    "tags": [
+      "vue",
+      "components",
+      "forms",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/props-emits-vs-vmodel-vue-custom-input-api/scenario.json"
+  },
+  {
+    "id": "ref-vs-reactive-vue-state-shape",
+    "family": "tradeoff-battle",
+    "title": "ref vs reactive for Vue state shape",
+    "route": "/tradeoffs/ref-vs-reactive-vue-state-shape",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue component manages several related form and filter fields. Would you keep each value in its own ref or group them in a reactive object?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "state",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/ref-vs-reactive-vue-state-shape/scenario.json"
+  },
+  {
+    "id": "vif-vs-vshow-vue-visibility-toggle",
+    "family": "tradeoff-battle",
+    "title": "v-if vs v-show for Vue visibility toggles",
+    "route": "/tradeoffs/vif-vs-vshow-vue-visibility-toggle",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue screen hides and shows UI sections based on user interaction. Would you use v-if or v-show?",
+    "tags": [
+      "vue",
+      "templates",
+      "rendering",
+      "tradeoffs"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/vif-vs-vshow-vue-visibility-toggle/scenario.json"
+  },
+  {
+    "id": "watch-vs-watcheffect-vue-reactive-effects",
+    "family": "tradeoff-battle",
+    "title": "watch vs watchEffect for Vue reactive side effects",
+    "route": "/tradeoffs/watch-vs-watcheffect-vue-reactive-effects",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue feature triggers side effects from several reactive inputs and needs cleanup for stale work. Would you use watch or watchEffect?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "side-effects",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/watch-vs-watcheffect-vue-reactive-effects/scenario.json"
   }
 ]

@@ -138,4 +138,72 @@ describe('TradeoffListComponent', () => {
     expect(text).toContain('Context vs Zustand vs Redux');
     expect(text).not.toContain('Reactive forms vs template-driven forms');
   });
+
+  it('sorts battles from easy to hard and moves premium items to the bottom', async () => {
+    const fixture = TestBed.createComponent(TradeoffListComponent);
+    fixture.componentInstance.items.set([
+      {
+        id: 'premium-easy',
+        title: 'Premium Easy Battle',
+        tech: 'vue',
+        difficulty: 'easy',
+        summary: 'Premium easy question.',
+        tags: ['vue'],
+        access: 'premium',
+        estimatedMinutes: 11,
+        updatedAt: '2026-03-30',
+      } as any,
+      {
+        id: 'free-hard',
+        title: 'Free Hard Battle',
+        tech: 'vue',
+        difficulty: 'hard',
+        summary: 'Free hard question.',
+        tags: ['vue'],
+        access: 'free',
+        estimatedMinutes: 11,
+        updatedAt: '2026-03-30',
+      } as any,
+      {
+        id: 'free-medium',
+        title: 'Free Medium Battle',
+        tech: 'vue',
+        difficulty: 'intermediate',
+        summary: 'Free medium question.',
+        tags: ['vue'],
+        access: 'free',
+        estimatedMinutes: 11,
+        updatedAt: '2026-03-30',
+      } as any,
+      {
+        id: 'free-easy',
+        title: 'Free Easy Battle',
+        tech: 'vue',
+        difficulty: 'easy',
+        summary: 'Free easy question.',
+        tags: ['vue'],
+        access: 'free',
+        estimatedMinutes: 11,
+        updatedAt: '2026-03-30',
+      } as any,
+    ]);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const titles = Array.from(
+      fixture.nativeElement.querySelectorAll('.tradeoff-card h2'),
+      (node: Element) => node.textContent?.trim() ?? '',
+    );
+
+    expect(titles).toEqual([
+      'Free Easy Battle',
+      'Free Medium Battle',
+      'Free Hard Battle',
+      'Premium Easy Battle',
+    ]);
+    expect(fixture.nativeElement.textContent || '').toContain('Medium');
+    expect(fixture.nativeElement.textContent || '').not.toContain('11 min');
+  });
 });

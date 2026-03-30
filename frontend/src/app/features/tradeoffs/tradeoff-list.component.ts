@@ -8,6 +8,7 @@ import { TradeoffBattleListItem } from '../../core/models/tradeoff-battle.model'
 import { TradeoffBattleListResolved } from '../../core/resolvers/tradeoff-battle.resolver';
 import { TradeoffBattleProgressService } from '../../core/services/tradeoff-battle-progress.service';
 import { FaChipComponent } from '../../shared/components/chip/fa-chip.component';
+import { PracticeAccess, PracticeDifficulty } from '../../core/models/practice.model';
 
 const PAGE_TITLE = 'Frontend Tradeoff Interview Questions and Architecture Decisions';
 const PAGE_DESCRIPTION =
@@ -30,6 +31,8 @@ export class TradeoffListComponent {
     'css',
     'system-design',
   ];
+  private readonly difficultyOrder: readonly PracticeDifficulty[] = ['easy', 'intermediate', 'hard'];
+  private readonly accessOrder: readonly PracticeAccess[] = ['free', 'premium'];
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(SeoService);
   readonly progress = inject(TradeoffBattleProgressService);
@@ -42,12 +45,13 @@ export class TradeoffListComponent {
   readonly techOptions = computed<PracticeTechnology[]>(() =>
     this.techOrder.filter((tech) => this.items().some((item) => item.tech === tech)),
   );
+  readonly sortedItems = computed(() => this.sortItems(this.items()));
 
   readonly filteredItems = computed(() => {
     const search = this.searchTerm().trim().toLowerCase();
     const selectedTech = this.selectedTech();
 
-    return this.items().filter((item) => {
+    return this.sortedItems().filter((item) => {
       if (selectedTech && item.tech !== selectedTech) return false;
       if (!search) return true;
       const haystack = [item.title, item.summary, ...item.tags].join(' ').toLowerCase();
@@ -119,14 +123,44 @@ export class TradeoffListComponent {
     return `tech-badge--${value}`;
   }
 
+  difficultyLabel(value: PracticeDifficulty): string {
+    switch (value) {
+      case 'easy':
+        return 'Easy';
+      case 'intermediate':
+        return 'Medium';
+      case 'hard':
+        return 'Hard';
+      default:
+        return value;
+    }
+  }
+
   trackById(_: number, item: TradeoffBattleListItem): string {
     return item.id;
+  }
+
+  private sortItems(items: readonly TradeoffBattleListItem[]): TradeoffBattleListItem[] {
+    return [...items].sort((left, right) => {
+      const accessRank =
+        this.accessOrder.indexOf(left.access) - this.accessOrder.indexOf(right.access);
+      if (accessRank !== 0) return accessRank;
+
+      const difficultyRank =
+        this.difficultyOrder.indexOf(left.difficulty) - this.difficultyOrder.indexOf(right.difficulty);
+      if (difficultyRank !== 0) return difficultyRank;
+
+      const techRank = this.techOrder.indexOf(left.tech) - this.techOrder.indexOf(right.tech);
+      if (techRank !== 0) return techRank;
+
+      return left.title.localeCompare(right.title);
+    });
   }
 
   private publishSeo(): void {
     const canonicalPath = '/tradeoffs';
     const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
-    const itemListElement = this.items().map((item, index) => ({
+    const itemListElement = this.sortItems(this.items()).map((item, index) => ({
       '@type': 'ListItem',
       position: index + 1,
       name: item.title,

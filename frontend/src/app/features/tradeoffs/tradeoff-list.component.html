@@ -71,8 +71,10 @@
           <h2>{{ item.title }}</h2>
         </div>
         <div class="tradeoff-card__header-meta">
+          <span class="tradeoff-card__difficulty" [ngClass]="'tradeoff-card__difficulty--' + item.difficulty">
+            {{ difficultyLabel(item.difficulty) }}
+          </span>
           <span class="tradeoff-card__access" *ngIf="item.access === 'premium'">Premium</span>
-          <span class="tradeoff-card__minutes">{{ item.estimatedMinutes }} min</span>
         </div>
       </div>
 
@@ -80,7 +82,6 @@
 
       <div class="tradeoff-card__meta">
         <span>{{ techLabel(item.tech) }}</span>
-        <span>{{ item.difficulty }}</span>
         <span>{{ item.updatedAt }}</span>
       </div>
 
