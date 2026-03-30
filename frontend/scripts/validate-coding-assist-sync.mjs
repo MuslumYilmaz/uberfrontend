@@ -4,7 +4,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const ZERO_SHA = '0000000000000000000000000000000000000000';
-const CODING_JSON_RE = /^frontend\/src\/assets\/questions\/[^/]+\/coding\.json$/;
+const CODING_JSON_RE = /^(?:frontend\/src\/assets\/questions|cdn\/questions)\/[^/]+\/coding\.json$/;
 const EXPLAIN_ARTIFACT_FILES = [
   'frontend/src/app/core/utils/failure-explain-rules.ts',
   'frontend/src/app/core/utils/failure-explain-content.json',
@@ -128,30 +128,40 @@ function safeGitShow(spec) {
   }
 }
 
-function resolveFrontendAssetPath(assetValue) {
+function resolveRepoAssetPaths(assetValue) {
   const raw = String(assetValue || '').trim();
-  if (!raw) return null;
-  if (raw.startsWith('frontend/')) return raw;
-  if (raw.startsWith('assets/')) return path.posix.join('frontend/src', raw);
-  return null;
+  if (!raw) return [];
+  if (raw.startsWith('frontend/')) return [raw];
+  if (raw.startsWith('assets/questions/')) {
+    const rel = raw.slice('assets/'.length);
+    return [path.posix.join('cdn', rel), path.posix.join('frontend/src', raw)];
+  }
+  if (raw.startsWith('assets/')) return [path.posix.join('frontend/src', raw)];
+  return [];
+}
+
+function resolveCurrentCatalogPath(filePath) {
+  const canonical = filePath.replace(/^frontend\/src\/assets\/questions\//, 'cdn/questions/');
+  if (fs.existsSync(canonical)) return canonical;
+  return filePath;
 }
 
 function collectDecisionGraphPaths(question) {
   const paths = new Set();
 
-  const topLevelAsset = resolveFrontendAssetPath(question?.decisionGraphAsset);
-  if (topLevelAsset) paths.add(topLevelAsset);
+  const topLevelAssets = resolveRepoAssetPaths(question?.decisionGraphAsset);
+  for (const assetPath of topLevelAssets) paths.add(assetPath);
 
   const approaches = Array.isArray(question?.solutionBlock?.approaches)
     ? question.solutionBlock.approaches
     : [];
   for (const approach of approaches) {
-    const explicitAsset = resolveFrontendAssetPath(approach?.decisionGraphAsset);
-    if (explicitAsset) {
-      paths.add(explicitAsset);
+    const explicitAssets = resolveRepoAssetPaths(approach?.decisionGraphAsset);
+    if (explicitAssets.length > 0) {
+      for (const assetPath of explicitAssets) paths.add(assetPath);
       continue;
     }
-    if (topLevelAsset) paths.add(topLevelAsset);
+    for (const assetPath of topLevelAssets) paths.add(assetPath);
   }
 
   return [...paths];
@@ -215,9 +225,10 @@ function main() {
 
   const latestQuestionById = new Map();
   for (const file of codingFilesInPush) {
-    if (!fs.existsSync(file)) continue;
-    const text = fs.readFileSync(file, 'utf8');
-    const questions = parseQuestions(text, file);
+    const currentFile = resolveCurrentCatalogPath(file);
+    if (!fs.existsSync(currentFile)) continue;
+    const text = fs.readFileSync(currentFile, 'utf8');
+    const questions = parseQuestions(text, currentFile);
     for (const question of questions) {
       const id = typeof question?.id === 'string' ? question.id.trim() : '';
       if (!id) continue;

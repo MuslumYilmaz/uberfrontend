@@ -42,7 +42,7 @@
 - Frontend app is layered: `src/app/core/` (guards/interceptors/resolvers/services/security), `src/app/features/` (route features), `src/app/shared/` (reusable UI/content), `src/app/store/` (state slices).
 - Use shared UI primitives in `frontend/src/app/shared/ui/` for interactive controls; `lint:design-system` enforces no new raw PrimeNG usage, `::ng-deep`, or raw visual/color drift outside allowlisted files.
 - Keep theme consistency for new UI work: reuse tokens in `frontend/src/styles/tokens.scss` and existing shared-ui typography/spacing patterns, not one-off colors or font styles.
-- Question content and registries live under `frontend/src/assets/questions/`; related generators/lints live in `frontend/scripts/` and are wired into `gen:data`/test flows.
+- Question content and registries live under `cdn/questions/`; related generators/lints live in `frontend/scripts/` and are wired into `gen:data`/test flows.
 
 ## Review guidelines
 - Security: preserve cookie auth + CSRF/CORS behavior in backend auth/billing paths; validate/sanitize external input; never commit secrets.

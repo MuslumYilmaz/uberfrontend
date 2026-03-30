@@ -171,7 +171,7 @@ strict-transport-security: max-age=63072000
 ## Step 1: URL Inventory (Indexable Intent)
 
 Dynamic URL generation sources:
-- Tech question routes from `src/assets/questions/*/{coding,trivia,debug}.json` (`frontend/scripts/generate-prerender-routes.mjs:98-117`)
+- Tech question routes from `cdn/questions/*/{coding,trivia,debug}.json` (`frontend/scripts/generate-prerender-routes.mjs:98-117`)
 - System design IDs from `system-design/index.json` (`frontend/scripts/generate-prerender-routes.mjs:119-128`)
 - Guide slugs from `guide.registry.ts` (`frontend/scripts/generate-prerender-routes.mjs:131-142`)
 

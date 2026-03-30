@@ -34,8 +34,9 @@ ZERO_SHA="0000000000000000000000000000000000000000"
 HAVE_REFS=0
 CHANGED_FILES="$(mktemp)"
 PUSH_COMMITS="$(mktemp)"
-SYNC_DIFF="$(mktemp)"
-trap 'rm -f "$CHANGED_FILES" "$PUSH_COMMITS" "$SYNC_DIFF"' EXIT
+trap 'rm -f "$CHANGED_FILES" "$PUSH_COMMITS"' EXIT
+FRONTEND_CHANGE_RE='^(frontend/|cdn/(questions/|incidents/|tradeoff-battles/|practice/)|cdn/data-version\.json$)'
+CDN_CONTENT_CHANGE_RE='^(cdn/(questions/|incidents/|tradeoff-battles/|practice/)|cdn/data-version\.json$)'
 
 # Collect file paths included in refs being pushed.
 while read -r local_ref local_sha remote_ref remote_sha; do
@@ -86,21 +87,20 @@ fi
 echo "[pre-push] OK: Coding assist artifact sync check passed."
 
 # When Git provides refs (normal push), skip expensive frontend checks unless
-# pushed commits include frontend or mirrored CDN question data changes.
-if [ "$HAVE_REFS" -eq 1 ] && ! grep -Eq '^(frontend/|cdn/questions/)' "$CHANGED_FILES"; then
+# pushed commits include frontend code or CDN-backed content changes.
+if [ "$HAVE_REFS" -eq 1 ] && ! grep -Eq "$FRONTEND_CHANGE_RE" "$CHANGED_FILES"; then
   echo "[pre-push] No frontend/cdn changes in push refs. Skipping frontend checks."
   exit 0
 fi
 
-echo "[pre-push] Verifying frontend assets/questions and cdn/questions are in sync..."
-if ! diff -qr frontend/src/assets/questions cdn/questions > "$SYNC_DIFF"; then
-  echo "[pre-push] ERROR: cdn/questions is out of sync with frontend/src/assets/questions." >&2
-  echo "[pre-push] Sync command: rsync -a --delete frontend/src/assets/questions/ cdn/questions/" >&2
-  echo "[pre-push] Differences (first 50):" >&2
-  sed -n '1,50p' "$SYNC_DIFF" >&2 || true
-  exit 1
+if grep -Eq "$CDN_CONTENT_CHANGE_RE" "$CHANGED_FILES"; then
+  echo "[pre-push] Running frontend content lint checks..."
+  if ! npm -C frontend run lint:questions; then
+    echo "[pre-push] ERROR: Frontend content lint checks failed. Push aborted." >&2
+    exit 1
+  fi
+  echo "[pre-push] OK: Frontend content lint checks passed."
 fi
-echo "[pre-push] OK: cdn/questions is in sync."
 
 # Legacy importance rubric tooling was removed. Keep hook aligned with active workflow.
 
