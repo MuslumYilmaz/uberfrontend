@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "async-pipe-vs-manual-subscribe-angular",
+    "title": "Async pipe vs manual subscribe for Angular UI data",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular page needs to show live user data, loading states, and refreshed values from Observables. Would you bind with the async pipe or subscribe manually in the component?",
+    "tags": [
+      "angular",
+      "observables",
+      "templates",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building an Angular account page. A service already exposes `user$`, `plan$`, and `notificationsCount$` as Observables. The page mostly needs to render those values in the template and update automatically when the service emits new data. A teammate wants to subscribe manually in `ngOnInit`, copy the values into component fields, and unsubscribe later. Another teammate wants to keep the streams in the template and render them with the `async` pipe. In the interview, the panel asks which direction you would defend.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "async-pipe",
+      "label": "Use the async pipe",
+      "summary": "Fits best when the template is the main consumer of the Observable and the goal is to render values, loading states, or refreshed UI data.",
+      "whenItWins": [
+        "The stream mainly exists so the template can render the latest value and update when new values arrive.",
+        "You want Angular to own the subscription lifecycle instead of wiring subscription and teardown code by hand.",
+        "The component does not need imperative side effects every time the Observable emits."
+      ],
+      "watchOutFor": [
+        "If the stream emission must trigger imperative logic such as navigation, form patching, third-party APIs, or chained service calls, the template alone may not be the right place to own it.",
+        "A weak answer says async pipe always wins without checking whether the component actually needs side effects on each emission."
+      ]
+    },
+    {
+      "id": "manual-subscribe",
+      "label": "Subscribe manually in the component",
+      "summary": "Fits best when each emission must drive imperative component logic instead of just rendering template data.",
+      "whenItWins": [
+        "The component needs to run side effects when values arrive, such as routing, analytics, imperative form updates, or integration with APIs outside the template.",
+        "You must coordinate several streams into imperative workflow steps that are not simply 'show the latest value on screen.'",
+        "The subscription boundary is part of real component behavior, not just a way to move data into the view."
+      ],
+      "watchOutFor": [
+        "Manual subscribe adds lifecycle and teardown responsibility, and many components end up subscribing only to copy values into fields the template could have read directly.",
+        "A weak answer reaches for manual subscribe out of habit, even when the template is the only real consumer."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "template-display-only",
+      "title": "Template is the real consumer",
+      "prompt": "The page mostly needs to display Observable values and reactively refresh the UI when they change.",
+      "cells": [
+        {
+          "optionId": "async-pipe",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the template owns the stream and Angular can manage subscription lifecycle for you."
+        },
+        {
+          "optionId": "manual-subscribe",
+          "verdict": "reasonable",
+          "note": "It still works, but now you should explain why copying values into component fields is worth the extra code and teardown responsibility."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "The page mainly renders service Observables and should stay updated as those streams emit new values.",
+      "cells": [
+        {
+          "optionId": "async-pipe",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer because the problem is mostly reactive UI display, not imperative workflow orchestration."
+        },
+        {
+          "optionId": "manual-subscribe",
+          "verdict": "stretch",
+          "note": "Harder to defend because the main effect of the subscription is just to move values from one property to another before the template reads them."
+        }
+      ]
+    },
+    {
+      "id": "imperative-side-effect",
+      "title": "Emissions must trigger imperative logic",
+      "prompt": "Each emission must patch a form, call a third-party API, trigger navigation, or coordinate imperative workflow steps.",
+      "cells": [
+        {
+          "optionId": "async-pipe",
+          "verdict": "reasonable",
+          "note": "You can still keep some display streams in the template, but the template is no longer the full owner of the behavior."
+        },
+        {
+          "optionId": "manual-subscribe",
+          "verdict": "best-fit",
+          "note": "This becomes easier to defend because the component genuinely needs to run logic when values arrive, not just render them."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "consumer-ownership",
+      "title": "Who really consumes the stream?",
+      "description": "The first question is whether the Observable mostly exists to render UI or whether the component needs to do work every time it emits."
+    },
+    {
+      "id": "lifecycle-cost",
+      "title": "Who should own subscription lifecycle?",
+      "description": "A strong answer notices when manual subscription is adding cleanup and state-copying code that Angular could have handled for display-only streams."
+    },
+    {
+      "id": "imperative-needs",
+      "title": "Do emissions cause imperative side effects?",
+      "description": "Routing, form patching, analytics, and non-template APIs often push the answer toward manual subscription because the component needs to react in code."
+    },
+    {
+      "id": "template-clarity",
+      "title": "Is the data flow still easy to read?",
+      "description": "A good answer should care about whether future developers can see that the template is reading a stream directly instead of chasing copied component fields."
+    },
+    {
+      "id": "habit-vs-boundary",
+      "title": "Are you choosing from habit or from the actual boundary?",
+      "description": "Many teams subscribe manually by reflex. A stronger answer chooses based on whether the stream is for rendering or for imperative behavior."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean async pipe because the prompt is mostly about rendering stream values",
+    "summary": "This account page mainly needs to show the latest values from service Observables and refresh the template as they change. That makes the async pipe the easier answer to defend for the exact prompt.",
+    "reasoning": [
+      "The main clue is consumer ownership. Here the template is the real consumer of `user$`, `plan$`, and `notificationsCount$`.",
+      "If I subscribe manually only to assign each emission into component fields, I am mostly writing lifecycle glue code rather than solving a real product problem.",
+      "I would move toward manual subscribe only when each emission must trigger imperative work in the component, such as navigation, form patching, or coordinating with APIs the template cannot own."
+    ],
+    "recommendation": "For this exact prompt, I would keep the streams in the template with the async pipe and reserve manual subscribe for cases where Observable emissions drive imperative component behavior."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not subscribe in ngOnInit so the component has plain values to work with?",
+      "answer": "If the template is the only real consumer, that usually just creates extra fields and teardown work. I would rather keep the data flow direct and let Angular manage the display subscription."
+    },
+    {
+      "question": "When would manual subscribe clearly be the better answer?",
+      "answer": "When the component must do something imperative on emission, like patch a form, redirect the user, fire analytics, or coordinate with an API outside the template."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the page stopped being mostly display-oriented and the stream emissions became inputs to imperative workflow logic, I would move the ownership into the component and subscribe there."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use the async pipe because that is the Angular way.",
+      "whyItWorks": "It does not. This sounds generic and teaches no boundary for when manual subscription is still the correct tool."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use the async pipe because it keeps the template reactive and avoids some subscription code.",
+      "whyItWorks": "This is directionally fine, but it still needs a sharper explanation of why the template owns the stream in this prompt and when that stops being true."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use the async pipe because the page mainly needs to render Observable values from the service and update when they change. The template is the real consumer, so I do not want to subscribe manually just to copy those values into component fields. I would only move to manual subscribe if each emission needed imperative work in the component, such as patching a form, triggering navigation, or coordinating with APIs the template cannot own.",
+      "whyItWorks": "This sounds strong because it starts from stream ownership, explains why manual subscription would be mostly glue code here, and still gives a clear boundary for when imperative subscription logic is worth it."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking who really consumes the Observable: the template or imperative component logic.",
+    "Choose the approach that matches that ownership boundary.",
+    "Explain the main cost of the other option, either extra subscription glue or hiding imperative behavior in the wrong layer.",
+    "Acknowledge when the other option is still the better answer.",
+    "End with a simple rule of thumb, for example: async pipe for display streams, manual subscribe for imperative side effects."
+  ],
+  "antiPatterns": [
+    "Subscribing manually just to copy values into component fields the template could have read directly.",
+    "Saying async pipe is always better without talking about imperative emissions.",
+    "Hiding real component side effects behind a display-only mental model.",
+    "Choosing from habit instead of from stream ownership."
+  ]
+}

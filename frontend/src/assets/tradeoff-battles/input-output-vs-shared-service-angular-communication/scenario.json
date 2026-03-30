@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "input-output-vs-shared-service-angular-communication",
+    "title": "@Input/@Output vs shared service for Angular component communication",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular page has a parent container and a few child UI components that need to send user actions upward and receive current state downward. Would you use @Input/@Output or a shared service?",
+    "tags": [
+      "angular",
+      "components",
+      "communication",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building an Angular orders page. `OrdersPageComponent` owns the current filters, selected sort, and the loaded result set. Under it, there is a `FilterBarComponent`, a `SortMenuComponent`, and a `ResultsToolbarComponent`. Those children need to show the current values and emit user actions such as 'status changed', 'sort changed', and 'clear filters'. One teammate wants to wire the page with `@Input()` and `@Output()` because the parent already owns the state. Another teammate wants to create a shared service immediately so components can communicate through that instead of bubbling events through the parent. In the interview, the panel asks which direction you would defend.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "input-output",
+      "label": "Use @Input() and @Output()",
+      "summary": "Fits best when the data flow already matches the component tree and the parent is the natural owner of the state.",
+      "whenItWins": [
+        "A parent container clearly owns the state and child components mostly need to render inputs and emit user intent back up.",
+        "The communication path is short and understandable, so explicit bindings make dependencies easier to trace.",
+        "You want future developers to see data flow directly in the template instead of hunting through an extra service layer."
+      ],
+      "watchOutFor": [
+        "If communication starts crossing distant branches of the tree or several components need long-lived shared state, binding everything through parents can get noisy.",
+        "A weak answer uses inputs and outputs by habit even when the feature no longer fits a simple parent-owned flow."
+      ]
+    },
+    {
+      "id": "shared-service",
+      "label": "Use a shared service",
+      "summary": "Fits best when several components need a shared feature state or coordination that no single parent cleanly owns.",
+      "whenItWins": [
+        "Siblings or distant components need to share state over time, and lifting everything to a parent would create awkward plumbing.",
+        "The feature needs shared streams, cached values, or coordination that survives component replacement inside the route.",
+        "A single service boundary makes the feature easier to reason about than passing data through several wrapper components."
+      ],
+      "watchOutFor": [
+        "A service can become an unnecessary event bus if the parent already owns the state and children only need standard input and output bindings.",
+        "A weak answer reaches for a service because it feels more scalable, without checking whether it is solving a real communication problem yet."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "parent-owned-tree",
+      "title": "Clear parent-owned component tree",
+      "prompt": "One parent owns the state and a few children only need to receive values and emit user actions.",
+      "cells": [
+        {
+          "optionId": "input-output",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the component tree already matches the data-flow boundary."
+        },
+        {
+          "optionId": "shared-service",
+          "verdict": "reasonable",
+          "note": "Still possible, but now you should explain why another coordination layer is helping more than explicit bindings."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "The page container already owns filters and sort state, while children mostly render and emit user intent.",
+      "cells": [
+        {
+          "optionId": "input-output",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer because the parent is already the source of truth and the child interactions map neatly to outputs."
+        },
+        {
+          "optionId": "shared-service",
+          "verdict": "stretch",
+          "note": "Harder to defend because the service would mostly duplicate ownership the parent already has."
+        }
+      ]
+    },
+    {
+      "id": "cross-feature-coordination",
+      "title": "State shared across several branches",
+      "prompt": "Several components across the route need the same feature state, and no single parent cleanly owns the coordination anymore.",
+      "cells": [
+        {
+          "optionId": "input-output",
+          "verdict": "reasonable",
+          "note": "You can still wire it, but the bindings may become plumbing rather than useful explicit design."
+        },
+        {
+          "optionId": "shared-service",
+          "verdict": "best-fit",
+          "note": "This becomes easier to defend when the feature needs a shared state boundary rather than just parent-child events."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "state-ownership",
+      "title": "Who really owns the state?",
+      "description": "This is the first question. If one parent already owns the data, that usually changes the answer a lot."
+    },
+    {
+      "id": "tree-alignment",
+      "title": "Does the communication match the component tree?",
+      "description": "Inputs and outputs are strongest when the data naturally moves down and user intent naturally moves up through the same tree."
+    },
+    {
+      "id": "shared-feature-needs",
+      "title": "Is this just communication or real shared feature state?",
+      "description": "A strong answer separates simple component communication from a broader feature state that several components need to coordinate around."
+    },
+    {
+      "id": "readability",
+      "title": "Where will the next developer understand the flow faster?",
+      "description": "Explicit template bindings can be easier to trace than a service, but once bindings become plumbing, a service boundary may read better."
+    },
+    {
+      "id": "premature-abstraction",
+      "title": "Are you adding a service before the feature needs one?",
+      "description": "Junior developers often assume a service is more scalable by default. A stronger answer checks whether the extra layer solves a current problem."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean @Input/@Output because the parent already owns the page state",
+    "summary": "This orders page already has a natural owner for filters, sort, and results. The child components mostly display current values and emit user intent. That makes `@Input()` and `@Output()` the easier answer to defend for the exact prompt.",
+    "reasoning": [
+      "The key signal is ownership. `OrdersPageComponent` is already the source of truth, so the simplest design is to pass state down and emit events back up.",
+      "That keeps dependencies explicit in the template. A future developer can see which child receives which value and which event the parent handles.",
+      "I would move toward a shared service only when the feature stops fitting a clear parent-owned tree, such as when several distant components need the same shared state or coordination over time."
+    ],
+    "recommendation": "For this exact prompt, I would keep the communication with `@Input()` and `@Output()`. I would introduce a shared service later only if the feature grows into broader shared state that no single parent cleanly owns."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not use a service now so it scales better later?",
+      "answer": "I would not add that layer until the feature actually needs it. In this prompt, the parent already owns the state, so a service would mostly duplicate that ownership and hide a flow that is currently easy to read."
+    },
+    {
+      "question": "When would a shared service clearly be the better answer?",
+      "answer": "When several siblings or distant components need shared feature state over time and pushing everything through parent bindings starts to look like plumbing instead of useful explicit flow."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If filters, selection, and other state started being shared across several route components with no clean single owner, I would move toward a shared feature service."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use a shared service because that is more scalable.",
+      "whyItWorks": "It does not. This sounds generic and ignores the fact that the parent in this prompt already owns the state clearly."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use inputs and outputs because the parent can pass values down and get events back.",
+      "whyItWorks": "This is directionally fine, but it still needs a sharper explanation of ownership and when a shared service becomes justified."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use `@Input()` and `@Output()` because the page component already owns the filter and sort state. The child components mainly need to render those values and emit user actions such as changing a filter or clearing it. That keeps the flow explicit in the template. I would only move to a shared service if the feature grew into shared state across several component branches where no single parent cleanly owned the coordination anymore.",
+      "whyItWorks": "This sounds strong because it starts from state ownership, explains why explicit bindings fit the current tree, and still gives a clear boundary for when a service becomes the better tool."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking who owns the state in this prompt.",
+    "Check whether the communication path already matches the component tree.",
+    "Choose the lighter or broader coordination model based on that boundary.",
+    "Explain the main cost of the other option, either noisy plumbing or premature abstraction.",
+    "End with a simple rule of thumb, for example: inputs and outputs for clear parent-child flow, shared service for broader feature coordination."
+  ],
+  "antiPatterns": [
+    "Choosing a shared service just because it feels more scalable.",
+    "Using inputs and outputs even after the feature clearly stopped fitting a parent-owned tree.",
+    "Treating simple component communication and shared feature state as if they were the same problem.",
+    "Talking only about boilerplate instead of talking about ownership and readability."
+  ]
+}

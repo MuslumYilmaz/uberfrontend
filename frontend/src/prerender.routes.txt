@@ -509,6 +509,7 @@
 /tradeoffs/debounce-vs-throttle-live-search
 /tradeoffs/event-delegation-vs-direct-listeners
 /tradeoffs/feature-service-vs-ngrx-angular
+/tradeoffs/props-drilling-vs-context-shared-ui
 /tradeoffs/reactive-forms-vs-template-driven-angular
 /tradeoffs/sse-vs-websocket-live-dashboard
 /vue/coding/vue-accordion-faq

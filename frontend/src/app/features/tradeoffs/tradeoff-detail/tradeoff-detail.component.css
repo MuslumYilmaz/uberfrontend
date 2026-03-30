@@ -441,7 +441,8 @@
 }
 
 .tradeoff-example {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
 }
 
@@ -456,6 +457,11 @@
   border-left: 3px solid rgba(255, 255, 255, 0.14);
   color: rgba(255, 255, 255, 0.86);
   line-height: 1.65;
+}
+
+.tradeoff-example__why {
+  margin-top: auto !important;
+  padding-top: 0.3rem;
 }
 
 .tradeoff-example.is-weak {

@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { PracticeTechnology } from '../../core/models/practice.model';
 import { SeoService } from '../../core/services/seo.service';
 import { TradeoffBattleListItem } from '../../core/models/tradeoff-battle.model';
 import { TradeoffBattleListResolved } from '../../core/resolvers/tradeoff-battle.resolver';
 import { TradeoffBattleProgressService } from '../../core/services/tradeoff-battle-progress.service';
+import { FaChipComponent } from '../../shared/components/chip/fa-chip.component';
 
 const PAGE_TITLE = 'Frontend Tradeoff Interview Questions and Architecture Decisions';
 const PAGE_DESCRIPTION =
@@ -14,11 +16,20 @@ const PAGE_DESCRIPTION =
 @Component({
   standalone: true,
   selector: 'app-tradeoff-list',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, FaChipComponent],
   templateUrl: './tradeoff-list.component.html',
   styleUrls: ['./tradeoff-list.component.css'],
 })
 export class TradeoffListComponent {
+  private readonly techOrder: readonly PracticeTechnology[] = [
+    'javascript',
+    'react',
+    'angular',
+    'vue',
+    'html',
+    'css',
+    'system-design',
+  ];
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(SeoService);
   readonly progress = inject(TradeoffBattleProgressService);
@@ -27,12 +38,18 @@ export class TradeoffListComponent {
     ((this.route.snapshot.data['tradeoffBattleList'] as TradeoffBattleListResolved | undefined)?.items ?? []),
   );
   readonly searchTerm = signal('');
+  readonly selectedTech = signal<PracticeTechnology | ''>('');
+  readonly techOptions = computed<PracticeTechnology[]>(() =>
+    this.techOrder.filter((tech) => this.items().some((item) => item.tech === tech)),
+  );
 
   readonly filteredItems = computed(() => {
     const search = this.searchTerm().trim().toLowerCase();
-    if (!search) return this.items();
+    const selectedTech = this.selectedTech();
 
     return this.items().filter((item) => {
+      if (selectedTech && item.tech !== selectedTech) return false;
+      if (!search) return true;
       const haystack = [item.title, item.summary, ...item.tags].join(' ').toLowerCase();
       return haystack.includes(search);
     });
@@ -50,11 +67,56 @@ export class TradeoffListComponent {
     this.searchTerm.set(value);
   }
 
+  setSelectedTech(value: PracticeTechnology | '' | null | undefined): void {
+    const normalized = String(value || '').trim();
+    this.selectedTech.set(
+      this.techOrder.includes(normalized as PracticeTechnology)
+        ? (normalized as PracticeTechnology)
+        : '',
+    );
+  }
+
   statusLabel(id: string): string {
     const record = this.progress.getRecord(id);
     if (record.completed) return 'Completed';
     if (record.started) return 'In progress';
     return 'Not started';
+  }
+
+  techLabel(value: PracticeTechnology): string {
+    switch (value) {
+      case 'javascript':
+        return 'JavaScript';
+      case 'system-design':
+        return 'System design';
+      default:
+        return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+  }
+
+  techBadge(value: PracticeTechnology): string {
+    switch (value) {
+      case 'javascript':
+        return 'JS';
+      case 'react':
+        return 'RE';
+      case 'angular':
+        return 'NG';
+      case 'vue':
+        return 'VU';
+      case 'html':
+        return 'HT';
+      case 'css':
+        return 'CS';
+      case 'system-design':
+        return 'SD';
+      default:
+        return 'FE';
+    }
+  }
+
+  techBadgeClass(value: PracticeTechnology): string {
+    return `tech-badge--${value}`;
   }
 
   trackById(_: number, item: TradeoffBattleListItem): string {

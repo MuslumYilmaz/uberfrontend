@@ -1,5 +1,85 @@
 [
   {
+    "id": "object-vs-map-keyed-collections",
+    "title": "Object vs Map for keyed JavaScript collections",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A dashboard keeps adding, removing, counting, and iterating items by id. Would you store that data in a plain object or a Map?",
+    "tags": [
+      "javascript",
+      "data-structures",
+      "collections",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "promise-all-vs-sequential-awaits",
+    "title": "Promise.all vs sequential awaits in JavaScript",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A page needs several independent requests before it can render. Would you run them with Promise.all or await them one by one?",
+    "tags": [
+      "javascript",
+      "async",
+      "promises",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "localstorage-vs-sessionstorage-browser-persistence",
+    "title": "localStorage vs sessionStorage for browser persistence",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A web app needs to remember some client-side UI state. Would you persist it in localStorage or sessionStorage?",
+    "tags": [
+      "javascript",
+      "browser",
+      "storage",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "settimeout-vs-requestanimationframe-ui-updates",
+    "title": "setTimeout vs requestAnimationFrame for UI updates",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A browser UI needs smooth visual updates while the user drags and scrolls. Would you schedule that work with setTimeout or requestAnimationFrame?",
+    "tags": [
+      "javascript",
+      "browser",
+      "rendering",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "mutation-vs-immutable-copy-shared-state",
+    "title": "Mutation vs immutable copy for shared JavaScript state",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A UI updates nested client-side state and also needs undo, predictable re-renders, and easy debugging. Would you mutate existing objects or create immutable copies?",
+    "tags": [
+      "javascript",
+      "state",
+      "data-flow",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
     "id": "sse-vs-websocket-live-dashboard",
     "title": "SSE vs WebSocket for a live operations dashboard",
     "tech": "javascript",
@@ -48,6 +128,118 @@
     "updatedAt": "2026-03-21"
   },
   {
+    "id": "web-worker-vs-main-thread-heavy-compute",
+    "title": "Web Worker vs main thread for heavy browser compute",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "A browser app parses large local data, builds a search index, and recomputes facets while the UI must stay responsive. Would you keep that work on the main thread or move it to a Web Worker?",
+    "tags": [
+      "javascript",
+      "browser",
+      "performance",
+      "architecture"
+    ],
+    "access": "free",
+    "estimatedMinutes": 15,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "props-drilling-vs-context-shared-ui",
+    "title": "Props drilling vs Context for shared React UI state",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "Theme, current user, and permissions are needed in several deep React components. Would you keep passing props or introduce Context?",
+    "tags": [
+      "react",
+      "context",
+      "state-sharing",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "usestate-vs-usereducer-growing-state",
+    "title": "useState vs useReducer for growing React component state",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React settings panel started simple, then gained validation, loading, error, reset, and success flows. Would you keep useState or move to useReducer?",
+    "tags": [
+      "react",
+      "hooks",
+      "state-management",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "controlled-vs-uncontrolled-react-inputs",
+    "title": "Controlled vs uncontrolled inputs in React forms",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React form now needs instant validation, disabled submit rules, formatted input, and reset behavior. Would you keep inputs controlled or let the DOM manage them?",
+    "tags": [
+      "react",
+      "forms",
+      "inputs",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "derive-in-render-vs-store-derived-state",
+    "title": "Derive in render vs store derived state in React",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React filter panel needs visible results, a count badge, and a disabled Apply button. Would you compute these from current state or store them separately?",
+    "tags": [
+      "react",
+      "derived-state",
+      "state-management",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "useeffect-vs-event-handler-logic",
+    "title": "useEffect vs event-handler logic in React",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React save flow needs a request, success toast, analytics event, and modal close after the user clicks Save. Would you run that logic in useEffect or keep it in the event handler?",
+    "tags": [
+      "react",
+      "effects",
+      "events",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "lift-state-up-vs-keep-local-react",
+    "title": "Lift state up vs keep state local in React",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A filter drawer, results header, and product grid now need to reflect the same selection state. Would you lift state up or keep it local in each component?",
+    "tags": [
+      "react",
+      "state-sharing",
+      "component-design",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
     "id": "context-vs-zustand-vs-redux",
     "title": "Context vs Zustand vs Redux for a growing React dashboard",
     "tech": "react",
@@ -62,6 +254,86 @@
     "access": "free",
     "estimatedMinutes": 14,
     "updatedAt": "2026-03-21"
+  },
+  {
+    "id": "csr-vs-ssr-vs-rsc-react-rendering",
+    "title": "CSR vs SSR vs RSC for a React product experience",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "A React commerce page needs SEO, fast first render, large product data, faceted filters, and client-side interactions. Would you defend CSR, SSR, or RSC?",
+    "tags": [
+      "react",
+      "rendering",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 16,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "async-pipe-vs-manual-subscribe-angular",
+    "title": "Async pipe vs manual subscribe for Angular UI data",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular page needs to show live user data, loading states, and refreshed values from Observables. Would you bind with the async pipe or subscribe manually in the component?",
+    "tags": [
+      "angular",
+      "observables",
+      "templates",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "input-output-vs-shared-service-angular-communication",
+    "title": "@Input/@Output vs shared service for Angular component communication",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular page has a parent container and a few child UI components that need to send user actions upward and receive current state downward. Would you use @Input/@Output or a shared service?",
+    "tags": [
+      "angular",
+      "components",
+      "communication",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "route-resolver-vs-fetch-in-ngoninit-angular",
+    "title": "Route resolver vs fetch in ngOnInit for Angular page data",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular route needs page data before rendering some parts of the screen. Would you load it with a resolver or fetch it in ngOnInit?",
+    "tags": [
+      "angular",
+      "routing",
+      "data-loading",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  {
+    "id": "pure-pipe-vs-component-method-template-angular",
+    "title": "Pure pipe vs component method in an Angular template",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular list template needs to format and derive display values for many rows. Would you use a pure pipe or call a component method from the template?",
+    "tags": [
+      "angular",
+      "templates",
+      "performance",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
   },
   {
     "id": "reactive-forms-vs-template-driven-angular",
@@ -96,6 +368,134 @@
     "updatedAt": "2026-03-21"
   },
   {
+    "id": "feature-service-signals-rxjs-vs-ngrx-angular-platform",
+    "title": "Feature service with signals or RxJS vs NgRx Store for a large Angular product surface",
+    "tech": "angular",
+    "difficulty": "hard",
+    "summary": "A multi-screen Angular product surface has optimistic updates, websocket refreshes, draft restore, route re-entry, and several teams touching the same state graph. Would you keep state in a feature service with signals or RxJS, or move the core shared state into NgRx Store?",
+    "tags": [
+      "angular",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 16,
+    "updatedAt": "2026-03-30"
+  },
+  {
+    "id": "props-emits-vs-provide-inject-vue-context",
+    "title": "Props and emits vs provide and inject for Vue component communication",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue page has nested UI wrappers and deep child components that need shared context and user actions. Would you use props and emits or switch to provide and inject?",
+    "tags": [
+      "vue",
+      "components",
+      "communication",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30"
+  },
+  {
+    "id": "ref-vs-reactive-vue-state-shape",
+    "title": "ref vs reactive for Vue state shape",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue component manages several related form and filter fields. Would you keep each value in its own ref or group them in a reactive object?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "state",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30"
+  },
+  {
+    "id": "vif-vs-vshow-vue-visibility-toggle",
+    "title": "v-if vs v-show for Vue visibility toggles",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue screen hides and shows UI sections based on user interaction. Would you use v-if or v-show?",
+    "tags": [
+      "vue",
+      "templates",
+      "rendering",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30"
+  },
+  {
+    "id": "computed-vs-method-template-vue-derived-ui",
+    "title": "Computed vs method in a Vue template for derived UI",
+    "tech": "vue",
+    "difficulty": "easy",
+    "summary": "A Vue template needs derived values like filtered rows, counts, and summary text from reactive state. Would you use computed properties or call methods in the template?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "templates",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-30"
+  },
+  {
+    "id": "watch-vs-watcheffect-vue-reactive-effects",
+    "title": "watch vs watchEffect for Vue reactive side effects",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue feature triggers side effects from several reactive inputs and needs cleanup for stale work. Would you use watch or watchEffect?",
+    "tags": [
+      "vue",
+      "reactivity",
+      "side-effects",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30"
+  },
+  {
+    "id": "local-state-vs-extracted-composable-vue-feature-logic",
+    "title": "Local component state vs extracted composable for Vue feature logic",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue feature has search, selection, sorting, loading, and retry logic. Would you keep that state inside the component or extract it into a composable?",
+    "tags": [
+      "vue",
+      "composables",
+      "state",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30"
+  },
+  {
+    "id": "props-emits-vs-vmodel-vue-custom-input-api",
+    "title": "Props and emits vs v-model for a Vue custom input API",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "A Vue custom form component needs to send value changes back to its parent. Would you design it around explicit props and emits or expose a v-model API?",
+    "tags": [
+      "vue",
+      "components",
+      "forms",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 13,
+    "updatedAt": "2026-03-30"
+  },
+  {
     "id": "computed-vs-watch-vue-catalog",
     "title": "Computed vs watch for a filterable Vue catalog",
     "tech": "vue",
@@ -110,5 +510,21 @@
     "access": "free",
     "estimatedMinutes": 13,
     "updatedAt": "2026-03-21"
+  },
+  {
+    "id": "composable-vs-pinia-vue-shared-product-state",
+    "title": "Composable vs Pinia store for a shared Vue product surface",
+    "tech": "vue",
+    "difficulty": "hard",
+    "summary": "A multi-screen Vue product surface has optimistic updates, background refreshes, draft restore, and several teams touching the same shared state graph. Would you keep the core logic in composables or move it into a Pinia store?",
+    "tags": [
+      "vue",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 16,
+    "updatedAt": "2026-03-30"
   }
 ]

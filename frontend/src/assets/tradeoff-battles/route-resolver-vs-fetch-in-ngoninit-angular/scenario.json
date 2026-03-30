@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "route-resolver-vs-fetch-in-ngoninit-angular",
+    "title": "Route resolver vs fetch in ngOnInit for Angular page data",
+    "tech": "angular",
+    "difficulty": "easy",
+    "summary": "An Angular route needs page data before rendering some parts of the screen. Would you load it with a resolver or fetch it in ngOnInit?",
+    "tags": [
+      "angular",
+      "routing",
+      "data-loading",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building an Angular order-details page. The route needs the order record, customer name, and top-level status to decide what the page should show. Once the page is open, smaller panels such as timeline notes and shipment events can continue loading independently. One teammate wants to fetch the main order data in `ngOnInit` and show a loading state inside the component. Another teammate wants to use a route resolver so the page only activates once the core order record is ready. In the interview, the panel asks which direction you would defend.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "resolver",
+      "label": "Use a route resolver",
+      "summary": "Fits best when the route should open with essential page data already available and that data shapes the page itself.",
+      "whenItWins": [
+        "The route needs core data before the page can make sense, such as deciding which screen state, title, or layout should appear.",
+        "You want navigation to wait for a small set of essential page data instead of rendering a half-defined page first.",
+        "The resolved data acts like route-level context, while secondary panels can still load after activation."
+      ],
+      "watchOutFor": [
+        "If too much data gets pushed into the resolver, navigation can start feeling blocked and the route may wait on work that did not need to happen up front.",
+        "A weak answer says resolvers are cleaner by default without checking whether the component actually wants to own a loading and retry experience."
+      ]
+    },
+    {
+      "id": "ngoninit-fetch",
+      "label": "Fetch in ngOnInit",
+      "summary": "Fits best when loading, skeleton states, and retry behavior are part of the component experience rather than something the router should hide.",
+      "whenItWins": [
+        "The page can render a meaningful shell first and then progressively load the rest of the data.",
+        "You want the component to own loading, retry, partial error handling, or skeleton UX as part of the screen itself.",
+        "The data is important, but the route does not need to block activation just to start rendering."
+      ],
+      "watchOutFor": [
+        "If the route really depends on that data to know what it is showing, the component can end up rendering an awkward placeholder version of a page that is not ready yet.",
+        "A weak answer fetches in ngOnInit by habit, even when the route is clearer if it enters with core context already resolved."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "route-needs-core-context",
+      "title": "Route needs core page context first",
+      "prompt": "The page title, primary state, or main layout depends on a small set of essential data being present before activation.",
+      "cells": [
+        {
+          "optionId": "resolver",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the route has a real dependency on that core data before the page meaningfully opens."
+        },
+        {
+          "optionId": "ngoninit-fetch",
+          "verdict": "reasonable",
+          "note": "Still possible, but now you should explain why rendering before core context is ready helps more than it hurts."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "The order page needs the main record before it knows what to show, but secondary panels can load later.",
+      "cells": [
+        {
+          "optionId": "resolver",
+          "verdict": "best-fit",
+          "note": "This is the cleanest answer because the core route context is needed up front, while non-critical panels can stay progressive."
+        },
+        {
+          "optionId": "ngoninit-fetch",
+          "verdict": "reasonable",
+          "note": "Possible, but it is harder to defend if the component first opens without the main order context that defines the page."
+        }
+      ]
+    },
+    {
+      "id": "progressive-screen",
+      "title": "Progressive screen with visible loading UX",
+      "prompt": "The route can render a meaningful shell immediately, and loading or retry UX is part of the component experience.",
+      "cells": [
+        {
+          "optionId": "resolver",
+          "verdict": "reasonable",
+          "note": "You can still use it for a small critical subset, but it becomes weaker if the route does not need to block on that data."
+        },
+        {
+          "optionId": "ngoninit-fetch",
+          "verdict": "best-fit",
+          "note": "This becomes easier to defend because the component genuinely owns a progressive loading experience."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "route-readiness",
+      "title": "Does the route need the data before it can make sense?",
+      "description": "This is the first question. Some pages need core context before they can meaningfully open, while others can render a shell and fill in details progressively."
+    },
+    {
+      "id": "loading-ownership",
+      "title": "Should loading be owned by the router or the component?",
+      "description": "A strong answer notices whether loading is just a route dependency or part of the page's intended experience."
+    },
+    {
+      "id": "critical-vs-secondary-data",
+      "title": "What is truly critical, and what can load later?",
+      "description": "Resolvers are strongest when they stay narrow. Secondary panels or enrichments do not always belong in the route gate."
+    },
+    {
+      "id": "error-and-retry-story",
+      "title": "Where should error and retry behavior live?",
+      "description": "If retries and partial failure handling are part of the screen design, the component often wants more ownership."
+    },
+    {
+      "id": "overblocking-risk",
+      "title": "Are you blocking navigation on work that could have loaded progressively?",
+      "description": "A balanced answer should avoid turning the resolver into a bucket for all page data just because route-level loading feels tidy."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean route resolver because the route needs core order context before it really opens",
+    "summary": "This order-details page needs the main record and top-level state before the page can meaningfully decide what it is showing. That makes a resolver the easier answer to defend for the exact prompt.",
+    "reasoning": [
+      "The key boundary is not 'where can I fetch data' but 'what does the route need before it makes sense.' In this prompt, the core order record is route-level context.",
+      "That makes a resolver a good fit for the essential order data, because the page should activate with that context ready rather than first opening in a half-defined state.",
+      "I would keep the resolver narrow. Secondary panels like timeline notes and shipment events can still load in the component after activation, because they enrich the page rather than define it."
+    ],
+    "recommendation": "For this exact prompt, I would resolve the core order record at the route level and let secondary, non-critical panels continue loading inside the component. I would move toward ngOnInit fetching when the page can intentionally render and manage its own progressive loading experience."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not always fetch in ngOnInit so the component controls loading?",
+      "answer": "I would do that when loading is part of the screen experience. Here the page needs the main order context before it can even know what primary state to show, so I would rather enter the route with that essential data already ready."
+    },
+    {
+      "question": "When would ngOnInit clearly be the better answer?",
+      "answer": "When the page can render a meaningful shell immediately and loading, retry, or partial failure states are part of the component's real UX instead of something the router should block on."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the route no longer depended on that core data to decide what it is, and the page intentionally supported progressive loading with skeletons and retry flows, I would move the ownership into the component."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use a resolver because that is cleaner than fetching in ngOnInit.",
+      "whyItWorks": "It does not. This sounds generic and teaches no boundary for when component-owned loading is actually the better design."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use a resolver because the page needs the order data first, but smaller parts could still load later.",
+      "whyItWorks": "This is directionally fine, but it still needs a sharper explanation of why the route depends on the core data and why the resolver should stay narrow."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use a route resolver for the core order record because the page needs that data before it can really know what it is showing. I do not want to activate the route into a half-defined screen and then decide the main state afterward. I would keep the resolver focused on the critical route context and let secondary panels like notes or shipment events load inside the component after activation. If the page instead supported a deliberate progressive loading experience with skeletons and retry UI, I would fetch in ngOnInit.",
+      "whyItWorks": "This sounds strong because it starts from route readiness, keeps the resolver narrow, and still gives a fair boundary for when component-owned loading is the better tool."
+    }
+  ],
+  "answerFramework": [
+    "Start by asking whether the route needs core data before it can make sense.",
+    "Separate critical route context from secondary enrichments that can load later.",
+    "Choose resolver or component-owned fetching based on who should own the loading experience.",
+    "Explain the main cost of the other option, either overblocking navigation or opening a half-defined page.",
+    "End with a simple rule of thumb, for example: resolver for essential route context, ngOnInit for progressive component-owned loading."
+  ],
+  "antiPatterns": [
+    "Putting all page data in the resolver just because route-level loading feels cleaner.",
+    "Fetching in ngOnInit by habit even when the route depends on core context first.",
+    "Treating resolvers as always better instead of asking who should own loading UX.",
+    "Failing to separate critical page context from secondary panels that can load later."
+  ]
+}

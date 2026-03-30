@@ -1501,6 +1501,9 @@
     <loc>https://frontendatlas.com/tradeoffs/feature-service-vs-ngrx-angular</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/tradeoffs/props-drilling-vs-context-shared-ui</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/tradeoffs/reactive-forms-vs-template-driven-angular</loc>
   </url>
   <url>

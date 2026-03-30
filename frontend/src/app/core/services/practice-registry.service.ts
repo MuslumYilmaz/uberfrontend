@@ -128,9 +128,9 @@ export class PracticeRegistryService {
   private resolveCatalogBadge(entry: PracticeCatalogEntry, items: PracticeRegistryItem[]): string | null {
     switch (entry.key) {
       case 'incidents':
-        return items.some((item) => item.family === 'incident' && item.access === 'premium') ? 'Premium' : null;
+        return items.some((item) => item.family === 'incident') ? 'New' : null;
       case 'tradeoff-battles':
-        return items.some((item) => item.family === 'tradeoff-battle' && item.access === 'premium') ? 'Premium' : null;
+        return items.some((item) => item.family === 'tradeoff-battle') ? 'New' : null;
       default:
         return null;
     }

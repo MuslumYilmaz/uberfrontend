@@ -101,4 +101,41 @@ describe('TradeoffListComponent', () => {
 
     expect(fixture.nativeElement.textContent || '').toContain('Premium');
   });
+
+  it('filters tradeoff battles by selected tech', async () => {
+    const fixture = TestBed.createComponent(TradeoffListComponent);
+    fixture.componentInstance.items.set([
+      {
+        id: 'context-vs-zustand-vs-redux',
+        title: 'Context vs Zustand vs Redux for a growing React dashboard',
+        tech: 'react',
+        difficulty: 'intermediate',
+        summary: 'Shared state tradeoff question.',
+        tags: ['react', 'tradeoffs'],
+        access: 'free',
+        estimatedMinutes: 14,
+        updatedAt: '2026-03-21',
+      } as any,
+      {
+        id: 'reactive-forms-vs-template-driven-angular',
+        title: 'Reactive forms vs template-driven forms for a growing Angular workflow',
+        tech: 'angular',
+        difficulty: 'intermediate',
+        summary: 'Angular forms tradeoff question.',
+        tags: ['angular', 'tradeoffs'],
+        access: 'free',
+        estimatedMinutes: 13,
+        updatedAt: '2026-03-21',
+      } as any,
+    ]);
+
+    fixture.componentInstance.setSelectedTech('react');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+    expect(text).toContain('Context vs Zustand vs Redux');
+    expect(text).not.toContain('Reactive forms vs template-driven forms');
+  });
 });

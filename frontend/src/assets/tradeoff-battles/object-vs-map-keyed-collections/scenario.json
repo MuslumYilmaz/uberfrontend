@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "object-vs-map-keyed-collections",
+    "title": "Object vs Map for keyed JavaScript collections",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A dashboard keeps adding, removing, counting, and iterating items by id. Would you store that data in a plain object or a Map?",
+    "tags": [
+      "javascript",
+      "data-structures",
+      "collections",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building a JavaScript dashboard that tracks selected rows by id. The UI needs to add and remove entries often, check whether an id already exists, show a count badge, iterate through the current selections, and clear the whole collection quickly. The ids are string values today, but the set behaves like a living collection rather than a fixed record shape. In the interview, the panel asks whether you would store this in a plain object or a Map.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "object",
+      "label": "Use a plain object",
+      "summary": "Fits well when the data behaves like a simple record with predictable string keys and a JSON-like shape.",
+      "whenItWins": [
+        "The structure is really a plain record, config object, or API-shaped dictionary keyed by known string names.",
+        "You mainly want straightforward property access and easy JSON serialization without a collection-specific API.",
+        "The data is not being treated like a heavily mutated collection with lots of insert, delete, count, and iteration work."
+      ],
+      "watchOutFor": [
+        "Once the value starts acting like a dynamic collection, you often end up rebuilding collection helpers yourself with Object.keys, manual counts, and delete operations.",
+        "A weak answer picks object just because it is more familiar, without asking whether the data is actually a record or a collection."
+      ]
+    },
+    {
+      "id": "map",
+      "label": "Use a Map",
+      "summary": "Fits well when the value behaves like a dynamic keyed collection that you will add to, remove from, count, and iterate over frequently.",
+      "whenItWins": [
+        "The data acts like a live collection with repeated set, get, has, delete, clear, size, and iteration operations.",
+        "You want the code to communicate intent clearly: this is not just an object shape, it is a collection with lifecycle operations.",
+        "The collection may evolve over time, and you want a structure designed for keyed entries instead of borrowing plain objects for that job."
+      ],
+      "watchOutFor": [
+        "If the value really needs to stay a plain JSON-shaped record, Map can add unnecessary conversion and mental overhead.",
+        "A weak answer says Map is always better without checking whether the data is actually just a simple record with string keys."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "json-like-record",
+      "title": "Plain record or config shape",
+      "prompt": "The value mostly behaves like a simple object of named fields or a JSON-style dictionary.",
+      "cells": [
+        {
+          "optionId": "object",
+          "verdict": "best-fit",
+          "note": "This is easier to defend when the data is naturally record-shaped and does not need collection-style operations."
+        },
+        {
+          "optionId": "map",
+          "verdict": "reasonable",
+          "note": "It can still work, but you now need to explain why a collection API is worth it for a shape that is mostly just a plain record."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Entries are added, removed, counted, iterated, and cleared like a living keyed collection.",
+      "cells": [
+        {
+          "optionId": "object",
+          "verdict": "reasonable",
+          "note": "Possible, but the code often starts collecting helper work that Map already models directly."
+        },
+        {
+          "optionId": "map",
+          "verdict": "best-fit",
+          "note": "This is easiest to defend because the data behaves like a collection and Map expresses that intent clearly."
+        }
+      ]
+    },
+    {
+      "id": "serialize-boundary",
+      "title": "Data must cross a plain JSON boundary",
+      "prompt": "The value is frequently sent over the network or stored in a format that naturally expects plain objects.",
+      "cells": [
+        {
+          "optionId": "object",
+          "verdict": "best-fit",
+          "note": "This becomes easier to defend when plain serialization and record shape matter more than collection ergonomics."
+        },
+        {
+          "optionId": "map",
+          "verdict": "reasonable",
+          "note": "Still viable internally, but now you should explain the conversion cost and why the collection API is still worth it."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "data-shape",
+      "title": "Is this data really a record or really a collection?",
+      "description": "This is the first question. Plain records and dynamic collections often look similar at first, but they age differently in real code."
+    },
+    {
+      "id": "operation-pattern",
+      "title": "Which operations happen most often?",
+      "description": "Frequent add, remove, clear, count, and iteration work usually pushes you toward a collection-oriented structure."
+    },
+    {
+      "id": "intent-clarity",
+      "title": "What does the code communicate to the next developer?",
+      "description": "A strong answer considers whether the chosen structure makes it obvious that the value is a plain record or a live keyed collection."
+    },
+    {
+      "id": "serialization-boundary",
+      "title": "Does the data need to stay plain JSON-friendly?",
+      "description": "Sometimes the best structure is shaped by what the rest of the system expects to receive, store, or serialize."
+    },
+    {
+      "id": "helper-overhead",
+      "title": "Are you rebuilding collection behavior by hand?",
+      "description": "If your object solution keeps needing extra helper logic for size, iteration, or clearing, that is usually a sign the data may want a collection structure."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean Map because the prompt describes a dynamic collection, not just a plain record",
+    "summary": "This dashboard state is being added to, removed from, checked, counted, iterated, and cleared as a live keyed collection. That makes Map easier to defend for the exact prompt.",
+    "reasoning": [
+      "If this were a plain config object or a JSON-shaped dictionary of known fields, I would be happy to keep it as an object because that shape is simpler and more natural there.",
+      "In this prompt, the important clue is not only the keys. It is the operation pattern: has, set, delete, clear, size, and iteration are central to the problem.",
+      "Map communicates that collection intent more clearly and avoids turning a plain object into a do-it-yourself collection API."
+    ],
+    "recommendation": "For this exact prompt, I would use Map for the live keyed collection and only move back toward a plain object if the data later needs to behave more like a simple serialized record than a dynamic collection."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Can't an object do all of this too?",
+      "answer": "It can, but that is not the same as being the clearest model. Once the state behaves like a collection with add, delete, count, clear, and iteration as first-class operations, Map usually expresses the intent better and avoids extra helper code."
+    },
+    {
+      "question": "When would you still prefer an object?",
+      "answer": "When the value is really a plain record or JSON-like dictionary and the code mainly wants simple property access or serialization instead of collection operations."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the data stopped behaving like a live collection and instead became a simple API-shaped object that mostly gets read and serialized as plain key-value data, I would move back toward an object."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use Map because it is more advanced than object.",
+      "whyItWorks": "It does not. This sounds like tool worship and ignores the actual shape and operations in the prompt."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use Map because there will be add and delete operations.",
+      "whyItWorks": "This is directionally fine, but it still needs a clearer explanation of why the data behaves like a collection and when object is still the better fit."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would use Map because the state behaves like a live keyed collection: I need to add entries, remove them, test membership, iterate them, count them, and clear them. If the value were really just a plain JSON-style record with predictable string keys, I would keep it as an object. Here the collection behavior is the deciding signal, not just the fact that keys exist.",
+      "whyItWorks": "This sounds strong because it starts from the operation pattern, explains why Map matches the intent, and still gives a clean boundary for when object remains the simpler choice."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming whether the value behaves like a plain record or a live keyed collection.",
+    "List the main operations the code must support in this prompt.",
+    "Choose the structure that matches those operations most naturally.",
+    "Acknowledge when the other option is still the better answer, especially around JSON-shaped data.",
+    "End with one clear boundary, for example: object for records, Map for dynamic keyed collections."
+  ],
+  "antiPatterns": [
+    "Choosing Map only because it feels more advanced or modern.",
+    "Choosing object only because it is more familiar, even when the code is rebuilding collection behavior by hand.",
+    "Ignoring serialization and record-shaped boundaries when plain objects are still the more natural fit.",
+    "Talking only about keys instead of talking about operations and intent."
+  ]
+}

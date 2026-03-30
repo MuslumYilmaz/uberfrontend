@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "feature-service-signals-rxjs-vs-ngrx-angular-platform",
+    "title": "Feature service with signals or RxJS vs NgRx Store for a large Angular product surface",
+    "tech": "angular",
+    "difficulty": "hard",
+    "summary": "A multi-screen Angular product surface has optimistic updates, websocket refreshes, draft restore, route re-entry, and several teams touching the same state graph. Would you keep state in a feature service with signals or RxJS, or move the core shared state into NgRx Store?",
+    "tags": [
+      "angular",
+      "state-management",
+      "architecture",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 16,
+    "updatedAt": "2026-03-30"
+  },
+  "scenario": "You are designing an Angular claims platform used by support, risk, and operations teams. The experience includes a searchable queue, a detail workbench, side panels, staged edits, optimistic actions, background websocket refreshes, retry flows for failed mutations, draft restore after navigation, deep links back into the same record, and audit-sensitive debugging when state gets out of sync. Different teams own different parts of the surface, but they all touch the same entity graph and workflow events. In the interview, the panel asks whether you would keep the core shared state in a feature service built with signals or RxJS, or move it into NgRx Store.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "feature-service",
+      "label": "Keep core state in a feature service with signals or RxJS",
+      "summary": "Fits best when the feature is still truly bounded, ownership is clear, and the team can keep shared state conventions disciplined without full store machinery.",
+      "whenItWins": [
+        "The state mostly belongs to one route-bounded feature or one team, and the event surface is still understandable without reducers and effects.",
+        "Signals or RxJS can model the shared state cleanly, while selectors, derived view models, and mutation methods remain explicit and reviewable inside the feature boundary.",
+        "The product does not need heavy cross-screen orchestration, broad action tracing, or a long-lived event story that multiple teams must debug in the same way."
+      ],
+      "watchOutFor": [
+        "As event sources multiply, service methods can quietly become a custom store without the conventions, tooling, or traceability that made the service feel simple at first.",
+        "A weak answer says a service is lighter without explaining how optimistic rollback, background refresh, and multi-team debugging stay coherent over time."
+      ]
+    },
+    {
+      "id": "ngrx-store",
+      "label": "Move core shared state into NgRx Store",
+      "summary": "Fits best when the feature behaves like a small product platform with many event sources, multiple teams, and a real need for predictable state transitions.",
+      "whenItWins": [
+        "Several screens and teams share the same source of truth, while actions, reducers, selectors, and effects make transitions easier to explain and review.",
+        "Optimistic updates, rollback, websocket refreshes, retries, restore-on-navigation, and deep-link re-entry create enough event complexity that explicit state transitions become valuable.",
+        "The product benefits from a stronger debugging story, clearer conventions, and a stable way to reason about how state changes over time."
+      ],
+      "watchOutFor": [
+        "NgRx is weaker when the feature is still modest and route-bounded, because the extra ceremony may outweigh the actual coordination needs.",
+        "A weak answer says NgRx is the enterprise answer without separating core shared product state from local view state that should stay out of the store."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "bounded-feature",
+      "title": "Bounded feature with clear ownership",
+      "prompt": "One team owns the feature, the state graph is modest, and most coordination stays inside one route surface.",
+      "cells": [
+        {
+          "optionId": "feature-service",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because a disciplined service with signals or RxJS can stay explicit without paying store-wide ceremony too early."
+        },
+        {
+          "optionId": "ngrx-store",
+          "verdict": "reasonable",
+          "note": "Still viable, but you need to explain why the extra conventions pay off before the feature has real product-platform pressure."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Multiple teams touch the same entity graph, optimistic workflows exist, background updates race with user edits, and debugging needs a stable transition model.",
+      "cells": [
+        {
+          "optionId": "feature-service",
+          "verdict": "reasonable",
+          "note": "Possible, but harder to defend because the service now has to own a product-sized event model without the stronger conventions of a store."
+        },
+        {
+          "optionId": "ngrx-store",
+          "verdict": "best-fit",
+          "note": "This is easiest to defend because the product has enough event coordination and team pressure that explicit state transitions are now part of the value."
+        }
+      ]
+    },
+    {
+      "id": "platform-scale-growth",
+      "title": "Long-lived platform with growing workflows",
+      "prompt": "The feature keeps adding teams, side effects, entity relationships, and re-entry paths over time.",
+      "cells": [
+        {
+          "optionId": "feature-service",
+          "verdict": "stretch",
+          "note": "At this point the answer starts to sound optimistic unless the service architecture has already become store-like in everything but name."
+        },
+        {
+          "optionId": "ngrx-store",
+          "verdict": "best-fit",
+          "note": "The structured event, selector, and effect model becomes easier to defend as the product surface and team count keep growing."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "state-ownership",
+      "title": "Is this still one feature boundary or now a product platform?",
+      "description": "This is the first question. A feature service can be excellent for a bounded surface, but the answer changes when several teams and workflows now share the same state graph."
+    },
+    {
+      "id": "event-complexity",
+      "title": "How many event sources and transition paths exist?",
+      "description": "Websocket refreshes, optimistic writes, rollback, route re-entry, and retries all push the architecture toward a clearer event model."
+    },
+    {
+      "id": "debuggability",
+      "title": "How will engineers explain and inspect state changes later?",
+      "description": "A senior answer should care about more than code volume. The real question is how reliably engineers can trace why state changed when several flows intersect."
+    },
+    {
+      "id": "team-conventions",
+      "title": "How many teams need the same mental model?",
+      "description": "As more engineers touch the same state transitions, consistent patterns become more valuable than the lightest possible setup."
+    },
+    {
+      "id": "scope-discipline",
+      "title": "Can you keep the core store narrow?",
+      "description": "A strong answer should avoid false binaries. Even if NgRx wins for core shared state, ephemeral view state and tiny local interactions should usually stay outside the store."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean NgRx Store because this is no longer just a feature, it is a shared event-heavy product surface",
+    "summary": "This claims platform has enough cross-screen coordination, async event pressure, and multi-team ownership that predictable state transitions become part of the product's operability. That makes NgRx the easier answer to defend for the core shared state.",
+    "reasoning": [
+      "The key signal is not simply that the UI has multiple screens. It is that several event sources now interact with the same entity graph: user edits, optimistic writes, websocket refreshes, retries, deep-link re-entry, and draft restore.",
+      "A feature service with signals or RxJS is still a real architecture, not a toy. I would happily use it for a bounded route surface. But in this prompt the service starts drifting toward a custom store, and then the question becomes whether we want store-like complexity with store-level conventions or without them.",
+      "NgRx gives a stronger boundary for the core shared workflow state here: actions make state transitions explicit, reducers keep mutation rules predictable, selectors stabilize read paths, and effects give async workflows a clearer home. I would still keep local UI details such as panel-open flags, hover state, and tiny form-only interactions outside the store."
+    ],
+    "recommendation": "For this exact prompt, I would move the core shared product state into NgRx Store while keeping local transient view state in components or small feature-local services. I would choose a feature service with signals or RxJS instead only if the surface were clearly route-bounded, had fewer intersecting event sources, and stayed under one team's direct ownership."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not keep a disciplined feature service and avoid NgRx boilerplate?",
+      "answer": "I would do that for a bounded feature. Here the problem is not just code volume. It is that several teams and event sources now need the same transition model. At that point the discipline you need starts looking a lot like store architecture anyway, so I would rather adopt the clearer conventions deliberately."
+    },
+    {
+      "question": "Are you saying NgRx should own every piece of state in the feature?",
+      "answer": "No. I would be very intentional about scope. Core shared workflow and entity state belong in the store here; transient view concerns such as local panel toggles, hover state, and tiny component-only interactions should stay local."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the feature became more route-bounded, had fewer intersecting event sources, and one team could still reason about the full state graph inside a service boundary, I would move back toward a feature service with signals or RxJS."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use NgRx because large Angular apps should use NgRx.",
+      "whyItWorks": "It does not. This sounds generic and misses the real boundary between a bounded feature service and a product-sized event model."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use NgRx because the feature is complex and many teams are involved, although a service with signals could still work.",
+      "whyItWorks": "This is directionally fine, but it still needs sharper reasoning about event sources, debugging, and why the service boundary is no longer the cleaner model."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would move the core shared workflow state into NgRx Store because the platform now has several event sources touching the same entity graph: optimistic user edits, websocket refreshes, retries, restore flows, and deep-link re-entry. That is the point where explicit actions, reducers, selectors, and effects become valuable as an operating model, not just as extra structure. I would still keep transient local UI state out of the store. If the feature were more route-bounded and owned by one team, I would be comfortable keeping it in a disciplined feature service built with signals or RxJS.",
+      "whyItWorks": "This sounds strong because it explains why NgRx wins for this exact product shape, avoids the 'enterprise by default' trap, and still gives a clean boundary for when a feature service remains the better answer."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming whether the surface is still a bounded feature or now a shared product platform.",
+    "List the event sources and workflow pressures that shape the state architecture.",
+    "Choose the model that best supports those transitions and debugging needs.",
+    "Be explicit about scope: what belongs in the core store and what should stay local.",
+    "End with a calm boundary, for example: feature service for bounded route state, NgRx for multi-team event-heavy shared workflow state."
+  ],
+  "antiPatterns": [
+    "Saying NgRx is automatically correct for any large Angular app.",
+    "Saying a feature service is always simpler without accounting for event complexity and team scale.",
+    "Putting every tiny local UI flag in the store once NgRx is introduced.",
+    "Talking only about boilerplate instead of transition clarity, debugging, and ownership boundaries."
+  ]
+}

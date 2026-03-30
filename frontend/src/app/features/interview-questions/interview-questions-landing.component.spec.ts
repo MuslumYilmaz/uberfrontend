@@ -100,7 +100,7 @@ describe('InterviewQuestionsLandingComponent', () => {
           useValue: {
             primaryHubEntries: signal([
               { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
-              { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident', badge: 'Premium' },
+              { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident', badge: 'New' },
               {
                 key: 'system-design',
                 label: 'System design',
@@ -109,7 +109,7 @@ describe('InterviewQuestionsLandingComponent', () => {
                 query: { view: 'formats', category: 'system' },
                 family: 'question',
               },
-              { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle', badge: 'Premium' },
+              { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle', badge: 'New' },
             ]),
           },
         },
@@ -144,7 +144,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(loadingState).toBeNull();
   });
 
-  it('shows premium badges on shared practice route links', async () => {
+  it('shows discovery badges on shared practice route links', async () => {
     const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -153,8 +153,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     const incidentsLink = fixture.nativeElement.querySelector('a[href="/incidents"]') as HTMLAnchorElement | null;
     const tradeoffsLink = fixture.nativeElement.querySelector('a[href="/tradeoffs"]') as HTMLAnchorElement | null;
 
-    expect(incidentsLink?.textContent || '').toContain('Premium');
-    expect(tradeoffsLink?.textContent || '').toContain('Premium');
+    expect(incidentsLink?.textContent || '').toContain('New');
+    expect(tradeoffsLink?.textContent || '').toContain('New');
   });
 
   it('publishes CollectionPage schema through seo tags', async () => {

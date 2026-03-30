@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "usestate-vs-usereducer-growing-state",
+    "title": "useState vs useReducer for growing React component state",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "A React settings panel started simple, then gained validation, loading, error, reset, and success flows. Would you keep useState or move to useReducer?",
+    "tags": [
+      "react",
+      "hooks",
+      "state-management",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building a React profile settings panel. It began with a couple of fields and one save button, but now the component handles editable form values, client-side validation, a saving spinner, a server error message, a success banner, and a reset action that should bring the draft back to the last saved values. In the interview, the panel asks whether you would keep this component on several useState hooks or move the state transitions into useReducer.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "use-state",
+      "label": "Keep useState",
+      "summary": "Keeps small components easy to scan when the state pieces are simple and mostly independent.",
+      "whenItWins": [
+        "The component only has a few state values, and updates are straightforward enough that each setter still reads clearly.",
+        "Most state pieces change independently, so the code does not need a central transition model to stay understandable.",
+        "You want the lightest solution and the component has not yet become a maze of branching updates."
+      ],
+      "watchOutFor": [
+        "As related state changes pile up, save logic can spread across handlers and effects until the component becomes harder to reason about.",
+        "A weak answer says useState is always simpler, even when several values must change together in coordinated ways."
+      ]
+    },
+    {
+      "id": "use-reducer",
+      "label": "Move to useReducer",
+      "summary": "Makes state transitions easier to name and centralize when several pieces of state change together after the same event.",
+      "whenItWins": [
+        "One user action now affects multiple related state values, such as clearing an error, setting loading, updating success, and restoring draft data together.",
+        "The component has clear event-style transitions like edit, validate, save success, save failure, and reset.",
+        "You want the next developer to understand the allowed state changes by reading one reducer instead of hunting through many setters."
+      ],
+      "watchOutFor": [
+        "If the component is still tiny, a reducer can add ceremony before there is a real transition problem to solve.",
+        "A weak answer says useReducer is better for every form, even when the state is still small and the reducer would mostly forward boilerplate actions."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "small-local-form",
+      "title": "Small local form",
+      "prompt": "A couple of fields, a save flag, and no complicated reset, error, or success flow.",
+      "cells": [
+        {
+          "optionId": "use-state",
+          "verdict": "best-fit",
+          "note": "This is usually the cleaner answer because separate setters are still easy to follow and the ceremony cost stays low."
+        },
+        {
+          "optionId": "use-reducer",
+          "verdict": "reasonable",
+          "note": "It can still work, but you now have to justify a reducer before the transitions are complex enough to need it."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "The component now has validation, loading, success, error, and reset behavior tied to the same few user actions.",
+      "cells": [
+        {
+          "optionId": "use-state",
+          "verdict": "reasonable",
+          "note": "Possible, but related updates can start scattering across submit handlers and helper functions."
+        },
+        {
+          "optionId": "use-reducer",
+          "verdict": "best-fit",
+          "note": "This is easier to defend because the component now has a real transition model, not just a few isolated values."
+        }
+      ]
+    },
+    {
+      "id": "more-events-over-time",
+      "title": "More transitions keep arriving",
+      "prompt": "Autosave, retry, dirty-state warnings, and additional reset rules are added later.",
+      "cells": [
+        {
+          "optionId": "use-state",
+          "verdict": "stretch",
+          "note": "At this point the component can still function, but understanding which states move together becomes much harder."
+        },
+        {
+          "optionId": "use-reducer",
+          "verdict": "best-fit",
+          "note": "The reducer model becomes easier to defend because named actions and a single transition map age better as the component grows."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "state-count",
+      "title": "How many state pieces exist now?",
+      "description": "A few values do not automatically require a reducer, but a growing list of related fields is often the first warning sign."
+    },
+    {
+      "id": "transition-coupling",
+      "title": "How often do several values change together?",
+      "description": "When one event updates loading, error, success, and draft state together, the shape starts to look like transitions rather than isolated setters."
+    },
+    {
+      "id": "event-clarity",
+      "title": "Can you name the important events?",
+      "description": "If the component naturally talks in terms like edit, validate, submit, success, failure, and reset, a reducer usually becomes easier to explain."
+    },
+    {
+      "id": "reader-cost",
+      "title": "How hard is it for the next developer to trace the flow?",
+      "description": "A strong answer considers whether another engineer can understand the valid state changes without chasing setters across the whole file."
+    },
+    {
+      "id": "ceremony-vs-payoff",
+      "title": "Is the extra structure paying off yet?",
+      "description": "Reducers help when they compress complexity. If they only wrap a tiny form in action boilerplate, the structure is not earning its keep."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean useReducer, but only because the component now has real state transitions",
+    "summary": "This is no longer just a few independent values. The prompt describes several related states that change together after the same user events, which makes useReducer easier to defend.",
+    "reasoning": [
+      "If the panel were still only a couple of fields and one loading flag, I would keep useState because it stays explicit and lighter.",
+      "In this prompt, submit, failure, success, and reset each update multiple related values. That means the real problem is transition coordination, not just storing data.",
+      "A reducer gives names to those transitions and puts them in one place, which helps the next developer understand what the component is allowed to do."
+    ],
+    "recommendation": "For this exact prompt, I would move the coordinated panel state into useReducer, while still keeping extremely local values simple when they do not need to participate in those transitions."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not keep it simple with several useState hooks?",
+      "answer": "I would do that if the state were still mostly independent. Here the save flow, error flow, success flow, and reset flow all touch several values together, so the code starts to read more clearly as named transitions than as scattered setters."
+    },
+    {
+      "question": "Is useReducer too much for one component?",
+      "answer": "Sometimes yes, which is why I would not default to it for every form. In this prompt the component already has enough coupled transitions that the reducer earns its extra structure."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the component shrank back to a few fields with one save action and very little branching behavior, I would move back toward useState because the lighter model would be easier to read."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use useReducer because forms are complex.",
+      "whyItWorks": "It does not. This sounds generic, does not describe the actual transitions in the prompt, and teaches no boundary for when useState is still enough."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use useReducer because there are several state values now and it may be cleaner.",
+      "whyItWorks": "This is directionally fine, but it still needs a clearer explanation of why the state values are related and how the reducer improves the transition story."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would move the panel state into useReducer because submit, success, failure, and reset each change several related values together. If the component were still only a few independent fields, I would keep useState because it is lighter and easier to scan. Here the reducer helps by naming the allowed transitions instead of spreading that logic across many setters.",
+      "whyItWorks": "This sounds strong because it ties the choice to coordinated transitions, keeps a fair boundary for useState, and explains the readability benefit for the next developer."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming whether the component has isolated values or coordinated transitions.",
+    "Say which hook you would choose for this prompt.",
+    "Explain how many state values change together after the main events such as submit, success, failure, and reset.",
+    "Show when the other hook is still the better answer so you do not sound absolute.",
+    "End with one clean boundary, for example: useReducer for coordinated panel transitions, useState for very local independent values."
+  ],
+  "antiPatterns": [
+    "Saying useReducer is automatically better as soon as a form has more than one field.",
+    "Saying useState is always simpler without discussing how related transitions are currently spread through the file.",
+    "Writing a reducer that mostly forwards trivial setters and calling that architecture.",
+    "Focusing on hook preference instead of the actual transition complexity in the prompt."
+  ]
+}

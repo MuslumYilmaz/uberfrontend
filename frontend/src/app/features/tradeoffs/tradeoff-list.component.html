@@ -4,7 +4,9 @@
       <p class="tradeoff-hero__eyebrow">TRADEOFF BATTLES</p>
       <h1>Practice the interview questions where reasoning matters more than a single right answer</h1>
       <p class="tradeoff-hero__summary">
-        These scenarios focus on how you defend a decision. Pick a direction, pressure-test it, then compare it with a stronger interview answer.
+        AI can help with syntax and boilerplate, but interviews still test whether you understand system behavior,
+        constraints, and tradeoffs. These battles train you to pick a direction, defend it under pushback, and compare
+        your reasoning with a stronger interview answer.
       </p>
       <div class="tradeoff-hero__meta">
         <div class="tradeoff-hero__stat">
@@ -20,16 +22,43 @@
   </header>
 
   <section class="tradeoff-search">
-    <input
-      type="search"
-      [ngModel]="searchTerm()"
-      (ngModelChange)="setSearchTerm($event)"
-      placeholder="Search by topic, stack, or tradeoff"
-      aria-label="Search tradeoff battles"
-    />
+    <div class="tradeoff-search__controls">
+      <input
+        type="search"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="setSearchTerm($event)"
+        placeholder="Search by topic, stack, or tradeoff"
+        aria-label="Search tradeoff battles"
+      />
+    </div>
+
+    <div class="chip-row-scroll" *ngIf="techOptions().length">
+      <nav class="chip-row chip-row--primary" aria-label="Tradeoff battle tech filters">
+        <fa-chip
+          class="filter-chip filter-chip--primary"
+          size="md"
+          [selected]="selectedTech() === ''"
+          (selectedChange)="setSelectedTech('')"
+        >
+          <span class="tech-badge tech-badge--all">All</span>
+          <span class="filter-chip-label">All techs</span>
+        </fa-chip>
+
+        <fa-chip
+          *ngFor="let tech of techOptions()"
+          class="filter-chip filter-chip--primary"
+          size="md"
+          [selected]="selectedTech() === tech"
+          (selectedChange)="setSelectedTech(tech)"
+        >
+          <span class="tech-badge" [ngClass]="techBadgeClass(tech)">{{ techBadge(tech) }}</span>
+          <span class="filter-chip-label">{{ techLabel(tech) }}</span>
+        </fa-chip>
+      </nav>
+    </div>
   </section>
 
-  <section class="tradeoff-cards">
+  <section class="tradeoff-cards" *ngIf="filteredItems().length; else emptyState">
     <a
       *ngFor="let item of filteredItems(); trackBy: trackById"
       class="tradeoff-card"
@@ -50,7 +79,7 @@
       <p class="tradeoff-card__summary">{{ item.summary }}</p>
 
       <div class="tradeoff-card__meta">
-        <span>{{ item.tech }}</span>
+        <span>{{ techLabel(item.tech) }}</span>
         <span>{{ item.difficulty }}</span>
         <span>{{ item.updatedAt }}</span>
       </div>
@@ -60,4 +89,10 @@
       </div>
     </a>
   </section>
+
+  <ng-template #emptyState>
+    <div class="tradeoff-empty">
+      No tradeoff battles match this filter yet. Reset the tech filter or search term to see the full set.
+    </div>
+  </ng-template>
 </section>

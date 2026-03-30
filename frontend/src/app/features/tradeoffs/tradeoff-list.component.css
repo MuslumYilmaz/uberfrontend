@@ -1,4 +1,14 @@
 .tradeoff-list {
+  --filter-chip-h: 44px;
+  --filter-chip-pad-x: 16px;
+  --filter-chip-gap: 12px;
+  --filter-chip-radius: 14px;
+  --filter-muted-bg: color-mix(in srgb, var(--uf-surface) 88%, var(--uf-surface-alt));
+  --filter-muted-border: color-mix(in srgb, var(--uf-border-subtle) 78%, var(--uf-text-secondary) 22%);
+  --filter-active-bg: color-mix(in srgb, var(--uf-accent) 24%, var(--uf-surface));
+  --filter-active-border: color-mix(in srgb, var(--uf-accent) 56%, var(--uf-border-subtle));
+  --filter-focus-ring: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 45%, transparent);
+
   display: grid;
   gap: 1.5rem;
   max-width: 78rem;
@@ -87,6 +97,11 @@
   padding: 1rem;
 }
 
+.tradeoff-search__controls {
+  display: grid;
+  gap: 0.9rem;
+}
+
 .tradeoff-search input {
   width: 100%;
   border: 0;
@@ -98,9 +113,107 @@
   font: inherit;
 }
 
+.chip-row-scroll {
+  overflow-x: auto;
+  padding-top: 0.95rem;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--uf-accent) 35%, var(--uf-border-subtle)) transparent;
+}
+
+.chip-row {
+  display: flex;
+  align-items: center;
+  gap: var(--filter-chip-gap);
+  flex-wrap: wrap;
+  min-width: max-content;
+}
+
+.chip-row--primary {
+  min-height: var(--filter-chip-h);
+}
+
+.filter-chip-label {
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+fa-chip.filter-chip--primary {
+  --fa-chip-min-h: var(--filter-chip-h);
+  --fa-chip-pad-y: 0;
+  --fa-chip-pad-x: var(--filter-chip-pad-x);
+  --fa-chip-gap: 10px;
+  --fa-chip-radius: var(--filter-chip-radius);
+  --fa-chip-font-size: 14px;
+  --fa-chip-bg: var(--filter-muted-bg);
+  --fa-chip-border: var(--filter-muted-border);
+  --fa-chip-hover: color-mix(in srgb, var(--filter-muted-bg) 88%, var(--uf-text-primary) 12%);
+  --fa-chip-active: color-mix(in srgb, var(--filter-muted-bg) 84%, var(--uf-text-primary) 16%);
+  --fa-chip-selected-bg: var(--filter-active-bg);
+  --fa-chip-selected-border: var(--filter-active-border);
+  --fa-chip-selected-ring: none;
+  --fa-chip-focus-ring: var(--filter-focus-ring);
+  --fa-chip-ink: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
+  --fa-chip-ink-strong: var(--uf-text-primary);
+}
+
+.tech-badge {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 11px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 66%, var(--uf-text-secondary) 34%);
+  line-height: 1;
+  filter: saturate(0.88) brightness(0.96);
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));
+}
+
+.tech-badge--all {
+  background: color-mix(in srgb, var(--uf-text-primary) 9%, var(--uf-surface));
+}
+
+.tech-badge--javascript {
+  background: color-mix(in srgb, #f7df1e 22%, var(--uf-surface));
+}
+
+.tech-badge--react {
+  background: color-mix(in srgb, #61dafb 20%, var(--uf-surface));
+}
+
+.tech-badge--angular {
+  background: color-mix(in srgb, #dd0031 18%, var(--uf-surface));
+}
+
+.tech-badge--vue {
+  background: color-mix(in srgb, #42b883 18%, var(--uf-surface));
+}
+
+.tech-badge--html {
+  background: color-mix(in srgb, #e34f26 18%, var(--uf-surface));
+}
+
+.tech-badge--css {
+  background: color-mix(in srgb, #2965f1 18%, var(--uf-surface));
+}
+
+.tech-badge--system-design {
+  background: color-mix(in srgb, #9c7bff 16%, var(--uf-surface));
+}
+
 .tradeoff-cards {
   display: grid;
   gap: 1rem;
+}
+
+.tradeoff-empty {
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 1.25rem;
+  padding: 1.15rem 1.2rem;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(8, 12, 22, 0.72);
 }
 
 .tradeoff-card {
@@ -199,6 +312,16 @@
   .tradeoff-search,
   .tradeoff-card {
     border-radius: 1.15rem;
+  }
+
+  .chip-row {
+    gap: 10px;
+    min-width: auto;
+  }
+
+  .chip-row--primary {
+    flex-wrap: nowrap;
+    width: max-content;
   }
 
   .tradeoff-card__header {

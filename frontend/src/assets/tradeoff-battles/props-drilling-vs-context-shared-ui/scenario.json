@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "props-drilling-vs-context-shared-ui",
+    "title": "Props drilling vs Context for shared React UI state",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "Theme, current user, and permissions are needed in several deep React components. Would you keep passing props or introduce Context?",
+    "tags": [
+      "react",
+      "context",
+      "state-sharing",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29"
+  },
+  "scenario": "You are building a React account area with a layout shell, sidebar, page header, settings panel, and a few deeply nested buttons. Several leaf components need the same stable UI data: the current user, the active theme, and whether the user can see admin-only actions. A few wrapper components sit in the middle only for layout and do not actually care about those values. In the interview, the panel asks whether you would keep passing props through the tree or introduce Context.",
+  "prompt": "Which direction would you defend for this prompt, and how would you explain when the other option is still the better answer?",
+  "options": [
+    {
+      "id": "props-drilling",
+      "label": "Keep passing props",
+      "summary": "Keeps data flow explicit and makes component dependencies easier to trace when the sharing path is still simple.",
+      "whenItWins": [
+        "Only one or two branches need the data, and the prop path is still short enough to read without friction.",
+        "The parent clearly owns the data and passing it down keeps the component contract obvious for a junior-friendly codebase.",
+        "The values change often and you do not want a broad provider rerendering many consumers unless the sharing problem is truly real."
+      ],
+      "watchOutFor": [
+        "Once many middle components forward the same values without using them, the tree gets noisy and the real dependencies become harder to see.",
+        "A weak answer calls every prop pass 'prop drilling' even when the path is only one or two levels and still perfectly readable."
+      ]
+    },
+    {
+      "id": "context",
+      "label": "Introduce Context",
+      "summary": "Reduces repetitive prop forwarding when the same stable data is needed across distant parts of the component tree.",
+      "whenItWins": [
+        "Several distant leaf components need the same stable UI data such as theme, current user, locale, or permissions.",
+        "Intermediate layout components do not care about the values and are only forwarding them to deeper children.",
+        "You can keep the provider narrow and use Context for low-frequency shared UI concerns instead of turning it into a giant global state bucket."
+      ],
+      "watchOutFor": [
+        "Context is not a free replacement for all state sharing. If you dump too much fast-changing state into one provider, updates become harder to reason about.",
+        "A weak answer says 'Context avoids prop drilling' without explaining data frequency, provider boundaries, or when explicit props are still simpler."
+      ]
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "id": "short-explicit-path",
+      "title": "Short and explicit prop path",
+      "prompt": "One branch needs the data, the tree is shallow, and the parent already owns the values naturally.",
+      "cells": [
+        {
+          "optionId": "props-drilling",
+          "verdict": "best-fit",
+          "note": "This is usually the cleaner answer because the dependency stays obvious and the plumbing cost is still low."
+        },
+        {
+          "optionId": "context",
+          "verdict": "reasonable",
+          "note": "It can still work, but you now need to justify extra abstraction for a problem that is not very painful yet."
+        }
+      ]
+    },
+    {
+      "id": "exact-prompt",
+      "title": "The exact prompt in this battle",
+      "prompt": "Several deep leaves need the same stable UI data, and multiple wrapper components forward props without using them.",
+      "cells": [
+        {
+          "optionId": "props-drilling",
+          "verdict": "reasonable",
+          "note": "Possible, but the tree starts to fill with forwarding props that do not match what the middle components actually care about."
+        },
+        {
+          "optionId": "context",
+          "verdict": "best-fit",
+          "note": "This is the easier answer to defend because the sharing problem is real, the data is stable, and the provider can stay narrow."
+        }
+      ]
+    },
+    {
+      "id": "hot-changing-shared-state",
+      "title": "Fast-changing shared product state",
+      "prompt": "Now the data updates constantly, many interactions write into it, and more screens depend on it over time.",
+      "cells": [
+        {
+          "optionId": "props-drilling",
+          "verdict": "stretch",
+          "note": "At this point the plumbing cost becomes hard to defend, especially if several branches need the same values."
+        },
+        {
+          "optionId": "context",
+          "verdict": "reasonable",
+          "note": "Better than long prop chains, but you should start talking about narrower providers or a more deliberate shared-state architecture."
+        }
+      ]
+    }
+  ],
+  "evaluationDimensions": [
+    {
+      "id": "consumer-count",
+      "title": "How many components actually need the data?",
+      "description": "If only one branch needs it, props are often still the simplest answer. If many distant leaves need it, Context starts to pay for itself."
+    },
+    {
+      "id": "tree-depth",
+      "title": "How much useless forwarding is happening?",
+      "description": "The real cost of prop drilling is not 'props exist'. It is when middle components become wiring layers for values they do not even use."
+    },
+    {
+      "id": "update-frequency",
+      "title": "How often do these values change?",
+      "description": "Stable UI concerns like theme, locale, or current user are friendlier to Context than hot, constantly changing shared product state."
+    },
+    {
+      "id": "explicitness",
+      "title": "How important is an obvious component contract?",
+      "description": "Props keep dependencies visible at the call site. That is often easier for juniors to follow when the sharing problem is still small."
+    },
+    {
+      "id": "provider-scope",
+      "title": "Can you keep the provider narrow?",
+      "description": "Context works best when it solves one clear sharing problem, not when it turns into a giant bag of app state."
+    }
+  ],
+  "strongAnswer": {
+    "title": "A strong answer here would lean Context, but only for this narrow shared UI state",
+    "summary": "This prompt has a real sharing problem: several deep components need the same stable values, and the middle layout layers are only forwarding props. That makes Context easier to defend here.",
+    "reasoning": [
+      "If this were only one short prop path, I would keep props because explicit data flow is easier to read and easier for new developers to trace.",
+      "In this prompt, the same values are needed by several distant leaves, while multiple wrapper components do not care about them at all. That is the point where prop plumbing starts to add noise instead of clarity.",
+      "I would still keep the Context narrow to shared UI concerns like current user, theme, or permissions. I would not use this as an excuse to put every changing piece of state into one global provider."
+    ],
+    "recommendation": "For this exact prompt, I would introduce a narrow Context for the shared UI data, but I would still pass props for local behavior and keep fast-changing feature state out of that provider."
+  },
+  "interviewerPushback": [
+    {
+      "question": "Why not always use Context so you never have to pass props?",
+      "answer": "Because props are still clearer when the sharing path is short. Context is useful when the same data is needed by many deep consumers, not as a default replacement for normal parent-to-child data flow."
+    },
+    {
+      "question": "Is props drilling really that bad?",
+      "answer": "Not always. A couple of prop hops is normal React. It becomes a real problem when several middle components are just forwarding values they do not use and the tree starts to describe plumbing instead of intent."
+    },
+    {
+      "question": "What would change your answer?",
+      "answer": "If the data were only needed in one small branch or the tree were shallower, I would move back toward props. If the shared state became much hotter and more complex, I would start discussing narrower providers or a stronger state architecture beyond this simple Context decision."
+    }
+  ],
+  "answerExamples": [
+    {
+      "level": "weak",
+      "title": "Weak answer",
+      "answer": "I would use Context because prop drilling is bad.",
+      "whyItWorks": "It does not. This sounds absolute, skips the shape of the component tree, and teaches no boundary for when props are still the better tool."
+    },
+    {
+      "level": "decent",
+      "title": "Decent answer",
+      "answer": "I would probably use Context because there are many nested components and it would save prop passing.",
+      "whyItWorks": "This is directionally fine, but it still needs a better explanation of why the exact prompt makes forwarding props noisy and why the provider should stay narrow."
+    },
+    {
+      "level": "strong",
+      "title": "Strong answer",
+      "answer": "For this prompt I would introduce a narrow Context for current user, theme, and permissions because several deep components need the same stable values and the middle layout wrappers are only forwarding them. If the tree were shallower, I would keep props because explicit data flow is simpler. I would also avoid turning this Context into a giant global store for fast-changing feature state.",
+      "whyItWorks": "This sounds strong because it ties the answer to the exact sharing problem, shows when props still win, and sets a healthy boundary for Context."
+    }
+  ],
+  "answerFramework": [
+    "Start by naming where the data lives now and how many components actually need it.",
+    "Explain whether the current prop path is still short and explicit or already turning into forwarding noise.",
+    "State your choice for this prompt and tie it to data frequency, not just tree depth.",
+    "Show when the other option is still the better answer so you do not sound dogmatic.",
+    "End with a scope boundary, for example: Context for narrow shared UI data, props for local behavior."
+  ],
+  "antiPatterns": [
+    "Calling any normal parent-to-child prop passing 'prop drilling' even when the tree is still simple.",
+    "Using Context as a default for every shared value without discussing update frequency or provider scope.",
+    "Putting hot, fast-changing feature state into one broad Context just to avoid thinking about ownership.",
+    "Talking about convenience only and ignoring readability for the next developer."
+  ]
+}

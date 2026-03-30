@@ -10223,6 +10223,26 @@
     "assetRef": "tradeoff-battles/context-vs-zustand-vs-redux/scenario.json"
   },
   {
+    "id": "props-drilling-vs-context-shared-ui",
+    "family": "tradeoff-battle",
+    "title": "Props drilling vs Context for shared React UI state",
+    "route": "/tradeoffs/props-drilling-vs-context-shared-ui",
+    "tech": "react",
+    "difficulty": "easy",
+    "summary": "Theme, current user, and permissions are needed in several deep React components. Would you keep passing props or introduce Context?",
+    "tags": [
+      "react",
+      "context",
+      "state-sharing",
+      "tradeoffs"
+    ],
+    "access": "free",
+    "estimatedMinutes": 11,
+    "updatedAt": "2026-03-29",
+    "schemaVersion": "tradeoff-battle.v1",
+    "assetRef": "tradeoff-battles/props-drilling-vs-context-shared-ui/scenario.json"
+  },
+  {
     "id": "computed-vs-watch-vue-catalog",
     "family": "tradeoff-battle",
     "title": "Computed vs watch for a filterable Vue catalog",
