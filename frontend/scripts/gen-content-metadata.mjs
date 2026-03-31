@@ -11,6 +11,7 @@ import {
 } from './content-paths.mjs';
 
 const OUTPUT_PATH = path.join(generatedAppDir, 'content-metadata.ts');
+const CHECK = process.argv.includes('--check');
 
 async function readJson(filePath) {
   const raw = await fs.readFile(filePath, 'utf8');
@@ -34,6 +35,21 @@ export const TAG_REGISTRY = ${JSON.stringify(tagRegistry, null, 2)};
 
 export const SHOWCASE_STATS = ${JSON.stringify(showcaseStats, null, 2)};
 `;
+
+  if (CHECK) {
+    let prev = '';
+    try {
+      prev = await fs.readFile(OUTPUT_PATH, 'utf8');
+    } catch {}
+    if (prev !== source) {
+      console.error('[gen-content-metadata] ERROR: generated content metadata is stale.');
+      console.error('[gen-content-metadata] Run: node scripts/gen-content-metadata.mjs');
+      console.error(`  - ${relFromFrontend(OUTPUT_PATH)}`);
+      process.exit(1);
+    }
+    console.log(`[gen-content-metadata] check passed: ${relFromFrontend(OUTPUT_PATH)}`);
+    return;
+  }
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
   await fs.writeFile(OUTPUT_PATH, source, 'utf8');

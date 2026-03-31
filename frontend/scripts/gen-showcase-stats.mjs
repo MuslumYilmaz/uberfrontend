@@ -19,6 +19,7 @@ const FRAMEWORK_FAMILIES_PATH = path.join(
   'framework-families.ts',
 );
 const OUTPUT_PATHS = [cdnQuestionShowcaseStatsPath];
+const CHECK = process.argv.includes('--check');
 
 const TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
 const KINDS = ['coding', 'trivia'];
@@ -167,10 +168,32 @@ async function main() {
   };
 
   const serializedPayload = `${JSON.stringify(payload, null, 2)}\n`;
+  const driftedOutputs = [];
   for (const outputPath of OUTPUT_PATHS) {
+    if (CHECK) {
+      let prev = '';
+      try {
+        prev = await fs.readFile(outputPath, 'utf8');
+      } catch {}
+      if (prev !== serializedPayload) driftedOutputs.push(outputPath);
+      continue;
+    }
+
     await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, serializedPayload, 'utf8');
     console.log(`[gen-showcase-stats] wrote ${path.relative(repoRoot, outputPath)}`);
+  }
+
+  if (CHECK) {
+    if (driftedOutputs.length > 0) {
+      console.error('[gen-showcase-stats] ERROR: showcase stats are stale.');
+      console.error('[gen-showcase-stats] Run: node scripts/gen-showcase-stats.mjs');
+      for (const outputPath of driftedOutputs) {
+        console.error(`  - ${path.relative(repoRoot, outputPath)}`);
+      }
+      process.exit(1);
+    }
+    console.log('[gen-showcase-stats] check passed: showcase stats are up to date.');
   }
 
   console.log(

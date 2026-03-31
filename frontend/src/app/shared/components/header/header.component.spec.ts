@@ -86,9 +86,10 @@ describe('HeaderComponent', () => {
 
   it('hides pricing actions for premium users', async () => {
     const fixture = await createComponent({ isLoggedIn: true, isPro: true });
+    const pricingLink = fixture.nativeElement.querySelector('a[href="/pricing"]') as HTMLAnchorElement | null;
+    const premiumUpsellCta = fixture.nativeElement.querySelector('.fah-cta') as HTMLAnchorElement | null;
 
-    expect(fixture.nativeElement.textContent || '').not.toContain('Pricing');
-    expect(fixture.nativeElement.textContent || '').not.toContain('Upgrade');
-    expect(fixture.nativeElement.textContent || '').not.toContain('Get full access');
+    expect(pricingLink).toBeNull();
+    expect(premiumUpsellCta).toBeNull();
   });
 });

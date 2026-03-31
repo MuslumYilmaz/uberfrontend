@@ -10,6 +10,8 @@ import {
   relFromFrontend,
 } from './content-paths.mjs';
 
+const CHECK = process.argv.includes('--check');
+
 const QUESTION_KINDS = ['coding', 'trivia', 'debug'];
 const QUESTION_DEFAULT_MINUTES = {
   coding: 18,
@@ -208,6 +210,19 @@ const registry = sortEntries([
   ...buildTradeoffBattleEntries(),
 ]);
 
-ensureDir(OUT_DIR);
-fs.writeFileSync(OUT_PATH, `${JSON.stringify(registry, null, 2)}\n`);
-console.log(`[gen:practice-registry] wrote ${relFromFrontend(OUT_PATH)} (${registry.length} entries)`);
+const nextText = `${JSON.stringify(registry, null, 2)}\n`;
+
+if (CHECK) {
+  const prevText = fs.existsSync(OUT_PATH) ? fs.readFileSync(OUT_PATH, 'utf8') : '';
+  if (prevText !== nextText) {
+    console.error('[gen:practice-registry] ERROR: practice registry is stale.');
+    console.error('[gen:practice-registry] Run: node scripts/generate-practice-registry.mjs');
+    console.error(`  - ${relFromFrontend(OUT_PATH)}`);
+    process.exit(1);
+  }
+  console.log(`[gen:practice-registry] check passed: ${relFromFrontend(OUT_PATH)} (${registry.length} entries)`);
+} else {
+  ensureDir(OUT_DIR);
+  fs.writeFileSync(OUT_PATH, nextText);
+  console.log(`[gen:practice-registry] wrote ${relFromFrontend(OUT_PATH)} (${registry.length} entries)`);
+}

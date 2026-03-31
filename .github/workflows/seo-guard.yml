@@ -5,6 +5,7 @@ on:
 
 jobs:
   prerender-sitemap-guard:
+    name: SEO Prerender Guard
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:

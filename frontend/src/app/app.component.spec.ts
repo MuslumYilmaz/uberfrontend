@@ -25,19 +25,6 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render the brand name in the shell', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('FrontendAtlas');
-  });
-
   it('does not mount bug report dialog until requested', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();

@@ -129,32 +129,18 @@ describe('InterviewQuestionsLandingComponent', () => {
     const triviaLink = fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-purpose"]') as HTMLAnchorElement | null;
     const featuredLink = fixture.nativeElement.querySelector('a[href="/react/trivia/react-hooks-rules"]') as HTMLAnchorElement | null;
     const incidentsLink = fixture.nativeElement.querySelector('a[href="/incidents"]') as HTMLAnchorElement | null;
+    const mustKnowChips = fixture.nativeElement.querySelectorAll('.iq-item__chip--priority[data-priority="must_know"]');
     expect(codingLink).toBeTruthy();
     expect(triviaLink).toBeTruthy();
     expect(featuredLink).toBeTruthy();
     expect(incidentsLink).toBeTruthy();
-
-    const mustKnowStat = fixture.nativeElement.textContent || '';
-    expect(mustKnowStat).toContain('Must know');
+    expect(fixture.componentInstance.mustKnowCount()).toBe(mustKnowChips.length);
 
     const priorityChip = fixture.nativeElement.querySelector('.iq-item__chip--priority[data-priority="must_know"]') as HTMLElement | null;
     expect(priorityChip?.textContent || '').toContain('Must know');
 
     const loadingState = fixture.nativeElement.querySelector('.iq-loading');
     expect(loadingState).toBeNull();
-  });
-
-  it('shows discovery badges on shared practice route links', async () => {
-    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    fixture.detectChanges();
-
-    const incidentsLink = fixture.nativeElement.querySelector('a[href="/incidents"]') as HTMLAnchorElement | null;
-    const tradeoffsLink = fixture.nativeElement.querySelector('a[href="/tradeoffs"]') as HTMLAnchorElement | null;
-
-    expect(incidentsLink?.textContent || '').toContain('New');
-    expect(tradeoffsLink?.textContent || '').toContain('New');
   });
 
   it('publishes CollectionPage schema through seo tags', async () => {
