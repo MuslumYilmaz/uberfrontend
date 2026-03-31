@@ -314,8 +314,13 @@
 /javascript/coding/js-valid-anagram
 /javascript/coding/js-validate-username
 /javascript/debug/js-debug-async-race
+/javascript/debug/js-debug-lost-this-binding
+/javascript/debug/js-debug-missing-return-map-filter
 /javascript/debug/js-debug-mutating-input
+/javascript/debug/js-debug-nullish-defaults
+/javascript/debug/js-debug-numeric-sort
 /javascript/debug/js-debug-off-by-one
+/javascript/debug/js-debug-stale-closure-autosave
 /javascript/interview-questions
 /javascript/trivia/ai-streaming-data-handling
 /javascript/trivia/ai-ux-integration-challenges

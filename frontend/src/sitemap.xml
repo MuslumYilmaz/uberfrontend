@@ -922,10 +922,25 @@
     <loc>https://frontendatlas.com/javascript/debug/js-debug-async-race</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/debug/js-debug-lost-this-binding</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/debug/js-debug-missing-return-map-filter</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/debug/js-debug-mutating-input</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/debug/js-debug-nullish-defaults</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/debug/js-debug-numeric-sort</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/debug/js-debug-off-by-one</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/debug/js-debug-stale-closure-autosave</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/interview-questions</loc>
