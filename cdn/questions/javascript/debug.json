@@ -2,42 +2,150 @@
     {
         "id": "js-debug-off-by-one",
         "title": "Fix off-by-one in `chunk`",
-        "difficulty": "intermediate",
-        "importance": 3,
+        "difficulty": "easy",
+        "importance": 4,
         "tags": [
             "arrays",
-            "bugs",
+            "boundaries",
             "edge-cases"
         ],
         "description": {
-            "text": "The current implementation of `chunk(arr, size)` occasionally drops the last group or returns an empty chunk when size divides the length exactly. Find and fix the bug.",
+            "text": "A teammate wrote `chunk(arr, size)` to split rows into smaller batches. It looks fine at first glance, but the loop boundary is slightly off: exact divisions can produce an extra empty chunk, and an empty input can come back as `[[]]`. Fix the bug without changing the function's contract.",
             "examples": [
                 "chunk([1,2,3,4,5], 2) // [[1,2],[3,4],[5]]",
-                "chunk([1,2,3,4], 2)   // [[1,2],[3,4]]"
+                "chunk([1,2,3,4], 2)   // [[1,2],[3,4]]",
+                "chunk([], 3)          // []"
             ]
         },
-        "starterCode": "export default function chunk(arr, size){\n  if(!Array.isArray(arr) || size <= 0) return [];\n  const out = [];\n  for(let i = 0; i <= arr.length; i += size){ // BUG: '<='\n    out.push(arr.slice(i, i + size));\n  }\n  return out;\n}\n",
-        "tests": "import chunk from './js-debug-off-by-one';\n\ndescribe('chunk', () => {\n  test('splits into uneven groups', () => {\n    expect(chunk([1,2,3,4,5], 2)).toEqual([[1,2],[3,4],[5]]);\n  });\n\n  test('exactly divisible should not add empty chunk', () => {\n    expect(chunk([1,2,3,4], 2)).toEqual([[1,2],[3,4]]);\n  });\n\n  test('invalid size or non-array returns []', () => {\n    expect(chunk([1,2,3], 0)).toEqual([]);\n    // @ts-ignore\n    expect(chunk(null, 2)).toEqual([]);\n  });\n});\n",
-        "solution": "export default function chunk(arr, size){\n  if(!Array.isArray(arr) || size <= 0) return [];\n  const out = [];\n  for(let i = 0; i < arr.length; i += size){\n    out.push(arr.slice(i, i + size));\n  }\n  return out;\n}\n"
+        "starterCode": "export default function chunk(arr, size){\n  if(!Array.isArray(arr) || size <= 0) return [];\n  const out = [];\n  for(let i = 0; i <= arr.length; i += size){\n    out.push(arr.slice(i, i + size));\n  }\n  return out;\n}\n",
+        "tests": "import chunk from './js-debug-off-by-one';\n\ndescribe('chunk', () => {\n  test('keeps the last partial group', () => {\n    expect(chunk([1,2,3,4,5], 2)).toEqual([[1,2],[3,4],[5]]);\n  });\n\n  test('does not append an empty group when the length divides evenly', () => {\n    expect(chunk([1,2,3,4], 2)).toEqual([[1,2],[3,4]]);\n  });\n\n  test('returns [] for an empty array', () => {\n    expect(chunk([], 3)).toEqual([]);\n  });\n\n  test('returns [] for invalid size or non-array input', () => {\n    expect(chunk([1,2,3], 0)).toEqual([]);\n    // @ts-ignore\n    expect(chunk(null, 2)).toEqual([]);\n  });\n});\n",
+        "solution": "export default function chunk(arr, size){\n  if(!Array.isArray(arr) || size <= 0) return [];\n  const out = [];\n  // Stop before arr.length so we never push a trailing empty slice.\n  for(let i = 0; i < arr.length; i += size){\n    out.push(arr.slice(i, i + size));\n  }\n  return out;\n}\n"
     },
     {
         "id": "js-debug-mutating-input",
-        "title": "Stop mutating input in `unique`",
+        "title": "Stop mutating caller data in `unique`",
         "difficulty": "easy",
-        "importance": 2,
+        "importance": 4,
         "tags": [
             "arrays",
+            "debugging",
             "immutability"
         ],
         "description": {
-            "text": "`unique(arr)` must return a new array of unique items while leaving the input array untouched.",
+            "text": "A teammate tried to make `unique(arr)` look clever with a one-liner. The returned values seem close, but two subtle bugs slipped in: it reorders the data and it mutates the caller's array in place. Fix it so the helper keeps the first-seen order and does not change any shared input state.",
             "examples": [
-                "const a = [2,2,1,3,1];\nconst b = unique(a);\n// b: [2,1,3]\n// a must remain [2,2,1,3,1]"
+                "const ids = [2,2,1,3,1];\nconst out = unique(ids);\n// out: [2,1,3]\n// ids must still be [2,2,1,3,1]",
+                "const state = { selectedIds: [3,3,2,1] };\nunique(state.selectedIds);\n// state.selectedIds must still be [3,3,2,1]"
             ]
         },
-        "starterCode": "export default function unique(arr){\n  // BUG: sorts in-place and mutates input\n  return Array.from(new Set(arr.sort()));\n}\n",
-        "tests": "import unique from './js-debug-mutating-input';\n\ndescribe('unique', () => {\n  test('returns unique values', () => {\n    expect(unique([2,2,1,3,1])).toEqual([2,1,3]);\n  });\n\n  test('does not mutate input', () => {\n    const a = [2,2,1,3,1];\n    unique(a);\n    expect(a).toEqual([2,2,1,3,1]);\n  });\n});\n",
-        "solution": "export default function unique(arr){\n  return Array.from(new Set(arr.slice()));\n}\n"
+        "starterCode": "export default function unique(arr){\n  return Array.from(new Set(arr.sort()));\n}\n",
+        "tests": "import unique from './js-debug-mutating-input';\n\ndescribe('unique', () => {\n  test('returns unique values in first-seen order', () => {\n    expect(unique([2,2,1,3,1])).toEqual([2,1,3]);\n  });\n\n  test('does not mutate the caller array', () => {\n    const ids = [2,2,1,3,1];\n    unique(ids);\n    expect(ids).toEqual([2,2,1,3,1]);\n  });\n\n  test('does not mutate a shared array reference inside another object', () => {\n    const state = { selectedIds: [3,3,2,1] };\n    unique(state.selectedIds);\n    expect(state.selectedIds).toEqual([3,3,2,1]);\n  });\n});\n",
+        "solution": "export default function unique(arr){\n  // Set already preserves first-seen order, so there is no need to sort.\n  return Array.from(new Set(arr.slice()));\n}\n"
+    },
+    {
+        "id": "js-debug-missing-return-map-filter",
+        "title": "Fix missing return in `map` / `filter`",
+        "difficulty": "easy",
+        "importance": 4,
+        "tags": [
+            "array-methods",
+            "callbacks",
+            "debugging"
+        ],
+        "description": {
+            "text": "A teammate refactored a simple array pipeline to use block-bodied arrow functions because it looked more readable. The shape still looks right, but now the result comes back empty or full of `undefined`. Fix the missing returns without changing the overall intent of the pipeline.",
+            "examples": [
+                "summarizeOpenTickets([{ title: ' Bug ', open: true }, { title: 'Chore', open: false }]) // ['BUG']",
+                "summarizeOpenTickets([{ title: ' Docs ', open: true }, { title: ' Test ', open: true }]) // ['DOCS','TEST']"
+            ]
+        },
+        "starterCode": "export default function summarizeOpenTickets(tickets){\n  return tickets\n    .filter(ticket => {\n      ticket.open;\n    })\n    .map(ticket => {\n      ticket.title.trim().toUpperCase();\n    });\n}\n",
+        "tests": "import summarizeOpenTickets from './js-debug-missing-return-map-filter';\n\ndescribe('summarizeOpenTickets', () => {\n  test('keeps only open tickets and maps cleaned uppercase titles', () => {\n    expect(summarizeOpenTickets([\n      { title: ' Bug ', open: true },\n      { title: 'Chore', open: false },\n      { title: ' Docs ', open: true }\n    ])).toEqual(['BUG', 'DOCS']);\n  });\n\n  test('returns one transformed title for a single open ticket', () => {\n    expect(summarizeOpenTickets([\n      { title: '  retry payment ', open: true }\n    ])).toEqual(['RETRY PAYMENT']);\n  });\n\n  test('returns [] when nothing is open', () => {\n    expect(summarizeOpenTickets([\n      { title: 'Bug', open: false },\n      { title: 'Docs', open: false }\n    ])).toEqual([]);\n  });\n});\n",
+        "solution": "export default function summarizeOpenTickets(tickets){\n  return tickets\n    .filter(ticket => {\n      return ticket.open;\n    })\n    .map(ticket => {\n      return ticket.title.trim().toUpperCase();\n    });\n}\n"
+    },
+    {
+        "id": "js-debug-nullish-defaults",
+        "title": "Fix wrong defaults in `normalizeSettings`",
+        "difficulty": "easy",
+        "importance": 4,
+        "tags": [
+            "debugging",
+            "defaults",
+            "operators"
+        ],
+        "description": {
+            "text": "A teammate used `||` while hydrating UI settings, and the bug stayed invisible until real saved values showed up. Now `0`, an intentionally blank subtitle, and `false` keep getting overwritten by defaults. Fix the helper so only truly missing values fall back.",
+            "examples": [
+                "normalizeSettings({ retryCount: 0, subtitle: '', emailOptIn: false }) // { retryCount: 0, subtitle: '', emailOptIn: false }",
+                "normalizeSettings({ retryCount: undefined, subtitle: null, emailOptIn: undefined }) // { retryCount: 3, subtitle: 'Untitled', emailOptIn: true }"
+            ]
+        },
+        "starterCode": "export default function normalizeSettings(settings){\n  return {\n    retryCount: settings.retryCount || 3,\n    subtitle: settings.subtitle || 'Untitled',\n    emailOptIn: settings.emailOptIn || true\n  };\n}\n",
+        "tests": "import normalizeSettings from './js-debug-nullish-defaults';\n\ndescribe('normalizeSettings', () => {\n  test('keeps valid falsy values instead of overwriting them', () => {\n    expect(normalizeSettings({\n      retryCount: 0,\n      subtitle: '',\n      emailOptIn: false\n    })).toEqual({\n      retryCount: 0,\n      subtitle: '',\n      emailOptIn: false\n    });\n  });\n\n  test('falls back only for null or undefined values', () => {\n    expect(normalizeSettings({\n      retryCount: undefined,\n      subtitle: null,\n      emailOptIn: undefined\n    })).toEqual({\n      retryCount: 3,\n      subtitle: 'Untitled',\n      emailOptIn: true\n    });\n  });\n\n  test('supports a mix of present and missing values', () => {\n    expect(normalizeSettings({\n      retryCount: 5,\n      subtitle: '',\n      emailOptIn: undefined\n    })).toEqual({\n      retryCount: 5,\n      subtitle: '',\n      emailOptIn: true\n    });\n  });\n});\n",
+        "solution": "export default function normalizeSettings(settings){\n  return {\n    retryCount: settings.retryCount ?? 3,\n    subtitle: settings.subtitle ?? 'Untitled',\n    emailOptIn: settings.emailOptIn ?? true\n  };\n}\n"
+    },
+    {
+        "id": "js-debug-numeric-sort",
+        "title": "Fix numeric sort in `sortScores`",
+        "difficulty": "easy",
+        "importance": 4,
+        "tags": [
+            "arrays",
+            "debugging",
+            "sorting"
+        ],
+        "description": {
+            "text": "A teammate wrote a tiny leaderboard helper with plain `sort()`. It looked fine in a quick demo with single-digit values, then broke the moment scores like `10` and `100` showed up. Fix the bug so numbers sort numerically in ascending order while keeping the original input unchanged.",
+            "examples": [
+                "sortScores([10, 2, 30, 4]) // [2, 4, 10, 30]",
+                "sortScores([1, 100, 20, 3]) // [1, 3, 20, 100]"
+            ]
+        },
+        "starterCode": "export default function sortScores(scores){\n  return scores.slice().sort();\n}\n",
+        "tests": "import sortScores from './js-debug-numeric-sort';\n\ndescribe('sortScores', () => {\n  test('sorts numbers numerically in ascending order', () => {\n    expect(sortScores([10, 2, 30, 4])).toEqual([2, 4, 10, 30]);\n  });\n\n  test('handles multi-digit values correctly', () => {\n    expect(sortScores([1, 100, 20, 3])).toEqual([1, 3, 20, 100]);\n  });\n\n  test('does not mutate the original input array', () => {\n    const scores = [10, 2, 30, 4];\n    sortScores(scores);\n    expect(scores).toEqual([10, 2, 30, 4]);\n  });\n});\n",
+        "solution": "export default function sortScores(scores){\n  return scores.slice().sort((a, b) => a - b);\n}\n"
+    },
+    {
+        "id": "js-debug-lost-this-binding",
+        "title": "Fix lost `this` binding in callback registration",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "callbacks",
+            "debugging",
+            "this"
+        ],
+        "description": {
+            "text": "A teammate passes an object method straight into a callback API, assuming it will still remember its owner later. Direct calls like `tracker.recordClick()` work, but the same method breaks once another function invokes it without the original receiver. Fix the bug so registered callbacks keep the right `this`.",
+            "examples": [
+                "const tracker = createClickTracker('save');\ntracker.recordClick(); // 'save:1'\ntracker.attach(handler => handler()); // 'save:2'",
+                "const tracker = createClickTracker('open');\ntracker.attach(handler => [handler(), handler()]); // ['open:1', 'open:2']"
+            ]
+        },
+        "starterCode": "export default function createClickTracker(label){\n  return {\n    label,\n    count: 0,\n    recordClick(){\n      this.count += 1;\n      return `${this.label}:${this.count}`;\n    },\n    attach(register){\n      return register(this.recordClick);\n    }\n  };\n}\n",
+        "tests": "import createClickTracker from './js-debug-lost-this-binding';\n\ndescribe('createClickTracker', () => {\n  test('still works when called directly as a method', () => {\n    const tracker = createClickTracker('save');\n    expect(tracker.recordClick()).toBe('save:1');\n  });\n\n  test('keeps the tracker context when a callback API invokes it later', () => {\n    const tracker = createClickTracker('save');\n    tracker.recordClick();\n    const result = tracker.attach((handler) => handler());\n    expect(result).toBe('save:2');\n    expect(tracker.count).toBe(2);\n  });\n\n  test('supports repeated callback calls without losing state', () => {\n    const tracker = createClickTracker('open');\n    const result = tracker.attach((handler) => [handler(), handler()]);\n    expect(result).toEqual(['open:1', 'open:2']);\n    expect(tracker.count).toBe(2);\n  });\n});\n",
+        "solution": "export default function createClickTracker(label){\n  return {\n    label,\n    count: 0,\n    recordClick(){\n      this.count += 1;\n      return `${this.label}:${this.count}`;\n    },\n    attach(register){\n      // Detached methods lose their receiver, so bind before handing them off.\n      return register(this.recordClick.bind(this));\n    }\n  };\n}\n"
+    },
+    {
+        "id": "js-debug-stale-closure-autosave",
+        "title": "Fix stale closure in delayed autosave callback",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "closures",
+            "debugging",
+            "timers"
+        ],
+        "description": {
+            "text": "A teammate tried to make autosave \"predictable\" by capturing the current draft when wiring a delayed callback. That feels reasonable until the user keeps typing: the callback keeps saving the old draft it closed over instead of the latest one. Fix the bug so delayed saves read fresh state at execution time.",
+            "examples": [
+                "const autosave = createDraftAutosave('hel');\nlet flush;\nautosave.install(cb => { flush = cb; }, value => value);\nautosave.setDraft('hello');\nflush(); // 'hello'",
+                "const autosave = createDraftAutosave('a');\nlet flush;\nautosave.install(cb => { flush = cb; }, value => value);\nautosave.setDraft('ab');\nflush(); // 'ab'\nautosave.setDraft('abc');\nflush(); // 'abc'"
+            ]
+        },
+        "starterCode": "export default function createDraftAutosave(initialDraft = ''){\n  let draft = initialDraft;\n\n  return {\n    setDraft(nextDraft){\n      draft = nextDraft;\n    },\n    install(register, save){\n      const snapshot = draft;\n      return register(() => save(snapshot));\n    }\n  };\n}\n",
+        "tests": "import createDraftAutosave from './js-debug-stale-closure-autosave';\n\ndescribe('createDraftAutosave', () => {\n  test('uses the latest draft when the delayed callback finally runs', () => {\n    const autosave = createDraftAutosave('hel');\n    const saved = [];\n    let flush;\n\n    autosave.install((cb) => {\n      flush = cb;\n      return 'registered';\n    }, (value) => {\n      saved.push(value);\n      return value;\n    });\n\n    autosave.setDraft('hello');\n    flush();\n\n    expect(saved).toEqual(['hello']);\n  });\n\n  test('keeps reading fresh draft values across repeated delayed runs', () => {\n    const autosave = createDraftAutosave('a');\n    const saved = [];\n    let flush;\n\n    autosave.install((cb) => {\n      flush = cb;\n    }, (value) => {\n      saved.push(value);\n      return value;\n    });\n\n    autosave.setDraft('ab');\n    flush();\n    autosave.setDraft('abc');\n    flush();\n\n    expect(saved).toEqual(['ab', 'abc']);\n  });\n\n  test('still works if the draft never changes after install', () => {\n    const autosave = createDraftAutosave('draft one');\n    let flush;\n\n    autosave.install((cb) => {\n      flush = cb;\n    }, (value) => value);\n\n    expect(flush()).toBe('draft one');\n  });\n});\n",
+        "solution": "export default function createDraftAutosave(initialDraft = ''){\n  let draft = initialDraft;\n\n  return {\n    setDraft(nextDraft){\n      draft = nextDraft;\n    },\n    install(register, save){\n      // Read the current draft when the callback runs, not when it is registered.\n      return register(() => save(draft));\n    }\n  };\n}\n"
     },
     {
         "id": "js-debug-async-race",
@@ -50,10 +158,10 @@
             "promise"
         ],
         "description": {
-            "text": "Multiple simultaneous calls with the same key should share the same in-flight request. Fix the race so only one network call happens per key until it resolves."
+            "text": "A teammate built a shared fetch helper to avoid duplicate network work, but real traffic exposed two nasty bugs. Concurrent callers with the same key still fan out into multiple requests, and a failed request can leave the helper stuck in a bad in-flight state. Fix it so callers share one active request per key, successful responses cache correctly, and failures can retry cleanly."
         },
-        "starterCode": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  // BUG: not sharing in-flight promise\n  const p = fetcher().then(res => { cache.set(key, res); inflight.delete(key); return res; });\n  inflight.set(key, p);\n  return p;\n}\n",
-        "tests": "import fetchWithCache from './js-debug-async-race';\n\ndescribe('fetchWithCache', () => {\n  test('shares in-flight promise for concurrent calls', async () => {\n    let calls = 0;\n    const fetcher = async () => { calls++; await new Promise(r=>setTimeout(r,20)); return 'OK'; };\n    const [a,b,c] = await Promise.all([\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher)\n    ]);\n    expect(a).toBe('OK');\n    expect(b).toBe('OK');\n    expect(c).toBe('OK');\n    expect(calls).toBe(1);\n  });\n\n  test('uses cached value on subsequent calls after resolve', async () => {\n    let calls = 0;\n    const fetcher = async () => { calls++; return 'VAL'; };\n    await fetchWithCache('x', fetcher);\n    const v2 = await fetchWithCache('x', fetcher);\n    expect(v2).toBe('VAL');\n    expect(calls).toBe(1);\n  });\n});\n",
-        "solution": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  if(inflight.has(key)) return inflight.get(key);\n  const p = fetcher().then(res => { cache.set(key, res); inflight.delete(key); return res; });\n  inflight.set(key, p);\n  return p;\n}\n"
+        "starterCode": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  const p = fetcher().then(res => { cache.set(key, res); inflight.delete(key); return res; });\n  inflight.set(key, p);\n  return p;\n}\n",
+        "tests": "import fetchWithCache from './js-debug-async-race';\n\ndescribe('fetchWithCache', () => {\n  test('shares one in-flight request for concurrent callers', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      await new Promise(r => setTimeout(r, 20));\n      return 'OK';\n    };\n\n    const [a, b, c] = await Promise.all([\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher)\n    ]);\n\n    expect(a).toBe('OK');\n    expect(b).toBe('OK');\n    expect(c).toBe('OK');\n    expect(calls).toBe(1);\n  });\n\n  test('uses the cached value on later calls after success', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      return 'VAL';\n    };\n\n    await fetchWithCache('x', fetcher);\n    const v2 = await fetchWithCache('x', fetcher);\n\n    expect(v2).toBe('VAL');\n    expect(calls).toBe(1);\n  });\n\n  test('cleans up failed in-flight requests so the next call can retry', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      if (calls === 1) throw new Error('boom');\n      return 'RECOVERED';\n    };\n\n    await expect(fetchWithCache('retry-key', fetcher)).rejects.toThrow('boom');\n    await expect(fetchWithCache('retry-key', fetcher)).resolves.toBe('RECOVERED');\n    expect(calls).toBe(2);\n  });\n});\n",
+        "solution": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  if(inflight.has(key)) return inflight.get(key);\n\n  const p = Promise.resolve()\n    .then(() => fetcher())\n    .then(res => {\n      cache.set(key, res);\n      return res;\n    })\n    .finally(() => {\n      inflight.delete(key);\n    });\n\n  inflight.set(key, p);\n  return p;\n}\n"
     }
 ]
