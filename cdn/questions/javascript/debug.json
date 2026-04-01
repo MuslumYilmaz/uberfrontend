@@ -4,6 +4,7 @@
         "title": "Fix off-by-one in `chunk`",
         "difficulty": "easy",
         "importance": 4,
+        "updatedAt": "2026-03-31",
         "tags": [
             "arrays",
             "boundaries",
@@ -26,6 +27,7 @@
         "title": "Stop mutating caller data in `unique`",
         "difficulty": "easy",
         "importance": 4,
+        "updatedAt": "2026-03-31",
         "tags": [
             "arrays",
             "debugging",
@@ -47,6 +49,7 @@
         "title": "Fix missing return in `map` / `filter`",
         "difficulty": "easy",
         "importance": 4,
+        "updatedAt": "2026-03-31",
         "tags": [
             "array-methods",
             "callbacks",
@@ -68,6 +71,7 @@
         "title": "Fix wrong defaults in `normalizeSettings`",
         "difficulty": "easy",
         "importance": 4,
+        "updatedAt": "2026-03-31",
         "tags": [
             "debugging",
             "defaults",
@@ -89,6 +93,7 @@
         "title": "Fix numeric sort in `sortScores`",
         "difficulty": "easy",
         "importance": 4,
+        "updatedAt": "2026-03-31",
         "tags": [
             "arrays",
             "debugging",
@@ -110,6 +115,7 @@
         "title": "Fix lost `this` binding in callback registration",
         "difficulty": "intermediate",
         "importance": 4,
+        "updatedAt": "2026-03-31",
         "tags": [
             "callbacks",
             "debugging",
@@ -131,6 +137,7 @@
         "title": "Fix stale closure in delayed autosave callback",
         "difficulty": "intermediate",
         "importance": 4,
+        "updatedAt": "2026-03-31",
         "tags": [
             "closures",
             "debugging",
@@ -152,6 +159,7 @@
         "title": "Fix async race in `fetchWithCache`",
         "difficulty": "hard",
         "importance": 4,
+        "updatedAt": "2026-03-31",
         "tags": [
             "async",
             "cache",

@@ -1034,7 +1034,6 @@ export const TOPIC_REGISTRY = {
 export const TAG_REGISTRY = {
   "schemaVersion": 1,
   "tags": [
-    "!important",
     "a11y",
     "abort-controller",
     "absolute",
@@ -1475,8 +1474,6 @@ export const TAG_REGISTRY = {
     "units",
     "upload",
     "use-strict",
-    "useCallback",
-    "useMemo",
     "user-input",
     "utilities",
     "ux",

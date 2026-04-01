@@ -248,6 +248,15 @@ function validateTechnology({ file, id, technology, severity, expectedTech, requ
   }
 }
 
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function validateRegistryDate({ file, id, updatedAt, createdAt, severity }) {
+  if (isNonEmptyString(updatedAt) || isNonEmptyString(createdAt)) return;
+  severity.addError(file, id, "Missing updatedAt or createdAt for registry-backed content.");
+}
+
 // ---------- minimal JSON token parsing helpers (for safe tag patches) ----------
 function detectIndent(text) {
   const lines = text.split("\n");
@@ -540,6 +549,7 @@ for (const file of questionFiles) {
         validateAccess({ file, id, access: q.access, severity, required: false });
       }
 
+      validateRegistryDate({ file, id, updatedAt: q.updatedAt, createdAt: q.createdAt, severity });
       validateDifficulty({ file, id, difficulty: q.difficulty, severity });
 
       const tagCheck = validateTags({ file, id, tags: q.tags, canonicalTags, severity });
@@ -599,6 +609,7 @@ for (const file of questionFiles) {
         severity.addError(file, id, "Missing or invalid description.");
       }
 
+      validateRegistryDate({ file, id, updatedAt: entry.updatedAt, createdAt: entry.createdAt, severity });
       validateType({ file, id, type: entry.type, severity, expected: "system-design", required: true });
       validateAccess({ file, id, access: entry.access, severity, required: true });
 

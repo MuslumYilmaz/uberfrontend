@@ -50,6 +50,8 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   process.env.MONGO_URL_TEST = mongoServer.getUri();
   process.env.JWT_SECRET = JWT_SECRET;
+  process.env.GOOGLE_CLIENT_ID = 'test_google_client_id';
+  process.env.GOOGLE_CLIENT_SECRET = 'test_google_client_secret';
   process.env.GITHUB_CLIENT_ID = 'test_gh_client_id';
   process.env.GITHUB_CLIENT_SECRET = 'test_gh_client_secret';
 

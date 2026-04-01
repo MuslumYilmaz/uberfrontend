@@ -69,6 +69,15 @@ function fallbackDate(filePath) {
   return fs.statSync(filePath).mtime.toISOString().slice(0, 10);
 }
 
+function resolveRegistryDate({ updatedAt, createdAt, filePath, id, allowFallback = true }) {
+  const raw = String(updatedAt || createdAt || '').trim();
+  if (raw) return raw.slice(0, 10);
+  if (allowFallback) return fallbackDate(filePath);
+  throw new Error(
+    `[gen:practice-registry] Missing updatedAt/createdAt for ${relFromFrontend(filePath)}#${id}`
+  );
+}
+
 function listQuestionTechDirs() {
   return fs
     .readdirSync(QUESTIONS_DIR)
@@ -86,7 +95,6 @@ function buildQuestionEntries() {
       const filePath = path.join(QUESTIONS_DIR, tech, `${kind}.json`);
       if (!fs.existsSync(filePath)) return;
 
-      const fileFallbackDate = fallbackDate(filePath);
       const questions = safeArray(readJson(filePath));
       questions.forEach((question) => {
         if (!question?.id || !question?.title) return;
@@ -104,7 +112,13 @@ function buildQuestionEntries() {
             typeof question.estimatedMinutes === 'number'
               ? question.estimatedMinutes
               : QUESTION_DEFAULT_MINUTES[kind],
-          updatedAt: toDateOnly(question.updatedAt || question.createdAt, fileFallbackDate),
+          updatedAt: resolveRegistryDate({
+            updatedAt: question.updatedAt,
+            createdAt: question.createdAt,
+            filePath,
+            id: question.id,
+            allowFallback: false,
+          }),
           schemaVersion: 'question.v1',
           assetRef: `questions/${tech}/${kind}.json#${question.id}`,
         });
@@ -114,7 +128,6 @@ function buildQuestionEntries() {
 
   const systemDesignIndex = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
   if (fs.existsSync(systemDesignIndex)) {
-    const fallback = fallbackDate(systemDesignIndex);
     const items = safeArray(readJson(systemDesignIndex));
     items.forEach((item) => {
       if (!item?.id || !item?.title) return;
@@ -132,7 +145,13 @@ function buildQuestionEntries() {
           typeof item.estimatedMinutes === 'number'
             ? item.estimatedMinutes
             : QUESTION_DEFAULT_MINUTES['system-design'],
-        updatedAt: toDateOnly(item.updatedAt || item.createdAt, fallback),
+        updatedAt: resolveRegistryDate({
+          updatedAt: item.updatedAt,
+          createdAt: item.createdAt,
+          filePath: systemDesignIndex,
+          id: item.id,
+          allowFallback: false,
+        }),
         schemaVersion: 'question.v1',
         assetRef: `questions/system-design/${item.id}/meta.json`,
       });

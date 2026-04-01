@@ -172,6 +172,21 @@ if ! node frontend/scripts/validate-coding-assist-sync.mjs --changed-files "$CHA
 fi
 echo "[pre-push] OK: Coding assist artifact sync check passed."
 
+echo "[pre-push] Running frontend tag/topic/track lints..."
+if ! npm -C frontend run lint:tags; then
+  echo "[pre-push] ERROR: Frontend tag lint failed. Push aborted." >&2
+  exit 1
+fi
+if ! npm -C frontend run lint:topics; then
+  echo "[pre-push] ERROR: Frontend topic lint failed. Push aborted." >&2
+  exit 1
+fi
+if ! npm -C frontend run lint:tracks; then
+  echo "[pre-push] ERROR: Frontend track lint failed. Push aborted." >&2
+  exit 1
+fi
+echo "[pre-push] OK: Frontend tag/topic/track lints passed."
+
 echo "[pre-push] Running frontend unit and content verification..."
 if ! npm -C frontend run verify:unit-and-content; then
   echo "[pre-push] ERROR: Frontend unit/content verification failed. Push aborted." >&2
