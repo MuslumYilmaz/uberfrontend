@@ -136,7 +136,7 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
     backend_source_args=()
     while IFS= read -r file; do
       [ -z "${file:-}" ] && continue
-      backend_source_args+=("$file")
+      backend_source_args+=("${file#backend/}")
     done < "$BACKEND_SOURCE_FILES"
     if ! npm -C backend test -- --findRelatedTests --passWithNoTests "${backend_source_args[@]}"; then
       echo "[pre-push] ERROR: Backend related tests failed. Push aborted." >&2
@@ -150,7 +150,7 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
     backend_test_args=()
     while IFS= read -r file; do
       [ -z "${file:-}" ] && continue
-      backend_test_args+=("$file")
+      backend_test_args+=("${file#backend/}")
     done < "$BACKEND_TEST_FILES"
     if ! npm -C backend test -- --runTestsByPath "${backend_test_args[@]}"; then
       echo "[pre-push] ERROR: Changed backend test files failed. Push aborted." >&2
