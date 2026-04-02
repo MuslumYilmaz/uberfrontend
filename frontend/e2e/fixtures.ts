@@ -46,7 +46,10 @@ async function installUnhandledRejectionHook(page: Page, issues: CollectedIssue[
 }
 
 async function attachAndFailIfNeeded(testInfo: TestInfo, issues: CollectedIssue[], extraAllowlist: RegExp[]) {
-  const relevant = issues.filter((i) => !(i.type === 'console.error' && isAllowlisted(i.message, extraAllowlist)));
+  const relevant = issues.filter((i) => {
+    const scopedAllowlist = i.type === 'console.error' ? extraAllowlist : [];
+    return !isAllowlisted(i.message, scopedAllowlist);
+  });
   if (!relevant.length) return;
 
   const body = relevant

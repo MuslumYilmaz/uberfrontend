@@ -115,6 +115,10 @@ Enable WebKit locally (optional, for whichever suite you run):
 
 `PLAYWRIGHT_ENABLE_WEBKIT=1 npm run test:e2e`
 
+Verify the same browser set as GitHub before pushing:
+
+`npm run verify:e2e-critical:all-browsers`
+
 Run critical suite in CI mode (headless, retries enabled):
 
 `CI=true npm run test:e2e`

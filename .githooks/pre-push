@@ -193,11 +193,34 @@ if ! npm -C frontend run verify:unit-and-content; then
   exit 1
 fi
 echo "[pre-push] OK: Frontend unit/content verification passed."
+
+RUN_WEBKIT_E2E=0
+echo "[pre-push] Checking local Playwright WebKit health..."
+if npm -C frontend run check:playwright-webkit-health; then
+  RUN_WEBKIT_E2E=1
+  echo "[pre-push] OK: Local Playwright WebKit health check passed."
+else
+  if [ "${PRE_PUSH_ALLOW_MISSING_WEBKIT:-0}" = "1" ]; then
+    echo "[pre-push] WARNING: Local WebKit is unavailable. Continuing with Chromium-only E2E because PRE_PUSH_ALLOW_MISSING_WEBKIT=1 is set." >&2
+    echo "[pre-push] WARNING: GitHub will still run WebKit, so this push is accepting GitHub-only browser risk." >&2
+  else
+    echo "[pre-push] ERROR: Local Playwright WebKit is unavailable on this machine." >&2
+    echo "[pre-push] ERROR: Fix local WebKit or rerun with PRE_PUSH_ALLOW_MISSING_WEBKIT=1 if you intentionally want to rely on GitHub for WebKit coverage." >&2
+    exit 1
+  fi
+fi
+
 echo "[pre-push] Running frontend critical E2E verification..."
 
 # Use a dedicated hook port and disable server reuse to avoid conflicts with
 # already-running local dev servers or stale processes on :4200.
-if ! PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_PORT=4310 PLAYWRIGHT_REUSE_SERVER=0 npm -C frontend run verify:e2e-critical; then
+if [ "$RUN_WEBKIT_E2E" -eq 1 ]; then
+  E2E_ENV=(PLAYWRIGHT_ENABLE_WEBKIT=1)
+else
+  E2E_ENV=()
+fi
+
+if ! env PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_PORT=4310 PLAYWRIGHT_REUSE_SERVER=0 "${E2E_ENV[@]}" npm -C frontend run verify:e2e-critical; then
   echo "[pre-push] ERROR: Frontend critical E2E verification failed. Push aborted." >&2
   exit 1
 fi
