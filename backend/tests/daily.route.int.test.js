@@ -2,12 +2,15 @@
 
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 jest.setTimeout(120000);
 
 let app;
 let User;
+let DailyChallenge;
+let DailyChallengeAssignment;
 let DailyChallengeCompletion;
 let connectToMongo;
 let disconnectMongo;
@@ -48,6 +51,8 @@ beforeAll(async () => {
   app = require('../index');
   ({ connectToMongo, disconnectMongo } = require('../config/mongo'));
   User = require('../models/User');
+  DailyChallenge = require('../models/DailyChallenge');
+  DailyChallengeAssignment = require('../models/DailyChallengeAssignment');
   DailyChallengeCompletion = require('../models/DailyChallengeCompletion');
   ({ getOrCreateDailyChallenge } = require('../services/gamification/daily-challenge'));
 
@@ -61,6 +66,8 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await User.deleteMany({});
+  await DailyChallenge.deleteMany({});
+  await DailyChallengeAssignment.deleteMany({});
   await DailyChallengeCompletion.deleteMany({});
 });
 
@@ -109,6 +116,7 @@ describe('POST /api/daily/complete', () => {
     mockSystemTime('2026-02-11T12:00:00.000Z');
 
     const user = await User.create({
+      _id: new mongoose.Types.ObjectId('000000000000000000000005'),
       email: 'daily-day-change@example.com',
       username: 'daily_day_change_user',
       passwordHash: 'hash',

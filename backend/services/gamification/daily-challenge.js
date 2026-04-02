@@ -104,10 +104,10 @@ async function getOrCreateDailyChallenge({ user = null, now = new Date(), timeZo
   if (!basePool.length) return null;
 
   const lookbackStart = shiftDayKey(dayKey, -(DAILY_CHALLENGE_RECENT_WINDOW_DAYS - 1));
-  const recent = await DailyChallenge.find({
+  const recentGlobal = await DailyChallenge.find({
     dayKey: { $gte: lookbackStart, $lt: dayKey },
   }).select('questionId').lean();
-  const recentIds = new Set(recent.map((row) => row.questionId));
+  const globalRecentIds = new Set(recentGlobal.map((row) => row.questionId));
 
   if (!existing) {
     const globalSelected = selectDailyChallengeQuestion({
@@ -115,7 +115,7 @@ async function getOrCreateDailyChallenge({ user = null, now = new Date(), timeZo
       dayKey,
       userId: 'global',
       preferredTech: null,
-      recentIds,
+      recentIds: globalRecentIds,
     });
     const payload = toChallengeDoc(globalSelected, dayKey);
 
@@ -127,6 +127,16 @@ async function getOrCreateDailyChallenge({ user = null, now = new Date(), timeZo
   }
 
   const preferredTech = resolveDailyChallengeTechPreference(user, catalog);
+  const recentIds = new Set(globalRecentIds);
+  if (user?._id) {
+    const recentAssignments = await DailyChallengeAssignment.find({
+      userId: user._id,
+      dayKey: { $gte: lookbackStart, $lt: dayKey },
+    }).select('questionId').lean();
+    for (const row of recentAssignments) {
+      if (row?.questionId) recentIds.add(row.questionId);
+    }
+  }
   const selected = selectDailyChallengeQuestion({
     basePool,
     dayKey,

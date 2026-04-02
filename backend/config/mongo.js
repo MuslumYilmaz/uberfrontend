@@ -90,6 +90,12 @@ function getModelCollectionMap() {
     .sort((a, b) => a.model.localeCompare(b.model));
 }
 
+async function ensureLoadedModelIndexes() {
+  const models = Object.values(mongoose.models);
+  if (!models.length) return;
+  await Promise.all(models.map((model) => model.init()));
+}
+
 function assertExpectedMongoDbName(connection, uri) {
   const expectedName = getExpectedMongoDbName();
   if (!expectedName) return;
@@ -144,6 +150,7 @@ async function connectToMongo(uri) {
   try {
     connection = await cache.promise;
     assertExpectedMongoDbName(connection, uri);
+    await ensureLoadedModelIndexes();
   } catch (err) {
     cache.conn = null;
     cache.promise = null;
