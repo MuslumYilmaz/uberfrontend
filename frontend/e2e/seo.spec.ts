@@ -48,6 +48,26 @@ test('seo: question detail has canonical + json-ld', async ({ page }) => {
     .toContain('TechArticle');
 });
 
+test('seo: css display flex page keeps route identity + structured data', async ({ page }) => {
+  await setSeoHost(page, 'frontendatlas.com');
+  await page.goto('/css/trivia/css-display-flex');
+  const base = new URL(page.url()).origin;
+
+  await expect(page).toHaveTitle(/what does display:\s*flex do in css\?.*\| frontendatlas/i);
+  await expect(page.locator('h1').first()).toContainText(/what does display:\s*flex do\?/i);
+  await expect.poll(() => getMeta(page, 'description')).not.toBeNull();
+  await expect.poll(() => getCanonical(page)).toBe(`${base}/css/trivia/css-display-flex`);
+
+  const jsonLd = page.locator('script#seo-jsonld');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('TechArticle');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('FAQPage');
+
+  const triviaMain = page.getByTestId('trivia-detail-main');
+  await expect(triviaMain).toContainText(/inline-flex/i);
+  await expect(triviaMain).toContainText(/flex:\s*auto/i);
+});
+
 test('seo: login page is noindex', async ({ page }) => {
   await setSeoHost(page, 'frontendatlas.com');
   await page.goto('/auth/login');

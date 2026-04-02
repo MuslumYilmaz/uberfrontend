@@ -2231,7 +2231,7 @@
     "route": "/css/trivia/css-display-flex",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "The display: flex property enables the flexbox layout model, which allows elements within a container to align, distribute, and resize themselves dynamically. It simplifies responsive design by providing precise control…",
+    "summary": "Setting `display: flex` changes the display property so an element becomes a flex container for its direct children. The browser then lays out those flex items on one main axis and one cross axis, making alignment, spac…",
     "tags": [
       "css",
       "layout",
@@ -2241,7 +2241,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-02",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-display-flex"
   },

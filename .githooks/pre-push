@@ -30,6 +30,11 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 1
 fi
 
+ALLOW_MISSING_WEBKIT="${PRE_PUSH_ALLOW_MISSING_WEBKIT:-}"
+if [ -z "$ALLOW_MISSING_WEBKIT" ]; then
+  ALLOW_MISSING_WEBKIT="$(git config --bool --get hooks.allowMissingWebkit || true)"
+fi
+
 ZERO_SHA="0000000000000000000000000000000000000000"
 HAVE_REFS=0
 CHANGED_FILES="$(mktemp)"
@@ -200,12 +205,12 @@ if npm -C frontend run check:playwright-webkit-health; then
   RUN_WEBKIT_E2E=1
   echo "[pre-push] OK: Local Playwright WebKit health check passed."
 else
-  if [ "${PRE_PUSH_ALLOW_MISSING_WEBKIT:-0}" = "1" ]; then
-    echo "[pre-push] WARNING: Local WebKit is unavailable. Continuing with Chromium-only E2E because PRE_PUSH_ALLOW_MISSING_WEBKIT=1 is set." >&2
+  if [ "$ALLOW_MISSING_WEBKIT" = "1" ] || [ "$ALLOW_MISSING_WEBKIT" = "true" ]; then
+    echo "[pre-push] WARNING: Local WebKit is unavailable. Continuing with Chromium-only E2E because the missing-WebKit override is enabled." >&2
     echo "[pre-push] WARNING: GitHub will still run WebKit, so this push is accepting GitHub-only browser risk." >&2
   else
     echo "[pre-push] ERROR: Local Playwright WebKit is unavailable on this machine." >&2
-    echo "[pre-push] ERROR: Fix local WebKit or rerun with PRE_PUSH_ALLOW_MISSING_WEBKIT=1 if you intentionally want to rely on GitHub for WebKit coverage." >&2
+    echo "[pre-push] ERROR: Fix local WebKit or enable the override with PRE_PUSH_ALLOW_MISSING_WEBKIT=1 or git config hooks.allowMissingWebkit true." >&2
     exit 1
   fi
 fi
