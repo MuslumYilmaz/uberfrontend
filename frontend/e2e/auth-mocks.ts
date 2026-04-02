@@ -402,12 +402,23 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
       if (state) dest.searchParams.set('state', state);
       if (mode) dest.searchParams.set('mode', mode);
 
+      // WebKit rejects route.fulfill() with redirect status codes. Serve a tiny
+      // HTML redirect page instead so mocked OAuth flows behave consistently.
       return route.fulfill({
-        status: 302,
+        status: 200,
         headers: {
           ...authCookies(req, opts.token),
-          location: dest.toString(),
+          ...getCorsHeaders(req),
+          'content-type': 'text/html; charset=utf-8',
         },
+        body: [
+          '<!doctype html>',
+          '<html><head>',
+          `<meta http-equiv="refresh" content="0;url=${dest.toString().replace(/"/g, '&quot;')}">`,
+          '</head><body>',
+          `<script>location.replace(${JSON.stringify(dest.toString())});</script>`,
+          '</body></html>',
+        ].join(''),
       });
     }
 

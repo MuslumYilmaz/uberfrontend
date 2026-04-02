@@ -70,14 +70,14 @@ try {
   console.log('[playwright-webkit-health] OK: Local Playwright WebKit launched successfully.');
 } catch (error) {
   console.error('[playwright-webkit-health] ERROR: Local Playwright WebKit could not launch.');
-  console.error('[playwright-webkit-health] This machine cannot verify the same browser matrix that GitHub runs for Playwright Critical.');
+  console.error('[playwright-webkit-health] This machine cannot run the optional Safari/WebKit E2E coverage.');
   if (macOsVersionMismatch) {
     console.error(
       `[playwright-webkit-health] Detected macOS ${macOsVersionMismatch.currentVersion}, but the installed Playwright WebKit bundle requires macOS ${macOsVersionMismatch.requiredVersion} or newer.`,
     );
     console.error('[playwright-webkit-health] Upgrade macOS or use an older local Playwright/WebKit build. The repo is currently pinned to a browser build that targets a newer macOS runtime.');
   }
-  console.error('[playwright-webkit-health] Fix the local browser runtime or set PRE_PUSH_ALLOW_MISSING_WEBKIT=1 if you intentionally want to rely on GitHub for WebKit coverage.');
+  console.error('[playwright-webkit-health] Fix the local browser runtime or set PRE_PUSH_ALLOW_MISSING_WEBKIT=1 to continue with Chromium-only critical E2E.');
   if (error instanceof Error) {
     console.error(error.stack ?? error.message);
   } else {
