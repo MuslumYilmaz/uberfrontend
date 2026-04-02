@@ -30,6 +30,11 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 1
 fi
 
+ALLOW_MISSING_WEBKIT="${PRE_PUSH_ALLOW_MISSING_WEBKIT:-}"
+if [ -z "$ALLOW_MISSING_WEBKIT" ]; then
+  ALLOW_MISSING_WEBKIT="$(git config --bool --get hooks.allowMissingWebkit || true)"
+fi
+
 ZERO_SHA="0000000000000000000000000000000000000000"
 HAVE_REFS=0
 CHANGED_FILES="$(mktemp)"
@@ -136,7 +141,7 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
     backend_source_args=()
     while IFS= read -r file; do
       [ -z "${file:-}" ] && continue
-      backend_source_args+=("$file")
+      backend_source_args+=("${file#backend/}")
     done < "$BACKEND_SOURCE_FILES"
     if ! npm -C backend test -- --findRelatedTests --passWithNoTests "${backend_source_args[@]}"; then
       echo "[pre-push] ERROR: Backend related tests failed. Push aborted." >&2
@@ -150,7 +155,7 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
     backend_test_args=()
     while IFS= read -r file; do
       [ -z "${file:-}" ] && continue
-      backend_test_args+=("$file")
+      backend_test_args+=("${file#backend/}")
     done < "$BACKEND_TEST_FILES"
     if ! npm -C backend test -- --runTestsByPath "${backend_test_args[@]}"; then
       echo "[pre-push] ERROR: Changed backend test files failed. Push aborted." >&2
@@ -172,19 +177,57 @@ if ! node frontend/scripts/validate-coding-assist-sync.mjs --changed-files "$CHA
 fi
 echo "[pre-push] OK: Coding assist artifact sync check passed."
 
+echo "[pre-push] Running frontend tag/topic/track lints..."
+if ! npm -C frontend run lint:tags; then
+  echo "[pre-push] ERROR: Frontend tag lint failed. Push aborted." >&2
+  exit 1
+fi
+if ! npm -C frontend run lint:topics; then
+  echo "[pre-push] ERROR: Frontend topic lint failed. Push aborted." >&2
+  exit 1
+fi
+if ! npm -C frontend run lint:tracks; then
+  echo "[pre-push] ERROR: Frontend track lint failed. Push aborted." >&2
+  exit 1
+fi
+echo "[pre-push] OK: Frontend tag/topic/track lints passed."
+
 echo "[pre-push] Running frontend unit and content verification..."
 if ! npm -C frontend run verify:unit-and-content; then
   echo "[pre-push] ERROR: Frontend unit/content verification failed. Push aborted." >&2
   exit 1
 fi
 echo "[pre-push] OK: Frontend unit/content verification passed."
+
+RUN_WEBKIT_E2E=0
+echo "[pre-push] Checking local Playwright WebKit health..."
+if npm -C frontend run check:playwright-webkit-health; then
+  RUN_WEBKIT_E2E=1
+  echo "[pre-push] OK: Local Playwright WebKit health check passed."
+else
+  if [ "$ALLOW_MISSING_WEBKIT" = "1" ] || [ "$ALLOW_MISSING_WEBKIT" = "true" ]; then
+    echo "[pre-push] WARNING: Local WebKit is unavailable. Continuing with Chromium-only E2E because the missing-WebKit override is enabled." >&2
+  else
+    echo "[pre-push] ERROR: Local Playwright WebKit is unavailable on this machine." >&2
+    echo "[pre-push] ERROR: Fix local WebKit or enable the override with PRE_PUSH_ALLOW_MISSING_WEBKIT=1 or git config hooks.allowMissingWebkit true." >&2
+    exit 1
+  fi
+fi
+
 echo "[pre-push] Running frontend critical E2E verification..."
 
 # Use a dedicated hook port and disable server reuse to avoid conflicts with
 # already-running local dev servers or stale processes on :4200.
-if ! PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_PORT=4310 PLAYWRIGHT_REUSE_SERVER=0 npm -C frontend run verify:e2e-critical; then
-  echo "[pre-push] ERROR: Frontend critical E2E verification failed. Push aborted." >&2
-  exit 1
+if [ "$RUN_WEBKIT_E2E" -eq 1 ]; then
+  if ! env PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_PORT=4310 PLAYWRIGHT_REUSE_SERVER=0 PLAYWRIGHT_ENABLE_WEBKIT=1 npm -C frontend run verify:e2e-critical; then
+    echo "[pre-push] ERROR: Frontend critical E2E verification failed. Push aborted." >&2
+    exit 1
+  fi
+else
+  if ! env PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_PORT=4310 PLAYWRIGHT_REUSE_SERVER=0 npm -C frontend run verify:e2e-critical; then
+    echo "[pre-push] ERROR: Frontend critical E2E verification failed. Push aborted." >&2
+    exit 1
+  fi
 fi
 
 echo "[pre-push] OK: Frontend critical E2E verification passed."

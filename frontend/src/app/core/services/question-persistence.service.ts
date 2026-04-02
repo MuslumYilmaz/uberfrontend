@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import localForage from 'localforage';
 
 type PersistenceStore = {
   keys(): Promise<unknown[]>;
@@ -120,14 +121,12 @@ export class QuestionPersistenceService {
     if (this.idbDisabled) return null;
     if (this.storePromise) return this.storePromise;
 
-    this.storePromise = import('localforage')
-      .then((module) => {
-        const localForage = module.default ?? module;
-        return localForage.createInstance({
-          name: 'frontendatlas',
-          storeName: 'fa_questions',
-        }) as PersistenceStore;
-      })
+    this.storePromise = Promise.resolve(
+      localForage.createInstance({
+        name: 'frontendatlas',
+        storeName: 'fa_questions',
+      }) as PersistenceStore
+    )
       .catch(() => {
         this.disableIdb();
         return null;

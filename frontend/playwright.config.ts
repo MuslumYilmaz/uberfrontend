@@ -2,7 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 const isCI = !!process.env.CI;
 const useWebServer = process.env.PLAYWRIGHT_WEB_SERVER === '1';
-const includeWebkit = isCI || process.env.PLAYWRIGHT_ENABLE_WEBKIT === '1';
+// Keep critical E2E deterministic across local and CI by defaulting to Chromium.
+// WebKit remains opt-in via PLAYWRIGHT_ENABLE_WEBKIT=1 when explicitly requested.
+const includeWebkit = process.env.PLAYWRIGHT_ENABLE_WEBKIT === '1';
 const webHost = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const webPort = Number.parseInt(process.env.PLAYWRIGHT_PORT || '4200', 10);
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || `http://${webHost}:${webPort}`;

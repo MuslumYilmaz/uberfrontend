@@ -115,6 +115,14 @@ Enable WebKit locally (optional, for whichever suite you run):
 
 `PLAYWRIGHT_ENABLE_WEBKIT=1 npm run test:e2e`
 
+Verify the same browser set as GitHub before pushing:
+
+`npm run verify:e2e-critical:all-browsers`
+
+If your local machine cannot launch Playwright WebKit but you still need to push and let GitHub be the WebKit gate, set a Git-level override once:
+
+`git config hooks.allowMissingWebkit true`
+
 Run critical suite in CI mode (headless, retries enabled):
 
 `CI=true npm run test:e2e`

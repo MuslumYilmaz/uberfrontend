@@ -46,7 +46,10 @@ async function installUnhandledRejectionHook(page: Page, issues: CollectedIssue[
 }
 
 async function attachAndFailIfNeeded(testInfo: TestInfo, issues: CollectedIssue[], extraAllowlist: RegExp[]) {
-  const relevant = issues.filter((i) => !(i.type === 'console.error' && isAllowlisted(i.message, extraAllowlist)));
+  const relevant = issues.filter((i) => {
+    const scopedAllowlist = i.type === 'console.error' ? extraAllowlist : [];
+    return !isAllowlisted(i.message, scopedAllowlist);
+  });
   if (!relevant.length) return;
 
   const body = relevant
@@ -83,6 +86,15 @@ export const test = baseTest.extend<{
       });
     });
 
+    // Keep connectivity probes deterministic in browser environments that report
+    // transient offline states while frontend-only E2E is booting.
+    await page.route(/https:\/\/(?:www\.gstatic\.com\/generate_204|www\.google\.com\/generate_204|example\.com\/)(?:\?.*)?$/, async (route) => {
+      await route.fulfill({
+        status: 204,
+        body: '',
+      });
+    });
+
     // Keep E2E deterministic in frontend-only runs: avoid backend/proxy dependency
     // for assist sync while preserving request shape/flow on the client.
     await page.route(/\/api\/editor-assist\/sync(?:\?.*)?$/, async (route) => {
@@ -103,6 +115,31 @@ export const test = baseTest.extend<{
             upserted: 0,
             deduped: 0,
             returned: 0,
+          },
+        }),
+      });
+    });
+
+    // Keep frontend-only E2E deterministic when showcase/pricing eagerly read billing config.
+    await page.route(/\/api\/billing\/checkout\/config(?:\?.*)?$/, async (route) => {
+      const req = route.request();
+      if (req.method() === 'OPTIONS') {
+        await route.fulfill({ status: 204 });
+        return;
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json; charset=utf-8',
+        body: JSON.stringify({
+          configuredProvider: null,
+          provider: null,
+          mode: 'test',
+          enabled: false,
+          plans: {
+            monthly: false,
+            yearly: false,
+            lifetime: false,
           },
         }),
       });

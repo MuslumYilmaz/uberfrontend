@@ -4,6 +4,7 @@
         "title": "Counter not updating",
         "difficulty": "intermediate",
         "importance": 3,
+        "updatedAt": "2025-08-24",
         "tags": [
             "signals",
             "change-detection",

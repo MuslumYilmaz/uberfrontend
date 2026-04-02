@@ -1,7 +1,6 @@
 {
   "schemaVersion": 1,
   "tags": [
-    "!important",
     "a11y",
     "abort-controller",
     "absolute",
@@ -442,8 +441,6 @@
     "units",
     "upload",
     "use-strict",
-    "useCallback",
-    "useMemo",
     "user-input",
     "utilities",
     "ux",

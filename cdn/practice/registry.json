@@ -2231,7 +2231,7 @@
     "route": "/css/trivia/css-display-flex",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "The display: flex property enables the flexbox layout model, which allows elements within a container to align, distribute, and resize themselves dynamically. It simplifies responsive design by providing precise control…",
+    "summary": "Setting `display: flex` changes the display property so an element becomes a flex container for its direct children. The browser then lays out those flex items on one main axis and one cross axis, making alignment, spac…",
     "tags": [
       "css",
       "layout",
@@ -2241,7 +2241,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-02",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-display-flex"
   },
@@ -4566,7 +4566,7 @@
     "route": "/javascript/debug/js-debug-async-race",
     "tech": "javascript",
     "difficulty": "hard",
-    "summary": "Multiple simultaneous calls with the same key should share the same in-flight request. Fix the race so only one network call happens per key until it resolves.",
+    "summary": "A teammate built a shared fetch helper to avoid duplicate network work, but real traffic exposed two nasty bugs. Concurrent callers with the same key still fan out into multiple requests, and a failed request can leave…",
     "tags": [
       "async",
       "cache",
@@ -4574,9 +4574,66 @@
     ],
     "access": "free",
     "estimatedMinutes": 12,
-    "updatedAt": "2025-12-30",
+    "updatedAt": "2026-03-31",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/debug.json#js-debug-async-race"
+  },
+  {
+    "id": "js-debug-lost-this-binding",
+    "family": "question",
+    "title": "Fix lost `this` binding in callback registration",
+    "route": "/javascript/debug/js-debug-lost-this-binding",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A teammate passes an object method straight into a callback API, assuming it will still remember its owner later. Direct calls like `tracker.recordClick()` work, but the same method breaks once another function invokes…",
+    "tags": [
+      "callbacks",
+      "debugging",
+      "this"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-31",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-lost-this-binding"
+  },
+  {
+    "id": "js-debug-missing-return-map-filter",
+    "family": "question",
+    "title": "Fix missing return in `map` / `filter`",
+    "route": "/javascript/debug/js-debug-missing-return-map-filter",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A teammate refactored a simple array pipeline to use block-bodied arrow functions because it looked more readable. The shape still looks right, but now the result comes back empty or full of `undefined`. Fix the missing…",
+    "tags": [
+      "array-methods",
+      "callbacks",
+      "debugging"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-31",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-missing-return-map-filter"
+  },
+  {
+    "id": "js-debug-numeric-sort",
+    "family": "question",
+    "title": "Fix numeric sort in `sortScores`",
+    "route": "/javascript/debug/js-debug-numeric-sort",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A teammate wrote a tiny leaderboard helper with plain `sort()`. It looked fine in a quick demo with single-digit values, then broke the moment scores like `10` and `100` showed up. Fix the bug so numbers sort numericall…",
+    "tags": [
+      "arrays",
+      "debugging",
+      "sorting"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-31",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-numeric-sort"
   },
   {
     "id": "js-debug-off-by-one",
@@ -4584,18 +4641,56 @@
     "title": "Fix off-by-one in `chunk`",
     "route": "/javascript/debug/js-debug-off-by-one",
     "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "The current implementation of `chunk(arr, size)` occasionally drops the last group or returns an empty chunk when size divides the length exactly. Find and fix the bug.",
+    "difficulty": "easy",
+    "summary": "A teammate wrote `chunk(arr, size)` to split rows into smaller batches. It looks fine at first glance, but the loop boundary is slightly off: exact divisions can produce an extra empty chunk, and an empty input can come…",
     "tags": [
       "arrays",
-      "bugs",
+      "boundaries",
       "edge-cases"
     ],
     "access": "free",
     "estimatedMinutes": 12,
-    "updatedAt": "2025-12-30",
+    "updatedAt": "2026-03-31",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/debug.json#js-debug-off-by-one"
+  },
+  {
+    "id": "js-debug-stale-closure-autosave",
+    "family": "question",
+    "title": "Fix stale closure in delayed autosave callback",
+    "route": "/javascript/debug/js-debug-stale-closure-autosave",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A teammate tried to make autosave \"predictable\" by capturing the current draft when wiring a delayed callback. That feels reasonable until the user keeps typing: the callback keeps saving the old draft it closed over in…",
+    "tags": [
+      "closures",
+      "debugging",
+      "timers"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-31",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-stale-closure-autosave"
+  },
+  {
+    "id": "js-debug-nullish-defaults",
+    "family": "question",
+    "title": "Fix wrong defaults in `normalizeSettings`",
+    "route": "/javascript/debug/js-debug-nullish-defaults",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "A teammate used `||` while hydrating UI settings, and the bug stayed invisible until real saved values showed up. Now `0`, an intentionally blank subtitle, and `false` keep getting overwritten by defaults. Fix the helpe…",
+    "tags": [
+      "debugging",
+      "defaults",
+      "operators"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-03-31",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-nullish-defaults"
   },
   {
     "id": "js-flatten-once",
@@ -6055,18 +6150,19 @@
   {
     "id": "js-debug-mutating-input",
     "family": "question",
-    "title": "Stop mutating input in `unique`",
+    "title": "Stop mutating caller data in `unique`",
     "route": "/javascript/debug/js-debug-mutating-input",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "`unique(arr)` must return a new array of unique items while leaving the input array untouched.",
+    "summary": "A teammate tried to make `unique(arr)` look clever with a one-liner. The returned values seem close, but two subtle bugs slipped in: it reorders the data and it mutates the caller's array in place. Fix it so the helper…",
     "tags": [
       "arrays",
+      "debugging",
       "immutability"
     ],
     "access": "free",
     "estimatedMinutes": 12,
-    "updatedAt": "2025-12-30",
+    "updatedAt": "2026-03-31",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/debug.json#js-debug-mutating-input"
   },

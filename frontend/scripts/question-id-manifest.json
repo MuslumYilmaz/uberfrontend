@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-03-15T15:26:15.643Z",
+  "generatedAt": "2026-03-31T16:20:40.723Z",
   "entries": [
     {
       "tech": "angular",
@@ -1421,13 +1421,43 @@
     {
       "tech": "javascript",
       "kind": "debug",
+      "id": "js-debug-lost-this-binding",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-missing-return-map-filter",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
       "id": "js-debug-mutating-input",
       "file": "javascript/debug.json"
     },
     {
       "tech": "javascript",
       "kind": "debug",
+      "id": "js-debug-nullish-defaults",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-numeric-sort",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
       "id": "js-debug-off-by-one",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-stale-closure-autosave",
       "file": "javascript/debug.json"
     },
     {

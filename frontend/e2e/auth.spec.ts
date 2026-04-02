@@ -18,8 +18,8 @@ async function expectLoggedIn(page: any) {
   await page.getByTestId('header-profile-button').click();
   await expect(page.getByTestId('header-profile-menu')).toBeVisible();
   await expect(page.getByTestId('header-menu-logout')).toBeVisible();
-  // Close menu to avoid overlay interference.
-  await page.getByTestId('header-profile-button').click();
+  // Close menu via Escape to avoid click-flakes while the header is still settling.
+  await page.keyboard.press('Escape');
   await expect(page.getByTestId('header-profile-menu')).toBeHidden();
 }
 
