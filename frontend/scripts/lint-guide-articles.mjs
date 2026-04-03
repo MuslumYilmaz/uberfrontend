@@ -13,6 +13,7 @@ const GUIDE_SHELL_PATH = path.resolve(
 );
 const GUIDE_COLLECTIONS = ['PLAYBOOK', 'SYSTEM', 'BEHAVIORAL'];
 const TEMPLATE_BASENAMES = new Set(['playbook.md', 'system-design.md', 'trivia.md', 'tradeoff-battle.md', 'incident.md']);
+const SKIP_GIT_HISTORY_CHECKS = process.env.GUIDE_ARTICLES_SKIP_GIT_HISTORY_CHECKS === '1';
 
 const errors = [];
 const warnings = [];
@@ -313,6 +314,20 @@ function readGitDateRange(filePath) {
   }
 }
 
+function hasUsableGitHistory() {
+  if (SKIP_GIT_HISTORY_CHECKS) return false;
+  try {
+    const raw = execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
+      cwd: frontendRoot,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim().toLowerCase();
+    return raw !== 'true';
+  } catch {
+    return false;
+  }
+}
+
 function validateGuideShellContract() {
   if (!fs.existsSync(GUIDE_SHELL_PATH)) {
     addError(`guide shell not found: ${relFromRepo(GUIDE_SHELL_PATH)}`);
@@ -398,10 +413,15 @@ function validateDraftParity(entry, shippedWordCount, template, usesGuideShell) 
 function main() {
   const guideShellHasRelatedLinks = validateGuideShellContract();
   const entries = readGuideArrays();
+  const hasFullGitHistory = hasUsableGitHistory();
 
   const titleMap = new Map();
   const descriptionMap = new Map();
   const primaryKeywordMap = new Map();
+
+  if (!hasFullGitHistory) {
+    addWarning('skipping git-history date checks because repository history is shallow or unavailable');
+  }
 
   entries.forEach((entry) => {
     const id = `${entry.collection}:${entry.slug}`;
@@ -433,12 +453,14 @@ function main() {
       addError(`${id} seo.keywords must include seo.primaryKeyword`);
     }
 
-    const gitDates = readGitDateRange(entry.componentPath);
-    if (publishedAt && gitDates.first && publishedAt < gitDates.first) {
-      addError(`${id} seo.publishedAt (${publishedAt}) is earlier than the first git commit for ${relFromRepo(entry.componentPath)} (${gitDates.first})`);
-    }
-    if (updatedAt && gitDates.last && updatedAt < gitDates.last) {
-      addWarning(`${id} seo.updatedAt (${updatedAt}) is older than the latest git commit for ${relFromRepo(entry.componentPath)} (${gitDates.last})`);
+    if (hasFullGitHistory) {
+      const gitDates = readGitDateRange(entry.componentPath);
+      if (publishedAt && gitDates.first && publishedAt < gitDates.first) {
+        addError(`${id} seo.publishedAt (${publishedAt}) is earlier than the first git commit for ${relFromRepo(entry.componentPath)} (${gitDates.first})`);
+      }
+      if (updatedAt && gitDates.last && updatedAt < gitDates.last) {
+        addWarning(`${id} seo.updatedAt (${updatedAt}) is older than the latest git commit for ${relFromRepo(entry.componentPath)} (${gitDates.last})`);
+      }
     }
 
     const template = extractComponentTemplate(entry.componentPath);

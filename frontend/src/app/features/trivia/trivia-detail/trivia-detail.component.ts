@@ -1,6 +1,6 @@
 /* ========================= trivia-detail.component.ts ========================= */
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, computed, effect, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, PLATFORM_ID, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -82,12 +82,14 @@ type LockedPath = {
   route: any[];
   queryParams?: Record<string, string>;
 };
+type TriviaAnalyticsLocation = 'sidebar' | 'mobile_nav' | 'similar' | 'guides' | 'prep_bridge' | 'body';
 
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
   ...(Array.isArray((TAG_REGISTRY as any)?.tags) ? (TAG_REGISTRY as any).tags : []),
   ...((Array.isArray((TOPIC_REGISTRY as any)?.topics) ? (TOPIC_REGISTRY as any).topics : [])
     .flatMap((topic: any) => Array.isArray(topic?.tags) ? topic.tags : [])),
 ]);
+const TRIVIA_SCROLL_THRESHOLDS = [25, 50, 75, 100];
 
 function buildTagMatchers(rawTags: unknown[]): TagMatcher[] {
   const unique = new Set<string>();
@@ -168,8 +170,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   private sub?: Subscription;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly ngZone = inject(NgZone);
   private dataLoaded = false;
   private readonly sideScrollStoragePrefix = 'fa:trivia:side-scroll:';
+  private maxTriviaDepthPercent = 0;
+  private trackedTriviaDepths = new Set<number>();
+  private triviaReadEngagedTracked = false;
+  private visibleTriviaMs = 0;
+  private triviaVisibleIntervalId: number | null = null;
 
   // practice session
   private practice: PracticeSession = null;
@@ -406,15 +414,46 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     this.syncSidebarAfterSelection();
+    this.startTriviaVisibilityTimer();
+    this.updateTriviaScrollDepth();
   }
 
   ngOnDestroy() {
     this.saveSidebarScrollPosition();
     this.sub?.unsubscribe();
+    if (this.triviaVisibleIntervalId !== null) {
+      window.clearInterval(this.triviaVisibleIntervalId);
+      this.triviaVisibleIntervalId = null;
+    }
   }
 
   onSideScroll() {
     this.saveSidebarScrollPosition();
+  }
+
+  onMainScroll() {
+    this.updateTriviaScrollDepth();
+  }
+
+  onTrackedRootClick(event: Event) {
+    const context = this.triviaAnalyticsContext();
+    if (!context) return;
+
+    const target = event.target as Element | null;
+    const anchor = target?.closest?.('a') as HTMLAnchorElement | null;
+    if (!anchor) return;
+
+    const targetPath = this.normalizeTrackedInternalPath(anchor);
+    if (!targetPath) return;
+
+    const location = this.classifyTriviaLinkLocation(anchor);
+    if (!location) return;
+
+    this.analytics.track('trivia_internal_link_clicked', {
+      ...context,
+      location,
+      target_path: targetPath,
+    });
   }
 
   private applyResolved(resolved: QuestionDetailResolved) {
@@ -485,6 +524,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   private selectQuestion(id: string) {
     const found = this.questionsList.find((q) => q.id === id) ?? null;
     this.question.set(found);
+    this.resetTriviaEngagementState();
     this.resetIncidentPrompt();
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
     this.refreshLockedPersonalization();
@@ -500,6 +540,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.updateSeo(found);
     this.scrollMainToTop();
     this.syncSidebarAfterSelection();
+    this.updateTriviaScrollDepth();
   }
 
   private setLoadState(found: Question | null) {
@@ -1522,6 +1563,117 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     requestAnimationFrame(() => {
       el.scrollTo({ top: 0 });
     });
+  }
+
+  private triviaAnalyticsContext() {
+    const q = this.question();
+    if (!this.isBrowser || !q || this.locked() || this.loadState() !== 'loaded') return null;
+    return {
+      tech: this.tech,
+      question_id: q.id,
+      question_title: q.title,
+    };
+  }
+
+  private resetTriviaEngagementState() {
+    this.maxTriviaDepthPercent = 0;
+    this.trackedTriviaDepths = new Set<number>();
+    this.triviaReadEngagedTracked = false;
+    this.visibleTriviaMs = 0;
+  }
+
+  private startTriviaVisibilityTimer() {
+    if (!this.isBrowser || this.triviaVisibleIntervalId !== null) return;
+    this.ngZone.runOutsideAngular(() => {
+      this.triviaVisibleIntervalId = window.setInterval(() => {
+        if (document.hidden || !this.triviaAnalyticsContext()) return;
+        this.visibleTriviaMs += 1000;
+        this.maybeTrackTriviaReadEngaged();
+      }, 1000);
+    });
+  }
+
+  private updateTriviaScrollDepth() {
+    const context = this.triviaAnalyticsContext();
+    if (!context) return;
+
+    const depthPercent = this.computeTriviaScrollDepth();
+    if (depthPercent > this.maxTriviaDepthPercent) {
+      this.maxTriviaDepthPercent = depthPercent;
+      TRIVIA_SCROLL_THRESHOLDS.forEach((threshold) => {
+        if (depthPercent < threshold || this.trackedTriviaDepths.has(threshold)) return;
+        this.trackedTriviaDepths.add(threshold);
+        this.analytics.track('trivia_scroll_depth', {
+          ...context,
+          depth_percent: threshold,
+        });
+      });
+    }
+
+    this.maybeTrackTriviaReadEngaged();
+  }
+
+  private computeTriviaScrollDepth(): number {
+    const container = this.mainScroll?.nativeElement;
+    if (!container) return 0;
+
+    const scrollHeight = Math.max(container.scrollHeight, 1);
+    const reached = Math.min(scrollHeight, container.scrollTop + container.clientHeight);
+    return Math.max(0, Math.min(100, Math.round((reached / scrollHeight) * 100)));
+  }
+
+  private maybeTrackTriviaReadEngaged() {
+    if (this.triviaReadEngagedTracked) return;
+    const context = this.triviaAnalyticsContext();
+    if (!context) return;
+    if (this.maxTriviaDepthPercent < 50) return;
+    if (this.visibleTriviaMs < 30_000) return;
+
+    this.triviaReadEngagedTracked = true;
+    this.analytics.track('trivia_read_engaged', {
+      ...context,
+      seconds_visible: Math.floor(this.visibleTriviaMs / 1000),
+      max_depth_percent: this.maxTriviaDepthPercent,
+    });
+  }
+
+  private normalizeTrackedInternalPath(anchor: HTMLAnchorElement): string | null {
+    if (!this.isBrowser) return null;
+
+    const rawHref = String(anchor.getAttribute('href') || anchor.href || '').trim();
+    if (!rawHref || rawHref.startsWith('#')) return null;
+
+    let targetUrl;
+    try {
+      targetUrl = new URL(rawHref, window.location.origin);
+    } catch {
+      return null;
+    }
+
+    if (targetUrl.origin !== window.location.origin) return null;
+
+    const currentUrl = new URL(window.location.href);
+    if (
+      targetUrl.pathname === currentUrl.pathname
+      && targetUrl.search === currentUrl.search
+      && !!targetUrl.hash
+    ) {
+      return null;
+    }
+
+    return `${targetUrl.pathname}${targetUrl.search}`;
+  }
+
+  private classifyTriviaLinkLocation(anchor: HTMLAnchorElement): TriviaAnalyticsLocation | null {
+    if (anchor.closest('.mobile-qnav__body')) return 'mobile_nav';
+    if (anchor.closest('.side')) return 'sidebar';
+
+    const explicitZone = anchor.closest('[data-trivia-link-zone]')?.getAttribute('data-trivia-link-zone');
+    if (explicitZone === 'similar' || explicitZone === 'guides' || explicitZone === 'prep_bridge') {
+      return explicitZone;
+    }
+    if (anchor.closest('.content')) return 'body';
+    return null;
   }
 
   private sideScrollStorageKey(): string {

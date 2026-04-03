@@ -188,7 +188,7 @@ ${'This draft explains the concept in depth with examples and decision points. '
 `;
 }
 
-function runLinter(tempFrontendRoot, tempDraftRoot) {
+function runLinter(tempFrontendRoot, tempDraftRoot, extraEnv = {}) {
   return execFileSync('node', [LINTER_PATH], {
     cwd: path.join(repoRoot, 'frontend'),
     encoding: 'utf8',
@@ -197,14 +197,15 @@ function runLinter(tempFrontendRoot, tempDraftRoot) {
       GUIDE_REGISTRY_PATH: path.join(tempFrontendRoot, 'src/app/shared/guides/guide.registry.ts'),
       GUIDE_SHELL_PATH: path.join(tempFrontendRoot, 'src/app/shared/components/guide/guide-shell.component.ts'),
       CONTENT_DRAFTS_DIR: tempDraftRoot,
+      ...extraEnv,
     },
     stdio: 'pipe',
   });
 }
 
-function expectFailure(tempFrontendRoot, tempDraftRoot) {
+function expectFailure(tempFrontendRoot, tempDraftRoot, extraEnv = {}) {
   try {
-    runLinter(tempFrontendRoot, tempDraftRoot);
+    runLinter(tempFrontendRoot, tempDraftRoot, extraEnv);
     assert.fail('Expected lint-guide-articles to fail');
   } catch (error) {
     return error;
@@ -356,6 +357,33 @@ function testDraftBackedGuideRequiresReaderPromiseBinding() {
   assert.match(String(failure.stderr || ''), /guide article must pass readerPromise into <fa-guide-shell>/);
 }
 
+function testShallowHistorySkipsGitDateFloorChecks() {
+  const tempRoot = makeTempRoot();
+  const tempDrafts = path.join(tempRoot, 'content-drafts');
+  writeShell(tempRoot);
+  writeFile(tempRoot, 'src/app/features/guides/playbook/guide-one.ts', guideComponent());
+  writeFile(
+    tempRoot,
+    'src/app/shared/guides/guide.registry.ts',
+    guideRegistry(
+      guideEntry({
+        slug: 'guide-one',
+        title: 'Guide One',
+        primaryKeyword: 'guide one keyword',
+        keywords: ['guide one keyword', 'guide one supporting phrase'],
+        importPath: '../../features/guides/playbook/guide-one',
+        publishedAt: '2020-01-01',
+        updatedAt: '2020-02-01',
+      }),
+    ),
+  );
+
+  const output = runLinter(tempRoot, tempDrafts, {
+    GUIDE_ARTICLES_SKIP_GIT_HISTORY_CHECKS: '1',
+  });
+  assert.match(output, /guide articles look valid/);
+}
+
 testValidGuideRegistryPasses();
 testDuplicatePrimaryKeywordFails();
 testDraftParityFailsWhenShippedArticleIsTooThin();
@@ -364,5 +392,6 @@ testDraftBackedGuideRequiresReaderPromise();
 testDraftBackedGuideFailsOnMismatchedUniqueAngle();
 testDraftBackedGuideFailsWhenFactCheckedAtIsOlderThanDraft();
 testDraftBackedGuideRequiresReaderPromiseBinding();
+testShallowHistorySkipsGitDateFloorChecks();
 
 console.log('[lint-guide-articles.test] ok');

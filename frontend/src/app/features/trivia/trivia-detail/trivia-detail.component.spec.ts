@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -26,6 +26,8 @@ describe('TriviaDetailComponent', () => {
   let analytics: jasmine.SpyObj<AnalyticsService>;
   let onboarding: jasmine.SpyObj<OnboardingService>;
   let triviaIncident: jasmine.SpyObj<TriviaIncidentService>;
+  let originalPath = '';
+  let originalHiddenDescriptor: PropertyDescriptor | undefined;
 
   const makeResolved = (access: 'free' | 'premium', extras: Record<string, any> = {}) => ({
     tech: 'javascript',
@@ -34,14 +36,85 @@ describe('TriviaDetailComponent', () => {
       id: 'q1',
       title: 'What is closure?',
       description: 'Closure keeps lexical scope.',
-      answer: 'A closure captures variables from outer scope.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: 'Closure captures lexical scope so later callbacks can still read outer variables safely in asynchronous UI code.',
+          },
+          {
+            type: 'text',
+            text: 'Example: a click handler can increment a value from the outer factory function without re-reading global state.',
+          },
+        ],
+      },
       importance: 3,
       difficulty: 'easy',
       technology: 'javascript',
       access,
+      tags: ['closures', 'functions'],
+      updatedAt: '2026-04-02',
       ...extras,
+    }, {
+      id: 'q2',
+      title: 'What is event delegation?',
+      description: 'Event delegation uses bubbling.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: 'Event delegation attaches one listener high in the tree and handles matching descendants as events bubble upward.',
+          },
+          {
+            type: 'text',
+            text: 'Example: a todo list can use one listener on the list root instead of one listener per button.',
+          },
+        ],
+      },
+      importance: 3,
+      difficulty: 'easy',
+      technology: 'javascript',
+      access,
+      tags: ['closures', 'dom-events'],
+      updatedAt: '2026-04-02',
     }],
   });
+
+  function trackCalls(eventName: string) {
+    return analytics.track.calls.allArgs().filter(([name]) => name === eventName);
+  }
+
+  function setDocumentHidden(value: boolean) {
+    Object.defineProperty(document, 'hidden', {
+      configurable: true,
+      get: () => value,
+    });
+  }
+
+  function resetTriviaAnalyticsState(component: any) {
+    if (component.triviaVisibleIntervalId !== null) {
+      window.clearInterval(component.triviaVisibleIntervalId);
+      component.triviaVisibleIntervalId = null;
+    }
+
+    component.maxTriviaDepthPercent = 0;
+    component.trackedTriviaDepths = new Set<number>();
+    component.triviaReadEngagedTracked = false;
+    component.visibleTriviaMs = 0;
+  }
+
+  function dispatchTrackedClick(anchor: HTMLAnchorElement) {
+    anchor.addEventListener('click', (event) => event.preventDefault(), { once: true });
+    anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  }
+
+  function appendTrackedAnchor(container: Element, href: string, text: string) {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', href);
+    anchor.textContent = text;
+    container.appendChild(anchor);
+    return anchor;
+  }
 
   beforeEach(async () => {
     routeData$ = new ReplaySubject<any>(1);
@@ -87,6 +160,9 @@ describe('TriviaDetailComponent', () => {
         ? `https://frontendatlas.com${raw}`
         : `https://frontendatlas.com/${raw}`;
     });
+    originalPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    originalHiddenDescriptor = Object.getOwnPropertyDescriptor(document, 'hidden');
+    window.history.pushState({}, '', '/javascript/trivia/q1');
 
     await TestBed.configureTestingModule({
       imports: [TriviaDetailComponent, RouterTestingModule, NoopAnimationsModule],
@@ -123,6 +199,22 @@ describe('TriviaDetailComponent', () => {
     }).compileComponents();
   });
 
+  afterEach(() => {
+    window.history.pushState({}, '', originalPath || '/');
+    if (originalHiddenDescriptor) {
+      Object.defineProperty(document, 'hidden', originalHiddenDescriptor);
+    }
+  });
+
+  async function createLoadedFixture(access: 'free' | 'premium' = 'free') {
+    routeData$.next({ questionDetail: makeResolved(access) });
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    return fixture;
+  }
+
   it('shows report issue button on unlocked trivia detail', async () => {
     routeData$.next({ questionDetail: makeResolved('free') });
 
@@ -137,12 +229,7 @@ describe('TriviaDetailComponent', () => {
   });
 
   it('renders crawlable sidebar and interview-hub links', async () => {
-    routeData$.next({ questionDetail: makeResolved('free') });
-
-    const fixture = TestBed.createComponent(TriviaDetailComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    fixture.detectChanges();
+    const fixture = await createLoadedFixture();
 
     const sideLink = fixture.nativeElement.querySelector('.side-list a.side-item') as HTMLAnchorElement | null;
     expect(sideLink).toBeTruthy();
@@ -153,6 +240,15 @@ describe('TriviaDetailComponent', () => {
     ) as HTMLAnchorElement[];
     const prepHrefs = prepLinks.map((link) => link.getAttribute('href') || '');
     expect(prepHrefs.some((href) => href.includes('/javascript/interview-questions'))).toBeTrue();
+  });
+
+  it('renders unlocked trivia shell with sidebar, similar, guides, and prep bridge blocks', async () => {
+    const fixture = await createLoadedFixture();
+
+    expect(fixture.nativeElement.querySelector('.side-list')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.similar-list')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.guide-links')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="trivia-prep-entry"]')).toBeTruthy();
   });
 
   it('maps trivia detail tech to interview hub routes', () => {
@@ -182,6 +278,159 @@ describe('TriviaDetailComponent', () => {
     const lockedActions = fixture.nativeElement.querySelector('.locked-actions') as HTMLElement | null;
     expect(lockedActions).toBeTruthy();
     expect(lockedActions?.textContent || '').toContain('Report access issue');
+  });
+
+  it('fires trivia scroll depth exactly once per threshold from the main scroll container', fakeAsync(() => {
+    routeData$.next({ questionDetail: makeResolved('free') });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as any;
+    const main = fixture.nativeElement.querySelector('[data-testid="trivia-detail-main"]') as HTMLElement;
+    analytics.track.calls.reset();
+    resetTriviaAnalyticsState(component);
+    spyOn(component, 'computeTriviaScrollDepth').and.returnValues(30, 60, 100, 100);
+
+    main.dispatchEvent(new Event('scroll'));
+    main.dispatchEvent(new Event('scroll'));
+    main.dispatchEvent(new Event('scroll'));
+    main.dispatchEvent(new Event('scroll'));
+
+    const depths = trackCalls('trivia_scroll_depth').map(([, params]) => (params as any).depth_percent);
+    expect(depths).toEqual([25, 50, 75, 100]);
+
+    fixture.destroy();
+  }));
+
+  it('waits for both time and scroll depth before tracking trivia engaged read', fakeAsync(() => {
+    routeData$.next({ questionDetail: makeResolved('free') });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as any;
+    analytics.track.calls.reset();
+    resetTriviaAnalyticsState(component);
+    spyOn(component, 'computeTriviaScrollDepth').and.returnValue(60);
+
+    component.startTriviaVisibilityTimer();
+    component.onMainScroll();
+    tick(29_000);
+    expect(trackCalls('trivia_read_engaged').length).toBe(0);
+
+    tick(1_000);
+    expect(trackCalls('trivia_read_engaged').length).toBe(1);
+    expect(trackCalls('trivia_read_engaged')[0][1]).toEqual(jasmine.objectContaining({
+      tech: 'javascript',
+      question_id: 'q1',
+      question_title: 'What is closure?',
+      max_depth_percent: 60,
+      seconds_visible: 30,
+    }));
+
+    fixture.destroy();
+  }));
+
+  it('does not count hidden-tab time toward trivia engaged read', fakeAsync(() => {
+    routeData$.next({ questionDetail: makeResolved('free') });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as any;
+    analytics.track.calls.reset();
+    resetTriviaAnalyticsState(component);
+    spyOn(component, 'computeTriviaScrollDepth').and.returnValue(60);
+
+    component.startTriviaVisibilityTimer();
+    component.onMainScroll();
+    setDocumentHidden(true);
+    tick(30_000);
+    expect(trackCalls('trivia_read_engaged').length).toBe(0);
+
+    setDocumentHidden(false);
+    tick(30_000);
+    expect(trackCalls('trivia_read_engaged').length).toBe(1);
+
+    fixture.destroy();
+  }));
+
+  it('tracks sidebar, mobile nav, similar, guides, prep bridge, and body internal link clicks', async () => {
+    const fixture = await createLoadedFixture();
+    analytics.track.calls.reset();
+
+    const component = fixture.componentInstance;
+    component.openQnav();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const sidebarLink = appendTrackedAnchor(
+      fixture.nativeElement.querySelector('.side') as HTMLElement,
+      '/javascript/trivia/sidebar-target',
+      'Sidebar link',
+    );
+    const mobileNavLink = appendTrackedAnchor(
+      fixture.nativeElement.querySelector('.mobile-qnav__body') as HTMLElement,
+      '/javascript/trivia/mobile-target',
+      'Mobile nav link',
+    );
+    const similarLink = appendTrackedAnchor(
+      fixture.nativeElement.querySelector('.similar-list') as HTMLElement,
+      '/javascript/trivia/similar-target',
+      'Similar link',
+    );
+    (similarLink as HTMLAnchorElement).setAttribute('data-trivia-link-zone', 'similar');
+    const guideLink = appendTrackedAnchor(
+      fixture.nativeElement.querySelector('.guide-links') as HTMLElement,
+      '/guides/interview-blueprint/guide-target',
+      'Guide link',
+    );
+    guideLink.setAttribute('data-trivia-link-zone', 'guides');
+    const prepLink = appendTrackedAnchor(
+      fixture.nativeElement.querySelector('.prep-bridge__links') as HTMLElement,
+      '/tracks/prep-target',
+      'Prep link',
+    );
+    prepLink.setAttribute('data-trivia-link-zone', 'prep_bridge');
+    const bodyLink = appendTrackedAnchor(
+      fixture.nativeElement.querySelector('.content') as HTMLElement,
+      '/guides/interview-blueprint/body-target',
+      'Body link',
+    );
+
+    [sidebarLink, mobileNavLink, similarLink, guideLink, prepLink, bodyLink].forEach((anchor) => {
+      dispatchTrackedClick(anchor);
+    });
+
+    const locations = trackCalls('trivia_internal_link_clicked').map(([, params]) => (params as any).location);
+    expect(locations).toEqual(['sidebar', 'mobile_nav', 'similar', 'guides', 'prep_bridge', 'body']);
+  });
+
+  it('ignores external links and same-page hash links', async () => {
+    const fixture = await createLoadedFixture();
+    analytics.track.calls.reset();
+
+    const contentHost = fixture.nativeElement.querySelector('.content') as HTMLElement;
+    const hashLink = document.createElement('a');
+    hashLink.setAttribute('href', '#answer');
+    hashLink.textContent = 'Hash link';
+    const externalLink = document.createElement('a');
+    externalLink.setAttribute('href', 'https://example.com/external');
+    externalLink.textContent = 'External link';
+    contentHost.append(hashLink, externalLink);
+
+    dispatchTrackedClick(hashLink);
+    dispatchTrackedClick(externalLink);
+
+    expect(trackCalls('trivia_internal_link_clicked').length).toBe(0);
   });
 
   it('adds interview context fields to TechArticle json-ld', async () => {
