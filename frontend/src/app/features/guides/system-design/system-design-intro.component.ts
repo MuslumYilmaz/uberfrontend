@@ -13,7 +13,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['system design','overview']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <p>
         Front-end system design interviews aren’t about trick questions or drawing 
@@ -179,4 +180,5 @@ export class SystemDesignIntroArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

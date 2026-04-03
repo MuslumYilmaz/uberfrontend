@@ -48,6 +48,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     [prev]="prev"
     [next]="next"
     [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined"
   >
     <p>
     In most interviews, you’ll get a few <strong>fundamentals questions</strong>.
@@ -229,4 +230,5 @@ export class FundamentalsCheckArticle {
     @Input() prev: any[] | null = null;
     @Input() next: any[] | null = null;
     @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

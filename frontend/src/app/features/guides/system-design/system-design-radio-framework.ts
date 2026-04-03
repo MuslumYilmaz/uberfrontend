@@ -214,7 +214,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['system design', 'radio framework', 'frontend system design']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <h2>Suggested SEO Snippets</h2>
       <ul>
@@ -673,4 +674,5 @@ export class SystemDesignRadioFrameworkArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

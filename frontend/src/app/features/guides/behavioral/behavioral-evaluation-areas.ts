@@ -15,7 +15,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['behavioral','signals','evaluation']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <p>
         Every behavioral interview is secretly scored. Interviewers aren’t just listening to your
@@ -66,4 +67,5 @@ export class BehavioralEvaluationAreasArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

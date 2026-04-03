@@ -59,4 +59,40 @@ describe('guide-seo.util', () => {
     expect(meta.description || '').toMatch(/interview roadmap/i);
     expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
   });
+
+  it('uses richer guide article metadata when provided', () => {
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      {
+        slug: 'api-design',
+        title: 'Component API Design',
+        summary: 'Learn how to design better component APIs.',
+        seo: {
+          title: 'Component API Design for Frontend Interviews',
+          description: 'Learn how to design reusable component APIs with interview-ready trade-offs.',
+          keywords: ['component api design', 'frontend interviews'],
+          publishedAt: '2025-02-10',
+          updatedAt: '2025-03-15',
+          author: {
+            type: 'Person',
+            name: 'M. Yilmaz',
+          },
+        },
+      } as any
+    );
+
+    expect(meta.keywords).toEqual(['component api design', 'frontend interviews']);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    expect(article).toBeTruthy();
+    expect(article.author).toEqual({
+      '@type': 'Person',
+      name: 'M. Yilmaz',
+    });
+    expect(article.datePublished).toBe('2025-02-10T00:00:00.000Z');
+    expect(article.dateModified).toBe('2025-03-15T00:00:00.000Z');
+  });
 });

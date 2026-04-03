@@ -5631,6 +5631,7 @@ function onInput(value) {
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined"
     >
       <p *ngIf="!isJavascriptPath">
         This <a [routerLink]="['/guides/framework-prep']">{{ config.pathLabel }}</a> is built for interview preparation,
@@ -7520,6 +7521,7 @@ function onInput(value) {
 export class FrameworkPrepPathArticle {
   @Input() prev?: any[] | null;
   @Input() next?: any[] | null;
+  @Input() readerPromise: string | null = null;
   @Input() leftNav?: {
     title?: string;
     sections: Array<{ title: string; items: Array<{ title: string; link: any[]; active?: boolean }> }>;

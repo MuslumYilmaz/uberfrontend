@@ -15,7 +15,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['behavioral','hiring','signals']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <p>
         Behavioral interviews exist to predict <strong>how you will work on this team</strong>.
@@ -150,4 +151,5 @@ export class BehavioralBigPictureArticle {
     @Input() prev: any[] | null = null;
     @Input() next: any[] | null = null;
     @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

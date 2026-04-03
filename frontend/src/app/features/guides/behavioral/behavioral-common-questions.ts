@@ -15,7 +15,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['behavioral','questions','prep']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <p>
         Behavioral interviews don’t come with surprises—you’ll see the same patterns across companies.
@@ -92,4 +93,5 @@ export class BehavioralQuestionsArticle {
     @Input() prev: any[] | null = null;
     @Input() next: any[] | null = null;
     @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

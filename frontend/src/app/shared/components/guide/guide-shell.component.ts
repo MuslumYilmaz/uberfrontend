@@ -13,6 +13,7 @@ import {
   signal,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 
 type TocItem = { id: string; text: string; level: 2 | 3 };
 type LeftNav = {
@@ -22,6 +23,10 @@ type LeftNav = {
     items: Array<{ title: string; link: any[]; active?: boolean }>;
   }>;
 };
+type RelatedGuideLink = { title: string; link: any[] };
+type GuidePathMeta = { section: string; slug: string };
+const FALLBACK_READER_PROMISE = 'This guide is part of the FrontendAtlas frontend interview preparation roadmap, focused on interview questions, practical trade-offs, and high-signal decision patterns.';
+const GUIDE_SCROLL_THRESHOLDS = [25, 50, 75, 100];
 
 @Component({
   selector: 'fa-guide-shell',
@@ -234,6 +239,57 @@ type LeftNav = {
   border:1px solid var(--uf-border-subtle);
   padding:.5px 6px; border-radius:6px;
   color: var(--uf-text-primary);
+}
+.related{
+  margin-top: 26px;
+  padding: 18px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 18px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--uf-surface-alt) 90%, var(--uf-surface)), color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt)));
+  box-shadow: var(--uf-card-shadow);
+}
+.related > *{
+  max-width: none;
+}
+.related h2{
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.related p{
+  margin: 0 0 14px;
+}
+.related-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.related-card{
+  display: block;
+  padding: 14px 15px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 20%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-surface) 82%, var(--uf-surface-alt));
+  text-decoration: none;
+}
+.related-card:hover{
+  border-color: color-mix(in srgb, var(--uf-accent) 44%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-surface) 70%, var(--uf-surface-alt));
+}
+.related-label{
+  display: inline-block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 86%, transparent);
+}
+.related-card strong{
+  display: block;
+  color: var(--uf-text-primary);
+  line-height: 1.45;
 }
 .content p code,
 .content li code,
@@ -619,7 +675,7 @@ type LeftNav = {
 
 `],
   template: `
-  <div class="wrap" [class.has-left]="leftNav">
+  <div #shellRoot class="wrap" [class.has-left]="leftNav">
     <aside class="left" *ngIf="leftNav">
       <div #leftAnchor></div>
       <div #leftPanel class="left-fixed">
@@ -629,6 +685,7 @@ type LeftNav = {
           <a *ngFor="let it of s.items"
              class="item"
              [class.active]="it.active"
+             data-guide-link-zone="left_nav"
              [routerLink]="it.link">
             <span class="dot"></span>
             <span>{{ it.title }}</span>
@@ -644,9 +701,7 @@ type LeftNav = {
         <span *ngIf="minutes as m" class="badge">{{m}} min</span>
         <span *ngFor="let t of (tags||[])" class="badge">{{t}}</span>
       </div>
-      <p class="intent-lead">
-        This guide is part of the FrontendAtlas frontend interview preparation roadmap, focused on interview questions, practical trade-offs, and high-signal decision patterns.
-      </p>
+      <p class="intent-lead">{{ readerPromise || fallbackReaderPromise }}</p>
 
       <div class="mobile-panels" *ngIf="leftNav || toc().length">
         <details class="mp" *ngIf="leftNav">
@@ -659,6 +714,7 @@ type LeftNav = {
               <div class="sec">{{ s.title }}</div>
               <a *ngFor="let it of s.items"
                  [class.active]="it.active"
+                 data-guide-link-zone="mobile_menu"
                  [routerLink]="it.link"
                  (click)="closeNearestDetails($event)">
                 <span class="dot"></span>
@@ -685,10 +741,21 @@ type LeftNav = {
 
       <div #content class="content"><ng-content></ng-content></div>
 
+      <section class="related" *ngIf="relatedLinks().length">
+        <h2>Continue Exploring</h2>
+        <p>Use these related guides to deepen the same topic and build stronger internal navigation paths across the interview roadmap.</p>
+        <div class="related-grid">
+          <a *ngFor="let item of relatedLinks()" [routerLink]="item.link" class="related-card" data-guide-link-zone="related">
+            <span class="related-label">Related guide</span>
+            <strong>{{ item.title }}</strong>
+          </a>
+        </div>
+      </section>
+
       <div class="footer-nav">
-        <a *ngIf="prev" [routerLink]="prev" class="nav-btn">← Prev</a>
+        <a *ngIf="prev" [routerLink]="prev" class="nav-btn" data-guide-link-zone="footer_nav">← Prev</a>
         <span></span>
-        <a *ngIf="next" [routerLink]="next" class="nav-btn">Next →</a>
+        <a *ngIf="next" [routerLink]="next" class="nav-btn" data-guide-link-zone="footer_nav">Next →</a>
       </div>
     </div>
 
@@ -716,7 +783,9 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   @Input() prev?: any[] | null;
   @Input() next?: any[] | null;
   @Input() leftNav?: LeftNav;
+  @Input() readerPromise?: string;
 
+  @ViewChild('shellRoot', { read: ElementRef }) shellRootRef!: ElementRef<HTMLElement>;
   @ViewChild('content', { read: ElementRef }) contentRef!: ElementRef<HTMLElement>;
   @ViewChild('leftAnchor', { read: ElementRef }) leftAnchor?: ElementRef<HTMLElement>;
   @ViewChild('rightAnchor', { read: ElementRef }) rightAnchor?: ElementRef<HTMLElement>;
@@ -735,6 +804,15 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   private mo?: MutationObserver;
   private imgListeners: Array<() => void> = [];
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  readonly fallbackReaderPromise = FALLBACK_READER_PROMISE;
+  private readonly analytics = inject(AnalyticsService, { optional: true });
+  private guidePath: GuidePathMeta | null = null;
+  private maxGuideDepthPercent = 0;
+  private trackedGuideDepths = new Set<number>();
+  private guideReadEngagedTracked = false;
+  private visibleGuideMs = 0;
+  private guideVisibleIntervalId: number | null = null;
+  private shellClickCleanup: (() => void) | null = null;
 
   constructor(private r: Renderer2) { }
 
@@ -746,16 +824,19 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
     this.enhanceTables(el);
     if (!this.isBrowser) return;
 
+    this.guidePath = this.readGuidePathMeta();
     this.buildRanges();          // compute ranges once content is laid out
     this.positionFixedPanels();
+    this.attachGuideLinkTracking();
+    this.startGuideVisibilityTimer();
 
     // Keep ranges fresh
     this.onResize = () => {
       this.positionFixedPanels();
       this.buildRanges();
-      this.recalcActiveFromScroll();
+      this.handleViewportSignals();
     };
-    this.onScroll = () => this.recalcActiveFromScroll();
+    this.onScroll = () => this.handleViewportSignals();
 
     window.addEventListener('resize', this.onResize, { passive: true });
     window.addEventListener('scroll', this.onScroll, { passive: true });
@@ -764,7 +845,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
     if (typeof MutationObserver !== 'undefined') {
       this.mo = new MutationObserver(() => {
         // schedule on next frame to allow layout to settle
-        requestAnimationFrame(() => { this.buildRanges(); this.recalcActiveFromScroll(); });
+        requestAnimationFrame(() => { this.buildRanges(); this.handleViewportSignals(); });
       });
       this.mo.observe(el, { childList: true, subtree: true, attributes: true });
     }
@@ -776,7 +857,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
       this.imgListeners.push(() => img.removeEventListener('load', handler));
     }
 
-    this.recalcActiveFromScroll(); // first paint
+    this.handleViewportSignals(); // first paint
   }
 
   ngOnDestroy(): void {
@@ -784,6 +865,11 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
       window.removeEventListener('resize', this.onResize);
       window.removeEventListener('scroll', this.onScroll);
     }
+    if (this.guideVisibleIntervalId !== null) {
+      window.clearInterval(this.guideVisibleIntervalId);
+      this.guideVisibleIntervalId = null;
+    }
+    this.shellClickCleanup?.();
     this.mo?.disconnect();
     this.imgListeners.forEach(off => off());
   }
@@ -836,10 +922,52 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
     return s.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').slice(0, 60);
   }
 
+  relatedLinks(): RelatedGuideLink[] {
+    const navItems = this.flattenNavItems();
+    const links: RelatedGuideLink[] = [];
+    const seen = new Set<string>();
+
+    const add = (item?: { title: string; link: any[]; active?: boolean } | null) => {
+      if (!item || item.active || !Array.isArray(item.link)) return;
+      const title = String(item.title || '').trim();
+      if (!title) return;
+      const key = JSON.stringify(item.link);
+      if (seen.has(key)) return;
+      seen.add(key);
+      links.push({ title, link: item.link });
+    };
+
+    const activeIndex = navItems.findIndex((item) => item.active);
+    if (activeIndex >= 0) {
+      add(navItems[activeIndex - 1]);
+      add(navItems[activeIndex + 1]);
+    }
+
+    add(navItems.find((item) => this.sameLink(item.link, this.prev)));
+    add(navItems.find((item) => this.sameLink(item.link, this.next)));
+    navItems.forEach(add);
+
+    return links.slice(0, 4);
+  }
+
+  private flattenNavItems(): Array<{ title: string; link: any[]; active?: boolean }> {
+    if (!this.leftNav?.sections?.length) return [];
+    return this.leftNav.sections.flatMap((section) => section.items || []);
+  }
+
+  private sameLink(a: any[] | null | undefined, b: any[] | null | undefined): boolean {
+    return JSON.stringify(a || null) === JSON.stringify(b || null);
+  }
+
   closeNearestDetails(ev: Event) {
     const el = ev.currentTarget as HTMLElement | null;
     const details = el?.closest?.('details') as HTMLDetailsElement | null;
     if (details) details.open = false;
+  }
+
+  private handleViewportSignals() {
+    this.recalcActiveFromScroll();
+    this.updateGuideScrollDepth();
   }
 
   smoothScroll(ev: Event, id: string) {
@@ -850,6 +978,125 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
     if (!t) return;
     const y = t.getBoundingClientRect().top + window.scrollY - (this.headerOffset() - 2);
     window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+
+  private readGuidePathMeta(): GuidePathMeta | null {
+    if (!this.isBrowser) return null;
+    const match = window.location.pathname.match(/^\/guides\/([^/]+)\/([^/?#]+)\/?$/);
+    if (!match) return null;
+    return { section: match[1], slug: match[2] };
+  }
+
+  private guideAnalyticsContext() {
+    if (!this.isBrowser || !this.analytics || !this.guidePath) return null;
+    return {
+      guide_section: this.guidePath.section,
+      guide_slug: this.guidePath.slug,
+      guide_title: this.title,
+    };
+  }
+
+  private startGuideVisibilityTimer() {
+    if (!this.guideAnalyticsContext() || this.guideVisibleIntervalId !== null) return;
+    this.guideVisibleIntervalId = window.setInterval(() => {
+      if (document.hidden) return;
+      this.visibleGuideMs += 1000;
+      this.maybeTrackGuideReadEngaged();
+    }, 1000);
+  }
+
+  private updateGuideScrollDepth() {
+    const context = this.guideAnalyticsContext();
+    if (!context) return;
+
+    const depthPercent = this.computeGuideScrollDepth();
+    if (depthPercent > this.maxGuideDepthPercent) {
+      this.maxGuideDepthPercent = depthPercent;
+      GUIDE_SCROLL_THRESHOLDS.forEach((threshold) => {
+        if (depthPercent < threshold || this.trackedGuideDepths.has(threshold)) return;
+        this.trackedGuideDepths.add(threshold);
+        this.analytics?.track('guide_scroll_depth', {
+          ...context,
+          depth_percent: threshold,
+        });
+      });
+    }
+
+    this.maybeTrackGuideReadEngaged();
+  }
+
+  private computeGuideScrollDepth(): number {
+    if (!this.isBrowser || !this.contentRef?.nativeElement) return 0;
+    const contentEl = this.contentRef.nativeElement;
+    const rect = contentEl.getBoundingClientRect();
+    const contentHeight = Math.max(contentEl.scrollHeight, contentEl.offsetHeight, Math.round(rect.height), 1);
+    const contentTop = window.scrollY + rect.top;
+    const viewportBottom = window.scrollY + window.innerHeight;
+    const reached = Math.min(contentHeight, Math.max(0, viewportBottom - contentTop));
+    return Math.max(0, Math.min(100, Math.round((reached / contentHeight) * 100)));
+  }
+
+  private maybeTrackGuideReadEngaged() {
+    if (this.guideReadEngagedTracked) return;
+    const context = this.guideAnalyticsContext();
+    if (!context) return;
+    if (this.maxGuideDepthPercent < 50) return;
+    if (this.visibleGuideMs < 45_000) return;
+
+    this.guideReadEngagedTracked = true;
+    this.analytics?.track('guide_read_engaged', {
+      ...context,
+      seconds_visible: Math.floor(this.visibleGuideMs / 1000),
+      max_depth_percent: this.maxGuideDepthPercent,
+    });
+  }
+
+  private attachGuideLinkTracking() {
+    const context = this.guideAnalyticsContext();
+    if (!context || !this.shellRootRef?.nativeElement) return;
+
+    this.shellClickCleanup = this.r.listen(this.shellRootRef.nativeElement, 'click', (event: Event) => {
+      const target = event.target as Element | null;
+      const anchor = target?.closest?.('a') as HTMLAnchorElement | null;
+      if (!anchor) return;
+
+      const targetPath = this.normalizeTrackedInternalPath(anchor);
+      if (!targetPath) return;
+
+      const location = this.classifyGuideLinkLocation(anchor);
+      if (!location) return;
+
+      this.analytics?.track('guide_internal_link_clicked', {
+        ...context,
+        location,
+        target_path: targetPath,
+      });
+    });
+  }
+
+  private normalizeTrackedInternalPath(anchor: HTMLAnchorElement): string | null {
+    if (!this.isBrowser) return null;
+    const rawHref = String(anchor.getAttribute('href') || anchor.href || '').trim();
+    if (!rawHref || rawHref.startsWith('#')) return null;
+
+    try {
+      const url = new URL(rawHref, window.location.origin);
+      if (url.origin !== window.location.origin) return null;
+      const targetPath = `${url.pathname}${url.search}${url.hash}`;
+      const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      if (url.pathname === window.location.pathname && url.hash) return null;
+      if (targetPath === currentPath) return null;
+      return targetPath;
+    } catch {
+      return null;
+    }
+  }
+
+  private classifyGuideLinkLocation(anchor: HTMLAnchorElement): string | null {
+    const explicitZone = anchor.getAttribute('data-guide-link-zone');
+    if (explicitZone) return explicitZone;
+    if (anchor.closest('.content')) return 'body';
+    return null;
   }
 
   /** Range-based selection — no “near-bottom” hacks, so it won’t skip on direction changes. */

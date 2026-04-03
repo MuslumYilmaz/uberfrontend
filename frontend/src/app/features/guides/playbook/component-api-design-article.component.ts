@@ -53,6 +53,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     [prev]="prev"
     [next]="next"
     [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined"
   >
     <p>
       In UI interviews, you’re often asked to build <em>reusable components</em> like a
@@ -202,4 +203,5 @@ export class ComponentApiDesignArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

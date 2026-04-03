@@ -1,6 +1,27 @@
 // shared/guides/guide.registry.ts
 import { Type } from '@angular/core';
 
+export type GuideAuthor = {
+    type: 'Organization' | 'Person';
+    name: string;
+};
+
+export type GuideSeo = {
+    title?: string;
+    description?: string;
+    primaryKeyword?: string;
+    keywords?: string[];
+    publishedAt?: string;
+    updatedAt?: string;
+    author?: GuideAuthor;
+    draftSource?: string;
+    searchIntent?: string;
+    readerPromise?: string;
+    uniqueAngle?: string;
+    factCheckedAt?: string;
+    reviewedBy?: string;
+};
+
 /** A single article entry */
 export type GuideEntry = {
     slug: string;
@@ -8,10 +29,7 @@ export type GuideEntry = {
     load: () => Promise<Type<any>>;
     minutes?: number;
     summary?: string;
-    seo?: {
-        title?: string;
-        description?: string;
-    };
+    seo?: GuideSeo;
 };
 
 export type GuideGroup = {
@@ -56,6 +74,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Frontend Interview Preparation Guide: Process, Rounds, and Plan',
             description: 'Understand each interview stage, what frontend hiring teams evaluate, and how to build a realistic prep plan that leads to stronger interview performance.',
+            primaryKeyword: 'frontend interview preparation guide',
+            keywords: ['frontend interview preparation guide', 'frontend interview process', 'frontend interview rounds'],
+            publishedAt: '2025-08-30',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/fe-intro-article.component')
@@ -69,6 +91,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Frontend Coding Interviews: Solve Prompts Under Pressure',
             description: 'A practical framework to turn ambiguous prompts into working solutions fast, avoid common coding-round mistakes, and communicate clearly under time limits.',
+            primaryKeyword: 'frontend coding interviews',
+            keywords: ['frontend coding interviews', 'frontend coding interview tips', 'frontend coding rounds'],
+            publishedAt: '2025-08-30',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/fe-coding-article.component')
@@ -82,6 +108,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'JavaScript Interview Patterns and Answers',
             description: 'Practice high-frequency JavaScript interview problems, apply fast solution patterns, and explain trade-offs clearly with examples that mirror real rounds.',
+            primaryKeyword: 'javascript interview patterns',
+            keywords: ['javascript interview patterns', 'javascript interview questions', 'javascript interview answers'],
+            publishedAt: '2025-09-27',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/js-problems-article.component')
@@ -95,6 +125,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'DSA for Frontend Interviews: Just Enough to Pass Coding Rounds',
             description: 'Learn the exact arrays/maps/queues patterns frontend interviews test and what problems you should solve confidently after this guide.',
+            primaryKeyword: 'dsa for frontend interviews',
+            keywords: ['dsa for frontend interviews', 'frontend dsa interview prep', 'javascript data structures interview'],
+            publishedAt: '2025-09-27',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/fe-dsa-article.component')
@@ -108,6 +142,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Frontend UI Interviews: Build Accessible Components Under Time',
             description: 'Learn exactly what to build first, how to add accessibility and polish, and how to finish UI interview prompts with a complete, explainable result.',
+            primaryKeyword: 'frontend ui interviews',
+            keywords: ['frontend ui interviews', 'frontend ui interview prep', 'frontend component interview'],
+            publishedAt: '2025-09-27',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/fe-ui-in-60.component')
@@ -121,6 +159,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Component API Design for Frontend Interviews: Props, Events, Trade-offs',
             description: 'Interview-focused patterns for designing reusable components with clear APIs, accessibility, and scalable composition decisions.',
+            primaryKeyword: 'component api design for frontend interviews',
+            keywords: ['component api design for frontend interviews', 'frontend component api design', 'props events tradeoffs'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/component-api-design-article.component')
@@ -134,6 +176,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'JavaScript Prep Path: Async, Closures, State',
             description: 'Follow a JavaScript prep path covering async flow, closures, stale state, race conditions, and cleanup drills so your interview answers stay reliable.',
+            primaryKeyword: 'javascript prep path',
+            keywords: ['javascript prep path', 'javascript interview study plan', 'javascript async closures state'],
+            publishedAt: '2026-02-12',
+            updatedAt: '2026-03-30',
         },
         load: () =>
             import('../../features/guides/playbook/framework-prep-path-article.component')
@@ -147,6 +193,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'React Prep Path: State, Effects, Performance',
             description: 'Use this React prep path to practice hooks, rerender reasoning, stale-state fixes, and performance trade-offs through targeted coding and trivia drills.',
+            primaryKeyword: 'react prep path',
+            keywords: ['react prep path', 'react interview study plan', 'react state effects performance'],
+            publishedAt: '2026-02-12',
+            updatedAt: '2026-03-30',
         },
         load: () =>
             import('../../features/guides/playbook/framework-prep-path-article.component')
@@ -160,6 +210,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Angular Prep Path: RxJS, Architecture, Tests',
             description: 'Practice Angular interview decisions on RxJS flows, change detection, DI boundaries, and testing strategy with a step-by-step prep sequence.',
+            primaryKeyword: 'angular prep path',
+            keywords: ['angular prep path', 'angular interview study plan', 'angular rxjs architecture tests'],
+            publishedAt: '2026-02-12',
+            updatedAt: '2026-03-30',
         },
         load: () =>
             import('../../features/guides/playbook/framework-prep-path-article.component')
@@ -173,6 +227,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Vue Prep Path: Reactivity, Rendering, State',
             description: 'Build Vue interview confidence with a focused path on reactivity traps, nextTick timing, component communication, and practical coding/trivia drills.',
+            primaryKeyword: 'vue prep path',
+            keywords: ['vue prep path', 'vue interview study plan', 'vue reactivity rendering state'],
+            publishedAt: '2026-02-12',
+            updatedAt: '2026-03-30',
         },
         load: () =>
             import('../../features/guides/playbook/framework-prep-path-article.component')
@@ -186,6 +244,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Frontend System Design Interviews: A Fast Answer Framework',
             description: 'Use a step-by-step framework to answer frontend system design questions, cover trade-offs clearly, and avoid common interview anti-patterns.',
+            primaryKeyword: 'frontend system design interviews',
+            keywords: ['frontend system design interviews', 'frontend system design framework', 'frontend architecture interview'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/fe-system-design-fast-framework-article.component')
@@ -199,6 +261,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Frontend Interview Fundamentals Quiz: Browser, CSS, JavaScript, HTTP',
             description: 'Use this quick fundamentals check to find weak spots before interviews and practice concise, high-signal answers hiring teams expect.',
+            primaryKeyword: 'frontend interview fundamentals quiz',
+            keywords: ['frontend interview fundamentals quiz', 'frontend fundamentals check', 'browser css javascript http quiz'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/fundamentals-check-article.component')
@@ -212,6 +278,10 @@ export const PLAYBOOK: GuideEntry[] = [
         seo: {
             title: 'Frontend Resume for Interviews: What Gets Calls and What Gets Rejected',
             description: 'A practical frontend resume blueprint with impact-focused bullets, section-by-section rules, and common mistakes to remove before applying.',
+            primaryKeyword: 'frontend resume for interviews',
+            keywords: ['frontend resume for interviews', 'frontend resume guide', 'frontend resume tips'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/playbook/resume-article.component')
@@ -258,6 +328,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'Front-End System Design: What It Really Tests',
             description: 'How FE system design differs from backend, what interviewers evaluate, and how to approach these rounds.',
+            primaryKeyword: 'front-end system design',
+            keywords: ['front-end system design', 'frontend system design overview', 'what frontend system design tests'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-intro.component')
@@ -271,6 +345,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'Frontend System Design Interview Foundations: Scope and Trade-offs',
             description: 'Clarify requirements fast, define constraints, and prioritize trade-offs before architecture so your frontend system design interview answers stay structured.',
+            primaryKeyword: 'frontend system design interview foundations',
+            keywords: ['frontend system design interview foundations', 'system design scope constraints tradeoffs', 'frontend requirements and tradeoffs'],
+            publishedAt: '2025-08-31',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-foundations')
@@ -284,6 +362,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'Frontend System Design Interview Framework: A Reusable 5-Step Method',
             description: 'Use a repeatable 5-step interview framework to answer frontend system design prompts clearly, cover trade-offs, and avoid rambling under time pressure.',
+            primaryKeyword: 'frontend system design interview framework',
+            keywords: ['frontend system design interview framework', 'frontend system design 5 step method', 'system design answer framework'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-framework')
@@ -297,6 +379,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'RADIO Framework for Frontend System Design Interviews',
             description: 'Use the RADIO framework to ace frontend system design interviews with reusable artifacts, timelines, and scripts for focused preparation.',
+            primaryKeyword: 'radio framework for frontend system design interviews',
+            keywords: ['radio framework for frontend system design interviews', 'radio framework frontend', 'frontend system design radio method'],
+            publishedAt: '2026-02-18',
+            updatedAt: '2026-02-23',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
@@ -310,6 +396,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'R - Requirements Deep Dive for Frontend System Design Interviews',
             description: 'Master requirements in frontend system design interviews with a repeatable script, scope box, metrics, and edge-case checklist before architecture.',
+            primaryKeyword: 'requirements deep dive for frontend system design interviews',
+            keywords: ['requirements deep dive for frontend system design interviews', 'frontend system design requirements', 'radio requirements frontend'],
+            publishedAt: '2026-02-18',
+            updatedAt: '2026-02-23',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-requirements')
@@ -323,6 +413,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'Frontend System Design Architecture Guide',
             description: 'Use this interview guide to structure frontend system design architecture decisions, from rendering boundaries and caching to clear trade-off framing.',
+            primaryKeyword: 'frontend system design architecture guide',
+            keywords: ['frontend system design architecture guide', 'frontend architecture interview guide', 'rendering caching boundaries'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2026-03-06',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-architecture')
@@ -336,6 +430,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'D - Data Model Deep Dive for Frontend System Design Interviews',
             description: 'Master data modeling in a frontend system design interview with entity contracts, UI-state matrix, cache invalidation rules, and mutation rollback patterns.',
+            primaryKeyword: 'data model deep dive for frontend system design interviews',
+            keywords: ['data model deep dive for frontend system design interviews', 'frontend state and data model', 'cache invalidation interview'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2026-02-23',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-state')
@@ -349,6 +447,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'I - Interface Deep Dive for Frontend System Design Interviews',
             description: 'Master interface design in a frontend system design interview with component boundaries, UI-state mapping, accessibility contracts, and interaction scripts.',
+            primaryKeyword: 'interface deep dive for frontend system design interviews',
+            keywords: ['interface deep dive for frontend system design interviews', 'frontend system design interface guide', 'a11y interaction states'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2026-02-23',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-ux')
@@ -362,6 +464,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'O - Optimizations Deep Dive for Frontend System Design Interviews',
             description: 'Master optimization strategy in a frontend system design interview with performance budgets, bottleneck prioritization, trade-offs, and rollout validation.',
+            primaryKeyword: 'optimizations deep dive for frontend system design interviews',
+            keywords: ['optimizations deep dive for frontend system design interviews', 'frontend system design performance', 'performance budgets interview'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2026-02-23',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-performance')
@@ -375,6 +481,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'Frontend System Design Interview Signals: What Interviewers Actually Score',
             description: 'Learn the exact interview signals hiring teams evaluate: clarity, prioritization, trade-off reasoning, and communication quality in system design rounds.',
+            primaryKeyword: 'frontend system design interview signals',
+            keywords: ['frontend system design interview signals', 'what interviewers score in system design', 'system design evaluation criteria'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-evaluation')
@@ -388,6 +498,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'Frontend System Design Interview Pitfalls and How to Avoid Them',
             description: 'Avoid common interview mistakes like over-design, vague assumptions, and missing trade-offs, with practical fixes you can apply during real rounds.',
+            primaryKeyword: 'frontend system design interview pitfalls',
+            keywords: ['frontend system design interview pitfalls', 'system design anti patterns', 'system design mistakes to avoid'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-pitfalls')
@@ -401,6 +515,10 @@ export const SYSTEM: GuideEntry[] = [
         seo: {
             title: 'Frontend System Design Interview Checklist: One-Page Final Review',
             description: 'Use this one-page interview checklist before system design rounds to verify requirements, architecture, trade-offs, risks, and communication flow.',
+            primaryKeyword: 'frontend system design interview checklist',
+            keywords: ['frontend system design interview checklist', 'system design final review checklist', 'system design prep checklist'],
+            publishedAt: '2025-09-28',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-checklist')
@@ -426,6 +544,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'Behavioral Interviews: What Great Answers Look Like',
             description: 'Signals interviewers care about and how to prepare high-signal stories.',
+            primaryKeyword: 'behavioral interviews',
+            keywords: ['behavioral interviews', 'behavioral interview overview', 'what great behavioral answers look like'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-intro')
@@ -439,6 +561,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'Behavioral Interview Big Picture: How It Impacts Screening and Onsite',
             description: 'Understand where behavioral rounds affect screening and onsite decisions, and how to frame answers around the exact signals hiring teams score.',
+            primaryKeyword: 'behavioral interview big picture',
+            keywords: ['behavioral interview big picture', 'behavioral screening and onsite', 'behavioral interview process'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-big-picture')
@@ -452,6 +578,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'Behavioral Interview Scorecard: The Areas Hiring Teams Evaluate',
             description: 'Use this interview scorecard to map stories to communication, collaboration, ownership, leadership, and growth signals that drive hiring decisions.',
+            primaryKeyword: 'behavioral interview scorecard',
+            keywords: ['behavioral interview scorecard', 'behavioral evaluation areas', 'behavioral interview competencies'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-evaluation-areas')
@@ -465,6 +595,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'Behavioral Interview Prep Plan: Fast, Structured, and Effective',
             description: 'Build an interview prep routine with a reusable story bank, competency mapping, and practice loops so answers stay concise and high-signal.',
+            primaryKeyword: 'behavioral interview prep plan',
+            keywords: ['behavioral interview prep plan', 'behavioral interview preparation', 'behavioral story bank'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-prep')
@@ -478,6 +612,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'STAR Stories for Behavioral Interviews: A Practical Answer Framework',
             description: 'Learn a practical interview framework to craft STAR stories that are concise, credible, and memorable across common behavioral prompts.',
+            primaryKeyword: 'star stories for behavioral interviews',
+            keywords: ['star stories for behavioral interviews', 'behavioral story framework', 'how to craft star stories'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2025-12-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-stories')
@@ -491,6 +629,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'Behavioral Interview Questions: How to Answer Common Prompts',
             description: 'Use clear frameworks and sample answer structures for top behavioral interview questions like conflict, failure, leadership, and “tell me about yourself.”',
+            primaryKeyword: 'behavioral interview questions',
+            keywords: ['behavioral interview questions', 'common behavioral prompts', 'behavioral interview answers'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-common-questions')
@@ -504,6 +646,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'Frontend Behavioral Interview Scenarios: How to Answer Technical Prompts',
             description: 'Answer frontend-specific behavioral prompts on trade-offs, accessibility, performance, and cross-team collaboration with structured, interview-ready examples.',
+            primaryKeyword: 'frontend behavioral interview scenarios',
+            keywords: ['frontend behavioral interview scenarios', 'technical behavioral interview examples', 'frontend collaboration tradeoffs stories'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-fe-advanced')
@@ -517,6 +663,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'Behavioral Interview Tips: Common Mistakes and Better Answers',
             description: 'Fix the delivery mistakes that weaken behavioral interviews: rambling, vague answers, weak impact, and poor remote interview habits.',
+            primaryKeyword: 'behavioral interview tips',
+            keywords: ['behavioral interview tips', 'behavioral interview mistakes', 'better behavioral answers'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-practical-tips')
@@ -530,6 +680,10 @@ export const BEHAVIORAL: GuideEntry[] = [
         seo: {
             title: 'Behavioral Interview Checklist: Last-Minute Prep Before the Call',
             description: 'A fast pre-interview checklist for behavioral rounds: story bank, company research, questions to ask, and final delivery checks.',
+            primaryKeyword: 'behavioral interview checklist',
+            keywords: ['behavioral interview checklist', 'last minute behavioral interview prep', 'behavioral interview review'],
+            publishedAt: '2025-10-01',
+            updatedAt: '2026-02-09',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-checklist')
