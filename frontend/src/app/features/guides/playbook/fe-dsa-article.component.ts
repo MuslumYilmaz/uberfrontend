@@ -66,6 +66,12 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       Treat this as a <strong>minimum toolkit</strong>. Know these patterns well, and you’ll be ready
       for 90% of coding rounds without grinding endless puzzles.
     </p>
+    <p>
+      <strong>Worked example:</strong> if an interview prompt asks for search suggestions with recent-history pills,
+      the real test is usually not fancy graph theory. It is whether you can use arrays for ordering, a
+      <code>Map</code> for fast lookup, and a small queue or history stack without reaching for an over-engineered
+      anti-pattern.
+    </p>
 
     <!-- Section 1 -->
     <h2>What to actually know</h2>

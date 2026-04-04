@@ -88,6 +88,10 @@ export class TestGuideArticle {
 `;
 }
 
+function guideWrapper(targetImport = './guide-one') {
+  return `export { TestGuideArticle } from '${targetImport}';\n`;
+}
+
 function runLinter(tempRoot) {
   return spawnSync('node', [LINTER_PATH], {
     cwd: path.join(repoRoot, 'frontend'),
@@ -231,6 +235,28 @@ function setupSingleGuide(componentSource, entryOverrides = {}) {
   );
   const output = expectSuccess(tempRoot);
   assert.match(output, /has not been updated in/);
+}
+
+{
+  const tempRoot = makeTempRoot();
+  writeFile(tempRoot, 'src/app/shared/guides/guide.registry.ts', guideRegistry(guideEntry({
+    importPath: '../../features/guides/playbook/guide-wrapper',
+  })));
+  writeFile(tempRoot, 'src/app/features/guides/playbook/guide-one.ts', guideComponent({
+    body: `
+      <h2>Concept</h2>
+      <p>${'This section explains the model with interview framing, user impact, concrete constraints, and the way a candidate should communicate the answer. '.repeat(30)}</p>
+      <h2>Decision points</h2>
+      <p>${'Trade-offs matter because the first answer is rarely the final answer in production, and the article should show how those trade-offs move under pressure. '.repeat(24)}</p>
+      <h2>Worked example</h2>
+      <blockquote>Example: choose the simpler version first, then extend after measuring risk.</blockquote>
+      <h2>Next moves</h2>
+      <p><a routerLink="/guides/interview-blueprint/next">Next guide</a></p>
+    `,
+  }));
+  writeFile(tempRoot, 'src/app/features/guides/playbook/guide-wrapper.ts', guideWrapper('./guide-one'));
+  const output = expectSuccess(tempRoot);
+  assert.match(output, /editorial quality checks passed/);
 }
 
 console.log('[lint-guide-editorial-quality.test] ok');

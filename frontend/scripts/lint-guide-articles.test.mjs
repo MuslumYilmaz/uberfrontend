@@ -127,6 +127,10 @@ function writeShell(root) {
   );
 }
 
+function guideWrapper(targetImport = './guide-one') {
+  return `export { TestGuideArticle } from '${targetImport}';\n`;
+}
+
 function draftFrontmatter(overrides = {}) {
   const values = {
     title: 'Guide One',
@@ -384,6 +388,32 @@ function testShallowHistorySkipsGitDateFloorChecks() {
   assert.match(output, /guide articles look valid/);
 }
 
+function testReExportWrapperResolvesUnderlyingGuideTemplate() {
+  const tempRoot = makeTempRoot();
+  const tempDrafts = path.join(tempRoot, 'content-drafts');
+  writeShell(tempRoot);
+  writeFile(tempRoot, 'src/app/features/guides/playbook/guide-one.ts', guideComponent());
+  writeFile(tempRoot, 'src/app/features/guides/playbook/guide-wrapper.ts', guideWrapper('./guide-one'));
+  writeFile(
+    tempRoot,
+    'src/app/shared/guides/guide.registry.ts',
+    guideRegistry(
+      guideEntry({
+        slug: 'guide-one',
+        title: 'Guide One',
+        primaryKeyword: 'guide one keyword',
+        keywords: ['guide one keyword', 'guide one supporting phrase'],
+        importPath: '../../features/guides/playbook/guide-wrapper',
+      }),
+    ),
+  );
+
+  const output = runLinter(tempRoot, tempDrafts, {
+    GUIDE_ARTICLES_SKIP_GIT_HISTORY_CHECKS: '1',
+  });
+  assert.match(output, /guide articles look valid/);
+}
+
 testValidGuideRegistryPasses();
 testDuplicatePrimaryKeywordFails();
 testDraftParityFailsWhenShippedArticleIsTooThin();
@@ -393,5 +423,6 @@ testDraftBackedGuideFailsOnMismatchedUniqueAngle();
 testDraftBackedGuideFailsWhenFactCheckedAtIsOlderThanDraft();
 testDraftBackedGuideRequiresReaderPromiseBinding();
 testShallowHistorySkipsGitDateFloorChecks();
+testReExportWrapperResolvesUnderlyingGuideTemplate();
 
 console.log('[lint-guide-articles.test] ok');

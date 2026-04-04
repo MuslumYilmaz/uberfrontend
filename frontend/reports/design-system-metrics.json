@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-04T07:43:42.220Z",
+  "generatedAt": "2026-04-04T07:47:34.744Z",
   "scope": {
     "src": "src",
     "features": "src/app/features",
@@ -19,6 +19,5 @@
     "rawColorLiteralFiles": 35,
     "inlineComponentStylesHits": 43,
     "inlineComponentStyleFiles": 43
-  },
-  "notes": "Baseline refreshed on 2026-04-04 after enabling enforced design-system budgets. Future increases should fail check:design-budget until the baseline is intentionally updated."
+  }
 }

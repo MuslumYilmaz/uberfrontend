@@ -216,6 +216,39 @@ function extractComponentTemplate(filePath) {
   return template;
 }
 
+function resolveGuideImplementationPath(filePath, seen = new Set()) {
+  const absolutePath = path.resolve(filePath);
+  if (!fs.existsSync(absolutePath)) return absolutePath;
+  if (seen.has(absolutePath)) return absolutePath;
+  seen.add(absolutePath);
+
+  const source = fs.readFileSync(absolutePath, 'utf8');
+  if (source.includes('@Component(')) return absolutePath;
+
+  const sourceFile = ts.createSourceFile(
+    absolutePath,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+
+  const reExport = sourceFile.statements.find(
+    (statement) =>
+      ts.isExportDeclaration(statement)
+      && statement.moduleSpecifier
+      && ts.isStringLiteral(statement.moduleSpecifier),
+  );
+
+  if (!reExport || !ts.isStringLiteral(reExport.moduleSpecifier)) {
+    return absolutePath;
+  }
+
+  const targetPath = path.resolve(path.dirname(absolutePath), `${reExport.moduleSpecifier.text}.ts`);
+  if (!fs.existsSync(targetPath)) return absolutePath;
+  return resolveGuideImplementationPath(targetPath, seen);
+}
+
 function countInternalLinks(template) {
   return (
     template.match(/\[routerLink\]|routerLink=|href=["']\/(?!\/)/g)?.length || 0
@@ -453,17 +486,19 @@ function main() {
       addError(`${id} seo.keywords must include seo.primaryKeyword`);
     }
 
+    const inspectionPath = resolveGuideImplementationPath(entry.componentPath);
+
     if (hasFullGitHistory) {
-      const gitDates = readGitDateRange(entry.componentPath);
+      const gitDates = readGitDateRange(inspectionPath);
       if (publishedAt && gitDates.first && publishedAt < gitDates.first) {
-        addError(`${id} seo.publishedAt (${publishedAt}) is earlier than the first git commit for ${relFromRepo(entry.componentPath)} (${gitDates.first})`);
+        addError(`${id} seo.publishedAt (${publishedAt}) is earlier than the first git commit for ${relFromRepo(inspectionPath)} (${gitDates.first})`);
       }
       if (updatedAt && gitDates.last && updatedAt < gitDates.last) {
-        addWarning(`${id} seo.updatedAt (${updatedAt}) is older than the latest git commit for ${relFromRepo(entry.componentPath)} (${gitDates.last})`);
+        addWarning(`${id} seo.updatedAt (${updatedAt}) is older than the latest git commit for ${relFromRepo(inspectionPath)} (${gitDates.last})`);
       }
     }
 
-    const template = extractComponentTemplate(entry.componentPath);
+    const template = extractComponentTemplate(inspectionPath);
     const usesGuideShell = /<fa-guide-shell\b/.test(template);
     const bindsPrev = /\[prev\]\s*=\s*"prev"/.test(template);
     const bindsNext = /\[next\]\s*=\s*"next"/.test(template);

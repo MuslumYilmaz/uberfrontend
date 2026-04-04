@@ -1,0 +1,33 @@
+{
+  "servers": {
+    "textlint": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "textlint",
+        "--mcp",
+        "--config",
+        "frontend/.textlintrc.json",
+        "--ignore-path",
+        "frontend/.textlintignore"
+      ]
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp",
+        "--headless",
+        "--isolated",
+        "--browser",
+        "chrome",
+        "--test-id-attribute",
+        "data-testid",
+        "--viewport-size",
+        "1440x1024",
+        "--output-dir",
+        "frontend/.playwright-mcp"
+      ]
+    }
+  }
+}

@@ -168,6 +168,14 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       likely to face, what each one is really testing, and how to prep in a way that
       builds confidence instead of burnout.
     </p>
+    <p>
+      <strong>Worked example:</strong> imagine a 4-round loop where you first solve a
+      JavaScript utility, then build a modal with keyboard support, then explain a
+      dashboard architecture, and finally walk through a conflict story. The company
+      is not secretly testing four unrelated skills. It is checking whether you can
+      ship under pressure, debug UI details, reason about trade-offs, and explain your
+      decisions like a teammate people would trust in production.
+    </p>
 
     <!-- Section 1 -->
     <h2>The big picture</h2>

@@ -77,7 +77,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'frontend interview preparation guide',
             keywords: ['frontend interview preparation guide', 'frontend interview process', 'frontend interview rounds'],
             publishedAt: '2025-08-30',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/fe-intro-article.component')
@@ -94,7 +94,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'frontend coding interviews',
             keywords: ['frontend coding interviews', 'frontend coding interview tips', 'frontend coding rounds'],
             publishedAt: '2025-08-30',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/fe-coding-article.component')
@@ -121,14 +121,14 @@ export const PLAYBOOK: GuideEntry[] = [
         slug: 'dsa-for-fe',
         title: 'DSA for Frontend Interviews: Just Enough to Pass Coding Rounds',
         minutes: 18,
-        summary: 'Learn the exact arrays/maps/queues patterns frontend interviews test and what problems you should solve confidently after this guide.',
+        summary: 'A minimum frontend interview toolkit with worked examples, prep anti-patterns, and the arrays/maps/queues patterns interviewers actually test.',
         seo: {
-            title: 'DSA for Frontend Interviews: Just Enough to Pass Coding Rounds',
-            description: 'Learn the exact arrays/maps/queues patterns frontend interviews test and what problems you should solve confidently after this guide.',
+            title: 'Frontend Interview DSA: The Minimum Toolkit and Prep Anti-Patterns',
+            description: 'A minimum frontend interview toolkit with worked examples, prep anti-patterns, and the arrays/maps/queues patterns interviewers actually test.',
             primaryKeyword: 'dsa for frontend interviews',
             keywords: ['dsa for frontend interviews', 'frontend dsa interview prep', 'javascript data structures interview'],
             publishedAt: '2025-09-27',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/fe-dsa-article.component')
@@ -179,11 +179,11 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'javascript prep path',
             keywords: ['javascript prep path', 'javascript interview study plan', 'javascript async closures state'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-03-30',
+            updatedAt: '2026-04-04',
         },
         load: () =>
-            import('../../features/guides/playbook/framework-prep-path-article.component')
-                .then(m => m.FrameworkPrepPathArticle),
+            import('../../features/guides/playbook/javascript-prep-path-article.component')
+                .then(m => m.JavascriptPrepPathArticle),
     },
     {
         slug: 'react-prep-path',
@@ -196,11 +196,11 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'react prep path',
             keywords: ['react prep path', 'react interview study plan', 'react state effects performance'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-03-30',
+            updatedAt: '2026-04-04',
         },
         load: () =>
-            import('../../features/guides/playbook/framework-prep-path-article.component')
-                .then(m => m.FrameworkPrepPathArticle),
+            import('../../features/guides/playbook/react-prep-path-article.component')
+                .then(m => m.ReactPrepPathArticle),
     },
     {
         slug: 'angular-prep-path',
@@ -213,11 +213,11 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'angular prep path',
             keywords: ['angular prep path', 'angular interview study plan', 'angular rxjs architecture tests'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-03-30',
+            updatedAt: '2026-04-04',
         },
         load: () =>
-            import('../../features/guides/playbook/framework-prep-path-article.component')
-                .then(m => m.FrameworkPrepPathArticle),
+            import('../../features/guides/playbook/angular-prep-path-article.component')
+                .then(m => m.AngularPrepPathArticle),
     },
     {
         slug: 'vue-prep-path',
@@ -230,11 +230,11 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'vue prep path',
             keywords: ['vue prep path', 'vue interview study plan', 'vue reactivity rendering state'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-03-30',
+            updatedAt: '2026-04-04',
         },
         load: () =>
-            import('../../features/guides/playbook/framework-prep-path-article.component')
-                .then(m => m.FrameworkPrepPathArticle),
+            import('../../features/guides/playbook/vue-prep-path-article.component')
+                .then(m => m.VuePrepPathArticle),
     },
     {
         slug: 'system-design',
@@ -247,7 +247,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'frontend system design interviews',
             keywords: ['frontend system design interviews', 'frontend system design framework', 'frontend architecture interview'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/fe-system-design-fast-framework-article.component')
@@ -274,14 +274,14 @@ export const PLAYBOOK: GuideEntry[] = [
         slug: 'resume',
         title: 'Frontend Resume for Interviews: What Gets Calls and What Gets Rejected',
         minutes: 12,
-        summary: 'A practical frontend resume blueprint with impact-focused bullets, section-by-section rules, and common mistakes to remove before applying.',
+        summary: 'A frontend resume interview checklist covering recruiter skim patterns, rejection triggers, and the anti-patterns that cost callbacks.',
         seo: {
-            title: 'Frontend Resume for Interviews: What Gets Calls and What Gets Rejected',
-            description: 'A practical frontend resume blueprint with impact-focused bullets, section-by-section rules, and common mistakes to remove before applying.',
+            title: 'Frontend Resume Interview Checklist: What Gets Calls and What Gets Rejected',
+            description: 'A frontend resume interview checklist covering recruiter skim patterns, rejection triggers, and the anti-patterns that cost callbacks.',
             primaryKeyword: 'frontend resume for interviews',
             keywords: ['frontend resume for interviews', 'frontend resume guide', 'frontend resume tips'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/resume-article.component')
@@ -324,14 +324,14 @@ export const SYSTEM: GuideEntry[] = [
         slug: 'intro',
         title: 'Front-End System Design: What It Really Tests',
         minutes: 8,
-        summary: 'How FE system design differs from backend, what interviewers evaluate, and how to approach these rounds.',
+        summary: 'Learn what a front-end system design interview really scores, the senior trade-offs backend-heavy guides miss, and how to structure answers under pressure.',
         seo: {
-            title: 'Front-End System Design: What It Really Tests',
-            description: 'How FE system design differs from backend, what interviewers evaluate, and how to approach these rounds.',
+            title: 'Front-End System Design Interview: What It Really Tests',
+            description: 'Learn what a front-end system design interview really scores, the senior trade-offs backend-heavy guides miss, and how to structure answers under pressure.',
             primaryKeyword: 'front-end system design',
             keywords: ['front-end system design', 'frontend system design overview', 'what frontend system design tests'],
             publishedAt: '2025-09-28',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-intro.component')
@@ -348,7 +348,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'frontend system design interview foundations',
             keywords: ['frontend system design interview foundations', 'system design scope constraints tradeoffs', 'frontend requirements and tradeoffs'],
             publishedAt: '2025-08-31',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-foundations')
@@ -365,7 +365,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'frontend system design interview framework',
             keywords: ['frontend system design interview framework', 'frontend system design 5 step method', 'system design answer framework'],
             publishedAt: '2025-09-28',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-framework')
@@ -382,7 +382,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'radio framework for frontend system design interviews',
             keywords: ['radio framework for frontend system design interviews', 'radio framework frontend', 'frontend system design radio method'],
             publishedAt: '2026-02-18',
-            updatedAt: '2026-02-23',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
@@ -467,7 +467,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'optimizations deep dive for frontend system design interviews',
             keywords: ['optimizations deep dive for frontend system design interviews', 'frontend system design performance', 'performance budgets interview'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-02-23',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-performance')
@@ -540,14 +540,14 @@ export const BEHAVIORAL: GuideEntry[] = [
         slug: 'intro',
         title: 'Behavioral Interviews: What Great Answers Look Like',
         minutes: 12,
-        summary: 'Signals interviewers care about and how to prepare high-signal stories.',
+        summary: 'A behavioral interview rubric for scoring signals, judgment, and high-signal stories that hiring teams remember.',
         seo: {
-            title: 'Behavioral Interviews: What Great Answers Look Like',
-            description: 'Signals interviewers care about and how to prepare high-signal stories.',
+            title: 'Behavioral Interview Guide: Scoring Signals and High-Signal Answers',
+            description: 'A behavioral interview rubric for scoring signals, judgment, and high-signal stories that hiring teams remember.',
             primaryKeyword: 'behavioral interviews',
             keywords: ['behavioral interviews', 'behavioral interview overview', 'what great behavioral answers look like'],
             publishedAt: '2025-10-01',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-intro')

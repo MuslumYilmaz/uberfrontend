@@ -11,7 +11,7 @@ const srcRoot = path.join(projectRoot, 'src');
 const appRoot = path.join(srcRoot, 'app');
 const featuresRoot = path.join(appRoot, 'features');
 const buildRoot = path.join(projectRoot, 'dist', 'frontendatlas', 'browser');
-const outputPath = path.join(projectRoot, 'reports', 'design-system-baseline.json');
+const outputPath = path.join(projectRoot, 'reports', 'design-system-metrics.json');
 
 const PRIME_PATTERNS = [
   /\bpButton\b/g,
@@ -22,6 +22,15 @@ const PRIME_PATTERNS = [
 const VISUAL_CLASS_PATTERN = /\bfa-(btn|chip|card)\b/g;
 const NG_DEEP_PATTERN = /::ng-deep/g;
 const INLINE_STYLES_PATTERN = /styles\s*:\s*\[/g;
+const RAW_COLOR_LITERAL_PATTERN = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]+\)|hsla?\([^)]+\)/g;
+
+const RAW_COLOR_LITERAL_FILE_EXCLUDES = [
+  'src/assets/monaco/',
+];
+
+const APPROVED_COLOR_LITERAL_FILES = new Set([
+  'src/styles/tokens.scss',
+]);
 
 async function walkFiles(dir, predicate, out = []) {
   try {
@@ -77,9 +86,13 @@ async function collectBundleMetrics() {
   };
 }
 
-async function main() {
+export async function collectDesignSystemMetrics() {
   const featureTemplates = await walkFiles(featuresRoot, (f) => f.endsWith('.html'));
-  const appSources = await walkFiles(appRoot, (f) => f.endsWith('.ts') || f.endsWith('.scss') || f.endsWith('.css'));
+  const appSources = await walkFiles(
+    appRoot,
+    (f) => f.endsWith('.ts') || f.endsWith('.scss') || f.endsWith('.css'),
+  );
+  const styleFiles = await walkFiles(srcRoot, (f) => f.endsWith('.scss') || f.endsWith('.css'));
 
   let rawPrimeHits = 0;
   let rawPrimeFiles = 0;
@@ -125,9 +138,29 @@ async function main() {
     }
   }
 
+  let rawColorLiteralHits = 0;
+  let rawColorLiteralFiles = 0;
+
+  for (const file of styleFiles) {
+    const rel = normalizeRel(file);
+    if (RAW_COLOR_LITERAL_FILE_EXCLUDES.some((prefix) => rel.startsWith(prefix))) {
+      continue;
+    }
+    if (APPROVED_COLOR_LITERAL_FILES.has(rel)) {
+      continue;
+    }
+
+    const text = await fs.readFile(file, 'utf8');
+    const colorCount = countMatches(text, RAW_COLOR_LITERAL_PATTERN);
+    if (colorCount > 0) {
+      rawColorLiteralHits += colorCount;
+      rawColorLiteralFiles += 1;
+    }
+  }
+
   const bundle = await collectBundleMetrics();
 
-  const payload = {
+  return {
     generatedAt: new Date().toISOString(),
     scope: {
       src: normalizeRel(srcRoot),
@@ -144,24 +177,36 @@ async function main() {
       rawPrimeFiles,
       rawVisualPrimitiveClassHits: rawVisualHits,
       rawVisualPrimitiveClassFiles: rawVisualFiles,
+      rawColorLiteralHits,
+      rawColorLiteralFiles,
       inlineComponentStylesHits: inlineStyleHits,
       inlineComponentStyleFiles: inlineStyleFiles,
     },
   };
+}
+
+async function main() {
+  const payload = await collectDesignSystemMetrics();
 
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
 
   console.log(`[design-system-metrics] wrote ${normalizeRel(outputPath)}`);
-  console.log(`[design-system-metrics] ngDeep=${ngDeepHits} rawPrime=${rawPrimeHits} rawVisualClasses=${rawVisualHits}`);
-  if (bundle.buildFound) {
-    console.log(`[design-system-metrics] bundleJsBytes=${bundle.bundleJsBytes} globalCssBytes=${bundle.globalCssBytes}`);
+  console.log(
+    `[design-system-metrics] ngDeep=${payload.metrics.ngDeepHits} rawPrime=${payload.metrics.rawPrimeHits} rawVisualClasses=${payload.metrics.rawVisualPrimitiveClassHits} rawColorLiterals=${payload.metrics.rawColorLiteralHits}`,
+  );
+  if (payload.metrics.buildFound) {
+    console.log(
+      `[design-system-metrics] bundleJsBytes=${payload.metrics.bundleJsBytes} globalCssBytes=${payload.metrics.globalCssBytes}`,
+    );
   } else {
     console.log('[design-system-metrics] build metrics unavailable (dist/frontendatlas/browser not found)');
   }
 }
 
-main().catch((err) => {
-  console.error('[design-system-metrics] fatal:', err);
-  process.exit(1);
-});
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+  main().catch((err) => {
+    console.error('[design-system-metrics] fatal:', err);
+    process.exit(1);
+  });
+}

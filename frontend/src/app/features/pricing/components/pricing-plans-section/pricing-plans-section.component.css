@@ -61,6 +61,9 @@
 .plan-compare > .pr-section-subtitle{
   padding-inline: 16px;
 }
+.plan-compare > .pr-section-subtitle{
+  color: var(--uf-text-secondary);
+}
 .plan-compare table{
   width:100%;
   border-collapse:collapse;

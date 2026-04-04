@@ -2,10 +2,10 @@
   {
     "id": "html-dom",
     "title": "What is the DOM?",
-    "description": "The DOM (Document Object Model) is a programming interface for web documents. It represents the structure of an HTML or XML document as a tree of nodes, allowing developers to read, modify, and manipulate the page’s content, structure, and styles dynamically using JavaScript.",
+    "description": "Understand the DOM as the browser's in-memory tree, how DOM mutations trigger real render work, and what to debug when selectors, timing, or frequent updates go wrong.",
     "seo": {
-      "title": "What is the DOM in HTML and JavaScript?",
-      "description": "The DOM is a tree-like object model of an HTML document that JavaScript can read and update at runtime."
+      "title": "DOM explained: browser tree, mutations, and debugging real updates",
+      "description": "Learn the DOM as the browser's in-memory node tree, how JavaScript mutations affect rendering, and which DOM timing or performance bugs show up in production."
     },
     "type": "trivia",
     "technology": "html",
@@ -23,7 +23,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong>Document Object Model (DOM)</strong> is how the browser represents a webpage in memory. When you load an HTML document, the browser doesn’t just display the raw text — it builds a <strong>structured tree of objects</strong> where each HTML element, attribute, and text becomes a <strong>node</strong> in that tree.\n\nDevelopers use JavaScript to interact with this model — meaning they can change the content, styles, or even the structure of the page <em>after</em> it’s loaded, making webpages dynamic and interactive."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong>Document Object Model (DOM)</strong> is the browser's <strong>in-memory tree</strong> of the page, not the raw HTML string. That under the hood model is what selectors, DevTools, and framework runtimes interact with when they read nodes, patch text, move elements, or attach listeners.\n\nThat distinction matters when you debug real UI issues. If you query too early, mutate the DOM too often, or misunderstand which node actually changed, you get timing bugs, stale UI, and expensive reflow or repaint work in production."
         },
         {
           "type": "code",
@@ -102,7 +102,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "DOM Tree Mental Model Check",
       "scenario": "A teammate says, \"The DOM is basically just the raw HTML file sitting in the browser. JavaScript mostly searches that text and swaps pieces out.\" Another teammate says, \"Not really. The browser parses the HTML into an in-memory tree of nodes, and JavaScript works with that object model to read or change the page.\" Which explanation is better?",
@@ -127,10 +127,10 @@
   {
     "id": "html-tags",
     "title": "What are HTML tags?",
-    "description": "HTML tags are labels that define structure and meaning in a page: headings, paragraphs, links, buttons, sections, forms, and more. Browsers parse tags into a DOM tree, which CSS styles and JavaScript manipulates.",
+    "description": "HTML tags are the markup primitives browsers parse into a DOM tree. In production, choosing the right tag affects semantics, accessibility, SEO, and how reliably CSS and JavaScript can target the page.",
     "seo": {
-      "title": "What are HTML tags and how do they work?",
-      "description": "HTML tags are markup keywords enclosed in angle brackets that define elements and structure on a web page."
+      "title": "HTML tags explained: semantics, DOM structure, and common markup mistakes",
+      "description": "Learn how HTML tags shape DOM structure, accessibility, SEO, and the common mistake of using generic markup where semantic elements belong."
     },
     "type": "trivia",
     "technology": "html",
@@ -148,7 +148,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>HTML tags are the building blocks of a web page. Each tag tells the browser what something <em>is</em> (heading, paragraph, link, image, section), not just how it should look."
+          "text": "<strong>Core idea</strong><br><br>HTML tags are not just angle-bracket syntax. They are the browser's structural hints for building the DOM tree, exposing semantics to assistive tech, and giving CSS and JavaScript reliable hooks. In production, the common mistake is treating every tag like a generic container when headings, landmarks, forms, and links carry meaning that changes accessibility and debugging."
         },
         {
           "type": "code",
@@ -219,7 +219,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Semantic Tag Choice Check",
       "scenario": "A teammate builds a blog card entirely with nested `div`s and says, \"Tags are mostly visual anyway. We can style any element to look the same, so semantics do not really matter.\" Another teammate says, \"The browser may render them similarly, but tags still communicate meaning to assistive tech, crawlers, and other developers. Choosing `article`, headings, paragraphs, and links makes the page easier to understand and maintain.\" Which explanation is better?",
@@ -244,10 +244,10 @@
   {
     "id": "html-head-tag",
     "title": "What is the purpose of the <head> tag in HTML?",
-    "description": "The &lt;head&gt; tag in HTML contains metadata and resources about the document that are not directly visible to users. It provides essential information such as the page title, linked stylesheets, scripts, and meta tags that help browsers, search engines, and social networks understand and render the page correctly.",
+    "description": "The &lt;head&gt; tag is the document control surface for metadata, styles, scripts, and social or SEO signals. Production bugs often come from bad head config: wrong viewport, duplicate titles, broken previews, or render-blocking resources.",
     "seo": {
-      "title": "What is the purpose of the HTML head tag?",
-      "description": "The <head> tag stores document metadata such as title, meta, links, and scripts that browsers and search engines use."
+      "title": "HTML head tag: metadata, SEO, and production debugging",
+      "description": "Understand how the head tag controls titles, meta tags, styles, scripts, and the production bugs caused by bad document metadata."
     },
     "type": "trivia",
     "technology": "html",
@@ -265,7 +265,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong><code>&lt;head&gt;</code></strong> tag is an essential section of every HTML document. It doesn’t display visible content but instead holds **metadata** — information about the webpage that helps browsers interpret it, search engines index it, and other systems (like social media platforms) understand how to preview it.\n\nEverything inside the <code>&lt;head&gt;</code> tag affects how the page behaves, loads, and integrates with the web ecosystem."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong><code>&lt;head&gt;</code></strong> tag is the page's invisible control room. It configures metadata, resource loading, SEO signals, and social preview behavior before users ever see the UI. In production, broken <code>&lt;head&gt;</code> setup is a real debug source: wrong viewport tags create mobile issues, duplicate titles hurt discoverability, and blocking scripts or styles can delay rendering."
         },
         {
           "type": "code",
@@ -345,7 +345,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Head Metadata Check",
       "scenario": "A teammate moves the page title, stylesheet link, and viewport meta tag into the visible page layout because they say, \"If users need the site to work, those things should live near the content in the body.\" Another teammate says, \"That mixes up visible content with document metadata. The `<head>` is where the browser gets setup information like title, meta tags, CSS links, and scripts that help it interpret and load the page correctly.\" Which explanation is better?",
@@ -370,10 +370,10 @@
   {
     "id": "html-div-vs-span",
     "title": "What is the difference between <div> and <span>?",
-    "description": "The &lt;div&gt; and &lt;span&gt; tags are both generic container elements in HTML, but they differ in how they behave and are used. &lt;div&gt; is a block-level element used for structuring larger sections of a webpage, while &lt;span&gt; is an inline element used to style or manipulate small portions of text or content within a line.",
+    "description": "Use &lt;div&gt; and &lt;span&gt; as generic containers only when semantic HTML does not fit. The real pitfall is layout or DOM-hook misuse: &lt;div&gt; changes flow as a block wrapper, while &lt;span&gt; stays inline for text-level targeting.",
     "seo": {
-      "title": "What is the difference between div and span?",
-      "description": "<div> is a block-level container for larger sections, while <span> is an inline container for small text-level styling."
+      "title": "div vs span: layout behavior, semantics, and common mistakes",
+      "description": "Learn when div or span is the right generic container, why block vs inline changes layout, and which common markup mistakes cause misuse."
     },
     "type": "trivia",
     "technology": "html",
@@ -393,7 +393,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBoth <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> are **generic container elements**, meaning they don’t add semantic meaning on their own. Instead, they’re used for **grouping elements** and **applying styles or scripts**. The key difference is their **display behavior**:\n\n- <code>&lt;div&gt;</code> is a **block-level element** — it starts on a new line and stretches across the full width of its parent container.\n- <code>&lt;span&gt;</code> is an **inline element** — it stays within the flow of text and only takes up as much width as its content requires."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBoth <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> are **generic container elements**, but the production mistake is using them as if they were interchangeable. <code>&lt;div&gt;</code> is a **block-level wrapper** that changes layout flow, while <code>&lt;span&gt;</code> stays **inline** for text-level hooks. Neither adds semantics, so if you really mean navigation, article content, emphasis, or a button, a semantic element is usually the better choice."
         },
         {
           "type": "code",
@@ -473,7 +473,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Block vs Inline Choice Check",
       "scenario": "A teammate wants to highlight one word inside a paragraph and wraps it in a `div`, saying, \"`div` and `span` are both generic containers, so it does not really matter which one we use.\" Another teammate says, \"It does matter here. `span` is meant for inline content that should stay in the text flow, while `div` is a block-level container that can change layout behavior.\" Which explanation is better?",
@@ -498,10 +498,10 @@
   {
     "id": "html-title-tag",
     "title": "What does the <title> tag do?",
-    "description": "The <title> tag sets a page title used in the browser tab, bookmarks, and often search result headlines. It is one of the highest-impact HTML tags for discoverability and user orientation.",
+    "description": "The <title> tag is one of the highest-leverage SEO and UX signals on a page. It shapes browser tabs, bookmarks, and often the search result headline, and duplicate or vague titles are a common discoverability pitfall.",
     "seo": {
-      "title": "What does the HTML title tag do?",
-      "description": "The <title> tag sets the page title shown in browser tabs and often used as the clickable headline in search results."
+      "title": "HTML title tag: SEO headlines, tab clarity, and duplicate-title pitfalls",
+      "description": "Learn how the title tag affects browser tabs, search result headlines, and the common pitfall of shipping duplicate or vague page titles."
     },
     "type": "trivia",
     "technology": "html",
@@ -519,7 +519,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Direct answer</strong><br><br>The <code>&lt;title&gt;</code> tag defines the document title shown in the browser tab and commonly reused by search engines as the result headline."
+          "text": "<strong>Direct answer</strong><br><br>The <code>&lt;title&gt;</code> tag defines the document title, but in production it acts as more than tab text. It becomes a search-facing headline, a bookmark label, and a debugging clue when many pages look similar. The common mistake is shipping duplicate or generic titles like <code>Home</code>, which hurts click-through and makes tabs hard to scan."
         },
         {
           "type": "code",
@@ -598,7 +598,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Page Title Signal Check",
       "scenario": "A teammate leaves `<title>Home</title>` on dozens of pages and says, \"The title tag is minor. Users already see the page heading, so the browser tab text and search result label are not a big deal.\" Another teammate says, \"That is a real problem. The title tag helps users identify tabs, bookmarks, and history entries, and search engines often use it as the result headline. Each page should have a clear, specific title.\" Which explanation is better?",
@@ -623,10 +623,10 @@
   {
     "id": "html-img-alt-attribute",
     "title": "What is the purpose of the alt attribute in the <img> tag?",
-    "description": "The alt (alternative text) attribute in the &lt;img&gt; tag provides a textual description of an image. It helps users who cannot see the image — such as visually impaired users using screen readers — and also appears if the image fails to load. Additionally, alt text improves SEO by allowing search engines to understand image content.",
+    "description": "The alt attribute gives an image a text alternative for screen readers, fallback rendering, and search understanding. The common mistake is writing alt text for what the image looks like instead of what the image contributes to the page.",
     "seo": {
-      "title": "What is the alt attribute in an image tag?",
-      "description": "The alt attribute provides alternative text for an image so screen readers and fallback displays can convey its meaning."
+      "title": "HTML img alt attribute: accessibility, SEO, and common mistakes",
+      "description": "Write alt text that matches image purpose, know when decorative images need empty alt, and avoid common accessibility or SEO misuse."
     },
     "type": "trivia",
     "technology": "html",
@@ -644,7 +644,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe **alt attribute** (short for “alternative text”) in the <code>&lt;img&gt;</code> tag provides a textual description of an image. It’s a key part of **web accessibility**, ensuring that users who cannot see the image — due to visual impairments, slow connections, or technical errors — still understand what the image represents. Search engines also rely on this attribute to interpret image content for ranking and indexing."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe **alt attribute** (short for “alternative text”) in the <code>&lt;img&gt;</code> tag provides a text alternative for what the image means in context. It’s a key part of **web accessibility**, and the common production mistake is treating alt text like a caption or SEO keyword bucket. Good alt text tells assistive tech what the image contributes, while decorative images should usually use empty alt so screen readers skip noise."
         },
         {
           "type": "code",
@@ -713,7 +713,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Alt Text Purpose Check",
       "scenario": "A teammate leaves product images without `alt` text and says, \"That is mostly an SEO bonus. If the image fails to load, users can still refresh the page, so it is not a real accessibility issue.\" Another teammate says, \"That misses the point. `alt` text gives screen reader users a text alternative, shows useful fallback if the image fails, and should be written based on what the image contributes to the page. Decorative images can use an empty alt instead.\" Which explanation is better?",
@@ -738,10 +738,10 @@
   {
     "id": "html-semantic-elements",
     "title": "What are semantic HTML elements?",
-    "description": "Semantic HTML elements clearly describe their meaning in a way that both browsers and developers can understand. Unlike generic containers such as &lt;div&gt; or &lt;span&gt;, semantic elements like &lt;header&gt;, &lt;article&gt;, &lt;section&gt;, and &lt;footer&gt; convey the purpose and structure of the content, improving accessibility, SEO, and maintainability.",
+    "description": "Semantic HTML elements expose content roles like navigation, article, main content, and supporting sections. They improve accessibility landmarks, SEO structure, and teammate readability, and the common mistake is replacing them all with generic div soup.",
     "seo": {
-      "title": "What are semantic HTML elements?",
-      "description": "Semantic HTML elements describe the meaning and role of content, such as header, main, article, and footer."
+      "title": "Semantic HTML elements: accessibility landmarks, SEO structure, and common mistakes",
+      "description": "Learn how semantic elements improve screen-reader navigation, document structure, and SEO, and why div soup becomes a production accessibility problem."
     },
     "type": "trivia",
     "technology": "html",
@@ -759,7 +759,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n**Semantic HTML** means using HTML elements that describe the purpose of the content they enclose. These elements add **meaning** rather than just presentation. For example, <code>&lt;header&gt;</code> tells both browsers and developers that the content is a page header, while <code>&lt;article&gt;</code> indicates an independent piece of content.\n\nSemantic HTML improves **readability**, **search engine optimization (SEO)**, and **accessibility** because assistive technologies and search engines can interpret the structure and importance of content more accurately."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n**Semantic HTML** means choosing elements that describe the job of the content, not just its visual container. That matters in production because landmarks like <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, and <code>&lt;footer&gt;</code> help screen readers navigate, help search engines understand structure, and make large layouts easier to debug. The common mistake is collapsing everything into generic wrappers and losing those signals."
         },
         {
           "type": "code",
@@ -861,7 +861,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Semantic Structure Check",
       "scenario": "A teammate builds the whole page with nested `div`s and says, \"Semantic tags are mostly style preferences. Search engines and assistive tools can figure the page out anyway, so using `header`, `main`, `nav`, or `article` does not really change much.\" Another teammate says, \"Those tags communicate structure on purpose. They make the document easier for screen readers, crawlers, and developers to understand, which improves accessibility, SEO, and maintainability.\" Which explanation is better?",
@@ -958,7 +958,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Layout Flow Check",
       "scenario": "A teammate wraps a whole card layout in inline elements and says, \"Inline versus block is mostly old-school browser trivia now. If the content shows up, the default display type does not really matter.\" Another teammate says, \"It still matters. Block elements start new lines and are meant for page structure, while inline elements stay in the text flow and are better for small text-level content. Picking the wrong one can create layout and nesting problems.\" Which explanation is better?",
@@ -986,16 +986,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 2,
-    "description": "The &lt;br&gt; tag inserts a line break inside text content. It’s an empty element and should be used for line breaks in prose, not for layout (use CSS for spacing). Use it only for semantic line breaks (addresses, poems), not layout. Overuse can hurt accessibility and maintainability; test with screen readers.",
+    "description": "The &lt;br&gt; tag inserts a semantic line break inside the same text block. The real pitfall is using it as a layout spacer instead of CSS, which hurts readability, accessibility, and maintainability.",
     "seo": {
-      "title": "What does the br tag do in HTML?",
-      "description": "The <br> tag inserts a single line break inside text content without creating a new paragraph block."
+      "title": "HTML br tag: semantic line breaks, accessibility, and layout pitfalls",
+      "description": "Use br for meaningful line breaks like addresses or poetry, and avoid the common layout pitfall of stacking br tags for spacing."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;br&gt;</code> tag stands for **'break'** and is an empty (self-closing) HTML element used to force a line break in text. It tells the browser to move the content that follows onto the next line. Unlike <code>&lt;p&gt;</code> or <code>&lt;div&gt;</code>, it does not create extra vertical spacing or start a new block — it simply breaks the line within the same block context."
+          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;br&gt;</code> tag inserts a line break inside the current text block. In production, the important <strong>when not</strong> rule is this: <code>&lt;br&gt;</code> is for semantic line breaks like addresses, lyrics, or short contact info, not for page layout spacing. Using it as a spacing hack creates readability, accessibility, and maintenance problems."
         },
         {
           "type": "text",
@@ -1058,7 +1058,7 @@
       "semantics",
       "line-break"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Line Break Intent Check",
       "scenario": "A teammate stacks several `<br>` tags between sections to create vertical spacing and says, \"A break tag is the quickest layout tool for pushing content down.\" Another teammate says, \"That is the wrong use. `<br>` is for meaningful line breaks inside text, like addresses or poems. If you want spacing between sections, use proper block elements and CSS instead.\" Which explanation is better?",
@@ -1086,16 +1086,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The <a> (anchor) tag creates hyperlinks so users can navigate to pages, sections, files, email addresses, or phone links. It is the core navigation primitive of the web.",
+    "description": "The <a> (anchor) tag is the browser's real navigation primitive: it gives links semantics, accessibility, and SEO behavior, and it avoids common button-vs-link pitfalls in production UIs.",
     "seo": {
-      "title": "What is the a tag used for in HTML?",
-      "description": "The <a> tag creates hyperlinks that navigate to URLs, page sections, files, or other destinations."
+      "title": "HTML <a> tag: navigation semantics, accessibility, and common pitfalls",
+      "description": "Learn when to use <a> for real navigation, how href/rel affect accessibility and SEO, and which common pitfalls break browser behavior."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Direct answer</strong><br><br>Use <code>&lt;a&gt;</code> to create a clickable link. The critical attribute is <code>href</code>, which tells the browser where to go."
+          "text": "<strong>Direct answer</strong><br><br>Use <code>&lt;a&gt;</code> when the user is navigating to another URL, document, or fragment target. In production, the common mistake is treating anchors and buttons as interchangeable: <code>&lt;a&gt;</code> preserves link semantics, open-in-new-tab behavior, browser history, and SEO, while <code>&lt;button&gt;</code> is for in-page actions."
         },
         {
           "type": "code",
@@ -1172,7 +1172,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Navigation Primitive Check",
       "scenario": "A teammate wires the sidebar with plain `div`s and click handlers, saying, \"An anchor tag is basically just a styling choice. If JavaScript can navigate, we do not need real links.\" Another teammate says, \"If the element performs navigation, `<a>` is the right primitive because it carries link semantics, supports browser behaviors like open-in-new-tab and history, and uses `href` as the destination.\" Which explanation is better?",
@@ -1200,16 +1200,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The `href` (Hypertext Reference) attribute in HTML defines the target destination of a link or resource. It is most commonly used within the `&lt;a&gt;` (anchor) tag to specify the URL a user will navigate to when clicking the link.",
+    "description": "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior.",
     "seo": {
-      "title": "What is the href attribute used for in HTML?",
-      "description": "The href attribute specifies the destination URL for links and related elements like anchors and stylesheets."
+      "title": "HTML href attribute: link destinations, navigation semantics, and pitfalls",
+      "description": "Understand how href powers navigation and linked resources, and avoid common mistakes like fake links, bad fragments, or unsafe external targets."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe `href` attribute stands for **Hypertext Reference**. It is used to define the **URL, file path, or identifier** that a hyperlink or resource points to. When applied to an element like <code>&lt;a&gt;</code>, it tells the browser where to go when a user clicks on it.\n\nWhile it’s most frequently associated with the <code>&lt;a&gt;</code> tag, it can also be used in other elements like <code>&lt;link&gt;</code>, <code>&lt;base&gt;</code>, and <code>&lt;area&gt;</code> to define related resources."
+          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>href</code> attribute is the browser's destination reference for navigation and linked resources. It is not decorative metadata. In production, missing or fake <code>href</code> values create accessibility issues, broken keyboard behavior, and confusing link debugging. The same idea powers anchors, stylesheets, base URLs, and image-map areas."
         },
         {
           "type": "text",
@@ -1285,7 +1285,7 @@
       "basics",
       "anchor"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Destination Wiring Check",
       "scenario": "A teammate says, \"The anchor tag already tells the browser this is a link. The `href` value is optional detail, so we can add click handlers later and still consider it a proper hyperlink.\" Another teammate says, \"That misses the core role of `href`. It is the destination reference that tells the browser where the link or resource points. Without it, you lose the real navigation target and a lot of expected browser behavior.\" Which explanation is better?",
@@ -1313,16 +1313,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 5,
-    "description": "The &lt;meta&gt; tag provides metadata—data about the webpage itself—such as character encoding, viewport settings, description, keywords, and author information. It helps browsers, search engines, and social media platforms understand and display the page correctly.",
+    "description": "The &lt;meta&gt; tag configures how browsers, crawlers, and social platforms interpret a page, and the real production pitfall is shipping the wrong head metadata and debugging broken previews, indexing, or viewport behavior later.",
     "seo": {
-      "title": "What is the meta tag used for in HTML?",
-      "description": "The <meta> tag provides document metadata such as charset, viewport, and descriptions used by browsers and search engines."
+      "title": "HTML meta tag: SEO, viewport, and social preview debugging",
+      "description": "Learn what meta tags control, how they affect browsers and crawlers, and which SEO/debug pitfalls come from bad head metadata."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;meta&gt;</code> tag in HTML defines **metadata**, which is information about the webpage rather than content visible to users. It plays a crucial role in helping **browsers, search engines, and other web services** interpret a page’s content, encoding, responsiveness, and SEO-related information. All <code>&lt;meta&gt;</code> tags are placed within the <code>&lt;head&gt;</code> section of an HTML document."
+          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;meta&gt;</code> tag does not render UI; it configures how browsers, crawlers, and social scrapers interpret the page. In production, wrong meta tags become a real debug problem: you can ship broken encoding, a bad mobile viewport, or incorrect SEO and social preview signals even when the visible page looks fine. All <code>&lt;meta&gt;</code> tags live inside the <code>&lt;head&gt;</code> section."
         },
         {
           "type": "code",
@@ -1452,16 +1452,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; tags are all list-related elements in HTML, but they serve different purposes. &lt;ol&gt; defines an ordered (numbered) list, &lt;ul&gt; defines an unordered (bulleted) list, and &lt;dl&gt; defines a description (definition) list used for terms and their definitions.",
+    "description": "Choose &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; based on the relationship between items, not just the visual bullet style. The semantic pitfall is using the wrong list type and making steps, grouped items, or term-definition pairs harder for screen readers to interpret.",
     "seo": {
-      "title": "What is the difference between ol ul and dl?",
-      "description": "<ol> is an ordered list, <ul> is an unordered list, and <dl> is a description list for terms and definitions."
+      "title": "ol vs ul vs dl: list semantics, accessibility, and common pitfalls",
+      "description": "Learn when ordered, unordered, or description lists are semantically correct, and why styling alone should not decide your list markup."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>HTML provides three primary list elements — <ol>, <ul>, and &lt;dl&gt; — each used for structuring information in a specific way. Lists help organize related items, improve readability, and provide semantic meaning for assistive technologies and search engines."
+          "text": "<strong>Overview</strong><br><br>HTML gives you <code>&lt;ol&gt;</code>, <code>&lt;ul&gt;</code>, and <code>&lt;dl&gt;</code> because different lists express different relationships. In production, the semantic pitfall is choosing based only on bullets or numbering styles. Screen readers and search engines read these structures differently: <code>&lt;ol&gt;</code> implies sequence, <code>&lt;ul&gt;</code> implies grouping, and <code>&lt;dl&gt;</code> implies term-value meaning."
         },
         {
           "type": "list",
@@ -1554,7 +1554,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "List Type Choice Check",
       "scenario": "A teammate uses a plain bullet list for a three-step checkout flow and says, \"All list tags are basically interchangeable. We can style any of them however we want, so choosing `ol`, `ul`, or `dl` is not a meaningful semantic decision.\" Another teammate says, \"The tag still matters. `ol` is for sequences where order matters, `ul` is for grouped items without sequence, and `dl` is for term-definition style relationships.\" Which explanation is better?",
@@ -1582,12 +1582,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The default HTML form method is GET. Form fields are encoded into the URL query string unless method=\"post\" is specified. Default GET can leak data in URLs, so consider security and privacy. Test with network tools to verify method and payload.",
+    "description": "HTML forms default to GET, which puts form fields into the URL query string. That is useful for search and filtering, but a production security pitfall when teams accidentally send private data without switching to POST.",
+    "seo": {
+      "title": "HTML form default method: GET, URL exposure, and debugging pitfalls",
+      "description": "Learn why forms default to GET, when query-string submissions help, and why sensitive or state-changing actions need POST instead."
+    },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>When a user submits a form, the browser sends its input data to a server endpoint defined in the <code>action</code> attribute. If no <code>method</code> is provided, the default is <strong>GET</strong> — meaning the data is sent as part of the URL query string."
+          "text": "<strong>Overview</strong><br><br>If a form omits the <code>method</code> attribute, the browser defaults to <strong>GET</strong>. That means fields are serialized into the URL query string. In production, this default is helpful for search and filters, but it becomes a security and debugging pitfall if a login, token, or sensitive workflow accidentally leaks data into the address bar, logs, or browser history."
         },
         {
           "type": "list",
@@ -1799,8 +1803,8 @@
       "rereadPrompt": "Re-read the overview and comparison. The default form method is GET, which appends values to the URL. Use POST explicitly when the submission is sensitive or should not be exposed in the address bar."
     },
     "seo": {
-      "title": "What is the default form method in HTML?",
-      "description": "The default HTML form method is GET when no method attribute is specified."
+      "title": "HTML form default method: GET, URL exposure, and debugging pitfalls",
+      "description": "Learn why forms default to GET, when query-string submissions help, and why sensitive or state-changing actions need POST instead."
     }
   },
   {
@@ -1809,16 +1813,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 3,
-    "description": "The placeholder attribute provides a short hint that describes the expected value of an input field. It appears inside the input box as gray text until the user enters a value, helping users understand what kind of data to type.",
+    "description": "The placeholder attribute is only a temporary hint, and the common production pitfall is treating it like a label and creating accessibility, validation, and autofill confusion.",
     "seo": {
-      "title": "What is the placeholder attribute in HTML input?",
-      "description": "The placeholder attribute shows hint text inside an input until the user enters a value."
+      "title": "HTML placeholder attribute: accessibility pitfalls and form UX guidance",
+      "description": "Learn when placeholder text helps, why it should not replace labels, and which common form UX mistakes it creates."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>placeholder</code> attribute gives users a visual hint about what kind of information is expected in a form field. It displays light-gray text inside an input box before the user types anything."
+          "text": "<strong>Overview</strong><br><br>The <code>placeholder</code> attribute is a lightweight hint, not a durable instruction. The common mistake in production forms is replacing the real label with placeholder text, which hurts accessibility, validation clarity, and autofill UX once the user starts typing."
         },
         {
           "type": "list",
@@ -1886,7 +1890,7 @@
       "accessibility",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Hint vs Label Check",
       "scenario": "A teammate removes visible labels from a signup form and says, \"The placeholder already tells people what to type, so labels are redundant.\" Another teammate says, \"That is a UX and accessibility mistake. A placeholder is only a temporary hint inside the input, but a real label is still needed because the placeholder disappears as soon as the user starts typing.\" Which explanation is better?",
@@ -1914,16 +1918,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Both id and class are used to identify HTML elements, but they serve different purposes. The id attribute uniquely identifies a single element, while the class attribute groups multiple elements under a shared name for styling or scripting.",
+    "description": "id vs class is not just selector syntax: it affects fragment links, CSS specificity, JS hooks, and the common mistake of duplicating ids across reusable UI.",
     "seo": {
-      "title": "What is the difference between id and class in HTML?",
-      "description": "An id identifies one unique element, while a class groups multiple elements for shared styling or behavior."
+      "title": "HTML id vs class: specificity, DOM hooks, and common mistakes",
+      "description": "Learn when ids are the right unique hook, when classes should stay reusable, and which common mistakes create selector and testing bugs."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>id</code> and <code>class</code> attributes are both used to label HTML elements, but they work differently. The <code>id</code> attribute gives an element a unique name on the page, while <code>class</code> allows multiple elements to share the same style or behavior."
+          "text": "<strong>Overview</strong><br><br>The <code>id</code> and <code>class</code> attributes are not interchangeable. In production, the common mistake is treating both as generic labels: <code>id</code> is a unique identity hook for one node, while <code>class</code> is a reusable grouping hook for styling, behavior, fragment links, and test selectors."
         },
         {
           "type": "list",
@@ -1998,7 +2002,7 @@
       "selectors",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Unique vs Shared Selector Check",
       "scenario": "A teammate gives the same `id=\"card\"` to twelve product cards and says, \"`id` and `class` are basically interchangeable. We can style and script them the same way, so reusing an id is not a real problem.\" Another teammate says, \"That breaks the meaning of `id`. An id should uniquely identify one element, while a class is what you reuse across many elements for shared styling or behavior.\" Which explanation is better?",
@@ -2026,16 +2030,16 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "The &lt;iframe&gt; (inline frame) tag allows you to embed another HTML page within the current page. It’s commonly used to display external content such as videos, maps, ads, or other web pages without leaving the parent site.",
+    "description": "The &lt;iframe&gt; element creates a nested browsing context, so the real production concerns are sandboxing, performance, accessibility, and third-party embed pitfalls.",
     "seo": {
-      "title": "What is an iframe in HTML and how does it work?",
-      "description": "An iframe embeds another webpage or resource inside the current page using a nested browsing context."
+      "title": "HTML iframe: sandbox, performance, and third-party embed pitfalls",
+      "description": "Learn how iframes work under the hood, when to sandbox them, and which security/performance pitfalls show up with real embeds."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>iframe</code> tag creates an inline frame that embeds another webpage inside the current document. It acts like a small browser window within your page, allowing you to load external or internal HTML content."
+          "text": "<strong>Overview</strong><br><br>The <code>iframe</code> tag creates a separate browsing context inside your page. In production, the key question is not just whether an embed works, but what permissions, loading cost, accessibility impact, and security risk that third-party content brings with it."
         },
         {
           "type": "list",
@@ -2131,7 +2135,7 @@
       "security",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Embedded Content Risk Check",
       "scenario": "A teammate says, \"An iframe is just a visual embed box. If it loads, we are done. Accessibility titles, sandboxing, and source trust are extra details we can ignore for now.\" Another teammate says, \"That is risky. An iframe embeds another browsing context, so you need to think about what source you are loading, give it a useful `title`, and restrict it with attributes like `sandbox` when appropriate.\" Which explanation is better?",
@@ -2159,16 +2163,16 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "data-* attributes store custom data on elements. They are accessible via dataset in JavaScript (e.g., el.dataset.userId) and are useful for hooks without affecting semantics. Use data-* as lightweight hooks, but test parsing and accessibility, and avoid sensitive data.",
+    "description": "data-* attributes are lightweight DOM hooks for custom metadata, testing selectors, or UI behavior flags that JavaScript reads via dataset. The common production mistake is treating them as private storage or stuffing too much application state into markup.",
     "seo": {
-      "title": "What is the data attribute in HTML used for?",
-      "description": "data-* attributes store custom, non-visible metadata on elements that JavaScript can read and update."
+      "title": "HTML data-* attributes: dataset hooks, testing, and when not to use them",
+      "description": "Use data attributes for lightweight DOM hooks, know that dataset values are strings, and avoid the common mistake of storing secrets or app state in markup."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>data-*</code> attribute lets developers store custom information directly within HTML elements. These attributes are part of the HTML5 specification and are especially useful for passing small pieces of data to JavaScript without cluttering the DOM with nonstandard attributes."
+          "text": "<strong>Overview</strong><br><br>The <code>data-*</code> attribute is a lightweight way to attach custom metadata to an element for JavaScript hooks, test selectors, or small UI configuration. In production, the common mistake is treating <code>data-*</code> like hidden application state. It still lives in the DOM, <code>dataset</code> values come through as strings, and sensitive data or large state blobs do not belong there."
         },
         {
           "type": "list",
@@ -2253,7 +2257,7 @@
       "javascript",
       "attributes"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Dataset Safety Check",
       "scenario": "A teammate says, \"Let's put the user's role, plan, and auth token into `data-*` attributes on the button. It keeps everything close to the markup, and users can't really see it anyway.\" Another teammate says, \"Use `data-*` for small, non-sensitive values like IDs or UI actions. They are still in the DOM, JavaScript reads them as strings through `dataset`, and secrets do not belong there.\" Which explanation is better?",
@@ -2287,16 +2291,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "You can make an image clickable by wrapping it in an anchor tag. This creates a linked image that behaves like a normal link and is accessible when you include alt text and descriptive link context. Use rel=noopener when opening in a new tab.",
+    "description": "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link. Good linked images need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed.",
     "seo": {
-      "title": "How do you make an image clickable in HTML?",
-      "description": "Make an image clickable by wrapping the <img> element inside an <a> tag with an href destination."
+      "title": "Clickable images in HTML: anchor pattern, alt text, and new-tab pitfalls",
+      "description": "Wrap <img> in <a>, write alt text that communicates destination, and avoid common accessibility or target=\"_blank\" pitfalls."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>You can make an image clickable by placing it inside an <a> tag. The <a> tag defines a hyperlink, and any element inside it — including images — becomes clickable."
+          "text": "<strong>Overview</strong><br><br>You can make an image clickable by placing it inside an <a> tag. The <a> tag defines a hyperlink, and any element inside it - including images - becomes clickable. The common mistake is treating this as \"just markup\" and forgetting link semantics, destination clarity, and accessible alt text."
         },
         {
           "type": "list",
@@ -2698,16 +2702,16 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "srcset provides multiple image sources for different resolutions or sizes. Combined with sizes, it lets the browser choose the best image for the device and viewport. This impacts performance and data usage, so test the chosen image under throttled network.",
+    "description": "The `srcset` attribute gives the browser multiple image candidates so it can pick the right file for DPR and layout width. The production pitfall is shipping large images or mismatched `sizes`, which wastes bandwidth and makes responsive image debugging harder.",
     "seo": {
-      "title": "What is srcset in the HTML img tag?",
-      "description": "srcset provides multiple image sources so the browser can choose the most appropriate file for screen size and pixel density."
+      "title": "HTML img srcset: responsive images, sizes, and performance debugging",
+      "description": "Learn how srcset and sizes let the browser pick the right image, and avoid performance pitfalls like oversized files or wrong width hints."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>srcset</code> attribute provides a list of image sources with different sizes or resolutions. The browser picks the most suitable one based on device pixel density (DPR) and layout width."
+          "text": "<strong>Overview</strong><br><br>The <code>srcset</code> attribute gives the browser a set of image candidates so it can choose based on device pixel ratio and layout width. Under the hood, this is a performance feature, not just a syntax trick. The common pitfall is providing <code>srcset</code> without accurate <code>sizes</code> or asset widths, which causes blurry images, oversized downloads, or confusing network debugging."
         },
         {
           "type": "list",
@@ -2780,7 +2784,7 @@
       "responsive",
       "performance"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Responsive Image Choice Check",
       "scenario": "A teammate says, \"Let's add `srcset` because the browser will try the first image, and if it fails it will move to the next one like a fallback list. That way we do not need to think about screen density or layout size.\" Another teammate says, \"`srcset` gives the browser multiple image candidates so it can choose the best one for the current device and layout. With width-based candidates, `sizes` helps the browser make the right performance choice.\" Which explanation is better?",
@@ -2814,16 +2818,16 @@
     "technology": "html",
     "difficulty": "hard",
     "importance": 4,
-    "description": "Browsers parse HTML top-to-bottom, building the DOM as they go. CSS can block rendering, and synchronous scripts can block parsing unless deferred or async.",
+    "description": "Browsers parse HTML progressively, build the DOM and CSSOM, then layout and paint what users see. Under the hood, synchronous scripts and render-blocking CSS can pause this pipeline and create hard-to-debug performance issues.",
     "seo": {
-      "title": "How does browser HTML parsing and rendering work?",
-      "description": "Browsers parse HTML into the DOM, combine it with CSS to build render data, then layout and paint the page."
+      "title": "HTML parsing and rendering: DOM, CSSOM, and render-blocking debugging",
+      "description": "Understand the browser's parse-to-paint pipeline and how scripts, CSS, and render blockers affect first paint and debugging."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>When a browser loads a webpage, it processes the HTML from top to bottom. During this process, it constructs the <strong>DOM (Document Object Model)</strong>, parses CSS into the <strong>CSSOM</strong>, and then combines both to create the <strong>Render Tree</strong>."
+          "text": "<strong>Overview</strong><br><br>Browsers do not wait for the full HTML file before starting work. They parse the document progressively, build the <strong>DOM</strong>, parse CSS into the <strong>CSSOM</strong>, then combine both into render data for layout and paint. Under the hood, synchronous scripts and render-blocking CSS are the real debugging hooks because they can pause parsing or delay what users see."
         },
         {
           "type": "list",
@@ -2898,7 +2902,7 @@
       "performance",
       "scripts"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Render Blocking Check",
       "scenario": "A teammate says, \"The browser downloads the whole HTML file first, then parses everything at the end. Scripts in the head are fine because rendering only starts after all images finish loading anyway.\" Another teammate says, \"Browsers parse HTML as it arrives, building the DOM top to bottom. Synchronous scripts can pause parsing, CSS can block rendering, and the browser builds the DOM, CSSOM, and render tree before layout and paint.\" Which explanation is better?",
@@ -2932,10 +2936,10 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren’t available, but should not replace proper HTML tags. ARIA should match real behavior; incorrect roles hurt accessibility. Test with keyboard navigation and screen readers.",
+    "description": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren't available, but should not replace proper HTML tags. The common mistake is adding ARIA where native HTML already gives the right semantics; only reach for roles when you are building custom widgets and can match them with keyboard behavior and state updates.",
     "seo": {
-      "title": "What are ARIA roles in HTML?",
-      "description": "ARIA roles describe element purpose to assistive technologies when native HTML semantics are not sufficient."
+      "title": "ARIA roles in HTML: when they help, when they hurt, and common mistakes",
+      "description": "Use ARIA roles for custom widgets when native semantics are missing, and avoid the common mistake of replacing correct HTML with unnecessary ARIA."
     },
     "answer": {
       "blocks": [
@@ -3043,16 +3047,16 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 2,
-    "description": "The Shadow DOM is a browser feature that encapsulates a component’s internal structure, keeping its styles and markup isolated from the main document. It’s a core part of Web Components for building reusable, self-contained UI elements. It improves style isolation but can complicate theming and testing; be mindful of accessibility and focus behavior.",
+    "description": "Shadow DOM creates an encapsulated subtree for a component so styles and markup do not leak in or out. That isolation is useful, but the real pitfall is forgetting about theming, testing, focus behavior, and accessibility when the component stops behaving like regular DOM.",
     "seo": {
-      "title": "What is Shadow DOM in web components?",
-      "description": "Shadow DOM provides encapsulated markup and styles for a component so internal structure is isolated from the main document."
+      "title": "Shadow DOM explained: encapsulation, theming, and web-component pitfalls",
+      "description": "Learn how Shadow DOM isolates component markup and styles, and why testing, theming, focus, and accessibility require extra design."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The Shadow DOM creates a hidden subtree inside a DOM element. It allows components to have their own scoped styles and markup, preventing conflicts with global CSS or other parts of the page."
+          "text": "<strong>Overview</strong><br><br>The Shadow DOM creates an encapsulated subtree inside a host element so a component can own its markup and styles without global CSS collisions. Under the hood, that isolation is the point, but it also creates trade-offs: theming is harder, tests need shadow-aware selectors, and focus or accessibility bugs can appear if you assume the component behaves like regular DOM."
         },
         {
           "type": "list",
@@ -3120,7 +3124,7 @@
       "encapsulation",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Component Encapsulation Check",
       "scenario": "A teammate says, \"Shadow DOM is basically just a fancy way to group markup. Global CSS should still style everything inside it, and click events work exactly the same, so we do not need to think about isolation at all.\" Another teammate says, \"Shadow DOM creates an encapsulated subtree for a component. That helps prevent style leakage, but it also means global CSS usually does not flow in the same way, and things like theming, slots, and event behavior need deliberate design.\" Which explanation is better?",
@@ -3151,10 +3155,10 @@
   {
     "id": "web-accessibility-make-page-accessible",
     "title": "How would you make a page accessible?",
-    "description": "Describe practical steps to make a web page accessible: semantic HTML, ARIA usage, color contrast, keyboard navigation, focus management, and screen reader testing.",
+    "description": "Use a production accessibility review workflow: semantic structure, keyboard order, focus management, contrast, ARIA restraint, and screen reader checks that catch real usability bugs.",
     "seo": {
-      "title": "How do you make a web page accessible?",
-      "description": "Make a page accessible with semantic HTML, proper labels, keyboard navigation, visible focus states, sufficient contrast, and screen reader testing."
+      "title": "How to make a page accessible: production workflow and common mistakes",
+      "description": "Make a page accessible with semantic HTML, keyboard and focus checks, contrast review, ARIA restraint, and testing that catches production accessibility bugs."
     },
     "type": "trivia",
     "technology": "html",
@@ -3173,7 +3177,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAccessibility means people can use your page with different abilities, devices, and assistive tech. The best answers cover semantics, keyboard use, visual contrast, and testing."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAccessibility is not a last-minute checklist item. In production it is a review workflow: start with semantic structure, verify keyboard order and visible focus, confirm contrast and labels, then test with screen readers and automated tools. The best answers sound like a bug-prevention plan, not a loose list of nice-to-haves."
         },
         {
           "type": "list",
@@ -3218,12 +3222,16 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common mistakes</strong>\n\nProduction accessibility bugs usually come from the same places: a modal without a focus trap, a form error that uses color alone, custom controls with broken keyboard order, or ARIA pasted onto the wrong native element. Review the page in that order so you catch structural issues before polishing labels."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nUse semantic HTML first, add ARIA only when necessary, ensure keyboard navigation and focus visibility, verify color contrast, and test with real tools."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Accessibility Review Check",
       "scenario": "A teammate says, \"This page is accessible enough because we added some ARIA labels and alt text. Keyboard flow, focus states, color contrast, and semantic structure are nice extras we can polish later.\" Another teammate says, \"Accessibility is broader than that. Start with semantic HTML, make the page work with a keyboard, keep focus visible, label forms correctly, avoid relying on color alone, and verify with tools plus real assistive-tech checks.\" Which explanation is better?",
@@ -3254,10 +3262,10 @@
   {
     "id": "html-dom-tree-structure",
     "title": "DOM Tree Structure and Depth",
-    "description": "Explain the DOM as a tree of nodes, estimate tree depth/height, and discuss performance implications. A balanced DOM has height about log_b(n) (O(log n)), while a skewed DOM can be O(n) deep. Mention node types and why depth affects traversal and layout.",
+    "description": "DOM tree structure matters under the hood because deep or unstable trees increase traversal, style recalculation, and layout cost, which turns into real debugging and performance pitfalls.",
     "seo": {
-      "title": "What is DOM tree structure and why does depth matter?",
-      "description": "DOM tree structure is the parent-child hierarchy of nodes in a document, and excessive depth can increase traversal, style, and layout cost."
+      "title": "DOM tree structure under the hood: depth, traversal, and performance pitfalls",
+      "description": "Learn how DOM depth affects traversal, style/layout work, and why deeply nested trees become a real performance debugging problem."
     },
     "type": "trivia",
     "technology": "html",
@@ -3275,7 +3283,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe DOM is a <strong>tree</strong> of nodes (document, element, text, comment). Each element has a single parent and zero or more children."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nUnder the hood, the DOM is a <strong>tree</strong> of nodes (document, element, text, comment). In real debug and performance work, tree depth matters because each element still has one parent and zero or more children, and overly nested branches make traversal, style recalculation, and layout work harder to reason about."
         },
         {
           "type": "text",
@@ -3305,7 +3313,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "DOM Depth Performance Check",
       "scenario": "A teammate says, \"The DOM is basically just a flat list the browser can scan however it wants, so deep nesting is mostly a readability issue. It does not really affect traversal or layout work.\" Another teammate says, \"The DOM is a tree of nodes with parent-child relationships. Tree depth matters because deep or skewed structures can increase traversal, style recalculation, and layout cost, even though real pages are not perfectly balanced trees.\" Which explanation is better?",

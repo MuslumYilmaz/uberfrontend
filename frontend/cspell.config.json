@@ -1,0 +1,20 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "dictionaryDefinitions": [
+    {
+      "name": "frontendatlas-words",
+      "path": "./cspell/project-words.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": [
+    "frontendatlas-words"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    "dist/**",
+    "coverage/**",
+    "reports/**"
+  ]
+}

@@ -60,6 +60,12 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     Highlight the wins that show you can build, ship, and improve products —
     not just that you “worked on features.”
     </p>
+    <p>
+    A strong resume should also tee up the next screens. If your bullets naturally lead into
+    <a [routerLink]="['/guides/interview-blueprint/coding-interviews']">coding interview conversations</a>
+    or a sharper <a [routerLink]="['/guides/interview-blueprint/system-design']">front-end system design story</a>,
+    recruiters can already see how you might perform once you reach the interview loop.
+    </p>
 
     <!-- Section 1 -->
     <h2>Core principles</h2>

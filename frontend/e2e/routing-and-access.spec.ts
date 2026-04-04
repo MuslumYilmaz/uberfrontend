@@ -143,4 +143,30 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByRole('heading', { name: /Frontend Interview Questions/i })).toBeVisible();
     await expect(page.locator('.iq-item')).not.toHaveCount(0);
   });
+
+  test('legacy aliases redirect to the current canonical routes', async ({ page }) => {
+    await page.goto('/safeJsonParse');
+    await expect(page).toHaveURL('/javascript/coding/js-safe-json-parse');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+
+    await page.goto('/code-reviews');
+    await expect(page).toHaveURL('/coding');
+
+    await page.goto('/guides/playbook/intro');
+    await expect(page).toHaveURL('/guides/interview-blueprint/intro');
+    await expect(page.getByRole('heading', { name: /frontend interview preparation guide/i })).toBeVisible();
+  });
+
+  test('invalid guide slugs redirect to 404 and preserve the missing path', async ({ page }) => {
+    await page.goto('/guides/interview-blueprint/not-a-real-guide');
+    await expect(page).toHaveURL('/404');
+    await expect(page.getByTestId('not-found-page')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem('fa:lastMissing'))).toBe('/guides/interview-blueprint/not-a-real-guide');
+  });
+
+  test('invalid practice question slugs redirect to 404', async ({ page }) => {
+    await page.goto('/javascript/coding/not-a-real-question');
+    await expect(page).toHaveURL('/404');
+    await expect(page.getByTestId('not-found-page')).toBeVisible();
+  });
 });

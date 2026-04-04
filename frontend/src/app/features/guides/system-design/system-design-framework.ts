@@ -82,6 +82,12 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         only 1-to-1 messaging or if group chats, file sharing, and reactions are required. 
         These questions show that you think like a product owner, not just a coder.
       </p>
+      <p>
+        If requirement gathering is where you usually freeze, skim the
+        <a [routerLink]="['/guides','system-design-blueprint','foundations']">scope and trade-offs guide</a>
+        first, then come back to this 5-step method. It gives you stronger prompts for
+        narrowing the problem before you start drawing boxes.
+      </p>
 
       <h2>Step 2: Identify core components</h2>
       <p>
@@ -157,6 +163,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Dropping in even <em>one or two</em> of these points during your answer 
         shows you’re thinking like a senior engineer who cares about real users, 
         not just happy-path code.
+      </p>
+      <p>
+        When performance becomes the deciding trade-off, jump to the
+        <a [routerLink]="['/guides','system-design-blueprint','performance']">optimization deep dive</a>
+        for a concrete bottleneck-to-priority workflow instead of listing random fixes.
       </p>
 
       <h2>Step 5: Summarize trade-offs and next steps</h2>

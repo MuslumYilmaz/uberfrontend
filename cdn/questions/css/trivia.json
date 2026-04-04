@@ -106,10 +106,10 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content and gives the browser CSS before first paint.",
+    "description": "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content, and most real bugs come from wrong paths, wrong placement, or render-blocking trade-offs you should debug in DevTools.",
     "seo": {
-      "title": "How to Link CSS to HTML: link rel=\"stylesheet\" Guide",
-      "description": "See the correct way to attach an external CSS file in the HTML head, avoid common path mistakes, and improve first render by loading stylesheets early."
+      "title": "Link CSS to HTML: debug broken paths and avoid FOUC",
+      "description": "Use <link rel=\"stylesheet\"> in <head>, debug 404/path mistakes, and avoid unstyled first paint when wiring CSS into real pages."
     },
     "answer": {
       "blocks": [
@@ -339,10 +339,10 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 2,
-    "description": "The background-color property in CSS sets the background color of an element or the entire webpage. It supports multiple color formats including named colors, hexadecimal, RGB, RGBA, and HSL. When applied to the &lt;body&gt; element, it changes the entire page’s background color. Backgrounds affect contrast and readability. Test with dark mode and accessibility contrast checks.",
+    "description": "Use background-color on the body or on individual elements, but treat it as a readability decision, not just paint. Compare hex/rgb/hsl formats, watch contrast in dark mode, and avoid common theming pitfalls where a \"simple\" color change hurts legibility.",
     "seo": {
-      "title": "How to Set Background Color in CSS (body and elements)",
-      "description": "Learn how background-color works on body and other elements, compare color formats, and keep readability high with accessible contrast choices."
+      "title": "CSS background-color in practice: body vs sections, contrast, and theme pitfalls",
+      "description": "Set page or component backgrounds with accessible contrast, compare color formats, and avoid common theme or readability pitfalls."
     },
     "answer": {
       "blocks": [
@@ -2600,12 +2600,12 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "This question is specifically about selector scoring (specificity points), not the full cascade algorithm. Explain how selector weights are computed and compared, then mention tie-breakers briefly. Keep the deep dive on origin/importance/order for the dedicated cascade question.",
+    "description": "This question is specifically about selector scoring (specificity points), not the full cascade algorithm. Explain how selector weights are computed and compared, then mention tie-breakers briefly. Use it to debug why one rule wins, why another loses, and why !important often hides the real specificity problem. Keep the deep dive on origin/importance/order for the dedicated cascade question.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>When multiple CSS rules apply to the same element, the browser resolves conflicts using <em>specificity</em>. Specificity is calculated based on the selector’s type — IDs, classes, attributes, and element names each contribute differently to its weight."
+          "text": "<strong>Overview</strong><br><br>When multiple CSS rules apply to the same element, the browser resolves conflicts using <em>specificity</em>. Specificity is calculated based on the selector's type - IDs, classes, attributes, and element names each contribute differently to its weight. When a \"simple\" override refuses to apply, specificity is often the first debug clue."
         },
         {
           "type": "text",
@@ -2693,8 +2693,8 @@
     ],
     "updatedAt": "2026-02-01",
     "seo": {
-      "title": "How does CSS specificity work?",
-      "description": "CSS specificity assigns selector weights, and the highest-weight matching rule wins unless !important or later equal-specificity rules override it."
+      "title": "CSS specificity under the hood: debug override bugs without !important",
+      "description": "Learn selector scoring, tie-breakers, and the common pitfalls that create specificity wars in production CSS."
     },
     "incidentCard": {
       "title": "Specificity Conflict Check",
@@ -2723,12 +2723,12 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Media queries are conditional CSS rules that apply styles based on device characteristics such as screen size, resolution, or orientation. They are the foundation of responsive web design, allowing content to adapt to various devices and viewports.",
+    "description": "Use media queries as a production breakpoint strategy: adapt layouts, respect user preferences, and avoid responsive pitfalls caused by viewport-only thinking.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Media queries enable developers to define different styles depending on the device’s capabilities. This allows webpages to look and function optimally across desktops, tablets, and smartphones, forming the backbone of responsive design."
+          "text": "<strong>Overview</strong><br><br>Media queries are not just responsive CSS trivia. In production they define your breakpoint strategy, user-preference handling, and fallback rules when layouts change across devices. Strong answers talk about <strong>mobile-first defaults</strong>, <strong>pitfalls</strong> like overfitting to a few screen widths, and when viewport queries should give way to container queries."
         },
         {
           "type": "list",
@@ -2805,10 +2805,10 @@
       "layout",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What are media queries in CSS?",
-      "description": "Media queries apply CSS rules only when conditions like viewport width, orientation, or resolution match."
+      "title": "CSS media queries: breakpoint strategy, user preferences, and pitfalls",
+      "description": "Use CSS media queries for breakpoint strategy, prefers-reduced-motion and color-scheme support, and avoid common mobile-first or viewport-only pitfalls."
     },
     "incidentCard": {
       "title": "Responsive Rule Check",
@@ -3466,12 +3466,12 @@
     "technology": "css",
     "difficulty": "hard",
     "importance": 3,
-    "description": "Hardware acceleration and compositing layers are critical for smooth, performant animations in CSS. Understanding how the browser's rendering pipeline works — including layout, paint, and composite steps — helps developers optimize animations and avoid costly reflows.",
+    "description": "Understand how compositing affects CSS animation performance, how to debug layout vs paint vs composite bottlenecks, and when will-change becomes a performance pitfall.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>CSS animations can either be handled by the <em>CPU</em> (software rendering) or <em>GPU</em> (hardware acceleration). When hardware acceleration is enabled, specific properties (like <code>transform</code> and <code>opacity</code>) are offloaded to the GPU, allowing smoother transitions and freeing up the CPU for other tasks. The browser achieves this by creating a new <em>compositing layer</em> for the animated element."
+          "text": "<strong>Overview</strong><br><br>Hardware acceleration matters when you are <strong>debugging</strong> why one animation stays smooth and another stutters. The useful mental model is layout → paint → composite: properties like <code>transform</code> and <code>opacity</code> often stay on a compositor layer, while layout-heavy changes do not. In production, the pitfall is assuming the GPU makes every animation free; too many promoted layers or careless <code>will-change</code> hints can create new performance problems."
         },
         {
           "type": "text",
@@ -3561,10 +3561,10 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How does hardware acceleration affect CSS animations?",
-      "description": "Hardware acceleration improves animation smoothness by offloading composited properties like transform and opacity to the GPU."
+      "title": "CSS hardware acceleration: compositing debug and will-change pitfalls",
+      "description": "Learn how hardware acceleration changes CSS animation performance, how to debug paint vs composite bottlenecks, and why overusing will-change backfires."
     },
     "incidentCard": {
       "title": "Animation Performance Check",

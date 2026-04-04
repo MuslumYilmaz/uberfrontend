@@ -190,6 +190,39 @@ function extractComponentTemplate(filePath) {
   return template;
 }
 
+function resolveGuideImplementationPath(filePath, seen = new Set()) {
+  const absolutePath = path.resolve(filePath);
+  if (!fs.existsSync(absolutePath)) return absolutePath;
+  if (seen.has(absolutePath)) return absolutePath;
+  seen.add(absolutePath);
+
+  const source = fs.readFileSync(absolutePath, 'utf8');
+  if (source.includes('@Component(')) return absolutePath;
+
+  const sourceFile = ts.createSourceFile(
+    absolutePath,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+
+  const reExport = sourceFile.statements.find(
+    (statement) =>
+      ts.isExportDeclaration(statement)
+      && statement.moduleSpecifier
+      && ts.isStringLiteral(statement.moduleSpecifier),
+  );
+
+  if (!reExport || !ts.isStringLiteral(reExport.moduleSpecifier)) {
+    return absolutePath;
+  }
+
+  const targetPath = path.resolve(path.dirname(absolutePath), `${reExport.moduleSpecifier.text}.ts`);
+  if (!fs.existsSync(targetPath)) return absolutePath;
+  return resolveGuideImplementationPath(targetPath, seen);
+}
+
 function normalizeText(value) {
   return String(value || '')
     .replace(/```[\s\S]*?```/g, ' ')
@@ -250,9 +283,10 @@ function validateEntry(entry) {
     return;
   }
 
-  const template = extractComponentTemplate(entry.componentPath);
+  const inspectionPath = resolveGuideImplementationPath(entry.componentPath);
+  const template = extractComponentTemplate(inspectionPath);
   if (!template) {
-    addError(`${id} is missing an inline component template: ${relFromRepo(entry.componentPath)}`);
+    addError(`${id} is missing an inline component template: ${relFromRepo(inspectionPath)}`);
     return;
   }
   if (!/<fa-guide-shell\b/.test(template)) {

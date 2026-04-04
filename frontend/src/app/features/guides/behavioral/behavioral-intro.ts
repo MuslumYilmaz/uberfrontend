@@ -23,6 +23,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Interviewers are listening for clear thinking, ownership, collaboration, and growth. This intro
         explains the signals they score and how to prepare stories that make those signals obvious.
       </p>
+      <p>
+        Think of this page as a lightweight scoring rubric. The goal is not to sound polished in the abstract,
+        but to make your judgment, trade-offs, and evidence visible fast enough that an interviewer can trust the
+        story before time runs out.
+      </p>
 
       <h2>What behavioral interviews really test</h2>
       <ul>

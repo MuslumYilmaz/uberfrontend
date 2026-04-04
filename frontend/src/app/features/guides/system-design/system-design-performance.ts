@@ -148,6 +148,21 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Script cue: "I will baseline where time is spent first, then optimize the slowest stage with highest user impact."
       </p>
 
+      <h2>Worked Example: LCP/INP Triage on a Search Dashboard</h2>
+      <p>
+        Imagine a dashboard interview prompt where the first route loads in 3.8s LCP on
+        mid-tier mobile and filter interaction spikes to 280ms INP. A strong answer does
+        not start with ten optimization buzzwords. It starts by isolating the two
+        bottlenecks that matter most: the chart bundle delaying first render, and a large
+        result list causing expensive rerenders on every filter change.
+      </p>
+      <p>
+        From there, your top-2 plan is clear: first split and defer the heavy charting
+        package to bring LCP down, then reduce interaction cost with request dedupe,
+        lighter row rendering, or virtualization so INP drops under the target budget.
+        That sequence shows prioritization, not just awareness of performance tools.
+      </p>
+
       <h2>Optimization Levers by Layer</h2>
       <table>
         <thead>

@@ -1215,16 +1215,16 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why React treats props as read-only inputs (UI = f(props, state, context)). Connect this to predictable rendering, parent ownership, referential equality optimizations (PureComponent/React.memo), and why mutating props can cause missed updates, shared-state bugs, and inconsistent UI—especially under concurrent rendering and StrictMode.",
+    "description": "Explain props immutability as a production contract: parent ownership, predictable rendering, memoization safety, and the shared-state bugs you debug when children mutate props.",
     "seo": {
-      "title": "Why are props immutable in React?",
-      "description": "Props are immutable in React because parent components own them, and mutating them in children breaks predictable updates and memoization."
+      "title": "React props immutability: parent ownership, memoization, and mutation bugs",
+      "description": "Learn why React props are immutable, how mutation breaks parent ownership and memoization, and which production bugs appear when children mutate shared inputs."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Props are <em>inputs</em> owned by the parent. React’s mental model is: <code>UI = f(props, state, context)</code>. If a child can mutate its inputs, rendering stops being a pure computation and you get hidden side effects and shared mutable state across components."
+          "text": "<strong>Core idea</strong><br><br>Props are <em>inputs</em> owned by the parent. React’s mental model is: <code>UI = f(props, state, context)</code>. If a child mutates those inputs, rendering stops being a pure computation and you get hidden side effects, broken memoization assumptions, and shared mutable state bugs that are painful to <strong>debug</strong> in production."
         },
         {
           "type": "list",
@@ -1338,7 +1338,7 @@
       "data-flow",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Props Immutability Bug Check",
       "scenario": "A memoized `UserCard` receives `user` as a prop. Inside the child, someone mutates `user.name` directly and now updates are inconsistent across siblings. What is the best fix?",
@@ -1629,12 +1629,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Keys in React help identify which list items have changed, been added, or been removed. They make the reconciliation process efficient by allowing React to re-render only the modified elements instead of rebuilding the entire list.",
+    "description": "Keys are React's identity contract for list items. Use stable keys to prevent reordered rows, lost input state, and production bugs where React preserves the wrong component.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>When rendering lists in React using <code>map()</code>, each item should have a unique <code>key</code> prop. Keys help React track elements between renders, improving performance and preventing bugs during dynamic updates or reordering."
+          "text": "<strong>Overview</strong><br><br>Keys are not just a performance hint. In React they define item <strong>identity</strong>, which is why a bad key can create production bugs: checked boxes jump rows, inputs keep the wrong text after reordering, or a row preserves state that belonged to a different item. Strong answers frame keys as a debugging tool for list correctness, not only as reconciliation trivia."
         },
         {
           "type": "code",
@@ -1727,10 +1727,10 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why are keys important in React lists?",
-      "description": "Keys give list items stable identity so React can correctly match, move, and preserve state during reconciliation."
+      "title": "React keys in lists: identity bugs, reordered rows, and stable state",
+      "description": "Learn why React keys are about stable identity, how bad keys cause reordered-row bugs and state leakage, and which key choices are safe in production."
     }
   },
   {
@@ -3405,12 +3405,16 @@
     ],
     "difficulty": "hard",
     "importance": 5,
-    "description": "Preventing unnecessary re-renders in React is crucial for maintaining optimal performance. Re-renders occur when a component's state, props, or context changes, but React provides several techniques and patterns to minimize them — including memoization, pure components, stable references, and smart state management.",
+    "description": "Prevent unnecessary React rerenders with a profiling-first workflow: find unstable props, broad context churn, and memoization pitfalls before reaching for blanket useMemo or useCallback.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>React re-renders components whenever their <code>state</code>, <code>props</code>, or <code>context</code> change. While this ensures UI consistency, unnecessary re-renders can slow down large applications. To optimize performance, React provides techniques like <code>React.memo()</code>, <code>useMemo()</code>, <code>useCallback()</code>, and state hoisting strategies that reduce redundant rendering cycles."
+          "text": "<strong>Overview</strong><br><br>The goal is not to stop every rerender. The goal is to <strong>debug</strong> the expensive ones first. In production, unnecessary rerenders usually come from unstable object or function props, context fanout, or state stored too high in the tree. Good answers start with profiling, then choose the smallest fix instead of scattering <code>React.memo()</code>, <code>useMemo()</code>, and <code>useCallback()</code> everywhere."
+        },
+        {
+          "type": "text",
+          "text": "<strong>When memoization hurts</strong><br><br>Memoization is a <strong>pitfall</strong> when you add it before profiling. Dependency arrays become harder to reason about, stale closures sneak in, and shallow comparison work can outweigh the rerender you were trying to save. Use memo tools when they remove a measured bottleneck, not as a blanket rule."
         },
         {
           "type": "list",
@@ -3485,10 +3489,10 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How do you prevent unnecessary re-renders in React?",
-      "description": "Prevent unnecessary React re-renders by stabilizing props, splitting state, and using memoization tools like React.memo, useMemo, and useCallback."
+      "title": "Prevent React rerenders: profiling-first fixes and memoization pitfalls",
+      "description": "Debug React rerenders by profiling first, stabilizing references, shrinking context blast radius, and avoiding memoization patterns that add complexity without real wins."
     },
     "incidentCard": {
       "title": "Rerender Scope Root Cause Check",
@@ -3623,12 +3627,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Reconciliation is the process React uses to compare the current Virtual DOM with the previous one and determine the minimal set of changes needed to update the real DOM. It ensures React applications stay fast and efficient even when rendering complex UI trees.",
+    "description": "Reconciliation is React’s identity model for deciding whether a subtree keeps state or remounts. The high-value interview explanation is about preserve-vs-replace behavior when element types or keys change.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Reconciliation is the core mechanism that makes React performant. Whenever the state or props of a component change, React generates a new Virtual DOM tree. It then compares this new tree with the previous one to detect differences. This comparison process is called <em>reconciliation</em>, and the optimized algorithm React uses to perform it is known as the <em>diffing algorithm</em>."
+          "text": "<strong>Overview</strong><br><br>Reconciliation is React’s decision process for component identity: should this subtree be preserved, updated in place, or remounted? That distinction matters in interview and production bugs because changing an element type or unstable key can reset local state even when the UI looks almost the same. Diffing is one implementation detail inside that bigger preserve-vs-replace decision."
         },
         {
           "type": "list",
@@ -3697,13 +3701,13 @@
       "diffing",
       "basics"
     ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "companies": [
       "apple"
     ],
     "seo": {
-      "title": "What is reconciliation in React?",
-      "description": "Reconciliation is React's process of comparing previous and next element trees to decide the minimal UI updates."
+      "title": "React reconciliation: state preservation, remounts, and key-driven identity",
+      "description": "Understand how React decides to preserve or remount a subtree when element types or keys change, and why that shows up as form-reset and state-loss bugs in production."
     },
     "incidentCard": {
       "title": "Reconciliation Reset Root Cause Check",
@@ -3732,12 +3736,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "React’s diffing algorithm efficiently compares two Virtual DOM trees to find the minimal number of operations needed to synchronize the real DOM with the new state. It uses intelligent heuristics that make the process nearly O(n) instead of O(n³).",
+    "description": "React’s diffing algorithm uses O(n) heuristics based on element type and keys. The useful beyond-basics angle is understanding the under-the-hood assumptions, list-update pitfalls, and where those heuristics give the wrong intuition.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The diffing algorithm is the heart of React’s Virtual DOM system. Whenever a component’s state or props change, React constructs a new Virtual DOM and compares it to the previous one. Instead of checking every possible change (which would be computationally expensive), React uses smart assumptions to identify the minimal changes required."
+          "text": "<strong>Overview</strong><br><br>React’s diffing algorithm is the under-the-hood heuristic that makes reconciliation fast enough to use constantly. Instead of computing the perfect tree edit distance, React makes a few bets about element type and keys. Those bets are why list reordering with bad keys creates state bugs, and why the algorithm can feel surprising if you expect a full semantic understanding of your UI."
         },
         {
           "type": "list",
@@ -3806,13 +3810,13 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "companies": [
       "apple"
     ],
     "seo": {
-      "title": "How does React's diffing algorithm work?",
-      "description": "React diffing compares old and new trees with heuristics based on element type and keys to update only changed nodes."
+      "title": "React diffing algorithm: O(n) heuristics, keys, and list-update pitfalls",
+      "description": "Learn the under-the-hood heuristics React uses for diffing, how element type and keys drive updates, and which list-update pitfalls lead to confusing state bugs."
     },
     "incidentCard": {
       "title": "Diffing Identity Root Cause Check",
@@ -5662,12 +5666,12 @@
     ],
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "React 18 introduced the concurrent rendering foundation plus new APIs like createRoot, automatic batching, transitions, and new hooks. Explain the key changes and why they matter to users and developers.",
+    "description": "React 18 introduced concurrency foundations, transitions, and batching changes that matter in production migrations: responsiveness, StrictMode effect audits, and when createRoot changes behavior.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nReact 18 is about a new rendering foundation (concurrency) plus APIs that make apps feel more responsive without changing every component. It also adds new hooks and stricter dev checks to surface unsafe effects."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nReact 18 is not just a feature list. It is a new rendering foundation plus migration changes that show up in production and interview discussions: more responsive update scheduling, transitions for non-urgent work, and stricter dev checks that expose effect bugs you must actually fix."
         },
         {
           "type": "list",
@@ -5730,10 +5734,10 @@
       "performance",
       "hooks"
     ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is new in React 18?",
-      "description": "React 18 introduced createRoot, automatic batching, transitions, and concurrent rendering features that improve responsiveness and update scheduling."
+      "title": "React 18: createRoot, transitions, batching, and migration pitfalls",
+      "description": "Learn what changed in React 18, why transitions and automatic batching matter, and which StrictMode or migration pitfalls show up after moving to createRoot."
     },
     "incidentCard": {
       "title": "React 18 Responsiveness Choice Check",

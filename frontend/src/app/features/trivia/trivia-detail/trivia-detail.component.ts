@@ -1870,13 +1870,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/^##\s?(.*)$/gm, '<h3 class="md-h md-h3">$1</h3>')
       .replace(/^#\s?(.*)$/gm, '<h2 class="md-h md-h2">$1</h2>');
 
-    // Ordered lists
-    html = html.replace(/^[ \t]{0,3}\d+\.\s+(.+)$/gm, '<li>$1</li>');
-    html = html.replace(/(?:\s*<li>.*?<\/li>)+/gms, (m: string) => `<ol class="md-ol">${m}</ol>`);
-
-    // Unordered lists
-    html = html.replace(/^[ \t]{0,3}[-*]\s+(.+)$/gm, '<li>$1</li>');
-    html = html.replace(/(?:\s*<li>.*?<\/li>)+/gms, (m: string) => `<ul class="md-ul">${m}</ul>`);
+    // Lists
+    html = this.renderMarkdownLists(html);
 
     // Blockquotes (already whitelisted above too)
     html = html.replace(/^\>\s?(.*)$/gm, '<blockquote class="md-quote">$1</blockquote>');
@@ -1903,6 +1898,41 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     return html;
+  }
+
+  private renderMarkdownLists(source: string): string {
+    const orderedPattern = /^[ \t]{0,3}\d+\.\s+(.+)$/;
+    const unorderedPattern = /^[ \t]{0,3}[-*]\s+(.+)$/;
+    const lines = source.split('\n');
+    const output: string[] = [];
+
+    for (let index = 0; index < lines.length;) {
+      const orderedMatch = lines[index].match(orderedPattern);
+      const unorderedMatch = lines[index].match(unorderedPattern);
+
+      if (!orderedMatch && !unorderedMatch) {
+        output.push(lines[index]);
+        index += 1;
+        continue;
+      }
+
+      const isOrdered = Boolean(orderedMatch);
+      const tagName = isOrdered ? 'ol' : 'ul';
+      const className = isOrdered ? 'md-ol' : 'md-ul';
+      const pattern = isOrdered ? orderedPattern : unorderedPattern;
+      const items: string[] = [];
+
+      while (index < lines.length) {
+        const match = lines[index].match(pattern);
+        if (!match) break;
+        items.push(`<li>${match[1]}</li>`);
+        index += 1;
+      }
+
+      output.push(`<${tagName} class="${className}">${items.join('')}</${tagName}>`);
+    }
+
+    return output.join('\n');
   }
 
 }
