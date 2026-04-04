@@ -13,7 +13,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['system design','foundations','constraints']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
     <h1>Scope, Constraints, and Trade-offs</h1>
     <p>
       The easiest way to stumble in a system design interview is to start drawing 
@@ -118,4 +119,5 @@ export class SystemDesignFoundationsArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

@@ -15,7 +15,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['behavioral','communication','leadership']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <p>
         Behavioral rounds measure <strong>how you work with others</strong>, not just what you can code.
@@ -185,4 +186,5 @@ export class BehavioralIntroArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

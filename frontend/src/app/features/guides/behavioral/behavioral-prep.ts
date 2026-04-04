@@ -15,7 +15,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         [tags]="['behavioral','prep','stories']"
         [prev]="prev"
         [next]="next"
-        [leftNav]="leftNav">
+        [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
         <p>
             Most people treat behavioral prep as an afterthought. They focus on LeetCode,
@@ -145,4 +146,5 @@ export class BehavioralPrepArticle {
     @Input() prev: any[] | null = null;
     @Input() next: any[] | null = null;
     @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

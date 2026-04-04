@@ -15,7 +15,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['behavioral','frontend','scenarios']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <p>
         These behavioral questions target real-world decisions frontend developers make: trade-offs in design, performance, accessibility, and collaboration. Your goal is to show both judgment and technical empathy—how you balance UX, engineering constraints, and team alignment.
@@ -64,4 +65,5 @@ export class BehavioralFeAdvancedArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

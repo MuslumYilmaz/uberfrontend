@@ -49,6 +49,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     [prev]="prev"
     [next]="next"
     [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined"
   >
     <p>
       In front-end interviews, “system design” doesn’t mean load balancers and databases —
@@ -313,4 +314,5 @@ export class FeSystemDesignFastFrameworkArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

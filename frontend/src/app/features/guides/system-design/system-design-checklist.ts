@@ -13,7 +13,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['system design','checklist','cheatsheet']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <p>
         A quick mental map for any front-end system design interview. 
@@ -191,4 +192,5 @@ export class SystemDesignChecklistArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

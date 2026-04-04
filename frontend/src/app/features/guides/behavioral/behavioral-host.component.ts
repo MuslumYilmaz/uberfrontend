@@ -12,6 +12,7 @@ import { GuideDetailResolved } from '../../../core/resolvers/guide-detail.resolv
 type GuideArticleInputs = {
     prev?: any[] | null;
     next?: any[] | null;
+    readerPromise?: string | null;
     leftNav?: {
         title?: string;
         sections: Array<{ title: string; items: Array<{ title: string; link: any[]; active?: boolean }> }>;
@@ -112,6 +113,7 @@ export class BehavioralHostComponent implements OnDestroy {
             const ref = this.vc.createComponent<GuideArticleInputs>(Cmp);
             ref.instance.prev = prev;
             ref.instance.next = next;
+            ref.instance.readerPromise = current.seo?.readerPromise || null;
             ref.instance.leftNav = leftNav;
             this.showShellHeading.set(false);
         } catch {

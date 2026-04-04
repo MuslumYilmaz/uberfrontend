@@ -62,6 +62,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     [prev]="prev"
     [next]="next"
     [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined"
   >
     <p>
     In a UI interview, the fastest way to impress is to <strong>ship a small thing that works</strong>
@@ -310,4 +311,5 @@ export class FeUiIn60Article {
     @Input() prev: any[] | null = null;
     @Input() next: any[] | null = null;
     @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

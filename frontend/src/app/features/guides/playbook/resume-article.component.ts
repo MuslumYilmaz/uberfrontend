@@ -46,6 +46,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     [prev]="prev"
     [next]="next"
     [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined"
   >
     <!-- Intro -->
     <p>
@@ -222,4 +223,5 @@ export class ResumeArticle {
     @Input() prev: any[] | null = null;
     @Input() next: any[] | null = null;
     @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }

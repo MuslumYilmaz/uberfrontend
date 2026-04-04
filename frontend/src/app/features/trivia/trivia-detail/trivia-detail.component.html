@@ -1,5 +1,5 @@
 <!-- ========================= trivia-detail.component.html ========================= -->
-<div class="page-frame">
+<div class="page-frame" (click)="onTrackedRootClick($event)">
     <ng-template #questionListTpl>
         <ul class="side-list">
             <li *ngFor="let q of sidebarQuestions; trackBy: trackByQuestionId">
@@ -30,7 +30,7 @@
     </aside>
 
     <!-- Detail -->
-    <main class="main" #mainScroll data-testid="trivia-detail-main">
+    <main class="main" #mainScroll data-testid="trivia-detail-main" (scroll)="onMainScroll()">
         <div *ngIf="loadState() === 'loaded' && question() as q; else stateBlock" class="main-stack">
             <ng-container *ngIf="!locked(); else lockedView">
             <!-- Mobile/tablet: closable question nav -->
@@ -214,6 +214,7 @@
                 <div class="card-body" *ngIf="similarOpen()">
                     <div class="similar-list">
                         <a class="similar-item" *ngFor="let s of similarItems(); trackBy: trackBySimilarQuestion"
+                            data-trivia-link-zone="similar"
                             [routerLink]="['/', tech, 'trivia', s.question.id]"
                             [state]="similarNavState(s.question)">
                             <span class="similar-title">{{ s.question.title }}</span>
@@ -229,13 +230,13 @@
                 <div class="card-body">
                     <ul class="guide-links">
                         <li>
-                            <a [routerLink]="['/guides/interview-blueprint/quiz']">Fundamentals Check: Browser, CSS, JS, HTTP</a>
+                            <a data-trivia-link-zone="guides" [routerLink]="['/guides/interview-blueprint/quiz']">Fundamentals Check: Browser, CSS, JS, HTTP</a>
                         </li>
                         <li>
-                            <a [routerLink]="['/guides/interview-blueprint/javascript-interviews']">JavaScript Problems That Actually Show Up</a>
+                            <a data-trivia-link-zone="guides" [routerLink]="['/guides/interview-blueprint/javascript-interviews']">JavaScript Problems That Actually Show Up</a>
                         </li>
                         <li>
-                            <a [routerLink]="['/guides/interview-blueprint/ui-interviews']">Build Great UI in 60 Minutes</a>
+                            <a data-trivia-link-zone="guides" [routerLink]="['/guides/interview-blueprint/ui-interviews']">Build Great UI in 60 Minutes</a>
                         </li>
                     </ul>
                 </div>
@@ -248,10 +249,10 @@
                         Use the relevant interview-question hub first, then move into a concrete study plan before targeted company sets.
                     </p>
                     <div class="prep-bridge__links">
-                        <a [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
-                        <a [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
-                        <a [routerLink]="['/companies']">Browse company questions</a>
-                        <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/companies']">Browse company questions</a>
+                        <a *ngIf="hasFrameworkPrepPath()" data-trivia-link-zone="prep_bridge" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
                     </div>
                 </div>
             </section>

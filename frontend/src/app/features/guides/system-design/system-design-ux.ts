@@ -13,7 +13,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [tags]="['system design', 'interface', 'radio framework', 'frontend system design']"
       [prev]="prev"
       [next]="next"
-      [leftNav]="leftNav">
+      [leftNav]="leftNav"
+      [readerPromise]="readerPromise || undefined">
 
       <h2>If You Remember One Thing</h2>
       <p>
@@ -498,4 +499,5 @@ export class SystemDesignCrossCuttingArticle {
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;
+  @Input() readerPromise: string | null = null;
 }
