@@ -62,6 +62,13 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       If you’ve only prepared for coding rounds, this one can feel unfamiliar — but it’s 
       just about showing clear, structured thinking.
     </p>
+    <p>
+      If you want the broader scoring context first, read the
+      <a [routerLink]="['/guides','system-design-blueprint','intro']">frontend system design intro</a>
+      before using this page as your fast answer script. That intro explains what the
+      round really tests; this article focuses on the response shape you can reuse under
+      time pressure.
+    </p>
 
     <h2>Step 1: Clarify the feature</h2>
     <p>

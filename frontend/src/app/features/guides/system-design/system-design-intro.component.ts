@@ -30,6 +30,12 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         with clarity and confidence. Think of it less as “getting the right answer” 
         and more as <em>teaching the interviewer how you reason through a real problem</em>.
       </p>
+      <p>
+        If you want a reusable interview script instead of broad advice, continue into the
+        <a [routerLink]="['/guides/system-design-blueprint/foundations']">scope-and-trade-off foundations</a>
+        and the <a [routerLink]="['/guides/system-design-blueprint/framework']">answer framework</a> after this intro.
+        Those chapters turn the scoring signals here into a practical workflow.
+      </p>
 
       <h2>Why companies ask these questions</h2>
       <p>

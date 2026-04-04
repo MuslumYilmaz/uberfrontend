@@ -243,7 +243,7 @@
     "route": "/angular/trivia/angular-data-binding",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Data binding is how Angular connects component state (TS) to the template (HTML) and back. It’s mostly one-way (component ➜ view via interpolation/property bindings, view ➜ component via event bindings). Two-way binding…",
+    "summary": "Angular data binding is mostly explicit one-way flow in one direction at a time: component state into the DOM, events back into the component, and two-way syntax only as sugar. The useful angle is when property versus a…",
     "tags": [
       "angular",
       "data-binding",
@@ -253,7 +253,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-data-binding"
   },
@@ -563,7 +563,7 @@
     "route": "/angular/trivia/angular-appmodule-standalone-changes",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "This question is about AppModule migration mechanics in standalone Angular. Explain exactly what moved to bootstrapApplication/ApplicationConfig, component imports, and route-level providers, then show how to migrate pr…",
+    "summary": "This question is about standalone migration execution: what moved from AppModule into bootstrapApplication or ApplicationConfig, component imports, and route providers, plus the provider-scope and route-wiring bugs team…",
     "tags": [
       "angular",
       "modules",
@@ -573,7 +573,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-appmodule-standalone-changes"
   },
@@ -686,7 +686,7 @@
     "route": "/angular/trivia/angular-hierarchical-dependency-injection-real-bug",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Angular’s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get mul…",
+    "summary": "Angular DI is hierarchical, so provider location changes instance count and service lifetime. The useful angle is the real production bug: re-providing a service in a component or route and silently splitting shared sta…",
     "tags": [
       "angular",
       "dependency-injection",
@@ -696,7 +696,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-hierarchical-dependency-injection-real-bug"
   },
@@ -749,7 +749,7 @@
     "route": "/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Memory leaks in Angular almost always come from forgotten subscriptions, long-lived streams, or global listeners. The correct fixes include using the async pipe, takeUntilDestroyed/DestroyRef, takeUntil with a Subject,…",
+    "summary": "Most Angular memory leaks come from long-lived streams, global listeners, or timers that outlive a component. The practical angle is knowing when AsyncPipe, takeUntilDestroyed, or manual teardown actually matters and wh…",
     "tags": [
       "angular",
       "rxjs",
@@ -759,7 +759,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-prevent-memory-leaks-unsubscribe-patterns"
   },
@@ -770,7 +770,7 @@
     "route": "/angular/trivia/angular-ngif-dom-lifecycle",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "*ngIf is a structural directive that conditionally creates and destroys an embedded view. That means DOM nodes, component instances, directives, listeners, and template bindings inside the *ngIf block are actually creat…",
+    "summary": "*ngIf is not a visibility toggle; it creates and destroys embedded views. The practical angle is lifecycle and debug behavior: state resets, ngOnDestroy cleanup, and the production choice between real teardown and simpl…",
     "tags": [
       "angular",
       "directives",
@@ -780,7 +780,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-ngif-dom-lifecycle"
   },
@@ -791,7 +791,7 @@
     "route": "/angular/trivia/angular-template-compilation-and-binding",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Angular turns your component template into generated render/update instructions (AOT or JIT). At runtime, change detection re-runs the update phase so bindings (text, properties, attributes, events) stay in sync with th…",
+    "summary": "Angular templates are not runtime strings; Ivy compiles them into creation and update instructions, AOT type-checks them, and change detection re-runs the update phase. The useful mental model is how this under-the-hood…",
     "tags": [
       "angular",
       "templates",
@@ -801,7 +801,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-template-compilation-and-binding"
   },
@@ -833,7 +833,7 @@
     "route": "/angular/trivia/angular-performance-optimization",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Angular provides a variety of built-in tools and best practices for optimizing performance in large applications. These include efficient change detection strategies, lazy loading, Ahead-of-Time (AOT) compilation, tree-…",
+    "summary": "Angular performance work starts with profiling, then reducing change-detection and rendering cost. The practical angle is identifying hotspots in large lists, expensive templates, unnecessary re-renders, and bundle-size…",
     "tags": [
       "angular",
       "performance",
@@ -843,7 +843,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-performance-optimization"
   },
@@ -854,7 +854,7 @@
     "route": "/angular/trivia/angular-zonejs-change-detection",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Zone.js is a library used by Angular to automatically track and intercept asynchronous operations such as events, promises, and timers. It notifies Angular whenever an async event completes so the framework can trigger…",
+    "summary": "Zone.js explains why Angular notices async work without manual wiring: it patches timers, promises, events, and other async APIs, then tells Angular when to run change detection. The useful angle is stale-view debugging…",
     "tags": [
       "angular",
       "zonejs",
@@ -864,7 +864,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-zonejs-change-detection"
   },
@@ -1048,7 +1048,7 @@
     "route": "/angular/trivia/ngrx-data-flow-end-to-end-angular",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "NgRx data flow in Angular follows a predictable loop: component dispatches actions, reducers create the next immutable state, selectors read and derive view data, and effects handle async side effects before dispatching…",
+    "summary": "NgRx data flow is a predictable loop, but the high-value explanation is operational: UI intent dispatches actions, reducers stay pure, effects handle async side effects, and selectors expose debug-friendly read models b…",
     "tags": [
       "angular",
       "store",
@@ -1058,7 +1058,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-26",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#ngrx-data-flow-end-to-end-angular"
   },
@@ -1365,7 +1365,7 @@
     "route": "/angular/trivia/angular-forroot-forchild",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "forRoot() and forChild() are Angular module configuration methods that help manage singleton services and routing across root and feature modules. forRoot() configures global providers and routes for the root module, wh…",
+    "summary": "forRoot() and forChild() are a legacy Angular module pattern for singleton setup and feature routing. The useful explanation is about avoiding provider-duplication bugs, understanding root vs feature scope, and knowing…",
     "tags": [
       "angular",
       "modules",
@@ -1375,7 +1375,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-forroot-forchild"
   },
@@ -1407,7 +1407,7 @@
     "route": "/angular/trivia/angular-services",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "This question is about service responsibilities and boundary design in Angular apps: what belongs in services, why teams split logic out of components, and how provider scope changes behavior. Reference DI only as much…",
+    "summary": "This question is about service responsibilities and boundary design in Angular apps: what belongs in services, why teams split logic out of components, and how provider scope changes behavior in production code. Referen…",
     "tags": [
       "angular",
       "services",
@@ -1428,7 +1428,7 @@
     "route": "/angular/trivia/angular-routing",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Angular routing is a feature that allows navigation between different views or components in a single-page application (SPA). Routes are defined using the RouterModule and configured with path-component mappings in a ro…",
+    "summary": "Angular routing is more than path-to-component mapping. The interview-ready explanation covers RouterOutlet, route trees, guards, lazy loading, and the production bugs you debug when navigation is misconfigured.",
     "tags": [
       "angular",
       "routing",
@@ -1438,7 +1438,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-routing"
   },
@@ -1449,7 +1449,7 @@
     "route": "/angular/trivia/angular-controlvalueaccessor-vs-custom-two-way-binding",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "ControlValueAccessor (CVA) is Angular’s official bridge between custom components and Angular Forms. It lets your component behave like a real form control (ngModel, formControl, formControlName) with validation, touche…",
+    "summary": "ControlValueAccessor is the bridge that makes a custom Angular component behave like a real form control. The useful comparison is not just value syncing, but validation, touched or dirty state, disabled propagation, an…",
     "tags": [
       "angular",
       "forms",
@@ -1459,7 +1459,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-controlvalueaccessor-vs-custom-two-way-binding"
   },
@@ -1491,7 +1491,7 @@
     "route": "/angular/trivia/angular-lazy-loading",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Lazy loading in Angular is a technique that loads feature modules only when they are needed, rather than at application startup. It improves performance by reducing the initial bundle size and speeding up the first load.",
+    "summary": "Angular lazy loading is a route-boundary and bundle-trade-off decision, not just “load later.” The useful angle is production routing: initial bundle relief, preloading strategy, and the pitfalls of fragmenting features…",
     "tags": [
       "angular",
       "routing",
@@ -1501,7 +1501,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-lazy-loading"
   },
@@ -1533,7 +1533,7 @@
     "route": "/angular/trivia/angular-vs-angularjs",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "AngularJS (1.x) and Angular (2+) share a name but are different frameworks. Angular (2+) is a rewrite with TypeScript, components, RxJS-first patterns, modern tooling, and a different rendering/change-detection model. E…",
+    "summary": "Compare AngularJS 1.x and modern Angular through real migration work: digest cycle versus component tree, $scope/controllers versus DI plus RxJS, and why this is a rewrite with production migration cost rather than a ve…",
     "tags": [
       "angular",
       "angularjs",
@@ -1543,7 +1543,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-vs-angularjs"
   },
@@ -1575,7 +1575,7 @@
     "route": "/angular/trivia/angular-component-metadata",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "The @Component decorator attaches metadata to a TypeScript class so Angular can treat it as a component. This metadata tells Angular how to render the view (template + styles), how to match it in HTML (selector), what d…",
+    "summary": "This is the under-the-hood contract between a plain class and Angular's compiler/runtime. @Component metadata tells Angular what selector to match, what template and styles to compile, which imports/providers define sco…",
     "tags": [
       "angular",
       "components",
@@ -1659,7 +1659,7 @@
     "route": "/angular/trivia/angular-ngfor-trackby",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "trackBy tells Angular how to uniquely identify items in an *ngFor list so it can reuse existing DOM nodes and component instances when the array changes. Without it (or with a bad trackBy), Angular may destroy and recre…",
+    "summary": "trackBy is Angular list identity, not just a micro-optimization. It prevents production bugs like lost focus, reset inputs, and child state churn by letting Angular reuse the right DOM rows when arrays refresh or reorde…",
     "tags": [
       "angular",
       "directives",
@@ -1669,7 +1669,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-ngfor-trackby"
   },
@@ -1870,7 +1870,7 @@
     "route": "/css/trivia/css-specificity-hierarchy",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "This question is specifically about selector scoring (specificity points), not the full cascade algorithm. Explain how selector weights are computed and compared, then mention tie-breakers briefly. Keep the deep dive on…",
+    "summary": "This question is specifically about selector scoring (specificity points), not the full cascade algorithm. Explain how selector weights are computed and compared, then mention tie-breakers briefly. Use it to debug why o…",
     "tags": [
       "css",
       "selectors",
@@ -1891,7 +1891,7 @@
     "route": "/css/trivia/css-hardware-acceleration",
     "tech": "css",
     "difficulty": "hard",
-    "summary": "Hardware acceleration and compositing layers are critical for smooth, performant animations in CSS. Understanding how the browser's rendering pipeline works — including layout, paint, and composite steps — helps develop…",
+    "summary": "Understand how compositing affects CSS animation performance, how to debug layout vs paint vs composite bottlenecks, and when will-change becomes a performance pitfall.",
     "tags": [
       "css",
       "performance",
@@ -1901,7 +1901,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-hardware-acceleration"
   },
@@ -1933,7 +1933,7 @@
     "route": "/css/trivia/css-background-color",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "The background-color property in CSS sets the background color of an element or the entire webpage. It supports multiple color formats including named colors, hexadecimal, RGB, RGBA, and HSL. When applied to the &lt;bod…",
+    "summary": "Use background-color on the body or on individual elements, but treat it as a readability decision, not just paint. Compare hex/rgb/hsl formats, watch contrast in dark mode, and avoid common theming pitfalls where a \"si…",
     "tags": [
       "css",
       "colors",
@@ -1975,7 +1975,7 @@
     "route": "/css/trivia/css-link-html",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content and gives the browser CSS before first paint.",
+    "summary": "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content, and most real bugs come from wrong paths, wrong placement, or render-blocking trade-o…",
     "tags": [
       "css",
       "html",
@@ -2168,7 +2168,7 @@
     "route": "/css/trivia/css-media-queries",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "Media queries are conditional CSS rules that apply styles based on device characteristics such as screen size, resolution, or orientation. They are the foundation of responsive web design, allowing content to adapt to v…",
+    "summary": "Use media queries as a production breakpoint strategy: adapt layouts, respect user preferences, and avoid responsive pitfalls caused by viewport-only thinking.",
     "tags": [
       "css",
       "responsive",
@@ -2178,7 +2178,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-media-queries"
   },
@@ -2550,7 +2550,7 @@
     "route": "/html/trivia/html-dom-tree-structure",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "Explain the DOM as a tree of nodes, estimate tree depth/height, and discuss performance implications. A balanced DOM has height about log_b(n) (O(log n)), while a skewed DOM can be O(n) deep. Mention node types and why…",
+    "summary": "DOM tree structure matters under the hood because deep or unstable trees increase traversal, style recalculation, and layout cost, which turns into real debugging and performance pitfalls.",
     "tags": [
       "dom",
       "tree",
@@ -2558,7 +2558,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-dom-tree-structure"
   },
@@ -2591,7 +2591,7 @@
     "route": "/html/trivia/html-clickable-image",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "You can make an image clickable by wrapping it in an anchor tag. This creates a linked image that behaves like a normal link and is accessible when you include alt text and descriptive link context. Use rel=noopener whe…",
+    "summary": "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link. Good linked images need meaningful alt text, clear destination context, and safe new…",
     "tags": [
       "html",
       "images",
@@ -2612,7 +2612,7 @@
     "route": "/html/trivia/html-iframe-tag",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "The &lt;iframe&gt; (inline frame) tag allows you to embed another HTML page within the current page. It’s commonly used to display external content such as videos, maps, ads, or other web pages without leaving the paren…",
+    "summary": "The &lt;iframe&gt; element creates a nested browsing context, so the real production concerns are sandboxing, performance, accessibility, and third-party embed pitfalls.",
     "tags": [
       "html",
       "embedding",
@@ -2622,7 +2622,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-iframe-tag"
   },
@@ -2633,7 +2633,7 @@
     "route": "/html/trivia/html-parsing-rendering",
     "tech": "html",
     "difficulty": "hard",
-    "summary": "Browsers parse HTML top-to-bottom, building the DOM as they go. CSS can block rendering, and synchronous scripts can block parsing unless deferred or async.",
+    "summary": "Browsers parse HTML progressively, build the DOM and CSSOM, then layout and paint what users see. Under the hood, synchronous scripts and render-blocking CSS can pause this pipeline and create hard-to-debug performance…",
     "tags": [
       "html",
       "parsing",
@@ -2644,7 +2644,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-parsing-rendering"
   },
@@ -2655,7 +2655,7 @@
     "route": "/html/trivia/web-accessibility-make-page-accessible",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "Describe practical steps to make a web page accessible: semantic HTML, ARIA usage, color contrast, keyboard navigation, focus management, and screen reader testing.",
+    "summary": "Use a production accessibility review workflow: semantic structure, keyboard order, focus management, contrast, ARIA restraint, and screen reader checks that catch real usability bugs.",
     "tags": [
       "accessibility",
       "semantics",
@@ -2664,7 +2664,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#web-accessibility-make-page-accessible"
   },
@@ -2845,7 +2845,7 @@
     "route": "/html/trivia/html-aria-roles",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren’t available, but should not replace proper HTML tags. ARIA should match real behavior; incorrect role…",
+    "summary": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren't available, but should not replace proper HTML tags. The common mistake is adding ARIA where native…",
     "tags": [
       "html",
       "aria",
@@ -2866,7 +2866,7 @@
     "route": "/html/trivia/html-tags",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "HTML tags are labels that define structure and meaning in a page: headings, paragraphs, links, buttons, sections, forms, and more. Browsers parse tags into a DOM tree, which CSS styles and JavaScript manipulates.",
+    "summary": "HTML tags are the markup primitives browsers parse into a DOM tree. In production, choosing the right tag affects semantics, accessibility, SEO, and how reliably CSS and JavaScript can target the page.",
     "tags": [
       "html",
       "tags",
@@ -2876,7 +2876,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-tags"
   },
@@ -2887,7 +2887,7 @@
     "route": "/html/trivia/html-semantic-elements",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "Semantic HTML elements clearly describe their meaning in a way that both browsers and developers can understand. Unlike generic containers such as &lt;div&gt; or &lt;span&gt;, semantic elements like &lt;header&gt;, &lt;…",
+    "summary": "Semantic HTML elements expose content roles like navigation, article, main content, and supporting sections. They improve accessibility landmarks, SEO structure, and teammate readability, and the common mistake is repla…",
     "tags": [
       "accessibility",
       "html",
@@ -2897,7 +2897,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-semantic-elements"
   },
@@ -2908,7 +2908,7 @@
     "route": "/html/trivia/html-br-tag",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The &lt;br&gt; tag inserts a line break inside text content. It’s an empty element and should be used for line breaks in prose, not for layout (use CSS for spacing). Use it only for semantic line breaks (addresses, poem…",
+    "summary": "The &lt;br&gt; tag inserts a semantic line break inside the same text block. The real pitfall is using it as a layout spacer instead of CSS, which hurts readability, accessibility, and maintainability.",
     "tags": [
       "html",
       "br",
@@ -2918,7 +2918,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-br-tag"
   },
@@ -2929,7 +2929,7 @@
     "route": "/html/trivia/html-title-tag",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The <title> tag sets a page title used in the browser tab, bookmarks, and often search result headlines. It is one of the highest-impact HTML tags for discoverability and user orientation.",
+    "summary": "The <title> tag is one of the highest-leverage SEO and UX signals on a page. It shapes browser tabs, bookmarks, and often the search result headline, and duplicate or vague titles are a common discoverability pitfall.",
     "tags": [
       "html",
       "title",
@@ -2939,7 +2939,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-title-tag"
   },
@@ -2950,7 +2950,7 @@
     "route": "/html/trivia/html-form-default-method",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The default HTML form method is GET. Form fields are encoded into the URL query string unless method=\"post\" is specified. Default GET can leak data in URLs, so consider security and privacy. Test with network tools to v…",
+    "summary": "HTML forms default to GET, which puts form fields into the URL query string. That is useful for search and filtering, but a production security pitfall when teams accidentally send private data without switching to POST.",
     "tags": [
       "html",
       "forms",
@@ -2972,7 +2972,7 @@
     "route": "/html/trivia/html-div-vs-span",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The &lt;div&gt; and &lt;span&gt; tags are both generic container elements in HTML, but they differ in how they behave and are used. &lt;div&gt; is a block-level element used for structuring larger sections of a webpage,…",
+    "summary": "Use &lt;div&gt; and &lt;span&gt; as generic containers only when semantic HTML does not fit. The real pitfall is layout or DOM-hook misuse: &lt;div&gt; changes flow as a block wrapper, while &lt;span&gt; stays inline fo…",
     "tags": [
       "html",
       "div",
@@ -2984,7 +2984,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-div-vs-span"
   },
@@ -2995,7 +2995,7 @@
     "route": "/html/trivia/html-ol-ul-dl-difference",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; tags are all list-related elements in HTML, but they serve different purposes. &lt;ol&gt; defines an ordered (numbered) list, &lt;ul&gt; defines an unordered (bulleted) list, a…",
+    "summary": "Choose &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; based on the relationship between items, not just the visual bullet style. The semantic pitfall is using the wrong list type and making steps, grouped items, or term-definit…",
     "tags": [
       "html",
       "lists",
@@ -3005,7 +3005,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-ol-ul-dl-difference"
   },
@@ -3026,7 +3026,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-block-inline-elements"
   },
@@ -3058,7 +3058,7 @@
     "route": "/html/trivia/html-id-vs-class",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "Both id and class are used to identify HTML elements, but they serve different purposes. The id attribute uniquely identifies a single element, while the class attribute groups multiple elements under a shared name for…",
+    "summary": "id vs class is not just selector syntax: it affects fragment links, CSS specificity, JS hooks, and the common mistake of duplicating ids across reusable UI.",
     "tags": [
       "html",
       "attributes",
@@ -3068,7 +3068,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-id-vs-class"
   },
@@ -3079,7 +3079,7 @@
     "route": "/html/trivia/html-dom",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The DOM (Document Object Model) is a programming interface for web documents. It represents the structure of an HTML or XML document as a tree of nodes, allowing developers to read, modify, and manipulate the page’s con…",
+    "summary": "Understand the DOM as the browser's in-memory tree, how DOM mutations trigger real render work, and what to debug when selectors, timing, or frequent updates go wrong.",
     "tags": [
       "dom",
       "html",
@@ -3089,7 +3089,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-dom"
   },
@@ -3100,7 +3100,7 @@
     "route": "/html/trivia/html-href-attribute",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The `href` (Hypertext Reference) attribute in HTML defines the target destination of a link or resource. It is most commonly used within the `&lt;a&gt;` (anchor) tag to specify the URL a user will navigate to when click…",
+    "summary": "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior.",
     "tags": [
       "html",
       "links",
@@ -3110,7 +3110,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-href-attribute"
   },
@@ -3121,7 +3121,7 @@
     "route": "/html/trivia/html-input-placeholder",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The placeholder attribute provides a short hint that describes the expected value of an input field. It appears inside the input box as gray text until the user enters a value, helping users understand what kind of data…",
+    "summary": "The placeholder attribute is only a temporary hint, and the common production pitfall is treating it like a label and creating accessibility, validation, and autofill confusion.",
     "tags": [
       "html",
       "forms",
@@ -3131,7 +3131,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-input-placeholder"
   },
@@ -3142,7 +3142,7 @@
     "route": "/html/trivia/html-head-tag",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The &lt;head&gt; tag in HTML contains metadata and resources about the document that are not directly visible to users. It provides essential information such as the page title, linked stylesheets, scripts, and meta tag…",
+    "summary": "The &lt;head&gt; tag is the document control surface for metadata, styles, scripts, and social or SEO signals. Production bugs often come from bad head config: wrong viewport, duplicate titles, broken previews, or rende…",
     "tags": [
       "html",
       "head",
@@ -3152,7 +3152,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-head-tag"
   },
@@ -3163,7 +3163,7 @@
     "route": "/html/trivia/html-meta-tag",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The &lt;meta&gt; tag provides metadata—data about the webpage itself—such as character encoding, viewport settings, description, keywords, and author information. It helps browsers, search engines, and social media plat…",
+    "summary": "The &lt;meta&gt; tag configures how browsers, crawlers, and social platforms interpret a page, and the real production pitfall is shipping the wrong head metadata and debugging broken previews, indexing, or viewport beh…",
     "tags": [
       "html",
       "head",
@@ -3184,7 +3184,7 @@
     "route": "/html/trivia/html-img-alt-attribute",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The alt (alternative text) attribute in the &lt;img&gt; tag provides a textual description of an image. It helps users who cannot see the image — such as visually impaired users using screen readers — and also appears i…",
+    "summary": "The alt attribute gives an image a text alternative for screen readers, fallback rendering, and search understanding. The common mistake is writing alt text for what the image looks like instead of what the image contri…",
     "tags": [
       "accessibility",
       "attributes",
@@ -3194,7 +3194,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-img-alt-attribute"
   },
@@ -3205,7 +3205,7 @@
     "route": "/html/trivia/html-data-attribute",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "data-* attributes store custom data on elements. They are accessible via dataset in JavaScript (e.g., el.dataset.userId) and are useful for hooks without affecting semantics. Use data-* as lightweight hooks, but test pa…",
+    "summary": "data-* attributes are lightweight DOM hooks for custom metadata, testing selectors, or UI behavior flags that JavaScript reads via dataset. The common production mistake is treating them as private storage or stuffing t…",
     "tags": [
       "html",
       "data-attributes",
@@ -3215,7 +3215,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-data-attribute"
   },
@@ -3226,7 +3226,7 @@
     "route": "/html/trivia/html-img-srcset",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "srcset provides multiple image sources for different resolutions or sizes. Combined with sizes, it lets the browser choose the best image for the device and viewport. This impacts performance and data usage, so test the…",
+    "summary": "The `srcset` attribute gives the browser multiple image candidates so it can pick the right file for DPR and layout width. The production pitfall is shipping large images or mismatched `sizes`, which wastes bandwidth an…",
     "tags": [
       "html",
       "images",
@@ -3236,7 +3236,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-img-srcset"
   },
@@ -3269,7 +3269,7 @@
     "route": "/html/trivia/html-shadow-dom",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "The Shadow DOM is a browser feature that encapsulates a component’s internal structure, keeping its styles and markup isolated from the main document. It’s a core part of Web Components for building reusable, self-conta…",
+    "summary": "Shadow DOM creates an encapsulated subtree for a component so styles and markup do not leak in or out. That isolation is useful, but the real pitfall is forgetting about theming, testing, focus behavior, and accessibili…",
     "tags": [
       "html",
       "web-components",
@@ -3279,7 +3279,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-shadow-dom"
   },
@@ -3290,7 +3290,7 @@
     "route": "/html/trivia/html-a-tag",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The <a> (anchor) tag creates hyperlinks so users can navigate to pages, sections, files, email addresses, or phone links. It is the core navigation primitive of the web.",
+    "summary": "The <a> (anchor) tag is the browser's real navigation primitive: it gives links semantics, accessibility, and SEO behavior, and it avoids common button-vs-link pitfalls in production UIs.",
     "tags": [
       "html",
       "links",
@@ -3300,7 +3300,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-a-tag"
   },
@@ -3462,7 +3462,7 @@
     "route": "/javascript/trivia/js-async-race-conditions",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "When multiple async requests are in flight, they can resolve out of order and overwrite newer UI state. Explain why this happens and how to prevent stale updates with cancellation or guards.",
+    "summary": "Debug the production bug where async requests resolve out of order and overwrite newer UI state. The fix is cancellation, request identity, or takeLatest-style guards that stop stale results from winning.",
     "tags": [
       "async",
       "concurrency",
@@ -3472,7 +3472,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-async-race-conditions"
   },
@@ -4301,7 +4301,7 @@
     "route": "/javascript/trivia/js-hoisting",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Hoisting is JavaScript declaration processing before execution. Declarations are known earlier than the line they appear on, but initialization timing differs by construct.",
+    "summary": "Hoisting is JavaScript declaration processing before execution. The practical debug value is mapping symptoms: `undefined` reads, early callable function declarations, and ReferenceError or TypeError when the wrong cons…",
     "tags": [
       "hoisting",
       "scope",
@@ -4310,7 +4310,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-hoisting"
   },
@@ -4321,7 +4321,7 @@
     "route": "/javascript/trivia/js-closures",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "A closure happens when a function keeps access to variables from its outer scope, even after that outer function has finished. It’s how JavaScript allows private data and persistent state inside functions.",
+    "summary": "Closures keep outer variables alive after the outer function returns. That powers private state, but the production pitfalls are loop-capture bugs, stale async state, and memory retention when callbacks keep old data al…",
     "tags": [
       "closure",
       "functions",
@@ -4330,7 +4330,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-closures"
   },
@@ -4341,7 +4341,7 @@
     "route": "/javascript/trivia/js-event-delegation",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Event delegation is a technique where a single event listener on a parent element handles events for multiple child elements by using event bubbling and checking the event target. Edge cases include stopPropagation and…",
+    "summary": "Event delegation uses one ancestor listener instead of many child listeners. The production value is handling dynamic DOM, nested targets, stopPropagation surprises, and list performance without attaching handlers every…",
     "tags": [
       "event-delegation",
       "dom",
@@ -4350,7 +4350,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-event-delegation"
   },
@@ -4361,7 +4361,7 @@
     "route": "/javascript/trivia/js-hoisting-tdz",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Hoisting means declarations are processed before execution. TDZ means let/const exist but cannot be accessed before their declaration line, which throws ReferenceError.",
+    "summary": "Hoisting and TDZ explain why `let` and `const` are registered before execution yet still throw before initialization. The common debug signal is `ReferenceError: Cannot access X before initialization`.",
     "tags": [
       "hoisting",
       "temporal-dead-zone",
@@ -4370,7 +4370,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-hoisting-tdz"
   },
@@ -4381,7 +4381,7 @@
     "route": "/javascript/trivia/js-prototypal-inheritance",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Prototypal inheritance means objects inherit from other objects via the prototype chain. Methods defined on a prototype are shared across instances, which saves memory and enables behavior reuse. Use Object.create or fu…",
+    "summary": "Prototypal inheritance is about linked lookup, not copied members. The debug value is understanding method sharing, property shadowing, and prototype-chain behavior under the hood.",
     "tags": [
       "prototypes",
       "inheritance",
@@ -4390,7 +4390,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-prototypal-inheritance"
   },
@@ -4401,7 +4401,7 @@
     "route": "/javascript/trivia/js-this-keyword",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "The value of `this` in JavaScript depends on how a function is called — not where it’s defined. It can refer to the global object, a specific object, or be `undefined` in strict mode or arrow functions. The value of thi…",
+    "summary": "The value of `this` depends on call site, strict mode, and arrow functions. The real debug problem is detached methods, callback context loss, and object methods that stop pointing at the receiver you expected.",
     "tags": [
       "binding",
       "context",
@@ -4410,7 +4410,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-this-keyword"
   },
@@ -4442,7 +4442,7 @@
     "route": "/javascript/trivia/js-event-loop",
     "tech": "javascript",
     "difficulty": "hard",
-    "summary": "JavaScript runs on a single thread. Each cycle: it executes synchronous code, drains all microtasks (e.g., Promise callbacks), then runs one macrotask (e.g., setTimeout) before repeating. This is why Promises run before…",
+    "summary": "JavaScript runs on a single thread, but the real production pitfall is queue ordering: synchronous work runs first, then microtasks drain before the next macrotask, which is why long Promise chains can starve rendering…",
     "tags": [
       "event-loop",
       "async",
@@ -4452,7 +4452,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-event-loop"
   },
@@ -4764,7 +4764,7 @@
     "route": "/javascript/trivia/js-garbage-collection-and-gc-pauses",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Explain how JavaScript garbage collection works at a high level, why memory pressure can cause UI jank (GC pauses), and how to investigate it with Chrome DevTools (Performance + Memory panels). Include WeakMap/WeakRef u…",
+    "summary": "Explain JavaScript garbage collection with a production angle: memory pressure, allocation churn, GC pauses, and how to debug jank with Chrome DevTools Performance and Memory panels.",
     "tags": [
       "memory",
       "garbage-collection",
@@ -4776,7 +4776,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-05",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-garbage-collection-and-gc-pauses"
   },
@@ -4877,7 +4877,7 @@
     "route": "/javascript/trivia/ai-streaming-data-handling",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "This checks whether you know how to implement streaming responses (SSE/WebSocket/ReadableStream), update the UI incrementally, and handle cancellation or errors cleanly.",
+    "summary": "This checks whether you can build a production streaming UI state machine: append partial output safely, preserve final message correctness, support cancellation, and recover from mid-stream failures.",
     "tags": [
       "real-time",
       "streams",
@@ -4888,7 +4888,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#ai-streaming-data-handling"
   },
@@ -5216,7 +5216,7 @@
     "route": "/javascript/trivia/js-object-creation-methods",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "There are several ways to create objects in JavaScript — each serving a unique purpose. From using object literals to the Object.create() method and ES6 classes, these approaches allow developers to structure data and b…",
+    "summary": "JavaScript offers several object-creation patterns, and the real production question is which prototype, memory, and testability trade-offs you accept with each one.",
     "tags": [
       "objects",
       "oop",
@@ -5226,7 +5226,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-object-creation-methods"
   },
@@ -5587,7 +5587,7 @@
     "route": "/javascript/trivia/js-performance-profiling-workflow",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Explain a practical workflow for profiling performance in the browser: pick metrics, record traces, isolate bottlenecks, apply fixes, and verify improvements. Include what LCP, INP, and CLS mean and how to measure them.",
+    "summary": "Use a production profiling workflow: pick the user-facing metric, capture a trace, isolate the slowest CPU, render, or network stage, then debug that bottleneck before changing code.",
     "tags": [
       "performance",
       "web-performance",
@@ -5630,7 +5630,7 @@
     "route": "/javascript/trivia/js-promise-fundamental-understanding",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Promise fundamentals are about mechanics: executor timing, single-settlement state transitions, chain propagation, and microtask ordering. Mastering these explains most async bugs better than memorizing APIs.",
+    "summary": "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering. Mastering them explains async debug sessions better than memorizing APIs.",
     "tags": [
       "promise",
       "asynchronous-javascript",
@@ -5640,7 +5640,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-promise-fundamental-understanding"
   },
@@ -5692,7 +5692,7 @@
     "route": "/javascript/trivia/js-promises-async-await",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Promises and async/await solve the same async problem with different syntax. Use them to model async flow, handle errors predictably, and avoid accidental sequential bottlenecks when work can run in parallel.",
+    "summary": "Promises and async/await use the same async model, but production pitfalls show up in accidental serialization, missing cancellation, and error paths that escape the right boundary.",
     "tags": [
       "async-await",
       "concurrency",
@@ -5702,7 +5702,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-promises-async-await"
   },
@@ -6356,7 +6356,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-tree-shaking"
   },
@@ -6495,7 +6495,7 @@
     "route": "/javascript/trivia/js-arrow-functions",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Arrow functions are a shorter syntax for writing functions in JavaScript, introduced in ES6. They don’t have their own `this`, `arguments`, or `prototype`. Use them for callbacks, but watch edge cases with this binding…",
+    "summary": "Arrow functions are concise, but the important production rule is when not to use them: object methods, constructors, and APIs that expect dynamic `this` or `arguments`.",
     "tags": [
       "arrow-functions",
       "es6",
@@ -6505,7 +6505,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-arrow-functions"
   },
@@ -6516,7 +6516,7 @@
     "route": "/javascript/trivia/js-callbacks",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "A callback is a function passed as an argument to another function to be executed later, often after a task is completed. Covers: async, callbacks, event loop, functions, higher order functions.",
+    "summary": "Callbacks are the original control-flow hook in JavaScript. The production issues are inversion of control, callback hell, and debugging legacy async code that cannot cancel or compose cleanly.",
     "tags": [
       "async",
       "callbacks",
@@ -6526,7 +6526,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-callbacks"
   },
@@ -6537,7 +6537,7 @@
     "route": "/javascript/trivia/js-classes",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Classes in JavaScript are syntactic sugar over prototype-based inheritance. Introduced in ES6, they provide a cleaner and more familiar syntax for creating objects and handling inheritance, making JavaScript feel more l…",
+    "summary": "JavaScript classes are cleaner syntax over prototypes, but the practical questions are under-the-hood method sharing, field initialization, and when class-heavy modeling adds more ceremony than value.",
     "tags": [
       "classes",
       "oop",
@@ -6547,7 +6547,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-classes"
   },
@@ -6705,7 +6705,7 @@
     "route": "/javascript/trivia/js-memoization",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Memoization is an optimization technique that speeds up function execution by caching previously computed results. When the same inputs occur again, the cached result is returned instantly, avoiding redundant calculatio…",
+    "summary": "Memoization caches function results so repeated expensive pure computations can return faster. The real trade-off is memory growth, stale assumptions, and cache-key correctness, so strong answers explain when memoizatio…",
     "tags": [
       "memoization",
       "optimization",
@@ -6726,7 +6726,7 @@
     "route": "/javascript/trivia/js-object-destructuring",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Object destructuring is a concise way to extract values from objects (or arrays) and assign them to variables using a syntax that mirrors the object’s structure. It was introduced in ES6 to make code cleaner and more re…",
+    "summary": "Object destructuring is concise, but production bugs usually show up around missing properties, nested undefined values, renaming, and misleading defaults.",
     "tags": [
       "object-destructuring",
       "es6",
@@ -6736,7 +6736,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-object-destructuring"
   },
@@ -6789,7 +6789,7 @@
     "route": "/javascript/trivia/js-higher-order-function",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "A higher-order function is a function that either takes another function as an argument, returns a function, or does both. It treats functions as values, enabling powerful patterns like callbacks, closures, and function…",
+    "summary": "A higher-order function accepts or returns functions, but the interview-level value is understanding why callbacks and composition depend on it and when extra abstraction becomes a pitfall.",
     "tags": [
       "callbacks",
       "closure",
@@ -6798,7 +6798,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-higher-order-function"
   },
@@ -6809,7 +6809,7 @@
     "route": "/javascript/trivia/js-equality-vs-strict-equality",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "In JavaScript, `==` is the loose equality operator that compares values after type conversion, while `===` is the strict equality operator that compares both value and type without conversion. Edge cases include null/un…",
+    "summary": "Loose equality and strict equality differ because coercion can silently change operands. The common mistake is letting form strings, nullish values, or `NaN` produce bugs that explicit conversion and tests should catch.",
     "tags": [
       "operators",
       "comparison",
@@ -6818,7 +6818,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-equality-vs-strict-equality"
   },
@@ -7152,7 +7152,7 @@
     "route": "/react/trivia/react-diffing-algorithm",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "React’s diffing algorithm efficiently compares two Virtual DOM trees to find the minimal number of operations needed to synchronize the real DOM with the new state. It uses intelligent heuristics that make the process n…",
+    "summary": "React’s diffing algorithm uses O(n) heuristics based on element type and keys. The useful beyond-basics angle is understanding the under-the-hood assumptions, list-update pitfalls, and where those heuristics give the wr…",
     "tags": [
       "react",
       "rendering",
@@ -7162,7 +7162,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-diffing-algorithm"
   },
@@ -7257,7 +7257,7 @@
     "route": "/react/trivia/react-prevent-unnecessary-rerenders",
     "tech": "react",
     "difficulty": "hard",
-    "summary": "Preventing unnecessary re-renders in React is crucial for maintaining optimal performance. Re-renders occur when a component's state, props, or context changes, but React provides several techniques and patterns to mini…",
+    "summary": "Prevent unnecessary React rerenders with a profiling-first workflow: find unstable props, broad context churn, and memoization pitfalls before reaching for blanket useMemo or useCallback.",
     "tags": [
       "react",
       "performance",
@@ -7267,7 +7267,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-prevent-unnecessary-rerenders"
   },
@@ -7982,7 +7982,7 @@
     "route": "/react/trivia/react-reconciliation",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Reconciliation is the process React uses to compare the current Virtual DOM with the previous one and determine the minimal set of changes needed to update the real DOM. It ensures React applications stay fast and effic…",
+    "summary": "Reconciliation is React’s identity model for deciding whether a subtree keeps state or remounts. The high-value interview explanation is about preserve-vs-replace behavior when element types or keys change.",
     "tags": [
       "react",
       "rendering",
@@ -7992,7 +7992,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-reconciliation"
   },
@@ -8066,7 +8066,7 @@
     "route": "/react/trivia/react-keys-in-lists",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Keys in React help identify which list items have changed, been added, or been removed. They make the reconciliation process efficient by allowing React to re-render only the modified elements instead of rebuilding the…",
+    "summary": "Keys are React's identity contract for list items. Use stable keys to prevent reordered rows, lost input state, and production bugs where React preserves the wrong component.",
     "tags": [
       "react",
       "lists",
@@ -8076,7 +8076,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-keys-in-lists"
   },
@@ -8149,7 +8149,7 @@
     "route": "/react/trivia/react-18-whats-new",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "React 18 introduced the concurrent rendering foundation plus new APIs like createRoot, automatic batching, transitions, and new hooks. Explain the key changes and why they matter to users and developers.",
+    "summary": "React 18 introduced concurrency foundations, transitions, and batching changes that matter in production migrations: responsiveness, StrictMode effect audits, and when createRoot changes behavior.",
     "tags": [
       "react",
       "concurrency",
@@ -8160,7 +8160,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-18-whats-new"
   },
@@ -8255,7 +8255,7 @@
     "route": "/react/trivia/react-why-props-immutable",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain why React treats props as read-only inputs (UI = f(props, state, context)). Connect this to predictable rendering, parent ownership, referential equality optimizations (PureComponent/React.memo), and why mutatin…",
+    "summary": "Explain props immutability as a production contract: parent ownership, predictable rendering, memoization safety, and the shared-state bugs you debug when children mutate props.",
     "tags": [
       "react",
       "props",
@@ -8265,7 +8265,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-why-props-immutable"
   },
@@ -9082,7 +9082,7 @@
     "route": "/vue/trivia/vue-conditional-list-rendering",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Vue handles conditional and list rendering efficiently through its virtual DOM diffing system. Directives like v-if, v-show, and v-for control what is rendered while Vue updates only the necessary parts of the DOM when…",
+    "summary": "Vue renders v-if, v-show, and v-for efficiently only when you choose the right directive for the toggle pattern and preserve keyed identity; the pitfalls show up during frequent toggles and list reorders.",
     "tags": [
       "vue",
       "directives",
@@ -9092,7 +9092,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-conditional-list-rendering"
   },
@@ -9798,7 +9798,7 @@
     "route": "/vue/trivia/vue-composition-api",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "The Vue Composition API provides a flexible and scalable way to organize component logic using functions like setup(), ref(), and reactive(). It was introduced in Vue 3 to improve reusability, maintainability, and TypeS…",
+    "summary": "Explain the Vue Composition API with an interview and production angle: why Vue introduced it, how setup(), ref(), and reactive() improve large-component organization, and which migration trade-offs matter.",
     "tags": [
       "vue",
       "composition-api",
@@ -9808,7 +9808,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-composition-api"
   },
@@ -9819,7 +9819,7 @@
     "route": "/vue/trivia/vue-directives",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Vue directives are special attributes (v-if, v-for, v-model, v-bind, v-on) that apply reactive behavior to DOM elements. They control rendering, bind data, and handle events. Framework focus: Vue SFC patterns, ref/react…",
+    "summary": "Vue directives are compiled template instructions, and the beyond-basics question is what they change in rendering, patching, or event flow and when not to reach for a custom directive.",
     "tags": [
       "vue",
       "directives",
@@ -9830,7 +9830,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-directives"
   },
@@ -9925,7 +9925,7 @@
     "route": "/vue/trivia/vue-sfc-vs-global-components",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Single-File Components (SFCs) and global components differ in scope and structure. SFCs define components in .vue files with encapsulated templates, scripts, and styles, while global components are registered once and a…",
+    "summary": "SFCs vs global components is an architectural trade-off around ownership, bundle clarity, and registration sprawl; the pitfall is making everything global and losing dependency visibility.",
     "tags": [
       "vue",
       "components",
@@ -9935,7 +9935,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-sfc-vs-global-components"
   },
@@ -10097,7 +10097,7 @@
     "route": "/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Explain why destructuring a reactive object in Vue breaks reactivity, how Vue’s Proxy-based tracking works, and how to use toRefs() and toRef() to safely extract reactive properties without losing updates.",
+    "summary": "Explain why destructuring breaks Vue reactivity under the hood, how Proxy tracking works, and how to debug stale values safely with toRefs() and toRef() in composables or components.",
     "tags": [
       "vue",
       "composition-api",
@@ -10108,7 +10108,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-destructuring-breaks-reactivity-torefs-toref"
   },
@@ -10141,7 +10141,7 @@
     "route": "/vue/trivia/vue-v-model-syntax-sugar-expansion",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Explain why v-model is considered syntax sugar in Vue: it’s compiled into a prop binding + an event listener. Show what it expands to for native form elements (text input, checkbox, select) and for custom components in…",
+    "summary": "Explain why v-model is considered syntax sugar in Vue: it's compiled into a prop binding + an event listener. Show what it expands to for native form elements (text input, checkbox, select) and for custom components in…",
     "tags": [
       "vue",
       "v-model",

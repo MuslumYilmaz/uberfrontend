@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   cdnIncidentsIndexPath as INCIDENTS_INDEX,
   cdnPracticeRegistryPath as PRACTICE_REGISTRY,
@@ -11,6 +12,8 @@ import {
   masteryPathsDir as MASTERY_PATHS_DIR,
   srcPrerenderRoutesPath as OUT_PATH,
 } from './content-paths.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
 
 function normalizeRoute(route) {
   const raw = String(route || '').trim();
@@ -270,6 +273,14 @@ function buildRoutes() {
   return Array.from(routes).sort((a, b) => a.localeCompare(b));
 }
 
-const routes = buildRoutes();
-fs.writeFileSync(OUT_PATH, `${routes.join('\n')}\n`, 'utf8');
-console.log(`Prerender routes generated: ${OUT_PATH} (${routes.length})`);
+function main() {
+  const routes = buildRoutes();
+  fs.writeFileSync(OUT_PATH, `${routes.join('\n')}\n`, 'utf8');
+  console.log(`Prerender routes generated: ${OUT_PATH} (${routes.length})`);
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+  main();
+}
+
+export { buildRoutes, normalizeRoute };

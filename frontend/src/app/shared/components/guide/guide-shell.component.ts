@@ -1155,8 +1155,19 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
       if (t.parentElement?.classList.contains('table-scroll')) continue;
       const wrap = this.r.createElement('div');
       this.r.addClass(wrap, 'table-scroll');
+      this.r.setAttribute(wrap, 'tabindex', '0');
+      this.r.setAttribute(wrap, 'role', 'region');
+      this.r.setAttribute(wrap, 'aria-label', this.tableRegionLabel(t));
       t.replaceWith(wrap);
       this.r.appendChild(wrap, t);
     }
+  }
+
+  private tableRegionLabel(table: HTMLTableElement): string {
+    const caption = table.querySelector('caption')?.textContent?.trim();
+    if (caption) {
+      return `Scrollable table: ${caption}`;
+    }
+    return 'Scrollable table';
   }
 }

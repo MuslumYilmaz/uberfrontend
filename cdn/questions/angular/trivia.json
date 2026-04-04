@@ -137,12 +137,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "AngularJS (1.x) and Angular (2+) share a name but are different frameworks. Angular (2+) is a rewrite with TypeScript, components, RxJS-first patterns, modern tooling, and a different rendering/change-detection model. Explain the practical differences and why migration is non-trivial.",
+    "description": "Compare AngularJS 1.x and modern Angular through real migration work: digest cycle versus component tree, $scope/controllers versus DI plus RxJS, and why this is a rewrite with production migration cost rather than a version upgrade.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core distinction</strong><br><br><strong>AngularJS (1.x)</strong> = JavaScript + controllers/scopes + digest cycle (watchers).<br><strong>Angular (2+)</strong> = TypeScript + components + dependency injection + RxJS + build-time tooling (CLI/compiler).<br><br>They are <strong>not</strong> backward-compatible; a real migration is usually a refactor/rewrite, not an upgrade."
+          "text": "<strong>Migration-first distinction</strong><br><br><strong>AngularJS (1.x)</strong> is built around controllers, <code>$scope</code>, and the digest cycle. <strong>Modern Angular</strong> is a TypeScript-first component framework with DI, RxJS-heavy async patterns, and a different compiler/rendering model. That is why real migrations are <strong>rewrite projects with production trade-offs</strong>, not a package-version bump."
         },
         {
           "type": "list",
@@ -291,10 +291,10 @@
       "history",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is the difference between Angular and AngularJS?",
-      "description": "AngularJS is the older 1.x framework, while Angular is a rewritten TypeScript-based platform with components, RxJS patterns, and modern tooling."
+      "title": "Angular vs AngularJS in real migrations: rewrite costs, digest cycle, and architecture shifts",
+      "description": "Explain Angular vs AngularJS through the production migration lens: digest cycle vs component tree, controllers and $scope vs DI plus RxJS, and why upgrades are really rewrites."
     }
   },
   {
@@ -452,12 +452,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "The @Component decorator attaches metadata to a TypeScript class so Angular can treat it as a component. This metadata tells Angular how to render the view (template + styles), how to match it in HTML (selector), what dependencies it can use (imports/providers), and how to run it (change detection, encapsulation, host bindings). Angular needs this because a plain class doesn’t contain enough information to compile and instantiate a UI component.",
+    "description": "This is the under-the-hood contract between a plain class and Angular's compiler/runtime. @Component metadata tells Angular what selector to match, what template and styles to compile, which imports/providers define scope, and which runtime rules apply (change detection, encapsulation, host bindings). This is the metadata interviewers expect you to debug when a component renders, scopes, or updates incorrectly.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>@Component({...})</code> is configuration for Angular’s compiler/runtime. It turns a plain class into something Angular can: (1) match in templates, (2) compile into render instructions, and (3) instantiate with the right DI scope and runtime behavior."
+          "text": "<strong>Under the hood</strong><br><br><code>@Component({...})</code> is configuration for Angular's compiler/runtime. It turns a plain class into something Angular can: (1) match in templates, (2) compile into render instructions, and (3) instantiate with the right DI scope and runtime behavior. When a component renders, scopes, or updates incorrectly, this metadata is often the first debug surface."
         },
         {
           "type": "code",
@@ -591,8 +591,8 @@
     ],
     "updatedAt": "2026-01-30",
     "seo": {
-      "title": "What does @Component metadata do in Angular?",
-      "description": "@Component metadata tells Angular how to create and render a class as a UI component. It defines selector, template, styles, imports, and runtime behavior."
+      "title": "Angular @Component metadata under the hood: selector, scope, and runtime",
+      "description": "Learn how @Component metadata drives Angular compilation, template scope, DI boundaries, and runtime behavior when components render or update incorrectly."
     }
   },
   {
@@ -733,12 +733,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "This question is about AppModule migration mechanics in standalone Angular. Explain exactly what moved to bootstrapApplication/ApplicationConfig, component imports, and route-level providers, then show how to migrate provider scope safely without regressions. Keep the focus on execution (bootstrapping, DI scope, route wiring), not on whether NgModules still matter for compatibility.",
+    "description": "This question is about standalone migration execution: what moved from AppModule into bootstrapApplication or ApplicationConfig, component imports, and route providers, plus the provider-scope and route-wiring bugs teams hit during real migrations.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Standalone changes Angular’s composition model:<br><br><strong>Before</strong>: AppModule declared what exists and what templates can use.<br><strong>Now</strong>: standalone components declare their own template dependencies (<code>imports</code>), and app-wide wiring happens in <code>bootstrapApplication</code> (or <code>ApplicationConfig</code>) + route providers."
+          "text": "<strong>Migration map</strong><br><br>Standalone Angular does not mean “move AppModule into AppComponent.” The production change is more specific: <strong>bootstrapping and global providers move to <code>bootstrapApplication</code> / <code>ApplicationConfig</code></strong>, template dependencies move into each standalone component’s <code>imports</code>, and feature-scoped services move to route providers. The main pitfall is accidentally changing DI scope while you migrate."
         },
         {
           "type": "list",
@@ -938,10 +938,10 @@
       "migration",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What replaces AppModule in standalone Angular?",
-      "description": "In standalone Angular, AppModule is replaced by bootstrapApplication, component-level imports, and route-level providers for app setup."
+      "title": "Standalone Angular migration: replacing AppModule without provider-scope bugs",
+      "description": "Explain standalone migration through real AppModule replacement work: bootstrapApplication, ApplicationConfig, component imports, route providers, and the DI-scope pitfalls that break features."
     }
   },
   {
@@ -950,16 +950,16 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Angular turns your component template into generated render/update instructions (AOT or JIT). At runtime, change detection re-runs the update phase so bindings (text, properties, attributes, events) stay in sync with the component instance (state). Covers: angular, templates, compilation, data binding, basics.",
+    "description": "Angular templates are not runtime strings; Ivy compiles them into creation and update instructions, AOT type-checks them, and change detection re-runs the update phase. The useful mental model is how this under-the-hood pipeline explains binding bugs and template performance.",
     "seo": {
-      "title": "How does Angular compile templates and update bindings?",
-      "description": "Angular compiles templates into efficient creation and update instructions, then runs change detection to sync DOM bindings with component state."
+      "title": "Angular template compilation under the hood: Ivy instructions, AOT checks, and binding debug",
+      "description": "Explain Angular template compilation through the debug lens: Ivy create or update instructions, AOT template checking, and how change detection replays bindings against component state."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Angular does <strong>two big jobs</strong>:<br>1) <strong>Compile</strong> the template into efficient instructions (Ivy) + type-check it.<br>2) <strong>Run change detection</strong> to execute the template’s <em>update</em> instructions, keeping the DOM synced with the component instance."
+          "text": "<strong>Under-the-hood model</strong><br><br>Angular does <strong>two separate jobs</strong>: it compiles the template into Ivy <em>create/update</em> instructions, then it re-runs the <em>update</em> instructions during change detection. That mental model matters in production because many template bugs are really <strong>binding or change-detection debug problems</strong>, not “Angular magic.”"
         },
         {
           "type": "list",
@@ -1173,7 +1173,7 @@
       "data-binding",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-04-04"
   },
   {
     "id": "angular-data-binding",
@@ -1181,12 +1181,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Data binding is how Angular connects component state (TS) to the template (HTML) and back. It’s mostly one-way (component ➜ view via interpolation/property bindings, view ➜ component via event bindings). Two-way binding is optional syntactic sugar that combines both directions (commonly via forms/ngModel or custom @Input/@Output pairs).",
+    "description": "Angular data binding is mostly explicit one-way flow in one direction at a time: component state into the DOM, events back into the component, and two-way syntax only as sugar. The useful angle is when property versus attribute binding, or too much two-way binding, creates real production bugs.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Angular templates are declarative. You bind values into the DOM and bind events back into the component. Angular then keeps the DOM synced by re-running the template update phase during change detection (triggered by events, async work, input changes, etc.)."
+          "text": "<strong>Production mental model</strong><br><br>Angular binding is not “everything is two-way.” Most bindings are <strong>one-way in one direction at a time</strong>: component state flows into the DOM, events flow back into the component, and <code>[(...)]</code> is just sugar on top. That distinction matters when you debug stale UI, misuse <code>[attr.*]</code> versus real DOM properties, or overuse two-way binding in complex forms."
         },
         {
           "type": "list",
@@ -1372,10 +1372,10 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What are the types of data binding in Angular?",
-      "description": "Angular data binding includes interpolation, property/attribute/class/style bindings, event binding, and two-way binding to sync UI and component state."
+      "title": "Angular data binding in production: one-way flow, property vs attribute, and two-way pitfalls",
+      "description": "Explain Angular data binding through the real pitfalls: one-way flow, property vs attribute differences, event wiring, and when two-way binding makes state harder to debug."
     }
   },
   {
@@ -2023,12 +2023,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "*ngIf is a structural directive that conditionally creates and destroys an embedded view. That means DOM nodes, component instances, directives, listeners, and template bindings inside the *ngIf block are actually created when the condition becomes true and destroyed when it becomes false.",
+    "description": "*ngIf is not a visibility toggle; it creates and destroys embedded views. The practical angle is lifecycle and debug behavior: state resets, ngOnDestroy cleanup, and the production choice between real teardown and simply hiding UI.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>*ngIf</code> does not “hide” elements. It <strong>adds/removes</strong> a chunk of template by creating/destroying an <em>embedded view</em> (<code>EmbeddedViewRef</code>) in a <code>ViewContainerRef</code>. When the view is removed, Angular destroys everything inside it (components, directives, pipes, listeners) and runs <code>ngOnDestroy</code>."
+          "text": "<strong>Debug mental model</strong><br><br><code>*ngIf</code> does not hide a subtree; it <strong>creates and destroys</strong> an embedded view. In production, that difference shows up as reset form state, fresh child instances, repeated init work, and cleanup bugs when subscriptions or listeners are tied to that subtree."
         },
         {
           "type": "code",
@@ -2197,10 +2197,10 @@
       "lifecycle",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How does *ngIf affect the DOM and component lifecycle in Angular?",
-      "description": "*ngIf creates and destroys embedded views, so components inside it are mounted and destroyed as the condition toggles."
+      "title": "Angular *ngIf in production: DOM teardown, lifecycle resets, and hide vs destroy",
+      "description": "Explain *ngIf through real lifecycle behavior: embedded-view creation, DOM teardown, ngOnDestroy cleanup, and when hiding UI is safer than destroying it."
     }
   },
   {
@@ -2209,12 +2209,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "trackBy tells Angular how to uniquely identify items in an *ngFor list so it can reuse existing DOM nodes and component instances when the array changes. Without it (or with a bad trackBy), Angular may destroy and recreate rows unnecessarily, which hurts performance and can reset UI state like input values, focus, and child component state. TrackBy preserves DOM state and performance; test with reorders and large lists.",
+    "description": "trackBy is Angular list identity, not just a micro-optimization. It prevents production bugs like lost focus, reset inputs, and child state churn by letting Angular reuse the right DOM rows when arrays refresh or reorder.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>*ngFor</code> maintains a list of embedded views (DOM + directives + child components). <code>trackBy</code> defines each item's identity so Angular can do efficient diffs: <strong>move/update</strong> existing views instead of <strong>destroy/recreate</strong> them."
+          "text": "<strong>Identity-first view</strong><br><br><code>*ngFor</code> identity is not just about shaving milliseconds off a list. <code>trackBy</code> tells Angular which row is the <strong>same logical item</strong>, so the framework can reuse DOM nodes and child components instead of destroying them. That is why bad identity causes real production bugs like lost focus, reset inputs, and row state sticking to the wrong item."
         },
         {
           "type": "code",
@@ -2367,10 +2367,10 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why is trackBy important in Angular *ngFor lists?",
-      "description": "trackBy lets Angular identify items by stable keys so it can reuse DOM nodes and preserve component or input state during list updates."
+      "title": "Angular trackBy for real list bugs: identity, DOM reuse, and preserved input state",
+      "description": "Explain trackBy through production list behavior: stable identity, DOM reuse, focus or input preservation, and the bugs caused by rebuilding rows on refresh."
     }
   },
   {
@@ -2379,7 +2379,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "This question is about service responsibilities and boundary design in Angular apps: what belongs in services, why teams split logic out of components, and how provider scope changes behavior. Reference DI only as much as needed to explain lifetime/sharing. Keep DI internals and token/provider mechanics in the dedicated dependency-injection question.",
+    "description": "This question is about service responsibilities and boundary design in Angular apps: what belongs in services, why teams split logic out of components, and how provider scope changes behavior in production code. Reference DI only as much as needed to explain lifetime/sharing. Keep DI internals and token/provider mechanics in the dedicated dependency-injection question.",
     "answer": {
       "blocks": [
         {
@@ -2563,8 +2563,8 @@
     ],
     "updatedAt": "2026-01-30",
     "seo": {
-      "title": "What is an Angular service and when should you use it?",
-      "description": "An Angular service is an injectable class for shared business logic, data access, and side effects that should stay outside UI components."
+      "title": "Angular services in production: DI scope, boundaries, and when to use one",
+      "description": "Use services for shared logic, HTTP, caching, and orchestration; learn provider scope, component-vs-service boundaries, and common architecture mistakes."
     }
   },
   {
@@ -3903,12 +3903,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular routing is a feature that allows navigation between different views or components in a single-page application (SPA). Routes are defined using the RouterModule and configured with path-component mappings in a routing module.",
+    "description": "Angular routing is more than path-to-component mapping. The interview-ready explanation covers RouterOutlet, route trees, guards, lazy loading, and the production bugs you debug when navigation is misconfigured.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Angular’s routing system enables navigation between different views or components without reloading the page. It turns your Angular application into a single-page application (SPA) — meaning that instead of fetching new HTML pages from the server, it dynamically updates the view based on the URL."
+          "text": "<strong>Overview</strong><br><br>Angular routing is the production navigation layer for your app, not just a syntax for URL matching. A strong answer explains how the route tree, <code>RouterOutlet</code>, guards, and lazy loading work together so you can debug blank screens, broken deep links, or unexpected redirects instead of only reciting <code>Routes</code> array syntax."
         },
         {
           "type": "text",
@@ -3998,10 +3998,10 @@
       "router",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How does Angular routing work and how do you define routes?",
-      "description": "Angular routing maps URL paths to components through a route configuration and renders matched views via RouterOutlet without full page reloads."
+      "title": "Angular routing in production: route trees, RouterOutlet, guards, and lazy loading",
+      "description": "Explain Angular routing through the real production concerns: route trees, RouterOutlet placement, guards, lazy loading, and the navigation bugs caused by misconfigured routes."
     }
   },
   {
@@ -4010,12 +4010,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Lazy loading in Angular is a technique that loads feature modules only when they are needed, rather than at application startup. It improves performance by reducing the initial bundle size and speeding up the first load.",
+    "description": "Angular lazy loading is a route-boundary and bundle-trade-off decision, not just “load later.” The useful angle is production routing: initial bundle relief, preloading strategy, and the pitfalls of fragmenting features too aggressively.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Lazy loading in Angular is an optimization strategy that helps improve performance by loading specific parts of the application only when required. Instead of downloading all modules and components when the app starts, Angular fetches feature modules on demand — typically when the user navigates to a particular route."
+          "text": "<strong>Performance trade-off</strong><br><br>Lazy loading is not just “load modules later.” In production Angular apps, it is a <strong>route-boundary decision</strong>: keep rarely used features out of the startup bundle, then choose whether background preloading is worth the extra network work. The main pitfall is over-fragmenting features and turning navigation into a chunk waterfall."
         },
         {
           "type": "text",
@@ -4121,10 +4121,10 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is lazy loading in Angular routing?",
-      "description": "Lazy loading in Angular loads feature code only when its route is visited, reducing initial bundle size and improving first-load performance."
+      "title": "Angular lazy loading in production: route boundaries, preloading, and bundle trade-offs",
+      "description": "Explain Angular lazy loading through real routing decisions: route boundaries, initial-bundle savings, preloading strategy, and the performance pitfalls of over-fragmented features."
     }
   },
   {
@@ -4243,12 +4243,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Zone.js is a library used by Angular to automatically track and intercept asynchronous operations such as events, promises, and timers. It notifies Angular whenever an async event completes so the framework can trigger change detection automatically.",
+    "description": "Zone.js explains why Angular notices async work without manual wiring: it patches timers, promises, events, and other async APIs, then tells Angular when to run change detection. The useful angle is stale-view debugging and what changes in zoneless setups.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Zone.js is a powerful library that Angular uses under the hood to manage asynchronous operations and automatically trigger change detection. Without it, developers would have to manually inform Angular every time something asynchronous (like an event, timer, or HTTP call) modifies the application state."
+          "text": "<strong>Under-the-hood role</strong><br><br>Zone.js is Angular’s classic answer to “how did the view update after that async work?” It patches browser async APIs, notices when tasks finish, and gives Angular a hook to run change detection. That matters in production when you debug a <strong>stale view</strong>, third-party callbacks, or a zoneless migration where those automatic triggers change."
         },
         {
           "type": "text",
@@ -4318,10 +4318,10 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How does Zone.js trigger change detection in Angular?",
-      "description": "Zone.js patches async APIs and notifies Angular when tasks complete, so Angular knows when to run change detection."
+      "title": "Angular Zone.js under the hood: async patching, stale-view debug, and zoneless trade-offs",
+      "description": "Explain Zone.js through the real debug model: patched async APIs, why Angular runs change detection after tasks finish, and what changes when apps go zoneless."
     }
   },
   {
@@ -4449,12 +4449,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "forRoot() and forChild() are Angular module configuration methods that help manage singleton services and routing across root and feature modules. forRoot() configures global providers and routes for the root module, while forChild() configures additional routes for feature modules without duplicating providers.",
+    "description": "forRoot() and forChild() are a legacy Angular module pattern for singleton setup and feature routing. The useful explanation is about avoiding provider-duplication bugs, understanding root vs feature scope, and knowing how this changes in standalone apps.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Angular, modules can include routing and services. The <code>forRoot()</code> and <code>forChild()</code> methods are conventions that help manage how routes and services are provided across different parts of an application — ensuring that global providers are instantiated only once, and feature modules get their own route configurations."
+          "text": "<strong>Overview</strong><br><br><code>forRoot()</code> and <code>forChild()</code> matter because they prevent a classic Angular production bug: importing a module in the wrong place and accidentally duplicating singleton providers or router setup. In legacy NgModule-based apps, this pattern separates root-only configuration from feature-level extension so lazy modules can add routes without re-registering global services."
         },
         {
           "type": "text",
@@ -4566,10 +4566,10 @@
       "dependency-injection",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What are forRoot and forChild used for in Angular?",
-      "description": "forRoot configures providers once at the app root, while forChild adds feature routes or config without recreating root singletons."
+      "title": "Angular forRoot vs forChild: singleton duplication bugs, legacy modules, and migration context",
+      "description": "Use forRoot() for root-only providers and routing, and forChild() for feature routes. The high-value angle is avoiding singleton duplication bugs in legacy NgModule apps and knowing how standalone Angular changes the pattern."
     }
   },
   {
@@ -4578,12 +4578,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Angular provides a variety of built-in tools and best practices for optimizing performance in large applications. These include efficient change detection strategies, lazy loading, Ahead-of-Time (AOT) compilation, tree-shaking, and other advanced techniques to minimize bundle size and rendering time.",
+    "description": "Angular performance work starts with profiling, then reducing change-detection and rendering cost. The practical angle is identifying hotspots in large lists, expensive templates, unnecessary re-renders, and bundle-size trade-offs instead of reciting a generic checklist.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>As Angular applications grow in size and complexity, performance optimization becomes essential to maintain fast loading times, smooth user interactions, and efficient change detection. Angular includes a robust set of features and optimization strategies designed to improve both runtime and build-time performance."
+          "text": "<strong>Performance-first mindset</strong><br><br>Angular performance work should start with <strong>profiling</strong>, not with a random checklist. Real production issues usually come from a few hotspots: too much change-detection work, expensive list rendering, unstable identity, or oversized route chunks. The job is to find the bottleneck first, then apply the right fix."
         },
         {
           "type": "text",
@@ -4739,10 +4739,10 @@
       "optimization",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How do you optimize performance in large Angular apps?",
-      "description": "Angular performance improves when you reduce change detection work and bundle size with OnPush, lazy loading, trackBy, and efficient rendering."
+      "title": "Angular performance optimization in production: profiling, change detection, and render hotspots",
+      "description": "Explain Angular performance through real bottlenecks: profiling first, change-detection hotspots, large-list rendering costs, bundle trade-offs, and fixes like OnPush or trackBy."
     }
   },
   {
@@ -5095,12 +5095,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Memory leaks in Angular almost always come from forgotten subscriptions, long-lived streams, or global listeners. The correct fixes include using the async pipe, takeUntilDestroyed/DestroyRef, takeUntil with a Subject, and understanding which streams complete automatically and which never do.",
+    "description": "Most Angular memory leaks come from long-lived streams, global listeners, or timers that outlive a component. The practical angle is knowing when AsyncPipe, takeUntilDestroyed, or manual teardown actually matters and when unsubscribe boilerplate is unnecessary.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Angular itself does not magically clean up your RxJS subscriptions. If a stream does not complete by itself and you keep a subscription alive after the component is destroyed, you leak memory, CPU, and sometimes network activity. <strong>Most Angular memory leaks come from forgotten subscriptions or global listeners.</strong>"
+          "text": "<strong>Teardown mental model</strong><br><br>Most Angular memory leaks are not mysterious framework bugs. They come from <strong>long-lived streams, timers, or global listeners that outlive a component</strong>. The production question is not “unsubscribe from everything?” but “which sources complete on their own, and which ones keep consuming memory, CPU, or network until I tear them down?”"
         },
         {
           "type": "list",
@@ -5233,10 +5233,10 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How do you prevent memory leaks in Angular?",
-      "description": "Prevent Angular memory leaks by cleaning subscriptions with AsyncPipe, takeUntil patterns, and ngOnDestroy teardown for long-lived streams."
+      "title": "Angular memory leaks in production: long-lived streams, AsyncPipe, and teardown patterns",
+      "description": "Explain Angular memory leaks through real teardown bugs: long-lived subscriptions, global listeners, timers, AsyncPipe, takeUntilDestroyed, and when manual unsubscribe still matters."
     },
     "incidentCard": {
       "title": "Leaking Subscription Check",
@@ -5265,12 +5265,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "ControlValueAccessor (CVA) is Angular’s official bridge between custom components and Angular Forms. It lets your component behave like a real form control (ngModel, formControl, formControlName) with validation, touched/dirty state, and disabled handling—unlike custom two-way binding which only syncs values and breaks form integration.",
+    "description": "ControlValueAccessor is the bridge that makes a custom Angular component behave like a real form control. The useful comparison is not just value syncing, but validation, touched or dirty state, disabled propagation, and the production pitfalls of relying on custom two-way binding instead.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>ControlValueAccessor</code> (CVA) is the interface that tells Angular Forms how to <strong>write a value into your component</strong> and how your component <strong>reports changes back</strong>. If you want a custom input component to work with <code>ngModel</code>, <code>formControl</code>, or <code>formControlName</code>, you must implement CVA."
+          "text": "<strong>Forms-integration question</strong><br><br><code>ControlValueAccessor</code> is not just another way to sync a value. It is the contract that lets Angular Forms treat your custom component like a <strong>real form control</strong>. That is the production difference: validation, touched/dirty state, reset behavior, and disabled handling work correctly instead of being rebuilt with fragile custom two-way bindings."
         },
         {
           "type": "text",
@@ -5384,10 +5384,10 @@
       "two-way-binding",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is ControlValueAccessor in Angular and when to use it?",
-      "description": "ControlValueAccessor is Angular's form bridge for custom inputs, enabling value sync, validation, touched or dirty state, and disabled handling."
+      "title": "Angular ControlValueAccessor vs custom two-way binding: real forms integration and pitfalls",
+      "description": "Explain ControlValueAccessor through real form behavior: validation, touched or dirty state, disabled propagation, and why custom two-way binding breaks down in serious Angular forms."
     },
     "incidentCard": {
       "title": "Custom Input Integration Check",
@@ -5983,16 +5983,16 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular’s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get multiple instances and break shared state, caching, or coordination logic.",
+    "description": "Angular DI is hierarchical, so provider location changes instance count and service lifetime. The useful angle is the real production bug: re-providing a service in a component or route and silently splitting shared state, caches, or coordination logic.",
     "seo": {
-      "title": "How does hierarchical dependency injection work in Angular?",
-      "description": "Angular hierarchical DI resolves providers from the nearest injector upward, so duplicate providers at different levels can create separate instances."
+      "title": "Angular hierarchical DI in production: duplicate providers, shadowed singletons, and cache bugs",
+      "description": "Explain Angular hierarchical DI through the real bug: a nearer provider shadows the root injector, creates a second instance, and breaks shared state or cache assumptions."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Angular does not have a single global injector. It has a <strong>tree of injectors</strong>. When Angular resolves a dependency, it starts from the current component’s injector and walks <em>up the tree</em> until it finds a provider. This means <strong>where you provide a service changes how many instances exist</strong>."
+          "text": "<strong>Bug-first mental model</strong><br><br>Angular DI is not a single global container. It is a <strong>tree of injectors</strong>, and the nearest provider wins. That becomes a production bug when a root service is accidentally re-provided in a component or route and your “singleton” cache, auth flag, or shared state quietly splits into multiple instances."
         },
         {
           "type": "text",
@@ -6125,7 +6125,7 @@
       "debugging",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Duplicate Service Instance Check",
       "scenario": "A team has `UserCacheService` marked with `providedIn: 'root'`, but one feature component also adds `providers: [UserCacheService]`. Later they notice that cache state updates in most of the app, but inside that feature the data looks like a different copy and resets unexpectedly. One teammate says, \"That cannot be DI-related. A service is a singleton once it is in root.\" Another says, \"This is exactly a hierarchical DI bug. The component-level provider is shadowing the root provider and creating a separate instance for that branch.\" Which explanation is better?",
@@ -6485,12 +6485,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "NgRx data flow in Angular follows a predictable loop: component dispatches actions, reducers create the next immutable state, selectors read and derive view data, and effects handle async side effects before dispatching success/failure actions. This is the core actions-reducers-effects-selectors flow interviewers expect.",
+    "description": "NgRx data flow is a predictable loop, but the high-value explanation is operational: UI intent dispatches actions, reducers stay pure, effects handle async side effects, and selectors expose debug-friendly read models back to Angular components.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core mental model</strong><br><br>Think of NgRx as a one-way loop:<br><br><code>Component event -> dispatch(action) -> reducer computes new state -> selector derives VM -> template renders</code><br><br>Effects run <em>beside</em> this loop for async work (HTTP, analytics, router side effects), then dispatch follow-up actions like success/failure."
+          "text": "<strong>Operational loop</strong><br><br>NgRx is most useful when you explain it as a <strong>debuggable one-way loop</strong>: the UI dispatches intent, reducers compute immutable state, effects run async side effects beside that loop, and selectors expose a clean read model back to the template. That framing is what separates “I know the words” from production understanding."
         },
         {
           "type": "list",
@@ -6585,10 +6585,10 @@
       "effects",
       "state-management"
     ],
-    "updatedAt": "2026-02-26",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How does NgRx data flow work in Angular?",
-      "description": "NgRx data flows from dispatched actions to reducers and effects, then selectors expose updated state back to components."
+      "title": "NgRx data flow in Angular: actions, reducers, effects, selectors, and debug loops",
+      "description": "Explain NgRx through the real loop: dispatch intent, keep reducers pure, run async work in effects, and expose memoized selectors that make state changes easier to debug."
     },
     "incidentCard": {
       "title": "NgRx Flow Check",

@@ -1000,7 +1000,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain why v-model is considered syntax sugar in Vue: it’s compiled into a prop binding + an event listener. Show what it expands to for native form elements (text input, checkbox, select) and for custom components in Vue 3 (modelValue + update:modelValue). Include how v-model arguments (v-model:foo) and common modifiers (.trim, .number, .lazy) change the expansion.",
+    "description": "Explain why v-model is considered syntax sugar in Vue: it's compiled into a prop binding + an event listener. Show what it expands to for native form elements (text input, checkbox, select) and for custom components in Vue 3 (modelValue + update:modelValue). Include how v-model arguments (v-model:foo) and common modifiers (.trim, .number, .lazy) change the expansion. This is the under-the-hood answer interviewers use to debug custom component bindings.",
     "answer": {
       "blocks": [
         {
@@ -1126,8 +1126,8 @@
     ],
     "updatedAt": "2026-01-30",
     "seo": {
-      "title": "What Does v-model Expand To in Vue Templates?",
-      "description": "v-model is syntax sugar that expands to prop binding plus update events, and Vue tracks model changes through those bindings."
+      "title": "Vue v-model under the hood: expansion, modifiers, and component pitfalls",
+      "description": "See how v-model compiles to prop binding plus update events for native inputs and custom components, and where modifiers or emits contracts create common pitfalls."
     },
     "incidentCard": {
       "title": "Model Expansion Check",
@@ -2137,12 +2137,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Vue directives are special attributes (v-if, v-for, v-model, v-bind, v-on) that apply reactive behavior to DOM elements. They control rendering, bind data, and handle events. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+    "description": "Vue directives are compiled template instructions, and the beyond-basics question is what they change in rendering, patching, or event flow and when not to reach for a custom directive.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Vue, directives are custom HTML attributes prefixed with <code>v-</code> that provide reactive behavior to DOM elements. They allow you to bind data, listen for events, show or hide elements, and apply dynamic logic directly in templates without writing manual JavaScript for DOM manipulation."
+          "text": "<strong>Overview</strong><br><br>Vue directives are not decorative attributes; they are compiled instructions that change how Vue renders, patches, and listens for events. The production mistake is using them without understanding whether they alter structure (<code>v-if</code>), visibility (<code>v-show</code>), binding (<code>v-bind</code>), or event flow (<code>v-on</code>)."
         },
         {
           "type": "code",
@@ -2236,10 +2236,10 @@
       "v-model",
       "templates"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What Are Vue Directives and How Do They Work?",
-      "description": "Vue directives bind data, conditionally render nodes, loop lists, and handle events in templates, while Vue tracks dependencies for updates."
+      "title": "Vue directives under the hood: rendering behavior and when not to use them",
+      "description": "Learn how built-in directives affect patching and reactivity, when custom directives are appropriate, and which template pitfalls to avoid."
     },
     "incidentCard": {
       "title": "Directive Behavior Check",
@@ -2674,12 +2674,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "Single-File Components (SFCs) and global components differ in scope and structure. SFCs define components in .vue files with encapsulated templates, scripts, and styles, while global components are registered once and accessible throughout the application.",
+    "description": "SFCs vs global components is an architectural trade-off around ownership, bundle clarity, and registration sprawl; the pitfall is making everything global and losing dependency visibility.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>. Both define reusable UI pieces, but they differ in organization, scope, and how they are registered within a Vue application."
+          "text": "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>, but they optimize for different trade-offs. The production pitfall is registering too much globally: you save imports, but lose clear ownership, dependency tracing, and bundle discipline."
         },
         {
           "type": "text",
@@ -2776,10 +2776,10 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What Is the Difference Between Vue SFCs and Global Components?",
-      "description": "Single-file components keep template, logic, and styles together, while global components are app-wide; Vue tracks local imports for clearer ownership."
+      "title": "Vue SFC vs global components: ownership, bundle clarity, and trade-offs",
+      "description": "Compare local SFC imports with global registration through maintainability, tree-shaking, and the pitfalls of app-wide component sprawl."
     },
     "incidentCard": {
       "title": "Component Scope Check",
@@ -2808,12 +2808,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Vue handles conditional and list rendering efficiently through its virtual DOM diffing system. Directives like v-if, v-show, and v-for control what is rendered while Vue updates only the necessary parts of the DOM when data changes.",
+    "description": "Vue renders v-if, v-show, and v-for efficiently only when you choose the right directive for the toggle pattern and preserve keyed identity; the pitfalls show up during frequent toggles and list reorders.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue provides efficient and declarative ways to control rendering using directives like <code>v-if</code>, <code>v-show</code>, and <code>v-for</code>. These directives determine whether elements should appear in the DOM and how lists of elements are dynamically generated and updated. Vue’s virtual DOM efficiently detects what has changed and updates only the affected parts, rather than re-rendering the entire DOM."
+          "text": "<strong>Overview</strong><br><br>Vue's rendering directives are efficient for different reasons, so the production pitfall is treating them as interchangeable. <code>v-if</code> creates and destroys branches, <code>v-show</code> keeps DOM mounted and toggles visibility, and <code>v-for</code> depends on stable keys so Vue can patch identity correctly during list updates."
         },
         {
           "type": "text",
@@ -2890,10 +2890,10 @@
       "v-for",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How Does Vue Render v-if, v-show, and v-for Efficiently?",
-      "description": "Vue handles conditional and list rendering by diffing virtual DOM changes, and it tracks keyed nodes to patch only affected items efficiently."
+      "title": "Vue v-if vs v-show vs v-for: patching behavior and rendering pitfalls",
+      "description": "Learn when Vue destroys DOM, when it only toggles visibility, and which keyed-list pitfalls cause incorrect patching."
     },
     "incidentCard": {
       "title": "Render Strategy Check",
@@ -3217,12 +3217,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The Vue Composition API provides a flexible and scalable way to organize component logic using functions like setup(), ref(), and reactive(). It was introduced in Vue 3 to improve reusability, maintainability, and TypeScript support compared to the Options API.",
+    "description": "Explain the Vue Composition API with an interview and production angle: why Vue introduced it, how setup(), ref(), and reactive() improve large-component organization, and which migration trade-offs matter.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The Composition API is a new way to write components in Vue 3. It provides greater flexibility and control over organizing logic inside components by using functions like <code>setup()</code>, <code>ref()</code>, and <code>reactive()</code>. This API was introduced to address the limitations of the traditional Options API, making complex component logic easier to read, reuse, and test."
+          "text": "<strong>Overview</strong><br><br>The Composition API is not just new syntax. In production and in interviews, its value is architectural: it lets you group one feature's state, effects, and derived values together instead of scattering them across Options API sections. That makes large components easier to reason about, reuse through composables, and scale with TypeScript."
         },
         {
           "type": "text",
@@ -3296,10 +3296,10 @@
       "reactivity",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What Are setup(), ref(), and reactive() in Vue?",
-      "description": "setup(), ref(), and reactive() are Composition API primitives for organizing component logic, and Vue tracks reactive state explicitly."
+      "title": "Vue Composition API: setup(), ref(), reactive(), and migration trade-offs",
+      "description": "Learn why Vue introduced the Composition API, how setup(), ref(), and reactive() improve large-component organization, and which migration trade-offs matter in practice."
     },
     "incidentCard": {
       "title": "Composition API Reasoning Check",
@@ -4227,12 +4227,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why destructuring a reactive object in Vue breaks reactivity, how Vue’s Proxy-based tracking works, and how to use toRefs() and toRef() to safely extract reactive properties without losing updates.",
+    "description": "Explain why destructuring breaks Vue reactivity under the hood, how Proxy tracking works, and how to debug stale values safely with toRefs() and toRef() in composables or components.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Vue 3, <code>reactive()</code> returns a <strong>Proxy</strong> that tracks property access and mutation. When you destructure properties from that object, you <strong>pull plain values out of the Proxy</strong>, so Vue can no longer track reads or writes. The fix is to use <code>toRefs()</code> or <code>toRef()</code>, which keep each extracted property <em>linked</em> to the original reactive source."
+          "text": "<strong>Overview</strong><br><br>In Vue 3, <code>reactive()</code> returns a <strong>Proxy</strong> that tracks property access and mutation. When you destructure properties from that object, you pull plain values out of the Proxy, so Vue can no longer track them. This is a classic production and interview <strong>debug</strong> problem: the state looks correct at the source, but the destructured value goes stale. The fix is to use <code>toRefs()</code> or <code>toRef()</code>, which keep the extracted property linked to the original reactive source."
         },
         {
           "type": "text",
@@ -4324,10 +4324,10 @@
       "state",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why does destructuring break reactivity in Vue?",
-      "description": "Destructuring breaks Vue reactivity because extracted variables are no longer tracked by Vue's Proxy. Use toRefs() or toRef() to preserve reactivity."
+      "title": "Vue destructuring and reactivity: Proxy internals, toRefs, and stale-value debugging",
+      "description": "Learn why destructuring breaks Vue reactivity, how Proxy tracking works under the hood, and how to debug stale values with toRefs() or toRef()."
     },
     "incidentCard": {
       "title": "Proxy Extraction Check",

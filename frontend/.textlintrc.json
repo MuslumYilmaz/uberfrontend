@@ -1,0 +1,65 @@
+{
+  "rules": {
+    "fa-house-style": true,
+    "terminology": {
+      "defaultTerms": false,
+      "terms": [
+        "FrontendAtlas",
+        "JavaScript",
+        "TypeScript",
+        "Playwright",
+        "WebKit",
+        "GitHub",
+        "Node.js",
+        "Lighthouse",
+        "DOM",
+        "HTML",
+        "CSS",
+        "SSR",
+        "CSR",
+        "RSC",
+        "SPA",
+        "API",
+        "CORS",
+        "CSRF",
+        "XSS",
+        "UI",
+        "UX",
+        "DX",
+        "SEO",
+        "npm",
+        "ngIf",
+        "trackBy",
+        "OnPush",
+        "NgRx",
+        "nextTick",
+        "Zustand",
+        "WebSocket",
+        [
+          "\\bGithub\\b",
+          "GitHub"
+        ],
+        [
+          "\\bJavascript\\b",
+          "JavaScript"
+        ],
+        [
+          "\\bTypescript\\b",
+          "TypeScript"
+        ],
+        [
+          "\\bfrontendatlas\\b",
+          "FrontendAtlas"
+        ],
+        [
+          "\\bWebsocket\\b",
+          "WebSocket"
+        ],
+        [
+          "\\bNexttick\\b",
+          "nextTick"
+        ]
+      ]
+    }
+  }
+}

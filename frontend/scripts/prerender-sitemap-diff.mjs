@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 const SRC_DIR = path.resolve('src');
 const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
 const FALLBACK_SITEMAP = path.join(SRC_DIR, 'sitemap-1.xml');
 const ALT_SITEMAP = path.join(SRC_DIR, 'sitemap.xml');
 const PRERENDER_PATH = path.join(SRC_DIR, 'prerender.routes.txt');
+const __filename = fileURLToPath(import.meta.url);
 
 function extractLocs(xml) {
   return Array.from(xml.matchAll(/<loc>(.*?)<\/loc>/g))
@@ -74,18 +76,26 @@ function readPrerenderRoutes() {
     .map(normalizeRoute);
 }
 
-const sitemapPaths = readSitemapPaths();
-const prerenderRoutes = readPrerenderRoutes();
+function main() {
+  const sitemapPaths = readSitemapPaths();
+  const prerenderRoutes = readPrerenderRoutes();
 
-const prerenderSet = new Set(prerenderRoutes);
-const missing = sitemapPaths.filter((p) => !prerenderSet.has(p));
+  const prerenderSet = new Set(prerenderRoutes);
+  const missing = sitemapPaths.filter((p) => !prerenderSet.has(p));
 
-console.log(`[prerender-sitemap-diff] sitemap URLs: ${sitemapPaths.length}`);
-console.log(`[prerender-sitemap-diff] prerender routes: ${prerenderRoutes.length}`);
-console.log(`[prerender-sitemap-diff] missing from prerender: ${missing.length}`);
+  console.log(`[prerender-sitemap-diff] sitemap URLs: ${sitemapPaths.length}`);
+  console.log(`[prerender-sitemap-diff] prerender routes: ${prerenderRoutes.length}`);
+  console.log(`[prerender-sitemap-diff] missing from prerender: ${missing.length}`);
 
-if (missing.length) {
-  console.log('[prerender-sitemap-diff] first 50 missing routes:');
-  missing.slice(0, 50).forEach((p) => console.log(`  ${p}`));
-  process.exitCode = 1;
+  if (missing.length) {
+    console.log('[prerender-sitemap-diff] first 50 missing routes:');
+    missing.slice(0, 50).forEach((p) => console.log(`  ${p}`));
+    process.exitCode = 1;
+  }
 }
+
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+  main();
+}
+
+export { normalizeRoute, readPrerenderRoutes, readSitemapPaths };
