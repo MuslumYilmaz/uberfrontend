@@ -1723,7 +1723,7 @@
   {
     "id": "js-why-eval-function-considered-dangerous",
     "title": "Why is the eval() function considered dangerous in JavaScript?",
-    "description": "eval() executes strings as code, which creates serious security and reliability risks when any input is untrusted. Learn why eval increases XSS/injection risk, hurts performance, complicates debugging, and what safer alternatives to use instead.",
+    "description": "Explain eval through the security pitfall lens: it turns data into code, expands injection risk, conflicts with CSP expectations, and makes production debugging or optimization much harder.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1746,7 +1746,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\n<code>eval()</code> takes a string and runs it as JavaScript code. That is dangerous because any unexpected string content can become executable behavior.\n\nA strong interview answer: <strong>eval turns data into code</strong>, which expands attack surface, reduces predictability, and makes optimization/debugging harder."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Security pitfall</strong>\n\n<code>eval()</code> turns data into executable code. In production that creates injection risk, CSP friction, and runtime behavior that is much harder to debug or optimize.\n\nA strong interview answer is simple: <strong>eval turns data into code</strong>, so it expands attack surface and reduces predictability."
         },
         {
           "type": "code",
@@ -1861,10 +1861,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why eval() Is Dangerous in JavaScript (Security + Performance)",
-      "description": "Learn why eval() is risky in JavaScript: code injection exposure, CSP conflicts, runtime overhead, debugging pain, and safer alternatives."
+      "title": "Why eval() is a security pitfall in JavaScript: CSP, code injection, and debug cost",
+      "description": "Understand eval through the real production pitfall: data becomes code, CSP weakens, optimizers bail out, and runtime behavior gets harder to debug."
     },
     "incidentCard": {
       "title": "Dynamic Code Safety Check",
@@ -2378,6 +2378,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Production review habit</strong><br><br>When you review a helper that handles user input or config defaults, ask three questions in order:<br><ul><li>Can <code>0</code>, <code>false</code>, or an empty string be valid here?</li><li>Am I comparing parsed values of the same type, or relying on coercion?</li><li>Will this function mutate caller-owned objects and create hidden shared-state bugs?</li></ul>This one checklist catches a surprising number of frontend incidents."
+        },
+        {
+          "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Use <code>??</code> when 0/false/'' are valid.</li><li>Use <code>===</code> after explicit parsing.</li><li>Avoid mutating caller-owned objects by default.</li></ul>"
         },
         {
@@ -2387,7 +2391,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-05",
     "seo": {
       "title": "Truthy/Falsy, Strict Equality, and Reference Bugs in JavaScript",
       "description": "Learn a real JavaScript use case combining truthy/falsy defaults, strict equality checks, and pass-by-value vs reference behavior."
@@ -4414,7 +4418,7 @@
   {
     "id": "js-nan-property",
     "title": "What is the NaN property in JavaScript?",
-    "description": "NaN stands for Not-a-Number and is the only value in JavaScript that is not equal to itself. Use Number.isNaN to check for it reliably, because global isNaN coerces values. This is important for numeric validation and edge cases. Edge cases include empty strings and non-numeric input; test with Number.isNaN.",
+    "description": "NaN matters in production numeric validation because it is the only JavaScript value not equal to itself, global isNaN coerces inputs, and empty strings or malformed payloads create common mistake cases.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -4431,7 +4435,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n<code>NaN</code> stands for <strong>Not-a-Number</strong>. It is a special numeric value that represents the result of an invalid mathematical operation — something that cannot produce a meaningful number."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Common mistake</strong>\n\n<code>NaN</code> is not just a trivia definition. It is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is usually <code>Number.isNaN</code>."
         },
         {
           "type": "code",
@@ -4488,10 +4492,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is NaN in JavaScript?",
-      "description": "NaN is a special numeric value that represents an invalid or unrepresentable number result."
+      "title": "JavaScript NaN common mistakes: Number.isNaN, coercion traps, and validation bugs",
+      "description": "Learn the NaN production pitfall: coercion hides invalid input, global isNaN misleads checks, and Number.isNaN is the safer debugging rule."
     },
     "incidentCard": {
       "title": "NaN Validation Check",
@@ -4719,7 +4723,7 @@
   {
     "id": "js-calback-hell-resolved-with-promise",
     "title": "How does Promise resolve callback hell in JavaScript?",
-    "description": "Callback hell happens when async callbacks are deeply nested and error handling is duplicated. Promises flatten async control flow, centralize failures with catch, and make sequencing and parallel execution easier to reason about.",
+    "description": "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic. Promises flatten the flow, centralize failures, and make production control flow easier to inspect, even though they do not solve cancellation by themselves.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -4741,7 +4745,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\n<strong>Callback hell</strong> means deeply nested async callbacks that are hard to read, hard to test, and easy to break.\n\nPromises solve this by turning nested callbacks into a <strong>linear chain</strong> where values and errors move through a predictable pipeline."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Async debug problem</strong>\n\n<strong>Callback hell</strong> is not just ugly indentation. It is a production reliability problem where sequencing becomes implicit, failures get duplicated, and async control flow is hard to debug.\n\nPromises improve that by turning nested callbacks into a <strong>linear chain</strong> where values and errors move through a predictable pipeline."
         },
         {
           "type": "list",
@@ -4855,10 +4859,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How Promises Resolve Callback Hell in JavaScript",
-      "description": "Understand callback hell and how Promises fix it with flatter async flow, centralized error handling, and cleaner sequencing or parallel execution."
+      "title": "Promises vs callback hell in JavaScript: async debug flow, errors, and cancellation limits",
+      "description": "Explain Promises through the real async pitfall: flatter sequencing, centralized error handling, better debug flow, but no automatic cancellation model."
     },
     "incidentCard": {
       "title": "Promise Refactor Check",
@@ -5461,7 +5465,7 @@
   {
     "id": "js-design-patterns",
     "title": "What do you mean by JavaScript Design Patterns?",
-    "description": "JavaScript design patterns are reusable solutions to common programming problems. They provide structured approaches for organizing code, improving maintainability, scalability, and readability in both small and large applications.",
+    "description": "JavaScript design patterns help when they clarify module boundaries, object creation, or event flow, but they become a pitfall when teams cargo-cult abstractions and overengineer simple code.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -5478,7 +5482,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nDesign patterns in JavaScript are tried-and-tested templates that solve recurring software design problems. They represent best practices refined by developers over years of experience and can be adapted to specific use cases. Patterns are not pieces of code you copy and paste, but concepts and structures that guide how you architect your applications."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Practical angle</strong>\n\nDesign patterns are not labels to memorize for an interview. In production they are useful only when they reduce coupling or clarify ownership. The <strong>common mistake</strong> is forcing module, factory, or observer patterns into simple code and ending up with abstraction layers that are harder to debug than the original problem."
         },
         {
           "type": "text",
@@ -5560,10 +5564,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What are JavaScript design patterns?",
-      "description": "JavaScript design patterns are reusable solution templates for common software design problems, such as module, factory, and observer."
+      "title": "JavaScript design patterns in production: module, factory, observer, and overengineering pitfalls",
+      "description": "Learn design patterns through the real trade-off: when module, factory, or observer clarifies architecture and when pattern-heavy code becomes a pitfall."
     },
     "incidentCard": {
       "title": "Pattern Choice Check",
@@ -5589,7 +5593,7 @@
   {
     "id": "js-deferred-scripts",
     "title": "What is the role of deferred scripts in JavaScript?",
-    "description": "Deferred scripts are JavaScript files that load in parallel with HTML parsing but execute only after the document has been fully parsed. They help improve page load performance by preventing render-blocking behavior.",
+    "description": "Deferred scripts improve load performance by removing parser blocking while preserving execution order. The real pitfall is assuming defer behaves like async or running DOM-dependent code without understanding script timing.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -5606,7 +5610,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nNormally, when the browser encounters a <code>&lt;script&gt;</code> tag during HTML parsing, it stops rendering, fetches the script, and executes it immediately before continuing. This behavior blocks the page rendering process and slows down the perceived load time.\n\nDeferred scripts solve this problem by allowing the browser to continue parsing HTML while downloading the script in the background — executing it only after the entire document is parsed."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Performance pitfall</strong>\n\nA normal <code>&lt;script&gt;</code> tag blocks HTML parsing. <code>defer</code> changes that by downloading during parsing and executing after the document is parsed, in order.\n\nThe production bug appears when teams confuse <code>defer</code> with <code>async</code> or rely on DOM timing without understanding how script execution order really works."
         },
         {
           "type": "code",
@@ -5676,10 +5680,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What does defer do in a script tag?",
-      "description": "The defer attribute downloads a script during HTML parsing and executes it after parsing completes, in document order."
+      "title": "JavaScript defer in production: render-blocking, execution order, and async vs defer pitfalls",
+      "description": "Understand defer through the loading pitfall lens: stop parser blocking, preserve execution order, and avoid DOM-ready bugs caused by async assumptions."
     },
     "incidentCard": {
       "title": "Defer Behavior Check",
@@ -6895,7 +6899,7 @@
   {
     "id": "js-array-sort-pitfalls",
     "title": "Array.sort Pitfalls in JavaScript (Lexicographic Sorting, Mutation, Comparator)",
-    "description": "Array.prototype.sort has several traps: it sorts elements as strings by default, mutates the original array, and requires a correct comparator function for numeric or custom sorting. These pitfalls cause many subtle bugs in real-world code and interviews. Sorting is in-place and lexicographic by default; test numeric comparisons and stability for performance.",
+    "description": "Array.prototype.sort causes common production bugs because it mutates in place, compares as strings by default, and depends on a correct comparator for stable domain-specific ordering.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -6913,7 +6917,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The big trap</strong>\n\n<strong><code>Array.prototype.sort()</code> sorts elements as <em>strings</em> by default</strong>. That means numbers are compared <strong>lexicographically</strong>, not numerically."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Production pitfall</strong>\n\n<strong><code>Array.prototype.sort()</code> looks harmless but it mutates the original array and sorts values as <em>strings</em> by default.</strong> That is why numeric lists, shared state, and custom ordering logic fail in ways that are frustrating to debug."
         },
         {
           "type": "code",
@@ -6980,10 +6984,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why does Array.sort cause bugs in JavaScript?",
-      "description": "Array.sort can cause bugs because it mutates the original array and sorts strings lexicographically unless you provide a comparator."
+      "title": "JavaScript Array.sort pitfalls: mutation, lexicographic order, and comparator bugs",
+      "description": "Explain Array.sort through the debug lens: in-place mutation, string-first ordering, and comparator mistakes that create subtle production bugs."
     },
     "incidentCard": {
       "title": "Sort Trap Check",
@@ -7155,7 +7159,7 @@
   {
     "id": "js-secure-cors-handling",
     "title": "How would you securely handle CORS issues in a frontend application?",
-    "description": "Explain why CORS errors happen (Same-Origin Policy) and how to fix cross-origin requests safely: server-set Access-Control-Allow-Origin/Methods/Headers, correct preflight handling, or a backend proxy/BFF. The frontend alone cannot bypass CORS.",
+    "description": "Secure CORS handling is mostly a server-policy and preflight debugging problem, not a frontend workaround. The production-safe fixes are trusted origin allowlists, correct headers, and a BFF or proxy when direct browser access is the wrong architecture.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -7181,7 +7185,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-shield'></i> <strong>Key principle</strong>\n\nCORS is part of the <strong>Same-Origin Policy</strong> enforced by the browser. If the API response doesn’t include the right CORS headers, the browser blocks your JavaScript from reading it. The fix is almost always <strong>server-side</strong> (or via a trusted proxy/BFF)."
+          "text": "<i class='fa-solid fa-shield'></i> <strong>Security model</strong>\n\nCORS is a browser-enforced boundary, so the frontend cannot bypass it. Real fixes are about <strong>server policy and preflight debug</strong>: allow the right origins, methods, and headers, or move calls behind a BFF/proxy when direct browser access is the wrong production architecture."
         },
         {
           "type": "list",
@@ -7267,10 +7271,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How do you handle CORS securely in frontend apps?",
-      "description": "CORS must be handled by allowing trusted origins on the server, because browsers enforce cross-origin restrictions on frontend requests."
+      "title": "Secure CORS handling in production: server policy, preflight debug, and BFF patterns",
+      "description": "Explain CORS through the real security model: the browser enforces it, the server sets policy, and production fixes come from allowlists, preflight handling, or a trusted proxy."
     },
     "incidentCard": {
       "title": "CORS Fix Check",
@@ -7967,7 +7971,7 @@
   {
     "id": "web-performance-optimize-load-time",
     "title": "How do you optimize a web page’s response or load time?",
-    "description": "This question checks if you can reason about performance across the network, render pipeline, assets, and runtime. Interviewers expect concrete tactics like caching, compression, code splitting, and image optimization.",
+    "description": "Web performance optimization is a prioritization problem across network transfer, render-blocking work, images, JavaScript, and caching. Strong answers tie improvements to critical-path debugging and Core Web Vitals rather than a random checklist.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -7991,7 +7995,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Definition (above the fold)</strong>\n\nTo optimize a web page's response or load time, you reduce work on the critical path before first meaningful paint, then reduce repeated work on later visits. In practice that means: send fewer bytes, unblock rendering, cache aggressively but safely, and validate outcomes with Core Web Vitals (LCP, INP, CLS). Interviewers want a layered answer, not one trick. If you only mention image compression or only mention code splitting, your answer sounds partial. A strong interview answer also sequences wins by impact and engineering cost, starting with the fastest measurable improvements."
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Performance decision</strong>\n\nOptimizing load time means shortening the critical path before the page becomes useful, then removing repeat work on later visits. In production, the right answer is not one trick but a <strong>debug process</strong>: find what blocks rendering, what ships too many bytes, and what hurts LCP or INP before choosing the next optimization."
         },
         {
           "type": "text",
@@ -8073,10 +8077,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-06",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How do you optimize web page load time?",
-      "description": "Optimize load time by reducing transfer size, removing render-blocking work, and caching assets so pages become interactive faster."
+      "title": "Web page load-time optimization: critical path, render-blocking debug, and caching priorities",
+      "description": "Explain load-time optimization through the performance-debug lens: critical path, transfer size, render-blocking work, caching strategy, and Core Web Vitals validation."
     },
     "incidentCard": {
       "title": "Load-Time Priority Check",
@@ -8538,7 +8542,7 @@
     ],
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "This probes your ability to model a conversation, manage streaming messages, and handle memory limits or truncation without breaking UX.",
+    "description": "Conversation state in chat apps is a production state-machine problem: stable message IDs, streaming draft buffers, retries, reconnects, truncation, and ordering guarantees all need explicit transitions.",
     "type": "trivia",
     "tags": [
       "state-management",
@@ -8552,7 +8556,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-comments'></i> <strong>Definition (above the fold)</strong>\n\nTo maintain conversation state in a chat app like ChatGPT, model chat history as an append-only timeline with stable IDs, explicit status transitions, and a separate streaming draft buffer. The key is deterministic state transitions: user submit, optimistic render, stream append, finalize, retry/fail. If these transitions are implicit, you get duplicate messages, stale drafts, and broken ordering under packet delay. Interviewers want a state model, not only UI screenshots. Strong answers also define persistence boundaries and recovery behavior for offline/reconnect cases, not only happy-path streaming."
+          "text": "<i class='fa-solid fa-comments'></i> <strong>Production state machine</strong>\n\nConversation state in a chat app is not just an array of messages. It is a set of explicit transitions: user submit, optimistic render, stream append, finalize, retry, reconnect, and recovery. If those transitions are implicit, you get duplicate messages, stale drafts, and ordering bugs."
         },
         {
           "type": "text",
@@ -8654,10 +8658,10 @@
       "rereadPrompt": "Not quite. The key idea is deterministic state transitions: pending, streaming, done, or error. Keep canonical message entities separate from UI helpers, tag streams with a request ID, and reject stale chunks instead of guessing which message to append to."
     },
     "access": "free",
-    "updatedAt": "2026-02-06",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How do you manage conversation state in a chat app?",
-      "description": "Manage conversation state as an ordered message timeline with stable IDs, statuses, and persistence for recovery and resume."
+      "title": "Chat conversation state in production: streaming buffers, retries, and ordering bugs",
+      "description": "Explain chat state through the real pitfalls: append-only timelines, stable IDs, streaming drafts, retry or reconnect handling, and message-order bugs."
     }
   },
   {
@@ -9204,6 +9208,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Real-world choice</strong><br><br>If your bug is about <em>order</em>, ask which item must leave first. Undo history, recursive traversal, and browser backtracking usually want stack semantics. Upload workers, notification delivery, and breadth-first exploration usually want queue semantics. Once the order is correct, then decide whether a simple array API is enough or whether you need an O(1) dequeue implementation."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Stack = LIFO, queue = FIFO.\n- Choose based on access order: last-first vs first-first.\n- Use O(1) operations with push/pop and head index (or two stacks)."
         }
       ]
@@ -9229,7 +9237,7 @@
       "rereadPrompt": "Not quite. The key decision is access order: a queue is FIFO, so it matches job processing in submission order. For larger workloads, avoid paying `shift()` reindexing cost on every dequeue and use a head index or two-stack queue instead."
     },
     "access": "free",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-05",
     "seo": {
       "title": "Stack vs queue in JavaScript: what is the difference?",
       "description": "A stack follows LIFO order, while a queue follows FIFO order for insertion and removal operations."
@@ -9244,7 +9252,7 @@
     ],
     "difficulty": "easy",
     "importance": 4,
-    "description": "Define Big-O time and space complexity, explain why it matters for scalability, show how to derive it with rules of thumb, and list common classes. Include best/average/worst-case and amortized complexity examples.",
+    "description": "Big O is useful when you compare scaling trade-offs, not when you recite symbols. Strong JavaScript answers connect complexity to real performance decisions, hidden constants, and the common mistake of optimizing the wrong bottleneck.",
     "type": "trivia",
     "tags": [
       "algorithms",
@@ -9256,7 +9264,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n<strong>Big-O</strong> describes how time or space usage grows as input size <code>n</code> increases. It is an <em>upper bound</em> that focuses on the dominant growth rate and ignores constants."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Performance lens</strong>\n\n<strong>Big-O</strong> is not a badge for memorizing <code>O(n log n)</code>. It is a way to reason about how an algorithm scales as input grows. The <strong>common mistake</strong> is treating it as the only performance signal and ignoring hidden constants, memory cost, or whether the real bottleneck is somewhere else."
         },
         {
           "type": "text",
@@ -9356,10 +9364,10 @@
       "rereadPrompt": "Not quite. Big-O is about how work grows with input size, not just how fast the code feels on a small sample. Nested loops over the same collection often mean quadratic behavior, which is exactly why performance collapses as the dataset grows."
     },
     "access": "free",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is Big O notation in JavaScript?",
-      "description": "Big O notation describes how an algorithm's time or space grows as input size increases."
+      "title": "Big O in JavaScript interviews: scaling trade-offs, hidden costs, and common mistakes",
+      "description": "Learn Big O through the performance-decision lens: how growth rate shapes scalability, where hidden constants still matter, and which common complexity mistakes confuse interviews."
     }
   },
   {
@@ -9887,7 +9895,7 @@
   {
     "id": "js-testing-edge-cases-strategy",
     "title": "Testing Strategy: Edge Cases and Boundaries",
-    "description": "Explain how to design tests that cover boundaries, equivalence classes, invariants, and failure modes. Include a practical checklist and JavaScript-specific pitfalls.",
+    "description": "Testing edge cases is about finding boundary, invariant, and failure-mode bugs with a small high-signal test set. The real production pitfall is writing many happy-path tests while missing the inputs that actually break logic.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -9905,7 +9913,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Goal</strong>\n\nA strong test strategy does not try every input. It finds the <strong>smallest set</strong> that still exposes boundary bugs, invalid inputs, and real-world failure modes. This is how you get high confidence with low test count."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>High-signal goal</strong>\n\nA good edge-case strategy is not about more tests. It is about choosing the smallest set that still finds boundary bugs, invalid-input bugs, and failure modes before production does. The <strong>common mistake</strong> is maximizing test count instead of bug-finding power."
         },
         {
           "type": "list",
@@ -10019,10 +10027,10 @@
       "rereadPrompt": "Not quite. Strong test strategy is about coverage with intent, not raw volume. Boundaries, equivalence classes, invalid inputs, invariants, and regression cases are usually where bugs hide, so a compact set can outperform dozens of repetitive happy-path assertions."
     },
     "access": "free",
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How do you test edge cases in JavaScript?",
-      "description": "Test edge cases by covering boundaries, invalid inputs, empty states, and failure paths that commonly break logic."
+      "title": "Testing edge cases in JavaScript: boundaries, failure modes, and high-signal test strategy",
+      "description": "Explain edge-case testing through the real bug-prevention lens: boundaries, invalid inputs, invariants, and the common mistake of shipping happy-path-only coverage."
     }
   },
   {
@@ -10510,7 +10518,7 @@
   {
     "id": "js-tree-shaking",
     "title": "Tree-Shaking: How It Works and Common Pitfalls",
-    "description": "Explain tree-shaking (dead code elimination) in modern bundlers, the requirements for it to work (ESM, sideEffects, pure), and how to verify results. Include common pitfalls that prevent tree-shaking.",
+    "description": "Tree shaking is dead-code elimination, but real bundler results depend on ESM, side-effect declarations, and import shape. The production pitfall is assuming unused code disappears automatically when package structure still blocks elimination.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -10528,7 +10536,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-seedling'></i> <strong>What is tree-shaking?</strong>\n\nTree-shaking is <strong>dead code elimination</strong>. Bundlers analyze your import graph and remove unused exports so your final bundle is smaller and faster. It works best with ESM because imports/exports are static."
+          "text": "<i class='fa-solid fa-seedling'></i> <strong>Bundler pitfall</strong>\n\nTree-shaking is not a magic \"remove everything unused\" switch. Bundlers need static ESM structure and trustworthy side-effect signals. When bundles stay fat, the <strong>debug question</strong> is usually where hidden side effects, barrel exports, or import shape prevented elimination."
         },
         {
           "type": "list",
@@ -10625,14 +10633,14 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is tree shaking in JavaScript bundlers?",
-      "description": "Tree shaking removes unused exports from final bundles, mainly when code uses ESM and avoids hidden side effects."
+      "title": "Tree shaking in bundlers: ESM requirements, side-effect pitfalls, and bundle debug",
+      "description": "Explain tree shaking through the real bundler pitfall: ESM helps, side effects block elimination, and verification matters when bundles stay large after optimizing."
     }
   },
   {
     "id": "js-intl-datetime-timezone",
     "title": "JavaScript Intl.DateTimeFormat: Time Zones, DST, and Reliable Date Formatting",
-    "description": "Practical frontend guide to Intl.DateTimeFormat and time zones: IANA zone IDs, daylight-saving transitions, formatToParts, and robust patterns for presenting user-local dates without fragile manual offset math.",
+    "description": "Intl.DateTimeFormat solves the production bug of formatting across time zones and DST without unsafe manual offset math. The useful angle is IANA zone IDs, locale formatting, and why fixed offsets break scheduling or audit displays.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -10652,7 +10660,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-clock'></i> <strong>Definition (above the fold)</strong>\n\nUse <code>Intl.DateTimeFormat</code> to render dates in the user or business time zone without manual offset arithmetic. The hard part is not formatting tokens. It is handling DST transitions, locale rules, and cross-region consistency. Interviewers want to hear why fixed offset math is unsafe in production apps."
+          "text": "<i class='fa-solid fa-clock'></i> <strong>Production bug to avoid</strong>\n\nTime-zone formatting gets hard when daylight-saving transitions, locale rules, and business zones differ from the user's machine. <code>Intl.DateTimeFormat</code> exists so you do not ship fixed-offset math that works in March and fails in November."
         },
         {
           "type": "text",
@@ -10781,10 +10789,10 @@
       "rereadPrompt": "Not quite. Fixed offsets break around DST changes and historical timezone rules. The robust pattern is to persist UTC for logic and transport, then format at the presentation edge with `Intl.DateTimeFormat` and an explicit IANA zone so display stays correct across regions and seasons."
     },
     "access": "free",
-    "updatedAt": "2026-02-16",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "How do you format dates with time zones in JavaScript?",
-      "description": "Use Intl.DateTimeFormat with a locale and IANA timeZone option to format dates correctly across regions and DST changes."
+      "title": "JavaScript time-zone formatting: DST bugs, IANA zones, and Intl.DateTimeFormat",
+      "description": "Explain Intl.DateTimeFormat through the production pitfall: DST shifts, fixed-offset bugs, IANA time zones, and reliable cross-region date rendering."
     }
   },
   {

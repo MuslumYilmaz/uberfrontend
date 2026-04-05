@@ -1829,7 +1829,7 @@
     "route": "/css/trivia/css-border-property",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "Add a border with the shorthand: border: 1px solid #333;. You can also set border-width, border-style, and border-color separately for finer control. In UI validation and focus states, borders signal errors; watch layou…",
+    "summary": "CSS borders are simple until validation states, focus rings, and hover transitions cause layout shift or contrast regressions. Explain shorthand, per-side control, and when outline or box-shadow is safer.",
     "tags": [
       "css",
       "border",
@@ -1838,7 +1838,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-border-property"
   },
@@ -1912,7 +1912,7 @@
     "route": "/css/trivia/css-center-text",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "The text-align property in CSS is used to align text content horizontally within its container. Setting text-align: center aligns inline-level content such as text and inline elements to the center of their parent conta…",
+    "summary": "Centering text with text-align is easy, but the common mistake is using it for layout centering when flexbox or grid should own the alignment. Explain inline content vs box alignment and responsive readability trade-off…",
     "tags": [
       "css",
       "text",
@@ -1922,7 +1922,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-center-text"
   },
@@ -1954,7 +1954,7 @@
     "route": "/css/trivia/css-change-text-size",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "You can control the size of text using the font-size property in CSS. This property defines how large or small the text content appears on a web page and supports both absolute and relative units for flexible design sca…",
+    "summary": "font-size is really about scale strategy: rem/em/px choices, zoom behavior, component nesting, and accessibility bugs caused by hard-coded sizes.",
     "tags": [
       "css",
       "typography",
@@ -1964,7 +1964,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-change-text-size"
   },
@@ -1996,7 +1996,7 @@
     "route": "/css/trivia/css-make-text-bold",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "Make text bold with font-weight, e.g., font-weight: bold or font-weight: 700. The actual weight depends on what the font family provides. Use font-weight carefully for readability and accessibility; test variable fonts…",
+    "summary": "font-weight looks trivial until fallback fonts, missing weights, and variable-font interpolation make bold text render inconsistently. Explain common readability and hierarchy mistakes.",
     "tags": [
       "css",
       "typography",
@@ -2005,7 +2005,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-make-text-bold"
   },
@@ -2038,7 +2038,7 @@
     "route": "/css/trivia/css-z-index",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "z-index controls stacking order for positioned elements within the same stacking context. Higher values appear on top, but only for elements that create/participate in a stacking context (e.g., position with z-index, op…",
+    "summary": "z-index bugs are usually stacking-context bugs. Explain layering, positioned elements, transforms or opacity, and why huge numbers fail when the wrong element owns the stacking context.",
     "tags": [
       "css",
       "z-index",
@@ -2049,7 +2049,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-z-index"
   },
@@ -2210,7 +2210,7 @@
     "route": "/css/trivia/css-definition",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "CSS stands for Cascading Style Sheets. HTML gives structure; CSS controls presentation like layout, spacing, color, and typography. The cascading part decides which rule wins when multiple rules target the same element…",
+    "summary": "CSS stands for Cascading Style Sheets, but the practical production angle is the cascade itself: specificity, source order, and competing rules that create hard-to-debug styling bugs.",
     "tags": [
       "css",
       "basics",
@@ -2220,7 +2220,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-definition"
   },
@@ -2231,7 +2231,7 @@
     "route": "/css/trivia/css-display-flex",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "Setting `display: flex` changes the display property so an element becomes a flex container for its direct children. The browser then lays out those flex items on one main axis and one cross axis, making alignment, spac…",
+    "summary": "display:flex is a layout system, not a centering spell. Explain main vs cross axis, direct-child constraints, and common production bugs around shrinking, overflow, and unexpected stretching.",
     "tags": [
       "css",
       "layout",
@@ -2241,7 +2241,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-02",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-display-flex"
   },
@@ -2273,7 +2273,7 @@
     "route": "/css/trivia/css-padding-property",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: css, padding, box model, layout, spacing.",
+    "summary": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: CSS, padding, box model, layout, spacing.",
     "tags": [
       "css",
       "padding",
@@ -2294,7 +2294,7 @@
     "route": "/css/trivia/css-box-model",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "The CSS box model is the foundation of web layout design. Every element in a webpage is represented as a rectangular box composed of four layers: content, padding, border, and margin. Understanding this model is essenti…",
+    "summary": "The CSS box model is the source of countless sizing bugs. Explain content, padding, border, margin, box-sizing, and why width calculations break when teams forget what is included.",
     "tags": [
       "css",
       "box-model",
@@ -2304,7 +2304,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-box-model"
   },
@@ -2465,7 +2465,7 @@
     "route": "/css/trivia/css-float-clear",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "The float and clear properties are part of CSS's early layout system used to wrap text around images and create multi-column designs before flexbox and grid. The float property allows elements to shift to the left or ri…",
+    "summary": "float and clear are mostly legacy layout tools now, but they still matter for text wrap, old codebases, and the common pitfall of collapsing parents or strange wrap behavior.",
     "tags": [
       "css",
       "layout",
@@ -2475,7 +2475,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-float-clear"
   },
@@ -2486,7 +2486,7 @@
     "route": "/css/trivia/css-font-family",
     "tech": "css",
     "difficulty": "easy",
-    "summary": "The font-family property in CSS specifies the typeface or group of typefaces to be used for displaying text. It allows developers to control the appearance and readability of textual content across different devices and…",
+    "summary": "font-family picks a prioritized font stack, but the production angle is fallback behavior, missing glyph coverage, and when bad stacks create layout shifts, readability problems, or branding drift.",
     "tags": [
       "css",
       "typography",
@@ -2496,7 +2496,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-font-family"
   },
@@ -3418,7 +3418,7 @@
     "route": "/javascript/trivia/js-array-sort-pitfalls",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Array.prototype.sort has several traps: it sorts elements as strings by default, mutates the original array, and requires a correct comparator function for numeric or custom sorting. These pitfalls cause many subtle bug…",
+    "summary": "Array.prototype.sort causes common production bugs because it mutates in place, compares as strings by default, and depends on a correct comparator for stable domain-specific ordering.",
     "tags": [
       "arrays",
       "sorting",
@@ -3429,7 +3429,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-array-sort-pitfalls"
   },
@@ -3483,7 +3483,7 @@
     "route": "/javascript/trivia/js-big-o-notation",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Define Big-O time and space complexity, explain why it matters for scalability, show how to derive it with rules of thumb, and list common classes. Include best/average/worst-case and amortized complexity examples.",
+    "summary": "Big O is useful when you compare scaling trade-offs, not when you recite symbols. Strong JavaScript answers connect complexity to real performance decisions, hidden constants, and the common mistake of optimizing the wr…",
     "tags": [
       "algorithms",
       "performance",
@@ -3492,7 +3492,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-big-o-notation"
   },
@@ -4831,7 +4831,7 @@
     "route": "/javascript/trivia/web-performance-optimize-load-time",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "This question checks if you can reason about performance across the network, render pipeline, assets, and runtime. Interviewers expect concrete tactics like caching, compression, code splitting, and image optimization.",
+    "summary": "Web performance optimization is a prioritization problem across network transfer, render-blocking work, images, JavaScript, and caching. Strong answers tie improvements to critical-path debugging and Core Web Vitals rat…",
     "tags": [
       "performance",
       "web-performance",
@@ -4845,7 +4845,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-06",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#web-performance-optimize-load-time"
   },
@@ -4856,7 +4856,7 @@
     "route": "/javascript/trivia/js-calback-hell-resolved-with-promise",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Callback hell happens when async callbacks are deeply nested and error handling is duplicated. Promises flatten async control flow, centralize failures with catch, and make sequencing and parallel execution easier to re…",
+    "summary": "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic. Promises flatten the flow, centralize failures, and make production control flow easier to inspect, even th…",
     "tags": [
       "callbacks",
       "promise",
@@ -4866,7 +4866,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-calback-hell-resolved-with-promise"
   },
@@ -4941,7 +4941,7 @@
     "route": "/javascript/trivia/chat-conversation-state-management",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "This probes your ability to model a conversation, manage streaming messages, and handle memory limits or truncation without breaking UX.",
+    "summary": "Conversation state in chat apps is a production state-machine problem: stable message IDs, streaming draft buffers, retries, reconnects, truncation, and ordering guarantees all need explicit transitions.",
     "tags": [
       "state-management",
       "ux",
@@ -4952,7 +4952,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-06",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#chat-conversation-state-management"
   },
@@ -4963,7 +4963,7 @@
     "route": "/javascript/trivia/js-secure-cors-handling",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Explain why CORS errors happen (Same-Origin Policy) and how to fix cross-origin requests safely: server-set Access-Control-Allow-Origin/Methods/Headers, correct preflight handling, or a backend proxy/BFF. The frontend a…",
+    "summary": "Secure CORS handling is mostly a server-policy and preflight debugging problem, not a frontend workaround. The production-safe fixes are trusted origin allowlists, correct headers, and a BFF or proxy when direct browser…",
     "tags": [
       "cors",
       "security",
@@ -4979,7 +4979,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-secure-cors-handling"
   },
@@ -5282,7 +5282,7 @@
     "route": "/javascript/trivia/js-intl-datetime-timezone",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Practical frontend guide to Intl.DateTimeFormat and time zones: IANA zone IDs, daylight-saving transitions, formatToParts, and robust patterns for presenting user-local dates without fragile manual offset math.",
+    "summary": "Intl.DateTimeFormat solves the production bug of formatting across time zones and DST without unsafe manual offset math. The useful angle is IANA zone IDs, locale formatting, and why fixed offsets break scheduling or au…",
     "tags": [
       "javascript",
       "frontend-interview",
@@ -5295,7 +5295,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-16",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-intl-datetime-timezone"
   },
@@ -6143,7 +6143,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-queue-vs-stack"
   },
@@ -6304,7 +6304,7 @@
     "route": "/javascript/trivia/js-testing-edge-cases-strategy",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Explain how to design tests that cover boundaries, equivalence classes, invariants, and failure modes. Include a practical checklist and JavaScript-specific pitfalls.",
+    "summary": "Testing edge cases is about finding boundary, invariant, and failure-mode bugs with a small high-signal test set. The real production pitfall is writing many happy-path tests while missing the inputs that actually break…",
     "tags": [
       "testing",
       "edge-cases",
@@ -6315,7 +6315,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-testing-edge-cases-strategy"
   },
@@ -6345,7 +6345,7 @@
     "route": "/javascript/trivia/js-tree-shaking",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Explain tree-shaking (dead code elimination) in modern bundlers, the requirements for it to work (ESM, sideEffects, pure), and how to verify results. Include common pitfalls that prevent tree-shaking.",
+    "summary": "Tree shaking is dead-code elimination, but real bundler results depend on ESM, side-effect declarations, and import shape. The production pitfall is assuming unused code disappears automatically when package structure s…",
     "tags": [
       "modules",
       "build",
@@ -6378,7 +6378,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-truthy-falsy-pass-by-value-reference-strict-equality-use-case"
   },
@@ -6622,7 +6622,7 @@
     "route": "/javascript/trivia/js-design-patterns",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "JavaScript design patterns are reusable solutions to common programming problems. They provide structured approaches for organizing code, improving maintainability, scalability, and readability in both small and large a…",
+    "summary": "JavaScript design patterns help when they clarify module boundaries, object creation, or event flow, but they become a pitfall when teams cargo-cult abstractions and overengineer simple code.",
     "tags": [
       "design-patterns",
       "architecture",
@@ -6632,7 +6632,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-design-patterns"
   },
@@ -6892,7 +6892,7 @@
     "route": "/javascript/trivia/js-nan-property",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "NaN stands for Not-a-Number and is the only value in JavaScript that is not equal to itself. Use Number.isNaN to check for it reliably, because global isNaN coerces values. This is important for numeric validation and e…",
+    "summary": "NaN matters in production numeric validation because it is the only JavaScript value not equal to itself, global isNaN coerces inputs, and empty strings or malformed payloads create common mistake cases.",
     "tags": [
       "global-object",
       "isnan",
@@ -6902,7 +6902,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-nan-property"
   },
@@ -6935,7 +6935,7 @@
     "route": "/javascript/trivia/js-deferred-scripts",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Deferred scripts are JavaScript files that load in parallel with HTML parsing but execute only after the document has been fully parsed. They help improve page load performance by preventing render-blocking behavior.",
+    "summary": "Deferred scripts improve load performance by removing parser blocking while preserving execution order. The real pitfall is assuming defer behaves like async or running DOM-dependent code without understanding script ti…",
     "tags": [
       "script-loading",
       "performance",
@@ -6945,7 +6945,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-deferred-scripts"
   },
@@ -7020,7 +7020,7 @@
     "route": "/javascript/trivia/js-why-eval-function-considered-dangerous",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "eval() executes strings as code, which creates serious security and reliability risks when any input is untrusted. Learn why eval increases XSS/injection risk, hurts performance, complicates debugging, and what safer al…",
+    "summary": "Explain eval through the security pitfall lens: it turns data into code, expands injection risk, conflicts with CSP expectations, and makes production debugging or optimization much harder.",
     "tags": [
       "eval",
       "security",
@@ -7031,7 +7031,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-why-eval-function-considered-dangerous"
   },
@@ -7194,7 +7194,7 @@
     "route": "/react/trivia/react-higher-order-components",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., in…",
+    "summary": "Explain higher-order components as a legacy React reuse pattern, with focus on wrapper debugging, prop collisions, display names, typing friction, and when hooks are simpler.",
     "tags": [
       "react",
       "patterns",
@@ -7204,7 +7204,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-higher-order-components"
   },
@@ -7341,7 +7341,7 @@
     "route": "/react/trivia/react-concurrent-rendering",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Concurrent rendering is a feature introduced in React 18 that allows React to prepare multiple versions of the UI simultaneously, improving responsiveness and user experience. It makes rendering interruptible, enabling…",
+    "summary": "Explain concurrent rendering as React scheduling rather than parallelism, focusing on urgent vs non-urgent work, interruptible rendering, and the performance pitfalls it actually solves.",
     "tags": [
       "react",
       "concurrent",
@@ -7351,7 +7351,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-concurrent-rendering"
   },
@@ -7856,7 +7856,7 @@
     "route": "/react/trivia/react-useeffect-purpose",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain what useEffect is actually for (synchronizing with external systems), when it runs (after commit), how dependencies control re-running, and how cleanup prevents leaks. Cover common patterns (fetching, subscripti…",
+    "summary": "Explain useEffect as React’s sync point with the outside world, focusing on cleanup, dependency discipline, stale-closure debugging, and the pitfall of moving pure logic into effects.",
     "tags": [
       "react",
       "hooks",
@@ -7866,7 +7866,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-useeffect-purpose"
   },
@@ -8087,7 +8087,7 @@
     "route": "/react/trivia/react-virtual-dom",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain what people mean by “Virtual DOM” in React (React element tree in memory), how React re-renders to produce a new tree, how reconciliation (diffing + heuristics + keys) computes changes, and how the commit phase…",
+    "summary": "Explain the React Virtual DOM through reconciliation, commit work, and performance debugging. Emphasize the under-the-hood difference between a re-render, a diff, and a real DOM mutation.",
     "tags": [
       "react",
       "virtual-dom",
@@ -8097,7 +8097,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-virtual-dom"
   },
@@ -8108,7 +8108,7 @@
     "route": "/react/trivia/react-error-boundaries-what-they-solve",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain how React Error Boundaries prevent a whole app from crashing due to rendering errors by showing a fallback UI, what they catch (render/lifecycle/constructor errors in descendants), and what they do NOT catch (ev…",
+    "summary": "Explain Error Boundaries through render-crash isolation, fallback UI, monitoring, and the common production mistake of expecting them to catch event-handler, async, or SSR errors.",
     "tags": [
       "react",
       "error-handling",
@@ -8117,7 +8117,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-error-boundaries-what-they-solve"
   },
@@ -8212,7 +8212,7 @@
     "route": "/react/trivia/react-component-rerendering",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain React’s update pipeline: what a “re-render” really is (re-running component functions to produce a new element tree), what triggers it (state/props/context/parent renders), how reconciliation decides what change…",
+    "summary": "Explain React’s rerender pipeline through render work, reconciliation, commit, bailouts, and the production identity pitfalls that make a component rerender even when the DOM barely changes.",
     "tags": [
       "react",
       "rendering",
@@ -8222,7 +8222,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-component-rerendering"
   },
@@ -8360,7 +8360,7 @@
     "route": "/react/trivia/react-why-batching-state-updates",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain why React batches multiple state updates into a single render for performance, how automatic batching works (especially in React 18), and in which situations batching does not apply or can be disabled.",
+    "summary": "Explain React state batching through render performance, async boundaries, queued snapshots, and the common mental-model mistake that setters update state immediately.",
     "tags": [
       "react",
       "state",
@@ -8369,7 +8369,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-why-batching-state-updates"
   },
@@ -8380,7 +8380,7 @@
     "route": "/react/trivia/react-one-way-data-flow",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain why React is designed around unidirectional data flow (state/props go down, events go up). Connect it to predictability, debugging, avoiding multiple-writers problems, and React’s rendering/reconciliation model…",
+    "summary": "Explain React one-way data flow through state ownership, multi-writer production bugs, debugging traceability, and why the model stays safer under reconciliation and concurrent rendering.",
     "tags": [
       "react",
       "state",
@@ -8390,7 +8390,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-one-way-data-flow"
   },
@@ -8401,7 +8401,7 @@
     "route": "/react/trivia/react-stale-state-closures",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain how JavaScript closures capture values from a specific render, why React renders create new closures, and how this leads to stale state bugs in effects, timeouts, and event handlers — and how to fix them.",
+    "summary": "Explain stale closure bugs in React through timers, async handlers, subscriptions, and effects that read an old render snapshot instead of the latest state.",
     "tags": [
       "react",
       "hooks",
@@ -8412,7 +8412,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-stale-state-closures"
   },
@@ -8444,7 +8444,7 @@
     "route": "/react/trivia/react-strictmode-double-invoke-effects",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain why React StrictMode intentionally double-invokes certain lifecycles and effects in development, how this simulates mount–unmount–remount, and what kinds of side-effect and cleanup bugs it is designed to reveal.",
+    "summary": "Explain StrictMode double effect invocation as a dev-only diagnostic for missing cleanup, duplicate side effects, and code that is not safe under remounts or concurrent-style replay.",
     "tags": [
       "react",
       "effects",
@@ -8452,7 +8452,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-strictmode-double-invoke-effects"
   },
@@ -8463,7 +8463,7 @@
     "route": "/react/trivia/react-derived-state-anti-pattern",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain why storing data in state that can be computed from props/state creates duplication and sync bugs, the concept of single source of truth, and when derived state is acceptable (initialization, controlled/uncontro…",
+    "summary": "Explain derived state as a single-source-of-truth problem, focusing on drift bugs, copied props, stale computed values, and the narrow cases where derived state is justified.",
     "tags": [
       "react",
       "state",
@@ -8473,7 +8473,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-derived-state-anti-pattern"
   },
@@ -8484,7 +8484,7 @@
     "route": "/react/trivia/react-usestate-purpose",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain what useState() is for (local component state), what it returns, how updates trigger re-renders, and the key mental models interviewers expect: initial state (including lazy init), functional updates, batching,…",
+    "summary": "Explain what useState is for through the lens of render snapshots, immutable updates, functional setters, and the production bugs caused by stale reads or direct mutation.",
     "tags": [
       "react",
       "hooks",
@@ -8494,7 +8494,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-usestate-purpose"
   },
@@ -9018,7 +9018,7 @@
     "route": "/vue/trivia/vue-v-show-vs-v-if-dom-lifecycle",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "v-if adds/removes elements from the DOM (mount/unmount lifecycle), while v-show toggles display via CSS and keeps elements in the DOM. Use v-if for expensive components; v-show for frequent toggles.",
+    "summary": "Compare v-show and v-if through DOM cost, lifecycle impact, preserved state, and the performance/debug trade-off between cheap toggles and true unmounting.",
     "tags": [
       "vue",
       "v-if",
@@ -9029,7 +9029,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-v-show-vs-v-if-dom-lifecycle"
   },
@@ -9061,7 +9061,7 @@
     "route": "/vue/trivia/vue-v-if-component-creation-destruction",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Explain what happens to a component instance when a v-if condition toggles: when it is created (mounted), when it is destroyed (unmounted), what lifecycle hooks run, and why local state resets. Contrast with v-show and…",
+    "summary": "Explain v-if as a structural mount/unmount decision, focusing on local-state resets, lifecycle cleanup, and the production pitfall of treating it like cheap visibility toggling.",
     "tags": [
       "vue",
       "directives",
@@ -9071,7 +9071,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-v-if-component-creation-destruction"
   },
@@ -9145,7 +9145,7 @@
     "route": "/vue/trivia/vue-virtual-dom-diffing",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance. Diffing optimizes updates, but keys and stable ident…",
+    "summary": "Explain Vue virtual DOM diffing through keyed identity, patch flags, and the production debugging gap between efficient updates and reused nodes with the wrong identity.",
     "tags": [
       "vue",
       "virtual-dom",
@@ -9155,7 +9155,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-virtual-dom-diffing"
   },
@@ -9946,7 +9946,7 @@
     "route": "/vue/trivia/vuex-state-management",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Vuex is a centralized state management pattern for large Vue apps. It provides a single store, predictable mutations, and devtools time-travel debugging. Centralized state helps predictability and debugging, but it adds…",
+    "summary": "Explain Vuex as centralized shared-state infrastructure, including predictable writes, devtools tracing, boilerplate cost, and when global store usage becomes a performance or architecture pitfall.",
     "tags": [
       "vue",
       "vuex",
@@ -9957,7 +9957,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vuex-state-management"
   },
@@ -9989,7 +9989,7 @@
     "route": "/vue/trivia/vue-router-navigation",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Vue Router enables client-side navigation with routes mapped to components. It supports dynamic params, nested routes, and navigation guards for auth and data loading. Routing impacts UX and data fetching; test guards,…",
+    "summary": "Explain Vue Router as navigation infrastructure: route matching, nested views, guards, and the production bugs that come from async navigation, auth checks, and scroll restoration.",
     "tags": [
       "vue",
       "router",
@@ -10000,7 +10000,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-router-navigation"
   },

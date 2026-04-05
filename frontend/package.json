@@ -44,7 +44,7 @@
     "test:e2e:critical": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/auth.spec.ts e2e/core-flows.spec.ts e2e/high-roi.spec.ts e2e/lemonsqueezy-integration.spec.ts e2e/filtering.spec.ts e2e/draft-versioning.spec.ts e2e/p1-regressions.spec.ts e2e/profile-password.spec.ts e2e/cv-linter-issues.spec.ts e2e/seo.spec.ts e2e/routing-and-access.spec.ts",
     "test:e2e:visual": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/visual-smoke.spec.ts --project=chromium",
     "test:e2e:a11y": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/accessibility.smoke.spec.ts --project=chromium",
-    "verify:unit-and-content": "npm run lint:text:warn && npm run lint:spelling:warn && npm run lint:content-drafts && npm run lint:guide-articles && npm run lint:guide-editorial-quality && npm run lint:trivia-editorial-quality && npm run lint:indexability-readiness && npm run lint:shipped-draft-parity && npm run lint:questions:check && npm run check:prerender-sitemap && npm run check:design-budget && npm run test",
+    "verify:unit-and-content": "npm run lint:text && npm run lint:spelling:warn && npm run lint:content-drafts && npm run lint:guide-articles && npm run lint:guide-editorial-quality && npm run lint:trivia-editorial-quality && npm run lint:indexability-readiness && npm run lint:shipped-draft-parity && npm run lint:questions:check && npm run check:prerender-sitemap && npm run check:design-budget && npm run test",
     "verify:e2e-critical": "npm run test:e2e:critical",
     "verify:e2e:experience": "npm run test:e2e:a11y && npm run test:e2e:visual",
     "verify:e2e-critical:all-browsers": "npm run check:playwright-webkit-health && PLAYWRIGHT_ENABLE_WEBKIT=1 npm run test:e2e:critical",

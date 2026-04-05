@@ -2507,7 +2507,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>You migrate a legacy XHTML app to HTML5 and need to relax strict XML rules while keeping markup valid.<br><br><strong>Common pitfalls</strong><br><ul><li>Self-closing tags or case sensitivity causing parse errors in XHTML.</li><li>Assuming all browsers enforce XML rules in HTML.</li><li>Mixing XHTML served as text/html and getting inconsistent behavior.</li></ul><strong>Trade-off or test tip</strong><br>XHTML is strict but less forgiving; HTML5 is pragmatic. Test parsing with validators and multiple browsers.</strong>"
+          "text": "<strong>Practical scenario</strong><br>You migrate a legacy XHTML app to HTML5 and need to relax strict XML rules while keeping markup valid.<br><br><strong>Common pitfalls</strong><br><ul><li>Self-closing tags or case sensitivity causing parse errors in XHTML.</li><li>Assuming all browsers enforce XML rules in HTML.</li><li>Mixing XHTML served as <code>text/html</code> and getting inconsistent behavior.</li></ul><strong>Trade-off or test tip</strong><br>XHTML is strict but less forgiving; HTML5 is pragmatic. Test parsing with validators and multiple browsers.</strong>"
         }
       ]
     },

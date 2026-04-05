@@ -701,12 +701,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain what happens to a component instance when a v-if condition toggles: when it is created (mounted), when it is destroyed (unmounted), what lifecycle hooks run, and why local state resets. Contrast with v-show and mention when you should prefer one over the other.",
+    "description": "Explain v-if as a structural mount/unmount decision, focusing on local-state resets, lifecycle cleanup, and the production pitfall of treating it like cheap visibility toggling.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>v-if</code> controls whether a template branch <em>exists</em>. For plain elements it means “insert/remove DOM”. For components it means “mount/unmount the component instance” — so the instance is created when the condition becomes true and destroyed when it becomes false."
+          "text": "<strong>Production pitfall</strong><br><br><code>v-if</code> is not just a visibility toggle. For components, it is a mount or unmount decision. That means local state, timers, watchers, focus, and in-flight UI context can disappear each time the condition turns false. The common mistake is treating <code>v-if</code> like cheap show or hide behavior when it actually resets the branch."
         },
         {
           "type": "list",
@@ -829,10 +829,10 @@
       "lifecycle",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "How Does v-if Affect Component Creation and Destruction in Vue?",
-      "description": "v-if removes and recreates components, so Vue tracks mount/unmount cycles and local component state resets on each toggle."
+      "title": "Vue v-if in production: mount/unmount resets, lifecycle cleanup, and toggle pitfalls",
+      "description": "v-if destroys and recreates component instances. The real production question is when that reset behavior is useful and when it becomes a pitfall."
     },
     "incidentCard": {
       "title": "Toggle Lifecycle Check",
@@ -1156,12 +1156,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "v-if adds/removes elements from the DOM (mount/unmount lifecycle), while v-show toggles display via CSS and keeps elements in the DOM. Use v-if for expensive components; v-show for frequent toggles.",
+    "description": "Compare v-show and v-if through DOM cost, lifecycle impact, preserved state, and the performance/debug trade-off between cheap toggles and true unmounting.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core difference</strong><br><br><code>v-if</code> is <em>structural</em>: the branch exists only when the condition is true (DOM nodes are created/inserted and later removed).<br><code>v-show</code> is <em>presentational</em>: the element/component is always rendered once, and Vue toggles visibility by setting <code>style.display</code> (typically <code>display: none</code>)."
+          "text": "<strong>Performance trade-off</strong><br><br><code>v-if</code> and <code>v-show</code> solve different problems. <code>v-if</code> removes the branch and pays mount/unmount cost each time. <code>v-show</code> keeps the instance alive and only toggles CSS display. The real production/debug question is whether you want cheap toggles with preserved state or true teardown with zero hidden work."
         },
         {
           "type": "list",
@@ -1268,10 +1268,10 @@
       "performance",
       "lifecycle"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What Is the Difference Between v-show and v-if in Vue?",
-      "description": "v-if adds or removes DOM nodes, while v-show toggles display on mounted nodes, and Vue tracks state without destroying the element."
+      "title": "v-show vs v-if in Vue: lifecycle cost, preserved state, and toggle-performance trade-offs",
+      "description": "v-show keeps the instance mounted while v-if unmounts it. The practical decision is state preservation versus zero hidden work."
     },
     "incidentCard": {
       "title": "Visibility Strategy Check",
@@ -2922,12 +2922,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Vue Router enables client-side navigation with routes mapped to components. It supports dynamic params, nested routes, and navigation guards for auth and data loading. Routing impacts UX and data fetching; test guards, async navigation, and scroll restoration.",
+    "description": "Explain Vue Router as navigation infrastructure: route matching, nested views, guards, and the production bugs that come from async navigation, auth checks, and scroll restoration.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue Router is an official library that enables navigation between different views or components in a Vue application. It transforms a Vue app into a Single-Page Application (SPA) by mapping URLs (routes) to specific components and handling transitions dynamically without reloading the page."
+          "text": "<strong>Production navigation layer</strong><br><br>Vue Router is not only a way to swap components by URL. It is the app's navigation control plane: route matching, nested rendering, async guards, params, and history updates. The bugs teams debug in production usually involve auth redirects, stale route data, canceled navigation, or scroll behavior, not just defining a path."
         },
         {
           "type": "text",
@@ -3028,10 +3028,10 @@
       "routes",
       "guards"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What Is Vue Router and How Does Navigation Work?",
-      "description": "Vue Router maps URLs to components for SPA navigation with router-link and router-view, and it tracks route changes through guards and params."
+      "title": "Vue Router in production: guards, async navigation, and route-debugging mental models",
+      "description": "Vue Router is more than router-link and router-view. The practical issues are auth guards, async navigation flow, params, and scroll/debug behavior."
     },
     "incidentCard": {
       "title": "Navigation Flow Check",
@@ -3328,12 +3328,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "Vuex is a centralized state management pattern for large Vue apps. It provides a single store, predictable mutations, and devtools time-travel debugging. Centralized state helps predictability and debugging, but it adds boilerplate and affects test setup and performance.",
+    "description": "Explain Vuex as centralized shared-state infrastructure, including predictable writes, devtools tracing, boilerplate cost, and when global store usage becomes a performance or architecture pitfall.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vuex is Vue’s official <strong>state management pattern and library</strong>. It serves as a centralized store that manages shared data and ensures all components access and modify it in a consistent, predictable way. This is crucial in large-scale applications where multiple components depend on or modify the same state."
+          "text": "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
         },
         {
           "type": "text",
@@ -3432,10 +3432,10 @@
       "mutations",
       "architecture"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What Is Vuex and How Does It Manage State in Vue Apps?",
-      "description": "Vuex centralizes shared state in a single store with predictable mutation flow, and it tracks updates so large Vue apps stay consistent."
+      "title": "Vuex in large apps: shared-state control, debugging flow, and global-store trade-offs",
+      "description": "Vuex centralizes shared state, but the real production discussion is predictable write flow, debugging, boilerplate, and when a global store becomes overkill."
     },
     "incidentCard": {
       "title": "Shared State Check",
@@ -3464,12 +3464,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance. Diffing optimizes updates, but keys and stable identity matter for performance and correctness.",
+    "description": "Explain Vue virtual DOM diffing through keyed identity, patch flags, and the production debugging gap between efficient updates and reused nodes with the wrong identity.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue’s virtual DOM is a lightweight JavaScript representation of the real DOM. Instead of directly manipulating the browser’s DOM — which is slow — Vue updates a virtual copy in memory and then compares it to the previous version using a process called <strong>diffing</strong>. After detecting the differences, Vue efficiently updates only the parts of the real DOM that have changed, resulting in faster rendering performance."
+          "text": "<strong>Under the hood</strong><br><br>Vue's virtual DOM is useful because it separates render calculation from real DOM mutation, but the production/debug value comes from understanding identity. Vue can patch very efficiently when nodes are stable, yet the wrong key or the wrong mental model still produces reused DOM bugs, focus jumps, or incorrect list state."
         },
         {
           "type": "text",
@@ -3588,10 +3588,10 @@
       "performance",
       "rendering"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "How Does Vue Virtual DOM Diffing Optimize Updates?",
-      "description": "Vue optimizes updates by diffing virtual DOM trees and patching only changed nodes, and Vue tracks dependencies so unchanged branches are skipped."
+      "title": "Vue virtual DOM under the hood: diffing, keyed identity, and patch-debugging pitfalls",
+      "description": "Vue diffing is fast when identity is stable. The practical debugging angle is keyed reuse, compiler patch flags, and why efficient updates can still go wrong."
     },
     "incidentCard": {
       "title": "Diffing Strategy Check",

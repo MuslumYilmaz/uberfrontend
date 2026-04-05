@@ -1077,12 +1077,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why React is designed around unidirectional data flow (state/props go down, events go up). Connect it to predictability, debugging, avoiding multiple-writers problems, and React’s rendering/reconciliation model (including concurrency-friendly rendering).",
+    "description": "Explain React one-way data flow through state ownership, multi-writer production bugs, debugging traceability, and why the model stays safer under reconciliation and concurrent rendering.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>React’s UI model is: <em>UI = f(state, props, context)</em>. One-way data flow means the “source of truth” lives in one place (usually the nearest common parent), and children can’t directly mutate that data. Data goes <em>down</em> via props; changes go <em>up</em> via callbacks/events. This keeps updates predictable and traceable."
+          "text": "<strong>Production debugging lens</strong><br><br>React’s one-way data flow is really a state-ownership rule: one part of the tree owns a piece of state, children read it through props, and changes flow back up through events. That discipline prevents multi-writer bugs, makes updates traceable in production, and keeps React’s render/reconciliation model safe to restart or interrupt."
         },
         {
           "type": "list",
@@ -1183,10 +1183,10 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why does React use one-way data flow?",
-      "description": "React uses one-way data flow to keep updates predictable: data moves down through props and updates move up through events or callbacks."
+      "title": "React one-way data flow in production: state ownership, multi-writer bugs, and debug clarity",
+      "description": "React one-way data flow keeps state ownership clear, prevents multi-writer bugs, and makes production debugging and concurrent rendering safer."
     },
     "incidentCard": {
       "title": "One-Way Data Flow Ownership Check",
@@ -1366,12 +1366,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain what useState() is for (local component state), what it returns, how updates trigger re-renders, and the key mental models interviewers expect: initial state (including lazy init), functional updates, batching, Object.is bailout, and why you must treat state as immutable.",
+    "description": "Explain what useState is for through the lens of render snapshots, immutable updates, functional setters, and the production bugs caused by stale reads or direct mutation.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>useState()</code> gives a function component <em>persistent local state</em> across renders. When you call its setter, React schedules a re-render of that component so the UI can be recalculated from the new state. The key model is: <code>UI = f(props, state)</code> — you don’t manually update the DOM."
+          "text": "<strong>Common mistake</strong><br><br><code>useState()</code> is not a mutable variable that changes immediately. It gives React a state snapshot for the current render plus a setter that schedules the next render. That mental-model gap causes production bugs around stale reads, direct mutation, and the classic debug question: <em>why didn’t the UI update?</em>"
         },
         {
           "type": "list",
@@ -1455,7 +1455,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br><code>useState()</code> adds persistent local state to function components. It returns <em>[state, setState]</em>; calling the setter schedules a re-render so React can recompute the UI. Use functional updates when the next state depends on the previous state, update objects/arrays immutably, and remember that React may batch updates and can bail out when the new state is <code>Object.is</code>-equal to the old state."
+          "text": "<strong>Summary</strong><br><br><code>useState()</code> adds persistent local state to function components. It returns <em>[state, setState]</em>; calling the setter schedules a re-render so React can recompute the UI. Use functional updates when the next state depends on the previous state, update objects/arrays immutably, and account for React batching and bailouts when the new state is <code>Object.is</code>-equal to the old state."
         }
       ]
     },
@@ -1488,10 +1488,10 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What does useState do in React?",
-      "description": "useState lets function components store local state and trigger re-renders by calling the state setter."
+      "title": "useState in React: render snapshots, rerender triggers, and common update mistakes",
+      "description": "useState stores local state, but the real production pitfalls are stale snapshots, mutated objects, and misunderstanding when setters take effect."
     }
   },
   {
@@ -2122,7 +2122,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Conditional rendering is simply returning different <code>ReactNode</code> outputs based on conditions. Choose a pattern by complexity: guard clauses for gating, ternaries for two options, and mappings/switches for multiple states. Be careful with <code>&&</code> when the condition might be a non-boolean (especially <code>0</code>). Finally, remember that mount/unmount controls whether local component state is preserved or reset (and <code>key</code> can force a reset when needed)."
+          "text": "<strong>Summary</strong><br><br>Conditional rendering is simply returning different <code>ReactNode</code> outputs based on conditions. Choose a pattern by complexity: guard clauses for gating, ternaries for two options, and mappings/switches for multiple states. Be careful with <code>&&</code> when the condition might be a non-boolean (especially <code>0</code>). Mounting and unmounting control whether local component state is preserved or reset, and <code>key</code> can force a reset when needed."
         },
         {
           "type": "text",
@@ -2174,12 +2174,12 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what useEffect is actually for (synchronizing with external systems), when it runs (after commit), how dependencies control re-running, and how cleanup prevents leaks. Cover common patterns (fetching, subscriptions, timers) and common pitfalls (stale closures, infinite loops, derived state in effects).",
+    "description": "Explain useEffect as React’s sync point with the outside world, focusing on cleanup, dependency discipline, stale-closure debugging, and the pitfall of moving pure logic into effects.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>useEffect()</code> is React’s API for <em>side effects</em>: code that must run <em>outside</em> rendering to keep your component synchronized with something external (network, subscriptions, browser APIs, timers, logging/analytics).<br><br>Key mental model: <strong>render computes UI</strong> (pure), then React <strong>commits</strong> DOM changes, then <code>useEffect</code> runs to “sync with the world.”"
+          "text": "<strong>Production pitfall</strong><br><br><code>useEffect()</code> is for synchronizing React with something <em>outside</em> render: network, subscriptions, timers, browser APIs, or analytics. The common mistake is treating it like a general-purpose “run code after render” hook. That leads to stale-closure bugs, cleanup leaks, and debug sessions where derived state keeps drifting because effect logic should have stayed in render."
         },
         {
           "type": "list",
@@ -2343,10 +2343,10 @@
       "lifecycle",
       "basics"
     ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is useEffect used for in React?",
-      "description": "useEffect is used to run side effects after render, such as subscriptions, data fetching, timers, or syncing with external systems."
+      "title": "useEffect in React: external sync, cleanup pitfalls, and stale-closure debugging",
+      "description": "useEffect is for syncing with external systems. The real pitfalls are stale closures, missing cleanup, and accidentally using effects for pure render logic."
     }
   },
   {
@@ -2515,12 +2515,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain what people mean by “Virtual DOM” in React (React element tree in memory), how React re-renders to produce a new tree, how reconciliation (diffing + heuristics + keys) computes changes, and how the commit phase applies DOM mutations. Emphasize: re-render ≠ DOM update.",
+    "description": "Explain the React Virtual DOM through reconciliation, commit work, and performance debugging. Emphasize the under-the-hood difference between a re-render, a diff, and a real DOM mutation.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>In React, “Virtual DOM” usually means: <em>an in-memory tree representation of your UI</em> (React elements / fibers), not the browser DOM itself. On each update, React re-runs components to produce a <em>new</em> tree, then <strong>reconciles</strong> it with the previous tree to decide what must change. Only after that, React <strong>commits</strong> the necessary changes to the real DOM."
+          "text": "<strong>Under the hood</strong><br><br>The Virtual DOM is React’s in-memory description of what the UI <em>should</em> look like after a render. The production debugging value is not the buzzword itself, but the mental model: React can re-run components, compare trees, and still commit zero DOM changes. That distinction explains why some “performance issues” are really JS/render work or key/identity mistakes, not raw DOM mutation cost."
         },
         {
           "type": "list",
@@ -2653,13 +2653,13 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-04",
     "companies": [
       "apple"
     ],
     "seo": {
-      "title": "What is the Virtual DOM in React?",
-      "description": "The Virtual DOM is React's in-memory UI representation used to compare renders and apply minimal real DOM updates during reconciliation."
+      "title": "React Virtual DOM under the hood: reconciliation, commit work, and performance misconceptions",
+      "description": "The Virtual DOM is an in-memory React tree, but the useful production angle is debugging re-renders, commit work, and reconciliation misconceptions."
     }
   },
   {
@@ -2668,12 +2668,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain React’s update pipeline: what a “re-render” really is (re-running component functions to produce a new element tree), what triggers it (state/props/context/parent renders), how reconciliation decides what changed, and why a re-render often results in zero DOM mutations. Include bailouts (Object.is state equality, React.memo/PureComponent), identity pitfalls (inline objects/functions, Context value identity), StrictMode dev behavior, and keys/remount gotchas.",
+    "description": "Explain React’s rerender pipeline through render work, reconciliation, commit, bailouts, and the production identity pitfalls that make a component rerender even when the DOM barely changes.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>In React, a <strong>re-render</strong> means: React runs your component again to compute the next <em>React element tree</em> (the in-memory UI description).<br><br><strong>Re-render ≠ DOM update</strong>. After rendering, React <strong>reconciles</strong> (matches old vs new trees) and only then <strong>commits</strong> the minimal DOM mutations <em>if anything actually changed</em>."
+          "text": "<strong>Debug mental model</strong><br><br>A React re-render means React re-ran part of the tree to compute the next UI. It does <em>not</em> automatically mean the browser DOM changed. That distinction matters in production: many rerender bugs are really identity bugs, context fanout, or remount problems, while many DOM-performance fears disappear once you separate render work from commit work."
         },
         {
           "type": "list",
@@ -2847,10 +2847,10 @@
       "props",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "When does React re-render and update the DOM?",
-      "description": "React re-renders when state, props, or context change, but the DOM updates only if reconciliation finds actual output differences."
+      "title": "React rerenders vs DOM updates: bailouts, identity pitfalls, and debug mental models",
+      "description": "React can re-render without mutating the DOM. The production bugs usually come from identity changes, context fanout, and confusing render work with commit work."
     }
   },
   {
@@ -3101,12 +3101,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 2,
-    "description": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., injecting props, guarding access, subscriptions). They’re common in older/legacy React and some libraries (e.g., Redux connect), even though hooks are the modern default for new code. HOCs enable reuse but can complicate debugging and typing. Test prop collisions and display names.",
+    "description": "Explain higher-order components as a legacy React reuse pattern, with focus on wrapper debugging, prop collisions, display names, typing friction, and when hooks are simpler.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>A <strong>higher-order component (HOC)</strong> is a <strong>function</strong> with the shape <code>(Component) =&gt; Component</code>. It wraps a “base” component and returns a new component that adds behavior around it (inject props, gate rendering, subscribe/unsubscribe, etc.).<br><br>Key rule: an HOC should be <strong>pure</strong> with respect to its input component (don’t mutate the wrapped component; compose by wrapping)."
+          "text": "<strong>Legacy pattern with real pitfalls</strong><br><br>Higher-order components are still worth knowing because many production React codebases and libraries use them. The beyond-basics part is not the definition; it is the wrapper cost: prop collisions, lost display names, awkward typing, and debug stacks that become harder to read. In new code, hooks are often simpler, but HOCs still matter when behavior must wrap a component contract."
         },
         {
           "type": "list",
@@ -3168,7 +3168,7 @@
             ],
             [
               "Side-effect wiring",
-              "Subscribes and cleans up (events, websockets) around the wrapped component",
+              "Subscribes and cleans up (events, WebSocket connections) around the wrapped component",
               "withSubscription / withWindowListener"
             ],
             [
@@ -3266,10 +3266,10 @@
       "composition",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is a higher-order component in React?",
-      "description": "A higher-order component is a function that takes a component and returns an enhanced component with added behavior."
+      "title": "Higher-order components in React: legacy reuse, prop-collision pitfalls, and when not to use them",
+      "description": "HOCs still matter in legacy React and library APIs, but the practical angle is wrapper debugging, prop collisions, typing friction, and when hooks are simpler."
     },
     "incidentCard": {
       "title": "HOC Composition Root Cause Check",
@@ -4059,12 +4059,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Concurrent rendering is a feature introduced in React 18 that allows React to prepare multiple versions of the UI simultaneously, improving responsiveness and user experience. It makes rendering interruptible, enabling React to prioritize urgent updates and avoid UI blocking during heavy computations.",
+    "description": "Explain concurrent rendering as React scheduling rather than parallelism, focusing on urgent vs non-urgent work, interruptible rendering, and the performance pitfalls it actually solves.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Traditional rendering in React was synchronous — once React started rendering a component tree, it had to finish before handling new updates. Concurrent rendering changes that behavior. It allows React to work on multiple UI updates at the same time, pause work when necessary, and prioritize more important updates (like user interactions) over less critical ones."
+          "text": "<strong>Performance lens</strong><br><br>Concurrent rendering is not “React rendering in parallel.” It is a scheduling model that lets React pause, resume, and prioritize work so urgent updates like typing stay responsive. The production pitfall it solves is coupling expensive tree updates to urgent input, which creates jank even when your logic is technically correct."
         },
         {
           "type": "text",
@@ -4136,10 +4136,10 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What is concurrent rendering in React?",
-      "description": "Concurrent rendering lets React interrupt and prioritize rendering work so urgent updates stay responsive during expensive UI updates."
+      "title": "Concurrent rendering in React: scheduling, interruptible work, and responsiveness pitfalls",
+      "description": "Concurrent rendering is about scheduling and interruptible work, not true parallelism. The key production question is when to split urgent and non-urgent updates."
     },
     "incidentCard": {
       "title": "Concurrent Priority Root Cause Check",
@@ -4282,12 +4282,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain how JavaScript closures capture values from a specific render, why React renders create new closures, and how this leads to stale state bugs in effects, timeouts, and event handlers — and how to fix them.",
+    "description": "Explain stale closure bugs in React through timers, async handlers, subscriptions, and effects that read an old render snapshot instead of the latest state.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>Because <em>each render creates new variables and new functions</em>, and JavaScript closures capture the values from <em>the render they were created in</em>. If an async callback or effect runs later, it may still see <em>old state</em> from an earlier render."
+          "text": "<strong>Common production bug</strong><br><br>Stale state in React closures is really a render-snapshot bug: each render creates new closures, and async code may keep reading an older one. That is why intervals, delayed handlers, and effects sometimes log or submit outdated values. The fix is not “React is wrong”; it is understanding when to use functional updates, refs, or correct dependencies."
         },
         {
           "type": "text",
@@ -4379,10 +4379,10 @@
       "effects",
       "callbacks"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why does stale state happen in React closures?",
-      "description": "Stale state happens because closures capture values from the render when they were created, not the latest state after future renders."
+      "title": "React stale closures: async bugs, latest-state fixes, and effect debugging",
+      "description": "Stale closure bugs show up in timers, subscriptions, and async handlers when code reads an old render snapshot instead of the latest state."
     },
     "incidentCard": {
       "title": "Stale Closure Snapshot Root Cause Check",
@@ -4591,12 +4591,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain why React batches multiple state updates into a single render for performance, how automatic batching works (especially in React 18), and in which situations batching does not apply or can be disabled.",
+    "description": "Explain React state batching through render performance, async boundaries, queued snapshots, and the common mental-model mistake that setters update state immediately.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>React batches state updates to <strong>avoid unnecessary re-renders</strong>. If multiple state updates happen during the same logical event, React groups them and performs <em>one</em> render instead of many."
+          "text": "<strong>Common mistake</strong><br><br>React batches state updates so related changes can produce one coherent render instead of many partial ones. The production confusion happens when developers expect each setter call to mutate state immediately. In practice, React queues work, applies batching rules across async boundaries, and only exposes the new snapshot on the next render."
         },
         {
           "type": "text",
@@ -4717,10 +4717,10 @@
       "performance",
       "state-management"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why does React batch state updates?",
-      "description": "React batches state updates to reduce extra renders and apply related updates together for more consistent UI."
+      "title": "React state batching: render performance, async boundaries, and common mental-model mistakes",
+      "description": "React batches updates to reduce extra renders, but the practical angle is understanding async boundaries, queued snapshots, and why setters do not update immediately."
     },
     "incidentCard": {
       "title": "Batching Snapshot Root Cause Check",
@@ -4749,16 +4749,16 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain why storing data in state that can be computed from props/state creates duplication and sync bugs, the concept of single source of truth, and when derived state is acceptable (initialization, controlled/uncontrolled transitions, memoized expensive computations, and snapshotting external values).",
+    "description": "Explain derived state as a single-source-of-truth problem, focusing on drift bugs, copied props, stale computed values, and the narrow cases where derived state is justified.",
     "seo": {
-      "title": "Why is derived state an anti-pattern in React?",
-      "description": "Derived state is often an anti-pattern because duplicated sources of truth drift out of sync and create stale or conflicting UI."
+      "title": "Derived state in React: single-source-of-truth bugs, drift, and when it is actually OK",
+      "description": "Derived state becomes a production pitfall when copied props or computed values drift out of sync. Use it only for narrow, justified cases."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>Derived state is considered an anti-pattern because it <strong>duplicates source data</strong>. When you store something in state that can be calculated from props or other state, you now have <em>two sources of truth</em> — and they eventually drift out of sync."
+          "text": "<strong>Production pitfall</strong><br><br>Derived state usually means you copied something React could already compute from props or other state. That creates two sources of truth, and the bug is rarely obvious at first: one path updates, the other drifts, and the UI becomes stale. The real interview-grade answer is to explain when duplication is unnecessary and when a narrow exception is actually justified."
         },
         {
           "type": "text",
@@ -4797,7 +4797,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why this breaks in real life</strong><br><br>If <code>items</code> changes (refetch, filtering, websocket update), <code>count</code> won’t automatically update because React does not “re-run” <code>useState</code> initializers. Your UI becomes inconsistent: it shows old computed values from a previous render."
+          "text": "<strong>Why this breaks in real life</strong><br><br>If <code>items</code> changes (refetch, filtering, WebSocket update), <code>count</code> won’t automatically update because React does not “re-run” <code>useState</code> initializers. Your UI becomes inconsistent: it shows old computed values from a previous render."
         },
         {
           "type": "text",
@@ -4889,7 +4889,7 @@
       "state-management",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "incidentCard": {
       "title": "Derived State Drift Root Cause Check",
       "scenario": "A profile form copies user.name from props into local state once, then keeps both values around. After a refetch, the header shows the new name but the input still shows the old one. What is the most likely root cause?",
@@ -5084,12 +5084,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain how React Error Boundaries prevent a whole app from crashing due to rendering errors by showing a fallback UI, what they catch (render/lifecycle/constructor errors in descendants), and what they do NOT catch (event handlers, async code, SSR, and errors inside the boundary itself).",
+    "description": "Explain Error Boundaries through render-crash isolation, fallback UI, monitoring, and the common production mistake of expecting them to catch event-handler, async, or SSR errors.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>Error Boundaries solve the problem of <strong>UI tree crashes</strong>. If a component throws during rendering, React can replace that broken subtree with a <strong>fallback UI</strong> instead of unmounting the entire app (or leaving a blank screen)."
+          "text": "<strong>Production bug to isolate</strong><br><br>Error Boundaries exist to stop one crashing subtree from taking down the entire visible UI. The beyond-basics part is scope: they are great for render-time crashes and fallback UX, but a common production mistake is assuming they also catch event-handler failures, async errors, or SSR problems. They isolate the render tree, not every possible runtime exception."
         },
         {
           "type": "text",
@@ -5197,10 +5197,10 @@
       "components",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "What do React Error Boundaries catch?",
-      "description": "Error Boundaries catch render, lifecycle, and constructor errors in trees and show fallback UI. They do not catch event-handler, async, or SSR errors."
+      "title": "React Error Boundaries in production: render-crash isolation, fallback UI, and what they do not catch",
+      "description": "Error Boundaries isolate render-time crashes, but a common production mistake is expecting them to catch event-handler, async, or SSR errors."
     },
     "incidentCard": {
       "title": "Error Boundary Coverage Root Cause Check",
@@ -5229,12 +5229,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why React StrictMode intentionally double-invokes certain lifecycles and effects in development, how this simulates mount–unmount–remount, and what kinds of side-effect and cleanup bugs it is designed to reveal.",
+    "description": "Explain StrictMode double effect invocation as a dev-only diagnostic for missing cleanup, duplicate side effects, and code that is not safe under remounts or concurrent-style replay.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>React StrictMode double-invokes effects in development to <strong>stress-test your side effects</strong>. It intentionally simulates <em>mount → unmount → mount</em> to expose bugs where effects are not <strong>idempotent</strong> or don’t clean up properly."
+          "text": "<strong>Debug diagnostic</strong><br><br>StrictMode double-invokes effects in development to flush out bugs that stay hidden when code assumes “this only runs once.” The practical value is finding missing cleanup, duplicate subscriptions, repeated network calls, and non-idempotent side effects before those same assumptions break under remounts, navigation churn, or concurrent-style replay."
         },
         {
           "type": "text",
@@ -5344,10 +5344,10 @@
       "effects",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Why does useEffect run twice in React StrictMode?",
-      "description": "In StrictMode development, React intentionally runs effect setup-cleanup-setup to expose missing cleanup and non-idempotent side effects."
+      "title": "React StrictMode double effects: cleanup bugs, duplicate side effects, and dev-only diagnostics",
+      "description": "StrictMode replays effects in development to expose missing cleanup, non-idempotent side effects, and production bugs hiding behind “runs once” assumptions."
     },
     "incidentCard": {
       "title": "StrictMode Cleanup Root Cause Check",

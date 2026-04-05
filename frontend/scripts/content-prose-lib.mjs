@@ -132,6 +132,10 @@ function extractComponentTemplate(filePath) {
   return template;
 }
 
+function cleanValue(value) {
+  return String(value || '').trim();
+}
+
 function stripMarkup(value) {
   return String(value || '')
     .replace(/```[\s\S]*?```/g, ' ')
@@ -139,6 +143,11 @@ function stripMarkup(value) {
     .replace(/<code\b[\s\S]*?<\/code>/gi, ' ')
     .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, '. ')
+    .replace(/<\/(h[1-6]|p|li|blockquote|figcaption|summary|caption)>/gi, '. ')
+    .replace(/<\/(td|th)>/gi, '. ')
+    .replace(/<\/tr>/gi, '. ')
+    .replace(/<\/(ul|ol|table|thead|tbody|tfoot)>/gi, '. ')
     .replace(/\{\{[\s\S]*?\}\}/g, ' ')
     .replace(/\[[^\]]+\]="[^"]*"/g, ' ')
     .replace(/\([^)]+\)="[^"]*"/g, ' ')
@@ -150,17 +159,39 @@ function stripMarkup(value) {
     .replace(/&amp;/gi, '&')
     .replace(/&quot;/gi, '"')
     .replace(/&#39;/gi, '\'')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
     .replace(/[^\p{L}\p{N}\s.,!?;:'"()/%+-]+/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
 
+function formatTableRow(columns, row) {
+  return row
+    .map((cell, index) => {
+      const value = cleanValue(cell);
+      if (!value) return '';
+      const column = cleanValue(columns[index]);
+      return column ? `${column}: ${value}.` : `${value}.`;
+    })
+    .filter(Boolean)
+    .join(' ');
+}
+
 function collectTextFromListBlock(block) {
-  const parts = [block.caption];
-  if (Array.isArray(block.columns)) parts.push(...block.columns);
+  const parts = [];
+  const caption = cleanValue(block.caption);
+  const columns = Array.isArray(block.columns) ? block.columns : [];
+  if (caption) parts.push(caption);
+  if (columns.length) {
+    parts.push(`Columns. ${columns.map((column) => `${cleanValue(column)}.`).join(' ')}`);
+  }
   if (Array.isArray(block.rows)) {
     block.rows.forEach((row) => {
-      if (Array.isArray(row)) parts.push(...row);
+      if (Array.isArray(row)) {
+        const formatted = formatTableRow(columns, row);
+        if (formatted) parts.push(formatted);
+      }
     });
   }
   return parts;
@@ -179,7 +210,7 @@ function collectTriviaAnswerText(entry) {
     if (block.type === 'list') parts.push(...collectTextFromListBlock(block));
     if (block.type === 'image') parts.push(block.caption, block.alt);
   });
-  return parts.join(' ');
+  return parts.join('\n\n');
 }
 
 function listTriviaFiles(rootDir) {

@@ -5,16 +5,16 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 2,
-    "description": "CSS stands for Cascading Style Sheets. HTML gives structure; CSS controls presentation like layout, spacing, color, and typography. The cascading part decides which rule wins when multiple rules target the same element (specificity, source order, and importance).",
+    "description": "CSS stands for Cascading Style Sheets, but the practical production angle is the cascade itself: specificity, source order, and competing rules that create hard-to-debug styling bugs.",
     "seo": {
-      "title": "What Does CSS Stand For? Cascading Style Sheets Explained",
-      "description": "Learn what CSS stands for, why the cascade matters, and how style sheets control layout, colors, typography, and responsive behavior across web pages."
+      "title": "CSS meaning in production: the cascade, specificity, and style-debugging basics",
+      "description": "CSS means Cascading Style Sheets, but the real beyond-basics topic is how the cascade, specificity, and source order create or prevent styling bugs."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>CSS means <strong>Cascading Style Sheets</strong>. Think of HTML as the structure and content, and CSS as the visual system that makes it readable, branded, and responsive."
+          "text": "<strong>Debug lens</strong><br><br>CSS means <strong>Cascading Style Sheets</strong>, but the word that matters in production is <em>cascading</em>. Multiple rules can target the same element, and the browser must decide which one wins. That is why CSS basics quickly turn into specificity, override, and debugging problems instead of just adding color and spacing."
         },
         {
           "type": "list",
@@ -78,7 +78,7 @@
       "styles",
       "html"
     ],
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-05",
     "incidentCard": {
       "title": "Cascade Meaning Check",
       "scenario": "A teammate says, \"CSS just means styling. The 'cascading' part is basically branding language, not something you really need to understand.\" Later, a button looks right on one page and wrong inside a card component because a more specific selector overrides the base class. Another teammate says, \"That bug is exactly why the cascade matters. CSS is not only about colors and spacing. You need to understand how rules win through specificity, source order, and importance.\" Which explanation is better?",
@@ -578,16 +578,16 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "The text-align property in CSS is used to align text content horizontally within its container. Setting text-align: center aligns inline-level content such as text and inline elements to the center of their parent container. Centering text affects readability and responsive layout, so test across breakpoints and line lengths.",
+    "description": "Centering text with text-align is easy, but the common mistake is using it for layout centering when flexbox or grid should own the alignment. Explain inline content vs box alignment and responsive readability trade-offs.",
     "seo": {
-      "title": "How to Center Text Horizontally in CSS with text-align",
-      "description": "Learn when text-align: center works, which content types it affects, and common cases where flexbox or grid is better for centering layout elements."
+      "title": "Centering text in CSS: text-align, layout mistakes, and when not to use it",
+      "description": "text-align centers inline content, not whole layout boxes. The common mistake is reaching for it when flexbox or grid should handle alignment."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>text-align</code> property controls the horizontal alignment of inline or inline-block elements inside a block-level container. By setting it to <code>center</code>, text and other inline content are positioned in the middle of the element’s width."
+          "text": "<strong>Common mistake</strong><br><br><code>text-align: center</code> centers inline content inside a container; it does not magically center every layout problem. The production/debug issue is using text centering for boxes, buttons, or whole sections that actually need flexbox, grid, or auto margins. Start by asking: am I aligning text, or am I aligning a layout object?"
         },
         {
           "type": "list",
@@ -673,7 +673,7 @@
       "layout",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "incidentCard": {
       "title": "Text Centering Check",
       "scenario": "A teammate says, \"This card is not centered, so I'll add `text-align: center` to the wrapper and that will center the whole block.\" Another teammate says, \"`text-align: center` centers inline content like text inside the container. If the real problem is centering the block itself, you need a layout technique such as auto margins, flexbox, or grid.\" Which explanation is better?",
@@ -701,16 +701,16 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "The font-family property in CSS specifies the typeface or group of typefaces to be used for displaying text. It allows developers to control the appearance and readability of textual content across different devices and platforms.",
+    "description": "font-family picks a prioritized font stack, but the production angle is fallback behavior, missing glyph coverage, and when bad stacks create layout shifts, readability problems, or branding drift.",
     "seo": {
-      "title": "CSS font-family Property: Purpose, Font Stacks, and Fallbacks",
-      "description": "Learn what font-family does, how font stacks and generic families work, and how to choose readable, cross-device fallbacks for consistent typography."
+      "title": "CSS font-family in production: font stacks, fallback pitfalls, and cross-device readability",
+      "description": "font-family is really about fallback strategy, glyph coverage, and avoiding production typography bugs when preferred fonts fail."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>font-family</code> property determines which typeface is used for rendering text on a webpage. It can list multiple font names in a prioritized order, known as a font stack, to ensure consistent display even if some fonts are unavailable on a user’s device."
+          "text": "<strong>Production pitfall</strong><br><br><code>font-family</code> is not just choose a font. It is a fallback plan. The browser walks the stack until it finds a font that exists and can render the text. Bad stacks create subtle production issues: layout shifts, missing glyphs, unreadable fallbacks, or a brand voice that changes across devices."
         },
         {
           "type": "list",
@@ -791,7 +791,7 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "incidentCard": {
       "title": "Font Stack Check",
       "scenario": "A teammate sets `font-family: 'Inter';` and says, \"That is enough because everyone will load the same font anyway.\" Another teammate says, \"A font stack should include fallbacks and a generic family, because the preferred font may fail to load or may not exist on the device. `font-family` is really about choosing typography with graceful fallback, not just naming one font.\" Which explanation is better?",
@@ -819,16 +819,16 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "Add a border with the shorthand: border: 1px solid #333;. You can also set border-width, border-style, and border-color separately for finer control. In UI validation and focus states, borders signal errors; watch layout shifts and accessibility contrast, and test across browsers.",
+    "description": "CSS borders are simple until validation states, focus rings, and hover transitions cause layout shift or contrast regressions. Explain shorthand, per-side control, and when outline or box-shadow is safer.",
     "seo": {
-      "title": "How to Add Borders in CSS: border Shorthand and Side Rules",
-      "description": "See how to add a border with width, style, and color, when to use shorthand versus per-side properties, and how to avoid layout shifts in UI states."
+      "title": "CSS borders in production: shorthand, focus-state pitfalls, and layout-shift debugging",
+      "description": "Adding a border is easy; the real pitfalls are focus states, contrast, per-side overrides, and layout shifts when borders appear late."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>border</code> property allows developers to define the style, thickness, and color of borders around elements. You can specify each side’s border individually or use the shorthand form to apply all at once."
+          "text": "<strong>Production pitfall</strong><br><br>Adding a border is easy. Adding one without causing layout shift, weak contrast, or a broken focus state is harder. In real UI work, the important question is not just <code>border: 1px solid</code>; it is whether border width, side overrides, and interactive states will change sizing or accessibility."
         },
         {
           "type": "list",
@@ -917,7 +917,7 @@
       "box-model",
       "styles"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "incidentCard": {
       "title": "Border Behavior Check",
       "scenario": "A teammate adds `border: 2px solid red` to an invalid input on focus and then complains that the form layout jumps around. They say, \"Borders are just visual, so if the layout moved the browser must be buggy.\" Another teammate says, \"Borders affect the element box unless you planned for them. If you add them only on hover or focus, you can cause layout shift. Sometimes `outline` or a preallocated border is the better approach.\" Which explanation is better?",
@@ -1086,7 +1086,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: css, padding, box model, layout, spacing.",
+    "description": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: CSS, padding, box model, layout, spacing.",
     "seo": {
       "title": "CSS padding Property Explained: Inner Spacing and Box Model",
       "description": "Learn how padding adds space between content and border, increases clickable area, and interacts with box sizing for predictable component sizing."
@@ -1332,16 +1332,16 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 2,
-    "description": "Make text bold with font-weight, e.g., font-weight: bold or font-weight: 700. The actual weight depends on what the font family provides. Use font-weight carefully for readability and accessibility; test variable fonts and fallback weights.",
+    "description": "font-weight looks trivial until fallback fonts, missing weights, and variable-font interpolation make bold text render inconsistently. Explain common readability and hierarchy mistakes.",
     "seo": {
-      "title": "How to Make Text Bold in CSS with font-weight Values",
-      "description": "Use font-weight keywords or numeric values to make text bold, understand font support limits, and choose weights across variable and fallback fonts."
+      "title": "Making text bold in CSS: font-weight support, fallback pitfalls, and readability choices",
+      "description": "font-weight can fail quietly when a font lacks the requested weight. The production angle is fallback behavior, hierarchy, and readability."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>CSS uses the <code>font-weight</code> property to adjust the thickness of glyphs. You can use keywords like <code>normal</code> and <code>bold</code> or numeric weights like 100–900 when the chosen font supports them."
+          "text": "<strong>Common mistake</strong><br><br><code>font-weight</code> does not guarantee the exact boldness you asked for. The browser can only use weights the chosen font actually provides, so a production design may look different across fallback fonts or variable-font settings. The real job is choosing emphasis that preserves hierarchy and readability, not just making text bold."
         },
         {
           "type": "list",
@@ -1430,7 +1430,7 @@
       "font-weight",
       "text"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "incidentCard": {
       "title": "Bold Text Check",
       "scenario": "A teammate wants a heading to look bold and says, \"I'll use `font-family` or maybe the `<b>` tag everywhere, that should be the same thing.\" Another teammate says, \"If the goal is visual boldness in CSS, the property is `font-weight`. And whether a weight really appears depends on what the chosen font family supports.\" Which explanation is better?",
@@ -1458,12 +1458,12 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 2,
-    "description": "You can control the size of text using the font-size property in CSS. This property defines how large or small the text content appears on a web page and supports both absolute and relative units for flexible design scaling. Font sizing impacts accessibility and layout, so test with user zoom and different root sizes.",
+    "description": "font-size is really about scale strategy: rem/em/px choices, zoom behavior, component nesting, and accessibility bugs caused by hard-coded sizes.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>font-size</code> property sets the height of text characters. It is one of the most frequently used CSS properties and affects the readability, hierarchy, and overall layout of a webpage. You can specify font size in fixed or relative units depending on your design needs."
+          "text": "<strong>Production decision</strong><br><br><code>font-size</code> is not just a bigger or smaller switch. It sets the scaling rules for an entire interface. The common mistake is picking units without thinking about zoom, root-size changes, nested components, or readability. In production, text sizing is a typography and accessibility decision, not only a visual one."
         },
         {
           "type": "list",
@@ -1541,10 +1541,10 @@
       "properties",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "How to Change Text Size in CSS with font-size Units",
-      "description": "Learn how to set text size with font-size, compare px/rem/em/% units, and keep typography responsive and accessible under zoom and root-size changes."
+      "title": "CSS text sizing in production: rem vs em vs px, zoom behavior, and accessibility pitfalls",
+      "description": "Changing text size is easy; the real production decisions are unit choice, zoom behavior, nested scaling, and accessible typography."
     },
     "incidentCard": {
       "title": "Text Size Strategy Check",
@@ -1795,12 +1795,12 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The CSS box model is the foundation of web layout design. Every element in a webpage is represented as a rectangular box composed of four layers: content, padding, border, and margin. Understanding this model is essential for controlling spacing, alignment, and element sizing accurately. The box model drives layout, spacing, and layout performance, so test with box-sizing and different breakpoints.",
+    "description": "The CSS box model is the source of countless sizing bugs. Explain content, padding, border, margin, box-sizing, and why width calculations break when teams forget what is included.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The CSS box model describes how browsers calculate the size and spacing of elements on a web page. Every visible element is treated as a rectangular box consisting of four nested layers — <em>content, padding, border,</em> and <em>margin</em> — which together define how much space an element occupies and how it interacts with surrounding elements."
+          "text": "<strong>Debug mental model</strong><br><br>The box model is where many CSS sizing bugs start. When a layout looks 320px wide but actually overflows, the problem is usually not magic; it is whether width applies to content only or to content plus padding and border. Understanding that under the hood is what makes spacing and overflow debugging predictable."
         },
         {
           "type": "list",
@@ -1877,10 +1877,10 @@
       "basics",
       "spacing"
     ],
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What is the CSS box model?",
-      "description": "The CSS box model treats each element as content, padding, border, and margin, which together determine rendered size and spacing."
+      "title": "CSS box model in production: box-sizing, width bugs, and spacing-debug mental models",
+      "description": "The box model matters because sizing bugs usually come from forgetting what width includes and how padding, border, and margin interact."
     },
     "incidentCard": {
       "title": "Box Model Overflow Check",
@@ -2142,12 +2142,12 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Setting `display: flex` changes the display property so an element becomes a flex container for its direct children. The browser then lays out those flex items on one main axis and one cross axis, making alignment, spacing, and controlled growth or shrink behavior much easier than float-based layouts.",
+    "description": "display:flex is a layout system, not a centering spell. Explain main vs cross axis, direct-child constraints, and common production bugs around shrinking, overflow, and unexpected stretching.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>display: flex</code> changes how the browser lays out an element's direct children. The parent becomes a <em>flex container</em>, the direct children become <em>flex items</em>, and the layout switches from normal block or inline flow to a one-dimensional flexbox layout. That means the browser can distribute free space, align items, and let them grow or shrink along a single axis without float hacks."
+          "text": "<strong>Common mistake</strong><br><br><code>display: flex</code> is not a one-line fix for every layout issue. It creates a one-dimensional layout system with a main axis, a cross axis, and rules for how direct children grow, shrink, wrap, and align. Most flexbox debugging problems come from misunderstanding those rules, not from flex itself being unpredictable."
         },
         {
           "type": "list",
@@ -2230,10 +2230,10 @@
       "display",
       "basics"
     ],
-    "updatedAt": "2026-04-02",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What does display: flex do in CSS?",
-      "description": "Learn how a flex container lays out direct children on main and cross axes, when to use inline-flex, and what flex:auto or flex:initial mean."
+      "title": "display:flex in production: axis mental model, child constraints, and layout pitfalls",
+      "description": "Flexbox is powerful, but the common mistakes are misunderstanding axes, direct-child behavior, shrinking, and overflow under real content."
     },
     "incidentCard": {
       "title": "Flex Container Reality Check",
@@ -2262,12 +2262,12 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "z-index controls stacking order for positioned elements within the same stacking context. Higher values appear on top, but only for elements that create/participate in a stacking context (e.g., position with z-index, opacity, transform). Stacking contexts cause most bugs, so test layering with position, opacity, and transforms.",
+    "description": "z-index bugs are usually stacking-context bugs. Explain layering, positioned elements, transforms or opacity, and why huge numbers fail when the wrong element owns the stacking context.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>z-index</code> property specifies the stacking order of positioned elements (elements with <code>position</code> other than static). Elements with higher z-index values appear on top of those with lower values when they overlap."
+          "text": "<strong>Debug lens</strong><br><br>Most <code>z-index</code> bugs are not about picking a larger number. They happen because the wrong stacking context owns the layer order. Once opacity, transform, filters, or positioned ancestors create a new context, your huge z-index value may still lose. That is why z-index debugging is really stacking-context debugging."
         },
         {
           "type": "list",
@@ -2344,10 +2344,10 @@
       "layering",
       "layout"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "How does z-index work in CSS?",
-      "description": "z-index controls stack order among positioned elements in the same stacking context, with higher values appearing on top."
+      "title": "CSS z-index debugging: stacking contexts, layering bugs, and why bigger numbers fail",
+      "description": "z-index only works inside the right stacking context. The real debug skill is spotting which ancestor created the layer boundary."
     },
     "incidentCard": {
       "title": "Stacking Context Check",
@@ -2479,12 +2479,12 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 2,
-    "description": "The float and clear properties are part of CSS's early layout system used to wrap text around images and create multi-column designs before flexbox and grid. The float property allows elements to shift to the left or right of their container, while the clear property prevents elements from wrapping around floated elements. Floats still appear in legacy layouts and can break layout flow; test clearing and responsive wrapping.",
+    "description": "float and clear are mostly legacy layout tools now, but they still matter for text wrap, old codebases, and the common pitfall of collapsing parents or strange wrap behavior.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Originally designed for print-style text wrapping, <code>float</code> and <code>clear</code> were later repurposed for web layouts before modern techniques like flexbox and grid. <code>float</code> moves elements to one side of their container, allowing text and inline elements to flow around them. <code>clear</code> ensures that subsequent elements do not wrap around floated elements."
+          "text": "<strong>Legacy pitfall</strong><br><br><code>float</code> and <code>clear</code> were built for text wrapping, then overused for whole-page layout before flexbox and grid existed. They still show up in production codebases, and the classic bugs are collapsed parents, strange wrapping, and layout rules that are hard to reason about. Today the key question is often <em>when not</em> to use them."
         },
         {
           "type": "list",
@@ -2564,10 +2564,10 @@
       "clear",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What do float and clear do in CSS?",
-      "description": "float moves an element left or right so text wraps around it, and clear prevents following elements from wrapping around floats."
+      "title": "CSS float and clear in legacy layouts: wrap behavior, clearfix pitfalls, and when not to use them",
+      "description": "float and clear still appear in production legacy CSS. The practical issues are collapsed parents, odd wrapping, and knowing when flexbox or grid should replace them."
     },
     "incidentCard": {
       "title": "Float Wrap Debug Check",

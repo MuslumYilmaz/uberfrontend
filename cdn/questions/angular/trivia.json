@@ -2296,7 +2296,7 @@
         {
           "type": "list",
           "columns": [
-            "TrackBy choice",
+            "trackBy choice",
             "When it's correct",
             "When it causes bugs"
           ],
@@ -2334,7 +2334,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A table with editable rows should preserve input focus when new data arrives from the server.<br><br><strong>Common pitfalls</strong><br><ul><li>Using index as trackBy, which breaks on reorders.</li><li>Returning non-unique ids, causing UI glitches.</li><li>Skipping trackBy and forcing full DOM re-creation.</li></ul><strong>Trade-off or test tip</strong><br>TrackBy improves performance but requires stable ids. Test by reordering and verifying focus retention.</strong>"
+          "text": "<strong>Practical scenario</strong><br>A table with editable rows should preserve input focus when new data arrives from the server.<br><br><strong>Common pitfalls</strong><br><ul><li>Using index as trackBy, which breaks on reorders.</li><li>Returning non-unique ids, causing UI glitches.</li><li>Skipping trackBy and forcing full DOM re-creation.</li></ul><strong>Trade-off or test tip</strong><br>trackBy improves performance but requires stable ids. Test by reordering and verifying focus retention.</strong>"
         }
       ]
     },
@@ -3657,7 +3657,7 @@
             [
               "0..N values",
               "Can emit many values over time (unlike Promise).",
-              "Fits UI/event streams (input, websockets, router events)."
+              "Fits UI/event streams (input, WebSocket messages, router events)."
             ],
             [
               "Teardown (unsubscribe)",
@@ -4626,7 +4626,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>5. Using TrackBy with *ngFor</strong><br>When rendering lists with <code>*ngFor</code>, Angular re-renders all elements when data changes by default. By providing a <code>trackBy</code> function, you can optimize list rendering by updating only the modified elements."
+          "text": "<strong>5. Using trackBy with *ngFor</strong><br>When rendering lists with <code>*ngFor</code>, Angular re-renders all elements when data changes by default. By providing a <code>trackBy</code> function, you can optimize list rendering by updating only the modified elements."
         },
         {
           "type": "code",
@@ -4706,7 +4706,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Angular optimizes large apps through OnPush detection, lazy loading, AOT, and tree shaking.</li><li>TrackBy, pure pipes, and RxJS streams prevent redundant rendering.</li><li>Web workers, preloading, and SSR further enhance responsiveness.</li><li>Combining these strategies ensures Angular apps remain fast, scalable, and efficient even at enterprise scale.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Angular optimizes large apps through OnPush detection, lazy loading, AOT, and tree shaking.</li><li>trackBy, pure pipes, and RxJS streams prevent redundant rendering.</li><li>Web workers, preloading, and SSR further enhance responsiveness.</li><li>Combining these strategies ensures Angular apps remain fast, scalable, and efficient even at enterprise scale.</li></ul>"
         }
       ]
     },
@@ -5647,7 +5647,7 @@
             [
               "Memory leaks",
               "By default, shareReplay keeps the source subscribed forever.",
-              "Services never released, websockets/intervals never stop."
+              "Services never released, WebSocket connections and intervals never stop."
             ],
             [
               "Stale data",
