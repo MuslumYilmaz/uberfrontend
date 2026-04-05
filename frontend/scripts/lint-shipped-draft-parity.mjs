@@ -5,14 +5,23 @@ import path from 'path';
 import {
   cdnIncidentsDir,
   cdnQuestionsDir,
+  contentReviewsDir,
   cdnTradeoffBattlesDir,
   repoRoot,
 } from './content-paths.mjs';
+import {
+  collectTriviaText,
+  normalizeRepoRelativePath,
+  reviewPathForTrivia,
+  validateCompetitiveReview,
+} from './trivia-competitive-review-lib.mjs';
 
 const CONTENT_DRAFTS_DIR = path.resolve(process.env.CONTENT_DRAFTS_DIR || path.join(repoRoot, 'content-drafts'));
 const INCIDENTS_DIR = path.resolve(process.env.CDN_INCIDENTS_DIR || cdnIncidentsDir);
 const TRADEOFF_BATTLES_DIR = path.resolve(process.env.CDN_TRADEOFF_BATTLES_DIR || cdnTradeoffBattlesDir);
 const QUESTIONS_DIR = path.resolve(process.env.CDN_QUESTIONS_DIR || cdnQuestionsDir);
+const CONTENT_REVIEWS_DIR = path.resolve(process.env.CONTENT_REVIEWS_DIR || contentReviewsDir);
+const CONTENT_REVIEW_BASE = path.dirname(CONTENT_REVIEWS_DIR);
 const TEMPLATE_BASENAMES = new Set(['playbook.md', 'system-design.md', 'trivia.md', 'tradeoff-battle.md', 'incident.md']);
 
 const errors = [];
@@ -129,6 +138,12 @@ function resolveEditorialDraftSource(source) {
   return path.resolve(path.dirname(CONTENT_DRAFTS_DIR), raw);
 }
 
+function resolveRepoRelativePath(rawPath) {
+  const normalized = normalizeRepoRelativePath(rawPath);
+  if (!normalized) return '';
+  return path.resolve(CONTENT_REVIEW_BASE, normalized);
+}
+
 function getIncidentBundle(slug) {
   const scenarioPath = path.join(INCIDENTS_DIR, slug, 'scenario.json');
   if (!fs.existsSync(scenarioPath)) return null;
@@ -178,7 +193,8 @@ function getTriviaBundle(tech, slug) {
   return {
     label: `${relFromRepo(triviaPath)}#${slug}`,
     editorial: item.editorial,
-    text: collectTextSegments(item).join(' '),
+    text: collectTriviaText(item),
+    entry: item,
   };
 }
 
@@ -204,6 +220,7 @@ function validateConvertedDraft(draftPath) {
 
   const slug = String(frontmatter.slug || '').trim();
   const family = String(frontmatter.family || '').trim();
+  const tech = String(frontmatter.tech || '').trim();
   const draftLabel = relFromRepo(draftPath);
   const shipped = shippedBundleForDraft(frontmatter);
   if (!shipped) {
@@ -264,6 +281,65 @@ function validateConvertedDraft(draftPath) {
   const shippedText = normalizeKey(shipped.text);
   if (draftPrimaryKeyword && !shippedText.includes(draftPrimaryKeyword)) {
     addError(`${draftLabel}: shipped content does not contain the draft primary keyword in ${shipped.label}`);
+  }
+
+  if (family === 'trivia') {
+    const expectedReviewPath = String(frontmatter.competitor_review_file || '').trim();
+    if (!expectedReviewPath) {
+      addError(`${draftLabel}: frontmatter competitor_review_file is required for converted trivia drafts`);
+      return;
+    }
+
+    if (!String(editorial.competitorReview || '').trim()) {
+      addError(`${draftLabel}: editorial.competitorReview is required in ${shipped.label}`);
+      return;
+    }
+
+    const normalizedDraftReviewPath = normalizeRepoRelativePath(expectedReviewPath);
+    const normalizedEditorialReviewPath = normalizeRepoRelativePath(editorial.competitorReview);
+    if (normalizedDraftReviewPath !== normalizedEditorialReviewPath) {
+      addError(`${draftLabel}: editorial.competitorReview does not match frontmatter competitor_review_file in ${shipped.label}`);
+      return;
+    }
+
+    const absoluteReviewPath = resolveRepoRelativePath(normalizedEditorialReviewPath);
+    if (!absoluteReviewPath || !fs.existsSync(absoluteReviewPath)) {
+      addError(`${draftLabel}: competitor review file is missing (${normalizedEditorialReviewPath})`);
+      return;
+    }
+
+    let review;
+    try {
+      review = readJson(absoluteReviewPath);
+    } catch (error) {
+      addError(`${draftLabel}: competitor review file could not be parsed (${normalizedEditorialReviewPath}): ${error.message}`);
+      return;
+    }
+
+    const reviewValidation = validateCompetitiveReview({
+      review,
+      label: `${family}:${slug}`,
+      reviewPath: normalizedEditorialReviewPath,
+      contentId: slug,
+      tech,
+      shippedText: shipped.text,
+      updatedAt: shipped.entry?.updatedAt,
+      today: editorial.factCheckedAt || frontmatter.last_fact_checked_at,
+      requireThreeCompetitors: true,
+      requireRelevantGreatFrontend: true,
+    });
+
+    reviewValidation.errors.forEach((message) => addError(`${draftLabel}: ${message}`));
+    reviewValidation.warnings.forEach(({ code, message }) => {
+      if (code === 'competitor-threshold-not-met') {
+        addError(`${draftLabel}: ${message}`);
+      }
+    });
+
+    const expectedConventionalPath = `content-reviews/trivia/${tech}/${slug}.json`;
+    if (normalizedEditorialReviewPath !== expectedConventionalPath) {
+      addError(`${draftLabel}: competitor review file must use the trivia convention (${expectedConventionalPath})`);
+    }
   }
 }
 

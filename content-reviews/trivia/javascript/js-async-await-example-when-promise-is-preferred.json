@@ -1,0 +1,138 @@
+{
+  "contentId": "js-async-await-example-when-promise-is-preferred",
+  "tech": "javascript",
+  "query": "when to use promises instead of async await javascript",
+  "reviewedAt": "2026-04-05",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd has Promise fundamentals material, but not a directly matching page about when direct Promise style is preferable to async/await."
+  },
+  "competitors": [
+    {
+      "label": "MDN Using promises",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the strongest canonical competitor for Promise chaining, composition, and concurrency combinators.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It explains Promise chains, composition, and combinators with strong reference coverage."
+      ],
+      "theirGaps": [
+        "It is not explicitly organized around the decision question of when raw Promise style is preferable to async/await."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already covers Promise composition and `Promise.all()`, so the practical concurrency framing is close."
+        ],
+        "actionableExamples": [
+          "Its composition examples are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "MDN also explains that async/await is built on Promises, so the false-dichotomy follow-up is not uniquely ours."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit in-flight dedupe example so the page feels more decision-oriented than a Promise guide."
+        ],
+        "actionableExamples": [
+          "Add one side-by-side example of raw `Promise.all()` vs accidentally serialized `await` calls."
+        ],
+        "followUpConfusion": [
+          "Add one short note about where raw Promise style stays better even inside codebases that mostly prefer async/await."
+        ]
+      }
+    },
+    {
+      "label": "DEV createSharedPromise",
+      "url": "https://dev.to/karbashevskyi/efficient-request-deduplication-with-createsharedpromise-in-jsts-fbf",
+      "category": "tutorial_reference",
+      "selectionReason": "This article is a strong real-world example of Promise-based in-flight sharing, which is one of our core use cases.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It has a very concrete in-flight deduplication example built around a reusable Promise abstraction."
+      ],
+      "theirGaps": [
+        "It is narrower and does not cover the broader decision space of composition and combinators."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The DEV article gives one strong production use case around request deduplication, so the practical criterion stays close."
+        ],
+        "actionableExamples": [
+          "Its `createSharedPromise` walkthrough is more fully worked than our current page."
+        ],
+        "followUpConfusion": [
+          "Our page is broader, but the follow-up explanation around composition vs readability is still close rather than clearly stronger."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one second real-world case that is not dedupe, such as fan-out/fan-in concurrency."
+        ],
+        "actionableExamples": [
+          "Add one richer in-flight sharing snippet with invalidation or error-reset behavior."
+        ],
+        "followUpConfusion": [
+          "Add one explicit rule of thumb for choosing Promise style over async/await."
+        ]
+      }
+    },
+    {
+      "label": "Stack Overflow async/await vs promises",
+      "url": "https://stackoverflow.com/questions/53057110/difference-of-using-async-await-vs-promises",
+      "category": "community_qna",
+      "selectionReason": "This thread is a direct community-Q&A competitor for the exact comparison users often search.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more editorially cohesive on composition, in-flight sharing, and the false Promise-vs-async/await dichotomy than the scattered thread format.",
+      "theirStrengths": [
+        "It surfaces the common point that Promise.all-style concurrency is a real reason to stay with raw Promises."
+      ],
+      "theirGaps": [
+        "It is thread-style Q&A, so the explanation is narrower and less structured than a dedicated editorial page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "async/await improves readability, but Promise APIs are often better for composition, concurrency combinators, and sharing in-flight work."
+        ],
+        "followUpConfusion": [
+          "Strong interview answer: it is not Promise vs async/await as enemies; async/await is built on Promises. You choose the style that best expresses the control flow."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Stack Overflow thread mentions concurrency and `Promise.all()`, but it is less complete on in-flight sharing and broader composition trade-offs."
+        ],
+        "actionableExamples": [
+          "The examples are practical enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page answers the false-dichotomy follow-up more directly than the scattered answers do."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one very small code sample contrasting sequential `await` with raw `Promise.all()`."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

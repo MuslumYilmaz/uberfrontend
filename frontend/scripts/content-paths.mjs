@@ -7,6 +7,7 @@ const __dirname = path.dirname(__filename);
 
 export const frontendRoot = path.resolve(__dirname, '..');
 export const repoRoot = path.resolve(frontendRoot, '..');
+export const contentReviewsDir = path.join(repoRoot, 'content-reviews');
 
 export const srcDir = path.join(frontendRoot, 'src');
 export const srcAssetsDir = path.join(srcDir, 'assets');

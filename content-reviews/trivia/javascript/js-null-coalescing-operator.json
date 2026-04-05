@@ -1,0 +1,138 @@
+{
+  "contentId": "js-null-coalescing-operator",
+  "tech": "javascript",
+  "query": "nullish coalescing operator javascript",
+  "reviewedAt": "2026-04-05",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd does not appear to have a directly relevant page dedicated to nullish coalescing or the `??` vs `||` defaulting bug."
+  },
+  "competitors": [
+    {
+      "label": "MDN Nullish coalescing",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical competitor for operator semantics, precedence rules, and optional chaining interaction.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "theirs"
+      },
+      "theirStrengths": [
+        "It explains operator semantics, short-circuiting, and the relationship to optional chaining precisely."
+      ],
+      "theirGaps": [
+        "It is less focused on the specific production bug where `||` overwrites legitimate falsy values."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already discusses the main defaulting use case, so the practical gap is close rather than decisive."
+        ],
+        "actionableExamples": [
+          "Its examples with `null`, `undefined`, and optional chaining keep the example criterion close."
+        ],
+        "followUpConfusion": [
+          "MDN covers precedence and operator-mixing rules more comprehensively than our current trivia."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit UI-state bug where `||` overwrites `0`, `false`, or an empty string in production."
+        ],
+        "actionableExamples": [
+          "Add one compact example that contrasts `||`, `??`, and optional chaining together."
+        ],
+        "followUpConfusion": [
+          "Add one dedicated note about when `??` is still the wrong tool because the value is empty but not nullish."
+        ]
+      }
+    },
+    {
+      "label": "GeeksforGeeks Nullish Coalescing",
+      "url": "https://www.geeksforgeeks.org/javascript-nullish-coalescing-operator/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a common beginner-facing competitor for `??` syntax, defaults, and basic examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It shows the default-value use case clearly and keeps the syntax accessible."
+      ],
+      "theirGaps": [
+        "It is lighter on precedence pitfalls and on the optional-chaining pairing pattern used in real apps."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It solves a common bug from || defaults where valid values like 0, '', or false get replaced unintentionally."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks shows default-value behavior, but it does not emphasize the production bug pattern as strongly as ours."
+        ],
+        "actionableExamples": [
+          "It includes basic examples with defaults and object properties, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It is weaker on precedence and on pairing `??` with optional chaining for nested API data, but not by a huge margin."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one nested API-data example that chains `?.` and `??` in a slightly more realistic state shape."
+        ],
+        "followUpConfusion": [
+          "Add a short warning about mixing `??` with `||` or `&&` without parentheses."
+        ]
+      }
+    },
+    {
+      "label": "Mastering JS Nullish Coalescing",
+      "url": "https://masteringjs.io/tutorials/fundamentals/nullish-coalescing",
+      "category": "tutorial_reference",
+      "selectionReason": "This page is a compact tutorial competitor focused on `??` versus `||` with concise examples.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It cleanly contrasts `??` with `||` and shows the assignment form too."
+      ],
+      "theirGaps": [
+        "It is shorter and does not go as far into the likely follow-up around operator mixing and nested optional chaining."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "JavaScript does not allow mixing ?? directly with || or && without parentheses. This prevents ambiguous logic."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Mastering JS explains the default-value bug clearly enough that the practical criterion stays close."
+        ],
+        "actionableExamples": [
+          "Its side-by-side examples are concrete enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page goes further on operator mixing and on pairing optional chaining with `??` in production code."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit config or API-state example so the page has a more concrete production context."
+        ],
+        "actionableExamples": [
+          "Keep one more worked example with nested data instead of only scalar defaults."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -17,6 +17,7 @@ reader_promise: ""
 unique_angle: ""
 what_this_adds_beyond_basics: ""
 competitor_query: ""
+competitor_review_file: ""
 competitor_takeaways:
   - ""
   - ""

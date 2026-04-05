@@ -46,6 +46,7 @@ reader_promise: ""
 unique_angle: ""
 what_this_adds_beyond_basics: ""
 competitor_query: ""
+competitor_review_file: ""
 competitor_takeaways:
   - ""
 competitor_gaps:
@@ -75,6 +76,7 @@ Field intent:
 - `unique_angle`: what makes this piece different from generic coverage.
 - `what_this_adds_beyond_basics`: what this piece adds that beginner-level articles usually miss.
 - `competitor_query`: the manual SERP query used for competitor review.
+- `competitor_review_file`: for trivia drafts in `editing`, `approved`, or `converted`, the repo-relative path to the matching competitor review snapshot.
 - `competitor_takeaways`: what current competing pages do well.
 - `competitor_gaps`: what current competing pages miss or flatten.
 - `sources`: public URLs used for factual review.
@@ -90,9 +92,10 @@ Field intent:
 4. Ask AI for outline only.
 5. After the outline is approved, draft section by section.
 6. Add the manual competitor brief before the editor pass.
-7. Run an editor pass before conversion.
-8. Fact-check non-trivial claims and fill `sources`, `last_fact_checked_at`, `reviewed_by`, and `confidence`.
-9. Convert manually into the production JSON or Angular format.
+7. For trivia drafts, create the matching competitor review snapshot in `content-reviews/trivia/<tech>/<slug>.json` and link it via `competitor_review_file`.
+8. Run an editor pass before conversion.
+9. Fact-check non-trivial claims and fill `sources`, `last_fact_checked_at`, `reviewed_by`, and `confidence`.
+10. Convert manually into the production JSON or Angular format.
 
 Lint behavior:
 
@@ -101,6 +104,7 @@ Lint behavior:
 - `outline`, `drafting`, `editing`, `approved`, and `converted` drafts must include search-intent and originality metadata.
 - `editing` drafts can surface warnings for thin sections, weak competitor notes, missing fact-review metadata, unresolved `VERIFY:` markers, or missing keyword coverage.
 - `approved` and `converted` drafts fail if they are still thin, placeholder-heavy, missing competitor/fact-review metadata, or contain unresolved `VERIFY:` markers.
+- Trivia drafts in `editing`, `approved`, and `converted` must point to a competitor review snapshot through `competitor_review_file`.
 
 ### Brief Template
 

@@ -1,0 +1,137 @@
+{
+  "contentId": "js-this-keyword",
+  "tech": "javascript",
+  "query": "javascript this keyword interview question",
+  "reviewedAt": "2026-04-05",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN this",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference competitor for every serious `this` explanation, especially on edge cases and invocation forms.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "theirs"
+      },
+      "theirStrengths": [
+        "It is the most complete reference for call-site rules across functions, methods, constructors, modules, and arrows."
+      ],
+      "theirGaps": [
+        "It is reference-first rather than compactly optimized for debugging detached-method failures."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already covers callbacks, methods, constructors, and module behavior, so the real-world edge is close rather than decisive."
+        ],
+        "actionableExamples": [
+          "MDN has many concrete invocation examples, so the worked-example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "MDN answers more long-tail follow-ups such as top-level module `this`, class fields, and multiple invocation forms."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit detached-method production bug so the debug framing is stronger than a general reference page."
+        ],
+        "actionableExamples": [
+          "Add one side-by-side example of the same function succeeding and failing under two different call sites."
+        ],
+        "followUpConfusion": [
+          "Add one concise note about top-level module `this` and class-field arrow methods."
+        ]
+      }
+    },
+    {
+      "label": "GreatFrontEnd this binding",
+      "url": "https://www.greatfrontend.com/questions/quiz/javascript-interview-questions?language=js&tab=quiz#explain-how-this-works-in-javascript",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep explanation of `this`, so it is required for calibration against interview-oriented competitors.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "theirs"
+      },
+      "theirStrengths": [
+        "It is aligned with the same interview question and covers the core mental model with direct examples."
+      ],
+      "theirGaps": [
+        "It is less explicitly bug-first than our detached-method framing."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd already frames `this` as an interview topic with realistic invocation scenarios, so the practical angle is close."
+        ],
+        "actionableExamples": [
+          "Its quiz-style examples make the worked-example criterion competitive."
+        ],
+        "followUpConfusion": [
+          "It covers the binding rules broadly enough that it currently handles more follow-up questions than our shorter page."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the callback-context-loss framing, but make one browser or framework callback scenario more explicit."
+        ],
+        "actionableExamples": [
+          "Add one single code sample that contrasts plain call, method call, and bound call in one place."
+        ],
+        "followUpConfusion": [
+          "Add one tighter summary of the uncommon but common-in-interviews cases: modules, class fields, and extracted methods."
+        ]
+      }
+    },
+    {
+      "label": "DigitalOcean this / bind / call / apply",
+      "url": "https://www.digitalocean.com/community/conceptual-articles/understanding-this-bind-call-and-apply-in-javascript",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a common reference competitor for practical binding fixes like bind, call, and apply.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more concise on the receiver-at-call-time mental model and keeps the detached-method debugging angle tighter than the broader DigitalOcean tutorial.",
+      "theirStrengths": [
+        "It explains bind, call, and apply with approachable examples and common browser contexts."
+      ],
+      "theirGaps": [
+        "It is broader and less compact on the core receiver-at-call-time mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real debug problem is detached methods, callback context loss, and object methods that stop pointing at the receiver you expected."
+        ],
+        "followUpConfusion": [
+          "So the useful mental model is not 'owner of the function' but 'receiver at call time.'"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DigitalOcean covers practical contexts, but it is less centered on the detached-method bug pattern our page foregrounds."
+        ],
+        "actionableExamples": [
+          "Its bind, call, and apply examples are solid enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "It teaches explicit binding well, but the core debugging heuristic is spread across a longer walkthrough."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact example involving method extraction and delayed invocation so the tutorial-reference comparison is easier to win."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "contentId": "js-block-scoped-or-function-scoped",
+  "tech": "javascript",
+  "query": "javascript block scope vs function scope var let const interview question",
+  "reviewedAt": "2026-04-05",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN let",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the strongest canonical reference for block scope, TDZ behavior, and loop binding semantics.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "theirs"
+      },
+      "theirStrengths": [
+        "It documents block scope, temporal dead zone behavior, and loop-binding semantics accurately."
+      ],
+      "theirGaps": [
+        "It is keyword-reference material rather than a compact interview answer."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already covers loop bindings and scope visibility clearly enough that the practical difference is close."
+        ],
+        "actionableExamples": [
+          "Its loop and block examples are concrete enough to keep the example criterion close."
+        ],
+        "followUpConfusion": [
+          "MDN goes deeper on TDZ and declaration semantics, so it resolves more long-tail follow-up questions than our short trivia."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit switch-case or module-vs-script scope bug so the production angle is stronger than a keyword reference."
+        ],
+        "actionableExamples": [
+          "Add one compact before/after loop example that contrasts shared `var` binding with per-iteration `let` binding."
+        ],
+        "followUpConfusion": [
+          "Add one short note explaining how TDZ and block scope interact in interview follow-up questions."
+        ]
+      }
+    },
+    {
+      "label": "GreatFrontEnd let / var / const",
+      "url": "https://www.greatfrontend.com/questions/quiz/javascript-interview-questions?language=js&tab=quiz#what-are-the-differences-between-variables-created-using-let-var-or-const",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep answer for the same var/let/const comparison.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the interview phrasing and likely includes a clean side-by-side comparison."
+      ],
+      "theirGaps": [
+        "It is less obviously focused on switch-case pitfalls and module-vs-script behavior."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd targets the same interview framing, so the practical use-case criterion stays close."
+        ],
+        "actionableExamples": [
+          "Its side-by-side comparison format is likely stronger than our current shorter worked examples."
+        ],
+        "followUpConfusion": [
+          "Our page mentions the shared-loop-binding trap, but the overall follow-up coverage is still close rather than clearly superior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Make one switch-case or global-scope example more explicit so our page surfaces a bug GreatFrontEnd is less likely to foreground."
+        ],
+        "actionableExamples": [
+          "Add one tiny table or code comparison that puts `var`, `let`, and `const` behavior side by side."
+        ],
+        "followUpConfusion": [
+          "Add one direct answer to the inevitable 'So is JavaScript block scoped or function scoped?' follow-up."
+        ]
+      }
+    },
+    {
+      "label": "GeeksforGeeks let",
+      "url": "https://www.geeksforgeeks.org/javascript/javascript-let/",
+      "category": "tutorial_reference",
+      "selectionReason": "This beginner-focused tutorial is a common reference competitor for `let` semantics and block scoping basics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is stronger on the interview trap itself and on why JavaScript presents both function and block scoping depending on the declaration keyword.",
+      "theirStrengths": [
+        "It explains `let`, block scope, and redeclaration rules clearly for beginners."
+      ],
+      "theirGaps": [
+        "It is not structured around the bigger comparison between function-scoped `var` and block-scoped `let`/`const`."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Strong answers explain loop behavior, closure bugs, switch-case pitfalls, and module-vs-script global scope differences."
+        ],
+        "followUpConfusion": [
+          "So the right interview answer is not one word. It is: 'Both, depending on declaration keyword.'"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks focuses on `let` semantics, but it does not connect the topic as strongly to loop-capture bugs and interview traps."
+        ],
+        "actionableExamples": [
+          "It includes straightforward scope examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It explains `let` itself, but not the larger follow-up of why JavaScript can be both function-scoped and block-scoped."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one more compact example that contrasts block, function, and module scope in one place."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

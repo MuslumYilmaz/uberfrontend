@@ -1,0 +1,140 @@
+{
+  "contentId": "js-why-eval-function-considered-dangerous",
+  "tech": "javascript",
+  "query": "why is eval dangerous javascript",
+  "reviewedAt": "2026-04-05",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd does not appear to have a directly relevant quiz or guide focused on why `eval()` is dangerous."
+  },
+  "competitors": [
+    {
+      "label": "MDN eval",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical competitor for `eval()`, especially around security, scope, and safer replacements.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "theirs"
+      },
+      "theirStrengths": [
+        "It covers arbitrary code execution, CSP restrictions, and safer alternatives in detail."
+      ],
+      "theirGaps": [
+        "It is more reference-style and less aggressively framed around interview-grade risk language."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already explains code execution risk and safer alternatives, so the practical criterion stays close."
+        ],
+        "actionableExamples": [
+          "Its replacements such as bracket accessors keep the example criterion close."
+        ],
+        "followUpConfusion": [
+          "MDN answers more of the likely next questions around CSP, dynamic property access, and safer replacement patterns."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the attack-surface framing, but add one concrete frontend path from untrusted data to executable code."
+        ],
+        "actionableExamples": [
+          "Add one explicit before/after example replacing `eval` with bracket access or `JSON.parse`."
+        ],
+        "followUpConfusion": [
+          "Add one short follow-up list of safe replacements grouped by use case."
+        ]
+      }
+    },
+    {
+      "label": "DigitalOcean eval tutorial",
+      "url": "https://www.digitalocean.com/community/tutorials/js-eval",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a common explanatory competitor for `eval()` risks and trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is tighter on CSP, optimizer cost, and production predictability, while DigitalOcean stays more general.",
+      "theirStrengths": [
+        "It calls out malicious input, performance cost, and the small class of metaprogramming cases where `eval` still appears."
+      ],
+      "theirGaps": [
+        "It is weaker on CSP friction and on the debugging/optimizer cost as a frontend mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Explain eval through the security pitfall lens: it turns data into code, expands injection risk, conflicts with CSP expectations, and makes production debugging or optimization much harder."
+        ],
+        "followUpConfusion": [
+          "A strong interview answer is simple: eval turns data into code, so it expands attack surface and reduces predictability."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DigitalOcean covers malicious input and performance cost, but it is lighter on CSP and broader runtime predictability."
+        ],
+        "actionableExamples": [
+          "Its examples of risky `eval` usage are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page does a better job connecting the security answer to CSP and optimization side effects."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny code example that replaces `eval` with a safer data-driven alternative."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Stack Overflow eval bad idea",
+      "url": "https://stackoverflow.com/questions/86513/why-is-using-the-javascript-eval-function-a-bad-idea",
+      "category": "community_qna",
+      "selectionReason": "This thread is a direct community-Q&A competitor for the exact search intent behind the question.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It covers the two classic concerns clearly: code injection and performance."
+      ],
+      "theirGaps": [
+        "It is an answer thread, so the reasoning is less consolidated than a purpose-built editorial page."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "JavaScript engines optimize code when structure is predictable. eval adds dynamic unknown code paths, which can force conservative assumptions and reduce optimization opportunities in surrounding scope."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Stack Overflow thread clearly mentions code injection and performance, so the practical criterion stays close."
+        ],
+        "actionableExamples": [
+          "Its examples are practical enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next question of why `eval` affects both security policy and engine optimization."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one sharper sentence that connects `eval` to a browser-origin attack path rather than only to generic 'risk'."
+        ],
+        "actionableExamples": [
+          "Keep one replacement example so the page does not rely only on reasoning."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "contentId": "js-promise-fundamental-understanding",
+  "tech": "javascript",
+  "query": "javascript promise fundamentals under the hood interview question",
+  "reviewedAt": "2026-04-05",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Using promises",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical competitor for Promise chaining, composition, and general async semantics.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It has broad Promise coverage with chaining, composition, and many API-level examples."
+      ],
+      "theirGaps": [
+        "It is less centered on the interview-style under-the-hood mental model than our page."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already connects Promises to realistic chaining and composition workflows, so the real-world edge is close."
+        ],
+        "actionableExamples": [
+          "MDN includes more step-by-step examples than our current trivia page."
+        ],
+        "followUpConfusion": [
+          "Our chain-propagation framing is useful, but MDN still answers many likely follow-ups about error handling and composition."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the under-the-hood framing, but show one concrete bug where missing a return changes later handlers."
+        ],
+        "actionableExamples": [
+          "Add one worked example that shows executor timing, a chained `then`, and a `finally` in one small snippet."
+        ],
+        "followUpConfusion": [
+          "Add one explicit note that distinguishes Promise state from callback scheduling."
+        ]
+      }
+    },
+    {
+      "label": "GreatFrontEnd Promise fundamentals",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-promises-and-how-do-they-work",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant Promise fundamentals page, so it is required for interview-prep calibration.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It directly targets the same Promise fundamentals question and includes accessible state and chaining examples."
+      ],
+      "theirGaps": [
+        "It is more introductory than our under-the-hood focus on executor timing, chain propagation, and `finally` behavior."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "A Promise chain is like a relay race: each runner must pass the baton (return). If one runner drops it, the next runner gets nothing."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd connects Promises to async code clearly, so the real-world criterion stays close."
+        ],
+        "actionableExamples": [
+          "Its Promise constructor, `.then()`, `.catch()`, and `Promise.all()` examples keep the example quality competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the next confusion around chain propagation and `finally`, not just state labels and basic handling."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit frontend debugging case where Promise timing changes visible UI order."
+        ],
+        "actionableExamples": [
+          "Add one compact example that contrasts a correct chain with a broken chain missing `return`."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "javascript.info Microtask queue",
+      "url": "https://javascript.info/microtask-queue",
+      "category": "tutorial_reference",
+      "selectionReason": "This page is a strong tutorial-style competitor for the microtask scheduling part of Promise fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page covers more of the full Promise mental model, while javascript.info intentionally focuses on queue timing.",
+      "theirStrengths": [
+        "It explains Promise handler scheduling and the microtask queue very clearly."
+      ],
+      "theirGaps": [
+        "It is intentionally narrow on queue timing and does not cover the wider Promise state-machine and chain-propagation model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering. Mastering them explains async debug sessions better than memorizing APIs."
+        ],
+        "followUpConfusion": [
+          "A Promise chain is like a relay race: each runner must pass the baton (return). If one runner drops it, the next runner gets nothing."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info teaches scheduling very well, but it stays narrower than a full Promise fundamentals answer."
+        ],
+        "actionableExamples": [
+          "Its queue-order demos are concrete enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page resolves the follow-up about return propagation and `finally` more directly because it covers more than the queue."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny logging example that shows sync code, `then`, `catch`, and `finally` order together."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "contentId": "js-closures",
+  "tech": "javascript",
+  "query": "javascript closures interview question",
+  "reviewedAt": "2026-04-05",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Closures",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures",
+      "category": "canonical_docs",
+      "selectionReason": "This is the strongest canonical reference for closures and one of the first pages candidates are likely to compare against.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "theirs"
+      },
+      "theirStrengths": [
+        "It combines closure basics, practical patterns, loop traps, and performance notes in one authoritative page."
+      ],
+      "theirGaps": [
+        "It is less explicitly framed as a production-debug answer than our shipped trivia."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already covers practical use cases such as module-style private state and the classic loop-capture failure, so the real-world gap is narrow."
+        ],
+        "actionableExamples": [
+          "MDN gives more code examples than our current trivia, including loop mistakes and modern fixes."
+        ],
+        "followUpConfusion": [
+          "MDN also answers the usual follow-ups around shared loop bindings and performance implications more comprehensively."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the stale-state and memory-retention framing, but add one explicit production callback scenario so the practical angle is undeniably stronger."
+        ],
+        "actionableExamples": [
+          "Add one compact before/after closure bug example that starts from a broken async callback and ends with the corrected binding."
+        ],
+        "followUpConfusion": [
+          "Add one short follow-up block on when closures keep old objects alive through listeners or timers."
+        ]
+      }
+    },
+    {
+      "label": "GreatFrontEnd Closures",
+      "url": "https://www.greatfrontend.com/questions/quiz/javascript-interview-questions?language=js&tab=quiz#what-is-a-closure-and-how-why-would-you-use-one",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant quiz answer for the same interview question, so it is the strongest interview-prep calibration point.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is tightly aligned with the interview phrasing and includes concrete patterns like private variables and counters."
+      ],
+      "theirGaps": [
+        "It is lighter on stale async state and memory-retention language than our page."
+      ],
+      "ourEvidence": {},
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd connects closures to private variables and practical usage, so the page is already grounded in real scenarios."
+        ],
+        "actionableExamples": [
+          "Its counter-style and private-variable examples keep the example quality competitive with ours."
+        ],
+        "followUpConfusion": [
+          "It answers the definition, use case, and why-you-would-use-one follow-up directly enough that the current comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one UI-specific stale closure example so our page has a clearer frontend-debug advantage."
+        ],
+        "actionableExamples": [
+          "Include one worked example that contrasts a useful closure with a broken loop-capture closure."
+        ],
+        "followUpConfusion": [
+          "Add one explicit note about long-lived listeners retaining outdated objects or state."
+        ]
+      }
+    },
+    {
+      "label": "DigitalOcean Closures",
+      "url": "https://www.digitalocean.com/community/tutorials/js-closures",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial-style page is a strong mainstream reference competitor that explains closures through callbacks and asynchronous code.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more explicit about frontend bug patterns and the likely next confusion, while DigitalOcean stays more introductory.",
+      "theirStrengths": [
+        "It gives accessible explanations of callbacks, async execution, and lexical scope."
+      ],
+      "theirGaps": [
+        "It stays introductory and is lighter on stale-state and memory-retention traps."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That powers private state, but the production pitfalls are loop-capture bugs, stale async state, and memory retention when callbacks keep old data alive."
+        ],
+        "followUpConfusion": [
+          "A closure means a function remembers variables from the place where it was created, not from where it is called."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DigitalOcean covers callbacks and async execution, but it does not lean as hard into production bug framing."
+        ],
+        "actionableExamples": [
+          "Its examples are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on the likely next confusion around loop bindings and long-lived references."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one more compact factory example so the page is strong on both bug-first framing and legitimate usage."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -285,6 +285,7 @@ function validateFrontmatter(frontmatter, filePath) {
   const competitorTakeaways = normalizeStringArray(frontmatter.competitor_takeaways);
   const competitorGaps = normalizeStringArray(frontmatter.competitor_gaps);
   const sources = normalizeStringArray(frontmatter.sources);
+  const competitorReviewFile = String(frontmatter.competitor_review_file || '').trim();
 
   if (isReview || isShipping) {
     const competitorTakeawayMessage = 'frontmatter competitor_takeaways must contain at least 2 non-empty items';
@@ -303,6 +304,22 @@ function validateFrontmatter(frontmatter, filePath) {
       const message = 'frontmatter sources must contain only public http(s) URLs';
       if (isShipping) addError(filePath, message);
       else addWarning(filePath, message);
+    }
+  }
+
+  if (family === 'trivia' && (isReview || isShipping)) {
+    const expectedReviewPath = `content-reviews/trivia/${String(frontmatter.tech || '').trim()}/${slug}.json`;
+    if (!competitorReviewFile) {
+      const message = 'frontmatter competitor_review_file is required for trivia editing/approved/converted drafts';
+      if (isShipping) addError(filePath, message);
+      else addWarning(filePath, message);
+    } else {
+      const normalizedReviewPath = competitorReviewFile.replace(/\\/g, '/');
+      const message = `frontmatter competitor_review_file must point to "${expectedReviewPath}"`;
+      if (normalizedReviewPath !== expectedReviewPath) {
+        if (isShipping) addError(filePath, message);
+        else addWarning(filePath, message);
+      }
     }
   }
 
