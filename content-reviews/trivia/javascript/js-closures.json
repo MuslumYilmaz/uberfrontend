@@ -2,7 +2,7 @@
   "contentId": "js-closures",
   "tech": "javascript",
   "query": "javascript closures interview question",
-  "reviewedAt": "2026-04-05",
+  "reviewedAt": "2026-04-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "seo_primary_keyword",
@@ -15,37 +15,41 @@
       "category": "canonical_docs",
       "selectionReason": "This is the strongest canonical reference for closures and one of the first pages candidates are likely to compare against.",
       "verdicts": {
-        "realWorldUseCases": "tie",
-        "actionableExamples": "theirs",
-        "followUpConfusion": "theirs"
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
       },
+      "winReason": "Our page is now more focused on the exact frontend bug shapes people debug in practice, with a sharper worked example for shared loop bindings while MDN remains broader on long-tail reference material.",
       "theirStrengths": [
         "It combines closure basics, practical patterns, loop traps, and performance notes in one authoritative page."
       ],
       "theirGaps": [
         "It is less explicitly framed as a production-debug answer than our shipped trivia."
       ],
-      "ourEvidence": {},
-      "theirEvidence": {
+      "ourEvidence": {
         "realWorldUseCases": [
-          "MDN already covers practical use cases such as module-style private state and the classic loop-capture failure, so the real-world gap is narrow."
+          "The real frontend debug value is explaining stale async callbacks, loop-capture bugs, and long-lived listeners that keep old objects alive in memory."
         ],
         "actionableExamples": [
-          "MDN gives more code examples than our current trivia, including loop mistakes and modern fixes."
+          "A common frontend bug is wiring delayed handlers inside a loop and then discovering every callback points at the last row."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers practical use cases well, but it is less explicitly centered on frontend stale-callback and retention bugs than our updated page."
+        ],
+        "actionableExamples": [
+          "MDN gives many code examples, but our page now has a tighter broken-versus-fixed loop callback example aimed directly at the debug failure."
         ],
         "followUpConfusion": [
-          "MDN also answers the usual follow-ups around shared loop bindings and performance implications more comprehensively."
+          "MDN still answers the broader follow-ups around closures and performance implications more comprehensively."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Keep the stale-state and memory-retention framing, but add one explicit production callback scenario so the practical angle is undeniably stronger."
-        ],
-        "actionableExamples": [
-          "Add one compact before/after closure bug example that starts from a broken async callback and ends with the corrected binding."
-        ],
+        "realWorldUseCases": [],
+        "actionableExamples": [],
         "followUpConfusion": [
-          "Add one short follow-up block on when closures keep old objects alive through listeners or timers."
+          "Keep one short note that distinguishes a stale closure bug from a generic async timing bug if this page needs another follow-up upgrade."
         ]
       }
     },
@@ -55,38 +59,42 @@
       "category": "interview_prep",
       "selectionReason": "GreatFrontEnd has a directly relevant quiz answer for the same interview question, so it is the strongest interview-prep calibration point.",
       "verdicts": {
-        "realWorldUseCases": "tie",
+        "realWorldUseCases": "ours",
         "actionableExamples": "tie",
-        "followUpConfusion": "tie"
+        "followUpConfusion": "ours"
       },
+      "winReason": "Our page now has a clearer frontend-debug angle and a more explicit explanation of why long-lived closures can retain outdated data, while GreatFrontEnd stays closer to the baseline interview definition.",
       "theirStrengths": [
         "It is tightly aligned with the interview phrasing and includes concrete patterns like private variables and counters."
       ],
       "theirGaps": [
         "It is lighter on stale async state and memory-retention language than our page."
       ],
-      "ourEvidence": {},
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That powers private state and factories, but the real production/debug value is knowing which bugs closures create: async callbacks reading stale values, loop handlers capturing one shared binding, and long-lived listeners keeping old objects alive longer than expected."
+        ],
+        "followUpConfusion": [
+          "Closures keep referenced values alive as long as the inner function is still reachable. If a long-lived event listener or timer still closes over a large cache, form snapshot, or DOM node, that old object graph stays in memory until you remove the listener or clear the reference."
+        ]
+      },
       "theirEvidence": {
         "realWorldUseCases": [
-          "GreatFrontEnd connects closures to private variables and practical usage, so the page is already grounded in real scenarios."
+          "GreatFrontEnd connects closures to private variables and practical usage, but our page now leans harder into frontend-debug scenarios."
         ],
         "actionableExamples": [
           "Its counter-style and private-variable examples keep the example quality competitive with ours."
         ],
         "followUpConfusion": [
-          "It answers the definition, use case, and why-you-would-use-one follow-up directly enough that the current comparison stays close."
+          "It answers the core definition well, but our page now resolves the retention and long-lived-listener follow-up more directly."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one UI-specific stale closure example so our page has a clearer frontend-debug advantage."
-        ],
+        "realWorldUseCases": [],
         "actionableExamples": [
-          "Include one worked example that contrasts a useful closure with a broken loop-capture closure."
+          "Keep one compact factory/private-state example beside the bug-first examples so the page stays balanced."
         ],
-        "followUpConfusion": [
-          "Add one explicit note about long-lived listeners retaining outdated objects or state."
-        ]
+        "followUpConfusion": []
       }
     },
     {
@@ -108,10 +116,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "That powers private state, but the production pitfalls are loop-capture bugs, stale async state, and memory retention when callbacks keep old data alive."
+          "The real frontend debug value is explaining stale async callbacks, loop-capture bugs, and long-lived listeners that keep old objects alive in memory."
         ],
         "followUpConfusion": [
-          "A closure means a function remembers variables from the place where it was created, not from where it is called."
+          "A <strong>closure</strong> means a function remembers variables from the place where it was created, not from where it is called."
         ]
       },
       "theirEvidence": {

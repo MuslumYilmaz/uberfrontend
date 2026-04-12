@@ -3028,7 +3028,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "CSS provides multiple units to define sizes, each with unique reference points and use cases. Understanding how em, rem, %, and px differ is essential for creating flexible, responsive layouts that behave consistently across devices and containers. Choose units based on accessibility and layout needs, and test edge cases in nested containers. Choosing units impacts accessibility and layout; test nested containers and root font-size changes.",
+    "description": "CSS units use different reference points. Use rem for root-scaled typography, em for component-local scaling, % for parent-relative sizing, and px for precision-only edges. The common production pitfall is assuming % behaves like rem or forgetting that nested em-based spacing compounds unexpectedly.",
     "answer": {
       "blocks": [
         {
@@ -3078,7 +3078,24 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Use <code>rem</code> for typography — it ensures consistent scaling across components.</li><li>Use <code>em</code> when nested scaling is desired (e.g., buttons inheriting parent font size).</li><li>Use <code>%</code> for flexible containers that resize with viewport or parent.</li><li>Use <code>px</code> only when precision is required (borders, shadows, small icons).</li></ul>"
+          "text": "<strong>Worked example: assign each unit one job</strong><br>A settings panel can use <code>rem</code> for app-wide type, <code>em</code> for badge padding that scales with the badge text itself, <code>%</code> for card width that tracks the parent container, and <code>px</code> for a crisp border that should not scale with text."
+        },
+        {
+          "type": "code",
+          "language": "css",
+          "code": "html { font-size: 16px; }\n.app-card { font-size: 1rem; max-width: 40rem; }\n.app-card__title { font-size: 1.25rem; }\n.app-card__badge {\n  font-size: 0.875em;   /* local to the badge text */\n  padding: 0.5em 1em;   /* grows with the badge font size */\n  width: 75%;           /* follows the parent card width */\n  border: 1px solid #222; /* fixed precision edge */\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Nested compounding trap</strong><br>If the parent card bumps its font size from <code>1rem</code> to <code>1.25rem</code>, any child spacing defined in <code>em</code> can grow twice in practice: once because the parent text got larger, and again because the child's own <code>em</code>-based padding is tied to that larger local font size. That surprises teams who expected only text to grow."
+        },
+        {
+          "type": "text",
+          "text": "<strong>% vs rem follow-up</strong><br><code>75%</code> width answers a layout question: “how wide should this box be inside its parent?” <code>1.25rem</code> answers a typography question: “how large should this value be relative to the root font size?” If the container gets narrower, the <code>%</code> width changes even when the root font size does not."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rule of thumb</strong><br><ul><li>Use <code>rem</code> for app-wide typography and spacing that should scale from the root.</li><li>Use <code>em</code> for component-local scaling when child spacing should follow the component's own font size.</li><li>Use <code>%</code> for fluid container sizing that depends on the parent box.</li><li>Use <code>px</code> for precision-only cases like thin borders, hairlines, and tiny icons.</li></ul>"
         },
         {
           "type": "text",
@@ -3086,7 +3103,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A responsive card layout uses rem for typography, % for container width, and px for hairline borders.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>em</code> for layout and getting compounded scaling.</li><li>Forgetting % depends on the parent size.</li><li>Relying only on px and losing accessibility scaling.</li></ul><strong>Trade-off or test tip</strong><br>Rem is consistent but less local; em is flexible but can compound. Test by changing root font size.</strong>"
+          "text": "<strong>Practical scenario</strong><br>A responsive card layout uses <code>rem</code> for typography, <code>%</code> for container width, <code>em</code> for an inline badge that should scale with local text, and <code>px</code> for hairline borders.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>em</code> for layout and getting compounded scaling inside nested components.</li><li>Forgetting <code>%</code> depends on the parent size, not the root font size.</li><li>Relying only on <code>px</code> and losing accessibility scaling.</li></ul><strong>Trade-off or test tip</strong><br><code>rem</code> is consistent but less local; <code>em</code> is flexible but can compound. Test both root font-size changes and narrower parent containers.</strong>"
         }
       ]
     },
@@ -3099,10 +3116,10 @@
       "typography",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-11",
     "seo": {
       "title": "em vs rem vs percent vs px: what is the difference?",
-      "description": "px is fixed, percent is relative to a parent value, em is relative to the current font size, and rem is relative to the root font size."
+      "description": "Compare rem, em, percent, and px with concrete layout examples, the nested em compounding pitfall, and the key difference between parent-relative percent sizing and root-relative rem sizing."
     },
     "incidentCard": {
       "title": "Unit Choice Check",

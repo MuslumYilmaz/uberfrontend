@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-child-mutates-prop-directly",
+  "tech": "vue",
+  "query": "Vue mutating props interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Props",
+      "url": "https://vuejs.org/guide/components/props.html#one-way-data-flow",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue explanation of one-way data flow, readonly props, and when local copies or transforms are appropriate.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "The official props guide is authoritative on one-way data flow, readonly behavior, and the two accepted local-copy or transform patterns."
+      ],
+      "theirGaps": [
+        "It is less explicit about nested object mutation bugs and the interview/debug framing around ambiguous ownership."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This couples child behavior to parent state and makes bugs look “random” because the mutation didn’t go through an explicit parent update."
+        ],
+        "actionableExamples": [
+          "The child requests a change; the parent applies it."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain that props refresh from the parent and should not be mutated, but they are less vivid about hard-to-trace shared-reference bugs."
+        ],
+        "actionableExamples": [
+          "They show the official local-copy and derived-transform patterns, so actionable coverage is still strong."
+        ],
+        "followUpConfusion": [
+          "The official guide remains stronger on the exact supported alternatives when you need local state derived from a prop."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one tighter note on when a local ref copy is appropriate versus when emit or v-model is the better contract."
+        ]
+      },
+      "winReason": "The official docs are canonical on one-way flow, but our page is stronger on the nested-object trap and on turning the rule into a practical debugging explanation."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because prop flow, state ownership, and component communication are core interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong broad Vue interview-prep hub with component-communication coverage."
+      ],
+      "theirGaps": [
+        "The landing page is not a direct prop-mutation explainer, so the nested-object pitfall is less explicit."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Objects/arrays are passed by reference; child mutation becomes parent mutation"
+        ],
+        "followUpConfusion": [
+          "Correct approach: child emits intent (update events / v-model) and the parent owns the actual state mutation."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank covers Vue component patterns broadly, but it is less focused on this specific shared-reference bug."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd emphasizes worked answers, the example bar stays competitive."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about readonly props, object mutation leaks, and v-model as the clean update contract."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the local-draft example short so the page remains focused on ownership rather than form architecture."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a strong broad Vue resource, but our page is more focused on why prop mutation creates ambiguous ownership and how to replace it with emit or v-model."
+    },
+    {
+      "label": "Vue Error: Avoid Mutating a Prop Directly",
+      "url": "https://michaelnthiessen.com/avoid-mutating-prop-directly",
+      "category": "tutorial_reference",
+      "selectionReason": "Michael Thiessen has a topic-direct article on the exact prop-mutation warning and its correct alternatives.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct focused explanation of the prop-mutation warning and how to replace the anti-pattern."
+      ],
+      "theirGaps": [
+        "It is lighter on the nested object or array shared-reference trap and on the parent-owned-state mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Mutates a nested field on an object/array prop (e.g. props.user.name = 'x') You silently mutate the parent’s object (shared reference) and create “action at a distance” bugs"
+        ],
+        "followUpConfusion": [
+          "Mutating props breaks one-way data flow: the parent is no longer the single source of truth, updates become non-deterministic to trace, and nested object/array props can mutate parent state by reference."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article addresses the warning directly, but it is less broad on shared-reference bugs beyond the main anti-pattern."
+        ],
+        "actionableExamples": [
+          "It includes a clear replacement pattern, so examples remain close."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about nested objects, local draft state, and the parent-child ownership contract."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one very short nested-object example so the shared-reference bug stays visible without making the answer too long."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "Michael Thiessen is a strong topic-direct comparator, but our page is stronger on the nested-object trap and the one-source-of-truth explanation that interviewers often probe next."
+    }
+  ]
+}

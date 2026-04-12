@@ -1,0 +1,42 @@
+{
+  "batchId": "importance-5-css-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    {
+      "tech": "css",
+      "id": "css-margin-vs-padding"
+    },
+    {
+      "tech": "css",
+      "id": "css-box-model"
+    },
+    {
+      "tech": "css",
+      "id": "css-position-relative-absolute-fixed"
+    },
+    {
+      "tech": "css",
+      "id": "css-display-flex"
+    },
+    {
+      "tech": "css",
+      "id": "css-specificity-hierarchy"
+    },
+    {
+      "tech": "css",
+      "id": "css-media-queries"
+    },
+    {
+      "tech": "css",
+      "id": "css-units-em-rem-percent-px"
+    },
+    {
+      "tech": "css",
+      "id": "css-cascade-order"
+    },
+    {
+      "tech": "css",
+      "id": "css-grid-vs-flexbox"
+    }
+  ]
+}

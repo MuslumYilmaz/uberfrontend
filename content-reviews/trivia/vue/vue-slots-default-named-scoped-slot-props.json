@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-slots-default-named-scoped-slot-props",
+  "tech": "vue",
+  "query": "Vue slots scoped slots interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Slots",
+      "url": "https://vuejs.org/guide/components/slots.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue page for default, named, and scoped slots.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official slots guide is authoritative on slot syntax, named regions, fallback content, and scoped slots."
+      ],
+      "theirGaps": [
+        "It is less explicitly framed around why scoped slots are a safe child-to-parent data exposure pattern and where they show up in headless component design."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Common real-world use cases - Table components (you provide column templates) - List / virtual scroller components - Data fetcher components - Form builders - Headless UI components"
+        ],
+        "followUpConfusion": [
+          "This is inversion of control, not two-way binding."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide covers slot mechanics comprehensively, but it is less compact on headless-component and list-renderer use cases."
+        ],
+        "actionableExamples": [
+          "It includes default, named, and scoped slot examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The docs explain scoped slots well, but our page is more direct about why slot props do not violate one-way data flow."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact renderless-component example so the slots page does not stay only at the wrapper-component level."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The official slots guide is canonical, but our page is stronger on why scoped slots matter in reusable component architecture and on the one-way-flow follow-up."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because slots, component composition, and data flow are core Vue interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong broad Vue interview-prep resource with component-pattern coverage."
+      ],
+      "theirGaps": [
+        "The landing page is not dedicated to slot types or slot-prop semantics."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Scoped slot (slot props) Child exposes data to the parent’s slot template Reusable logic components (List, Table, Fetcher, Virtualizer)"
+        ],
+        "followUpConfusion": [
+          "The child is not mutating parent state . It is only exposing data ."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank covers Vue composition patterns broadly, but it is less focused on this exact default-versus-named-versus-scoped slots decision."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd emphasizes solutions and examples, the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about why slot props do not break one-way data flow."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one tiny slot-props example with a list item or table row so the example remains concrete."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is useful as a broad interview resource, but our page is more explicit about slot types, slot-prop semantics, and why this is inversion of control rather than two-way binding."
+    },
+    {
+      "label": "The Complete Guide to Vue.js Slots",
+      "url": "https://vueschool.io/articles/vuejs-tutorials/the-complete-guide-to-vue-js-slots/",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a strong direct tutorial on default, named, and scoped slots.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct slots tutorial and therefore a strong comparator for syntax and examples."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped on the child-to-parent data-flow clarification and on reusable headless-component framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Child controls logic, parent controls rendering"
+        ],
+        "followUpConfusion": [
+          "This is inversion of control, not two-way binding."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial already explains slot types and rendering flexibility, so use-case coverage is close."
+        ],
+        "actionableExamples": [
+          "It remains a strong syntax tutorial, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about why scoped slots expose data safely without violating one-way flow."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the fetcher or virtualizer examples short enough that the page stays interview-sized."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "Vue School is a strong slots tutorial, but our page is sharper on the architectural takeaway: scoped slots are inversion of control, not a data-flow violation."
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "contentId": "angular-onpush-change-detection-debugging-real-bug",
+  "tech": "angular",
+  "query": "Angular OnPush change detection debugging interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Skipping Component Subtrees",
+      "url": "https://angular.dev/best-practices/skipping-subtrees",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official Angular guide for OnPush subtree skipping and trigger behavior, making it the canonical competitor.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The Angular docs are authoritative on trigger rules, but our page is more direct about the real production bug, the async-pipe default, and the markForCheck versus detectChanges follow-up that interviewers usually push next.",
+      "theirStrengths": [
+        "It clearly documents when Angular skips or checks an OnPush subtree."
+      ],
+      "theirGaps": [
+        "It is less organized around the concrete stale-UI bug that makes OnPush memorable in interviews."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This almost always means you mutated an object or array instead of creating a new reference."
+        ],
+        "actionableExamples": [
+          "Second real bug variant: manual subscription updates state, but the view still looks stale"
+        ],
+        "followUpConfusion": [
+          "AsyncPipe is your best friend",
+          "markForCheck() vs detectChanges()",
+          "Assuming a parent mutating child.input.deep.nestedValue should refresh the child even though the input reference stayed the same"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide explains subtree skipping and triggers, but our page centers the common production symptom instead of only the rule set."
+        ],
+        "actionableExamples": [
+          "Angular.dev still has clearer trigger diagrams and official examples, so the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "The docs cover why OnPush still updates on some events, but our page more directly explains async pipe, manual CDR, and mutation bugs together."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one smaller detached-view or zoneless example if we want to beat the official guide on total example breadth."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Experienced Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-experienced-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd directly covers OnPush, Angular DevTools, and performance debugging, so it is the right interview-prep comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd is strong on performance profiling, but our page is more focused on the classic stale-UI bug and the exact follow-up mechanics behind OnPush updates.",
+      "theirStrengths": [
+        "It ties OnPush to profiling, DevTools, and large-app performance."
+      ],
+      "theirGaps": [
+        "It spreads the discussion across a broader experienced-Angular checklist rather than one focused debugging answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This almost always means you mutated an object or array instead of creating a new reference."
+        ],
+        "actionableExamples": [
+          "Second real bug variant: manual subscription updates state, but the view still looks stale",
+          "Use Angular DevTools or a quick logging pass to verify which component is actually being checked."
+        ],
+        "followUpConfusion": [
+          "AsyncPipe is your best friend",
+          "markForCheck() vs detectChanges()"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The experienced guide connects OnPush to performance and profiling, but our page is more immediately useful for the concrete stale-UI failure mode."
+        ],
+        "actionableExamples": [
+          "Its Angular DevTools and profiler advice makes the example comparison close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on the precise mutation-versus-reference rule and the markForCheck versus detectChanges distinction."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit zoneless or detached-change-detector case if we want to beat a broad experienced-Angular interview guide on example spread."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University OnPush Change Detection Guide",
+      "url": "https://blog.angular-university.io/onpush-change-detection-how-it-works/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is the strongest long-form tutorial on OnPush pitfalls and real examples, so it is the best tutorial/reference competitor.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular University still goes deeper as a full OnPush tutorial, but our page now wins the compact production-debug framing: two concrete stale-UI bug variants, a cleaner mutation-versus-reference mental model, and a clearer parent-child boundary explanation.",
+      "theirStrengths": [
+        "It is a dedicated OnPush guide with concrete pitfall examples and more step-by-step depth."
+      ],
+      "theirGaps": [
+        "It is longer and less compact than a short interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Second real bug variant: manual subscription updates state, but the view still looks stale"
+        ],
+        "followUpConfusion": [
+          "Assuming a parent mutating child.input.deep.nestedValue should refresh the child even though the input reference stayed the same",
+          "Use Angular DevTools or a quick logging pass to verify which component is actually being checked."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University is also organized around real OnPush failures, but our page now includes a second stale-UI production variant instead of centering only the classic input-mutation bug."
+        ],
+        "actionableExamples": [
+          "Its pitfall walkthroughs and code examples go deeper than our compact answer."
+        ],
+        "followUpConfusion": [
+          "It already handles common follow-ups about mutation, observables, and nested component behavior, but our page now answers the parent-child nested-property trap and DevTools-driven validation more directly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one detached-view or zoneless interaction example if we want to beat a full OnPush tutorial on raw example depth."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

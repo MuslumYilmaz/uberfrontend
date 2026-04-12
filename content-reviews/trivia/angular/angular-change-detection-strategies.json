@@ -1,0 +1,152 @@
+{
+  "contentId": "angular-change-detection-strategies",
+  "tech": "angular",
+  "query": "Angular change detection strategies interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Skipping Component Subtrees",
+      "url": "https://angular.dev/best-practices/skipping-subtrees",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official Angular performance guide for OnPush and subtree skipping, so it is the canonical comparator for change-detection strategy behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular docs remain the canonical trigger reference, but our page now wins the production framing: Default-versus-OnPush is explained as a stale-UI and large-tree decision, with stronger follow-ups on ExpressionChanged timing and parent-child mutation traps.",
+      "theirStrengths": [
+        "It precisely documents OnPush triggers, subtree skipping behavior, and edge cases like manual input mutation and markForCheck."
+      ],
+      "theirGaps": [
+        "It is more of a performance guide than a compact interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real question is not “what is change detection?” but when should this subtree be checked."
+        ],
+        "followUpConfusion": [
+          "ExpressionChangedAfterItHasBeenCheckedError:",
+          "ViewChild or direct child mutation:"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Angular guide ties strategy choice directly to large component trees and performance-sensitive change detection paths, but our page is now more explicit about the Default-versus-OnPush architecture choice and stale-UI symptom."
+        ],
+        "actionableExamples": [
+          "It still gives official trigger diagrams and subtree cases, so the pure example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "It handles mutable inputs and subtree skipping well, but our page now covers ExpressionChanged timing and markForCheck versus detectChanges more directly in one compact answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny zoneless or detached-view example if we want to beat the official docs on raw example coverage."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Experienced Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-experienced-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has directly relevant senior Angular coverage on performance bottlenecks, OnPush, Angular DevTools, and change-detection debugging.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd is strong on experienced Angular profiling, but our page now wins as a focused answer because it combines architecture choice, a broken-versus-fixed mutation example, a trigger matrix, and a profiling-first checklist in one compact page.",
+      "theirStrengths": [
+        "It is interview-oriented and ties change detection to profiling, Angular DevTools, and real performance tuning decisions."
+      ],
+      "theirGaps": [
+        "It is broader across many experienced Angular topics and less dedicated to a single change-detection answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Default is the safe baseline when you want fewer stale-UI surprises. OnPush is the performance strategy when you want predictable checks, immutable inputs, and fewer wasted passes through a large component tree."
+        ],
+        "actionableExamples": [
+          "Compact trigger matrix",
+          "renameWrong()"
+        ],
+        "followUpConfusion": [
+          "ExpressionChangedAfterItHasBeenCheckedError:",
+          "Profiling-first debug checklist"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The experienced guide ties OnPush, trackBy, and profiling to real performance investigations, but it is not as focused on the single Default-versus-OnPush decision path."
+        ],
+        "actionableExamples": [
+          "It provides concrete suggestions like Angular DevTools and Chrome Performance, but our page now also includes a broken-versus-fixed immutable update example and a trigger matrix."
+        ],
+        "followUpConfusion": [
+          "It covers expression-changed debugging too, but our page now answers the likely follow-ups in a more compact, page-specific way."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one smaller zoneless or detached-view example if we want to beat a broad experienced-Angular guide on example breadth."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University Change Detection Guide",
+      "url": "https://blog.angular-university.io/how-does-angular-2-change-detection-really-work/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a focused deep dive on how Angular change detection works, including mutable data, OnPush, and manual control.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular University is still the deeper tutorial, but our page now wins the compact architectural framing and the likely interview follow-ups: strategy choice in large trees, trigger rules in one matrix, and the ExpressionChanged plus parent-child mutation traps.",
+      "theirStrengths": [
+        "It is a dedicated long-form guide that explains the tree model, mutable-object pitfalls, and manual detectChanges usage in depth."
+      ],
+      "theirGaps": [
+        "It is longer and less compact than a trivia answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Default is the safe baseline when you want fewer stale-UI surprises. OnPush is the performance strategy when you want predictable checks, immutable inputs, and fewer wasted passes through a large component tree."
+        ],
+        "followUpConfusion": [
+          "ExpressionChangedAfterItHasBeenCheckedError:",
+          "Why OnPush still updates after events and async work"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University connects change detection to mutable object bugs, async triggers, and performance concerns, but our page now frames the Default-versus-OnPush choice more directly as an app-architecture decision."
+        ],
+        "actionableExamples": [
+          "It still walks through more step-by-step examples than our compact answer, so the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "It answers the likely follow-ups too, but our page now surfaces the ExpressionChanged timing note and parent-child mutation trap more explicitly for interview use."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one smaller detached-view or zoneless example if we want to beat a long-form deep dive on example breadth."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

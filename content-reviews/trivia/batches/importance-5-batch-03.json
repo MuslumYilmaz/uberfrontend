@@ -1,0 +1,16 @@
+{
+  "batchId": "importance-5-batch-03",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "javascript", "id": "js-promises-async-await" },
+    { "tech": "javascript", "id": "js-calback-hell-resolved-with-promise" },
+    { "tech": "javascript", "id": "js-microtasks-vs-macrotasks" },
+    { "tech": "javascript", "id": "js-promise-combinators-all-allsettled-race-any" },
+    { "tech": "javascript", "id": "web-performance-optimize-load-time" },
+    { "tech": "javascript", "id": "js-repaint-reflow" },
+    { "tech": "javascript", "id": "js-async-race-conditions" },
+    { "tech": "javascript", "id": "js-cookie-options" },
+    { "tech": "javascript", "id": "js-xss-dom-sinks" },
+    { "tech": "javascript", "id": "js-arrow-vs-regular-functions" }
+  ]
+}

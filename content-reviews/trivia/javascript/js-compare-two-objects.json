@@ -2,7 +2,7 @@
   "contentId": "js-compare-two-objects",
   "tech": "javascript",
   "query": "how to compare two objects in javascript",
-  "reviewedAt": "2026-04-05",
+  "reviewedAt": "2026-04-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "seo_primary_keyword",
@@ -19,7 +19,7 @@
         "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
-      "winReason": "Our page is broader on comparison strategy because it distinguishes identity, shallow, deep, and `JSON.stringify` pitfalls, while MDN only covers the identity branch.",
+      "winReason": "Our page is broader on comparison strategy because it distinguishes identity, shallow, deep, and JSON pitfalls, while MDN only covers the identity branch.",
       "theirStrengths": [
         "It states the core identity rule correctly: object equality with `===` is reference equality."
       ],
@@ -28,10 +28,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Object comparison in JavaScript is not one single operation. You usually choose between three intents:"
+          "Object comparison in JavaScript is not one single operation. You choose the <strong>cheapest comparison strategy that matches your intent</strong>:"
         ],
         "followUpConfusion": [
-          "Most interview mistakes happen when people use === but expect deep value equality."
+          "Most interview mistakes happen when people use <code>===</code> but expect deep value equality, or when they deep-compare everything even though a flat shallow check would have been enough."
         ]
       },
       "theirEvidence": {
@@ -39,16 +39,16 @@
           "MDN explains the identity rule correctly, but it does not treat comparison as a choose-the-right-strategy problem."
         ],
         "actionableExamples": [
-          "It gives equality examples, but not a practical strategy comparison, so the example criterion stays close."
+          "It gives equality examples, but not a practical strategy comparison, so the example criterion remains close rather than clearly behind."
         ],
         "followUpConfusion": [
-          "It does not answer the next question of how to compare different objects with the same content."
+          "It does not answer the next question of when shallow or deep comparison is the right tool."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
         "actionableExamples": [
-          "Add one compact strategy table that shows when identity, shallow, deep, or library equality is the right choice."
+          "Add one compact strategy table row for library-based deep equality if we want a clearer example edge over the identity-only docs."
         ],
         "followUpConfusion": []
       }
@@ -59,37 +59,41 @@
       "category": "interview_prep",
       "selectionReason": "GreatFrontEnd has a directly relevant deep-equality interview problem, so it should calibrate our answer against a strong interview-prep competitor.",
       "verdicts": {
-        "realWorldUseCases": "tie",
-        "actionableExamples": "theirs",
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
         "followUpConfusion": "tie"
       },
+      "winReason": "GreatFrontEnd is strong on implementing deep equal, but our page now wins the broader interview question because it explains when identity, shallow, and deep comparison are each the right choice and adds explicit business-case examples.",
       "theirStrengths": [
         "It turns deep equality into a concrete implementation challenge with clear examples and testable behavior."
       ],
       "theirGaps": [
         "It is narrower on the earlier decision of when shallow or identity comparison is enough."
       ],
-      "ourEvidence": {},
-      "theirEvidence": {
+      "ourEvidence": {
         "realWorldUseCases": [
-          "GreatFrontEnd is directly relevant because deep equality is one of the main comparison intents our page discusses."
+          "Object comparison in JavaScript is not one single operation. You choose the <strong>cheapest comparison strategy that matches your intent</strong>:"
         ],
         "actionableExamples": [
-          "Its implementation challenge makes the example criterion stronger than our current concept-first page."
+          "const prevFilters = { page: 1, sort: 'price', query: 'gpu' };"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is very relevant for deep equality, but it is narrower on the earlier decision of whether deep comparison is needed at all."
+        ],
+        "actionableExamples": [
+          "Its implementation challenge is strong, while our page now adds both a shallow-equality business case and a nested deep-comparison example."
         ],
         "followUpConfusion": [
-          "Our page is broader on deciding between identity, shallow, and deep equality, but the overall follow-up handling is still close."
+          "GreatFrontEnd still handles the deep-equality implementation follow-up well enough that the broader follow-up set remains close."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one explicit business-case example where shallow equality is enough and deep equality is unnecessary."
-        ],
-        "actionableExamples": [
-          "Add one worked deep-comparison example involving arrays or nested objects so the page is less purely strategic."
-        ],
+        "realWorldUseCases": [],
+        "actionableExamples": [],
         "followUpConfusion": [
-          "Add one note about when deep equality still fails because of dates, functions, or cycles."
+          "Add one note on Map/Set comparison policy if we want a broader advanced follow-up edge than the current dates/functions/cycles note."
         ]
       }
     },
@@ -99,37 +103,41 @@
       "category": "tutorial_reference",
       "selectionReason": "This tutorial is a common mainstream competitor that surveys multiple comparison techniques in one page.",
       "verdicts": {
-        "realWorldUseCases": "tie",
-        "actionableExamples": "theirs",
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
         "followUpConfusion": "tie"
       },
+      "winReason": "GeeksforGeeks surveys many methods, but our page now wins this comparison because it turns the topic into a strategy choice, then backs that up with shallow, deep, and JSON-order examples tied to real UI trade-offs.",
       "theirStrengths": [
         "It surveys several comparison approaches, including reference checks, `JSON.stringify`, `Object.keys`, and recursive comparison."
       ],
       "theirGaps": [
         "It is less explicit about choosing the comparison strategy based on intent."
       ],
-      "ourEvidence": {},
-      "theirEvidence": {
+      "ourEvidence": {
         "realWorldUseCases": [
-          "GeeksforGeeks covers multiple comparison methods, so the practical criterion is close."
+          "If a filter bar stores only flat primitive fields like page, sort, and query, a shallow comparison is cheaper and easier to reason about than a recursive deep compare."
         ],
         "actionableExamples": [
-          "Its method inventory and code samples are more numerous than ours at the moment."
+          "const q1 = { sort: 'price', page: 1 };"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks covers many methods, but our page is stronger about picking the cheapest method that matches the business intent."
+        ],
+        "actionableExamples": [
+          "Its method inventory is broad, while our page now adds a concrete shallow-equality business case plus a JSON key-order trap."
         ],
         "followUpConfusion": [
-          "Our page is better at naming the intent buckets, but the follow-up comparison is still close because the tutorial covers many methods."
+          "The tutorial covers many approaches, so the broader follow-up set remains close instead of clearly behind."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one sentence about choosing the cheapest comparison that matches business intent, not just the most powerful one."
-        ],
-        "actionableExamples": [
-          "Add a compact example where `JSON.stringify` breaks because object key order changes."
-        ],
+        "realWorldUseCases": [],
+        "actionableExamples": [],
         "followUpConfusion": [
-          "Add one note on limits such as cycles, dates, and functions."
+          "Add one short note on comparing class instances with semantic equality rules if we want a broader advanced follow-up set."
         ]
       }
     }

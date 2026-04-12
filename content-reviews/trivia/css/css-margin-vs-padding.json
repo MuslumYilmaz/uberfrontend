@@ -1,0 +1,145 @@
+{
+  "contentId": "css-margin-vs-padding",
+  "tech": "css",
+  "query": "What is the difference between margin and padding in CSS?",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "The box model",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN guide is the canonical explanation of content, padding, border, margin, alternative box models, and margin collapsing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on how margin and padding behave inside the full box-model system, including collapsing and alternate box models."
+      ],
+      "theirGaps": [
+        "The guide is broader than the exact margin-vs-padding compare question and is less focused on component-spacing decisions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use <strong>padding</strong> to improve readability or increase tap targets inside buttons, cards, and inputs."
+        ],
+        "followUpConfusion": [
+          "<strong>Edge Cases</strong><br><ul><li><em>Collapsing margins:</em> adjacent vertical margins (e.g., between two paragraphs) merge to the largest value; padding avoids this.</li><li><em>Outline vs border:</em> margins sit outside both; padding sits inside the border but beneath the outline.</li><li><em>Auto margins:</em> <code>margin: 0 auto;</code> can center block elements horizontally; padding cannot.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains what margin and padding are and how they interact with layout, but it is less centered on one production spacing choice such as clickable area versus sibling separation."
+        ],
+        "actionableExamples": [
+          "The guide includes concrete examples for both padding and margin behavior, so the example bar stays close."
+        ],
+        "followUpConfusion": [
+          "It covers margin collapsing and explains that padding affects the visible box, but it is less compact as an interview answer about when each spacing tool is safer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter before-versus-after UI snippet showing a button that needs bigger tap area versus cards that need separation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical box-model reference, but our page is more focused on the real decision teams make: whether they need internal breathing room, external separation, or a safer layout primitive like gap."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because it explicitly covers box model, specificity, flexbox, grid, and responsive design as core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage and worked answers from experienced interviewers."
+      ],
+      "theirGaps": [
+        "The landing page is broad rather than dedicated to margin-versus-padding trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Practical scenario</strong><br>Space out cards (margin) and add breathing room inside cards (padding).<br><br><strong>Common pitfalls</strong><br><ul><li>Margin collapse causing unexpected spacing.</li><li>Padding affecting background and size calculations.</li><li>Using margin for alignment instead of layout.</li></ul><strong>Trade-off or test tip</strong><br>Gap in flex/grid is often safer for spacing. Test with nested layouts and responsive widths.</strong>"
+        ],
+        "followUpConfusion": [
+          "Margins can collapse vertically; padding cannot."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd highlights CSS topics like box model and responsive design, but the index page is less explicit about one concrete spacing-debug scenario."
+        ],
+        "actionableExamples": [
+          "Because the bank emphasizes quick answers and detailed explanations, the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "The hub is less explicit about margin collapse, auto margins, and when gap is safer than spacing with margin."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one ultra-compact code example that shows why padding expands the visual hit area while margin does not."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a useful CSS interview hub, but our page is more targeted on the exact compare-and-decide framing interviewers use for margin versus padding."
+    },
+    {
+      "label": "The CSS Box Model",
+      "url": "https://css-tricks.com/the-css-box-model/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks has a direct topic article on the box model and explicitly calls out margin as unique, which makes it the strongest tutorial comparator in this cluster.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article is direct, memorable, and strong on the mental model that every element is a box."
+      ],
+      "theirGaps": [
+        "It is more box-model oriented than compare-question oriented, so the margin-versus-padding decision path is less explicit."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use <strong>margin</strong> to control spacing between headings, paragraphs, sections, and components."
+        ],
+        "followUpConfusion": [
+          "<strong>Edge Cases</strong><br><ul><li><em>Collapsing margins:</em> adjacent vertical margins (e.g., between two paragraphs) merge to the largest value; padding avoids this.</li><li><em>Outline vs border:</em> margins sit outside both; padding sits inside the border but beneath the outline.</li><li><em>Auto margins:</em> <code>margin: 0 auto;</code> can center block elements horizontally; padding cannot.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks explains that margin is unique because it affects other content around the box rather than the box size itself."
+        ],
+        "actionableExamples": [
+          "The article uses diagrams and explanation-heavy examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "It is less explicit about clickable-area confusion, gap-versus-margin guidance, and the exact cases where auto margin behaves differently from padding."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one side-by-side code block with a button and a card stack so the compare question is answered in one glance."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong box-model explainer, but our page answers the actual compare question more directly by tying each spacing tool to a concrete UI decision and by surfacing the most common follow-up traps."
+    }
+  ]
+}

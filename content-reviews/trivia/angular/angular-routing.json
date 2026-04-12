@@ -1,0 +1,147 @@
+{
+  "contentId": "angular-routing",
+  "tech": "angular",
+  "query": "Angular routing interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Common Routing Tasks",
+      "url": "https://angular.dev/guide/routing/common-router-tasks",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official Angular routing guide covering route configuration, guards, and routing tasks, so it is the canonical baseline.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular docs remain the canonical routing reference, but our page is more explicitly shaped around production routing failures and the interview follow-ups around route trees, RouterOutlet, guards, and lazy loading.",
+      "theirStrengths": [
+        "It is authoritative on official route configuration, guards, and router APIs."
+      ],
+      "theirGaps": [
+        "It is less centered on how routing concepts show up as broken deep links, blank screens, or redirect-debugging questions in interviews."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A strong answer explains how the route tree, RouterOutlet, guards, and lazy loading work together so you can debug blank screens, broken deep links, or unexpected redirects instead of only reciting Routes array syntax."
+        ],
+        "followUpConfusion": [
+          "Angular routing is the production navigation layer for your app, not just a syntax for URL matching."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Angular guide documents guards and lazy loading, but it is not as bug-first about navigation failures and route-tree debugging."
+        ],
+        "actionableExamples": [
+          "The docs include route configuration and guard examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The official material explains router APIs well, but our answer more directly frames the route tree and RouterOutlet as the mental model interviewers ask about next."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one nested-route example with a child outlet and a guard so the answer shows route trees, not just flat routes."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant Angular Router question with code examples, making it the right interview-prep comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers the Router basics well, but our page does a better job tying routing concepts to production failure modes and the likely follow-up around guards, lazy loading, and route-tree thinking.",
+      "theirStrengths": [
+        "It is concise, interview-oriented, and includes a simple route configuration example."
+      ],
+      "theirGaps": [
+        "It stays at the basics and does not go as far into route trees, lazy loading tradeoffs, or navigation debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A strong answer explains how the route tree, RouterOutlet, guards, and lazy loading work together so you can debug blank screens, broken deep links, or unexpected redirects instead of only reciting Routes array syntax."
+        ],
+        "followUpConfusion": [
+          "Angular routing is the production navigation layer for your app, not just a syntax for URL matching."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The basic interview guide introduces Angular Router for single-page navigation, but it does not spend much time on blank-screen or deep-link debugging."
+        ],
+        "actionableExamples": [
+          "Its basic route setup example is concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The page names RouterOutlet and navigation, but it is lighter on how lazy loading and guards reshape the route tree."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one quick example where Router.navigate and routerLink solve different parts of the same flow."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University Router Guide",
+      "url": "https://blog.angular-university.io/angular2-router/",
+      "category": "tutorial_reference",
+      "selectionReason": "Angular University has a dedicated long-form router guide, making it the strongest tutorial/reference competitor for routing mechanics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular University is still the longer router tutorial, but our page now wins the route-tree mental model and production-debug angle: nested outlets, guard/resolver/lazy-child composition, and a routing failure checklist are clearer in one compact answer.",
+      "theirStrengths": [
+        "It is a focused router tutorial with more space for routes, outlets, and configuration detail."
+      ],
+      "theirGaps": [
+        "It is less compact and less interview-shaped than a short trivia answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Routing debug checklist",
+          "The highest-signal routing bugs are missing outlets, redirect loops, broken deep links, and routes blocked by guards or never-completing resolvers."
+        ],
+        "followUpConfusion": [
+          "RouterOutlet placement must mirror the tree",
+          "Angular routing is a route tree, not just flat path-to-component matching."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The guide also frames routing around real app navigation and outlet composition, but our page is now more direct about blank screens, redirect loops, resolver hangs, and deep-link failures."
+        ],
+        "actionableExamples": [
+          "As a dedicated router guide, it walks through more concrete routing examples than our compact answer."
+        ],
+        "followUpConfusion": [
+          "It covers routes, paths, and outlets in depth, but our page now explains more explicitly how outlet placement maps to the activated route tree."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one named-outlet or relative-navigation example if we want to beat a long-form router guide on pure example density."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "contentId": "web-performance-optimize-load-time",
+  "tech": "javascript",
+  "query": "how do you optimize a web page load time interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Web performance",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Performance",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's web performance overview is the strongest canonical baseline for load time, runtime responsiveness, measurement, and perceived performance.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN is the broader portal, but our page is now better for this specific interview question because it shows the concrete LCP-to-INP trade-off and adds a direct lab-versus-field measurement distinction plus a RUM snippet.",
+      "theirStrengths": [
+        "It covers web performance as both objective measurement and user experience, with broad guidance across latency, loading, and responsiveness."
+      ],
+      "theirGaps": [
+        "It is more of a portal and reference hub than a short interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "One common failure mode is fixing LCP with image and CSS work, then discovering hydration still hurts INP on real devices."
+        ],
+        "followUpConfusion": [
+          "Lab tools explain why a page is slow. Field data tells you whether real users actually improved after the release."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN is broad on performance outcomes, but our page is now more concrete about a common product trade-off where LCP improves while INP still fails."
+        ],
+        "actionableExamples": [
+          "It points to many concrete optimization guides and measurement APIs, so it still has broader reference depth than our compact answer."
+        ],
+        "followUpConfusion": [
+          "Our answer now separates lab diagnosis from field validation more explicitly, which is a common follow-up gap in interview answers."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one PerformanceObserver or long-task example so the page includes a lower-level measurement snippet beyond web-vitals."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Front End Performance Techniques",
+      "url": "https://www.greatfrontend.com/blog/front-end-performance-techniques",
+      "category": "tutorial_reference",
+      "selectionReason": "This GreatFrontEnd article is directly relevant to frontend load-time optimization and covers practical techniques such as code splitting, dynamic imports, preloading, and compression.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd offers a useful checklist of techniques, but our page is stronger on prioritization: starting from bottlenecks, mapping fixes to Core Web Vitals, and warning against optimizing one metric while regressing another.",
+      "theirStrengths": [
+        "It covers many practical front-end performance techniques and implementation ideas."
+      ],
+      "theirGaps": [
+        "It is more checklist-oriented and less explicit about critical-path diagnosis and trade-offs between metrics."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "the right answer is not one trick but a debug process: find what blocks rendering, what ships too many bytes, and what hurts LCP or INP before choosing the next optimization."
+        ],
+        "followUpConfusion": [
+          "Do not start with exotic micro-optimizations before you have a baseline and top bottleneck."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article lists relevant techniques, but our page is more explicit about choosing optimizations from measured symptoms rather than applying a generic checklist."
+        ],
+        "actionableExamples": [
+          "Both pages now include concrete implementation directions, and our cache-header example makes the criterion stay close rather than one-sided."
+        ],
+        "followUpConfusion": [
+          "Our answer is more explicit about LCP versus INP trade-offs, repeat-visit caching, and why measurement must precede micro-optimization."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one route-level code-splitting example to complement the resource-hints, image, and cache-header examples."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Learn Performance",
+      "url": "https://web.dev/learn/performance",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev's performance course is a strong broad competitor because it connects loading, rendering, metrics, and debugging into one learning path.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "web.dev remains broader as a performance curriculum, but our page now wins this comparison because it gives a sharper worked scenario for the interview intent: cold-load blockers, repeat-visit cache behavior, and the LCP-improves-but-INP-still-fails trade-off.",
+      "theirStrengths": [
+        "It gives a broader and deeper performance curriculum covering metrics, loading, rendering, images, fonts, and tooling."
+      ],
+      "theirGaps": [
+        "It is a course rather than an interview-sized answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A cold-load waterfall shows 220 KB of render-blocking CSS, an oversized hero image, and a delayed application bundle."
+        ],
+        "followUpConfusion": [
+          "First visits are usually bottlenecked by bytes and blockers; repeat visits depend more on cache headers, immutable assets, and whether users must redownload unchanged code."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page now anchors the performance discussion in a worked cold-load and repeat-visit scenario instead of staying at the course level."
+        ],
+        "actionableExamples": [
+          "It gives a much broader set of performance techniques and measurement examples than our compact answer."
+        ],
+        "followUpConfusion": [
+          "Our page now distinguishes first-visit critical-path work from repeat-visit cache wins more explicitly, which makes the follow-up path easier to explain."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one example where a render-blocking CSS fix improves LCP but hydration still hurts INP."
+        ],
+        "actionableExamples": [
+          "Add a short measurement checklist naming Lighthouse, DevTools waterfall, and field Core Web Vitals together."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

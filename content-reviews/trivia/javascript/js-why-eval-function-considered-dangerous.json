@@ -2,7 +2,7 @@
   "contentId": "js-why-eval-function-considered-dangerous",
   "tech": "javascript",
   "query": "why is eval dangerous javascript",
-  "reviewedAt": "2026-04-05",
+  "reviewedAt": "2026-04-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "seo_primary_keyword",
@@ -16,37 +16,41 @@
       "category": "canonical_docs",
       "selectionReason": "MDN is the canonical competitor for `eval()`, especially around security, scope, and safer replacements.",
       "verdicts": {
-        "realWorldUseCases": "tie",
-        "actionableExamples": "tie",
-        "followUpConfusion": "theirs"
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
       },
+      "winReason": "MDN remains the broader reference, but our page now wins this interview-sized comparison because it adds a sharper same-origin attack path and explicit before/after replacements for bracket access and JSON.parse.",
       "theirStrengths": [
         "It covers arbitrary code execution, CSP restrictions, and safer alternatives in detail."
       ],
       "theirGaps": [
         "It is more reference-style and less aggressively framed around interview-grade risk language."
       ],
-      "ourEvidence": {},
-      "theirEvidence": {
+      "ourEvidence": {
         "realWorldUseCases": [
-          "MDN already explains code execution risk and safer alternatives, so the practical criterion stays close."
+          "<code>eval()</code> turns data into executable code. In production that creates injection risk, CSP friction, and runtime behavior that is much harder to debug or optimize. In the browser, a query param, CMS field, or localStorage value can become same-origin script with DOM access and user-session privileges."
         ],
         "actionableExamples": [
-          "Its replacements such as bracket accessors keep the example criterion close."
+          "console.log(user[field]);"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already explains code-execution risk, but our page is now sharper on the browser-origin attack path from untrusted data to executable code."
+        ],
+        "actionableExamples": [
+          "MDN has solid safer-replacement guidance, while our page now adds one compact before/after example for both bracket access and JSON.parse."
         ],
         "followUpConfusion": [
-          "MDN answers more of the likely next questions around CSP, dynamic property access, and safer replacement patterns."
+          "MDN is still broader on related reference details, so the advanced follow-up set remains close."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Keep the attack-surface framing, but add one concrete frontend path from untrusted data to executable code."
-        ],
-        "actionableExamples": [
-          "Add one explicit before/after example replacing `eval` with bracket access or `JSON.parse`."
-        ],
+        "realWorldUseCases": [],
+        "actionableExamples": [],
         "followUpConfusion": [
-          "Add one short follow-up list of safe replacements grouped by use case."
+          "Add one short note on eval-like alternatives such as the Function constructor if we want a broader advanced follow-up set."
         ]
       }
     },
@@ -60,7 +64,7 @@
         "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
-      "winReason": "Our page is tighter on CSP, optimizer cost, and production predictability, while DigitalOcean stays more general.",
+      "winReason": "Our page is tighter on same-origin attack surface, CSP, and runtime predictability, while DigitalOcean stays more general.",
       "theirStrengths": [
         "It calls out malicious input, performance cost, and the small class of metaprogramming cases where `eval` still appears."
       ],
@@ -69,27 +73,27 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Explain eval through the security pitfall lens: it turns data into code, expands injection risk, conflicts with CSP expectations, and makes production debugging or optimization much harder."
+          "<code>eval()</code> turns data into executable code. In production that creates injection risk, CSP friction, and runtime behavior that is much harder to debug or optimize. In the browser, a query param, CMS field, or localStorage value can become same-origin script with DOM access and user-session privileges."
         ],
         "followUpConfusion": [
-          "A strong interview answer is simple: eval turns data into code, so it expands attack surface and reduces predictability."
+          "JavaScript engines optimize code when structure is predictable. <code>eval</code> adds dynamic unknown code paths, which can force conservative assumptions and reduce optimization opportunities in surrounding scope."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "DigitalOcean covers malicious input and performance cost, but it is lighter on CSP and broader runtime predictability."
+          "DigitalOcean covers malicious input and performance cost, but our page now connects that risk more directly to same-origin browser privileges."
         ],
         "actionableExamples": [
-          "Its examples of risky `eval` usage are concrete enough that the example criterion stays close."
+          "Its examples of risky eval usage are concrete enough that the example criterion stays close."
         ],
         "followUpConfusion": [
-          "Our page does a better job connecting the security answer to CSP and optimization side effects."
+          "Our page does a better job connecting the security answer to CSP and engine-optimization side effects."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
         "actionableExamples": [
-          "Add one tiny code example that replaces `eval` with a safer data-driven alternative."
+          "Add one explicit function-dispatch replacement for user-selected formulas if we want a larger example edge over general tutorials."
         ],
         "followUpConfusion": []
       }
@@ -100,10 +104,11 @@
       "category": "community_qna",
       "selectionReason": "This thread is a direct community-Q&A competitor for the exact search intent behind the question.",
       "verdicts": {
-        "realWorldUseCases": "tie",
+        "realWorldUseCases": "ours",
         "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
+      "winReason": "The Stack Overflow thread covers the classic warnings, but our page now wins this comparison because it turns them into a sharper browser-security mental model with cleaner grouped replacements.",
       "theirStrengths": [
         "It covers the two classic concerns clearly: code injection and performance."
       ],
@@ -111,27 +116,28 @@
         "It is an answer thread, so the reasoning is less consolidated than a purpose-built editorial page."
       ],
       "ourEvidence": {
+        "realWorldUseCases": [
+          "A rules engine receives a string from an admin panel and runs it with <code>eval</code>. A malformed or malicious rule can crash checkout logic or expose sensitive browser data because the payload now executes as code inside your origin, not as inert data."
+        ],
         "followUpConfusion": [
-          "JavaScript engines optimize code when structure is predictable. eval adds dynamic unknown code paths, which can force conservative assumptions and reduce optimization opportunities in surrounding scope."
+          "JavaScript engines optimize code when structure is predictable. <code>eval</code> adds dynamic unknown code paths, which can force conservative assumptions and reduce optimization opportunities in surrounding scope."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "The Stack Overflow thread clearly mentions code injection and performance, so the practical criterion stays close."
+          "The Stack Overflow thread clearly mentions code injection and performance, but our page now describes the browser-origin consequence more concretely."
         ],
         "actionableExamples": [
-          "Its examples are practical enough that the example criterion stays close."
+          "Its examples are practical enough that the example criterion remains close."
         ],
         "followUpConfusion": [
-          "Our page is clearer on the next question of why `eval` affects both security policy and engine optimization."
+          "Our page is clearer on the next question of why eval affects both security policy and engine optimization."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one sharper sentence that connects `eval` to a browser-origin attack path rather than only to generic 'risk'."
-        ],
+        "realWorldUseCases": [],
         "actionableExamples": [
-          "Keep one replacement example so the page does not rely only on reasoning."
+          "Add one tiny before/after example for allowlisted expression parsing if we want a stronger alternative-pattern edge over community threads."
         ],
         "followUpConfusion": []
       }

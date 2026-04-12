@@ -1,0 +1,160 @@
+{
+  "contentId": "react-lifting-state-up",
+  "tech": "react",
+  "query": "React lifting state up interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Sharing State Between Components",
+      "url": "https://react.dev/learn/sharing-state-between-components",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React page for lifting state, single source of truth, and coordinating sibling components.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official page still has the canonical worked example, but our answer is now stronger on the production bug framing and the follow-up decision interviewers ask next: when to keep state local, when to lift it, and when you are over-lifting and should reach for context or a reducer instead.",
+      "theirStrengths": [
+        "It is the official and clearest worked example of lifting state to a common parent."
+      ],
+      "theirGaps": [
+        "It is tutorial-first rather than optimized for short interview phrasing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "two sibling components both need the same value, but each starts keeping its own copy. Once those copies drift, one sibling shows stale data while the other reflects the latest edit."
+        ],
+        "followUpConfusion": [
+          "Use Context / reducer / store",
+          "The follow-up decision interviewers usually ask next"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs use a shared Accordion example to show sibling coordination and single source of truth."
+        ],
+        "actionableExamples": [
+          "They provide a fuller worked example of lifting state than our current summary page."
+        ],
+        "followUpConfusion": [
+          "They also explain controlled versus uncontrolled patterns in the context of shared state, so this criterion stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one concrete sibling-sync bug where two inputs drift until state is lifted."
+        ],
+        "actionableExamples": [
+          "Add a before-and-after example that moves duplicate child state into a parent."
+        ],
+        "followUpConfusion": [
+          "Add one short note on when not to lift state further and when Context is a better next step."
+        ]
+      }
+    },
+    {
+      "label": "State Design in React Interviews",
+      "url": "https://www.greatfrontend.com/react-interview-playbook/react-state-design",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's state design guide is directly relevant because lifting state up is part of deciding state ownership and scope in interviews.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers state placement well, but our page is now more concrete on the exact shared-state bug that lifting fixes and on the follow-up boundary between lifting, prop drilling, and moving to context/store.",
+      "theirStrengths": [
+        "It is interview-oriented and directly about choosing state ownership boundaries."
+      ],
+      "theirGaps": [
+        "It covers broader state-design questions beyond this one pattern."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Without lifting, a slider and numeric input might each own their own local state and slowly drift apart after validation, formatting, or async updates."
+        ],
+        "followUpConfusion": [
+          "Keep state local",
+          "Lift state up",
+          "Use Context / reducer / store"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The guide addresses how to place shared state and avoid duplication, so the real-world criterion is close."
+        ],
+        "actionableExamples": [
+          "As a dedicated state-design page, it gives more process around where state should live."
+        ],
+        "followUpConfusion": [
+          "It also frames the trade-off between local state, lifted state, and broader state solutions, so this remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one case where lifting state too far up creates prop-drilling and rerender costs."
+        ],
+        "actionableExamples": [
+          "Add a concrete common-parent example with callbacks flowing down to children."
+        ],
+        "followUpConfusion": [
+          "Add one explicit follow-up about when Context or a reducer becomes cleaner than more lifting."
+        ]
+      }
+    },
+    {
+      "label": "Lifting State Up in ReactJS",
+      "url": "https://www.geeksforgeeks.org/reactjs/lifting-state-up-in-reactjs/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a focused tutorial reference with concrete examples of moving shared state into a common ancestor.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The tutorial still has more step-by-step detail, but our page is now stronger on the bug-first rationale for lifting state and on the decision framework for not lifting it higher than necessary.",
+      "theirStrengths": [
+        "It is narrowly focused on the exact topic and includes step-by-step examples."
+      ],
+      "theirGaps": [
+        "It is more tutorial/reference oriented than concise interview delivery."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "After lifting, both children simply read the parent value and send updates upward, so you test one state transition instead of reconciling two competing copies."
+        ],
+        "followUpConfusion": [
+          "Keep state as high as necessary, but as low as possible — avoid globalizing everything."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial frames lifting state as the fix for inconsistent sibling data and duplicated state."
+        ],
+        "actionableExamples": [
+          "It includes more explicit step-by-step examples of moving state to a common parent."
+        ],
+        "followUpConfusion": [
+          "It covers why sibling components cannot coordinate by themselves and why the parent becomes the shared owner, so the follow-up criterion stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a scenario with two filters or tabs that share a single selection state."
+        ],
+        "actionableExamples": [
+          "Add a simple before-and-after code example instead of only prose trade-offs."
+        ],
+        "followUpConfusion": [
+          "Add one note on over-lifting state and avoiding unnecessary global state."
+        ]
+      }
+    }
+  ]
+}

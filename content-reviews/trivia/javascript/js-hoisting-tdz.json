@@ -1,0 +1,145 @@
+{
+  "contentId": "js-hoisting-tdz",
+  "tech": "javascript",
+  "query": "javascript temporal dead zone interview question",
+  "reviewedAt": "2026-04-08",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN let statement",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's let reference is the canonical docs source for TDZ behavior and the semantics around lexical declarations.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on TDZ behavior and answers the semantics of lexical declarations in detail."
+      ],
+      "theirGaps": [
+        "It is less interview-oriented than our trivia format."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That blocked window is the Temporal Dead Zone (TDZ), and it is the first thing to debug when you see Cannot access X before initialization."
+        ],
+        "followUpConfusion": [
+          "typeof is safe for undeclared globals, but not for TDZ variables."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains lexical-declaration semantics thoroughly, while our page now frames the issue more directly as a debugging diagnosis."
+        ],
+        "actionableExamples": [
+          "Its reference examples are still strong enough that the actionable criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page now separates undeclared identifiers, TDZ, and typeof behavior more explicitly in one place."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one import-cycle or module-initialization example so the actionable lead is clearer than a reference page."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN remains the canonical let reference, but our page now does more to frame TDZ as a first debugging move and to separate it from undeclared-name errors."
+    },
+    {
+      "label": "GreatFrontEnd let / var / const",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-the-differences-between-javascript-variables-created-using-let-var-or-const",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep answer that covers let/var/const differences and TDZ-adjacent behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is closely aligned with the interview intent and naturally includes the TDZ-adjacent comparison that interviewers ask next."
+      ],
+      "theirGaps": [
+        "It is broader across let/var/const differences, not solely focused on TDZ debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A startup file reads config before the later const config = ... line executes, or a class is used before initialization. That is TDZ, not “JavaScript forgot to hoist.”"
+        ],
+        "followUpConfusion": [
+          "typeof is safe for undeclared globals, but not for TDZ variables."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd covers the broader comparison well, while our page now centers the TDZ failure mode more explicitly."
+        ],
+        "actionableExamples": [
+          "Its comparison format remains useful, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page now answers the TDZ-versus-undeclared follow-up more directly than a broader var/let/const comparison."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one side-by-side snippet with var, let, const, and class access-before-init so the worked-example gap is clearer."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is relevant on the broader let/var/const comparison, but our page now addresses TDZ-specific debugging and the typeof trap more directly."
+    },
+    {
+      "label": "GeeksforGeeks Temporal Dead Zone in JavaScript",
+      "url": "https://www.geeksforgeeks.org/javascript/what-is-temporal-dead-zone-in-es6/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a mainstream tutorial-style explanation for TDZ and a reasonable comparison point for introductory readers.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more explicit about the first debugging move when TDZ errors appear, while GeeksforGeeks stays more introductory.",
+      "theirStrengths": [
+        "It gives a straightforward explanation of TDZ for beginner readers."
+      ],
+      "theirGaps": [
+        "It is lighter on the concrete debugging rule and on the specific Cannot access before initialization framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That blocked window is the Temporal Dead Zone (TDZ), and it is the first thing to debug when you see Cannot access X before initialization."
+        ],
+        "followUpConfusion": [
+          "If you see ReferenceError: Cannot access X before initialization, think TDZ first, not typo first."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks explains TDZ correctly, but it does not frame it as strongly as a first-debug mental model."
+        ],
+        "actionableExamples": [
+          "Its simple examples are adequate enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It is less explicit about how to distinguish TDZ failures from other declaration or typo issues."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one more compact example involving a block or module initialization path, not only a local declaration line."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

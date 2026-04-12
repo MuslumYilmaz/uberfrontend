@@ -1,0 +1,149 @@
+{
+  "contentId": "react-prevent-unnecessary-rerenders",
+  "tech": "react",
+  "query": "Prevent unnecessary rerenders in React interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "memo",
+      "url": "https://react.dev/reference/react/memo",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React API reference for memo-based rerender avoidance and its trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The memo reference is authoritative, but our page is stronger on the higher-level workflow: profile first, look for context fanout and unstable props, and avoid memoization when it adds more complexity than it removes.",
+      "theirStrengths": [
+        "It is the official reference for when memo can skip child rerenders."
+      ],
+      "theirGaps": [
+        "It is narrower than a full rerender-debug workflow."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "In production, unnecessary rerenders usually come from unstable object or function props, context fanout, or state stored too high in the tree."
+        ],
+        "followUpConfusion": [
+          "Memoization is a pitfall when you add it before profiling."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The memo docs explain when prop equality can skip work, but they are less broad about context blast radius and state placement."
+        ],
+        "actionableExamples": [
+          "They include clear examples of memo and prop changes, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that memoization can hurt if added before profiling and can hide stale-closure problems."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one measured-profiler example that compares memoized and non-memoized children."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "React Hooks for Interviews",
+      "url": "https://www.greatfrontend.com/react-interview-playbook/react-hooks",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's hooks playbook is the most relevant interview-prep comparator because rerender prevention usually turns into memo, callback, and dependency questions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The hooks playbook is useful, but our answer is more directly organized around a profiling-first workflow, context fanout, and why blanket memoization creates new bugs and cognitive overhead.",
+      "theirStrengths": [
+        "It is directly aligned with interview prep on hooks, memoization, and performance."
+      ],
+      "theirGaps": [
+        "It is broader than this specific rerender-prevention question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Good answers start with profiling, then choose the smallest fix instead of scattering React.memo(), useMemo(), and useCallback() everywhere."
+        ],
+        "followUpConfusion": [
+          "Use memo tools when they remove a measured bottleneck, not as a blanket rule."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The playbook covers memoization and hook patterns, but our page is more explicit about context fanout and state placement as rerender root causes."
+        ],
+        "actionableExamples": [
+          "Both pages include practical memoization guidance and examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer about when memoization hurts and why shallow comparison work can outweigh the rerender."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one context-splitting example next to the current useCallback example."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Memoization and React",
+      "url": "https://www.epicreact.dev/memoization-and-react",
+      "category": "tutorial_reference",
+      "selectionReason": "EpicReact is a strong performance tutorial source for memoization trade-offs and render-cost reasoning.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a focused teaching resource on memoization trade-offs in React."
+      ],
+      "theirGaps": [
+        "It is more tutorial-like than a short interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Broad context blast radius"
+        ],
+        "actionableExamples": [
+          "Inline callback pitfall"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is directly about when memoization is worth it and when it adds cost, so the real-world lens is close."
+        ],
+        "actionableExamples": [
+          "It offers more worked examples around memoization mechanics than our compact page."
+        ],
+        "followUpConfusion": [
+          "Both pages push back against blanket memoization and discuss trade-offs, so this criterion is effectively close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one example where a broad context value makes memoized children rerender anyway."
+        ],
+        "actionableExamples": [
+          "Add a before-and-after example showing why inline callbacks keep a memoized child hot."
+        ],
+        "followUpConfusion": [
+          "Keep one extra production note comparing deferred rendering versus memoization on very large lists."
+        ]
+      },
+      "winReason": "Our page now pairs profiling-first guidance with concrete context-blast-radius and inline-callback examples, which makes it stronger on use-cases and actions while the transition-versus-memo follow-up remains close."
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "contentId": "js-block-scoped-or-function-scoped",
   "tech": "javascript",
   "query": "javascript block scope vs function scope var let const interview question",
-  "reviewedAt": "2026-04-05",
+  "reviewedAt": "2026-04-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "seo_primary_keyword",
@@ -15,38 +15,42 @@
       "category": "canonical_docs",
       "selectionReason": "MDN is the strongest canonical reference for block scope, TDZ behavior, and loop binding semantics.",
       "verdicts": {
-        "realWorldUseCases": "tie",
+        "realWorldUseCases": "ours",
         "actionableExamples": "tie",
-        "followUpConfusion": "theirs"
+        "followUpConfusion": "ours"
       },
+      "winReason": "Our page now does a better job surfacing the real production traps and the exact interview follow-up about how TDZ fits into block scope, while MDN remains the broader reference.",
       "theirStrengths": [
         "It documents block scope, temporal dead zone behavior, and loop-binding semantics accurately."
       ],
       "theirGaps": [
         "It is keyword-reference material rather than a compact interview answer."
       ],
-      "ourEvidence": {},
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Strong answers compare `var`, `let`, and `const` side by side, show loop-capture and switch-case pitfalls, and explain how TDZ fits into block scope."
+        ],
+        "followUpConfusion": [
+          "Say it this way: JavaScript is function-scoped for <code>var</code> and block-scoped for <code>let</code>/<code>const</code>. TDZ is part of that block scope: the binding exists for the whole block, but you cannot use it until initialization runs."
+        ]
+      },
       "theirEvidence": {
         "realWorldUseCases": [
-          "MDN already covers loop bindings and scope visibility clearly enough that the practical difference is close."
+          "MDN covers loop bindings and scope visibility well, but our page now foregrounds switch-case and legacy-script production failures more directly."
         ],
         "actionableExamples": [
           "Its loop and block examples are concrete enough to keep the example criterion close."
         ],
         "followUpConfusion": [
-          "MDN goes deeper on TDZ and declaration semantics, so it resolves more long-tail follow-up questions than our short trivia."
+          "MDN goes deeper overall, but our page now answers the most likely interview follow-up about TDZ and block scope more directly."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one explicit switch-case or module-vs-script scope bug so the production angle is stronger than a keyword reference."
-        ],
+        "realWorldUseCases": [],
         "actionableExamples": [
-          "Add one compact before/after loop example that contrasts shared `var` binding with per-iteration `let` binding."
+          "Keep one extra compact before/after example only if this page needs a stronger example edge against MDN later."
         ],
-        "followUpConfusion": [
-          "Add one short note explaining how TDZ and block scope interact in interview follow-up questions."
-        ]
+        "followUpConfusion": []
       }
     },
     {
@@ -56,37 +60,41 @@
       "selectionReason": "GreatFrontEnd has a directly relevant interview-prep answer for the same var/let/const comparison.",
       "verdicts": {
         "realWorldUseCases": "tie",
-        "actionableExamples": "theirs",
-        "followUpConfusion": "tie"
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
       },
+      "winReason": "Our page now gives a tighter worked comparison for shared loop bindings and a clearer direct answer to the TDZ/block-scope follow-up that interviewers usually ask next.",
       "theirStrengths": [
         "It is directly aligned with the interview phrasing and likely includes a clean side-by-side comparison."
       ],
       "theirGaps": [
         "It is less obviously focused on switch-case pitfalls and module-vs-script behavior."
       ],
-      "ourEvidence": {},
+      "ourEvidence": {
+        "actionableExamples": [
+          "for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log('var', i), 0);\n}"
+        ],
+        "followUpConfusion": [
+          "Say it this way: JavaScript is function-scoped for <code>var</code> and block-scoped for <code>let</code>/<code>const</code>. TDZ is part of that block scope: the binding exists for the whole block, but you cannot use it until initialization runs."
+        ]
+      },
       "theirEvidence": {
         "realWorldUseCases": [
           "GreatFrontEnd targets the same interview framing, so the practical use-case criterion stays close."
         ],
         "actionableExamples": [
-          "Its side-by-side comparison format is likely stronger than our current shorter worked examples."
+          "GreatFrontEnd is still strong on concise comparison, but our page now includes a more explicit broken-versus-fixed loop example plus switch-case nuance."
         ],
         "followUpConfusion": [
-          "Our page mentions the shared-loop-binding trap, but the overall follow-up coverage is still close rather than clearly superior."
+          "Our page now directly answers the 'both or which one?' follow-up and ties TDZ back to block scope in one compact note."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [
-          "Make one switch-case or global-scope example more explicit so our page surfaces a bug GreatFrontEnd is less likely to foreground."
+          "Keep one module-vs-script example explicit so the practical angle stays differentiated from pure interview-prep competitors."
         ],
-        "actionableExamples": [
-          "Add one tiny table or code comparison that puts `var`, `let`, and `const` behavior side by side."
-        ],
-        "followUpConfusion": [
-          "Add one direct answer to the inevitable 'So is JavaScript block scoped or function scoped?' follow-up."
-        ]
+        "actionableExamples": [],
+        "followUpConfusion": []
       }
     },
     {
@@ -108,7 +116,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Strong answers explain loop behavior, closure bugs, switch-case pitfalls, and module-vs-script global scope differences."
+          "Strong answers compare `var`, `let`, and `const` side by side, show loop-capture and switch-case pitfalls, and explain how TDZ fits into block scope."
         ],
         "followUpConfusion": [
           "So the right interview answer is not one word. It is: 'Both, depending on declaration keyword.'"

@@ -1,0 +1,145 @@
+{
+  "contentId": "js-event-delegation",
+  "tech": "javascript",
+  "query": "javascript event delegation interview question",
+  "reviewedAt": "2026-04-08",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Event bubbling",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the closest canonical docs page because it covers propagation and event delegation in the same learning path.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It explains delegation through propagation mechanics and anchors the idea in standard DOM behavior."
+      ],
+      "theirGaps": [
+        "Delegation is part of a broader propagation lesson rather than the sole focus of the page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production/debug value is not just fewer listeners. It is surviving dynamic DOM updates, nested click targets, and propagation edge cases without silently handling the wrong element."
+        ],
+        "followUpConfusion": [
+          "Not every event is an ideal delegation candidate. focus/blur behave differently from click."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN shows delegation as practical DOM behavior, but our page is now more directly anchored to app-style dynamic-list bugs."
+        ],
+        "actionableExamples": [
+          "Its examples remain concrete enough that the actionable comparison stays close."
+        ],
+        "followUpConfusion": [
+          "MDN explains propagation well, while our page now answers nested-target, stopPropagation, and non-bubbling-event follow-ups more directly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one before/after snippet that contrasts per-item listeners with delegated handling on the same markup."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "Our page now focuses more directly on dynamic DOM, nested click targets, and propagation-edge-case debugging, while MDN teaches delegation inside a broader propagation lesson."
+    },
+    {
+      "label": "javascript.info Event delegation",
+      "url": "https://javascript.info/event-delegation",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info has one of the strongest tutorial pages dedicated specifically to event delegation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is focused specifically on delegation and includes concrete DOM examples that developers can copy."
+      ],
+      "theirGaps": [
+        "It is less explicitly framed around frontend-debug edge cases than our page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production/debug value is not just fewer listeners. It is surviving dynamic DOM updates, nested click targets, and propagation edge cases without silently handling the wrong element."
+        ],
+        "followUpConfusion": [
+          "Delegation depends on propagation; if a child calls stopPropagation(), the parent listener may never run."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info already uses strong menu and table scenarios, but our page now surfaces more explicit modern UI bug patterns."
+        ],
+        "actionableExamples": [
+          "Its worked examples are still detailed enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page now says more directly when delegation breaks because of nested targets, stopPropagation, or non-bubbling events."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one complete table/menu example where rows are inserted after listener registration to widen the actionable gap."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info remains a strong delegation tutorial, but our page is now stronger on nested-target bugs, stopPropagation edge cases, and accessibility-adjacent follow-ups."
+    },
+    {
+      "label": "GreatFrontEnd Event delegation",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-event-delegation",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep question about event delegation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page now pairs the concept with a nested-target closest() example and explicit propagation caveats, while GreatFrontEnd stays more definition-first.",
+      "theirStrengths": [
+        "It is tightly aligned with interview phrasing and stays focused on the delegation concept."
+      ],
+      "theirGaps": [
+        "It is lighter on nested-target and propagation-edge-case debugging than our shipped trivia."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production/debug value is not just fewer listeners. It is surviving dynamic DOM updates, nested click targets, and propagation edge cases without silently handling the wrong element."
+        ],
+        "actionableExamples": [
+          "const action = event.target.closest('button[data-action]');"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd explains why delegation helps, but it is lighter on a concrete nested-target production bug."
+        ],
+        "actionableExamples": [
+          "Its answer is concise, while our page now includes both a basic delegated list and a closest()-guarded production example."
+        ],
+        "followUpConfusion": [
+          "The overall follow-up comparison is still close because GreatFrontEnd stays tightly aligned with the interview concept."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on pointerenter or mouseenter-style events so the non-bubbling follow-up set is broader."
+        ]
+      }
+    }
+  ]
+}

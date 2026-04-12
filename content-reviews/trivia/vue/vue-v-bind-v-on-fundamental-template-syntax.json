@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-v-bind-v-on-fundamental-template-syntax",
+  "tech": "vue",
+  "query": "Vue v-bind vs v-on interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Template Syntax",
+      "url": "https://vuejs.org/guide/essentials/template-syntax.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue page for dynamic bindings, directive syntax, and how template expressions map to runtime behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official docs are authoritative on directive syntax, dynamic arguments, and core binding semantics."
+      ],
+      "theirGaps": [
+        "They are less explicit about the interview framing that treats v-bind and v-on as the two primitive bridges of the reactive loop."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Those two directives are “fundamental” because they are the main bridges between your reactive state and the rendered output."
+        ],
+        "followUpConfusion": [
+          "Everything else is either additional syntax around those primitives (like v-model ) or structural directives that still rely on them to express dynamic attributes and interactivity."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs clearly explain dynamic attribute binding and event handling, but they are less compact on why those two directives underpin most higher-level Vue patterns."
+        ],
+        "actionableExamples": [
+          "They include direct binding examples and directive syntax illustrations, so example strength remains close."
+        ],
+        "followUpConfusion": [
+          "The official page is lighter on the compile-to-VNode-props and v-model-as-sugar explanation that interviewers often ask next."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one even shorter example that pairs a bound prop and an event listener on the same component tag."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The official docs own the syntax reference, but our page is more interview-ready on the under-the-hood model: bindings become VNode props, events become listeners, and v-model is sugar on top."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because template syntax, bindings, and events are core fundamentals in Vue interviews.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong broad interview-prep resource with Vue fundamentals coverage and worked answers."
+      ],
+      "theirGaps": [
+        "The landing page is not dedicated to this exact directive pair, so it is lighter on the v-model and render-function follow-up."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Those two directives are “fundamental” because they are the main bridges between your reactive state and the rendered output."
+        ],
+        "followUpConfusion": [
+          "What happens under the hood Vue compiles templates into a render function that produces VNodes. v-bind becomes VNode props (including special handling for class / style and boolean props). v-on becomes event listener props like onClick ."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank clearly covers Vue fundamentals at a broad level, but it is less focused on this specific state-to-DOM and event-to-code bridge."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd emphasizes solutions and examples, the example bar stays competitive."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about compiled shape, VNode props, and why v-model is built from bind plus event listeners."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the pseudo-compiled render shape short so the page stays trivia-sized."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is more focused on the exact mental model behind v-bind and v-on and their relationship to v-model."
+    },
+    {
+      "label": "Vue.js Directives: A Beginner's Guide",
+      "url": "https://vueschool.io/articles/vuejs-tutorials/vue-js-directives-a-beginners-guide/",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a directive-focused article that is a strong tutorial comparator for binding and event syntax.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a direct directive-focused tutorial and therefore a good baseline for syntax examples."
+      ],
+      "theirGaps": [
+        "It is less explicit about the under-the-hood VNode model and the idea that most dynamic template behavior reduces to bind plus event."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "UI updates flow: user event ➜ state change ➜ DOM patch This is the main “reactive loop” in Vue apps"
+        ],
+        "actionableExamples": [
+          "v-model Compiles to a prop bind + an update listener"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article teaches directive usage well, but it is less focused on the bigger reactive-loop mental model."
+        ],
+        "actionableExamples": [
+          "It contains directive examples, but our page adds the tighter bind-plus-listener explanation around component props and v-model."
+        ],
+        "followUpConfusion": [
+          "Its follow-up depth is lighter on compile output and listener prop mapping."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one small clarification that component events still use the same listener model as DOM events."
+        ]
+      },
+      "winReason": "Vue School is a good directive primer, but our page is stronger on why these directives matter architecturally and how higher-level syntax compiles down to them."
+    }
+  ]
+}

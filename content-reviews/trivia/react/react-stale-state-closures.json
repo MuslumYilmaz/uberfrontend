@@ -1,0 +1,149 @@
+{
+  "contentId": "react-stale-state-closures",
+  "tech": "react",
+  "query": "React stale closures interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "State as a Snapshot",
+      "url": "https://react.dev/learn/state-as-a-snapshot",
+      "category": "canonical_docs",
+      "selectionReason": "This is the closest canonical React page for explaining render snapshots and why event handlers see state from a particular render.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official docs teach render snapshots clearly, but our page is more directly centered on stale-closure bugs in timers, async handlers, subscriptions, and the specific fixes interviewers ask for next.",
+      "theirStrengths": [
+        "It is the official baseline for the render-snapshot mental model behind stale closures."
+      ],
+      "theirGaps": [
+        "It is less explicitly bug-focused on intervals, async effects, and fix patterns."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Stale state in React closures is really a render-snapshot bug: each render creates new closures, and async code may keep reading an older one."
+        ],
+        "followUpConfusion": [
+          "The fix is not React is wrong; it is understanding when to use functional updates, refs, or correct dependencies."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain snapshot semantics well, but they are less centered on production bugs like intervals, delayed submits, and long-lived async handlers."
+        ],
+        "actionableExamples": [
+          "They include state snapshot examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up: which fix to choose between dependency updates, refs, and functional state updates."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit async submit example alongside the timer example."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "React Hooks for Interviews",
+      "url": "https://www.greatfrontend.com/react-interview-playbook/react-hooks",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's hooks playbook is directly relevant because stale closures usually surface in hook, dependency, and effect discussions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The hooks playbook is relevant, but our page is more explicitly organized around stale-closure incidents and the three practical fixes: dependencies, functional updates, and refs.",
+      "theirStrengths": [
+        "It is interview-oriented and covers hook pitfalls that lead into stale closure questions."
+      ],
+      "theirGaps": [
+        "It is broader and less concentrated on stale closures than a dedicated page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That is why intervals, delayed handlers, and effects sometimes log or submit outdated values."
+        ],
+        "followUpConfusion": [
+          "If you are updating state based on previous state, don’t read from the closure at all."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The playbook covers hook mistakes broadly, but our page is more focused on concrete stale-value incidents."
+        ],
+        "actionableExamples": [
+          "Both pages provide hook guidance and practical fixes, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our answer is more direct about choosing between functional updates, refs, and dependency corrections."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one subscription callback example that reads a stale prop or state value."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "How React Uses Closures to Avoid Bugs",
+      "url": "https://www.epicreact.dev/how-react-uses-closures-to-avoid-bugs",
+      "category": "tutorial_reference",
+      "selectionReason": "EpicReact has a strong dedicated article on closures, async timing, and why function components preserve the render-time snapshot.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It gives a detailed async bug walkthrough and shows exactly how closures preserve render-time values."
+      ],
+      "theirGaps": [
+        "It is a long-form article rather than a compact interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Worked async example: delayed submit + permission flow"
+        ],
+        "actionableExamples": [
+          "Keep the latest permission in a ref for long-lived async work"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article centers on an async stale-value bug and compares class and hook behavior in detail."
+        ],
+        "actionableExamples": [
+          "It contains more worked code examples and async timing walkthroughs than our current page."
+        ],
+        "followUpConfusion": [
+          "Both pages explain render snapshots and why async code can see older values, so this criterion remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one richer async example with a delayed submit or permission check, not only interval-style examples."
+        ],
+        "actionableExamples": [
+          "Add a before-and-after example using refs to avoid stale callbacks."
+        ],
+        "followUpConfusion": [
+          "Keep one extra one-liner that contrasts intentional snapshot behavior with true stale-state bugs."
+        ]
+      },
+      "winReason": "Our page now covers a delayed-submit permission flow and a ref-based latest-state repair in a compact interview format, while the broader closure follow-up remains close."
+    }
+  ]
+}

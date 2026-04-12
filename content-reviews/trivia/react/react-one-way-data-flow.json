@@ -1,0 +1,152 @@
+{
+  "contentId": "react-one-way-data-flow",
+  "tech": "react",
+  "query": "React one way data flow interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Sharing State Between Components",
+      "url": "https://react.dev/learn/sharing-state-between-components",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React page for single source of truth and shared state ownership, which is the closest official baseline for one-way data flow.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official docs teach single-source-of-truth mechanics through UI examples, but our page is stronger on multi-writer production bugs, implicit two-way coupling, and why React's rendering model depends on explicit ownership.",
+      "theirStrengths": [
+        "It is authoritative on shared state, controlled components, and single source of truth."
+      ],
+      "theirGaps": [
+        "It is more tutorial-shaped than production-debug shaped."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That discipline prevents multi-writer bugs, makes updates traceable in production, and keeps React’s render/reconciliation model safe to restart or interrupt."
+        ],
+        "followUpConfusion": [
+          "Two-way binding often means multiple places can write to the same piece of data (child + parent, or UI + model)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain single source of truth through shared accordion state, but they are less explicit about multi-writer production failures."
+        ],
+        "actionableExamples": [
+          "They include a full working example of lifting state and coordinating sibling panels."
+        ],
+        "followUpConfusion": [
+          "The page explains state ownership well, but our answer more directly names prop mutation and shared mutable objects as the follow-up failure mode."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one short before-and-after example where duplicated child state drifts and lifting it fixes the bug."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Thinking Declaratively in React Interviews",
+      "url": "https://www.greatfrontend.com/react-interview-playbook/react-thinking-declaratively",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's declarative React playbook is directly relevant because one-way data flow is usually taught through state ownership and declarative updates in interviews.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The declarative playbook is still useful, but our page is now more concrete on the exact failure mode one-way flow prevents: sibling drift, shared mutable data, and the distinction between one-way ownership and ordinary prop drilling.",
+      "theirStrengths": [
+        "It is interview-oriented and frames React through declarative state-driven UI rules."
+      ],
+      "theirGaps": [
+        "It is broader than this one concept and therefore less compressed around one-way data flow specifically."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If the preview child keeps its own local copy while the form child also writes to a different copy, the UI drifts: one part of the screen shows stale text, and save submits something else."
+        ],
+        "followUpConfusion": [
+          "One-way flow is not the same as no prop drilling."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The playbook relates declarative React to predictable UI state, so the real-world lens is close."
+        ],
+        "actionableExamples": [
+          "It provides more interview-oriented framing around declarative state patterns than our shorter answer."
+        ],
+        "followUpConfusion": [
+          "Both pages address why state should have a single owner and why children should not push data sideways."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one bug example where sibling components both try to own the same draft value."
+        ],
+        "actionableExamples": [
+          "Add a concrete example of callback-up, props-down flow with a shared parent."
+        ],
+        "followUpConfusion": [
+          "Add one line distinguishing one-way flow from merely passing props through many layers."
+        ]
+      }
+    },
+    {
+      "label": "Prop Immutability",
+      "url": "https://reactstyleguide.com/rules/prop-immutability/",
+      "category": "tutorial_reference",
+      "selectionReason": "This style-guide rule is a strong tutorial reference because it links one-way data flow to immutable props and state ownership.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The style guide is strong on prop mutation, but our page now wins the broader one-way-flow lens: sibling drift, multi-writer state, and the distinction between ownership and prop drilling are more explicit.",
+      "theirStrengths": [
+        "It gives concrete broken-versus-fixed examples around mutating props."
+      ],
+      "theirGaps": [
+        "It is centered on an immutability rule, not the broader one-way-flow mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That discipline prevents multi-writer bugs, makes updates traceable in production, and keeps React’s render/reconciliation model safe to restart or interrupt."
+        ],
+        "followUpConfusion": [
+          "In React, it typically shows up as mutating props or sharing mutable objects across components.",
+          "Prop drilling can be annoying, but it is a different problem from two-way writes or shared mutable data."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The style guide discusses bugs caused by prop mutation, which is close to the one-way-flow discussion."
+        ],
+        "actionableExamples": [
+          "It includes focused broken and fixed code examples around prop mutation."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer about why one-way flow matters beyond props alone: multi-writer state and concurrency-safe rendering."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one example where both parent and child can write the same data and state drifts."
+        ],
+        "actionableExamples": [
+          "Add a concrete anti-pattern example with a child mutating a shared object then show the setter-based fix."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

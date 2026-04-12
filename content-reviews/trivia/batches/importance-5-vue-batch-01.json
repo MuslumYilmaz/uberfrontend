@@ -1,0 +1,16 @@
+{
+  "batchId": "importance-5-vue-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "vue", "id": "vue-v-for-keys" },
+    { "tech": "vue", "id": "vue-v-show-vs-v-if-dom-lifecycle" },
+    { "tech": "vue", "id": "vue-computed-properties" },
+    { "tech": "vue", "id": "vue-computed-vs-watchers" },
+    { "tech": "vue", "id": "vue-lifecycle-hooks" },
+    { "tech": "vue", "id": "vue-v-bind-v-on-fundamental-template-syntax" },
+    { "tech": "vue", "id": "vue-child-mutates-prop-directly" },
+    { "tech": "vue", "id": "vue-composition-api" },
+    { "tech": "vue", "id": "vue-slots-default-named-scoped-slot-props" },
+    { "tech": "vue", "id": "vue-ref-vs-reactive-difference-traps" }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "contentId": "react-strictmode-double-invoke-effects",
+  "tech": "react",
+  "query": "React StrictMode double invoke effects interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<StrictMode>",
+      "url": "https://react.dev/reference/react/StrictMode",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of what StrictMode checks do, including extra renders, extra effect runs, and missing cleanup detection.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative explanation of StrictMode behavior and includes concrete examples for impure rendering and missing cleanup."
+      ],
+      "theirGaps": [
+        "It covers the whole StrictMode surface area, not just the effect-double-invoke interview trap."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "Extra render checks vs extra effect re-runs"
+        ],
+        "actionableExamples": [
+          "Worked fetch example: duplicate request vs cleanup-safe request"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs connect StrictMode to real bugs like mutating props, duplicate chat connections, and missing cleanup, so the incident lens is already strong."
+        ],
+        "actionableExamples": [
+          "It includes multiple worked examples across render purity, effect cleanup, and scoped StrictMode behavior."
+        ],
+        "followUpConfusion": [
+          "Our answer is more directly focused on the exact interview follow-up: why effects are re-run, why dev-only remounts matter, and why this is not a production performance regression."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one extra route-level or navigation-level example if future competitor coverage broadens."
+        ],
+        "actionableExamples": [
+          "Add a worked example that contrasts a duplicate fetch with an AbortController-based cleanup."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The reference page covers the full StrictMode surface, but our answer is now stronger on concrete cleanup-safe fetch examples and on separating extra render checks from extra effect re-runs."
+    },
+    {
+      "label": "What is React strict mode and what are its benefits?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-react-strict-mode-and-what-are-its-benefits",
+      "category": "interview_prep",
+      "selectionReason": "This GreatFrontEnd quiz page is the direct interview-prep comparator for StrictMode benefits and dev-only checks.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "GreatFrontEnd gives a solid baseline definition, but our page is much more concrete about duplicate side effects, missing cleanup, remount safety, and effect-specific debugging patterns.",
+      "theirStrengths": [
+        "It is concise and interview-oriented, with the core definition and benefits of StrictMode."
+      ],
+      "theirGaps": [
+        "It stays generic on benefits and does not dig as deeply into effect-specific failures like duplicate listeners, analytics calls, or remount replay."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The practical value is finding missing cleanup, duplicate subscriptions, repeated network calls, and non-idempotent side effects before those same assumptions break under remounts, navigation churn, or concurrent-style replay."
+        ],
+        "actionableExamples": [
+          "analytics.track('page_view');"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page explains general benefits like unsafe lifecycle warnings and unexpected side-effect detection, but it is less explicit about concrete effect failures than our answer."
+        ],
+        "actionableExamples": [
+          "It shows how to enable StrictMode, but our page adds multiple bug examples, cleanup code, and effect-specific remediation patterns."
+        ],
+        "followUpConfusion": [
+          "Both pages make it clear that StrictMode is a dev-only tool and not a production UI feature."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short line distinguishing extra render checks from extra effect re-runs so the StrictMode surface area is easier to separate."
+        ]
+      }
+    },
+    {
+      "label": "Why your useEffect is firing twice in React 18",
+      "url": "https://www.upgradejs.com/blog/javascript/react/updates-to-strict-mode-in-react-18.html",
+      "category": "tutorial_reference",
+      "selectionReason": "This article is a strong practical reference for React 18's dev-only remount behavior, cleanup, duplicate requests, and abortable effects.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is highly practical about cleanup, remount behavior, duplicate network calls, and abortable async work."
+      ],
+      "theirGaps": [
+        "It is longer and less compressed for interview delivery than a trivia answer."
+      ],
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article frames the bug through A to B to A navigation, duplicate requests, memory leaks, and remount churn, which is a very strong production lens."
+        ],
+        "actionableExamples": [
+          "It includes concrete cleanup patterns for event listeners, mounted flags, and AbortController-based fetch cancellation."
+        ],
+        "followUpConfusion": [
+          "Both pages explain that the behavior is dev-only and tied to remount safety rather than a production runtime bug."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one user-navigation or route-switch scenario so the remount problem feels less abstract."
+        ],
+        "actionableExamples": [
+          "Add an AbortController cleanup example next to the resize-listener example."
+        ],
+        "followUpConfusion": [
+          "Keep one concise line connecting the dev-only remount check to concurrent-safe side effects."
+        ]
+      },
+      "winReason": "Our page now matches the route-switch/remount framing and adds a concrete AbortController fix, so it is stronger on real use-cases and worked cleanup examples while the broader dev-only replay explanation stays close.",
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Why the route-switch scenario matters"
+        ],
+        "actionableExamples": [
+          "Abort the old request when StrictMode remounts or the route changes"
+        ]
+      }
+    }
+  ]
+}

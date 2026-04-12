@@ -1,0 +1,139 @@
+{
+  "contentId": "web-accessibility-make-page-accessible",
+  "tech": "html",
+  "query": "how would you make a page accessible interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "What is accessibility?",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility/What_is_accessibility",
+      "category": "canonical_docs",
+      "selectionReason": "This is the closest MDN canonical page for the accessibility topic and why semantics, assistive technology, and inclusive design matter.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on what accessibility is and why the browser accessibility tree and semantics matter."
+      ],
+      "theirGaps": [
+        "The page is broader and less directly structured as a production review workflow for checking one page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Accessibility is not a last-minute checklist item. In production it is a review workflow"
+        ],
+        "actionableExamples": [
+          "Is focus trapped correctly while open and returned to the trigger when closed?"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains why accessibility matters well, but our page is more directly organized as a production audit workflow."
+        ],
+        "actionableExamples": [
+          "Our answer now includes tighter manual test prompts and audit order examples than the broader foundational page."
+        ],
+        "followUpConfusion": [
+          "MDN still covers important conceptual follow-ups around semantics and assistive technologies, so the follow-up criterion remains close."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "Keep the manual-versus-automated tooling distinction visible so the workflow stays balanced."
+        ]
+      },
+      "winReason": "MDN is the broader accessibility foundation, but our page is more useful as an interview answer because it becomes a concrete page-review workflow with manual test prompts and common production bugs."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because accessibility, semantics, and form or keyboard concerns are core HTML interview areas.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to a single accessibility review workflow."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Accessibility is not a last-minute checklist item. In production it is a review workflow"
+        ],
+        "followUpConfusion": [
+          "Automated checks can catch missing labels, low contrast, and broken ARIA attributes, but they cannot reliably judge whether alt text is actually useful"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is clearly relevant for HTML interview prep, but the landing page is less focused on one explicit accessibility audit sequence."
+        ],
+        "actionableExamples": [
+          "Because it is a worked-answer interview source, the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page now separates manual checks from automated checks more clearly and gives more direct prompts for what to test next."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the audit-order table and manual spot checks close together so the actionable flow stays obvious."
+        ]
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page gives a clearer accessibility workflow and a more concrete set of manual checks and automation limits."
+    },
+    {
+      "label": "Manual accessibility testing",
+      "url": "https://web.dev/learn/accessibility/test-manual",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct manual accessibility testing guide that covers keyboard checks, visual checks, content checks, and the kinds of issues automated tools miss.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is very strong on concrete manual checks such as focus order, focus visibility, keyboard traps, color contrast, and content review."
+      ],
+      "theirGaps": [
+        "It is longer and more tutorial-like than a short interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Accessibility is not a last-minute checklist item. In production it is a review workflow"
+        ],
+        "actionableExamples": [
+          "Does focus move in a logical order and stay visible at every step?"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is grounded in real testing workflows, but our answer now frames that workflow more compactly as a sequence teams can actually repeat."
+        ],
+        "actionableExamples": [
+          "Our page now has tighter manual spot checks for focus order, modal focus return, invalid-form handling, and descriptive links."
+        ],
+        "followUpConfusion": [
+          "web.dev still goes deeper on manual testing nuance, so the follow-up criterion stays tied rather than flipping completely to us."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "If this page needs another pass later, add one short screen-reader-specific prompt without turning the answer into a long testing guide."
+        ]
+      },
+      "winReason": "web.dev is a strong manual-testing guide, but our page is now better as a compact interview answer because it gives an explicit audit order and immediate test prompts without requiring a long read."
+    }
+  ]
+}

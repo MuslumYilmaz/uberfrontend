@@ -1,0 +1,15 @@
+{
+  "batchId": "importance-5-angular-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "angular", "id": "angular-observables-rxjs" },
+    { "tech": "angular", "id": "angular-routing" },
+    { "tech": "angular", "id": "angular-change-detection-strategies" },
+    { "tech": "angular", "id": "angular-onpush-change-detection-debugging-real-bug" },
+    { "tech": "angular", "id": "rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use" },
+    { "tech": "angular", "id": "angular-prevent-memory-leaks-unsubscribe-patterns" },
+    { "tech": "angular", "id": "angular-http-what-actually-cancels-request" },
+    { "tech": "angular", "id": "angular-hierarchical-dependency-injection-real-bug" },
+    { "tech": "angular", "id": "ngrx-data-flow-end-to-end-angular" }
+  ]
+}

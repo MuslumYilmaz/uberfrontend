@@ -1,0 +1,14 @@
+{
+  "batchId": "importance-5-react-batch-02-losers",
+  "scope": "trivia content improvement candidates from react competitor review batch 02",
+  "items": [
+    {
+      "tech": "react",
+      "id": "react-why-hooks-have-rules"
+    },
+    {
+      "tech": "react",
+      "id": "react-strictmode-double-invoke-effects"
+    }
+  ]
+}

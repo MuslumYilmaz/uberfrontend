@@ -1,0 +1,147 @@
+{
+  "contentId": "angular-ngoninit-vs-constructor",
+  "tech": "angular",
+  "query": "Constructor vs ngOnInit in Angular: what is the difference?",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Component Lifecycle",
+      "url": "https://angular.dev/guide/components/lifecycle",
+      "category": "canonical_docs",
+      "selectionReason": "The official lifecycle guide is the canonical source for constructor and ngOnInit timing, so it is the strongest docs baseline.",
+        "verdicts": {
+          "realWorldUseCases": "ours",
+          "actionableExamples": "tie",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "The lifecycle guide is the canonical baseline, but our page now answers the side-effect placement and the ngOnChanges-versus-ngOnInit follow-up more directly in one interview-shaped explanation.",
+        "theirStrengths": [
+          "It states the official lifecycle order and clearly says ngOnInit runs after inputs are initialized."
+        ],
+      "theirGaps": [
+        "It is less explicit about testing, side-effect placement, and why constructor work makes component setup harder to reason about."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "Putting side effects in the constructor makes component instantiation do \"real work\" before Angular finishes binding and before tests can set up spies."
+          ],
+          "followUpConfusion": [
+            "If you must react to input changes over time, use <code>ngOnChanges</code> (or an input setter). DOM/ViewChild work usually belongs in <code>ngAfterViewInit</code>."
+          ]
+        },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain when constructor and ngOnInit run, but they are less opinionated about interview-grade placement of side effects and test setup."
+        ],
+        "actionableExamples": [
+          "The lifecycle guide has enough timing detail that the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "Angular.dev still answers the input-initialization timing well, so the broader follow-up comparison remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny example showing a constructor-based API call and the corrected ngOnInit version."
+        ],
+        "followUpConfusion": [
+          "Add one explicit note on ngOnChanges coming before ngOnInit for bound inputs."
+        ]
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "This is the main GreatFrontEnd Angular basics guide and a fair interview-prep comparator for lifecycle fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more explicit about constructor side effects, input timing, testing implications, and where DOM or long-lived reactions belong next.",
+      "theirStrengths": [
+        "It gives a concise lifecycle-hooks refresher for interview prep."
+      ],
+      "theirGaps": [
+        "It does not go as far into constructor side effects, test timing, or which next hook to mention after ngOnInit."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Putting side effects in the constructor makes component instantiation do \"real work\" before Angular finishes binding and before tests can set up spies."
+        ],
+        "followUpConfusion": [
+          "If you must react to input changes over time, use ngOnChanges (or an input setter). DOM/ViewChild work usually belongs in ngAfterViewInit ."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd covers the lifecycle basics, but not the concrete side-effect placement or testability argument."
+        ],
+        "actionableExamples": [
+          "Its interview examples are short and readable enough that the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "The page does not spend much time on what to say next when inputs continue changing or when DOM access is required."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one minimal fixture.detectChanges test example so the testability point becomes more concrete."
+        ],
+        "followUpConfusion": []
+      }
+    },
+      {
+        "label": "Stack Overflow: Difference between Constructor and ngOnInit",
+        "url": "https://stackoverflow.com/questions/35763730/difference-between-constructor-and-ngoninit",
+        "category": "community_qna",
+        "selectionReason": "This is one of the most visited community Q&A pages for the exact constructor-vs-ngOnInit interview prompt.",
+        "verdicts": {
+          "realWorldUseCases": "tie",
+          "actionableExamples": "ours",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "The Stack Overflow thread is strong, but our page now combines a direct before-and-after code pair, explicit test timing, and the ngOnChanges follow-up in one cohesive answer.",
+        "theirStrengths": [
+          "The accepted answer and comments cover several practical distinctions in one place, including @Input timing and the constructor-versus-ngOnInit split."
+        ],
+      "theirGaps": [
+        "It is community-shaped rather than a single cohesive frontend-specific explanation."
+      ],
+        "ourEvidence": {
+          "actionableExamples": [
+            "this.api.loadUser(this.userId).subscribe();"
+          ],
+          "followUpConfusion": [
+            "If you must react to input changes over time, use <code>ngOnChanges</code> (or an input setter). DOM/ViewChild work usually belongs in <code>ngAfterViewInit</code>."
+          ]
+        },
+        "theirEvidence": {
+          "realWorldUseCases": [
+            "The thread already frames constructor as DI/setup and ngOnInit as the place for real initialization work, so the practical gap is small."
+          ],
+          "actionableExamples": [
+            "Multiple answers and comments provide concrete examples about @Input availability, ViewChild timing, and initialization placement, but our page now has a single before-and-after code path for constructor, ngOnInit, and ngOnChanges."
+          ],
+          "followUpConfusion": [
+            "The thread also covers common follow-ups like ngOnChanges ordering and why constructor access to inputs is wrong, but our page now keeps those follow-ups in one tighter lifecycle decision model."
+          ]
+        },
+        "nextActions": {
+          "realWorldUseCases": [
+            "Add one example where constructor work causes a premature API call before the test harness has configured spies."
+          ],
+          "actionableExamples": [],
+          "followUpConfusion": []
+        }
+      }
+  ]
+}

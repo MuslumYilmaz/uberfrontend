@@ -2,7 +2,7 @@
   "contentId": "js-null-coalescing-operator",
   "tech": "javascript",
   "query": "nullish coalescing operator javascript",
-  "reviewedAt": "2026-04-05",
+  "reviewedAt": "2026-04-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "seo_primary_keyword",
@@ -16,38 +16,42 @@
       "category": "canonical_docs",
       "selectionReason": "MDN is the canonical competitor for operator semantics, precedence rules, and optional chaining interaction.",
       "verdicts": {
-        "realWorldUseCases": "tie",
+        "realWorldUseCases": "ours",
         "actionableExamples": "tie",
-        "followUpConfusion": "theirs"
+        "followUpConfusion": "ours"
       },
+      "winReason": "Our page now does a better job foregrounding the real frontend defaulting bug and the likely follow-up about when `??` is still not enough, while MDN remains stronger as a broad reference.",
       "theirStrengths": [
         "It explains operator semantics, short-circuiting, and the relationship to optional chaining precisely."
       ],
       "theirGaps": [
         "It is less focused on the specific production bug where `||` overwrites legitimate falsy values."
       ],
-      "ourEvidence": {},
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It solves a common production bug from <code>||</code> defaults where valid values like <code>0</code>, <code>''</code>, or <code>false</code> get replaced unintentionally."
+        ],
+        "followUpConfusion": [
+          "<code>??</code> only answers 'is the value missing?'. It does <strong>not</strong> answer business rules like 'an empty string should be replaced' or '0 should be rejected.'"
+        ]
+      },
       "theirEvidence": {
         "realWorldUseCases": [
-          "MDN already discusses the main defaulting use case, so the practical gap is close rather than decisive."
+          "MDN explains the main defaulting use case well, but it is less explicit about the UI-state bug where valid falsy values are rewritten in production."
         ],
         "actionableExamples": [
           "Its examples with `null`, `undefined`, and optional chaining keep the example criterion close."
         ],
         "followUpConfusion": [
-          "MDN covers precedence and operator-mixing rules more comprehensively than our current trivia."
+          "MDN covers precedence and operator mixing thoroughly, but our page now also answers the next question of when `??` is still the wrong business-rule tool."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one explicit UI-state bug where `||` overwrites `0`, `false`, or an empty string in production."
-        ],
+        "realWorldUseCases": [],
         "actionableExamples": [
-          "Add one compact example that contrasts `||`, `??`, and optional chaining together."
+          "Keep one compact example that contrasts `||`, `??`, and validation in the same helper if this page needs another upgrade."
         ],
-        "followUpConfusion": [
-          "Add one dedicated note about when `??` is still the wrong tool because the value is empty but not nullish."
-        ]
+        "followUpConfusion": []
       }
     },
     {
@@ -57,9 +61,10 @@
       "selectionReason": "This tutorial is a common beginner-facing competitor for `??` syntax, defaults, and basic examples.",
       "verdicts": {
         "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "actionableExamples": "ours",
         "followUpConfusion": "tie"
       },
+      "winReason": "Our page is now stronger on realistic UI-state examples, nested optional-chaining defaults, and the follow-up about when nullish handling is not the whole business rule.",
       "theirStrengths": [
         "It shows the default-value use case clearly and keeps the syntax accessible."
       ],
@@ -68,7 +73,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "It solves a common bug from || defaults where valid values like 0, '', or false get replaced unintentionally."
+          "It solves a common production bug from <code>||</code> defaults where valid values like <code>0</code>, <code>''</code>, or <code>false</code> get replaced unintentionally."
+        ],
+        "actionableExamples": [
+          "const locale = apiState.preferences?.locale ?? 'en-US';      // 'en-US'"
         ]
       },
       "theirEvidence": {
@@ -76,19 +84,17 @@
           "GeeksforGeeks shows default-value behavior, but it does not emphasize the production bug pattern as strongly as ours."
         ],
         "actionableExamples": [
-          "It includes basic examples with defaults and object properties, so the example criterion stays close."
+          "It includes basic examples with defaults and object properties, but our page now has a more realistic state object plus nested API-data access."
         ],
         "followUpConfusion": [
-          "It is weaker on precedence and on pairing `??` with optional chaining for nested API data, but not by a huge margin."
+          "It stays lighter on precedence and on pairing `??` with optional chaining, but the follow-up coverage is now close rather than decisively weaker."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
-        "actionableExamples": [
-          "Add one nested API-data example that chains `?.` and `??` in a slightly more realistic state shape."
-        ],
+        "actionableExamples": [],
         "followUpConfusion": [
-          "Add a short warning about mixing `??` with `||` or `&&` without parentheses."
+          "Keep the 'empty but still invalid' business-rule note concise so the follow-up advantage stays clearly differentiated from tutorial pages."
         ]
       }
     },
@@ -98,10 +104,11 @@
       "category": "tutorial_reference",
       "selectionReason": "This page is a compact tutorial competitor focused on `??` versus `||` with concise examples.",
       "verdicts": {
-        "realWorldUseCases": "tie",
+        "realWorldUseCases": "ours",
         "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
+      "winReason": "Our page is now stronger on production-context framing and still leads on the likely follow-up around operator mixing and business-rule validation.",
       "theirStrengths": [
         "It cleanly contrasts `??` with `||` and shows the assignment form too."
       ],
@@ -109,27 +116,28 @@
         "It is shorter and does not go as far into the likely follow-up around operator mixing and nested optional chaining."
       ],
       "ourEvidence": {
+        "realWorldUseCases": [
+          "A product dashboard stores <code>0</code> as a valid retry count, <code>''</code> as an intentionally blank subtitle, and <code>false</code> as a real saved toggle."
+        ],
         "followUpConfusion": [
-          "JavaScript does not allow mixing ?? directly with || or && without parentheses. This prevents ambiguous logic."
+          "<code>??</code> only answers 'is the value missing?'. It does <strong>not</strong> answer business rules like 'an empty string should be replaced' or '0 should be rejected.'"
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "Mastering JS explains the default-value bug clearly enough that the practical criterion stays close."
+          "Mastering JS explains the default-value bug clearly, but our page now anchors the operator in a more explicit UI-state production scenario."
         ],
         "actionableExamples": [
           "Its side-by-side examples are concrete enough that the example criterion remains close."
         ],
         "followUpConfusion": [
-          "Our page goes further on operator mixing and on pairing optional chaining with `??` in production code."
+          "Our page now goes further on both operator mixing and on the follow-up where `??` still needs a separate validation rule."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one explicit config or API-state example so the page has a more concrete production context."
-        ],
+        "realWorldUseCases": [],
         "actionableExamples": [
-          "Keep one more worked example with nested data instead of only scalar defaults."
+          "Keep one more full before/after helper example if this page needs another actionable-example boost."
         ],
         "followUpConfusion": []
       }

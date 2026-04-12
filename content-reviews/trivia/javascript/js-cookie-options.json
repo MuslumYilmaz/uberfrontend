@@ -1,0 +1,146 @@
+{
+  "contentId": "js-cookie-options",
+  "tech": "javascript",
+  "query": "cookie options expires secure httponly samesite interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "I did not find a GreatFrontEnd page directly focused on Set-Cookie attributes such as Expires, Max-Age, Domain, Path, Secure, HttpOnly, and SameSite; nearby auth/storage material would be a weaker comparator than MDN, web.dev, and MDN's secure-cookie guidance."
+  },
+  "competitors": [
+    {
+      "label": "Set-Cookie header",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for cookie attributes, host-only behavior, expiry semantics, and SameSite/Secure rules.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "MDN remains the deeper canonical reference, but our page is now better for this interview-sized question because it pairs product-driven cookie decisions with concrete Set-Cookie examples for host-only hardening, default Path surprises, and SameSite migration bugs.",
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production decision is usually whether the cookie is an auth cookie, a low-risk preference cookie, or a cross-site cookie for an embedded widget, affiliate redirect, or third-party sign-in flow."
+        ],
+        "actionableExamples": [
+          "Set-Cookie: __Host-session=abc123; Path=/; Secure; HttpOnly; SameSite=Lax"
+        ]
+      },
+      "theirStrengths": [
+        "It is exhaustive on the meaning of each cookie attribute, browser behavior, and edge cases like host-only cookies and SameSite=None requiring Secure."
+      ],
+      "theirGaps": [
+        "It is reference-heavy and less compact for interview delivery."
+      ],
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page now frames cookie attributes through auth, preference, embedded-widget, affiliate-redirect, and third-party sign-in decisions, which is more concrete for the interview-sized query."
+        ],
+        "actionableExamples": [
+          "Our page now shows concrete Set-Cookie examples for default Path behavior, a hardened __Host- cookie, and a SameSite migration fix, which makes the example set stronger for a compact interview answer."
+        ],
+        "followUpConfusion": [
+          "Both pages explain important follow-ups such as session cookies, Domain scope, SameSite rules, host-only behavior, and why omitted Path or SameSite can surprise teams, so this remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on cookie deletion needing matching Path and Domain when logout bugs appear."
+        ]
+      }
+    },
+    {
+      "label": "SameSite cookies explained",
+      "url": "https://web.dev/articles/samesite-cookies-explained",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a strong practical reference for SameSite defaults, cross-site use cases, and the None-plus-Secure rule.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "web.dev is still stronger as a broad SameSite explainer, but our page now wins this comparison because it combines multiple cross-site use cases with a compact before-and-after migration example and a decision matrix that is easier to reuse in interviews.",
+      "theirStrengths": [
+        "It is very strong on cross-site cookie behavior, browser defaults, and the practical decision between Strict, Lax, and None."
+      ],
+      "theirGaps": [
+        "It is narrower than our page on non-SameSite attributes such as Domain, Path, and Max-Age."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most auth cookies can stay Lax or even Strict, but embedded widgets, third-party sign-in callbacks, payment return flows, and cross-site iframes often need SameSite=None; Secure."
+        ],
+        "actionableExamples": [
+          "Set-Cookie: oauth_state=abc123; Path=/auth/callback; SameSite=None; Secure"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page now grounds SameSite in widgets, third-party sign-in callbacks, payment returns, and cross-site iframes, which is a broader product-use-case set."
+        ],
+        "actionableExamples": [
+          "Our page now includes both the Strict/Lax/None decision matrix and a concrete broken-cookie-to-fixed-cookie migration example."
+        ],
+        "followUpConfusion": [
+          "Both pages answer the main follow-up about why omitted SameSite often behaves like a Lax-style default and why compatibility testing still matters."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one sentence on when Partitioned cookies are preferable to a broader cross-site cookie."
+        ]
+      }
+    },
+    {
+      "label": "Session Management Cheat Sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html",
+      "category": "tutorial_reference",
+      "selectionReason": "OWASP is a strong practical security reference for Secure, HttpOnly, SameSite, and the risks of over-broad Domain/Path scope in session cookies.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "OWASP is stronger on pure session-security depth, but our page is now better for this interview question because it covers multiple real product cookie classes at once: hardened auth cookies, persistent preference cookies, and cross-site widget cookies.",
+      "theirStrengths": [
+        "It ties cookie attributes directly to XSS, CSRF, session fixation, and subdomain leakage risks."
+      ],
+      "theirGaps": [
+        "It is security-centric rather than a compact all-attributes interview explanation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production decision is usually whether the cookie is an auth cookie, a low-risk preference cookie, or a cross-site cookie for an embedded widget, affiliate redirect, or third-party sign-in flow."
+        ],
+        "actionableExamples": [
+          "In interviews, high-quality answers group cookie options into three buckets: lifetime, scope, and security."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "OWASP is very strong on session-cookie risk, but our page now maps the decision across auth, preference, and embedded cross-site cookies in one interview-sized answer."
+        ],
+        "actionableExamples": [
+          "Our page is more structured for quick explanation because it groups the attributes into lifetime, scope, and security, then ties them to a session-versus-theme scenario."
+        ],
+        "followUpConfusion": [
+          "OWASP is strong on why Path is not a real isolation boundary and why overly broad Domain values enable session fixation across subdomains, so this stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one line on how logout/debug flows fail when cookie deletion does not match the original Path or Domain."
+        ]
+      }
+    }
+  ]
+}

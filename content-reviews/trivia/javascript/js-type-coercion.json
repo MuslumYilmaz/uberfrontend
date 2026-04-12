@@ -1,0 +1,145 @@
+{
+  "contentId": "js-type-coercion",
+  "tech": "javascript",
+  "query": "javascript type coercion interview question",
+  "reviewedAt": "2026-04-08",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Type coercion",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's glossary entry is the canonical docs baseline for the coercion concept.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It gives the authoritative definition of coercion and links the concept back to the language model."
+      ],
+      "theirGaps": [
+        "It is narrower than our page on interview framing and default operator guidance."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real production bugs show up at boundaries: form fields, query params, localStorage, and API payloads often arrive as strings even when business logic expects numbers or booleans."
+        ],
+        "actionableExamples": [
+          "console.log(Boolean(rawPromoEnabled)); // true"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines the concept authoritatively, but it is lighter on UI-boundary bugs and production parsing mistakes."
+        ],
+        "actionableExamples": [
+          "The glossary is concise, while our page now includes concrete conversion snippets and a checkout-boundary scenario."
+        ],
+        "followUpConfusion": [
+          "MDN remains a strong conceptual reference, so the broader follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on ToPrimitive ordering or Symbol.toPrimitive to close the docs-level follow-up gap."
+        ]
+      },
+      "winReason": "Our page now goes beyond the glossary definition with boundary bugs, conversion code, and operator-specific traps, while MDN remains a conceptual baseline."
+    },
+    {
+      "label": "GreatFrontEnd == vs ===",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-the-difference-between-double-equal-and-triple-equal",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd does not appear to have a full type-coercion page, but this equality question is directly relevant because our trivia heavily emphasizes coercion through == vs ===.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It targets one of the most common interview manifestations of coercion directly."
+      ],
+      "theirGaps": [
+        "It is narrower than a full coercion explanation because it is centered on equality operators."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real production bugs show up at boundaries: form fields, query params, localStorage, and API payloads often arrive as strings even when business logic expects numbers or booleans."
+        ],
+        "actionableExamples": [
+          "A checkout form sends quantity as '0', a promo flag as 'false', and a query param as '18'. If you compare or validate them without explicit conversion, the UI can accept bad data or apply the wrong rule."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd maps well to equality confusion, but our page now covers several real boundary bugs outside == versus ===."
+        ],
+        "actionableExamples": [
+          "Its operator examples are useful, while our page now adds boundary parsing code and concrete boolean/string traps."
+        ],
+        "followUpConfusion": [
+          "The equality-focused interview follow-up remains competitive, so this criterion stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one explicit Symbol.toPrimitive follow-up so the advanced coercion story is stronger than an equality-only comparison."
+        ]
+      },
+      "winReason": "GreatFrontEnd is strong on equality, but our page now covers coercion across form input, booleans, object conversion, and fallback operators instead of only one operator family."
+    },
+    {
+      "label": "GeeksforGeeks Type coercion in JavaScript",
+      "url": "https://www.geeksforgeeks.org/javascript/what-is-type-coercion-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a mainstream tutorial-style page for the exact coercion search intent.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is optimized for the exact topic query and usually includes several concrete conversion examples."
+      ],
+      "theirGaps": [
+        "It is often more definitional than production-oriented."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real production bugs show up at boundaries: form fields, query params, localStorage, and API payloads often arrive as strings even when business logic expects numbers or booleans."
+        ],
+        "actionableExamples": [
+          "console.log('5' + 1); // '51' (number -> string)"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks answers the exact topic, but our page now ties the concept more directly to boundary bugs in frontend flows."
+        ],
+        "actionableExamples": [
+          "Its examples are useful, while our page now layers equality cases, boundary parsing, and explicit conversion guidance together."
+        ],
+        "followUpConfusion": [
+          "The follow-up comparison is still close because the concept family overlaps heavily."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on object-to-primitive coercion hooks so the advanced follow-up set is harder to beat."
+        ]
+      },
+      "winReason": "Our page now combines boundary bugs, explicit conversion code, and high-signal operator follow-ups, while GeeksforGeeks stays more introductory."
+    }
+  ]
+}

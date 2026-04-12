@@ -760,7 +760,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what triggers a React component to re-render, what a “render” actually means (vs updating the DOM), and what role the class render() method (or function component body) plays in the render + commit pipeline.",
+    "description": "Explain React rerenders through render vs commit, parent-child propagation, memo bailouts, context churn, and the follow-up confusion around remounts versus ordinary rerenders.",
     "answer": {
       "blocks": [
         {
@@ -844,6 +844,28 @@
         },
         {
           "type": "text",
+          "text": "<strong>Worked example: parent re-renders, child logs, DOM barely changes</strong><br><br>Imagine a search page where typing updates local input state in the parent. React may re-run the child result pane too, especially if you pass inline callbacks or config objects. That still does <em>not</em> prove the browser rewrote the whole subtree. It only proves React re-computed the next UI and then decided what, if anything, must be committed."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const SearchResults = React.memo(function SearchResults({ items, onSelect }) {\n  console.log('SearchResults render');\n  return items.map((item) => (\n    <button key={item.id} onClick={() => onSelect(item.id)}>{item.label}</button>\n  ));\n});\n\nfunction SearchPage({ allItems }) {\n  const [query, setQuery] = React.useState('');\n  const visible = allItems.filter((item) => item.label.includes(query));\n\n  return (\n    <>\n      <input value={query} onChange={(e) => setQuery(e.target.value)} />\n      <SearchResults\n        items={visible}\n        onSelect={(id) => console.log('select', id)}\n      />\n    </>\n  );\n}\n"
+        },
+        {
+          "type": "text",
+          "text": "In that example, the inline <code>onSelect</code> function creates a new reference on every parent render, so <code>React.memo</code> cannot bail out even if the visible list did not change. The browser may only update the text input, but React still had to re-run <code>SearchResults</code> first."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Another production bug: context churn</strong><br><br>Parent state is not the only rerender trigger. A provider value created inline can re-run every consumer even when the field they care about did not change."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const SearchContext = React.createContext(null);\n\nfunction SearchShell() {\n  const [theme, setTheme] = React.useState('dark');\n  const [query, setQuery] = React.useState('');\n\n  // ❌ New object identity every render\n  const value = { query, setQuery };\n\n  return (\n    <SearchContext.Provider value={value}>\n      <button onClick={() => setTheme((t) => t === 'dark' ? 'light' : 'dark')}>\n        Toggle theme\n      </button>\n      <SearchBox />\n    </SearchContext.Provider>\n  );\n}\n\n// Even theme-only renders recreate value, so consumers can rerender too."
+        },
+        {
+          "type": "text",
           "text": "<strong>Skipping re-renders (bailouts)</strong><br><br>By default, parent re-renders propagate to children. To skip work, React needs an explicit bailout rule."
         },
         {
@@ -873,6 +895,41 @@
           "caption": "Common ways to prevent unnecessary re-renders"
         },
         {
+          "type": "list",
+          "columns": [
+            "Event",
+            "What React means by it",
+            "What happens to local state"
+          ],
+          "rows": [
+            [
+              "Initial mount",
+              "Component appears in the tree for the first time",
+              "Fresh state is created."
+            ],
+            [
+              "Re-render",
+              "React re-runs the component because inputs might have changed",
+              "Existing local state is preserved."
+            ],
+            [
+              "Remount",
+              "React treats it as a different component because key/type/position changed",
+              "Local state resets."
+            ],
+            [
+              "No-op commit",
+              "React rendered, diffed, and found nothing DOM-visible to change",
+              "State stays the same; the browser may not visibly update."
+            ]
+          ],
+          "caption": "The follow-up distinction interviewers often want next"
+        },
+        {
+          "type": "text",
+          "text": "<strong>One-line distinction</strong><br><br><em>Rerender</em> means React ran the component again, <em>remount</em> means React threw away the old identity and local state, and <em>commit</em> means React actually mutated the DOM. Those are related, but they are not the same event."
+        },
+        {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>React re-renders when state/props/context might have changed. A “render” means recomputing the next React element tree, not necessarily updating the DOM. The class <code>render()</code> method (or function component body) is the pure computation React runs during the render phase; DOM updates happen later in the commit phase."
         }
@@ -887,10 +944,10 @@
       "props",
       "performance"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "How does React know when to re-render a component?",
-      "description": "React re-renders a component when its state, props, or consumed context changes, then render computes the next UI tree."
+      "title": "React rerender vs DOM update: render, commit, bailouts, and remounts",
+      "description": "Learn what actually triggers React rerenders, why render work is not the same as DOM mutation, and how bailouts, context churn, and remounts change the result."
     },
     "incidentCard": {
       "title": "Render vs Commit Reality Check",
@@ -1131,6 +1188,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Concrete sibling bug</strong><br><br>Suppose a parent shows both a live preview and a save button for the same draft message. If the preview child keeps its own local copy while the form child also writes to a different copy, the UI drifts: one part of the screen shows stale text, and save submits something else. One-way flow fixes that by making the parent the single owner and letting both children read the same source."
+        },
+        {
+          "type": "text",
           "text": "<strong>What goes wrong with “two-way” style patterns</strong><br><br>Two-way binding often means multiple places can write to the same piece of data (child + parent, or UI + model). That creates implicit coupling and hidden update loops. In React, it typically shows up as mutating props or sharing mutable objects across components."
         },
         {
@@ -1166,6 +1227,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>One-way flow is not the same as “no prop drilling”</strong><br><br>You can still have one-way data flow even if props pass through several layers. The important rule is ownership: one component owns the state, children receive snapshots of it, and changes come back through explicit callbacks or dispatched actions. Prop drilling can be annoying, but it is a different problem from two-way writes or shared mutable data."
+        },
+        {
+          "type": "text",
           "text": "<strong>Interview framing</strong><br><br>React is optimized for predictable updates: inputs flow down, updates happen through explicit events, and renders stay pure. One-way flow prevents multiple sources of truth and makes state changes easy to trace (especially important as React can re-render/retry work in modern rendering)."
         },
         {
@@ -1183,7 +1248,7 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "seo": {
       "title": "React one-way data flow in production: state ownership, multi-writer bugs, and debug clarity",
       "description": "React one-way data flow keeps state ownership clear, prevents multi-writer bugs, and makes production debugging and concurrent rendering safer."
@@ -1294,12 +1359,30 @@
         },
         {
           "type": "text",
+          "text": "<strong>Memoized child + mutated prop object</strong><br><br>The subtle bug is not just “mutation is bad.” It is that React may keep the same reference, so memoized children and sibling readers observe partially updated shared state at surprising times."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const SettingsPanel = React.memo(function SettingsPanel({ settings }) {\n  settings.sort = 'name'; // ❌ mutate parent-owned object in place\n  return <div>{settings.sort}</div>;\n});\n\n// Parent still holds the same settings object reference,\n// so memo/shallow comparison can miss the real change boundary."
+        },
+        {
+          "type": "text",
           "text": "<strong>Another classic footgun: mutating arrays</strong><br><br>Sorting, pushing, splicing, or reversing a prop array mutates in-place and can corrupt parent/sibling views."
         },
         {
           "type": "code",
           "language": "jsx",
           "code": "function List({ items }) {\n  // ❌ Mutates parent-owned array in-place\n  items.sort((a, b) => a.label.localeCompare(b.label));\n\n  return <ul>{items.map((x) => <li key={x.id}>{x.label}</li>)}</ul>;\n}\n\n// ✅ Make a copy\nfunction ListSafe({ items }) {\n  const sorted = [...items].sort((a, b) => a.label.localeCompare(b.label));\n  return <ul>{sorted.map((x) => <li key={x.id}>{x.label}</li>)}</ul>;\n}\n"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ✅ Copy nested structures too when a child needs a transformed version\nfunction Filters({ options }) {\n  const nextOptions = {\n    ...options,\n    groups: options.groups.map((group) => ({\n      ...group,\n      items: [...group.items].sort((a, b) => a.label.localeCompare(b.label))\n    }))\n  };\n\n  return <Sidebar options={nextOptions} />;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important clarification</strong><br><br>“Props are immutable” is a React rendering contract, not a JavaScript language rule. JavaScript will let you mutate the object. React code becomes unpredictable when you do."
         },
         {
           "type": "list",
@@ -1338,7 +1421,7 @@
       "data-flow",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "incidentCard": {
       "title": "Props Immutability Bug Check",
       "scenario": "A memoized `UserCard` receives `user` as a prop. Inside the child, someone mutates `user.name` directly and now updates are inconsistent across siblings. What is the best fix?",
@@ -1629,7 +1712,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Keys are React's identity contract for list items. Use stable keys to prevent reordered rows, lost input state, and production bugs where React preserves the wrong component.",
+    "description": "Keys are React's identity contract for list items. Use stable keys to prevent reordered rows, lost input state, random remounts, and production bugs where React preserves the wrong component.",
     "answer": {
       "blocks": [
         {
@@ -1682,6 +1765,28 @@
         },
         {
           "type": "text",
+          "text": "<strong>Another footgun: random keys</strong><br><br><code>key={Math.random()}</code> is worse than <code>key={index}</code>. React treats every row as a brand-new component on every render, which means local state resets, effects remount, and memoization cannot help."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "{items.map((item) => (\n  <Row key={Math.random()} item={item} /> // ❌ remounts every row each render\n))}\n\n{items.map((item) => (\n  <Row key={item.id} item={item} /> // ✅ stable identity\n))}"
+        },
+        {
+          "type": "text",
+          "text": "Random keys do not just rerender rows. They remount them, so local draft text, checkbox state, focus, and effect subscriptions are all torn down and recreated every render."
+        },
+        {
+          "type": "text",
+          "text": "<strong>When is <code>index</code> acceptable?</strong><br><br>If the list is truly static, never reorders, never inserts in the middle, and rows do not hold meaningful local state, an index key can be acceptable. The moment rows can move, be filtered, or contain inputs/checkmarks/animations, use a stable id instead."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ❌ Index keys break when rows reorder; typed text and checked state can move to the wrong todo\nfunction SortableTodosBad({ items }) {\n  return items.map((item, index) => (\n    <label key={index}>\n      <input defaultValue={item.text} />\n      <span>{item.text}</span>\n    </label>\n  ));\n}\n\n// ✅ Stable ids keep local row state attached to the correct item\nfunction SortableTodosGood({ items }) {\n  return items.map((item) => (\n    <label key={item.id}>\n      <input defaultValue={item.text} />\n      <span>{item.text}</span>\n    </label>\n  ));\n}\n"
+        },
+        {
+          "type": "text",
           "text": "<strong>Best Practices</strong><br><ul><li>Use stable and unique identifiers like database IDs for keys.</li><li>Avoid using array indices if the list can change order or length.</li><li>Do not use random or non-deterministic values as keys — React relies on key consistency across renders.</li></ul>"
         },
         {
@@ -1727,7 +1832,7 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "React keys in lists: identity bugs, reordered rows, and stable state",
       "description": "Learn why React keys are about stable identity, how bad keys cause reordered-row bugs and state leakage, and which key choices are safe in production."
@@ -1739,30 +1844,30 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Controlled components in React are those whose form data is managed by React state, while uncontrolled components manage their own state internally through the DOM. Controlled components offer more predictable, testable, and synchronized data flow, whereas uncontrolled components are simpler but less flexible. Controlled inputs enable validation and state sync but can be verbose; uncontrolled inputs are simpler but harder to test. Test with form reset and validation.",
+    "description": "Compare controlled and uncontrolled React inputs through validation, reset behavior, defaultValue, file-input limits, and the production warning/debugging cases that appear when a field switches ownership.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>React provides two ways to handle form inputs: <em>controlled</em> and <em>uncontrolled</em> components. Controlled components rely on React state as the single source of truth, while uncontrolled components use the DOM’s internal state via <code>ref</code> to manage data."
+          "text": "<strong>Overview</strong><br><br>The real distinction is <strong>ownership</strong>. A controlled input is owned by React state, which makes validation, derived UI, and reset flows predictable. An uncontrolled input is owned by the DOM, which is often simpler for one-off forms, file inputs, and low-friction submissions. The production bugs appear when one field tries to switch owners halfway through its lifecycle."
         },
         {
           "type": "list",
           "columns": [
             "Type",
-            "Description",
-            "Data Source"
+            "Best when",
+            "Common pitfall"
           ],
           "rows": [
             [
               "Controlled Component",
-              "React state controls the input value. Each keystroke triggers a state update.",
-              "React state"
+              "You need validation, derived UI, masking, live previews, or reliable reset behavior.",
+              "Large forms can get verbose, and poor state placement can make keystrokes feel laggy."
             ],
             [
               "Uncontrolled Component",
-              "Input value is handled by the DOM itself and accessed via <code>ref</code> when needed.",
-              "DOM element"
+              "You only need the value on submit, or the browser must own the field (for example file inputs).",
+              "It is easier to lose sync with React state or forget <code>defaultValue</code>/<code>defaultChecked</code>."
             ]
           ],
           "caption": "Key differences between controlled and uncontrolled components"
@@ -1771,6 +1876,19 @@
           "type": "code",
           "language": "jsx",
           "code": "// Controlled Component\nfunction ControlledInput() {\n  const [value, setValue] = useState('');\n  return (\n    <input value={value} onChange={(e) => setValue(e.target.value)} />\n  );\n}\n\n// Uncontrolled Component\nfunction UncontrolledInput() {\n  const inputRef = useRef(null);\n  const handleSubmit = () => alert(inputRef.current.value);\n  return (\n    <>\n      <input ref={inputRef} />\n      <button onClick={handleSubmit}>Submit</button>\n    </>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Production bug to recognize immediately</strong><br><br>The warning <code>A component is changing an uncontrolled input to be controlled</code> usually means the same field started with DOM ownership and later received a React-controlled <code>value</code>. A common cause is async form data: the first render passes <code>undefined</code>, then later a string arrives from state. Pick one owner from the start."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ❌ Warns: uncontrolled first, controlled later\nfunction ProfileName({ user }) {\n  return <input value={user?.name} onChange={() => {}} />;\n}\n\n// ✅ Controlled from the first render\nfunction ProfileNameFixed({ user }) {\n  const [name, setName] = useState(user?.name ?? '');\n  return <input value={name} onChange={(e) => setName(e.target.value)} />;\n}\n\n// ✅ Uncontrolled on purpose\nfunction SearchBox() {\n  const ref = useRef(null);\n  return <input ref={ref} defaultValue=\"\" />;\n}\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important follow-ups</strong><br><ul><li><strong><code>defaultValue</code> vs <code>value</code>:</strong> <code>defaultValue</code> sets the initial DOM value for uncontrolled inputs; <code>value</code> makes React the owner on every render.</li><li><strong>File inputs:</strong> Browsers own file input values for security reasons, so file inputs are effectively uncontrolled.</li><li><strong>Reset behavior:</strong> Controlled inputs reset from React state; uncontrolled inputs reset through the DOM or form reset APIs.</li></ul>"
         },
         {
           "type": "text",
@@ -1823,10 +1941,10 @@
       "inputs",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
-      "title": "Controlled vs uncontrolled inputs in React: what's the difference?",
-      "description": "Controlled inputs store value in React state, while uncontrolled inputs keep state in the DOM and are usually accessed with refs."
+      "title": "Controlled vs uncontrolled React inputs: warnings, defaultValue, and file input rules",
+      "description": "Learn when React state should own a form field, when the DOM should, and how to debug uncontrolled-to-controlled warnings, defaultValue mistakes, and file input edge cases."
     }
   },
   {
@@ -2174,12 +2292,16 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain useEffect as React’s sync point with the outside world, focusing on cleanup, dependency discipline, stale-closure debugging, and the pitfall of moving pure logic into effects.",
+    "description": "Explain useEffect as React’s external sync point through cleanup, dependency discipline, stale-closure debugging, and the common mistake of putting pure derived logic into effects.",
     "answer": {
       "blocks": [
         {
           "type": "text",
           "text": "<strong>Production pitfall</strong><br><br><code>useEffect()</code> is for synchronizing React with something <em>outside</em> render: network, subscriptions, timers, browser APIs, or analytics. The common mistake is treating it like a general-purpose “run code after render” hook. That leads to stale-closure bugs, cleanup leaks, and debug sessions where derived state keeps drifting because effect logic should have stayed in render."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Boundary check</strong><br><br>Event handlers respond to a user action <em>right now</em> (click, submit, keypress). Render derives pure values from current props/state. Effects are the third bucket: they synchronize with something <em>outside</em> React after commit. If a value is just computed UI state, keep it in render. If the code touches a subscription, timer, browser API, or network request, that is effect territory."
         },
         {
           "type": "list",
@@ -2252,13 +2374,40 @@
           "code": "import React from 'react';\n\nexport function ResizeLogger() {\n  React.useEffect(() => {\n    const onResize = () => console.log('width:', window.innerWidth);\n    window.addEventListener('resize', onResize);\n\n    // Cleanup prevents leaks + duplicate listeners\n    return () => window.removeEventListener('resize', onResize);\n  }, []);\n\n  return <div>Resize the window</div>;\n}\n"
         },
         {
+          "type": "text",
+          "text": "<strong>Worked subscription example</strong><br><br>Subscriptions are the classic <code>useEffect</code> case because you must both <em>start</em> listening and <em>stop</em> listening when the external source changes or the component disappears."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React from 'react';\n\nexport function ChatStatus({ roomId }) {\n  const [online, setOnline] = React.useState(false);\n\n  React.useEffect(() => {\n    const connection = createChatConnection(roomId);\n    connection.connect();\n    connection.on('presence', (nextOnline) => setOnline(nextOnline));\n\n    return () => {\n      connection.off('presence');\n      connection.disconnect();\n    };\n  }, [roomId]);\n\n  return <span>{online ? 'Online' : 'Offline'}</span>;\n}\n"
+        },
+        {
           "type": "code",
           "language": "jsx",
           "code": "import React from 'react';\n\nexport function IntervalCounter() {\n  const [n, setN] = React.useState(0);\n\n  React.useEffect(() => {\n    const id = setInterval(() => {\n      // Use functional update to avoid stale state\n      setN((x) => x + 1);\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []);\n\n  return <div>{n}</div>;\n}\n"
         },
         {
           "type": "text",
+          "text": "<strong>You might not need an effect</strong><br><br>If a value can be computed from props/state during render, storing it via <code>useEffect</code> usually creates extra renders, loops, and stale-state bugs. Effects are for synchronizing with <em>external systems</em>, not for moving pure logic out of render."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ❌ Extra render + duplicated state\nfunction SearchResults({ items, query }) {\n  const [visible, setVisible] = React.useState([]);\n\n  React.useEffect(() => {\n    setVisible(items.filter((item) => item.label.includes(query)));\n  }, [items, query]);\n\n  return <List items={visible} />;\n}\n\n// ✅ Pure derivation stays in render\nfunction SearchResultsFixed({ items, query }) {\n  const visible = items.filter((item) => item.label.includes(query));\n  return <List items={visible} />;\n}\n"
+        },
+        {
+          "type": "text",
           "text": "<strong>Data fetching pattern (avoid stale results)</strong><br><br>Fetching is a side effect. The common issue is: the component re-renders with a new <code>userId</code> while an older request is still in flight. You need a cancellation/ignore strategy."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Cleanup + dependency mistake side by side</strong><br><br>The bug is usually not the fetch itself. The bug is forgetting that changing inputs means React must <em>re-synchronize</em> and clean up the old work first."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ❌ Stale subscription: roomId changes, but this effect never re-subscribes\nuseEffect(() => {\n  const connection = createChatConnection(roomId);\n  connection.connect();\n  return () => connection.disconnect();\n}, []);\n\n// ✅ Re-sync when roomId changes\nuseEffect(() => {\n  const connection = createChatConnection(roomId);\n  connection.connect();\n  return () => connection.disconnect();\n}, [roomId]);"
         },
         {
           "type": "code",
@@ -2343,7 +2492,7 @@
       "lifecycle",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "useEffect in React: external sync, cleanup pitfalls, and stale-closure debugging",
       "description": "useEffect is for syncing with external systems. The real pitfalls are stale closures, missing cleanup, and accidentally using effects for pure render logic."
@@ -2668,7 +2817,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain React’s rerender pipeline through render work, reconciliation, commit, bailouts, and the production identity pitfalls that make a component rerender even when the DOM barely changes.",
+    "description": "Explain React rerendering through render work, reconciliation, commit, context fanout, and remount-vs-rerender identity bugs that make the DOM story easy to misread.",
     "answer": {
       "blocks": [
         {
@@ -2747,6 +2896,15 @@
           "text": "<strong>What this example proves</strong><br><br>1) Updating <code>count</code> re-renders <code>Parent</code>.<br>2) By default, children render too.<br>3) <code>React.memo</code> lets a child <em>bail out</em> if props are shallow-equal, but only if you keep prop identities stable (callbacks/objects)."
         },
         {
+          "type": "text",
+          "text": "<strong>Before/after bug: memoized child still hot because prop identity changes</strong><br><br>The usual production surprise is: “But the child is memoized.” If you keep allocating new objects/functions in the parent, the memo boundary sees changed props every time."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const Chart = React.memo(function Chart({ filters, onPointClick }) {\n  console.log('Chart rendered');\n  return <canvas />;\n});\n\nfunction Dashboard({ region }) {\n  // ❌ New references every render\n  return (\n    <Chart\n      filters={{ region, includeArchived: false }}\n      onPointClick={(id) => console.log(id)}\n    />\n  );\n}\n\nfunction DashboardFixed({ region }) {\n  const filters = React.useMemo(() => ({ region, includeArchived: false }), [region]);\n  const onPointClick = React.useCallback((id) => console.log(id), []);\n  return <Chart filters={filters} onPointClick={onPointClick} />;\n}"
+        },
+        {
           "type": "list",
           "columns": [
             "Common misconception",
@@ -2810,7 +2968,25 @@
         },
         {
           "type": "text",
+          "text": "<strong>Another classic production bug: context fanout</strong><br><br>A provider value object created inline changes identity every render. That means every consumer can re-render even if only one tiny field in the object changed. This is why rerender debugging often starts by looking at provider values, not only at prop comparisons."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const SearchContext = React.createContext(null);\n\nfunction App() {\n  const [theme, setTheme] = React.useState('light');\n  const [query, setQuery] = React.useState('');\n\n  // ❌ New object every render -> all consumers re-render\n  // const value = { theme, query, setQuery };\n\n  // ✅ Stable when only query changes? Split contexts or memoize\n  const value = React.useMemo(() => ({ theme, query, setQuery }), [theme, query]);\n\n  return <SearchContext.Provider value={value}><Layout /></SearchContext.Provider>;\n}\n"
+        },
+        {
+          "type": "text",
           "text": "<strong>Two important gotchas</strong><br><br>• <strong>StrictMode (dev)</strong>: React may intentionally run render logic more than once to surface unsafe side effects. Don’t treat “double logs” in dev as production behavior.<br>• <strong>Keys/type changes</strong>: Changing a component’s key or swapping wrappers (e.g., Fragment ↔ div) can cause a remount (state reset), not just a re-render."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Editor({ userId }) {\n  const [draft, setDraft] = React.useState('');\n  return <input value={draft} onChange={(e) => setDraft(e.target.value)} />;\n}\n\n// ❌ Re-render keeps local state, but changing key remounts and wipes it\n<Editor userId={activeUserId} key={activeUserId} />"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Commit vs rerender vs remount</strong><br><br>A rerender is compute work. A commit is visible DOM work. A remount is identity loss plus fresh local state. Keeping those separate makes render debugging much easier."
         },
         {
           "type": "text",
@@ -2847,7 +3023,7 @@
       "props",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "React rerenders vs DOM updates: bailouts, identity pitfalls, and debug mental models",
       "description": "React can re-render without mutating the DOM. The production bugs usually come from identity changes, context fanout, and confusing render work with commit work."
@@ -3004,17 +3180,21 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Lifting state up means moving shared state to the closest common ancestor and passing it down via props. This keeps siblings in sync and avoids duplicated state. The trade-off is prop drilling vs shared state, so test updates from each child and consider performance and memoization.",
+    "description": "Explain lifting state up through sibling-sync bugs, duplicated local state drift, and the trade-off between a single source of truth, prop drilling, and over-lifting state too high.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In React, when two or more components need to share the same state, it’s best to 'lift the state up' — move it to their nearest common parent. The parent holds the state, and passes it down to children via <code>props</code>. This ensures data consistency and centralized control."
+          "text": "<strong>Overview</strong><br><br>Lifting state up is the fix for a very specific bug class: two sibling components both need the same value, but each starts keeping its own copy. Once those copies drift, one sibling shows stale data while the other reflects the latest edit. The remedy is to move the value to their closest common parent so there is one source of truth."
         },
         {
           "type": "code",
           "language": "jsx",
           "code": "// Example: Lifting state up\nfunction Parent() {\n  const [value, setValue] = useState('');\n\n  return (\n    <div>\n      <Input value={value} onChange={setValue} />\n      <Display value={value} />\n    </div>\n  );\n}\n\nfunction Input({ value, onChange }) {\n  return <input value={value} onChange={(e) => onChange(e.target.value)} />;\n}\n\nfunction Display({ value }) {\n  return <p>Typed text: {value}</p>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Before vs after</strong><br><br>Without lifting, a slider and numeric input might each own their own local state and slowly drift apart after validation, formatting, or async updates. After lifting, both children simply read the parent value and send updates upward, so you test one state transition instead of reconciling two competing copies."
         },
         {
           "type": "list",
@@ -3037,6 +3217,32 @@
             ]
           ],
           "caption": "Core principles of lifting state up in React"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Decision",
+            "Choose it when",
+            "Watch out for"
+          ],
+          "rows": [
+            [
+              "Keep state local",
+              "Only one component needs it",
+              "Do not lift it just because another component is nearby."
+            ],
+            [
+              "Lift state up",
+              "Two or more siblings must stay in sync",
+              "You may create prop drilling or rerender a larger subtree."
+            ],
+            [
+              "Use Context / reducer / store",
+              "The common owner becomes too high or too many layers only forward props",
+              "Do not jump here before checking whether a nearby common parent is enough."
+            ]
+          ],
+          "caption": "The follow-up decision interviewers usually ask next"
         },
         {
           "type": "text",
@@ -3069,10 +3275,10 @@
       "lifting-state",
       "data-flow"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
-      "title": "How do you lift state up in React?",
-      "description": "Lift state up by moving shared state to the nearest common parent and passing values and update handlers down as props."
+      "title": "React lifting state up: sibling sync bugs, single source of truth, and trade-offs",
+      "description": "Learn when to lift React state to a common parent, how it fixes sibling drift bugs, and when lifting too far creates prop drilling or rerender costs."
     },
     "incidentCard": {
       "title": "Shared State Sync Root Cause Check",
@@ -3453,6 +3659,10 @@
           "caption": "Common strategies to prevent unnecessary re-renders in React"
         },
         {
+          "type": "text",
+          "text": "<strong>Profiling-first workflow</strong><br><br>Start with React DevTools Profiler or “Why did this render?” before you optimize. Then ask three questions in order: which component is actually hot, which prop/context/state change triggered it, and can I reduce the blast radius without adding a maze of memoization?"
+        },
+        {
           "type": "code",
           "language": "jsx",
           "code": "// Example using React.memo and useCallback\nconst Button = React.memo(({ onClick, label }) => {\n  console.log('Button rendered');\n  return <button onClick={onClick}>{label}</button>;\n});\n\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  const handleClick = useCallback(() => {\n    setCount((prev) => prev + 1);\n  }, []);\n\n  return (\n    <div>\n      <h1>Count: {count}</h1>\n      <Button onClick={handleClick} label='Increment' />\n    </div>\n  );\n}"
@@ -3462,13 +3672,31 @@
           "text": "<strong>Detailed Explanation</strong><br><ul><li><strong>Memoization:</strong> By caching values and functions, React avoids re-creating them during re-renders.</li><li><strong>Pure Components:</strong> Class-based components that implement shallow comparison for props and state, ensuring only changed data triggers updates.</li><li><strong>Restructuring State:</strong> Large shared state causes global re-renders; move state down to relevant child components when possible.</li><li><strong>Context Optimization:</strong> Context triggers re-renders in all consumers; use memoized context values or split contexts by responsibility.</li></ul>"
         },
         {
+          "type": "text",
+          "text": "<strong>Broad context blast radius</strong><br><br>A memoized child still re-renders if it reads from a context whose value changes every keypress. This is why context splitting often beats adding more memo wrappers."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const SearchContext = React.createContext(null);\n\nfunction App() {\n  const [theme, setTheme] = useState('light');\n  const [searchTerm, setSearchTerm] = useState('');\n\n  // ❌ Theme-only consumers still rerender on every keystroke\n  const value = useMemo(() => ({ theme, searchTerm, setSearchTerm }), [theme, searchTerm]);\n  return <SearchContext.Provider value={value}><Layout /></SearchContext.Provider>;\n}\n\n// Better: split fast-changing search state from slower theme state."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Inline callback pitfall</strong><br><br><code>React.memo</code> only helps when props are actually stable. Passing a new callback every render keeps the child hot even when the visual output barely changes."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const Row = React.memo(function Row({ item, onSelect }) {\n  return <button onClick={() => onSelect(item.id)}>{item.label}</button>;\n});\n\nfunction List({ items }) {\n  return items.map((item) => (\n    <Row\n      key={item.id}\n      item={item}\n      onSelect={(id) => console.log(id)} // ❌ new function every render\n    />\n  ));\n}\n\nfunction ListFixed({ items }) {\n  const onSelect = useCallback((id) => console.log(id), []);\n  return items.map((item) => <Row key={item.id} item={item} onSelect={onSelect} />);\n}"
+        },
+        {
           "type": "code",
           "language": "jsx",
           "code": "// Example: Context optimization with useMemo\nconst ThemeContext = React.createContext();\n\nfunction App() {\n  const [theme, setTheme] = useState('light');\n  const value = useMemo(() => ({ theme, setTheme }), [theme]);\n\n  return (\n    <ThemeContext.Provider value={value}>\n      <Toolbar />\n    </ThemeContext.Provider>\n  );\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Other Optimization Techniques</strong><br><ul><li>Use <code>key</code> attributes wisely — avoid changing keys unnecessarily.</li><li>Batch multiple state updates using <code>ReactDOM.flushSync()</code> or rely on React's automatic batching (React 18+).</li><li>Defer complex calculations or animations using <code>useTransition()</code> or <code>useDeferredValue()</code>.</li><li>Profile performance using React DevTools Profiler to locate render bottlenecks.</li></ul>"
+          "text": "<strong>When transition/deferred value is better than memoization</strong><br><br>If the real issue is that an update is legitimately expensive or low-priority, memoization may be the wrong tool. <code>useTransition()</code> and <code>useDeferredValue()</code> help when the user should keep typing or interacting while heavier list filtering or search results lag slightly behind."
         },
         {
           "type": "text",
@@ -3489,7 +3717,7 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "Prevent React rerenders: profiling-first fixes and memoization pitfalls",
       "description": "Debug React rerenders by profiling first, stabilizing references, shrinking context blast radius, and avoiding memoization patterns that add complexity without real wins."
@@ -4229,6 +4457,28 @@
         },
         {
           "type": "text",
+          "text": "<strong>Production-flavored example: feature flag / modal toggle</strong><br><br>The real bug is not academic. It happens when a feature flag, modal, or debug panel conditionally introduces a Hook and shifts every later slot."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ❌ When showAdvanced flips, the later hooks move to different slots\nfunction BillingPanel({ showAdvanced }) {\n  const [plan, setPlan] = useState('pro');\n\n  if (showAdvanced) {\n    const [coupon, setCoupon] = useState('');\n  }\n\n  const [notes, setNotes] = useState('');\n  return <Panel />;\n}\n\n// ✅ Keep hook order stable; move the condition inside the hook or JSX\nfunction BillingPanelFixed({ showAdvanced }) {\n  const [plan, setPlan] = useState('pro');\n  const [coupon, setCoupon] = useState('');\n  const [notes, setNotes] = useState('');\n\n  useEffect(() => {\n    if (!showAdvanced) return;\n    validateCoupon(coupon);\n  }, [showAdvanced, coupon]);\n\n  return showAdvanced ? <Advanced coupon={coupon} /> : <Basic notes={notes} />;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Early return: wrong vs right</strong><br><br>Returning early before later Hooks is the same class of bug as a conditional Hook call. React still expects the same hook index progression on every render."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ❌ Early return skips later hooks on some renders\nfunction Profile({ user }) {\n  const [tab, setTab] = useState('overview');\n  if (!user) return <Spinner />;\n  const [draft, setDraft] = useState(user.name);\n  return <Editor draft={draft} />;\n}\n\n// ✅ Put all hooks first, then branch in render output\nfunction ProfileFixed({ user }) {\n  const [tab, setTab] = useState('overview');\n  const [draft, setDraft] = useState('');\n\n  if (!user) return <Spinner />;\n  return <Editor draft={draft} />;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Hook index mental model</strong><br><br>You can think of React as replaying a hook index from top to bottom on every render: slot 0, slot 1, slot 2, and so on. If one render skips slot 1 because a branch changed, every later state/effect/memo lookup shifts and React starts attaching the wrong data to the wrong Hook."
+        },
+        {
+          "type": "text",
           "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"React tracks Hooks by call order, not by name. If you call Hooks conditionally, the order changes between renders, so React attaches state and effects to the wrong Hook. The Rules of Hooks exist to guarantee stable ordering.\"</em>"
         },
         {
@@ -4237,7 +4487,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A hook is called inside a conditional and breaks state order across renders.<br><br><strong>Common pitfalls</strong><br><ul><li>Calling hooks inside loops or conditionals.</li><li>Using hooks in non-component functions.</li><li>Suppressing lint rules and masking bugs.</li></ul><strong>Trade-off or test tip</strong><br>Rules enforce consistency. Test with eslint-plugin-react-hooks and avoid conditional calls.</strong>"
+          "text": "<strong>Practical guardrail</strong><br><br>Lint rules matter here because the failure mode is often silent until a branch toggles in production. Keep hooks at the top level, do conditional behavior <em>inside</em> an effect/callback, and let <code>eslint-plugin-react-hooks</code> catch branch-specific mistakes before they become state-slot corruption bugs."
         }
       ]
     },
@@ -4250,7 +4500,7 @@
       "best-practices",
       "control-flow"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "Why do React Hooks have rules?",
       "description": "Hooks have rules because React maps hook state by call order, so conditional or reordered calls break state and effect matching."
@@ -4357,7 +4607,20 @@
         },
         {
           "type": "text",
+          "text": "<strong>Worked async example: delayed submit + permission flow</strong><br><br>Timers are only one stale-closure variant. The same bug appears when a submit handler starts async work and later reads a value that has changed since the click."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ❌ Async callback keeps the snapshot from the click that started it\nfunction Checkout({ canSubmit }) {\n  const [status, setStatus] = useState('idle');\n\n  async function handleSubmit() {\n    setStatus('checking');\n    await verifyPaymentIntent();\n\n    if (!canSubmit) {\n      setStatus('blocked');\n      return;\n    }\n\n    setStatus('submitted');\n  }\n\n  return <button onClick={handleSubmit}>Pay</button>;\n}\n\n// ✅ Keep the latest permission in a ref for long-lived async work\nfunction CheckoutFixed({ canSubmit }) {\n  const latestCanSubmit = useRef(canSubmit);\n  const [status, setStatus] = useState('idle');\n\n  useEffect(() => {\n    latestCanSubmit.current = canSubmit;\n  }, [canSubmit]);\n\n  async function handleSubmit() {\n    setStatus('checking');\n    await verifyPaymentIntent();\n\n    if (!latestCanSubmit.current) {\n      setStatus('blocked');\n      return;\n    }\n\n    setStatus('submitted');\n  }\n\n  return <button onClick={handleSubmit}>Pay</button>;\n}"
+        },
+        {
+          "type": "text",
           "text": "<strong>Important insight</strong><br><br>This is not a React quirk. This is how <em>JavaScript closures</em> work combined with React’s <em>\"each render is a snapshot\"</em> model."
+        },
+        {
+          "type": "text",
+          "text": "<strong>When stale closures are expected</strong><br><br>A stale closure is not automatically a bug. Sometimes you intentionally want the snapshot from the click that started the work, such as logging which filters were active when an export began. The real question is: should this callback use the <em>latest</em> value, or the <em>value from the render that created it</em>?"
         },
         {
           "type": "text",
@@ -4379,7 +4642,7 @@
       "effects",
       "callbacks"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "React stale closures: async bugs, latest-state fixes, and effect debugging",
       "description": "Stale closure bugs show up in timers, subscriptions, and async handlers when code reads an old render snapshot instead of the latest state."
@@ -5317,6 +5580,23 @@
         },
         {
           "type": "text",
+          "text": "<strong>Worked fetch example: duplicate request vs cleanup-safe request</strong><br><br>The common complaint is “StrictMode fetched twice.” The real question is whether the effect is safe when React remounts the component or the user changes routes quickly."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// ❌ Duplicate fetch and late stale response can win after remount/navigation\nuseEffect(() => {\n  fetch(`/api/profile/${userId}`)\n    .then((r) => r.json())\n    .then(setUser);\n}, [userId]);\n\n// ✅ Abort the old request when StrictMode remounts or the route changes\nuseEffect(() => {\n  const controller = new AbortController();\n\n  fetch(`/api/profile/${userId}`, { signal: controller.signal })\n    .then((r) => r.json())\n    .then((data) => {\n      if (!controller.signal.aborted) setUser(data);\n    })\n    .catch((error) => {\n      if (controller.signal.aborted) return;\n      setError(error);\n    });\n\n  return () => controller.abort();\n}, [userId]);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why the route-switch scenario matters</strong><br><br>Dev-only replay maps to real user behavior. A user can open a profile, navigate away immediately, and come back. If your effect leaks subscriptions or lets an old request commit after unmount, that is a production bug even though StrictMode is what exposed it first."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Extra render checks vs extra effect re-runs</strong><br><br>StrictMode stresses more than one surface. Extra render calls catch impure render logic. Extra effect setup/cleanup cycles catch missing cleanup and non-idempotent side effects. Keep those two diagnostics separate when debugging double logs."
+        },
+        {
+          "type": "text",
           "text": "<strong>Why React does this (the real reason)</strong><br><br>Concurrent React may mount, pause, throw away, and restart trees. If your effects are not resilient to being started and stopped multiple times, you’ll get production-only bugs. StrictMode forces you to see them early."
         },
         {
@@ -5344,7 +5624,7 @@
       "effects",
       "best-practices"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "React StrictMode double effects: cleanup bugs, duplicate side effects, and dev-only diagnostics",
       "description": "StrictMode replays effects in development to expose missing cleanup, non-idempotent side effects, and production bugs hiding behind “runs once” assumptions."

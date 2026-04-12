@@ -1,0 +1,145 @@
+{
+  "contentId": "js-undefined-vs-not-defined",
+  "tech": "javascript",
+  "query": "undefined vs not defined in javascript interview question",
+  "reviewedAt": "2026-04-08",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "GreatFrontEnd null vs undefined vs undeclared",
+      "url": "https://www.greatfrontend.com/questions/quiz/whats-the-difference-between-a-variable-that-is-null-undefined-or-undeclared-how-would-you-go-about-checking-for-any-of-these-states",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep answer that covers undefined and undeclared checks together.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It tackles the broader interview family of null, undefined, and undeclared variables in one answer."
+      ],
+      "theirGaps": [
+        "It may spend less time on keeping the core undefined-vs-not-defined contrast extremely compact."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "console.log(typeof AppConfig); // 'undefined' if the global never loaded"
+        ],
+        "followUpConfusion": [
+          "If typeof itself throws, you are likely in TDZ rather than dealing with an undeclared global."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd still grounds the topic in actual checking strategy, so the real-world angle stays close."
+        ],
+        "actionableExamples": [
+          "Its quiz-style explanation is useful, but our page now shows missing-property, typeof, and undeclared-name checks side by side."
+        ],
+        "followUpConfusion": [
+          "It covers the broader state family, while our page is now more explicit about TDZ versus undeclared identifiers."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one failed script-load or feature-flag bootstrap example so the practical framing is clearly ahead rather than merely close."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "Our page is now more explicit about the safe check order, the typeof trap, and the TDZ boundary, while GreatFrontEnd remains broader across the null/undefined/undeclared family."
+    },
+    {
+      "label": "GeeksforGeeks undefined vs not defined",
+      "url": "https://www.geeksforgeeks.org/javascript/undefined-vs-not-defined-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a mainstream tutorial-style page that targets the same undefined-vs-not-defined search intent.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is directly optimized for the exact comparison query and usually includes multiple examples."
+      ],
+      "theirGaps": [
+        "It is often more definitional than production-oriented."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A missing API field often becomes undefined. A missing global, typo, or script-load failure often throws \"is not defined\" instead."
+        ],
+        "actionableExamples": [
+          "console.log(typeof AppConfig); // 'undefined' if the global never loaded"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks targets the exact query, but our page now does more to tie the distinction to real debugging paths."
+        ],
+        "actionableExamples": [
+          "Its comparison examples are useful, yet our page now shows missing-property, typeof, and undeclared-name checks in one compact flow."
+        ],
+        "followUpConfusion": [
+          "It stays focused on the same distinction, so the broader follow-up comparison remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one explicit null comparison so the page closes the broader state-family follow-up more decisively."
+        ]
+      },
+      "winReason": "Our page now explains the distinction through concrete debugging paths and safe checks, while GeeksforGeeks stays closer to a definitional comparison article."
+    },
+    {
+      "label": "Stack Overflow undefined vs not defined",
+      "url": "https://stackoverflow.com/questions/15975042/what-is-the-difference-between-undefined-and-not-defined-in-javascript",
+      "category": "community_qna",
+      "selectionReason": "This is a long-lived community Q&A result for the exact distinction and captures the practical confusion developers search for.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It directly mirrors the real confusion developers search when they hit these two terms."
+      ],
+      "theirGaps": [
+        "Community answers vary in tone and can be less cleanly structured than a curated trivia page."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "const payload = {};\nconsole.log(payload.age); // undefined (missing property value)"
+        ],
+        "followUpConfusion": [
+          "If typeof itself throws, you are likely in TDZ rather than dealing with an undeclared global."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Q&A is still anchored in a real developer confusion, so the practical angle remains close."
+        ],
+        "actionableExamples": [
+          "Community answers include code, but our page now presents a tighter side-by-side debugging sequence."
+        ],
+        "followUpConfusion": [
+          "Because the thread is broad and community-driven, our page now resolves the TDZ-versus-undeclared follow-up more cleanly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one module-load or feature-flag example so the page is more obviously anchored in a modern frontend failure mode."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "The community thread mirrors the real confusion, but our page now gives a cleaner debugging path with concrete typeof and TDZ guidance."
+    }
+  ]
+}

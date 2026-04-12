@@ -5,7 +5,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "constructor is for DI + trivial class setup, ngOnInit is for initialization that depends on inputs/bindings, and ngAfterViewInit is for work that needs the component view (DOM, ViewChild). For DOM/ViewChild access, ngAfterViewInit is usually correct—except @ViewChild({ static: true }) cases which are available earlier.",
+    "description": "constructor is for DI + trivial class setup, ngOnInit is for initialization that depends on inputs/bindings, and ngAfterViewInit is for work that needs the component view (DOM, ViewChild). The production follow-ups are what static ViewChild really changes, why static:true breaks under *ngIf/*ngFor, and when afterNextRender is a better post-render tool than guessing in the constructor.",
     "answer": {
       "blocks": [
         {
@@ -56,6 +56,15 @@
           "code": "import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';\n\n@Component({\n  selector: 'app-demo',\n  template: `\n    <input #nameInput />\n    <!-- If this input were under *ngIf, static:true would be wrong -->\n  `\n})\nexport class DemoComponent implements OnInit, AfterViewInit {\n  // Case A (common): default static:false => available in ngAfterViewInit\n  @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;\n\n  // Case B: static:true => available in ngOnInit (ONLY if always present)\n  // @ViewChild('nameInput', { static: true }) nameInput!: ElementRef<HTMLInputElement>;\n\n  constructor(/* inject services here */) {\n    // DI only. No DOM.\n  }\n\n  ngOnInit(): void {\n    // Good: init that depends on @Input() or services.\n    // If using static:true, you *can* access nameInput here.\n  }\n\n  ngAfterViewInit(): void {\n    // Safe place for DOM/ViewChild\n    this.nameInput?.nativeElement.focus();\n  }\n}"
         },
         {
+          "type": "text",
+          "text": "<strong>Broken-before-fixed-after example</strong><br><br><strong>Static queries are not “faster DOM access.”</strong> They only work early when the queried node is guaranteed to be present in the initial template. If the element is behind <code>*ngIf</code>, <code>static: true</code> is the wrong fix and usually produces <code>undefined</code> in exactly the interview scenario where someone says “but I moved it to <code>ngOnInit</code> already.”"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, ElementRef, ViewChild } from '@angular/core';\n\n@Component({\n  selector: 'app-broken-static-query',\n  template: `\n    <input *ngIf=\"showInput\" #nameInput />\n    <button type=\"button\" (click)=\"showInput = true\">Show</button>\n  `\n})\nexport class BrokenStaticQueryComponent {\n  showInput = false;\n\n  // ❌ Wrong: the node is not guaranteed to exist in the initial view tree.\n  @ViewChild('nameInput', { static: true }) nameInput?: ElementRef<HTMLInputElement>;\n\n  ngOnInit(): void {\n    console.log(this.nameInput); // still undefined\n  }\n\n  // ✅ Fix: keep the default query and use ngAfterViewInit or a later render hook\n  // after the input actually exists.\n}"
+        },
+        {
           "type": "list",
           "columns": [
             "Scenario",
@@ -92,6 +101,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Newer Angular nuance: <code>afterNextRender</code></strong><br><br>If the real requirement is “run this after Angular finishes rendering,” newer Angular also gives you render callbacks like <code>afterNextRender</code>. That helps with measurements, focus, or third-party widget setup after a render pass. It does <strong>not</strong> change the core decision: constructor is still for DI, <code>ngOnInit</code> is still for input-dependent init, and view-dependent work still belongs in a post-render phase."
+        },
+        {
+          "type": "text",
           "text": "<strong>Summary</strong><br><br><code>constructor</code> = DI + minimal setup. <code>ngOnInit</code> = initialization that depends on inputs/bindings. <code>ngAfterViewInit</code> = anything that needs the rendered view (DOM, <code>ViewChild</code>). For DOM/ViewChild access, <strong>ngAfterViewInit is the default correct choice</strong>, with the exception of <code>@ViewChild({ static: true })</code> when the element is guaranteed to exist."
         }
       ]
@@ -125,10 +138,10 @@
       "hooks",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
       "title": "Angular constructor vs ngOnInit vs ngAfterViewInit: when to use",
-      "description": "Use constructor for DI and simple class setup, ngOnInit for initialization that depends on bindings, and ngAfterViewInit for DOM or ViewChild access."
+      "description": "Use constructor for DI, ngOnInit for input-dependent init, and ngAfterViewInit for DOM or ViewChild work. Includes static ViewChild pitfalls, *ngIf edge cases, and render-hook follow-ups."
     }
   },
   {
@@ -361,6 +374,15 @@
           "text": "<strong>Rule of thumb</strong><br><br>If the code depends on <strong>how something is shown</strong> (DOM, template state, view events) → component. If it depends on <strong>what something means</strong> (rules, data fetching, caching, orchestration) → service."
         },
         {
+          "type": "text",
+          "text": "<strong>Worked example: duplicated business rule across two screens</strong><br><br>If both a checkout page and an admin refund page need the same “can this order be refunded?” rule, that logic does not belong in either component. Each component should ask a service/facade for the answer and stay focused on rendering the result."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// ❌ Fat component: rule duplicated in multiple screens\nexport class OrdersPageComponent {\n  canRefund(order: Order): boolean {\n    return order.status === 'paid' && !order.locked && order.total > 0;\n  }\n}\n\n// ✅ Move the reusable rule behind a service boundary\n@Injectable({ providedIn: 'root' })\nexport class OrdersPolicyService {\n  canRefund(order: Order): boolean {\n    return order.status === 'paid' && !order.locked && order.total > 0;\n  }\n}\n\nexport class OrdersPageComponent {\n  constructor(private ordersPolicy: OrdersPolicyService) {}\n}\n"
+        },
+        {
           "type": "code",
           "language": "typescript",
           "code": "// user.service.ts\nimport { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\nimport { Observable, shareReplay } from 'rxjs';\n\nexport interface UserDto { id: string; name: string; }\nexport interface User { id: string; displayName: string; }\n\n@Injectable({ providedIn: 'root' })\nexport class UserService {\n  private users$?: Observable<User[]>;\n\n  constructor(private http: HttpClient) {}\n\n  getUsers(): Observable<User[]> {\n    // Cache + dedupe requests for this session\n    this.users$ ??= this.http.get<UserDto[]>('/api/users').pipe(\n      // Business mapping belongs here (or a dedicated mapper)\n      // so multiple components get consistent data.\n      // Keep mapping pure.\n      // DTO -> domain model:\n      // (If mapping grows, extract to a pure function.)\n      shareReplay({ bufferSize: 1, refCount: true })\n    ) as unknown as Observable<User[]>;\n\n    return this.users$;\n  }\n}"
@@ -440,7 +462,7 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "Angular component vs service: what belongs where?",
       "description": "Components should handle template state and user interactions, while services should own reusable business logic, data access, and side effects."
@@ -1181,7 +1203,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular data binding is mostly explicit one-way flow in one direction at a time: component state into the DOM, events back into the component, and two-way syntax only as sugar. The useful angle is when property versus attribute binding, or too much two-way binding, creates real production bugs.",
+    "description": "Angular data binding is mostly explicit one-way flow in one direction at a time: component state into the DOM, events back into the component, and two-way syntax only as sugar. The real production edge is debugging property-vs-attribute mistakes, binding behavior under OnPush or signals, and why the wrong binding target can create a stale UI even when the template “looks correct.”",
     "answer": {
       "blocks": [
         {
@@ -1257,11 +1279,20 @@
         {
           "type": "code",
           "language": "html",
+          "code": "<!-- ❌ Wrong mental model: attribute binding for real control state -->\n<button [attr.disabled]=\"isSaving ? '' : null\">Save</button>\n\n<!-- ✅ Correct: DOM property controls real element behavior -->\n<button [disabled]=\"isSaving\">Save</button>\n\n<!-- ✅ ARIA stays attribute-based because it is metadata, not element state -->\n<button [disabled]=\"isSaving\" [attr.aria-busy]=\"isSaving ? 'true' : 'false'\">\n  Save\n</button>"
+        },
+        {
+          "type": "code",
+          "language": "html",
           "code": "<h2>{{ title }}</h2>\n\n<img [src]=\"avatarUrl\" [alt]=\"userName\" />\n\n<button type=\"button\" [disabled]=\"isSaving\" (click)=\"save()\">\n  Save\n</button>\n\n<input\n  [value]=\"query\"\n  (input)=\"query = ($event.target as HTMLInputElement).value\"\n  [attr.aria-label]=\"'Search'\"\n/>\n\n<div [class.error]=\"hasError\" [style.width.px]=\"panelWidth\"></div>"
         },
         {
           "type": "text",
           "text": "<strong>Two-way binding is just sugar</strong><br><br><code>[(x)]</code> expands to <code>[x]</code> + <code>(xChange)</code> for custom components. In forms, <code>[(ngModel)]</code> is provided by template-driven forms (requires importing <code>FormsModule</code>)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up seniors mention: OnPush, signals, and debug mode</strong><br><br>The one-way mental model matters even more with <code>OnPush</code> and signal-driven UIs. Property bindings still update when their inputs change, but a stale UI usually means the state did not change in a way Angular can observe, or you bound the wrong target. In dev mode Angular may also surface mistakes earlier with checks like expression-changed errors; production may hide the warning while the mental-model bug is still there."
         },
         {
           "type": "code",
@@ -1372,10 +1403,10 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "seo": {
       "title": "Angular data binding in production: one-way flow, property vs attribute, and two-way pitfalls",
-      "description": "Explain Angular data binding through the real pitfalls: one-way flow, property vs attribute differences, event wiring, and when two-way binding makes state harder to debug."
+      "description": "Explain Angular data binding through real debugging pitfalls: one-way flow, property vs attribute mistakes, OnPush and signal follow-ups, and when two-way binding hides state bugs."
     }
   },
   {
@@ -1686,7 +1717,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "A directive is a class that Angular attaches to an element (or an &lt;ng-template&gt;) to add behavior, change styling, or control whether a chunk of template exists at all. Interview focus: the 3 directive categories, how structural directives desugar from * syntax into &lt;ng-template&gt;, and how to build safe custom directives (HostBinding/HostListener, Renderer2, TemplateRef/ViewContainerRef). Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+    "description": "A directive is a class that Angular attaches to an element (or an &lt;ng-template&gt;) to add behavior, change styling, or control whether a chunk of template exists at all. The senior angle is not only naming structural vs attribute directives, but also knowing when to mention TemplateRef/ViewContainerRef, what the * rewrite actually changes, and when an attribute directive is the safer answer because you need to preserve state.",
     "answer": {
       "blocks": [
         {
@@ -1766,6 +1797,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Attribute directives do not wrap the template</strong><br><br>That is the practical contrast with structural directives. An attribute directive keeps the same host element alive and just changes host behavior or styling. If the requirement is “highlight, disable, annotate, or listen,” you usually stay in attribute-directive territory and do <strong>not</strong> need to bring up <code>TemplateRef</code>/<code>ViewContainerRef</code>."
+        },
+        {
+          "type": "text",
           "text": "<strong>Custom structural directive (the “real” senior signal)</strong><br><br>Structural directives control a <em>template block</em>. They inject <code>TemplateRef</code> (what to render) and <code>ViewContainerRef</code> (where to render)."
         },
         {
@@ -1777,6 +1812,10 @@
           "type": "code",
           "language": "html",
           "code": "<div *appIf=\"isVisible\">Visible</div>\n\n<!-- desugars to -->\n<ng-template [appIf]=\"isVisible\">\n  <div>Visible</div>\n</ng-template>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview calibration</strong><br><br>If the question is just “what is a directive?”, stop at the three categories. Bring up <code>TemplateRef</code>/<code>ViewContainerRef</code> only when they ask about <code>*</code> syntax, custom structural directives, or why <code>*ngIf</code> destroys component state while an attribute directive does not."
         },
         {
           "type": "list",
@@ -1864,10 +1903,10 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
-      "title": "What are directives in Angular and what does * syntax mean?",
-      "description": "Angular directives are classes that add behavior to templates, and * syntax is shorthand for creating an ng-template with a structural directive."
+      "title": "Angular directives in production: structural vs attribute, * syntax, and when TemplateRef matters",
+      "description": "Explain Angular directives through the real follow-ups: structural vs attribute behavior, * microsyntax desugaring, preserved state, and when TemplateRef/ViewContainerRef belongs in the answer."
     }
   },
   {
@@ -2209,7 +2248,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "trackBy is Angular list identity, not just a micro-optimization. It prevents production bugs like lost focus, reset inputs, and child state churn by letting Angular reuse the right DOM rows when arrays refresh or reorder.",
+    "description": "trackBy is Angular list identity, not just a micro-optimization. It prevents production bugs like lost focus, reset inputs, and child state churn by letting Angular reuse the right DOM rows when arrays refresh or reorder. The deeper follow-up is why index-based identity breaks on insert or sort, and why object reference is not the same thing as logical identity after API refreshes.",
     "answer": {
       "blocks": [
         {
@@ -2225,6 +2264,15 @@
           "type": "code",
           "language": "typescript",
           "code": "type User = { id: string; name: string };\n\nexport class UsersComponent {\n  users: User[] = [\n    { id: 'u1', name: 'Ada' },\n    { id: 'u2', name: 'Linus' }\n  ];\n\n  trackByUserId(index: number, user: User): string {\n    return user.id;\n  }\n\n  // Common real-world cause of problems: new object references on refresh\n  refreshFromApiLike(): void {\n    // Same ids, but NEW objects => without trackBy, Angular treats them as new items\n    this.users = this.users.map(u => ({ ...u }));\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Broken-before-fixed-after example</strong><br><br><strong>Index is not identity.</strong> If you sort or insert rows, index-based tracking makes the DOM state follow the row position instead of the logical item. That is how the wrong input value or focus can “stick” to a different row after reordering."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "trackByIndex(index: number): number {\n  return index;\n}\n\nsortByName(): void {\n  this.users = [...this.users].sort((a, b) => a.name.localeCompare(b.name));\n}\n\n// If the first row used to be Ada and becomes Linus after sort,\n// index tracking reuses the DOM by position, not by logical user.\n// That is how focus, typed text, or child row state can stick to the wrong row."
         },
         {
           "type": "list",
@@ -2330,6 +2378,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Reference equality is not logical identity</strong><br><br>If the backend returns fresh objects on every refresh, object reference is useless for preserving DOM state. What matters is a stable logical key like <code>user.id</code>. Reference equality only works when the same objects stay alive in memory, which is often false in real apps that rehydrate data from HTTP or stores."
+        },
+        {
+          "type": "text",
           "text": "<strong>Summary</strong><br><br><code>trackBy</code> is important because it gives Angular a stable key per item so it can reuse and move existing rows instead of recreating them. Without it (especially when data refresh creates new object references), you pay in performance and you lose UI state (inputs, focus, child component state). Use a stable unique id; avoid index unless the list is truly static."
         },
         {
@@ -2367,10 +2419,10 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "seo": {
       "title": "Angular trackBy for real list bugs: identity, DOM reuse, and preserved input state",
-      "description": "Explain trackBy through production list behavior: stable identity, DOM reuse, focus or input preservation, and the bugs caused by rebuilding rows on refresh."
+      "description": "Explain trackBy through production list behavior: stable identity, DOM reuse, focus or input preservation, index-based reorder bugs, and why API refreshes break reference-based thinking."
     }
   },
   {
@@ -2496,6 +2548,15 @@
           "code": "import { Injectable } from '@angular/core';\n\n@Injectable()\nexport class WizardStateService {\n  step = 1;\n  data: Record<string, unknown> = {};\n\n  reset(): void {\n    this.step = 1;\n    this.data = {};\n  }\n}\n\n// component.ts\n// @Component({\n//   ...\n//   providers: [WizardStateService]\n// })\n// export class CheckoutWizardComponent {\n//   constructor(public wizard: WizardStateService) {}\n// }"
         },
         {
+          "type": "text",
+          "text": "<strong>When root scope is the wrong choice</strong><br><br>A root singleton is correct for shared API clients and caches, but it is wrong for draft state that should reset per component instance. Two checkout wizards open at the same time should not silently share one mutable service instance."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "@Injectable({ providedIn: 'root' })\nexport class SearchCacheService {\n  results = new Map<string, User[]>();\n}\n\n@Injectable()\nexport class WizardStateService {\n  step = 1;\n  data: Record<string, unknown> = {};\n}\n\n@Component({\n  selector: 'app-checkout-wizard',\n  providers: [WizardStateService],\n  template: `...`\n})\nexport class CheckoutWizardComponent {\n  constructor(public wizard: WizardStateService, public cache: SearchCacheService) {}\n}\n\n// Each CheckoutWizardComponent gets its own WizardStateService,\n// but all screens still share the root SearchCacheService."
+        },
+        {
           "type": "list",
           "columns": [
             "Common pitfall",
@@ -2561,7 +2622,7 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "Angular services in production: DI scope, boundaries, and when to use one",
       "description": "Use services for shared logic, HTTP, caching, and orchestration; learn provider scope, component-vs-service boundaries, and common architecture mistakes."
@@ -2573,7 +2634,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular dependency injection (DI) is the framework mechanism that creates and supplies dependencies (services/config/values) to classes (components, directives, pipes, other services) based on providers. Instead of constructing dependencies manually, you register providers (how to build a value for a token) and Angular resolves them through a hierarchical injector tree. Interview focus: provider configuration, token types (class vs InjectionToken), scoping/lifetime (root vs component), and common pitfalls (multiple instances, circular deps, Optional/Self/SkipSelf). DI affects testability and architecture; test with mocks and scope providers carefully.",
+    "description": "Angular dependency injection (DI) is the framework mechanism that creates and supplies dependencies (services/config/values) to classes (components, directives, pipes, other services) based on providers. Instead of constructing dependencies manually, you register providers and Angular resolves them through a hierarchical injector tree. The senior follow-up is the real scope bug where a lower provider creates a second instance, plus knowing provider shapes and modifiers like Optional, Self, and SkipSelf.",
     "answer": {
       "blocks": [
         {
@@ -2616,6 +2677,10 @@
           "text": "<strong>How resolution works (hierarchical)</strong><br><br>When Angular needs a dependency, it checks the current injector (e.g., component injector), and if not found it walks up to parent injectors until it finds a provider. If multiple levels provide the same token, the <strong>nearest</strong> one is used."
         },
         {
+          "type": "text",
+          "text": "<strong>Real bug pattern: closest provider wins</strong><br><br>This is where DI stops being theory. A root-provided service can look “global” until a feature route or component provides the same token again. Then that subtree gets a different instance, which is exactly how carts, wizard state, and caches appear to reset “randomly” in production."
+        },
+        {
           "type": "list",
           "columns": [
             "Where you provide",
@@ -2645,6 +2710,11 @@
           "type": "code",
           "language": "typescript",
           "code": "import { Component, Injectable, inject } from '@angular/core';\n\n@Injectable({ providedIn: 'root' })\nexport class UsersService {\n  getUsers() { return ['Ada', 'Linus']; }\n}\n\n@Component({\n  selector: 'app-users',\n  standalone: true,\n  template: `{{ users.join(', ') }}`\n})\nexport class UsersComponent {\n  // Option A: constructor injection\n  // constructor(private usersService: UsersService) {}\n\n  // Option B: inject() (same timing category as constructor)\n  private readonly usersService = inject(UsersService);\n\n  users = this.usersService.getUsers();\n}"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, Injectable } from '@angular/core';\n\n@Injectable({ providedIn: 'root' })\nexport class CartService {\n  items = 3;\n}\n\n@Component({\n  selector: 'app-checkout',\n  standalone: true,\n  providers: [CartService],\n  template: `Checkout cart items: {{ cart.items }}`\n})\nexport class CheckoutComponent {\n  constructor(public cart: CartService) {}\n}\n\n// The header may still use the root CartService instance,\n// while CheckoutComponent and its subtree now use a different one.\n// That is why provider scope is a production bug source, not just an interview footnote."
         },
         {
           "type": "text",
@@ -2696,6 +2766,10 @@
           "text": "<strong>Multi providers (common in real apps)</strong><br><br>Some tokens accept multiple values. Angular collects them into an array when <code>multi: true</code> is used (classic example: HTTP interceptors)."
         },
         {
+          "type": "text",
+          "text": "<strong>Resolution modifiers seniors mention quickly</strong><br><br><code>@Optional()</code> says “return <code>null</code> if missing.” <code>@Self()</code> says “only check the current injector.” <code>@SkipSelf()</code> says “start at the parent injector.” These are the tools you use when the default nearest-provider rule is not the behavior you want."
+        },
+        {
           "type": "code",
           "language": "typescript",
           "code": "import { HTTP_INTERCEPTORS, HttpInterceptorFn } from '@angular/common/http';\n\nexport const authInterceptor: HttpInterceptorFn = (req, next) => {\n  const authReq = req.clone({ setHeaders: { Authorization: 'Bearer token' } });\n  return next(authReq);\n};\n\n// provider\n// { provide: HTTP_INTERCEPTORS, useValue: authInterceptor, multi: true }\n"
@@ -2742,7 +2816,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Inject a logging service and an API client across multiple features, then swap a mock in tests.<br><br><strong>Common pitfalls</strong><br><ul><li>Providing a service at the wrong level and creating extra instances.</li><li>Circular dependencies causing runtime errors.</li><li>Hard-coding dependencies that make testing hard.</li></ul><strong>Trade-off or test tip</strong><br>DI improves testability but needs clear provider scope. Test with mocks and verify singleton behavior.</strong>"
+          "text": "<strong>Practical scenario</strong><br>Inject a logging service and an API client across multiple features, then deliberately override one provider in a test or feature subtree.<br><br><strong>Common pitfalls</strong><br><ul><li>Providing a service at the wrong level and creating extra instances.</li><li>Circular dependencies causing runtime errors.</li><li>Hard-coding dependencies that make testing hard.</li></ul><strong>Trade-off or test tip</strong><br>DI improves testability but needs clear provider scope. Test with mocks, verify singleton behavior, and add one scope-override test when the service is stateful.</strong>"
         }
       ]
     },
@@ -2775,10 +2849,10 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
-      "title": "What is dependency injection in Angular?",
-      "description": "Dependency injection in Angular is a pattern where the framework creates and supplies class dependencies from providers and injector hierarchies."
+      "title": "Angular dependency injection in production: providers, injector hierarchy, and scope bugs",
+      "description": "Explain Angular DI through real provider-scope bugs, injector hierarchy, provider shapes, and resolution modifiers like Optional, Self, and SkipSelf."
     }
   },
   {
@@ -2787,7 +2861,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Constructor runs when the class instance is created (mainly for DI + trivial field setup). ngOnInit() runs once after Angular has set initial @Input() bindings (after the first ngOnChanges). Put Angular-dependent initialization (inputs, data streams, side effects) in ngOnInit, not in the constructor. Covers: angular, lifecycle, hooks, components, basics.",
+    "description": "Constructor runs when the class instance is created (mainly for DI + trivial field setup). ngOnInit() runs once after Angular has set initial @Input() bindings (after the first ngOnChanges). The stronger interview answer also calls out test timing, constructor side effects, and when ngOnChanges must take over because the input can change again later.",
     "answer": {
       "blocks": [
         {
@@ -2832,6 +2906,11 @@
               "✅ Yes (initial bindings are applied)"
             ],
             [
+              "Test timing",
+              "Runs during <code>TestBed.createComponent()</code>",
+              "Usually runs on first <code>fixture.detectChanges()</code>"
+            ],
+            [
               "Good for",
               "Assigning injected services to fields; lightweight defaults",
               "Starting streams, fetching data, initializing based on inputs, wiring subscriptions"
@@ -2847,6 +2926,11 @@
         {
           "type": "text",
           "text": "<strong>Why interviewers care</strong><br><br>Putting side effects in the constructor makes component instantiation do \"real work\" before Angular finishes binding and before tests can set up spies. Putting Angular-dependent logic in <code>ngOnInit</code> is predictable: bindings are ready, and in tests it usually runs on <code>fixture.detectChanges()</code>."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';\n\n@Component({\n  selector: 'app-user-details',\n  template: `User id: {{ userId }}`\n})\nexport class UserDetailsComponent implements OnInit, OnChanges {\n  @Input() userId!: string;\n\n  constructor(private readonly api: UsersApi) {\n    // ❌ Wrong: constructor runs before Angular finishes the first input binding pass.\n    // this.api.loadUser(this.userId).subscribe();\n  }\n\n  ngOnInit(): void {\n    // ✅ First load when the initial input is ready.\n    this.api.loadUser(this.userId).subscribe();\n  }\n\n  ngOnChanges(changes: SimpleChanges): void {\n    if (changes['userId'] && !changes['userId'].firstChange) {\n      // ✅ Follow-up when the parent changes the input again later.\n      this.api.loadUser(this.userId).subscribe();\n    }\n  }\n}"
         },
         {
           "type": "code",
@@ -2923,10 +3007,10 @@
       "components",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
       "title": "Constructor vs ngOnInit in Angular: what is the difference?",
-      "description": "Constructor runs when Angular instantiates the class for DI setup, while ngOnInit runs after input bindings are set and is better for initialization logic."
+      "description": "Constructor is for DI and trivial setup; ngOnInit is for input-dependent initialization. Includes test timing, ngOnChanges follow-ups, and constructor side-effect pitfalls."
     }
   },
   {
@@ -3387,6 +3471,42 @@
           "caption": "Picking the right hook (what interviewers actually test)"
         },
         {
+          "type": "list",
+          "columns": [
+            "Common task",
+            "Best hook",
+            "Why not the nearby hook?"
+          ],
+          "rows": [
+            [
+              "Kick off the first load that depends on bound inputs",
+              "<code>ngOnInit</code>",
+              "Constructor is too early because Angular has not finished the first input-binding pass."
+            ],
+            [
+              "React when the parent changes <code>@Input() filters</code> later",
+              "<code>ngOnChanges</code>",
+              "<code>ngOnInit</code> only runs once; it will not react to later parent updates."
+            ],
+            [
+              "Read projected tabs via <code>@ContentChild</code>",
+              "<code>ngAfterContentInit</code>",
+              "<code>ngAfterViewInit</code> is about the component view, not projected content from the parent."
+            ],
+            [
+              "Measure a <code>@ViewChild</code> input and focus it",
+              "<code>ngAfterViewInit</code>",
+              "<code>ngOnInit</code> is usually too early for view queries with the default <code>static: false</code> timing."
+            ],
+            [
+              "Tear down polling, listeners, and widget instances",
+              "<code>ngOnDestroy</code>",
+              "Cleanup in init hooks leaks because Angular may destroy the component long after setup."
+            ]
+          ],
+          "caption": "Scenario matrix interviewers actually expect next"
+        },
+        {
           "type": "code",
           "language": "typescript",
           "code": "import {\n  AfterContentChecked,\n  AfterContentInit,\n  AfterViewChecked,\n  AfterViewInit,\n  Component,\n  Input,\n  OnChanges,\n  OnDestroy,\n  OnInit,\n  SimpleChanges,\n  ViewChild,\n  ElementRef,\n} from '@angular/core';\n\n@Component({\n  selector: 'app-life',\n  template: `\n    <p #p>Hello</p>\n    <ng-content></ng-content>\n  `\n})\nexport class LifeComponent\n  implements\n    OnChanges,\n    OnInit,\n    AfterContentInit,\n    AfterContentChecked,\n    AfterViewInit,\n    AfterViewChecked,\n    OnDestroy {\n\n  @Input() value = 0;\n  @ViewChild('p') p?: ElementRef<HTMLParagraphElement>;\n\n  constructor() {\n    console.log('constructor');\n  }\n\n  ngOnChanges(changes: SimpleChanges): void {\n    if (changes['value']) {\n      console.log('ngOnChanges', changes['value'].previousValue, '->', changes['value'].currentValue);\n    }\n  }\n\n  ngOnInit(): void {\n    console.log('ngOnInit');\n  }\n\n  ngAfterContentInit(): void {\n    console.log('ngAfterContentInit');\n  }\n\n  ngAfterContentChecked(): void {\n    console.log('ngAfterContentChecked');\n  }\n\n  ngAfterViewInit(): void {\n    console.log('ngAfterViewInit');\n    // Safe: ViewChild available (default static:false)\n    this.p?.nativeElement.focus?.();\n  }\n\n  ngAfterViewChecked(): void {\n    console.log('ngAfterViewChecked');\n  }\n\n  ngOnDestroy(): void {\n    console.log('ngOnDestroy');\n  }\n}\n"
@@ -3394,6 +3514,15 @@
         {
           "type": "text",
           "text": "<strong>Execution order (practical)</strong><br><br><strong>First render (typical)</strong>:<br><code>constructor → ngOnChanges? → ngOnInit → ngAfterContentInit → ngAfterContentChecked → ngAfterViewInit → ngAfterViewChecked</code><br><br><strong>Later change-detection cycles</strong>:<br><code>ngOnChanges? → ngDoCheck → ngAfterContentChecked → ngAfterViewChecked</code><br><br><em>Note:</em> <code>ngOnChanges</code> only runs for <code>@Input</code> changes from the parent binding; it won’t fire just because you mutated an object in-place without changing the input reference."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "@Component({\n  selector: 'app-tabs-shell',\n  template: `\n    <section #panel><ng-content></ng-content></section>\n  `\n})\nexport class TabsShellComponent implements AfterContentInit, AfterViewInit {\n  @ContentChild(TabLabelDirective) projectedLabel?: TabLabelDirective;\n  @ViewChild('panel') panel?: ElementRef<HTMLElement>;\n\n  ngAfterContentInit(): void {\n    console.log('Projected label is ready:', this.projectedLabel?.text);\n  }\n\n  ngAfterViewInit(): void {\n    console.log('Own panel element is ready:', this.panel?.nativeElement.offsetWidth);\n  }\n}\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Newer Angular note: <code>afterNextRender</code></strong><br><br>If you only need a post-render callback and not a class lifecycle method, newer Angular APIs like <code>afterNextRender</code> can be a cleaner fit. It does <em>not</em> replace the meaning of <code>ngOnChanges</code>, <code>ngAfterContentInit</code>, or <code>ngOnDestroy</code>; it is just another timing tool for render-following work."
         },
         {
           "type": "list",
@@ -3471,7 +3600,7 @@
       "components",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "When do Angular lifecycle hooks run and what is each for?",
       "description": "Angular lifecycle hooks run at defined stages from input changes to destroy, letting you place setup, view logic, and cleanup in the correct phase."
@@ -3535,6 +3664,15 @@
         },
         {
           "type": "text",
+          "text": "<strong>Integrated example: input immutability + typed output event</strong><br><br>A strong production answer shows both contracts at once: the child renders parent-owned input data, but emits a typed event payload instead of mutating that input directly."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "type RenameUserEvent = { id: string; nextName: string };\n\n@Component({\n  selector: 'app-user-editor',\n  template: `\n    <input [value]=\"user.name\" (input)=\"rename(($event.target as HTMLInputElement).value)\" />\n    <button type=\"button\" (click)=\"save()\">Save</button>\n  `\n})\nexport class UserEditorComponent {\n  @Input({ required: true }) user!: User;\n  @Output() readonly renameRequested = new EventEmitter<RenameUserEvent>();\n\n  private draftName = '';\n\n  rename(nextName: string): void {\n    this.draftName = nextName;\n  }\n\n  save(): void {\n    this.renameRequested.emit({ id: this.user.id, nextName: this.draftName || this.user.name });\n  }\n}\n\n// parent template\n// <app-user-editor [user]=\"user\" (renameRequested)=\"renameUser($event)\"></app-user-editor>"
+        },
+        {
+          "type": "text",
           "text": "<strong>Inputs change over time</strong><br><br>Interviewers often ask how you react when an input changes after the first render. The correct answers are: <code>ngOnChanges</code>, an <code>@Input</code> setter, or (in newer Angular) signals-based inputs."
         },
         {
@@ -3589,6 +3727,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Output events do not bubble like DOM events</strong><br><br>An <code>@Output()</code> only notifies the parent that binds to that component event. Wrapping a native button does not magically forward the browser click up the component tree. If grandparents need the event, each component boundary must re-emit or the state flow should move to a service/store."
+        },
+        {
+          "type": "text",
           "text": "<strong>Summary</strong><br><br><code>@Input</code> defines the child’s data API (parent ➜ child). <code>@Output</code> defines the child’s event API (child ➜ parent). In interviews, emphasize: typed payloads, reacting to input changes correctly, OnPush + immutability behavior, and using EventEmitter only for component outputs (not as a global event bus)."
         }
       ]
@@ -3622,7 +3764,7 @@
       "outputs",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "How do @Input and @Output work in Angular?",
       "description": "@Input passes data from parent to child, and @Output uses EventEmitter to send events from child to parent."
@@ -3634,7 +3776,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "In Angular, most async APIs expose RxJS Observables (HttpClient, form valueChanges, router events). An Observable is a lazy stream that can emit 0..N values over time and supports cancellation via unsubscribe. Interview focus: cold vs hot streams, subscription/teardown, avoiding memory leaks, and composing streams with operators instead of nested subscribes.",
+    "description": "In Angular, most async APIs expose RxJS Observables (HttpClient, form valueChanges, router events). The interview-ready angle is not just the Observable definition, but when RxJS is still better than signals, how multicasting works, and how to compose streams without nested subscribes or stale UI bugs.",
     "answer": {
       "blocks": [
         {
@@ -3674,7 +3816,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Angular ↔ RxJS relationship</strong><br><br>RxJS provides the Observable implementation and operators. Angular exposes Observables in core APIs (most notably <code>HttpClient</code>, reactive forms <code>valueChanges</code>/<code>statusChanges</code>, and <code>Router.events</code>)."
+          "text": "<strong>Angular ↔ RxJS relationship</strong><br><br>RxJS provides the Observable implementation and operators. Angular exposes Observables in core APIs (most notably <code>HttpClient</code>, reactive forms <code>valueChanges</code>/<code>statusChanges</code>, and <code>Router.events</code>). Signals are great for local synchronous state, but Angular still leans on RxJS when you need time, cancellation, concurrency, or multiple async producers."
         },
         {
           "type": "list",
@@ -3701,6 +3843,32 @@
             ]
           ],
           "caption": "Where Observables show up in Angular"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Question",
+            "Prefer RxJS",
+            "Prefer signals"
+          ],
+          "rows": [
+            [
+              "Do values arrive over time?",
+              "✅ Router events, form streams, polling, WebSocket, cancellation-heavy HTTP flows",
+              "⚠️ Not the best default if the source is already stream-shaped"
+            ],
+            [
+              "Do you mainly need current local UI state?",
+              "⚠️ Possible, but can be heavier than needed",
+              "✅ Great for local derived state and synchronous template reads"
+            ],
+            [
+              "Do you need switchMap/mergeMap/debounce/retry/shareReplay?",
+              "✅ RxJS is still the natural tool",
+              "❌ Signals do not replace stream algebra"
+            ]
+          ],
+          "caption": "When RxJS is still better than converting everything to signals"
         },
         {
           "type": "text",
@@ -3783,7 +3951,16 @@
         {
           "type": "code",
           "language": "typescript",
-          "code": "import { Component, ChangeDetectionStrategy, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { AsyncPipe, NgFor } from '@angular/common';\nimport { HttpClient } from '@angular/common/http';\nimport { catchError, debounceTime, distinctUntilChanged, filter, of, startWith, switchMap } from 'rxjs';\n\ntype User = { id: number; name: string };\n\n@Component({\n  selector: 'app-user-search',\n  standalone: true,\n  imports: [ReactiveFormsModule, NgFor, AsyncPipe],\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    <input [formControl]=\"q\" placeholder=\"Search users\" />\n\n    <ul>\n      <li *ngFor=\"let u of (results$ | async)\">{{ u.name }}</li>\n    </ul>\n  `\n})\nexport class UserSearchComponent {\n  private http = inject(HttpClient);\n  readonly q = new FormControl('', { nonNullable: true });\n\n  readonly results$ = this.q.valueChanges.pipe(\n    startWith(this.q.value),\n    debounceTime(250),\n    mapTrim,\n    filter(v => v.length >= 2),\n    distinctUntilChanged(),\n    switchMap(v =>\n      this.http.get<User[]>(`/api/users?q=${encodeURIComponent(v)}`).pipe(\n        catchError(() => of([] as User[]))\n      )\n    )\n  );\n}\n\nfunction mapTrim(source$: any) {\n  return source$.pipe((v: string) => v.trim());\n}\n"
+          "code": "import { Component, ChangeDetectionStrategy, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { AsyncPipe, NgFor } from '@angular/common';\nimport { HttpClient } from '@angular/common/http';\nimport { catchError, debounceTime, distinctUntilChanged, filter, map, of, startWith, switchMap } from 'rxjs';\n\ntype User = { id: number; name: string };\n\n@Component({\n  selector: 'app-user-search',\n  standalone: true,\n  imports: [ReactiveFormsModule, NgFor, AsyncPipe],\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    <input [formControl]=\"q\" placeholder=\"Search users\" />\n\n    <ul>\n      <li *ngFor=\"let u of (results$ | async)\">{{ u.name }}</li>\n    </ul>\n  `\n})\nexport class UserSearchComponent {\n  private http = inject(HttpClient);\n  readonly q = new FormControl('', { nonNullable: true });\n\n  readonly results$ = this.q.valueChanges.pipe(\n    startWith(this.q.value),\n    debounceTime(250),\n    map(v => v.trim()),\n    filter(v => v.length >= 2),\n    distinctUntilChanged(),\n    switchMap(v =>\n      this.http.get<User[]>(`/api/users?q=${encodeURIComponent(v)}`).pipe(\n        catchError(() => of([] as User[]))\n      )\n    )\n  );\n}\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Second Angular example: Router events + shared data</strong><br><br>Typeahead is the common demo, but Angular teams also use RxJS when navigation, cancellation, and shared streams intersect. A route-driven header or breadcrumb service is a good example because the source is long-lived and multiple consumers may need the same derived value."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Injectable, inject } from '@angular/core';\nimport { NavigationEnd, Router } from '@angular/router';\nimport { filter, map, shareReplay } from 'rxjs';\n\n@Injectable({ providedIn: 'root' })\nexport class RouteInfoService {\n  private router = inject(Router);\n\n  readonly currentUrl$ = this.router.events.pipe(\n    filter((event): event is NavigationEnd => event instanceof NavigationEnd),\n    map(event => event.urlAfterRedirects),\n    shareReplay({ bufferSize: 1, refCount: true })\n  );\n}\n"
         },
         {
           "type": "text",
@@ -3793,6 +3970,15 @@
           "type": "code",
           "language": "typescript",
           "code": "import { Component, DestroyRef, inject } from '@angular/core';\nimport { takeUntilDestroyed } from '@angular/core/rxjs-interop';\nimport { fromEvent, map } from 'rxjs';\n\n@Component({\n  selector: 'app-resize-log',\n  standalone: true,\n  template: `Resize listener active (check console)`\n})\nexport class ResizeLogComponent {\n  private destroyRef = inject(DestroyRef);\n\n  constructor() {\n    fromEvent(window, 'resize').pipe(\n      map(() => window.innerWidth),\n      takeUntilDestroyed(this.destroyRef)\n    ).subscribe(w => console.log('width', w));\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Same stream, two Angular styles</strong><br><br>If the stream exists to render UI state, prefer exposing <code>vm$</code> or <code>users$</code> and binding with <code>async</code> pipe. Manual subscription is for imperative side effects like logging, focusing an element, or bridging to a third-party API."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// ❌ UI data via manual subscribe: extra teardown + duplicated component state\nngOnInit() {\n  this.http.get<User[]>('/api/users')\n    .pipe(takeUntilDestroyed(this.destroyRef))\n    .subscribe(users => {\n      this.users = users;\n    });\n}\n\n// ✅ UI data as a stream: template owns subscription lifetime\nreadonly users$ = this.http.get<User[]>('/api/users').pipe(\n  shareReplay({ bufferSize: 1, refCount: true })\n);\n"
         },
         {
           "type": "list",
@@ -3891,10 +4077,10 @@
       "async",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
-      "title": "What are Observables in Angular and how does RxJS fit in?",
-      "description": "Observables are lazy async data streams, and Angular uses RxJS to compose, transform, and cancel those streams cleanly."
+      "title": "Observables in Angular in production: RxJS, signals trade-offs, cancellation, and shared streams",
+      "description": "Explain Angular Observables through real app concerns: when RxJS still beats signals, how async pipe and cancellation work, and how shared streams behave with shareReplay."
     }
   },
   {
@@ -3912,60 +4098,60 @@
         },
         {
           "type": "text",
-          "text": "<strong>How Routing Works</strong><br>The Angular Router maps URL paths to specific components. When the browser’s address changes, Angular determines which component to display by matching the URL with a defined route configuration."
+          "text": "<strong>Route tree mental model</strong><br>The Angular Router does not just match one path to one component. It builds a <strong>tree of activated routes</strong>. Each level of that tree needs a matching <code>RouterOutlet</code>. Blank screens and half-rendered pages usually mean the route tree and the outlet tree do not line up."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Example: app-routing.module.ts\nimport { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\nimport { HomeComponent } from './home/home.component';\nimport { AboutComponent } from './about/about.component';\nimport { ContactComponent } from './contact/contact.component';\n\nconst routes: Routes = [\n  { path: '', component: HomeComponent }, // default route\n  { path: 'about', component: AboutComponent },\n  { path: 'contact', component: ContactComponent },\n  { path: '**', redirectTo: '' } // wildcard route for 404s\n];\n\n@NgModule({\n  imports: [RouterModule.forRoot(routes)],\n  exports: [RouterModule]\n})\nexport class AppRoutingModule {}"
+          "code": "import { Routes } from '@angular/router';\nimport { authGuard } from './auth.guard';\nimport { projectResolver } from './project.resolver';\nimport { AppShellComponent } from './app-shell.component';\nimport { ProjectsPageComponent } from './projects-page.component';\nimport { ProjectLayoutComponent } from './project-layout.component';\nimport { ProjectOverviewComponent } from './project-overview.component';\n\nexport const routes: Routes = [\n  {\n    path: '',\n    component: AppShellComponent,\n    children: [\n      { path: '', pathMatch: 'full', redirectTo: 'projects' },\n      { path: 'projects', component: ProjectsPageComponent },\n      {\n        path: 'projects/:projectId',\n        component: ProjectLayoutComponent,\n        canActivate: [authGuard],\n        resolve: { project: projectResolver },\n        children: [\n          { path: '', component: ProjectOverviewComponent },\n          {\n            path: 'settings',\n            loadComponent: () =>\n              import('./project-settings.component').then(m => m.ProjectSettingsComponent)\n          }\n        ]\n      }\n    ]\n  },\n  { path: '**', redirectTo: 'projects' }\n];"
         },
         {
           "type": "text",
-          "text": "<strong>Defining Routes</strong><br>Each route is defined as an object in the <code>Routes</code> array with at least a <code>path</code> and a <code>component</code> property:<ul><li><strong>path</strong> – the URL segment (e.g., 'about').</li><li><strong>component</strong> – the component to render when the path is matched.</li></ul>"
+          "text": "<strong>RouterOutlet placement must mirror the tree</strong><br>The root route renders into the app-shell outlet. Its child route renders into the outlet inside that shell. Then the <code>settings</code> child renders into the outlet inside <code>ProjectLayoutComponent</code>. If one outlet is missing, that branch of the route tree has nowhere to render."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- app.component.html -->\n<nav>\n  <a routerLink=\"/\">Home</a>\n  <a routerLink=\"/about\">About</a>\n  <a routerLink=\"/contact\">Contact</a>\n</nav>\n\n<!-- Placeholder for route content -->\n<router-outlet></router-outlet>"
+          "code": "<!-- app-shell.component.html -->\n<nav>\n  <a routerLink=\"/projects\">Projects</a>\n</nav>\n<router-outlet></router-outlet>\n\n<!-- project-layout.component.html -->\n<aside>Project nav</aside>\n<section>\n  <router-outlet></router-outlet>\n</section>"
         },
         {
           "type": "text",
-          "text": "<strong>RouterModule Methods</strong><br><ul><li><code>RouterModule.forRoot(routes)</code> – used in the root module for application-wide routing.</li><li><code>RouterModule.forChild(routes)</code> – used in feature modules for modular routing setups.</li></ul>"
+          "text": "<strong>Guard, resolver, and lazy child all answer different questions</strong><br><ul><li><strong>Guard</strong>: is the user allowed to enter this branch?</li><li><strong>Resolver</strong>: what data should exist before this screen activates?</li><li><strong>Lazy child</strong>: should this code be fetched only when the nested route is visited?</li></ul>That is why a production route tree is about ownership and navigation timing, not just matching strings."
         },
         {
           "type": "text",
-          "text": "<strong>Navigation Methods</strong><br>Angular provides two main ways to navigate:<ul><li>Declaratively with <code>routerLink</code> in templates.</li><li>Programmatically with <code>Router.navigate()</code> in TypeScript.</li></ul>"
+          "text": "<strong>routerLink vs Router.navigate()</strong><br><code>routerLink</code> is best when the destination is a direct template concern. <code>Router.navigate()</code> is for workflows where navigation depends on code, such as “save succeeded, now go to the detail route with query params.” They solve different parts of the same routing flow."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Example: programmatic navigation\nimport { Router } from '@angular/router';\n\nconstructor(private router: Router) {}\n\ngoToAbout() {\n  this.router.navigate(['/about']);\n}"
+          "code": "import { Router } from '@angular/router';\n\nconstructor(private router: Router) {}\n\nsaveProject(projectId: string) {\n  this.projectApi.save().subscribe(() => {\n    this.router.navigate(['/projects', projectId], {\n      queryParams: { tab: 'overview' }\n    });\n  });\n}\n\n// Meanwhile the template can still use:\n// <a [routerLink]=\"['/projects', projectId, 'settings']\">Settings</a>"
         },
         {
           "type": "text",
-          "text": "<strong>Route Parameters</strong><br>Routes can also include dynamic parameters, allowing you to create routes that depend on variable data (e.g., user IDs)."
+          "text": "<strong>Route params and resolved data</strong><br>Real routes rarely need only a path segment. They often combine params, query params, and resolver output. Good Angular answers mention where each piece comes from and whether the component expects the data synchronously on activation or reacts to later stream changes."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Example with route parameters\n{ path: 'user/:id', component: UserDetailComponent }"
+          "code": "{\n  path: 'projects/:projectId/tasks/:taskId',\n  component: TaskDetailComponent,\n  resolve: { project: projectResolver }\n}"
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Accessing route parameter in component\nimport { ActivatedRoute } from '@angular/router';\n\nconstructor(private route: ActivatedRoute) {}\n\nngOnInit() {\n  const id = this.route.snapshot.paramMap.get('id');\n  console.log('User ID:', id);\n}"
+          "code": "import { ActivatedRoute } from '@angular/router';\n\nconstructor(private route: ActivatedRoute) {}\n\nngOnInit() {\n  const projectId = this.route.snapshot.paramMap.get('projectId');\n  const taskId = this.route.snapshot.paramMap.get('taskId');\n  const project = this.route.snapshot.data['project'];\n\n  console.log({ projectId, taskId, project });\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Benefits of Angular Routing</strong><br><ul><li>Enables smooth client-side navigation without page reloads.</li><li>Improves performance and user experience.</li><li>Supports route guards, parameters, and lazy loading for scalability.</li><li>Allows nested and child routes for modular app structures.</li></ul>"
+          "text": "<strong>Routing debug checklist</strong><br><ul><li><strong>Blank screen:</strong> is the matching <code>RouterOutlet</code> actually present for that route level?</li><li><strong>Redirect loop:</strong> are your guard and redirect rules bouncing between two routes?</li><li><strong>Resolver never finishes:</strong> is navigation blocked by a stream that never completes?</li><li><strong>Deep link broken on refresh:</strong> is the server configured to hand unknown paths back to the Angular app shell?</li><li><strong>Wrong active tab or params:</strong> are you reading the right route level from <code>ActivatedRoute</code>?</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular routing as a GPS — it maps URLs to the right components so users can navigate your app fluidly without ever leaving the page."
+          "text": "<strong>What a strong interview answer sounds like</strong><br><br>“Angular routing is a route tree rendered through matching <code>RouterOutlet</code>s. The interesting production pieces are not just paths, but how guards, resolvers, params, and lazy-loaded children combine, and how you debug failures when one branch renders blank or navigation gets stuck.”"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Angular routing manages navigation between components in SPAs.</li><li>Routes are defined using <code>RouterModule</code> and configured in a routing module.</li><li><code>routerLink</code> and <code>Router.navigate()</code> are used for navigation.</li><li>Dynamic routes, guards, and lazy loading enhance flexibility.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Angular routing is a route tree, not just flat path-to-component matching.</li><li><code>RouterOutlet</code> placement must mirror the active route hierarchy.</li><li>Guards, resolvers, params, and lazy children solve different routing problems and often appear in the same production config.</li><li>The highest-signal routing bugs are missing outlets, redirect loops, broken deep links, and routes blocked by guards or never-completing resolvers.</li></ul>"
         }
       ]
     },
@@ -3998,7 +4184,7 @@
       "router",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "seo": {
       "title": "Angular routing in production: route trees, RouterOutlet, guards, and lazy loading",
       "description": "Explain Angular routing through the real production concerns: route trees, RouterOutlet placement, guards, lazy loading, and the navigation bugs caused by misconfigured routes."
@@ -4133,72 +4319,153 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Change detection in Angular is the mechanism that keeps the view in sync with the component’s data. Angular provides two strategies — Default and OnPush — to determine when and how it checks for changes and updates the DOM.",
+    "description": "Angular change detection strategy is a production performance and debugging choice, not just a framework definition. The useful answer compares Default versus OnPush through stale-UI bugs, trigger rules, immutable updates, and when to use markForCheck() or detectChanges().",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Change detection in Angular is the process by which the framework synchronizes the application's data model (component properties) with the view (DOM). Whenever the data changes, Angular determines what parts of the view need to be updated and efficiently re-renders them. This is one of the most critical mechanisms in Angular’s performance model."
+          "text": "<strong>Production decision first</strong><br><br>The real question is not “what is change detection?” but <strong>when should this subtree be checked</strong>. <strong>Default</strong> is the safe baseline when you want fewer stale-UI surprises. <strong>OnPush</strong> is the performance strategy when you want predictable checks, immutable inputs, and fewer wasted passes through a large component tree."
         },
         {
           "type": "text",
-          "text": "<strong>How Change Detection Works</strong><br>Angular maintains a tree of components, each associated with a change detector. Whenever a change occurs (for example, a user event, async call, or timer), Angular traverses this tree and checks if the component’s data bindings have changed. If a change is detected, the DOM is updated accordingly."
+          "text": "<strong>How Angular thinks about it</strong><br>Angular keeps a tree of views. On each detection pass it decides which branches need checking, evaluates bindings, and updates the DOM if values changed. That is why strategy choice matters more in large trees than in tiny demo components."
         },
         {
           "type": "text",
-          "text": "<strong>Change Detection Strategies</strong><br>Angular provides two strategies to control how and when the change detection mechanism runs:"
+          "text": "<strong>Two strategies, two trade-offs</strong><br>Interviewers usually want the architecture trade-off, not just the names:"
         },
         {
           "type": "list",
           "columns": [
             "Strategy",
-            "Description"
+            "What Angular does",
+            "Where it wins",
+            "Common production bug"
           ],
           "rows": [
             [
               "<code>ChangeDetectionStrategy.Default</code>",
-              "This is the default strategy. Angular checks every component in the component tree during every change detection cycle, whether or not its input data has changed. It’s simple but less efficient for large applications."
+              "Checks the component whenever Angular runs a normal change-detection pass for that branch.",
+              "Simpler state model and fewer stale-view surprises.",
+              "Large trees rerender too often because everything stays eligible for checks."
             ],
             [
               "<code>ChangeDetectionStrategy.OnPush</code>",
-              "With this strategy, Angular only checks the component and its children when specific conditions occur — such as when an @Input() reference changes, an event originates from inside the component, or you manually trigger detection. This makes the app faster and more predictable."
+              "Checks mainly when an input reference changes, an event happens in the subtree, an async pipe emits, or you mark the view manually.",
+              "Large lists, reactive UIs, and predictable immutable state flows.",
+              "UI looks stale because code mutated an object or updated state in a manual subscription without marking the view."
             ]
           ],
-          "caption": "Angular Change Detection Strategies"
+          "caption": "Default vs OnPush in real apps"
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "import { Component, ChangeDetectionStrategy } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<p>{{ user.name }}</p>`,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class UserCardComponent {\n  user = { name: 'Alice' };\n}"
+          "code": "import { ChangeDetectionStrategy, Component, Input } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<p>{{ user.name }}</p>`,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class UserCardComponent {\n  @Input() user!: { name: string };\n}"
         },
         {
           "type": "text",
-          "text": "In the example above, the component uses the <code>OnPush</code> strategy. Angular will only re-check this component when the <code>user</code> reference changes — not when you mutate its properties (e.g., <code>user.name = 'Bob'</code>)."
-        },
-        {
-          "type": "text",
-          "text": "<strong>When Does Angular Trigger Change Detection?</strong><br>Angular triggers change detection automatically in response to various async events, such as:<ul><li>User interactions (clicks, input changes, etc.)</li><li>Promises and Observables completing</li><li>setTimeout() and setInterval() callbacks</li><li>XHR or fetch responses</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Manually Controlling Change Detection</strong><br>For performance-sensitive applications, developers can control change detection manually using the <code>ChangeDetectorRef</code> API."
+          "text": "This child is <code>OnPush</code>, so Angular cares about <strong>reference changes and explicit triggers</strong>, not deep mutation. If a parent does <code>user.name = 'Bob'</code> on the same object, the child can stay stale even though the data technically changed."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "import { ChangeDetectorRef, Component } from '@angular/core';\n\n@Component({ selector: 'app-demo', template: `{{ counter }}` })\nexport class DemoComponent {\n  counter = 0;\n  constructor(private cd: ChangeDetectorRef) {}\n\n  increment() {\n    this.counter++;\n    this.cd.detectChanges(); // manually trigger change detection\n  }\n}"
+          "code": "@Component({\n  selector: 'app-parent',\n  template: `\n    <app-user-card [user]=\"user\"></app-user-card>\n    <button (click)=\"renameWrong()\">Wrong</button>\n    <button (click)=\"renameCorrect()\">Correct</button>\n  `\n})\nexport class ParentComponent {\n  user = { name: 'Alice' };\n\n  // ❌ Same object reference: an OnPush child can stay stale\n  renameWrong() {\n    this.user.name = 'Bob';\n  }\n\n  // ✅ New reference: OnPush sees a meaningful input change\n  renameCorrect() {\n    this.user = { ...this.user, name: 'Bob' };\n  }\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Performance Considerations</strong><br><ul><li><code>Default</code> is simpler and sufficient for smaller apps but can become costly for large component trees.</li><li><code>OnPush</code> is more performant and should be used when components depend on immutable data or pure inputs.</li><li>Manual detection control (using <code>ChangeDetectorRef</code>) is useful for advanced optimization scenarios.</li></ul>"
+          "text": "<strong>Why OnPush still updates after events and async work</strong><br>OnPush does <strong>not</strong> mean “never update unless an input changes.” Events inside the subtree, <code>async</code> pipe emissions, and manual CDR calls still mark the view dirty. That is why a stale card sometimes “wakes up” after a click or Observable emission."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Trigger",
+            "Default",
+            "OnPush",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Parent mutates existing object",
+              "✅ Usually visible on next pass",
+              "❌ Often skipped",
+              "OnPush compares input references, not deep object state."
+            ],
+            [
+              "Parent passes a new input reference",
+              "✅ Yes",
+              "✅ Yes",
+              "A new reference is a meaningful input change."
+            ],
+            [
+              "Event happens inside the component subtree",
+              "✅ Yes",
+              "✅ Yes",
+              "Angular marks that branch dirty."
+            ],
+            [
+              "Observable emits through <code>async</code> pipe",
+              "✅ Yes",
+              "✅ Yes",
+              "AsyncPipe internally marks the view for checking."
+            ],
+            [
+              "<code>markForCheck()</code>",
+              "✅ Yes",
+              "✅ Yes",
+              "Schedules the branch for the next normal pass."
+            ],
+            [
+              "<code>detectChanges()</code>",
+              "✅ Yes",
+              "✅ Yes",
+              "Forces an immediate synchronous check on this subtree."
+            ]
+          ],
+          "caption": "Compact trigger matrix"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular change detection as a 'smart mirror' — by default it checks everything for changes, but with <code>OnPush</code> you tell it to look only when you know something has changed."
+          "text": "<strong>markForCheck() vs detectChanges()</strong><br><br><code>markForCheck()</code> says “include me in the next normal pass.” <code>detectChanges()</code> says “run my subtree right now.” If you reach for <code>detectChanges()</code> by default, you usually have a lifecycle-timing smell rather than a true need for synchronous rendering."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';\n\n@Component({\n  selector: 'app-live-count',\n  template: `{{ total }}`,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class LiveCountComponent {\n  total = 0;\n\n  constructor(private cd: ChangeDetectorRef) {}\n\n  connectToExternalCallback(source: { onMessage(cb: (n: number) => void): void }) {\n    source.onMessage(n => {\n      this.total = n;\n      this.cd.markForCheck();\n    });\n  }\n\n  flushImmediatelyAfterViewMutation() {\n    this.total++;\n    this.cd.detectChanges();\n  }\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Change detection keeps the UI in sync with data changes.</li><li>Two strategies exist — Default (checks all) and OnPush (checks only when inputs or events trigger).</li><li>OnPush provides better performance for immutable and reactive data flows.</li><li>Developers can use <code>ChangeDetectorRef</code> for fine-grained control.</li></ul>"
+          "text": "<strong>Follow-up confusion that comes up in real debugging</strong><br><br><strong>ViewChild or direct child mutation:</strong> if you grab a child instance and mutate state directly, Angular may not treat that as a meaningful OnPush input change, so you often need a new reference or <code>markForCheck()</code>.<br><br><strong>ExpressionChangedAfterItHasBeenCheckedError:</strong> this usually means you changed bound state during the same detection turn after Angular already checked it. The fix is usually to move the update earlier, schedule it to the next turn, or rethink the data flow instead of blindly calling <code>detectChanges()</code> everywhere."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Profiling question",
+            "Check first",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Why is this list rerendering too often?",
+              "Angular DevTools and whether child subtrees should be OnPush",
+              "You want evidence before changing strategy."
+            ],
+            [
+              "Why does this OnPush child stay stale?",
+              "Look for in-place mutation or manual subscriptions without <code>markForCheck()</code>",
+              "Those are the two most common real bugs."
+            ],
+            [
+              "Why did this expression-changed error appear?",
+              "Check lifecycle timing and state writes after Angular already checked the view",
+              "The problem is often timing, not missing brute-force detection."
+            ]
+          ],
+          "caption": "Profiling-first debug checklist"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><ul><li><code>Default</code> favors simplicity; <code>OnPush</code> favors predictable performance in large trees.</li><li>OnPush still updates on events, <code>async</code> pipe emissions, and manual CDR APIs, but it will skip deep mutation on the same input reference.</li><li><code>markForCheck()</code> is the normal manual escape hatch; <code>detectChanges()</code> is the sharper synchronous tool.</li><li>The highest-signal production bugs are stale OnPush UIs from mutation, manual subscription updates without marking, and lifecycle-timing errors like <code>ExpressionChangedAfterItHasBeenCheckedError</code>.</li></ul>"
         }
       ]
     },
@@ -4231,10 +4498,10 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
-      "title": "Default vs OnPush in Angular: what is the difference?",
-      "description": "Default checks components frequently, while OnPush checks mainly on input reference changes, events, or observable emissions."
+      "title": "Angular change detection strategies in production: Default vs OnPush, triggers, and stale-UI bugs",
+      "description": "Compare Default vs OnPush through real Angular bugs: immutable updates, trigger rules, markForCheck vs detectChanges, and why stale views happen in production."
     }
   },
   {
@@ -4751,7 +5018,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "OnPush change detection tells Angular to skip checking a component unless one of a few specific triggers happens (Input reference change, event inside the component, async pipe emission, or manual markForCheck/detectChanges). It dramatically improves performance, but breaks the UI if you mutate objects or arrays instead of changing references.",
+    "description": "OnPush change detection is easiest to explain as a real stale-UI debugging story. Angular skips a component unless a narrow trigger happens, so production bugs usually come from mutating references, updating state inside manual subscriptions, or misunderstanding parent-child boundaries.",
     "answer": {
       "blocks": [
         {
@@ -4814,6 +5081,15 @@
         },
         {
           "type": "text",
+          "text": "<strong>Second real bug variant: manual subscription updates state, but the view still looks stale</strong><br><br>Even if no input mutation happens, an OnPush component can still miss updates when you subscribe imperatively and update local state without <code>async</code> pipe or <code>markForCheck()</code>. This is the other classic production bug after in-place mutation."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "@Component({\n  selector: 'app-summary-card',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `{{ stats.total }}`\n})\nexport class SummaryCardComponent {\n  stats = { total: 0 };\n\n  constructor(\n    private statsService: StatsService,\n    private cd: ChangeDetectorRef\n  ) {\n    this.statsService.total$.subscribe(total => {\n      // ❌ Bug: same object reference + no explicit mark\n      this.stats.total = total;\n    });\n  }\n\n  connectSafely() {\n    this.statsService.total$.subscribe(total => {\n      this.stats = { ...this.stats, total };\n      this.cd.markForCheck();\n    });\n  }\n}"
+        },
+        {
+          "type": "text",
           "text": "<strong>markForCheck() vs detectChanges()</strong>"
         },
         {
@@ -4843,7 +5119,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Common senior-level pitfalls</strong><br><br>• Mutating arrays/objects instead of replacing them<br>• Forgetting that OnPush uses <em>reference</em> checks, not deep checks<br>• Updating state inside subscriptions without async pipe or markForCheck<br>• Using OnPush everywhere without understanding its mental model"
+          "text": "<strong>Common senior-level pitfalls</strong><br><br>• Mutating arrays/objects instead of replacing them<br>• Forgetting that OnPush uses <em>reference</em> checks, not deep checks<br>• Updating state inside subscriptions without async pipe or markForCheck<br>• Assuming a parent mutating <code>child.input.deep.nestedValue</code> should refresh the child even though the input reference stayed the same<br>• Using OnPush everywhere without understanding its mental model"
         },
         {
           "type": "list",
@@ -4870,6 +5146,10 @@
             ]
           ],
           "caption": "Correct patterns with OnPush"
+        },
+        {
+          "type": "text",
+          "text": "<strong>How to debug it in a real app</strong><br><br>Use Angular DevTools or a quick logging pass to verify <strong>which component is actually being checked</strong>. If the parent rerenders but the child does not, look for an unchanged input reference. If neither rerenders after a subscription callback, check whether the update happened outside the normal template flow and needs <code>markForCheck()</code> or an <code>async</code> pipe."
         },
         {
           "type": "text",
@@ -4906,10 +5186,10 @@
       "debugging",
       "performance"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
-      "title": "What triggers OnPush change detection in Angular?",
-      "description": "OnPush checks run when input references change, component events fire, async pipe emits, or ChangeDetectorRef is used to mark updates."
+      "title": "Angular OnPush in production: triggers, stale-UI bugs, and markForCheck debugging",
+      "description": "Explain OnPush like a real Angular bug: input mutation, manual subscriptions, parent-child boundaries, async pipe, and when markForCheck fixes stale UI."
     }
   },
   {
@@ -5007,6 +5287,19 @@
         },
         {
           "type": "text",
+          "text": "<strong>Ordered intent example: when <code>concatMap</code> beats <code>switchMap</code></strong><br><br>If the user clicks “Save step 1”, then “Save step 2”, then “Save step 3”, those intents must usually stay ordered. <code>switchMap</code> would cancel earlier saves; <code>concatMap</code> preserves the queue."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "saveDraftClicks$.pipe(\n  concatMap(stepPayload => this.api.saveDraft(stepPayload))\n);\n\n// Use this when every save matters and order is part of correctness."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Same trigger, four different policies</strong><br><br>Imagine the exact same click stream hitting four operator choices:<br><br><code>switchMap</code> = keep the latest click<br><code>mergeMap</code> = let every click run in parallel<br><code>concatMap</code> = queue every click in order<br><code>exhaustMap</code> = ignore later clicks while busy<br><br>That is why this question is really about user-intent policy, not memorizing operators."
+        },
+        {
+          "type": "text",
           "text": "<strong>Senior pitfall #1: race conditions with mergeMap</strong><br><br>If you use <code>mergeMap</code> for UI state that should reflect the latest request, you can get <em>out-of-order overwrites</em>: request A starts, then request B starts, B returns first (UI shows B), then A returns later and overwrites the UI with stale data. That’s why typeahead/search is almost always <code>switchMap</code>."
         },
         {
@@ -5016,6 +5309,10 @@
         {
           "type": "text",
           "text": "<strong>Senior pitfall #3: exhaustMap dropping user intent</strong><br><br><code>exhaustMap</code> ignores new triggers while busy. Great for preventing double submits, but if you need “last click wins after current finishes”, use a different strategy (e.g., disable button in UI, or use <code>switchMap</code> with careful semantics)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Non-HTTP note</strong><br><br>These operators are not HTTP-only. The same choice matters for router params, WebSocket reconnect commands, drag streams, and any long-lived inner Observable where overlap policy changes correctness."
         },
         {
           "type": "list",
@@ -5063,7 +5360,7 @@
       "async",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "switchMap vs mergeMap vs concatMap vs exhaustMap: when to use?",
       "description": "Use switchMap to cancel stale streams, mergeMap for parallel streams, concatMap for ordered queues, and exhaustMap to ignore triggers during active work."
@@ -5095,7 +5392,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Most Angular memory leaks come from long-lived streams, global listeners, or timers that outlive a component. The practical angle is knowing when AsyncPipe, takeUntilDestroyed, or manual teardown actually matters and when unsubscribe boilerplate is unnecessary.",
+    "description": "Most Angular memory leaks come from long-lived streams, global listeners, or timers that outlive a component or route. The practical angle is knowing when AsyncPipe, takeUntilDestroyed, or manual teardown actually matters, when HTTP completes on its own, and how never-ending resolver streams can block navigation.",
     "answer": {
       "blocks": [
         {
@@ -5158,6 +5455,15 @@
         },
         {
           "type": "text",
+          "text": "<strong>Outside an injection context</strong><br><br><code>takeUntilDestroyed()</code> is still usable when the subscription setup happens in a helper or service method, but then you must pass an explicit <code>DestroyRef</code>. That detail matters when you refactor teardown logic out of the component body."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, DestroyRef, inject } from '@angular/core';\nimport { takeUntilDestroyed } from '@angular/core/rxjs-interop';\nimport { Observable } from 'rxjs';\n\nexport class SearchFacade {\n  connect(stream$: Observable<string>, destroyRef: DestroyRef) {\n    return stream$.pipe(takeUntilDestroyed(destroyRef));\n  }\n}\n\n@Component({ selector: 'app-search', template: '' })\nexport class SearchComponent {\n  private destroyRef = inject(DestroyRef);\n\n  ngOnInit() {\n    this.facade.connect(this.form.valueChanges, this.destroyRef)\n      .subscribe();\n  }\n}"
+        },
+        {
+          "type": "text",
           "text": "<strong>Pattern #3: Classic takeUntil + Subject (works in all Angular versions)</strong>"
         },
         {
@@ -5182,6 +5488,15 @@
           "type": "code",
           "language": "typescript",
           "code": "ngOnInit() {\n  window.addEventListener('resize', this.onResize);\n  this.timer = setInterval(() => {}, 1000);\n}\n\nngOnDestroy() {\n  window.removeEventListener('resize', this.onResize);\n  clearInterval(this.timer);\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Route-level pitfall: resolver streams that never complete</strong><br><br>A resolver is not just another subscription site. If the resolver returns a stream that never completes, navigation can hang forever because the router is still waiting for resolution. That is a different failure mode from a component leak, but it comes from the same teardown misunderstanding."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "export const projectResolver: ResolveFn<Project> = route => {\n  const api = inject(ProjectApi);\n\n  // ✅ one-shot HTTP completes, so navigation can continue\n  return api.loadProject(route.paramMap.get('projectId')!);\n\n  // ❌ dangerous if returned directly:\n  // return api.projectUpdates$;\n  // A never-ending stream can keep the route unresolved forever.\n};"
         },
         {
           "type": "list",
@@ -5216,11 +5531,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Senior pitfalls</strong><br><br>• Assuming Angular auto-unsubscribes everything (it doesn’t)<br>• Forgetting that <code>ActivatedRoute</code>, <code>valueChanges</code>, Subjects never complete<br>• Subscribing in services that live forever (root scope)<br>• Leaking intervals, event listeners, and WebSocket connections"
+          "text": "<strong>Senior pitfalls</strong><br><br>• Assuming Angular auto-unsubscribes everything (it doesn’t)<br>• Forgetting that <code>ActivatedRoute</code>, <code>valueChanges</code>, Subjects never complete<br>• Subscribing in services that live forever (root scope)<br>• Returning never-ending resolver streams and blocking navigation<br>• Leaking intervals, event listeners, and WebSocket connections"
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br>To prevent memory leaks in Angular: prefer the <code>async</code> pipe in templates, use <code>takeUntilDestroyed</code> (or <code>takeUntil</code> + Subject) in code, know which Observables complete automatically (HTTP) and which don’t, and always clean up timers and event listeners in <code>ngOnDestroy</code>."
+          "text": "<strong>Interview summary</strong><br><br>To prevent memory leaks in Angular: prefer the <code>async</code> pipe in templates, use <code>takeUntilDestroyed</code> (or <code>takeUntil</code> + Subject) in code, know which Observables complete automatically (HTTP) and which do not, and clean up timers, event listeners, and route-level long-lived streams deliberately. The hidden follow-up is that resolvers must usually <strong>complete</strong>, not just unsubscribe eventually."
         }
       ]
     },
@@ -5233,7 +5548,7 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "seo": {
       "title": "Angular memory leaks in production: long-lived streams, AsyncPipe, and teardown patterns",
       "description": "Explain Angular memory leaks through real teardown bugs: long-lived subscriptions, global listeners, timers, AsyncPipe, takeUntilDestroyed, and when manual unsubscribe still matters."
@@ -5792,7 +6107,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. This triggers the browser AbortController/XHR abort under the hood. But not all operators or patterns truly cancel the network request—some only ignore the result.",
+    "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. The production trap is that many patterns only ignore old responses instead of truly aborting the request.",
     "answer": {
       "blocks": [
         {
@@ -5861,6 +6176,19 @@
           "type": "code",
           "language": "typescript",
           "code": "this.http.get('/api/data').pipe(\n  takeUntil(this.destroy$)\n).subscribe();\n\nngOnDestroy() {\n  this.destroy$.next();\n  this.destroy$.complete();\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Manual teardown also cancels</strong><br><br><code>switchMap</code> is not the only cancel mechanism. If you keep the subscription and call <code>unsubscribe()</code> yourself, Angular aborts the underlying request just the same. That matters in imperative flows like dialogs, temporary polling, or explicit “cancel” buttons."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "let sub = this.http.get('/api/report').subscribe({\n  next: data => console.log(data),\n  error: err => console.error(err)\n});\n\ncancelButton.onclick = () => {\n  sub.unsubscribe(); // ✅ real network cancellation\n};"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Ignoring a result is not cancellation</strong><br><br>If code sets a flag like <code>ignoreOldResponses = true</code> but keeps the old subscription alive, the browser request still runs. You only changed what your callback does with the response."
         },
         {
           "type": "text",
@@ -5934,6 +6262,15 @@
         },
         {
           "type": "text",
+          "text": "<strong>Same flow, different operator, different cancellation behavior</strong><br><br>These two snippets look similar, but only one actually aborts old requests when a new query arrives:"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// ✅ Latest-only behavior: previous HttpClient request is unsubscribed\nresults$ = this.search.valueChanges.pipe(\n  debounceTime(250),\n  distinctUntilChanged(),\n  switchMap(q => this.http.get(`/api/search?q=${q}`))\n);\n\n// ❌ Old requests keep running: responses can still arrive out of order\nresults$ = this.search.valueChanges.pipe(\n  debounceTime(250),\n  distinctUntilChanged(),\n  mergeMap(q => this.http.get(`/api/search?q=${q}`))\n);"
+        },
+        {
+          "type": "text",
           "text": "<strong>Senior-level pitfall</strong><br><br>Using <code>shareReplay</code> without <code>refCount</code> can keep an HTTP request (or its subscription) alive forever, making it impossible to cancel later even if components unsubscribe."
         },
         {
@@ -5951,10 +6288,10 @@
       "cancellation",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "seo": {
-      "title": "What cancels an HTTP request in Angular HttpClient?",
-      "description": "An Angular HttpClient request is canceled when its subscription is unsubscribed, such as via switchMap, takeUntil, or AsyncPipe cleanup."
+      "title": "Angular HttpClient cancellation in production: unsubscribe, switchMap, and false-cancel myths",
+      "description": "Explain Angular HTTP cancellation through real patterns: unsubscribe, switchMap, takeUntil, AsyncPipe cleanup, and why ignoring a result is not the same as aborting a request."
     },
     "incidentCard": {
       "title": "Request Cancellation Check",
@@ -5983,7 +6320,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular DI is hierarchical, so provider location changes instance count and service lifetime. The useful angle is the real production bug: re-providing a service in a component or route and silently splitting shared state, caches, or coordination logic.",
+    "description": "Angular DI is hierarchical, so provider location changes instance count and service lifetime. The useful angle is the real production bug: re-providing a service in a component or standalone route and silently splitting shared state, caches, or coordination logic.",
     "seo": {
       "title": "Angular hierarchical DI in production: duplicate providers, shadowed singletons, and cache bugs",
       "description": "Explain Angular hierarchical DI through the real bug: a nearer provider shadows the root injector, creates a second instance, and breaks shared state or cache assumptions."
@@ -6078,6 +6415,15 @@
         },
         {
           "type": "text",
+          "text": "<strong>Standalone route providers are their own injector boundary</strong><br><br>In modern Angular, route-level <code>providers</code> create an <strong>EnvironmentInjector</strong> for that branch. That is why a service can be a singleton at the app root but still get a separate instance under one lazy route tree."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "@Injectable({ providedIn: 'root' })\nexport class FeatureFlagsService {\n  enabled = false;\n}\n\nexport const routes: Routes = [\n  {\n    path: 'reports',\n    providers: [FeatureFlagsService],\n    loadComponent: () => import('./reports.component').then(m => m.ReportsComponent)\n  }\n];\n\n// Outside /reports => root FeatureFlagsService\n// Inside /reports => route-scoped FeatureFlagsService"
+        },
+        {
+          "type": "text",
           "text": "<strong>When component-level providers are actually correct</strong><br><br>• Reusable UI widgets with isolated state<br>• Temporary, per-instance state machines<br>• Editable rows, dialogs, or dynamic components that must not share state"
         },
         {
@@ -6108,11 +6454,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Senior-level pitfalls</strong><br><br>• Accidentally re-providing a root service in a component<br>• Breaking caches or auth state via lazy-loaded module providers<br>• Assuming “service = singleton” without checking injector scope<br>• Debugging “state randomly resets” for hours"
+          "text": "<strong>Senior-level pitfalls</strong><br><br>• Accidentally re-providing a root service in a component<br>• Breaking caches or auth state via lazy-loaded module or route providers<br>• Forgetting that standalone route <code>providers</code> create a new injector boundary<br>• Assuming “service = singleton” without checking injector scope<br>• Debugging “state randomly resets” for hours"
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br>Angular DI is hierarchical: services are resolved by walking up the injector tree. Where you provide a service determines how many instances exist. Many real-world bugs come from accidentally creating multiple instances by providing a service in a component or lazy-loaded route when you expected a singleton."
+          "text": "<strong>Interview summary</strong><br><br>Angular DI is hierarchical: services are resolved by walking up the injector tree. Where you provide a service determines how many instances exist. Many real-world bugs come from accidentally creating multiple instances by providing a service in a component or lazy-loaded route when you expected a singleton. In standalone Angular, route <code>providers</code> are especially important because they create an <code>EnvironmentInjector</code> for that branch."
         }
       ]
     },
@@ -6125,7 +6471,7 @@
       "debugging",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "incidentCard": {
       "title": "Duplicate Service Instance Check",
       "scenario": "A team has `UserCacheService` marked with `providedIn: 'root'`, but one feature component also adds `providers: [UserCacheService]`. Later they notice that cache state updates in most of the app, but inside that feature the data looks like a different copy and resets unexpectedly. One teammate says, \"That cannot be DI-related. A service is a singleton once it is in root.\" Another says, \"This is exactly a hierarchical DI bug. The component-level provider is shadowing the root provider and creating a separate instance for that branch.\" Which explanation is better?",
@@ -6572,6 +6918,23 @@
         },
         {
           "type": "text",
+          "text": "<strong>Pure reducer update vs effect-driven async update</strong><br><br>A quick way to explain NgRx clearly is to separate the sync transition from the async side effect. Reducers update flags synchronously. Effects handle API work and feed the result back into the store."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// reducer: synchronous state transition\non(loadBooks, state => ({ ...state, loading: true, error: null }))\n\n// effect: async work beside the reducer loop\nloadBooks$ = createEffect(() =>\n  this.actions$.pipe(\n    ofType(loadBooks),\n    switchMap(() => this.api.getBooks().pipe(\n      map((books) => loadBooksSuccess({ books })),\n      catchError((error) => of(loadBooksFailure({ error: String(error) })))\n    ))\n  )\n);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Compact trace you should be able to say out loud</strong><br><br><code>Load Books click → loadBooks action → reducer sets loading=true → effect calls API → loadBooksSuccess/loadBooksFailure → reducer stores result → selector builds vm → template re-renders</code>. That is the end-to-end loop interviewers want."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Selectors are memoized read models</strong><br><br>A selector is not just a getter. It is the read layer that turns raw store state into a reusable, memoized view model so components do not keep sorting, filtering, and combining the same data in multiple places."
+        },
+        {
+          "type": "text",
           "text": "<strong>Interview summary</strong><br><br>In Angular state management with NgRx, components dispatch actions for user intent, reducers compute next immutable state, selectors expose memoized read models, and templates render selector output. Effects handle async side effects and dispatch success/failure actions back into the same loop. If you can explain that loop clearly, you understand NgRx data flow."
         }
       ]
@@ -6585,7 +6948,7 @@
       "effects",
       "state-management"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
       "title": "NgRx data flow in Angular: actions, reducers, effects, selectors, and debug loops",
       "description": "Explain NgRx through the real loop: dispatch intent, keep reducers pure, run async work in effects, and expose memoized selectors that make state changes easier to debug."

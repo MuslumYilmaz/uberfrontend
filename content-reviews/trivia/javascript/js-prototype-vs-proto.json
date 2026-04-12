@@ -1,0 +1,139 @@
+{
+  "contentId": "js-prototype-vs-proto",
+  "tech": "javascript",
+  "query": "javascript prototype vs __proto__ interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Inheritance and the prototype chain",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for the prototype chain, delegation, and inheritance behavior in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative guide for prototype-chain lookup and inheritance behavior."
+      ],
+      "theirGaps": [
+        "It is broader than the exact prototype-versus-__proto__ distinction and less compact as an interview answer."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Object.getPrototypeOf(obj) === Foo.prototype"
+        ],
+        "followUpConfusion": [
+          "__proto__"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN still grounds the prototype chain in real inheritance and property-lookup behavior, so the real-world criterion remains close."
+        ],
+        "actionableExamples": [
+          "Our page is more direct on the exact checks interviewers want, especially the new-to-instance bridge and the Object.getPrototypeOf comparison."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely next confusion more directly by separating function.prototype, object [[Prototype]], and the legacy __proto__ accessor in one compact explanation."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one tiny class-syntax bridge later if we want a clearer real-world edge over the canonical docs."
+        ]
+      },
+      "winReason": "MDN is the canonical prototype-chain guide, but our page is stronger for this exact question because it isolates prototype versus __proto__ and shows the canonical runtime checks interviewers actually ask for."
+    },
+    {
+      "label": "GreatFrontEnd prototype chain",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-the-prototype-chain-and-how-does-it-work",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep page on prototype-chain behavior, which is the closest exact-fit comparator for this topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly aligned with prototype-chain interview intent."
+      ],
+      "theirGaps": [
+        "It is broader on the chain itself and may be less explicit on the exact prototype-versus-__proto__ distinction."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Inspect prototypes with"
+        ],
+        "followUpConfusion": [
+          "prototype"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd fits the interview intent well, but our page is more explicit about the production-safe rule to inspect prototypes with Object.getPrototypeOf instead of relying on legacy accessors."
+        ],
+        "actionableExamples": [
+          "Its interview framing is likely strong enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page handles the most common follow-up more directly by contrasting constructor.prototype with an instance's internal prototype link."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the `new` bridge and the canonical checks together so the page stays stronger than a generic prototype-chain explanation."
+        ]
+      },
+      "winReason": "GreatFrontEnd is strong on the interview topic, but our page is more precise about the exact distinction this question usually tests: constructor.prototype versus an object's legacy __proto__ view of the prototype link."
+    },
+    {
+      "label": "javascript.info Prototype inheritance",
+      "url": "https://javascript.info/prototype-inheritance",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a strong tutorial-style competitor for prototype delegation and property lookup.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It explains delegation and property lookup very clearly."
+      ],
+      "theirGaps": [
+        "It is less centered on the exact interview contrast between prototype and __proto__."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Put shared methods on"
+        ],
+        "followUpConfusion": [
+          "legacy accessor"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info explains delegation well, but our page is more explicit about the practical rules engineers use when debugging prototype relationships."
+        ],
+        "actionableExamples": [
+          "Its inheritance examples are strong, so the actionable-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely next question more directly by naming the legacy __proto__ accessor and pointing to Object.getPrototypeOf as the modern inspection path."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one shorter Object.create example to make the delegation path even easier to scan."
+        ]
+      },
+      "winReason": "javascript.info is strong on delegation, but our page is better for this interview question because it is more explicit about the exact distinction and the modern inspection APIs engineers should actually use."
+    }
+  ]
+}

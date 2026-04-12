@@ -73,6 +73,24 @@
         },
         {
           "type": "text",
+          "text": "<strong>Production debugging example</strong><br>You set <code>spinner.hidden = false</code>, then immediately queue a long Promise chain. The UI still feels frozen because microtasks drain before the browser gets a paint opportunity."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "button.addEventListener('click', () => {\n  spinner.hidden = false;\n\n  Promise.resolve().then(() => {\n    for (let i = 0; i < 50000; i += 1) {\n      queueMicrotask(() => {});\n    }\n  });\n\n  // Spinner may still not paint before the microtasks finish.\n});"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Paint-first fix</strong><br>If the user must see the UI update first, split heavy work into a macrotask or a frame callback. The follow-up rule is simple: <code>await Promise.resolve()</code> still stays in microtask territory, so it does <strong>not</strong> guarantee a paint."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "button.addEventListener('click', () => {\n  spinner.hidden = false;\n\n  requestAnimationFrame(() => {\n    setTimeout(runHeavyWork, 0);\n  });\n});"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-layer-group'></i> <strong>Microtasks vs. Macrotasks (Summary)</strong>"
         },
         {
@@ -128,7 +146,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-08",
     "seo": {
       "title": "JavaScript Event Loop: microtasks, macrotasks, and rendering debug",
       "description": "Understand the JavaScript event loop under the hood: why Promise callbacks beat timers, how microtask starvation blocks paint, and what to debug first."
@@ -157,7 +175,7 @@
   {
     "id": "js-closures",
     "title": "Explain Closures in JavaScript",
-    "description": "Closures keep outer variables alive after the outer function returns. That powers private state, but the production pitfalls are loop-capture bugs, stale async state, and memory retention when callbacks keep old data alive.",
+    "description": "Closures keep outer variables alive after the outer function returns. The real frontend debug value is explaining stale async callbacks, loop-capture bugs, and long-lived listeners that keep old objects alive in memory.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -179,7 +197,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>closure</strong> means a function remembers variables from the place where it was created, not from where it is called. That is useful for private state and factories, but it also creates common production mistakes: async callbacks reading stale values, loop handlers capturing one shared binding, or long-lived listeners keeping old objects in memory."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>closure</strong> means a function remembers variables from the place where it was created, not from where it is called. That powers private state and factories, but the real production/debug value is knowing which bugs closures create: async callbacks reading stale values, loop handlers capturing one shared binding, and long-lived listeners keeping old objects alive longer than expected."
         },
         {
           "type": "code",
@@ -215,7 +233,16 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-memory'></i> <strong>Memory Notes</strong>\n\nClosures keep their referenced variables alive as long as the inner function exists. This can accidentally hold big objects or DOM elements in memory, so always clean up unused references."
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Worked debug example: shared binding vs fresh closure</strong>\n\nA common frontend bug is wiring delayed handlers inside a loop and then discovering every callback points at the last row. Closures are not broken here; the code created one shared binding. The fix is to capture a fresh binding per iteration or create a factory that receives the current value."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Broken: one shared `var` binding\nconst saveHandlers = [];\nfor (var row = 0; row < 3; row++) {\n  saveHandlers.push(() => console.log('save row', row));\n}\nsaveHandlers[0](); // save row 3\n\n// Fixed: each closure gets its own binding\nconst fixedHandlers = [];\nfor (let row = 0; row < 3; row++) {\n  fixedHandlers.push(() => console.log('save row', row));\n}\nfixedHandlers[0](); // save row 0"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-memory'></i> <strong>Memory Notes</strong>\n\nClosures keep referenced values alive as long as the inner function is still reachable. If a long-lived event listener or timer still closes over a large cache, form snapshot, or DOM node, that old object graph stays in memory until you remove the listener or clear the reference."
         },
         {
           "type": "text",
@@ -228,10 +255,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "JavaScript Closures: loop bugs, stale state, and memory pitfalls",
-      "description": "Learn closures beyond the definition: lexical scope, private state, common mistakes in loops, and why stale references can leak memory."
+      "title": "JavaScript closures: stale callback bugs, loop capture, and memory retention",
+      "description": "Learn closures through the frontend debug lens: private state, shared loop bindings, stale callbacks, and why long-lived listeners can retain old data."
     },
     "incidentCard": {
       "title": "Closure Scope Debug Check",
@@ -257,7 +284,7 @@
   {
     "id": "js-this-keyword",
     "title": "Explain the `this` keyword in JavaScript",
-    "description": "The value of `this` depends on call site, strict mode, and arrow functions. The real debug problem is detached methods, callback context loss, and object methods that stop pointing at the receiver you expected.",
+    "description": "The value of `this` is a call-site problem, not a definition-site feature. Strong answers show detached methods, callback context loss, module and class-field follow-ups, and when `bind()` or arrows are the right fix.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -278,7 +305,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe value of <code>this</code> is determined by <strong>how a function is called</strong>, not by where it is written. This becomes a real debug issue when a method is detached, passed as a callback, or mixed with arrow functions and strict mode.\n\nSo the useful mental model is not 'owner of the function' but 'receiver at call time.'"
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe value of <code>this</code> is determined by <strong>how a function is called</strong>, not by where it is written. The most common production/debug failure is extracting a method, passing it to a browser or framework callback, and then discovering the receiver disappeared.\n\nSo the useful mental model is not 'owner of the function' but 'receiver at call time.'"
         },
         {
           "type": "list",
@@ -342,12 +369,25 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-code-compare'></i> <strong>Same function, different call sites</strong>\n\nThis is the shortest mental-model check: the function body stays the same, but the receiver changes with the call site."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const account = {\n  name: 'Mia',\n  greet() {\n    return `Hi, ${this.name}`;\n  }\n};\n\nconsole.log(account.greet()); // 'Hi, Mia'\n\nconst detached = account.greet;\nconsole.log(detached()); // TypeError or 'Hi, undefined'\n\nconst rebound = account.greet.bind(account);\nconsole.log(rebound()); // 'Hi, Mia'"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-bolt'></i> <strong>Arrow Functions</strong>\n\nArrow functions **don’t have their own <code>this</code>**. They inherit it from the surrounding scope. Great for callbacks that need lexical <code>this</code>."
         },
         {
           "type": "code",
           "language": "javascript",
           "code": "function Timer() {\n  this.seconds = 0;\n  setInterval(() => {\n    this.seconds++;\n    console.log(this.seconds);\n  }, 1000);\n}\nnew Timer(); // works fine\n\n// But using a normal function would break:\n// setInterval(function() { this.seconds++ }, 1000); // this = undefined"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-question'></i> <strong>Follow-up cases interviewers ask next</strong>\n\n- In ES modules, top-level <code>this</code> is <code>undefined</code>.\n- Class-field arrow methods capture the instance <code>this</code> once and cannot be rebound.\n- An extracted method stops being a method until you call it with a receiver or bind it."
         },
         {
           "type": "text",
@@ -368,10 +408,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "JavaScript this: call-site rules, callback debug, and bind pitfalls",
-      "description": "Learn how this is resolved, why detached methods break in production, and when bind, call, apply, or arrows fix the bug."
+      "title": "JavaScript this: detached method bugs, bind fixes, and module follow-ups",
+      "description": "Learn this through real debugging cases: extracted methods, callback context loss, bind fixes, arrow trade-offs, and module-level edge cases."
     },
     "incidentCard": {
       "title": "this Binding Debug Check",
@@ -397,7 +437,7 @@
   {
     "id": "js-hoisting-tdz",
     "title": "Explain Hoisting and the Temporal Dead Zone (TDZ)",
-    "description": "Hoisting and TDZ explain why `let` and `const` are registered before execution yet still throw before initialization. The common debug signal is `ReferenceError: Cannot access X before initialization`.",
+    "description": "TDZ is the debug reason let, const, and class throw before initialization even though they are hoisted. Strong answers separate TDZ from undeclared identifiers and show the startup bugs this creates in real modules.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -457,6 +497,19 @@
         },
         {
           "type": "text",
+          "text": "<strong>Production bug to recognize</strong><br>A startup file reads <code>config</code> before the later <code>const config = ...</code> line executes, or a class is used before initialization. That is TDZ, not “JavaScript forgot to hoist.”"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "{\n  // console.log(typeof featureFlag); // ReferenceError inside TDZ\n  const featureFlag = true;\n}\n\n// console.log(Service); // ReferenceError\nclass Service {}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important follow-up</strong><br><ul><li>Undeclared identifier: name lookup fails.</li><li>TDZ: name exists, but initialization has not happened yet.</li><li><code>typeof</code> is safe for undeclared globals, but not for TDZ variables.</li></ul>"
+        },
+        {
+          "type": "text",
           "text": "<strong>Debugging rule of thumb</strong><br>If you see <code>ReferenceError: Cannot access X before initialization</code>, think TDZ first, not typo first."
         },
         {
@@ -474,10 +527,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-08",
     "seo": {
-      "title": "JavaScript TDZ and Hoisting: why let and const throw before init",
-      "description": "Debug TDZ correctly: declarations exist before execution, but let, const, and class stay inaccessible until initialization."
+      "title": "JavaScript TDZ and hoisting: Cannot access before initialization explained",
+      "description": "Learn how TDZ differs from undeclared variables, why typeof can still throw inside TDZ, and how to debug startup ordering bugs."
     },
     "incidentCard": {
       "title": "TDZ Runtime Failure Check",
@@ -503,7 +556,7 @@
   {
     "id": "js-var-let-const-hoisting",
     "title": "Explain the difference in hoisting between `var`, `let`, and `const`",
-    "description": "var, let, and const are all hoisted, but they differ in initialization and access-before-declaration behavior. var initializes to undefined; let/const stay in TDZ until declaration executes.",
+    "description": "var, let, and const are all hoisted, but interviewers usually care about three axes at once: access-before-declaration behavior, scope boundaries, and redeclaration/reassignment rules. Strong answers connect those rules to loop bugs and accidental leakage.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -523,7 +576,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Comparison answer</strong><br><br>All three are hoisted. The real difference is what happens before declaration is reached."
+          "text": "<strong>Comparison answer</strong><br><br>All three are hoisted. The real difference is what happens before declaration is reached. High-signal answers also mention scope boundaries and redeclaration rules, because that is where production bugs show up."
         },
         {
           "type": "list",
@@ -582,6 +635,15 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>var</code> gives you a key immediately (value may be empty). <code>let</code>/<code>const</code> reserve the room but keep it locked until you arrive at that line."
         },
         {
+          "type": "code",
+          "language": "javascript",
+          "code": "if (true) {\n  var leaked = 1;\n  let scoped = 2;\n}\n\nconsole.log(leaked); // 1\n// console.log(scoped); // ReferenceError"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up rule of thumb</strong><br><ul><li><code>var</code> is function-scoped and can leak outside blocks.</li><li><code>let</code>/<code>const</code> are block-scoped and stay in TDZ before initialization.</li><li><code>const</code> blocks rebinding, not internal object mutation.</li></ul>"
+        },
+        {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Hoisting is common to all three.</li><li>Initialization behavior is the key difference.</li><li>Modern default: <code>const</code> first, <code>let</code> when reassignment is needed, avoid <code>var</code> in new code.</li></ul>"
         },
@@ -592,10 +654,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-08",
     "seo": {
-      "title": "var vs let vs const hoisting: what is the difference?",
-      "description": "var is hoisted and initialized to undefined, while let and const are hoisted but stay uninitialized in the temporal dead zone."
+      "title": "var vs let vs const hoisting: TDZ, scope, and real bug patterns",
+      "description": "Compare var, let, and const the way interviewers expect: hoisting, TDZ, scope, reassignment, and the classic loop-closure trap."
     },
     "incidentCard": {
       "title": "var/let/const Hoisting Choice Check",
@@ -621,7 +683,7 @@
   {
     "id": "js-block-scoped-or-function-scoped",
     "title": "Is JavaScript block-scoped or function-scoped?",
-    "description": "JavaScript uses both block scope and function scope depending on declaration type. `var` is function-scoped, while `let` and `const` are block-scoped. Strong answers explain loop behavior, closure bugs, switch-case pitfalls, and module-vs-script global scope differences.",
+    "description": "JavaScript is both block-scoped and function-scoped depending on the declaration keyword. Strong answers compare `var`, `let`, and `const` side by side, show loop-capture and switch-case pitfalls, and explain how TDZ fits into block scope.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -645,7 +707,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Short answer first</strong>\n\nJavaScript is <strong>both</strong>, depending on what you declare with:\n- <code>var</code> is <strong>function-scoped</strong> (or global if declared outside a function).\n- <code>let</code> and <code>const</code> are <strong>block-scoped</strong> (inside <code>{ ... }</code>).\n\nSo the right interview answer is not one word. It is: <strong>'Both, depending on declaration keyword.'</strong>"
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Short answer first</strong>\n\nJavaScript is <strong>both</strong>, depending on what you declare with. That is the short answer. The real interview follow-up is which keyword created the binding, when <code>var</code> leaks across blocks, and why <code>let</code>/<code>const</code> can still throw before the declaration line because of the TDZ.\n\nSo the right interview answer is not one word. It is: <strong>'Both, depending on declaration keyword.'</strong>"
         },
         {
           "type": "list",
@@ -688,6 +750,10 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-circle-question'></i> <strong>Follow-up one-liner</strong>\n\nSay it this way: JavaScript is function-scoped for <code>var</code> and block-scoped for <code>let</code>/<code>const</code>. TDZ is part of that block scope: the binding exists for the whole block, but you cannot use it until initialization runs."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-rotate'></i> <strong>Loop behavior: the classic interview trap</strong>\n\n<code>var</code> in loops creates one shared binding for all iterations. <code>let</code> creates a fresh binding per iteration. This is why asynchronous callbacks behave differently."
         },
         {
@@ -706,7 +772,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Switch/case pitfall</strong>\n\nAll <code>case</code> clauses share one switch block unless you add braces. With <code>let</code>/<code>const</code>, duplicate names across cases can throw errors unless each case is wrapped in its own block."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Switch/case pitfall</strong>\n\nAll <code>case</code> clauses share one switch block unless you add braces. In production this shows up when reducers, parsers, or command handlers reuse the same variable name in multiple cases. With <code>let</code>/<code>const</code>, duplicate names across cases can throw errors unless each case is wrapped in its own block."
         },
         {
           "type": "code",
@@ -715,7 +781,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-globe'></i> <strong>Global nuance: Script vs Module</strong>\n\nIn classic scripts, top-level <code>var</code> can attach to <code>window</code>. In ES modules, top-level bindings are module-scoped and do not become <code>window</code> properties. This matters in bundlers and interview follow-ups."
+          "text": "<i class='fa-solid fa-globe'></i> <strong>Global nuance: Script vs Module</strong>\n\nIn classic scripts, top-level <code>var</code> can attach to <code>window</code>. In ES modules, top-level bindings are module-scoped and do not become <code>window</code> properties. This matters when old script assumptions meet bundlers, test runners, or interview follow-ups."
         },
         {
           "type": "code",
@@ -741,10 +807,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Is JavaScript Block Scoped or Function Scoped? var, let, const",
-      "description": "Understand block scope vs function scope in JavaScript with var, let, and const examples, loop pitfalls, TDZ behavior, and interview-ready explanations."
+      "title": "JavaScript scope: var vs let vs const, TDZ, and loop bug pitfalls",
+      "description": "Learn whether JavaScript is block-scoped or function-scoped with var, let, const, TDZ follow-ups, switch-case pitfalls, and loop callback bugs."
     },
     "incidentCard": {
       "title": "Scope Bug Root-Cause Check",
@@ -770,7 +836,7 @@
   {
     "id": "js-promises-async-await",
     "title": "Promises and async/await",
-    "description": "Promises and async/await use the same async model, but production pitfalls show up in accidental serialization, missing cancellation, and error paths that escape the right boundary.",
+    "description": "Promises and async/await use the same async model, but production decisions are really about concurrency, stale-request cancellation, request identity, and error boundaries rather than syntax alone.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -789,7 +855,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short version</strong><br><br>A Promise represents a future result. <code>async/await</code> is a cleaner way to <em>consume</em> Promises. Same engine behavior, different readability style, but the production pitfall is assuming <code>await</code> is always clearer when it may accidentally serialize independent work."
+          "text": "<strong>Short version</strong><br><br>A Promise represents a future result. <code>async/await</code> is a cleaner way to <em>consume</em> Promises. Same engine behavior, different readability style, but the production pitfall is assuming <code>await</code> is always clearer when it may accidentally serialize independent work. A strong production answer usually shows both independent work started together and one stale-request guard, because syntax is not the hard part."
         },
         {
           "type": "list",
@@ -861,7 +927,11 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Cancellation pattern with fetch\nconst controller = new AbortController();\n\nconst req = fetch('/search?q=react', { signal: controller.signal });\ncontroller.abort(); // cancel stale request\n\nreq.catch(err => {\n  if (err.name === 'AbortError') return;\n  throw err;\n});"
+          "code": "let activeController;\nlet latestRequestId = 0;\n\nasync function loadDashboard(userId) {\n  activeController?.abort();\n  const controller = new AbortController();\n  activeController = controller;\n  const requestId = ++latestRequestId;\n\n  try {\n    const [profile, notifications] = await Promise.all([\n      fetch(`/api/profile/${userId}`, { signal: controller.signal }).then(r => r.json()),\n      fetch(`/api/notifications/${userId}`, { signal: controller.signal }).then(r => r.json())\n    ]);\n\n    if (requestId !== latestRequestId) return; // stale result guard\n    renderDashboard({ profile, notifications });\n  } catch (err) {\n    if (err.name === 'AbortError') return;\n    reportError(err);\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-shield'></i> <strong>Why this pattern wins in production</strong><br><br>Start independent requests together, keep one <code>try/catch</code> boundary, and pair <code>AbortController</code> with a request-identity guard when older work must never overwrite newer UI state."
         },
         {
           "type": "text",
@@ -878,10 +948,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Promises vs async await: concurrency, cancellation, and production pitfalls",
-      "description": "Learn when async and await improves readability, when Promise combinators are clearer, and where sequential await adds hidden latency."
+      "title": "Promises vs async await: concurrency, stale-request control, and production pitfalls",
+      "description": "Learn when async and await improves readability, when Promise.all is clearer, and how cancellation plus request identity avoids stale UI bugs."
     },
     "incidentCard": {
       "title": "Async Flow Performance Check",
@@ -907,7 +977,7 @@
   {
     "id": "js-promise-fundamental-understanding",
     "title": "Promise - Fundamental Understanding",
-    "description": "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering. Mastering them explains async debug sessions better than memorizing APIs.",
+    "description": "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering. Strong answers also explain UI-order debugging, missing-return bugs, and why settlement is not the same as a callback already running.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -929,7 +999,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core mental model</strong><br><br>A Promise is a one-way state machine: <code>pending -> fulfilled</code> or <code>pending -> rejected</code>. The useful part is understanding it <strong>under the hood</strong>: the executor runs immediately, callbacks wait as microtasks, and one pitfall in a chain can change what every later step receives."
+          "text": "<strong>Core mental model</strong><br><br>A Promise is a one-way state machine: <code>pending -> fulfilled</code> or <code>pending -> rejected</code>. The useful part is understanding it <strong>under the hood</strong>: the executor runs immediately, callbacks wait as microtasks, and tiny mistakes like a missing <code>return</code> can change what the UI renders later."
         },
         {
           "type": "list",
@@ -969,7 +1039,16 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "Promise.resolve(10)\n  .then(v => v + 1)                 // next gets 11\n  .then(v => Promise.resolve(v * 2)) // waits, next gets 22\n  .then(() => { throw new Error('boom'); })\n  .catch(err => {\n    console.log(err.message); // boom\n    return 7;                 // recovery value\n  })\n  .then(v => console.log(v)); // 7"
+          "code": "Promise.resolve(10)\n  .then(v => v + 1)                  // next gets 11\n  .then(v => Promise.resolve(v * 2)) // waits, next gets 22\n  .then(() => { throw new Error('boom'); })\n  .catch(err => {\n    console.log(err.message); // boom\n    return 7;                 // recovery value\n  })\n  .then(v => console.log(v)); // 7"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Worked debug example</strong><br><br>This is the kind of production bug interviewers care about: the Promise is already settled, but the render callback still waits in the microtask queue, and one missing <code>return</code> silently turns the next value into <code>undefined</code>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('sync start');\n\nPromise.resolve('u42')\n  .then((id) => {\n    console.log('then 1', id);\n    return { id, name: 'Ada' };\n  })\n  .then((user) => {\n    console.log('then 2', user.name);\n    return user.name; // remove this return and the next handler gets undefined\n  })\n  .finally(() => {\n    console.log('finally cleanup');\n  })\n  .then((name) => {\n    console.log('render', name);\n  });\n\nconsole.log('sync end');\n\n// Output:\n// sync start\n// sync end\n// then 1 u42\n// then 2 Ada\n// finally cleanup\n// render Ada"
         },
         {
           "type": "list",
@@ -994,9 +1073,8 @@
           "caption": "Promise chain behavior is deterministic, not magic."
         },
         {
-          "type": "code",
-          "language": "javascript",
-          "code": "// Common bug: missing return\nfetch('/user')\n  .then(r => {\n    r.json(); // missing return\n  })\n  .then(data => {\n    console.log(data); // undefined\n  });"
+          "type": "text",
+          "text": "<strong>Likely follow-up confusion</strong><br><ul><li>Promise state and callback scheduling are not the same thing: a Promise can already be fulfilled while your <code>.then()</code> callback is still waiting as a microtask.</li><li><code>finally()</code> runs after settlement, but it does not replace the chain value unless it throws or returns a rejecting Promise.</li><li>Each <code>.then()</code> creates a fresh Promise, so value flow depends on what you <code>return</code> or <code>throw</code>.</li></ul>"
         },
         {
           "type": "text",
@@ -1004,19 +1082,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Executor is synchronous; handlers are microtasks.</li><li>Promise settles once.</li><li>Each chain step returns a new Promise.</li><li>Return/throw control value and error propagation.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Executor is synchronous; handlers are microtasks.</li><li>Promise settles once.</li><li>Each chain step returns a new Promise.</li><li><code>finally()</code> is cleanup, not a value-transform shortcut.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Checkout flow depends on profile -> shipping -> payment intent. Promise chain rules ensure each step receives the right input and failures route to one catch path.<br><br><strong>Common pitfalls</strong><br><ul><li>Missing return in then handlers.</li><li>Mixing callback nesting inside chain and losing error propagation.</li><li>Using broad catch that hides root cause.</li></ul>"
+          "text": "<strong>Practical scenario</strong><br>A checkout screen shows a spinner, then loads profile -> shipping -> payment intent. If one <code>.then()</code> forgets to return parsed data, the next render step gets <code>undefined</code> even though the Promise already settled correctly.<br><br><strong>Common pitfalls</strong><br><ul><li>Missing return in <code>.then()</code> handlers.</li><li>Assuming a fulfilled Promise means the UI callback already ran.</li><li>Using broad <code>catch</code> blocks that hide the original failure path.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "JavaScript Promises under the hood: timing, chaining, and finally pitfall",
-      "description": "Understand Promise internals: executor timing, microtask order, chain propagation, recovery, and the common finally pitfall."
+      "title": "JavaScript Promises under the hood: timing, missing returns, and finally",
+      "description": "Understand Promise internals: executor timing, microtask order, missing-return bugs, chain propagation, and what finally really does."
     },
     "incidentCard": {
       "title": "Promise Chain Propagation Check",
@@ -1042,7 +1120,7 @@
   {
     "id": "js-async-await-example-when-promise-is-preferred",
     "title": "When is Promise preferred over async/await in JavaScript?",
-    "description": "async/await improves readability, but Promise APIs are often better for composition, concurrency combinators, and sharing in-flight work. Learn practical cases where direct Promise usage is clearer and more scalable.",
+    "description": "async/await improves readability, but Promise APIs are often better for composition, fan-out concurrency, and shared in-flight work. Strong answers show the accidental-serialization pitfall and when raw Promise style stays clearer.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1064,7 +1142,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\n<code>async/await</code> is usually best for readable step-by-step logic. But Promises are often better when you need <strong>composition</strong>, <strong>fan-out/fan-in concurrency</strong>, or <strong>shareable in-flight results</strong>.\n\nStrong interview answer: it is not Promise <em>vs</em> async/await as enemies; async/await is built on Promises. You choose the style that best expresses the control flow."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\n<code>async/await</code> is usually best for readable step-by-step logic. But Promises are often better when you need <strong>composition</strong>, <strong>fan-out/fan-in concurrency</strong>, or <strong>shareable in-flight results</strong>. The common production pitfall is hiding independent work behind sequential <code>await</code> calls and accidentally adding latency.\n\nStrong interview answer: it is not Promise <em>vs</em> async/await as enemies; async/await is built on Promises. You choose the style that best expresses the control flow."
         },
         {
           "type": "list",
@@ -1085,48 +1163,48 @@
               "Avoid duplicate network calls and racey cache logic."
             ],
             [
+              "Need fan-out/fan-in orchestration",
+              "Return Promise composition",
+              "Makes parallel start + single join point obvious."
+            ],
+            [
               "Library/middleware expects a Promise return",
               "Return Promise chain directly",
               "No extra wrapper code; keeps API surface simple."
-            ],
-            [
-              "Need lazy composition before consumption",
-              "Pass Promise through layers and await later",
-              "Keeps orchestration flexible at boundaries."
             ]
           ],
           "caption": "Use async/await for readability, Promise APIs for composition-heavy flows."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Example 1: Combinators are naturally Promise-first</strong>\n\nWhen tasks are independent, Promise combinators usually produce cleaner code than manual sequential awaits."
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Example 1: side-by-side concurrency decision</strong>\n\nThis is the easiest place to lose performance: the slow version reads clearly, but it serializes independent requests."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "function loadDashboard(userId) {\n  return Promise.all([\n    fetch(`/api/users/${userId}`).then((r) => r.json()),\n    fetch(`/api/orders/${userId}`).then((r) => r.json()),\n    fetch(`/api/recommendations/${userId}`).then((r) => r.json())\n  ]).then(([user, orders, recs]) => ({ user, orders, recs }));\n}\n\nloadDashboard('u42')\n  .then(renderDashboard)\n  .catch(showDashboardError);"
+          "code": "async function loadDashboardSlow(userId) {\n  const user = await fetch(`/api/users/${userId}`).then((r) => r.json());\n  const orders = await fetch(`/api/orders/${userId}`).then((r) => r.json());\n  const recs = await fetch(`/api/recommendations/${userId}`).then((r) => r.json());\n  return { user, orders, recs };\n}\n\nfunction loadDashboardFast(userId) {\n  return Promise.all([\n    fetch(`/api/users/${userId}`).then((r) => r.json()),\n    fetch(`/api/orders/${userId}`).then((r) => r.json()),\n    fetch(`/api/recommendations/${userId}`).then((r) => r.json())\n  ]).then(([user, orders, recs]) => ({ user, orders, recs }));\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Example 2: In-flight dedupe cache (Promise is ideal)</strong>\n\nA Promise can represent work already started. Multiple callers can await the same Promise safely."
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Example 2: in-flight dedupe cache (Promise is ideal)</strong>\n\nA Promise can represent work already started. Multiple callers can await the same Promise safely, and a manual invalidation path keeps the cache story explicit."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "const inFlight = new Map();\n\nfunction getProduct(productId) {\n  if (inFlight.has(productId)) return inFlight.get(productId);\n\n  const p = fetch(`/api/products/${productId}`)\n    .then((r) => {\n      if (!r.ok) throw new Error(`HTTP ${r.status}`);\n      return r.json();\n    })\n    .finally(() => inFlight.delete(productId));\n\n  inFlight.set(productId, p);\n  return p;\n}\n\n// Both calls reuse one request if concurrent\nPromise.all([getProduct('p1'), getProduct('p1')]).then(console.log);"
+          "code": "const inFlight = new Map();\n\nfunction getProduct(productId) {\n  if (inFlight.has(productId)) return inFlight.get(productId);\n\n  const p = fetch(`/api/products/${productId}`)\n    .then((r) => {\n      if (!r.ok) throw new Error(`HTTP ${r.status}`);\n      return r.json();\n    })\n    .finally(() => inFlight.delete(productId));\n\n  inFlight.set(productId, p);\n  return p;\n}\n\nfunction invalidateProduct(productId) {\n  inFlight.delete(productId);\n}\n\nPromise.all([getProduct('p1'), getProduct('p1')]).then(console.log);"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-code'></i> <strong>Example 3: avoid unnecessary async wrappers</strong>\n\nIf a function simply forwards another Promise chain, returning the Promise directly can be cleaner."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Example 3: avoid unnecessary async wrappers</strong>\n\nIf a function simply forwards another Promise chain, returning the Promise directly can be clearer because the boundary stays composition-friendly."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ✅ Promise-forwarding wrapper\nfunction fetchSettings(userId) {\n  return fetch(`/api/settings/${userId}`).then((r) => r.json());\n}\n\n// Also valid with async/await, but no extra value here\nasync function fetchSettings2(userId) {\n  const res = await fetch(`/api/settings/${userId}`);\n  return res.json();\n}"
+          "code": "function fetchSettings(userId) {\n  return fetch(`/api/settings/${userId}`).then((r) => r.json());\n}\n\nasync function fetchSettings2(userId) {\n  const res = await fetch(`/api/settings/${userId}`);\n  return res.json();\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>Decision rule you can say in interviews</strong>\n\n- Use <code>async/await</code> for imperative, step-by-step business logic.\n- Use Promise combinators/chains when expressing relationship between multiple async operations is the main problem.\n\nThis answer shows design judgment, not just syntax preference."
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>Rule of thumb</strong>\n\nUse <code>async/await</code> when the main thing you are expressing is a story-like sequence of business steps. Use raw Promise style when the main thing you are expressing is the <strong>relationship between async tasks</strong>: start together, dedupe, race, join, or hand one in-flight result to multiple callers."
         },
         {
           "type": "list",
@@ -1142,17 +1220,17 @@
               "Choose one dominant style per function."
             ],
             [
-              "Missing <code>return</code> in <code>.then()</code>",
-              "Broken value propagation",
-              "Return each Promise/value explicitly."
-            ],
-            [
               "Using sequential await for independent calls",
               "Unnecessary latency",
               "Start tasks together and join with <code>Promise.all</code>."
+            ],
+            [
+              "Hiding shared in-flight work inside separate async functions",
+              "Duplicate requests and racey cache misses",
+              "Store and return the same Promise to all callers."
             ]
           ],
-          "caption": "Most bugs come from inconsistent flow shape, not from Promise itself."
+          "caption": "Most bugs come from the wrong control-flow shape, not from Promise itself."
         },
         {
           "type": "text",
@@ -1164,15 +1242,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A product page needs recommendations, inventory, and pricing from separate APIs. Running them sequentially with <code>await</code> adds unnecessary latency, while Promise combinators make concurrency explicit and easier to maintain.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>await</code> inside loops without checking if calls are independent.</li><li>Over-nesting <code>.then()</code> instead of returning chains cleanly.</li><li>Ignoring partial-failure strategy (all vs allSettled).</li></ul><strong>Trade-off or test tip</strong><br>Test both fast-success and partial-failure cases. Add latency tests to confirm the refactor actually improves total response time.</strong>"
+          "text": "<strong>Practical scenario</strong><br>A product page needs recommendations, inventory, and pricing from separate APIs. Running them sequentially with <code>await</code> adds unnecessary latency, while Promise combinators make fan-out/fan-in concurrency explicit. Meanwhile, product detail fetches may need one shared in-flight Promise so two widgets do not trigger duplicate requests.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>await</code> inside loops without checking if calls are independent.</li><li>Wrapping a Promise-returning utility in <code>async</code> even though the wrapper adds no clarity.</li><li>Ignoring invalidation for shared in-flight caches.</li></ul><strong>Trade-off or test tip</strong><br>Test both fast-success and partial-failure cases. Add latency tests to confirm the refactor actually improves total response time, and test duplicate callers against one shared Promise path.</strong>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "When to Prefer Promise Over Async/Await in JavaScript",
-      "description": "Learn when Promise APIs are better than async/await, including combinators, in-flight request sharing, and composition-heavy async flows."
+      "title": "When to prefer Promise over async/await: concurrency and dedupe",
+      "description": "Learn when Promise APIs beat async/await for composition: fan-out concurrency, in-flight request sharing, and accidental sequential-await bugs."
     },
     "incidentCard": {
       "title": "Promise vs Await Design Check",
@@ -1227,7 +1305,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example: With event delegation\nconst list = document.querySelector('ul');\nlist.addEventListener('click', (event) => {\n  if (event.target.tagName === 'LI') {\n    console.log('Clicked:', event.target.textContent);\n  }\n});"
+          "code": "// Example: With event delegation\nconst list = document.querySelector('ul');\nlist.addEventListener('click', (event) => {\n  const item = event.target.closest('li[data-id]');\n  if (!item || !list.contains(item)) return;\n  console.log('Clicked item:', item.dataset.id);\n});"
         },
         {
           "type": "list",
@@ -1266,6 +1344,19 @@
         },
         {
           "type": "text",
+          "text": "<strong>Production debugging example</strong><br>In a comment list, a click may land on an inner <code>svg</code> or <code>span</code>, not on the <code>button</code> you visually clicked. Guard with <code>closest()</code> and confirm the matched element still belongs to the delegated container."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "list.addEventListener('click', (event) => {\n  const action = event.target.closest('button[data-action]');\n  if (!action || !list.contains(action)) return;\n\n  if (action.dataset.action === 'delete') {\n    removeComment(action.closest('li[data-id]'));\n  }\n});"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up confusion to answer on the page</strong><br><ul><li>Delegation depends on propagation; if a child calls <code>stopPropagation()</code>, the parent listener may never run.</li><li>Not every event is an ideal delegation candidate. <code>focus</code>/<code>blur</code> behave differently from <code>click</code>.</li><li>Keyboard interactions may need separate handling so delegation stays accessible.</li></ul>"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Forgetting to check <code>event.target</code> → all clicks bubble and trigger the handler.\n- Relying on <code>event.target</code> when nested elements are inside clickable items (use <code>.closest()</code> to handle this safely)."
         },
         {
@@ -1288,7 +1379,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-08",
     "seo": {
       "title": "JavaScript Event Delegation: dynamic DOM, closest(), and debug traps",
       "description": "Learn delegation beyond bubbling basics: fewer listeners, better list performance, and the common pitfall of reading event.target too literally."
@@ -1431,7 +1522,7 @@
   {
     "id": "js-undefined-vs-not-defined",
     "title": "undefined vs not defined in JavaScript",
-    "description": "undefined is a real value on an existing identifier; not defined indicates identifier resolution failed (ReferenceError). Distinguishing value-state from scope-resolution is key to fast JS debugging.",
+    "description": "undefined is a value state; not defined is identifier lookup failure. Strong debugging answers also separate those from TDZ and null, then show the safe check order for missing globals, payload fields, and scope mistakes.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1453,7 +1544,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>One-liner</strong><br><br><code>undefined</code> means \"found variable, value missing\". \"not defined\" means \"variable name could not be found\"."
+          "text": "<strong>One-liner</strong><br><br><code>undefined</code> means \"found variable, value missing\". \"not defined\" means \"variable name could not be found\".<br><br><strong>Real debugging version</strong><br>A missing API field often becomes <code>undefined</code>. A missing global, typo, or script-load failure often throws \"is not defined\" instead."
         },
         {
           "type": "list",
@@ -1488,12 +1579,25 @@
         },
         {
           "type": "text",
-          "text": "<strong>typeof nuance</strong>"
+          "text": "<strong>typeof nuance</strong><br><br><code>typeof</code> is safe for an undeclared identifier, but it still throws inside TDZ. That is the follow-up distinction many answers skip."
         },
         {
           "type": "code",
           "language": "javascript",
           "code": "console.log(typeof maybeMissing); // 'undefined' (safe for undeclared names)\n\n{\n  // console.log(typeof inTdz); // ReferenceError\n  let inTdz = 1;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Real debugging example</strong><br>A missing property and a missing identifier are different failures. One is data state; the other is name resolution."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const payload = {};\nconsole.log(payload.age); // undefined (missing property value)\n\nconsole.log(typeof AppConfig); // 'undefined' if the global never loaded\n// console.log(AppConfig.timeout); // ReferenceError if AppConfig is undeclared"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fast check order</strong><br><ul><li>If the error literally says \"is not defined\", check typo, scope, or load order first.</li><li>If a read returns <code>undefined</code>, inspect assignment timing or object shape.</li><li>If <code>typeof</code> itself throws, you are likely in TDZ rather than dealing with an undeclared global.</li><li><code>null</code> is different again: the value is intentionally empty, not missing by accident.</li></ul>"
         },
         {
           "type": "list",
@@ -1532,10 +1636,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-08",
     "seo": {
-      "title": "undefined vs not defined in JavaScript (ReferenceError Guide)",
-      "description": "Understand undefined vs not defined in JavaScript, including scope lookup failures, typeof behavior, TDZ edge cases, and practical debugging fixes."
+      "title": "undefined vs not defined in JavaScript: TDZ, typeof, and debug order",
+      "description": "Debug undefined vs not defined correctly: missing values, missing identifiers, TDZ, typeof safety, and how to check undeclared globals without crashing."
     },
     "incidentCard": {
       "title": "ReferenceError Triage Check",
@@ -1561,7 +1665,7 @@
   {
     "id": "js-use-strict-describe",
     "title": "What does 'use strict' do in JavaScript?",
-    "description": "'use strict' enables strict mode, which blocks several error-prone JavaScript behaviors such as accidental globals and silent failures. Learn function-level vs file-level usage, strict-mode effects on this/eval, and practical migration tips.",
+    "description": "'use strict' is mainly a migration and debugging tool: it turns sloppy-mode footguns into explicit errors. Strong answers compare accidental globals, silent failures, bare-function this, eval restrictions, and modern ES module defaults.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1583,12 +1687,12 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\n<code>'use strict'</code> turns on <strong>strict mode</strong>, a safer JavaScript execution mode that converts many silent bugs into explicit errors.\n\nIn interviews, a strong answer is: strict mode reduces ambiguity, catches risky patterns early, and makes code behavior more predictable across runtimes."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\n<code>'use strict'</code> turns on <strong>strict mode</strong>, a safer JavaScript execution mode that converts many silent bugs into explicit errors. The real value is migration and debugging: old code that used to limp along with accidental globals or sloppy <code>this</code> assumptions starts failing loudly.\n\nIn interviews, a strong answer is: strict mode reduces ambiguity, catches risky patterns early, and makes code behavior more predictable across runtimes."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "'use strict';\n\nfunction run() {\n  // total = 10;\n  // ReferenceError: total is not defined\n}\n\nrun();"
+          "code": "// Sloppy mode\nfunction sloppyShow() {\n  leakedTotal = 10; // accidental global\n  return this;      // window in browsers\n}\n\nconst cfg = {};\nObject.defineProperty(cfg, 'version', {\n  value: 1,\n  writable: false\n});\n\nfunction sloppyWrite() {\n  cfg.version = 2;  // may fail silently\n}\n\n// Strict mode\nfunction strictShow() {\n  'use strict';\n  leakedTotal = 10; // ReferenceError\n  return this;      // undefined\n}\n\nfunction strictWrite() {\n  'use strict';\n  cfg.version = 2;  // TypeError\n}"
         },
         {
           "type": "list",
@@ -1654,6 +1758,10 @@
           "code": "'use strict';\n\nconst cfg = {};\nObject.defineProperty(cfg, 'version', {\n  value: 1,\n  writable: false\n});\n\n// cfg.version = 2;\n// TypeError in strict mode (instead of silent failure in sloppy mode for many cases)"
         },
         {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>Interview-ready trade-off</strong>\n\nAdvantages: strict mode catches accidental globals, unsafe <code>this</code> assumptions, and silent write failures earlier. Cost: old script files may break during migration because they relied on sloppy-mode behavior. In modern ES module code you often get strict mode automatically, so the literal mostly matters in legacy scripts or function-scoped opt-ins."
+        },
+        {
           "type": "list",
           "columns": [
             "Goal",
@@ -1681,6 +1789,10 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-circle-question'></i> <strong>Follow-up: eval and modern code</strong>\n\nStrict mode also changes some <code>eval</code> behavior and blocks older syntax like <code>with</code>. In ES modules and class bodies you already have strict semantics, so adding the literal there is usually redundant rather than harmful."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview one-liner</strong>\n\n<code>'use strict'</code> opts JavaScript into a safer mode that rejects legacy error-prone behaviors, making bugs surface earlier and execution semantics more predictable."
         },
         {
@@ -1694,10 +1806,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "'use strict' in JavaScript Explained: Benefits, Pitfalls, and Usage",
-      "description": "Learn what 'use strict' changes in JavaScript, including accidental globals, this binding, syntax restrictions, module defaults, and migration best practices."
+      "title": "JavaScript 'use strict': migration bugs, module defaults, and eval restrictions",
+      "description": "Learn what 'use strict' changes in practice: accidental globals, sloppy this, silent failures, module defaults, eval limits, and migration trade-offs."
     },
     "incidentCard": {
       "title": "Strict Mode Root Cause Check",
@@ -1723,7 +1835,7 @@
   {
     "id": "js-why-eval-function-considered-dangerous",
     "title": "Why is the eval() function considered dangerous in JavaScript?",
-    "description": "Explain eval through the security pitfall lens: it turns data into code, expands injection risk, conflicts with CSP expectations, and makes production debugging or optimization much harder.",
+    "description": "Explain eval through the security pitfall lens: it turns data into code, creates same-origin execution risk, conflicts with CSP expectations, and makes production debugging or optimization much harder.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1746,7 +1858,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Security pitfall</strong>\n\n<code>eval()</code> turns data into executable code. In production that creates injection risk, CSP friction, and runtime behavior that is much harder to debug or optimize.\n\nA strong interview answer is simple: <strong>eval turns data into code</strong>, so it expands attack surface and reduces predictability."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Security pitfall</strong>\n\n<code>eval()</code> turns data into executable code. In production that creates injection risk, CSP friction, and runtime behavior that is much harder to debug or optimize. In the browser, a query param, CMS field, or localStorage value can become same-origin script with DOM access and user-session privileges.\n\nA strong interview answer is simple: <strong>eval turns data into code</strong>, so it expands attack surface and reduces predictability."
         },
         {
           "type": "code",
@@ -1791,12 +1903,12 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Security-first explanation</strong>\n\nIf data can be influenced by users, third-party APIs, query params, or storage, using <code>eval</code> can convert that data into executable payloads. In browser apps, this often becomes DOM XSS or privilege abuse in your own origin."
+          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Security-first explanation</strong>\n\nIf data can be influenced by users, third-party APIs, query params, or storage, using <code>eval</code> can convert that data into executable payloads. In browser apps, this often becomes DOM XSS or privilege abuse in your own origin, not just a generic 'bad practice' warning."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ❌ Dangerous pattern\nconst query = new URL(location.href).searchParams.get('rule');\n// eval(query);\n\n// If 'rule' contains malicious code, it executes in your app context."
+          "code": "// ❌ Dangerous pattern\nconst rule = new URL(location.href).searchParams.get('rule');\n\nif (rule) {\n  eval(rule);\n}\n\n// /checkout?rule=fetch('/api/me').then(r => r.text()).then(console.log)\n// Now attacker-controlled text runs with your app's origin privileges."
         },
         {
           "type": "text",
@@ -1814,6 +1926,11 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-circle-info'></i> <strong>Safer alternatives by use case</strong>\n\n- Need to parse JSON: use <code>JSON.parse</code>.\n- Need dynamic property access: use bracket notation (<code>obj[key]</code>).\n- Need expression-like logic from users: build a restricted parser/interpreter with an allowlist grammar.\n- Need dispatch behavior: use maps of functions instead of code strings."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const user = { email: 'ada@example.com' };\nconst field = 'email';\nconst draft = '{\"theme\":\"dark\"}';\n\n// ❌ String decides what code runs\n// eval(`user.${field}`);\n// eval('(' + draft + ')');\n\n// ✅ Data stays data\nconsole.log(user[field]);\nconsole.log(JSON.parse(draft));"
         },
         {
           "type": "code",
@@ -1848,7 +1965,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview one-liner</strong>\n\n<code>eval</code> is dangerous because it executes strings as code, which can enable injection attacks, block security policies, hurt performance, and make code harder to audit and maintain."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview one-liner</strong>\n\n<code>eval</code> is dangerous because it executes strings as code, which can enable same-origin injection attacks, block security policies, hurt performance, and make code harder to audit and maintain."
         },
         {
           "type": "text",
@@ -1856,15 +1973,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A rules engine receives a string from an admin panel and runs it with <code>eval</code>. A malformed or malicious rule can crash checkout logic or expose sensitive browser data.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming only trusted users can influence inputs.</li><li>Using eval for tasks solved by JSON parsing or function maps.</li><li>Ignoring CSP constraints until deployment hardening starts.</li></ul><strong>Trade-off or test tip</strong><br>If dynamic logic is unavoidable, define a strict mini-language, parse it with an allowlist grammar, and test with malicious payload cases and fuzzed inputs.</strong>"
+          "text": "<strong>Practical scenario</strong><br>A rules engine receives a string from an admin panel and runs it with <code>eval</code>. A malformed or malicious rule can crash checkout logic or expose sensitive browser data because the payload now executes as code inside your origin, not as inert data.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming only trusted users can influence inputs.</li><li>Using eval for tasks solved by JSON parsing, bracket access, or function maps.</li><li>Ignoring CSP constraints until deployment hardening starts.</li></ul><strong>Trade-off or test tip</strong><br>If dynamic logic is unavoidable, define a strict mini-language, parse it with an allowlist grammar, and test with malicious payload cases and fuzzed inputs.</strong>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Why eval() is a security pitfall in JavaScript: CSP, code injection, and debug cost",
-      "description": "Understand eval through the real production pitfall: data becomes code, CSP weakens, optimizers bail out, and runtime behavior gets harder to debug."
+      "title": "Why eval() is dangerous: same-origin code execution, CSP, and safer replacements",
+      "description": "Understand the real eval pitfall: untrusted data becomes code, CSP weakens, same-origin attack paths open up, and safer replacements are usually simpler."
     },
     "incidentCard": {
       "title": "Dynamic Code Safety Check",
@@ -1890,7 +2007,7 @@
   {
     "id": "js-null-coalescing-operator",
     "title": "What is the nullish coalescing operator (??) in JavaScript?",
-    "description": "The nullish coalescing operator (??) returns the right value only when the left side is null or undefined. Unlike ||, it does not treat 0, empty string, or false as missing. Strong answers cover precedence, optional chaining, and safe fallback patterns.",
+    "description": "The nullish coalescing operator fixes a production defaulting bug: `||` overwrites valid `0`, `''`, and `false`. Strong answers also cover `?.`, precedence rules, and the follow-up case where empty-but-intentional values still need separate business logic.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1913,7 +2030,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong>nullish coalescing operator</strong> (<code>??</code>) gives you a fallback value only when the left side is <code>null</code> or <code>undefined</code>.\n\nIt solves a common bug from <code>||</code> defaults where valid values like <code>0</code>, <code>''</code>, or <code>false</code> get replaced unintentionally."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong>nullish coalescing operator</strong> (<code>??</code>) gives you a fallback value only when the left side is <code>null</code> or <code>undefined</code>.\n\nIt solves a common production bug from <code>||</code> defaults where valid values like <code>0</code>, <code>''</code>, or <code>false</code> get replaced unintentionally. The key follow-up is that <code>??</code> only answers 'missing or not'; it does not decide whether an empty-but-intentional value should still be rejected by business rules."
         },
         {
           "type": "code",
@@ -1944,7 +2061,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const settings = { retries: 0, label: '' };\n\nconsole.log(settings.retries || 3); // 3  ❌ loses valid 0\nconsole.log(settings.retries ?? 3); // 0  ✅\n\nconsole.log(settings.label || 'Untitled'); // 'Untitled' ❌ loses valid ''\nconsole.log(settings.label ?? 'Untitled'); // '' ✅"
+          "code": "const state = {\n  retryCount: 0,\n  subtitle: '',\n  emailOptIn: false,\n  theme: undefined\n};\n\nconsole.log(state.retryCount || 3);     // 3 ❌ loses valid 0\nconsole.log(state.retryCount ?? 3);     // 0 ✅\n\nconsole.log(state.subtitle || 'Untitled'); // 'Untitled' ❌ loses valid ''\nconsole.log(state.subtitle ?? 'Untitled'); // '' ✅\n\nconsole.log(state.emailOptIn || true);  // true ❌ loses valid false\nconsole.log(state.emailOptIn ?? true);  // false ✅\n\nconsole.log(state.theme ?? 'system');   // 'system' ✅ missing value"
         },
         {
           "type": "text",
@@ -1953,7 +2070,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const user = { profile: { nickname: '' } };\n\nconst city = user.address?.city ?? 'Unknown City';\nconst nickname = user.profile?.nickname ?? 'Anonymous';\n\nconsole.log(city);     // 'Unknown City'\nconsole.log(nickname); // '' (kept, not overwritten)"
+          "code": "const apiState = {\n  profile: {\n    stats: { loginCount: 0 },\n    badge: ''\n  },\n  preferences: null\n};\n\nconst loginCount = apiState.profile?.stats?.loginCount ?? 1; // 0\nconst badge = apiState.profile?.badge ?? 'New';              // ''\nconst locale = apiState.preferences?.locale ?? 'en-US';      // 'en-US'"
         },
         {
           "type": "text",
@@ -1972,6 +2089,10 @@
           "type": "code",
           "language": "javascript",
           "code": "const config = { timeout: null, retries: 0 };\n\nconfig.timeout ??= 5000;\nconfig.retries ??= 3;\n\nconsole.log(config);\n// { timeout: 5000, retries: 0 }"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-question'></i> <strong>Follow-up: when <code>??</code> is still the wrong tool</strong>\n\n<code>??</code> only answers 'is the value missing?'. It does <strong>not</strong> answer business rules like 'an empty string should be replaced' or '0 should be rejected.' If the product treats <code>''</code> as invalid, keep <code>??</code> for nullish handling and add a separate validation rule for empty values."
         },
         {
           "type": "list",
@@ -2013,15 +2134,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A product dashboard stores <code>0</code> as a valid retry count and <code>''</code> as an intentionally blank subtitle. Using <code>||</code> silently rewrites both values during render.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>||</code> for data defaults in forms/config screens.</li><li>Mixing <code>??</code> with <code>||</code> without parentheses.</li><li>Assuming optional chaining alone provides default values.</li></ul><strong>Trade-off or test tip</strong><br>Add test cases for <code>0</code>, <code>''</code>, <code>false</code>, <code>null</code>, and <code>undefined</code> to ensure fallback logic matches business intent.</strong>"
+          "text": "<strong>Practical scenario</strong><br>A product dashboard stores <code>0</code> as a valid retry count, <code>''</code> as an intentionally blank subtitle, and <code>false</code> as a real saved toggle. Using <code>||</code> silently rewrites all three values during render.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>||</code> for data defaults in forms/config screens.</li><li>Mixing <code>??</code> with <code>||</code> without parentheses.</li><li>Assuming optional chaining alone provides default values.</li><li>Forgetting that empty-but-invalid values still need separate validation logic.</li></ul><strong>Trade-off or test tip</strong><br>Add test cases for <code>0</code>, <code>''</code>, <code>false</code>, <code>null</code>, and <code>undefined</code> to ensure fallback logic matches business intent.</strong>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Null Coalescing Operator in JavaScript (??) Explained Clearly",
-      "description": "Learn the nullish coalescing operator (??), how it differs from ||, and why it is safer for defaults with 0, empty string, and false."
+      "title": "JavaScript ?? operator: defaulting bugs, precedence, and follow-up pitfalls",
+      "description": "Learn when to use ?? instead of ||, how to pair it with optional chaining, and what to do when empty values still need business-rule validation."
     },
     "incidentCard": {
       "title": "Fallback Logic Check",
@@ -2166,7 +2287,7 @@
   {
     "id": "js-compare-two-objects",
     "title": "How would you compare two objects in JavaScript?",
-    "description": "In JavaScript, object comparison depends on intent: `===` checks reference identity, while value-based checks require shallow or deep comparison. Learn practical comparison strategies, JSON.stringify pitfalls, and when to use utility libraries for reliable deep equality.",
+    "description": "Object comparison in JavaScript is a strategy decision: `===` checks identity, shallow checks fit flat data, and deep checks fit nested data. Learn when each approach is enough, where JSON.stringify breaks, and which edge cases need a real deep-equality helper.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -2188,7 +2309,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nObject comparison in JavaScript is not one single operation. You usually choose between three intents:\n- <strong>Identity comparison</strong>: are both variables pointing to the exact same object?\n- <strong>Shallow value comparison</strong>: are top-level keys and values equal?\n- <strong>Deep value comparison</strong>: are nested objects/arrays equal by content?\n\nMost interview mistakes happen when people use <code>===</code> but expect deep value equality."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nObject comparison in JavaScript is not one single operation. You choose the <strong>cheapest comparison strategy that matches your intent</strong>:\n- <strong>Identity comparison</strong>: are both variables pointing to the exact same object?\n- <strong>Shallow value comparison</strong>: are top-level keys and values equal?\n- <strong>Deep value comparison</strong>: are nested objects/arrays equal by content?\n\nMost interview mistakes happen when people use <code>===</code> but expect deep value equality, or when they deep-compare everything even though a flat shallow check would have been enough."
         },
         {
           "type": "code",
@@ -2236,6 +2357,15 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-briefcase'></i> <strong>Business case: shallow is often enough</strong>\n\nIf a filter bar stores only flat primitive fields like page, sort, and query, a shallow comparison is cheaper and easier to reason about than a recursive deep compare."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const prevFilters = { page: 1, sort: 'price', query: 'gpu' };\nconst nextFilters = { page: 1, sort: 'price', query: 'gpu' };\n\nconsole.log(shallowEqual(prevFilters, nextFilters)); // true\n// Good enough for a refetch guard or memo check on flat primitive fields."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-circle-info'></i> <strong>Deep comparison helper (handles cycles)</strong>\n\nFor nested data, deep comparison is safer. A robust helper should handle arrays, dates, and circular references."
         },
         {
@@ -2255,23 +2385,27 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const p = { a: 1, b: undefined };\nconst q = { a: 1 };\n\nconsole.log(JSON.stringify(p) === JSON.stringify(q));\n// true (but objects are not semantically identical for many use cases)"
+          "code": "const q1 = { sort: 'price', page: 1 };\nconst q2 = { page: 1, sort: 'price' };\nconsole.log(JSON.stringify(q1) === JSON.stringify(q2)); // false\n\nconst p = { a: 1, b: undefined };\nconst q = { a: 1 };\nconsole.log(JSON.stringify(p) === JSON.stringify(q)); // true"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Production guidance</strong>\n\n- Use <code>===</code> for identity checks (cheap and exact).\n- Use shallow compare for flat objects and render optimization.\n- Use a proven library (for example <code>fast-deep-equal</code>) when deep equality must be reliable and fast.\n- In tests, include edge cases: <code>NaN</code>, dates, arrays, and circular references."
+          "text": "<strong>Follow-up limits</strong><br><ul><li>Dates usually need value comparison such as <code>getTime()</code>.</li><li>Functions usually compare by identity, not by source text.</li><li>Cycles require visited-pair tracking or a proven library.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A product filter panel compares previous and next query objects to decide whether to refetch results. A strict reference check misses equal-by-value objects, while naive deep checks hurt performance on every keystroke.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>===</code> when your intent is value equality.</li><li>Using <code>JSON.stringify</code> for complex or cyclic objects.</li><li>Running deep comparison on large objects inside hot render loops.</li></ul><strong>Trade-off or test tip</strong><br>Choose comparison depth by use case, then benchmark. In UI code, prefer stable object creation plus targeted shallow checks; in validation/tests, use robust deep equality.</strong>"
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Production guidance</strong>\n\n- Use <code>===</code> for identity checks (cheap and exact).\n- Use shallow compare for flat objects and render optimization.\n- Use a proven library (for example <code>fast-deep-equal</code>) when deep equality must be reliable and fast.\n- In tests, include edge cases: <code>NaN</code>, dates, arrays, functions, and circular references."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A product filter panel compares previous and next query objects to decide whether to refetch results. A strict reference check misses equal-by-value objects, while naive deep checks hurt performance on every keystroke.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>===</code> when your intent is value equality.</li><li>Using <code>JSON.stringify</code> where key order, <code>undefined</code>, or cycles matter.</li><li>Running deep comparison on large objects inside hot render loops instead of using the cheapest strategy that fits the business intent.</li></ul><strong>Trade-off or test tip</strong><br>Choose comparison depth by use case, then benchmark. In UI code, prefer stable object creation plus targeted shallow checks; in validation/tests, use robust deep equality.</strong>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "How to Compare Two Objects in JavaScript (Shallow vs Deep)",
-      "description": "Compare objects in JavaScript correctly with reference checks, shallow equality, deep equality, JSON pitfalls, and practical production strategies."
+      "title": "How to compare two objects in JavaScript: shallow vs deep vs JSON pitfalls",
+      "description": "Choose the right object comparison strategy in JavaScript: identity, shallow equality, deep equality, and the common JSON.stringify traps."
     },
     "incidentCard": {
       "title": "Object Equality Strategy Check",
@@ -2297,7 +2431,7 @@
   {
     "id": "js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
     "title": "Truthy/falsy, pass-by-value vs reference, and strict equality: practical use case",
-    "description": "This is a high-frequency bug pattern: defaults that overwrite valid falsy values, loose equality coercion surprises, and accidental shared-object mutation. Robust code uses ??, ===, and controlled immutability.",
+    "description": "This page is about a common production bug combo: falsy defaults overwrite valid values, loose equality coerces unexpectedly, and shared mutation leaks state back to the caller. Strong answers separate those failures while showing one integrated helper bug.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -2320,7 +2454,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Why interviewers combine these topics</strong><br><br>Because real frontend bugs usually combine them: a fallback breaks <code>0</code>/<code>false</code>, a loose comparison silently passes, and a helper mutates shared state."
+          "text": "<strong>Why interviewers combine these topics</strong><br><br>Because real frontend bugs usually combine them: a fallback breaks <code>0</code>/<code>false</code>, a loose comparison silently passes, and a helper mutates shared state behind the caller's back. The debugging skill is separating those three failures without pretending they are the same bug."
         },
         {
           "type": "list",
@@ -2365,12 +2499,16 @@
         },
         {
           "type": "text",
-          "text": "<strong>Integrated real-world bug (before/after)</strong>"
+          "text": "<strong>Integrated real-world bug (before/after)</strong><br><br>One helper can fail in three different ways at once: it overwrites a valid falsy value, it relies on coercion, and it mutates caller-owned state."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ❌ buggy\nfunction prepare(cart) {\n  cart.retry = cart.retry || 3;\n  if (cart.total == '0') cart.status = 'empty';\n  return cart;\n}\n\n// ✅ safer\nfunction prepareSafe(input) {\n  const cart = { ...input };\n  cart.retry = cart.retry ?? 3;\n  if (cart.total === 0) cart.status = 'empty';\n  return cart;\n}"
+          "code": "// ❌ buggy\nfunction prepare(cart) {\n  cart.retry = cart.retry || 3;            // loses valid 0\n  cart.sendReceipt = cart.sendReceipt || true; // loses valid false\n  if (cart.total == 0) cart.status = 'empty';  // coercion surprise\n  return cart;                             // mutates caller object\n}\n\nconst source = { retry: 0, sendReceipt: false, total: '0' };\nconst broken = prepare(source);\nconsole.log(source.retry);        // 3 ❌ caller object changed\nconsole.log(broken.sendReceipt);  // true ❌ valid false lost\n\n// ✅ safer\nfunction prepareSafe(input) {\n  const cart = { ...input };\n  cart.retry = cart.retry ?? 3;\n  cart.sendReceipt = cart.sendReceipt ?? true;\n  const total = Number(cart.total);\n  if (Number.isNaN(total)) throw new Error('Invalid total');\n  if (total === 0) cart.status = 'empty';\n  return cart;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Separate the failures when debugging</strong><br><ul><li>The falsy-default bug asks: why was <code>0</code>, <code>false</code>, or <code>''</code> overwritten?</li><li>The coercion bug asks: why did the condition pass with the wrong type?</li><li>The shared-reference bug asks: why did caller-owned state change after the helper returned?</li></ul>"
         },
         {
           "type": "text",
@@ -2391,10 +2529,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Truthy/Falsy, Strict Equality, and Reference Bugs in JavaScript",
-      "description": "Learn a real JavaScript use case combining truthy/falsy defaults, strict equality checks, and pass-by-value vs reference behavior."
+      "title": "JavaScript bug combo: falsy defaults, == coercion, and shared mutation",
+      "description": "Learn one real JavaScript helper bug that mixes truthy/falsy defaults, loose equality, and shared object mutation, plus how to debug each failure separately."
     },
     "incidentCard": {
       "title": "Combined Debugging Check",
@@ -2474,7 +2612,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "run(); // works\nfunction run() {}\n\nconsole.log(a); // undefined\nvar a = 1;\n\nconsole.log(b); // ReferenceError\nlet b = 2;"
+          "code": "run(); // works\nfunction run() {}\n\nconsole.log(a); // undefined\nvar a = 1;\n\nspeak(); // TypeError: speak is not a function\nvar speak = function () {};\n\n// new Runner(); // ReferenceError\nclass Runner {}"
         },
         {
           "type": "text",
@@ -2504,6 +2642,14 @@
         },
         {
           "type": "text",
+          "text": "<strong>High-signal follow-up</strong><br><ul><li>Function declarations are callable early because the function value is ready during setup.</li><li>A <code>var</code> function expression hoists only the variable, so the read happens before the callable value exists.</li><li><code>class</code> behaves like lexical declarations and stays in TDZ.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Frontend debugging example</strong><br>A feature module may call a helper before its function expression is assigned, or instantiate a class before its declaration line. Those failures look similar at first, but they come from different hoisting outcomes."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Before the show starts, the stage crew places props (declarations). Some props are usable immediately, others are covered until the right scene (execution line)."
         },
         {
@@ -2517,7 +2663,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-08",
     "seo": {
       "title": "JavaScript Hoisting: undefined reads, early calls, and debug traps",
       "description": "Understand hoisting under the hood so you can debug why var reads as undefined, function declarations work early, and classes or expressions do not."
@@ -2647,7 +2793,7 @@
   {
     "id": "js-event-bubbling-capturing",
     "title": "What is event bubbling and capturing in JavaScript?",
-    "description": "Event bubbling and capturing define the order in which events propagate through the DOM. Bubbling moves upward from the target element to its ancestors, while capturing moves downward from the root to the target.",
+    "description": "Event bubbling and capturing matter most when nested buttons trigger parents, delegated menus read the wrong node, or stopPropagation hides the real bug. Strong answers explain phase order, target vs currentTarget, and when capture or composedPath are useful.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -2666,7 +2812,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nWhen an event (like a click) occurs in the DOM, it doesn’t just happen on one element. Instead, it travels through a **three-phase path**:\n\n1. **Capturing phase** – The event travels from the root of the document down to the target element.\n2. **Target phase** – The event occurs on the exact target element.\n3. **Bubbling phase** – The event bubbles up from the target element back to the root."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nWhen an event (like a click) occurs in the DOM, it does not belong to only one element. It travels through a <strong>three-phase path</strong>: capture -> target -> bubble. The real production/debug value is understanding why a nested button can trigger its panel and backdrop, why delegated menus sometimes read the wrong node, and why blindly calling <code>stopPropagation()</code> often hides the wrong bug."
         },
         {
           "type": "list",
@@ -2700,59 +2846,72 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: Bubbling (Default Behavior)</strong>\n\nWhen you click on a nested element, the event first triggers on the innermost element and then moves upward to its ancestors."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: bubbling in a modal</strong>\n\nA modal often contains a clickable panel inside a clickable backdrop. If you click a nested save button, the event still bubbles to the panel and then to the backdrop unless you handle it deliberately."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<div id='parent'>\n  <button id='child'>Click Me</button>\n</div>"
+          "code": "<div id='backdrop'>\n  <div id='panel'>\n    <button id='save'>Save</button>\n  </div>\n</div>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "document.getElementById('parent').addEventListener('click', () => {\n  console.log('Parent clicked');\n});\n\ndocument.getElementById('child').addEventListener('click', () => {\n  console.log('Child clicked');\n});"
+          "code": "backdrop.addEventListener('click', (event) => {\n  console.log('backdrop', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});\n\npanel.addEventListener('click', (event) => {\n  console.log('panel', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});\n\nsave.addEventListener('click', (event) => {\n  console.log('button', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});"
         },
         {
           "type": "text",
-          "text": "Output when you click the button:\n<pre class='md-pre'><code>Child clicked\nParent clicked</code></pre>\n\nThe event starts at the <code>button</code> (target) and bubbles up to the <code>div</code>."
+          "text": "Output when you click the save button:\n<pre class='md-pre'><code>button { target: 'save', currentTarget: 'save' }\npanel { target: 'save', currentTarget: 'panel' }\nbackdrop { target: 'save', currentTarget: 'backdrop' }</code></pre>\n\nThis is the first follow-up most people miss: <code>event.target</code> is the deepest clicked node, while <code>event.currentTarget</code> is whichever listener is currently running."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: Capturing Phase</strong>\n\nIf you set the third parameter of <code>addEventListener</code> to <code>true</code>, the handler will fire during the capturing phase instead of bubbling."
+          "text": "<i class='fa-solid fa-wave-square'></i> <strong>Single trace: capture -> target -> bubble</strong>\n\nA combined trace is often the fastest way to debug whether the wrong handler is firing or the right handler is firing in the wrong phase."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "document.getElementById('parent').addEventListener('click', () => {\n  console.log('Parent capturing');\n}, true);\n\ndocument.getElementById('child').addEventListener('click', () => {\n  console.log('Child clicked');\n});"
+          "code": "function trace(label) {\n  return (event) => {\n    console.log(label, {\n      target: event.target.id,\n      currentTarget: event.currentTarget.id\n    });\n  };\n}\n\nshell.addEventListener('click', trace('shell capture'), true);\nmenu.addEventListener('click', trace('menu capture'), true);\nitem.addEventListener('click', trace('item target'));\nmenu.addEventListener('click', trace('menu bubble'));\nshell.addEventListener('click', trace('shell bubble'));"
         },
         {
           "type": "text",
-          "text": "Output when you click the button:\n<pre class='md-pre'><code>Parent capturing\nChild clicked</code></pre>\n\nNow the parent reacts first because the event is captured while traveling down the DOM tree."
+          "text": "Expected order for a click on <code>item</code>:\n<pre class='md-pre'><code>shell capture -> menu capture -> item target -> menu bubble -> shell bubble</code></pre>\n\nThis makes phase order visible and shows why <code>target</code> stays the same while <code>currentTarget</code> changes as the event moves."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Stopping Event Propagation</strong>\n\nYou can stop the event from moving further in either direction using:\n- <code>event.stopPropagation()</code> → stops it from continuing up or down.\n- <code>event.stopImmediatePropagation()</code> → also prevents other handlers on the same element from firing."
+          "text": "<i class='fa-solid fa-list'></i> <strong>Delegated menu/list example</strong>\n\nPropagation knowledge matters most when one ancestor listener handles many dynamic children."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "child.addEventListener('click', e => {\n  e.stopPropagation();\n  console.log('Only child handled this.');\n});"
+          "code": "menu.addEventListener('click', (event) => {\n  const actionButton = event.target.closest('[data-action]');\n  if (!actionButton || !menu.contains(actionButton)) return;\n\n  runAction(actionButton.dataset.action);\n});"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The event path has three phases: capturing → target → bubbling.\n- Bubbling is the **default** in JavaScript.\n- You can listen in the capturing phase by passing <code>true</code> as the third argument.\n- <code>stopPropagation()</code> prevents the event from continuing.\n\nThis knowledge is crucial for efficient event handling and **event delegation** in complex UIs."
+          "text": "<strong>Likely follow-up confusion</strong><br><ul><li><code>event.target</code> answers 'what was actually clicked?'</li><li><code>event.currentTarget</code> answers 'which listener is running right now?'</li><li>Capture is opt-in; bubbling is default.</li><li>Use <code>stopPropagation()</code> narrowly, because it can break delegation, analytics, and outside-click handlers higher in the tree.</li><li>If a component uses shadow DOM, <code>composedPath()</code> can reveal the full path more accurately than guessing from one node.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of event flow like a water drop hitting nested cups:\n- **Capturing:** The water flows from the biggest cup down to the smallest one.\n- **Target:** The drop hits the smallest cup (the clicked element).\n- **Bubbling:** The water splashes back up through the larger cups."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Stopping propagation</strong>\n\nYou can stop the event from moving further in either direction using:\n- <code>event.stopPropagation()</code> -> stops it from continuing up or down.\n- <code>event.stopImmediatePropagation()</code> -> also prevents other handlers on the same element from firing.\n\nUse it as a targeted fix, not as a blanket answer to every propagation bug."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "document.getElementById('save').addEventListener('click', (event) => {\n  event.stopPropagation();\n  console.log('Only the save button handles this.');\n});"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The event path has three phases: capture -> target -> bubble.\n- Bubbling is the default in JavaScript.\n- <code>event.target</code> and <code>event.currentTarget</code> answer different questions.\n- This is core knowledge for event delegation, outside-click logic, and nested UI debugging."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of event flow like a messenger walking through a building: down the halls to the room (capture), delivering the message in the room (target), then walking back out past the same checkpoints (bubble)."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Event bubbling vs capturing in JavaScript: what is different?",
-      "description": "Event capturing runs from the root to the target, while bubbling runs from the target back up through ancestors."
+      "title": "JavaScript event bubbling vs capturing: delegated menus and debug flow",
+      "description": "Debug nested click handlers with confidence: bubbling, capture, target vs currentTarget, delegated menus, stopPropagation, and composedPath follow-ups."
     },
     "incidentCard": {
       "title": "Event Propagation Check",
@@ -3170,7 +3329,7 @@
   {
     "id": "js-cookie-options",
     "title": "What are the options (attributes) in a cookie?",
-    "description": "Cookie options are attributes on Set-Cookie that control lifetime, scope, and security. Learn Expires vs Max-Age, Domain and Path scoping, Secure/HttpOnly/SameSite protections, and when to use Partitioned cookies.",
+    "description": "Cookie options are production decisions about auth-cookie hardening, host-only scope, SameSite defaults, cross-site embeds, and which attributes must be set server-side in Set-Cookie.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -3192,7 +3351,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nA cookie is not just <code>name=value</code>. Real behavior is controlled by attributes in the <code>Set-Cookie</code> header: lifetime, which paths/domains can receive it, and how strongly it is protected against client-side attacks and cross-site request abuse.\n\nIn interviews, high-quality answers group cookie options into three buckets: <strong>lifetime</strong>, <strong>scope</strong>, and <strong>security</strong>."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nA cookie is not just <code>name=value</code>. Real behavior is controlled by attributes in the <code>Set-Cookie</code> header: lifetime, which paths/domains can receive it, and how strongly it is protected against client-side attacks and cross-site request abuse.\n\nIn interviews, high-quality answers group cookie options into three buckets: <strong>lifetime</strong>, <strong>scope</strong>, and <strong>security</strong>. The production decision is usually whether the cookie is an auth cookie, a low-risk preference cookie, or a cross-site cookie for an embedded widget, affiliate redirect, or third-party sign-in flow. Modern browsers also treat omitted <code>SameSite</code> as a <code>Lax</code>-style default in many cases, so a cookie can appear fine on your own site but still fail in cross-site contexts."
         },
         {
           "type": "code",
@@ -3270,7 +3429,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-sitemap'></i> <strong>Scope options: Domain and Path</strong>\n\nUse the narrowest scope possible. Over-broad cookies increase accidental leakage across subdomains or app sections."
+          "text": "<i class='fa-solid fa-sitemap'></i> <strong>Scope options: Domain and Path</strong>\n\nUse the narrowest scope possible. Over-broad cookies increase accidental leakage across subdomains or app sections. If <code>Domain</code> is omitted, the cookie is <strong>host-only</strong>, which is usually the safer default for session cookies. If <code>Path</code> is omitted, the browser does not default to <code>/</code>; it defaults to the current request path directory, which surprises teams when a cookie is set during <code>/auth/callback</code> or <code>/account/settings</code> and later does not appear on unrelated routes."
         },
         {
           "type": "code",
@@ -3278,8 +3437,31 @@
           "code": "Set-Cookie: hostOnly=1; Path=/\n# No Domain attribute -> only current host receives it\n\nSet-Cookie: shared=1; Domain=example.com; Path=/\n# Sent to example.com and subdomains (broader scope)"
         },
         {
+          "type": "code",
+          "language": "http",
+          "code": "# Response URL: https://app.example.com/account/settings/profile\nSet-Cookie: draft=1\n# Default Path becomes /account/settings/\n\nSet-Cookie: draft=1; Path=/\n# Explicit site-wide scope\n\nSet-Cookie: __Host-session=abc123; Path=/; Secure; HttpOnly; SameSite=Lax\n# Hardened host-only session cookie"
+        },
+        {
           "type": "text",
-          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Security options that matter most</strong>\n\nFor auth/session cookies, baseline hardening is usually:\n- <code>HttpOnly</code> to reduce token exposure via XSS.\n- <code>Secure</code> to avoid plaintext transport.\n- <code>SameSite</code> policy aligned with your cross-site needs (often <code>Lax</code> or <code>Strict</code>)."
+          "text": "<i class='fa-solid fa-shuffle'></i> <strong>SameSite is where many production bugs show up</strong>\n\nMost auth cookies can stay <code>Lax</code> or even <code>Strict</code>, but embedded widgets, third-party sign-in callbacks, payment return flows, and cross-site iframes often need <code>SameSite=None; Secure</code>. A common migration/debug bug is an older cookie config that omitted <code>SameSite</code>; after browsers moved to a <code>Lax</code>-style default, the OAuth callback, payment return, or embedded flow stops carrying the cookie until the attribute is set explicitly."
+        },
+        {
+          "type": "code",
+          "language": "http",
+          "code": "Set-Cookie: sid=abc123; Path=/; HttpOnly; Secure; SameSite=Strict\nSet-Cookie: app_session=xyz789; Path=/; HttpOnly; Secure; SameSite=Lax\nSet-Cookie: support_widget=embed123; Path=/; SameSite=None; Secure; Partitioned"
+        },
+        {
+          "type": "code",
+          "language": "http",
+          "code": "# Older config that breaks in some cross-site flows\nSet-Cookie: oauth_state=abc123; Path=/auth/callback; Secure\n\n# Explicit fix for third-party sign-in, payment return, or iframe flows\nSet-Cookie: oauth_state=abc123; Path=/auth/callback; SameSite=None; Secure"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Compatibility note</strong>\n\nOlder browsers and embedded webviews historically had rough <code>SameSite=None</code> handling, so auth and payment teams should test real clients instead of assuming a desktop Chrome result covers every callback flow."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Security options that matter most</strong>\n\nFor auth/session cookies, baseline hardening is usually:\n- <code>HttpOnly</code> to reduce token exposure via XSS.\n- <code>Secure</code> to avoid plaintext transport.\n- <code>SameSite</code> policy aligned with your cross-site needs (often <code>Lax</code> or <code>Strict</code>).\n\nFor highly sensitive host-only session cookies, prefixes like <code>__Host-</code> and <code>__Secure-</code> add extra deployment constraints that reduce misconfiguration risk. A <code>__Host-</code> cookie must be <code>Secure</code>, must use <code>Path=/</code>, and cannot set <code>Domain</code>, which makes it a strong fit for host-only session cookies."
         },
         {
           "type": "code",
@@ -3288,7 +3470,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-code'></i> <strong>Important frontend limitation</strong>\n\n<code>document.cookie</code> can set basic attributes like <code>Path</code>, <code>Expires</code>, and <code>SameSite</code> (browser support dependent), but it cannot set <code>HttpOnly</code>.\n\nIf you need secure auth cookies, set them server-side via <code>Set-Cookie</code> response headers."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Important frontend limitation</strong>\n\n<code>document.cookie</code> can set basic attributes like <code>Path</code>, <code>Expires</code>, and <code>SameSite</code> (browser support dependent), but it cannot set <code>HttpOnly</code>.\n\nIf you need secure auth cookies, set them server-side via <code>Set-Cookie</code> response headers. Frontend JavaScript also cannot read the <code>Set-Cookie</code> response header directly, so cookie debugging usually happens in DevTools network/storage panels rather than application code."
         },
         {
           "type": "code",
@@ -3322,6 +3504,32 @@
           "caption": "Choose attributes by risk profile, not by habit."
         },
         {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "SameSite choice",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Main-site session cookie",
+              "<code>Lax</code> (or <code>Strict</code> if UX allows)",
+              "Keeps normal first-party flows working while reducing cross-site request risk."
+            ],
+            [
+              "Embedded iframe, third-party widget, or cross-site SSO callback",
+              "<code>None; Secure</code> (+ optional <code>Partitioned</code>)",
+              "Cross-site delivery requires <code>None</code>, and modern browsers require <code>Secure</code> with it."
+            ],
+            [
+              "Low-risk preference cookie",
+              "Usually <code>Lax</code>",
+              "Avoid choosing <code>None</code> unless the cookie truly needs cross-site sending."
+            ]
+          ],
+          "caption": "SameSite should follow the actual cross-site behavior your product needs."
+        },
+        {
           "type": "text",
           "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview one-liner</strong>\n\nCookie options are <code>Set-Cookie</code> attributes that define lifetime, scope, and security; strong answers specifically mention <code>Max-Age/Expires</code>, <code>Domain/Path</code>, and <code>Secure/HttpOnly/SameSite</code>."
         },
@@ -3331,15 +3539,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>An app stores a login session and a theme preference. The session cookie must be locked down for security, while the theme cookie can be broader and persistent.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Missing <code>Secure</code> or <code>HttpOnly</code> on auth cookies.</li><li>Using <code>SameSite=None</code> without <code>Secure</code> (rejected by modern browsers).</li><li>Setting overly broad <code>Domain</code> values that expose cookies across subdomains.</li><li>Assuming <code>Path</code> alone provides strong security isolation.</li></ul><strong>Trade-off or test tip</strong><br>Test cookie behavior in real browser flows: same-site navigation, cross-site redirect, embedded iframe context, and HTTPS-only environments to verify attributes behave as intended.</strong>"
+          "text": "<strong>Practical scenario</strong><br>An app stores a login session, a theme preference, and an embedded support widget cookie. The session cookie should stay host-only and hardened, the theme can be broader and persistent, and the embedded widget may need <code>SameSite=None; Secure</code> to work cross-site.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Missing <code>Secure</code> or <code>HttpOnly</code> on auth cookies.</li><li>Using <code>SameSite=None</code> without <code>Secure</code> (rejected by modern browsers).</li><li>Setting overly broad <code>Domain</code> values that expose cookies across subdomains.</li><li>Assuming <code>Path</code> alone provides strong security isolation.</li><li>Forgetting that many browsers treat omitted <code>SameSite</code> like a <code>Lax</code>-style default.</li></ul><strong>Trade-off or test tip</strong><br>Test cookie behavior in same-site navigation, cross-site redirect, embedded iframe context, and HTTPS-only environments to verify attributes behave as intended.</strong>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Cookie Options: Expires, Secure, HttpOnly, SameSite",
-      "description": "Learn all key cookie options in Set-Cookie headers, including Expires, Max-Age, Domain, Path, Secure, HttpOnly, SameSite, and Partitioned."
+      "title": "Cookie options for auth and embeds: SameSite, Secure, HttpOnly, and host-only scope",
+      "description": "Learn how cookie attributes affect auth hardening, host-only vs Domain scope, cross-site widgets, SameSite defaults, and server-side Set-Cookie decisions."
     },
     "incidentCard": {
       "title": "Cookie Attribute Choice Check",
@@ -4144,7 +4352,7 @@
   {
     "id": "js-type-coercion",
     "title": "What is type coercion in JavaScript?",
-    "description": "Type coercion is JavaScript converting a value from one type to another, either implicitly (automatic) or explicitly (manual). It powers flexible syntax but can create surprising comparisons and bugs when types are mixed. Strong answers explain coercion rules, == vs ===, and safe patterns for input handling.",
+    "description": "Type coercion becomes dangerous at boundaries: form input, query params, localStorage, and mixed API payloads. Strong answers explain implicit vs explicit conversion, == vs ===, and the concrete values that still surprise senior engineers.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -4165,7 +4373,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n<strong>Type coercion</strong> means JavaScript converts values from one type to another so an operation can continue.\n\nThere are two forms:\n- <strong>Implicit coercion</strong>: JavaScript does it for you.\n- <strong>Explicit coercion</strong>: you do it intentionally with helpers like <code>Number()</code>, <code>String()</code>, or <code>Boolean()</code>.\n\nCoercion is not 'bad' by itself. The risk comes from relying on it without being deliberate."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n<strong>Type coercion</strong> means JavaScript converts values from one type to another so an operation can continue. The real production bugs show up at boundaries: form fields, query params, localStorage, and API payloads often arrive as strings even when business logic expects numbers or booleans.\n\nThere are two forms:\n- <strong>Implicit coercion</strong>: JavaScript does it for you.\n- <strong>Explicit coercion</strong>: you do it intentionally with helpers like <code>Number()</code>, <code>String()</code>, or <code>Boolean()</code>.\n\nCoercion is not 'bad' by itself. The risk comes from relying on it without being deliberate."
         },
         {
           "type": "list",
@@ -4197,6 +4405,37 @@
           "code": "// Explicit coercion (preferred in critical paths)\nconsole.log(Number('42'));      // 42\nconsole.log(String(42));        // '42'\nconsole.log(Boolean('hello'));  // true\n\n// Implicit coercion (context-dependent)\nconsole.log('5' + 1); // '51' (number -> string)\nconsole.log('5' - 1); // 4    (string -> number)\nconsole.log(1 + true); // 2   (true -> 1)"
         },
         {
+          "type": "list",
+          "columns": [
+            "Expression",
+            "Result",
+            "Why it surprises people"
+          ],
+          "rows": [
+            [
+              "<code>'5' + 1</code>",
+              "<code>'51'</code>",
+              "The <code>+</code> operator prefers string concatenation when one side is already a string."
+            ],
+            [
+              "<code>'5' - 1</code>",
+              "<code>4</code>",
+              "The <code>-</code> operator forces numeric conversion instead."
+            ],
+            [
+              "<code>Boolean('0')</code>",
+              "<code>true</code>",
+              "A non-empty string is truthy even when it looks like numeric zero."
+            ],
+            [
+              "<code>Number('')</code>",
+              "<code>0</code>",
+              "Empty string becomes zero, which can surprise validation logic."
+            ]
+          ],
+          "caption": "The same input can coerce differently depending on the operator and context."
+        },
+        {
           "type": "text",
           "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>Most Interview Questions Focus Here: <code>==</code> vs <code>===</code></strong>\n\n- <code>===</code> checks <strong>type + value</strong> (no coercion).\n- <code>==</code> allows coercion first, then compares.\n\nUse <code>===</code> by default. Use <code>==</code> only when you intentionally want coercion and can explain the exact rule."
         },
@@ -4213,6 +4452,19 @@
           "type": "code",
           "language": "javascript",
           "code": "const price = {\n  valueOf() { return 199; }\n};\n\nconsole.log(price + 1); // 200 (object -> primitive number)\n\nconst label = {\n  toString() { return 'SKU-42'; }\n};\nconsole.log(String(label)); // 'SKU-42'"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Production scenario</strong><br>A checkout form sends <code>quantity</code> as <code>'0'</code>, a promo flag as <code>'false'</code>, and a query param as <code>'18'</code>. If you compare or validate them without explicit conversion, the UI can accept bad data or apply the wrong rule."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const rawQuantity = '0';\nconst rawPromoEnabled = 'false';\n\nif (rawQuantity) {\n  console.log('truthy string, not validated quantity');\n}\n\nconsole.log(Boolean(rawPromoEnabled)); // true\nconsole.log(Number(rawQuantity)); // 0"
+        },
+        {
+          "type": "text",
+          "text": "<strong>High-signal follow-ups</strong><br><ul><li><code>isNaN(value)</code> coerces first; <code>Number.isNaN(value)</code> does not.</li><li><code>== null</code> is a narrow special case that matches only <code>null</code> and <code>undefined</code>.</li><li><code>||</code> and <code>??</code> solve different fallback problems; they are not interchangeable.</li><li>Object coercion exists, but most business bugs still come from string/number/boolean boundaries.</li></ul>"
         },
         {
           "type": "text",
@@ -4242,10 +4494,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-08",
     "seo": {
-      "title": "What Is Type Coercion in JavaScript? (== vs === Explained)",
-      "description": "Learn implicit and explicit type coercion in JavaScript, why == can surprise you, and when to use strict equality for predictable code."
+      "title": "JavaScript type coercion: real-world examples, == vs ===, and boundary bugs",
+      "description": "Go beyond the definition of coercion with concrete examples, mixed-type edge cases, Number.isNaN vs isNaN, and safer input-handling rules."
     },
     "incidentCard": {
       "title": "Coercion Control Check",
@@ -4271,7 +4523,7 @@
   {
     "id": "js-passing-by-value-and-by-reference",
     "title": "Passing by value vs passing by reference in JavaScript",
-    "description": "JavaScript is pass-by-value, but for objects the copied value is a reference to the same object. That is why object property mutations can be visible outside a function, while reassignment is not. Interview-quality answers explain call-by-sharing with concrete mutation vs reassignment examples.",
+    "description": "JavaScript is pass-by-value, but for objects the copied value is a reference to shared data. Strong answers name call-by-sharing, separate mutation from reassignment, and show the state bugs caused by mutating caller-owned objects.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -4341,6 +4593,19 @@
         },
         {
           "type": "text",
+          "text": "<strong>React-style bug pattern</strong><br>A reducer or helper mutates the object it received, the caller keeps the same reference, and stale UI or failed snapshot tests appear because the function changed caller-owned data instead of returning a new object."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const original = { user: { name: 'Lin' } };\nconst shallowCopy = { ...original };\n\nshallowCopy.user.name = 'Ada';\nconsole.log(original.user.name); // 'Ada' -> nested object is still shared"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important follow-up</strong><br><ul><li><strong>Pass-by-reference</strong> would let the callee replace the caller's variable directly.</li><li>JavaScript does <strong>not</strong> do that; it copies the reference value into a new parameter slot.</li><li><strong>Call-by-sharing</strong> is the precise mental model: mutation is shared, reassignment is local.</li></ul>"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-gears'></i> <strong>How to Avoid Side Effects</strong>\n\nIf a function should not alter caller state, create a new value inside the function and return it. Use shallow or deep copy strategy based on data shape."
         },
         {
@@ -4389,10 +4654,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-08",
     "seo": {
-      "title": "Pass by Value vs Reference in JavaScript (Explained Clearly)",
-      "description": "Learn how JavaScript passes arguments: values for primitives and copied references for objects, with mutation vs reassignment examples."
+      "title": "JavaScript pass by value vs reference: call-by-sharing and mutation bugs",
+      "description": "Understand JavaScript argument passing precisely: copied reference values, call-by-sharing, mutation vs reassignment, and common state-management bugs."
     },
     "incidentCard": {
       "title": "Mutation vs Reassignment Check",
@@ -4620,7 +4885,7 @@
   {
     "id": "js-callbacks",
     "title": "What are callbacks in JavaScript?",
-    "description": "Callbacks are the original control-flow hook in JavaScript. The production issues are inversion of control, callback hell, and debugging legacy async code that cannot cancel or compose cleanly.",
+    "description": "Callbacks are the original control-flow hook in JavaScript. Strong answers explain inversion of control, callback hell, legacy async debugging, and why callbacks still fit repeated-notification APIs like DOM events.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -4637,67 +4902,76 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>callback</strong> is a function you hand to other code so it can run later. That sounds simple, but the production/debug issue is inversion of control: another API decides when your function runs, what error path it takes, and whether it can be canceled or composed cleanly."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// Example: synchronous callback\nfunction greet(name) {\n  console.log('Hello, ' + name);\n}\n\nfunction processUserInput(callback) {\n  const name = 'Alice';\n  callback(name);\n}\n\nprocessUserInput(greet); // Hello, Alice"
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>callback</strong> is a function you hand to another API so it can decide when to call you. The real production/debug issue is inversion of control: DOM events, file APIs, or legacy libraries own the timing, the error path, and whether the work can be canceled or composed cleanly."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Callbacks in Asynchronous Code</strong>\n\nCallbacks are also used to handle tasks that take time (like network requests or file loading), so the program can keep running while waiting for them to finish."
+          "text": "<i class='fa-solid fa-repeat'></i> <strong>Callbacks still fit repeated notifications</strong>\n\nEvent sources fire many times, so a callback is still the natural model when there is no single final value to resolve."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log('Start');\n\nsetTimeout(function() {\n  console.log('This runs later');\n}, 1000);\n\nconsole.log('End');\n// Output: Start → End → This runs later"
+          "code": "const searchInput = document.querySelector('#search');\n\nsearchInput.addEventListener('input', (event) => {\n  renderPreview(event.target.value);\n});"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Legacy async bug pattern: nested callbacks</strong>\n\nCallbacks become painful when one async step owns the next async step and every branch repeats error handling."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "loadUser(userId, (err, user) => {\n  if (err) return showError(err);\n\n  loadOrders(user.id, (err2, orders) => {\n    if (err2) return showError(err2);\n    renderDashboard(user, orders);\n  });\n});"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "loadUserPromise(userId)\n  .then((user) => Promise.all([Promise.resolve(user), loadOrdersPromise(user.id)]))\n  .then(([user, orders]) => {\n    renderDashboard(user, orders);\n  })\n  .catch(showError);"
         },
         {
           "type": "list",
           "columns": [
-            "Concept",
-            "Explanation",
-            "Example"
+            "Pattern",
+            "What it means",
+            "Why it matters"
           ],
           "rows": [
             [
-              "Synchronous Callback",
-              "Executed immediately during the function call.",
-              "<code>[1,2,3].forEach(num => console.log(num));</code>"
+              "Event callback",
+              "Runs every time the source emits a new event.",
+              "Great for DOM events, observers, and repeated notifications."
             ],
             [
-              "Asynchronous Callback",
-              "Executed later, after a delay or async operation finishes.",
-              "<code>fs.readFile('data.txt', callback);</code>"
+              "Error-first callback",
+              "First argument represents failure, second carries data.",
+              "Common in legacy Node-style APIs and old libraries."
             ],
             [
-              "Callback Hell",
-              "When many callbacks are nested inside each other, making code hard to read.",
-              "<code>getData(() => getMore(() => getEvenMore()));</code>"
+              "Callback hell",
+              "Nested callbacks own each next step.",
+              "Makes sequencing, cancellation, and testing harder."
             ]
           ],
-          "caption": "Common callback types and use cases."
+          "caption": "The callback concept is simple; the control-flow shape is where bugs start."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- A callback is a function passed as an argument to another function.\n- Allows asynchronous and event-driven behavior.\n- Can cause 'callback hell' when deeply nested — use Promises or async/await instead.\n- Core part of how JavaScript handles non-blocking operations."
+          "text": "<strong>Likely follow-up confusion</strong><br><ul><li>Promises settle once; callbacks can be called many times.</li><li>Callbacks are still a good fit for DOM events, observers, and WebSocket message handlers.</li><li>The main problem is not the callback itself; it is when nested callbacks own sequencing and error propagation.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of callbacks like leaving your phone number with someone: you don’t wait on the line — they’ll call you <em>back</em> when they’re ready."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- A callback is a function passed to another API to be called later.\n- The production issue is inversion of control, not the definition itself.\n- Nested callbacks create sequencing and error-handling pain.\n- Callbacks still shine for repeated-notification APIs like events."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of callbacks like giving a venue your phone number: they decide when to call you back. That is useful for repeated updates, but awkward when you need one clean, linear workflow."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "JavaScript Callbacks: inversion of control, legacy async, and debug pain",
-      "description": "Go beyond the callback definition: where callbacks still fit, why nested error handling gets messy, and when Promises or events are safer."
+      "title": "JavaScript callbacks: inversion of control, legacy async, and event APIs",
+      "description": "Learn callbacks through real event APIs and legacy async flows: why nested callbacks get messy, how Promise refactors help, and when callbacks still fit."
     },
     "incidentCard": {
       "title": "Callback Pattern Check",
@@ -4723,7 +4997,7 @@
   {
     "id": "js-calback-hell-resolved-with-promise",
     "title": "How does Promise resolve callback hell in JavaScript?",
-    "description": "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic. Promises flatten the flow, centralize failures, and make production control flow easier to inspect, even though they do not solve cancellation by themselves.",
+    "description": "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic. Promise chains make return propagation, shared error boundaries, and staged migrations easier to reason about even though cancellation still needs separate support.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -4745,7 +5019,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Async debug problem</strong>\n\n<strong>Callback hell</strong> is not just ugly indentation. It is a production reliability problem where sequencing becomes implicit, failures get duplicated, and async control flow is hard to debug.\n\nPromises improve that by turning nested callbacks into a <strong>linear chain</strong> where values and errors move through a predictable pipeline."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Async debug problem</strong>\n\n<strong>Callback hell</strong> is not just ugly indentation. It is a production reliability problem where sequencing becomes implicit, failures get duplicated, and async control flow is hard to debug.\n\nPromises improve that by turning nested callbacks into a <strong>linear chain</strong> where values and errors move through a predictable pipeline. This matters most in flows like file upload -> metadata save -> audit log -> analytics, where one late failure should still hit one predictable error boundary."
         },
         {
           "type": "list",
@@ -4807,6 +5081,15 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-wand-magic-sparkles'></i> <strong>Reusable wrapper pattern</strong>\n\nA small promisify helper is often the cleanest migration point because it keeps callback-style code at the boundary and lets the rest of the flow move into Promise chains."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function promisify1(fn) {\n  return (...args) =>\n    new Promise((resolve, reject) => {\n      fn(...args, (err, value) => {\n        if (err) reject(err);\n        else resolve(value);\n      });\n    });\n}\n\nconst readFileP = promisify1(readFile);"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-people-arrows'></i> <strong>Sequential vs parallel: another major win</strong>\n\nCallback hell often serializes work by accident. With Promises you can run independent async operations concurrently and wait once."
         },
         {
@@ -4816,7 +5099,12 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common migration mistakes</strong>\n\n- Wrapping everything in Promises but still nesting deeply.\n- Forgetting to <code>return</code> inside <code>.then()</code> (breaks chain).\n- Mixing callback and Promise style in the same function without clear boundaries.\n- Catching errors too early and swallowing diagnostic context."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common migration mistakes</strong>\n\n- Wrapping everything in Promises but still nesting deeply.\n- Forgetting to <code>return</code> inside <code>.then()</code> (breaks chain).\n- Mixing callback and Promise style in the same function without clear boundaries.\n- Catching errors too early and swallowing diagnostic context.\n- Assuming Promises solve cancellation automatically."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "saveDraftP(data)\n  .then((result) => {\n    auditP(result.id); // missing return -> chain no longer waits for audit\n  })\n  .then(() => showSuccess())\n  .catch(reportError);"
         },
         {
           "type": "list",
@@ -4854,15 +5142,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>An onboarding flow needs user data, permissions, and feature flags from different services. Callback nesting led to duplicate error handling and hard-to-reproduce state bugs.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Nested callbacks with repeated <code>if (err)</code> blocks.</li><li>Independent calls executed serially.</li><li>Partial updates when one nested step fails late.</li></ul><strong>Trade-off or test tip</strong><br>After migration, write tests for both success and each failure branch, and verify that one rejection path triggers the same user-facing fallback consistently.</strong>"
+          "text": "<strong>Practical scenario</strong><br>An upload flow saves metadata, writes an audit log, and triggers analytics after the file reaches storage. Callback nesting led to duplicate error handling, hidden sequencing, and retries that were hard to reason about.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Nested callbacks with repeated <code>if (err)</code> blocks.</li><li>Independent calls executed serially.</li><li>Missing <code>return</code> inside a Promise chain after migration.</li><li>Assuming Promises automatically cancel in-flight work.</li></ul><strong>Trade-off or test tip</strong><br>After migration, test both success and each failure branch, and verify that one rejection path triggers the same user-facing fallback consistently.</strong>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Promises vs callback hell in JavaScript: async debug flow, errors, and cancellation limits",
-      "description": "Explain Promises through the real async pitfall: flatter sequencing, centralized error handling, better debug flow, but no automatic cancellation model."
+      "title": "Promises vs callback hell: async sequencing, return propagation, and cancellation limits",
+      "description": "Explain why Promise chains beat callback hell in production: flatter sequencing, one error boundary, reusable wrappers, and the common missing-return pitfall."
     },
     "incidentCard": {
       "title": "Promise Refactor Check",
@@ -5002,7 +5290,7 @@
   {
     "id": "js-arrow-vs-regular-functions",
     "title": "Arrow functions vs regular functions in JavaScript",
-    "description": "Arrow and regular functions look similar but behave differently for this binding, constructors, arguments, and method design. Strong answers explain lexical vs dynamic this, prototype/new behavior, and when each style is safer in real frontend code.",
+    "description": "Arrow and regular functions look similar but behave differently for callbacks, methods, constructors, arguments, and class-field memory cost. Strong answers explain lexical vs dynamic this and when each style is safer in real frontend code.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -5025,7 +5313,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Direct answer</strong>\n\nUse <strong>arrow functions</strong> for short callbacks and lexical <code>this</code>. Use <strong>regular functions</strong> when you need dynamic <code>this</code>, constructor behavior, or function-level features like <code>arguments</code> and <code>prototype</code>.\n\nThe interview goal is not 'which is better', but <strong>which fits the behavior you need</strong>."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Direct answer</strong>\n\nUse <strong>arrow functions</strong> for short callbacks, array transforms, and places where lexical <code>this</code> is the safe default. Use <strong>regular functions</strong> when you need dynamic <code>this</code>, constructor behavior, event-listener receiver semantics, or function-level features like <code>arguments</code> and <code>prototype</code>.\n\nThe interview goal is not 'which is better', but <strong>which fits the behavior you need</strong>."
         },
         {
           "type": "list",
@@ -5074,6 +5362,15 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-hand-pointer'></i> <strong>Callbacks and listeners are where the choice becomes concrete</strong>\n\nArrows are great when the callback should inherit outer scope. Regular functions still matter when the platform intentionally gives the callback its own receiver, such as some DOM event-listener patterns."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const totalsWithTax = [10, 20, 30].map((price) => price * 1.2);\n\nbutton.addEventListener('click', function () {\n  this.disabled = true; // receiver is the clicked element\n});"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-gears'></i> <strong>Constructors and prototypes</strong>\n\nIf you need <code>new</code> or prototype-based instance methods, use regular functions (or <code>class</code>). Arrow functions cannot be constructors and have no <code>prototype</code>."
         },
         {
@@ -5088,7 +5385,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "function regular() {\n  return arguments.length;\n}\n\nconst arrow = (...args) => args.length;\n\nconsole.log(regular(1, 2, 3)); // 3\nconsole.log(arrow(1, 2, 3));   // 3"
+          "code": "function regular() {\n  return arguments.length;\n}\n\nconst arrow = (...args) => args.length;\nconst double = (n) => n * 2;\n\nconsole.log(regular(1, 2, 3)); // 3\nconsole.log(arrow(1, 2, 3));   // 3\nconsole.log([1, 2, 3].map(double)); // [2, 4, 6]"
         },
         {
           "type": "text",
@@ -5153,10 +5450,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Arrow vs Regular Functions in JavaScript: Key Differences",
-      "description": "Compare arrow and regular functions in JavaScript: this binding, constructors, arguments, prototypes, and practical use cases."
+      "title": "Arrow vs regular functions: callbacks, methods, constructors, and this binding",
+      "description": "Compare arrow and regular functions through callbacks, event listeners, lexical vs dynamic this, constructors, arguments, prototypes, and class-field trade-offs."
     },
     "incidentCard": {
       "title": "Function Choice Check",
@@ -6155,7 +6452,7 @@
   {
     "id": "js-microtasks-vs-macrotasks",
     "title": "Microtasks vs Macrotasks in JavaScript (Event Loop Priority)",
-    "description": "In each event loop turn, JavaScript runs synchronous code, then drains the entire microtask queue (e.g., Promise.then, queueMicrotask) before taking the next macrotask (e.g., setTimeout, DOM events). This priority explains why Promises run before timers and why long microtask chains can delay rendering.",
+    "description": "In each event loop turn, JavaScript runs synchronous code, then drains the entire microtask queue before the next macrotask. That priority explains why Promises run before timers, why spinners can fail to paint, and when to yield with macrotasks or animation frames.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "hard",
@@ -6174,7 +6471,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Core difference</strong>\n\nBoth are “queued callbacks” that run <em>after</em> the current synchronous call stack finishes. The difference is <strong>priority and timing</strong>.\n\n- <strong>Microtasks</strong> run <strong>immediately after the call stack</strong> and are <strong>fully drained</strong> before anything else happens.\n- <strong>Macrotasks</strong> run <strong>one at a time</strong> on the next event loop turn, and the browser may render between macrotasks."
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Core difference</strong>\n\nBoth are “queued callbacks” that run <em>after</em> the current synchronous call stack finishes. The difference is <strong>priority and timing</strong>.\n\n- <strong>Microtasks</strong> run <strong>immediately after the call stack</strong> and are <strong>fully drained</strong> before anything else happens.\n- <strong>Macrotasks</strong> run <strong>one at a time</strong> on the next event loop turn, and the browser may render between macrotasks.\n\nThat is why a loading spinner can stay invisible if a recursive Promise chain keeps the current turn alive."
         },
         {
           "type": "list",
@@ -6224,12 +6521,16 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Practical guidance</strong>\n\n- Use <strong>microtasks</strong> for “run right after this finishes” follow-ups (e.g., finalize state, chain promise work).\n- Use <strong>macrotasks</strong> to yield control (e.g., split heavy work so the UI can render):\n  - <code>setTimeout(fn, 0)</code> (coarse)\n  - <code>requestAnimationFrame</code> (before next paint)\n  - <code>requestIdleCallback</code> (when idle; best-effort)"
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Practical guidance</strong>\n\n- Use <strong>microtasks</strong> for “run right after this finishes” follow-ups (e.g., finalize state, chain promise work).\n- Use <strong>macrotasks</strong> to yield control (e.g., split heavy work so the UI can render):\n  - <code>setTimeout(fn, 0)</code> (coarse)\n  - <code>requestAnimationFrame</code> (before next paint)\n  - <code>requestIdleCallback</code> (when idle; best-effort)\n\nBrowsers may render between macrotasks, but not while the microtask queue is still draining."
         },
         {
           "type": "code",
           "language": "javascript",
           "code": "// Yield so the UI can render between chunks\nfunction doChunkedWork(items, chunkSize = 200) {\n  let i = 0;\n  function runChunk() {\n    const end = Math.min(i + chunkSize, items.length);\n    for (; i < end; i++) {\n      // heavy work\n    }\n    if (i < items.length) setTimeout(runChunk, 0); // macrotask yield\n  }\n  runChunk();\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical incident</strong><br>A search page sets <code>loading=true</code>, then kicks off a recursive Promise chain to normalize 20k rows before painting the next frame. Because the microtask queue never empties, the spinner may not paint until the whole chain finishes.<br><br><strong>Fix</strong><br>Keep tiny follow-ups in microtasks, but move chunked CPU work behind <code>requestAnimationFrame</code> or a macrotask so the browser can paint and accept input."
         },
         {
           "type": "text",
@@ -6242,10 +6543,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Microtasks vs macrotasks in JavaScript: what is different?",
-      "description": "Microtasks run before the next macrotask and before rendering opportunities, while macrotasks run in later event loop turns."
+      "title": "Microtasks vs macrotasks: event-loop priority, paint starvation, and yielding",
+      "description": "Learn why Promise callbacks run before timers, how recursive microtasks can delay paint, and when to yield with setTimeout or requestAnimationFrame."
     },
     "incidentCard": {
       "title": "Event Loop Priority Check",
@@ -6271,7 +6572,7 @@
   {
     "id": "js-promise-combinators-all-allsettled-race-any",
     "title": "Promise.all vs allSettled vs race vs any (JavaScript Promise Combinators)",
-    "description": "Promise combinators coordinate multiple async operations. all fails fast, allSettled always returns results, race resolves/rejects with the first settled promise, and any resolves with the first fulfilled promise (or rejects with AggregateError if all reject). Know the exact output shapes and failure behavior for interviews.",
+    "description": "Promise combinators coordinate multiple async operations. all fails fast, allSettled always returns results, race resolves/rejects with the first settled promise, and any resolves with the first fulfilled promise (or rejects with AggregateError if all reject). Production answers map each one to partial-failure UIs, timeout guards, and fallback endpoints.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -6287,7 +6588,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The mental model</strong>\n\nAll four take an <strong>iterable of promises</strong> (values are auto-wrapped via <code>Promise.resolve</code>). The key differences are:\n\n1) <strong>What “finishes” the combinator</strong> (first failure? first settle? first success? all done?)\n2) <strong>What it returns</strong> (values only vs per-promise status objects)\n3) <strong>How errors behave</strong> (fail-fast vs aggregate)\n\nAlso: these combinators <strong>do not cancel</strong> the other promises; they just decide what result to produce."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The mental model</strong>\n\nAll four take an <strong>iterable of promises</strong> (values are auto-wrapped via <code>Promise.resolve</code>). The key differences are:\n\n1) <strong>What “finishes” the combinator</strong> (first failure? first settle? first success? all done?)\n2) <strong>What it returns</strong> (values only vs per-promise status objects)\n3) <strong>How errors behave</strong> (fail-fast vs aggregate)\n\nInterviewers usually want one real use case per combinator: <code>all</code> for dependencies, <code>allSettled</code> for partial-failure UIs, <code>race</code> for timeout guards, and <code>any</code> for fallback mirrors. Also: these combinators <strong>do not cancel</strong> the other promises; they just decide what result to produce."
         },
         {
           "type": "list",
@@ -6362,16 +6663,25 @@
           "code": "async function firstHealthy(urls) {\n  return Promise.any(\n    urls.map(async (u) => {\n      const r = await fetch(u);\n      if (!r.ok) throw new Error(`${u} -> ${r.status}`);\n      return r;\n    })\n  );\n}\n\n// If all endpoints fail -> AggregateError"
         },
         {
+          "type": "code",
+          "language": "javascript",
+          "code": "try {\n  await Promise.any([mirrorA(), mirrorB(), mirrorC()]);\n} catch (error) {\n  if (error instanceof AggregateError) {\n    console.error(error.errors); // every rejection reason\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Decision shortcut</strong><br><ul><li><code>Promise.all</code> for “I need every dependency before render”.</li><li><code>Promise.allSettled</code> for dashboards or batch jobs where partial failure is still useful.</li><li><code>Promise.race</code> for timeout guards or first-settled control flow.</li><li><code>Promise.any</code> for mirrors, fallbacks, or “first healthy response wins”.</li></ul>"
+        },
+        {
           "type": "text",
           "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-liners to memorize</strong>\n\n- <strong>all</strong>: “All succeed or I fail fast.”\n- <strong>allSettled</strong>: “Tell me how each one ended.”\n- <strong>race</strong>: “First one to settle decides.”\n- <strong>any</strong>: “First success wins; otherwise aggregate failure.”"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Promise.all vs allSettled vs race vs any: what is the difference?",
-      "description": "Promise.all fails on first rejection, allSettled waits for all outcomes, race settles on first settled promise, and any fulfills on first success."
+      "title": "Promise combinators: all vs allSettled vs race vs any in production",
+      "description": "Choose Promise combinators by product behavior: fail-fast dependencies, partial-failure UIs, timeout guards, fallback mirrors, and AggregateError handling."
     },
     "incidentCard": {
       "title": "Promise Combinator Choice Check",
@@ -7971,7 +8281,7 @@
   {
     "id": "web-performance-optimize-load-time",
     "title": "How do you optimize a web page’s response or load time?",
-    "description": "Web performance optimization is a prioritization problem across network transfer, render-blocking work, images, JavaScript, and caching. Strong answers tie improvements to critical-path debugging and Core Web Vitals rather than a random checklist.",
+    "description": "Web performance optimization is a prioritization problem across network transfer, render-blocking work, images, JavaScript, and caching. Strong answers tie improvements to critical-path debugging, first-visit vs repeat-visit trade-offs, and field validation instead of a random checklist.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -7995,11 +8305,11 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Performance decision</strong>\n\nOptimizing load time means shortening the critical path before the page becomes useful, then removing repeat work on later visits. In production, the right answer is not one trick but a <strong>debug process</strong>: find what blocks rendering, what ships too many bytes, and what hurts LCP or INP before choosing the next optimization."
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Performance decision</strong>\n\nOptimizing load time means shortening the first-visit critical path before the page becomes useful, then removing repeat work on later visits. In production, the right answer is not one trick but a <strong>debug process</strong>: find what blocks rendering, what ships too many bytes, and what hurts LCP or INP before choosing the next optimization. One common failure mode is fixing LCP with image and CSS work, then discovering hydration still hurts INP on real devices."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nThink in this order: 1) network handshake and transfer, 2) render-blocking resources, 3) main-thread execution, 4) repeat-visit caching. Every optimization should tie to a metric and a user-visible symptom (slow first paint, input lag, layout jump)."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nThink in this order: 1) network handshake and transfer, 2) render-blocking resources, 3) main-thread execution, 4) repeat-visit caching. First visits are usually bottlenecked by bytes and blockers; repeat visits depend more on cache headers, immutable assets, and whether users must redownload unchanged code. Every optimization should tie to a metric and a user-visible symptom (slow first paint, input lag, layout jump)."
         },
         {
           "type": "list",
@@ -8063,6 +8373,41 @@
           "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Lazy-loading above-the-fold hero media, which can worsen LCP.</li><li>Optimizing one metric in isolation (for example, better LCP but worse INP due to heavy hydration).</li><li>Skipping real-user monitoring and trusting only synthetic lab results.</li></ul>"
         },
         {
+          "type": "list",
+          "columns": [
+            "Tool",
+            "Question it answers",
+            "Typical next move"
+          ],
+          "rows": [
+            [
+              "Lighthouse",
+              "What broad opportunities exist on a cold page load?",
+              "Spot large images, blocking scripts, and cache misses."
+            ],
+            [
+              "DevTools waterfall + Performance panel",
+              "What exactly blocked render or created long tasks?",
+              "Trace CSS/script blockers, bundle cost, and hydration work."
+            ],
+            [
+              "Field Core Web Vitals / RUM",
+              "Did real users actually improve after release?",
+              "Compare p75 LCP/INP by device and network before shipping the next fix."
+            ]
+          ],
+          "caption": "Use one measurement loop instead of guessing."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-diagram-project'></i> <strong>Worked scenario: first-visit fix vs repeat-visit reality</strong>\n\nA cold-load waterfall shows 220 KB of render-blocking CSS, an oversized hero image, and a delayed application bundle. You inline critical CSS and ship a smaller hero, so LCP improves. On repeat visits, immutable asset caching removes the JS/CSS re-download cost, but HTML and API responses still revalidate and hydration leaves a long task that hurts INP. That is why 'LCP got better' does not mean the page is fully fixed."
+        },
+        {
+          "type": "code",
+          "language": "http",
+          "code": "# Versioned assets used on repeat visits\nCache-Control: public, max-age=31536000, immutable\n\n# HTML or mutable API shell that must stay fresh\nCache-Control: public, max-age=0, must-revalidate"
+        },
+        {
           "type": "text",
           "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse quick wins (compression, cache headers, image sizing) first when pages are broadly slow and budgets are unclear. Use deeper changes (route-level code splitting, partial hydration, worker offload) when profiling shows persistent long tasks or framework overhead. Do not start with exotic micro-optimizations before you have a baseline and top bottleneck."
         },
@@ -8072,15 +8417,28 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-wave-square'></i> <strong>Field validation snippet</strong>\n\nLab tools explain <em>why</em> a page is slow. Field data tells you whether real users actually improved after the release."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { onLCP, onINP, onCLS } from 'web-vitals';\n\nfunction send(metric) {\n  navigator.sendBeacon('/rum/vitals', JSON.stringify({\n    name: metric.name,\n    value: metric.value,\n    rating: metric.rating,\n    id: metric.id\n  }));\n}\n\nonLCP(send);\nonINP(send);\nonCLS(send);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A landing page improves hero-image delivery and removes one render blocker, so lab LCP gets better. Users on mid-tier phones still feel lag when the add-to-cart button hydrates because main-thread work and event wiring hurt INP.<br><br><strong>What to do next</strong><br>Keep the LCP fix, then profile hydration, long tasks, and bundle boundaries instead of assuming the page is now “fast enough.”"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nSet clear budgets, fix critical path first, add safe caching rules, then verify with RUM dashboards. Strong answers are metric-driven, layered, and explicit about trade-offs."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Web page load-time optimization: critical path, render-blocking debug, and caching priorities",
-      "description": "Explain load-time optimization through the performance-debug lens: critical path, transfer size, render-blocking work, caching strategy, and Core Web Vitals validation."
+      "title": "Web load-time optimization: critical path, Core Web Vitals trade-offs, and RUM",
+      "description": "Explain load-time optimization through critical-path debugging, render-blocking work, caching, LCP-vs-INP trade-offs, and field validation with Core Web Vitals."
     },
     "incidentCard": {
       "title": "Load-Time Priority Check",
@@ -8106,7 +8464,7 @@
   {
     "id": "js-repaint-reflow",
     "title": "What is the difference between reflow and repaint in browsers?",
-    "description": "Reflow (layout) recalculates element geometry, while repaint redraws visual styles without changing layout geometry. Learn what triggers each phase, why forced reflow hurts runtime performance, and how to reduce layout thrashing in modern frontend code.",
+    "description": "Reflow (layout) recalculates element geometry, while repaint redraws visual styles without changing layout geometry. Strong answers also explain paint-heavy visuals, composite-only updates, and why forced reflow causes runtime jank.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -8129,7 +8487,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nBrowsers render in stages. The two most asked stages are:\n- <strong>Reflow (layout)</strong>: recalculate element size/position.\n- <strong>Repaint</strong>: redraw pixels (colors, shadows, visibility) without changing geometry.\n\nReflow is usually more expensive because geometry changes can cascade through large parts of the DOM tree."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nBrowsers render in stages. The two most asked stages are:\n- <strong>Reflow (layout)</strong>: recalculate element size/position.\n- <strong>Repaint</strong>: redraw pixels (colors, shadows, visibility) without changing geometry.\n\nReflow is usually more expensive because geometry changes can cascade through large parts of the DOM tree. Paint-only work is not free either when you redraw large areas or heavy visual effects, but it usually skips layout."
         },
         {
           "type": "list",
@@ -8168,6 +8526,10 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Paint vs composite follow-up</strong>\n\nPaint-only changes can still be expensive when they redraw large backgrounds, shadows, filters, or blur effects. Composite-only updates, often with <code>transform</code> or <code>opacity</code> on isolated layers, are usually cheaper because the browser can move existing pixels instead of recalculating layout."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>What makes reflow expensive</strong>\n\nLayout changes can invalidate measurements of nearby or ancestor elements. On large pages, one geometry change can force the browser to recalculate positions for many nodes.\n\nThis becomes visible as scroll jank, delayed input response, and dropped frames during animations."
         },
         {
@@ -8194,7 +8556,7 @@
           "rows": [
             [
               "Avoid layout thrash",
-              "Batch reads and writes separately",
+              "Batch reads first, then batch writes in <code>requestAnimationFrame</code>",
               "Prevents repeated forced reflow in loops."
             ],
             [
@@ -8209,7 +8571,7 @@
             ],
             [
               "Lower DOM churn",
-              "Coalesce DOM updates (fragments/virtual DOM batching)",
+              "Toggle CSS classes or batch DOM updates (fragments/virtual DOM batching)",
               "Fewer layout/paint cycles per interaction."
             ]
           ],
@@ -8234,15 +8596,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A filter sidebar updates result-card dimensions on every keystroke, causing repeated layout reads and writes that create visible typing lag.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Reading <code>getBoundingClientRect()</code> right after multiple style mutations.</li><li>Animating <code>top/left/width</code> for high-frequency transitions.</li><li>Ignoring trace data and guessing performance bottlenecks.</li></ul><strong>Trade-off or test tip</strong><br>Measure before and after in DevTools and RUM. Compare frame times and INP when switching from layout-triggering animations to transform/opacity patterns.</strong>"
+          "text": "<strong>Practical scenario</strong><br>A filter sidebar and analytics dashboard both update card dimensions on every keystroke, causing repeated layout reads and writes that create visible typing lag. Paint-heavy shadows on the cards make the slow frames even more obvious.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Reading <code>getBoundingClientRect()</code> right after multiple style mutations.</li><li>Animating <code>top/left/width</code> for high-frequency transitions.</li><li>Using large blur, shadow, or filter effects and assuming “it is only repaint”.</li><li>Ignoring trace data and guessing performance bottlenecks.</li></ul><strong>Trade-off or test tip</strong><br>Measure before and after in DevTools and RUM. Compare frame times and INP when switching from layout-triggering animations to transform/opacity patterns.</strong>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Reflow vs Repaint in JavaScript: Browser Rendering Explained",
-      "description": "Understand reflow and repaint in browser rendering, what triggers layout recalculation, how layout thrashing occurs, and ways to improve UI performance."
+      "title": "Reflow vs repaint: layout thrashing, paint cost, and composite debug",
+      "description": "Understand reflow vs repaint, where layout thrashing comes from, why paint-heavy visuals still hurt, and when transform/opacity can stay in cheaper composite paths."
     },
     "incidentCard": {
       "title": "Layout Jank Check",
@@ -9373,7 +9735,7 @@
   {
     "id": "js-async-race-conditions",
     "title": "Async Race Conditions and Stale UI Updates",
-    "description": "Debug the production bug where async requests resolve out of order and overwrite newer UI state. The fix is cancellation, request identity, or takeLatest-style guards that stop stale results from winning.",
+    "description": "Debug the production bug where async requests resolve out of order and overwrite newer UI state. The fix is cancellation, request identity, shared-controller ownership, or takeLatest-style guards that stop stale results from winning.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -9390,7 +9752,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core issue</strong>\n\nThis is a classic production debug problem in search, filters, and autosave flows. Request A starts, then request B starts, B finishes first, and the UI briefly looks correct. When A finishes later, it overwrites newer state with stale data unless your code cancels or guards the older request."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core issue</strong>\n\nThis is a classic production debug problem in search, filters, autosave flows, and route-driven detail pages. Request A starts, then request B starts, B finishes first, and the UI briefly looks correct. When A finishes later, it overwrites newer state with stale data unless your code cancels or guards the older request."
         },
         {
           "type": "list",
@@ -9416,7 +9778,7 @@
               "UI is overwritten with stale 'rea' results"
             ]
           ],
-          "caption": "Classic search-as-you-type race condition."
+          "caption": "Classic search-as-you-type race condition; autosave and navigation races behave the same way."
         },
         {
           "type": "text",
@@ -9460,6 +9822,19 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-floppy-disk'></i> <strong>When the async work cannot be aborted</strong>\n\nAbortController only helps when the underlying task listens to <code>AbortSignal</code>. Autosave pipelines, IndexedDB work, and some library promises still need a latest-version guard so stale completions cannot win."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let latestDraftVersion = 0;\n\nasync function autosave(draft) {\n  const version = ++latestDraftVersion;\n  const saved = await saveDraftToLocalAndRemote(draft); // not abortable\n  if (version !== latestDraftVersion) return;\n  showSavedAt(saved.updatedAt);\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-diagram-project'></i> <strong>Shared-controller follow-up</strong>\n\nIf one route transition starts several fetches, a single <code>AbortController</code> can own the whole screen load. Aborting on route leave cancels profile, permissions, and related requests together instead of leaking old work into the next screen."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Pitfalls</strong>\n\n- Promise.race does not cancel the losing promises.\n- Debounce reduces request count but does not prevent out-of-order responses.\n- Always clean up abort listeners or timers to avoid leaks."
         }
       ]
@@ -9485,10 +9860,10 @@
       "rereadPrompt": "Not quite. The bug is caused by async requests resolving out of order. Debounce can lower request volume, but you still need cancellation or a stale-result guard so an older response cannot overwrite newer UI state."
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Debug async race conditions in JavaScript: stale UI, cancellation, and request guards",
-      "description": "Prevent stale UI updates in production with AbortController, request identity guards, or takeLatest-style patterns so older responses cannot overwrite newer state."
+      "title": "Debug async race conditions: stale UI, cancellation, and latest-result guards",
+      "description": "Prevent stale UI updates in production with AbortController, request identity guards, shared-controller ownership, and takeLatest-style patterns."
     }
   },
   {
@@ -9736,8 +10111,8 @@
   },
   {
     "id": "js-xss-dom-sinks",
-    "title": "DOM XSS Prevention in JavaScript: Dangerous Sinks, Safe APIs, and CSP",
-    "description": "Security-focused frontend interview guide to DOM XSS: attacker-controlled sources, dangerous DOM sinks, safe rendering patterns, URL/protocol validation, and defense in depth with CSP and Trusted Types.",
+    "title": "DOM XSS Prevention in JavaScript: Dangerous Sinks, Safe APIs, and Trusted Types",
+    "description": "Security-focused frontend interview guide to DOM XSS: attacker-controlled sources like location.hash or postMessage, dangerous DOM sinks, safe rendering patterns, URL validation, and defense in depth with CSP and Trusted Types.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -9757,11 +10132,15 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Definition (above the fold)</strong>\n\nDOM XSS occurs when untrusted input reaches a DOM sink that interprets it as code or HTML. This can happen entirely on the client side without a server-side template bug. The fix is data-flow control: identify untrusted sources, block dangerous sinks, and enforce safe APIs by default."
+          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Definition (above the fold)</strong>\n\nDOM XSS occurs when untrusted input reaches a DOM sink that interprets it as code or HTML. This can happen entirely on the client side without a server-side template bug, for example when <code>location.hash</code>, <code>postMessage</code>, or a profile-bio field gets pushed into <code>innerHTML</code> after page load. The fix is data-flow control: identify untrusted sources, block dangerous sinks, and enforce safe APIs by default."
         },
         {
           "type": "text",
           "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nModel this as <code>source -> transform -> sink</code>. If source is attacker-controlled and sink interprets executable content, you have risk. Break the chain by sanitizing/validating at boundaries and preferring non-executable sink APIs."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code-compare'></i> <strong>DOM XSS vs reflected/stored XSS</strong>\n\nReflected or stored XSS often starts when the server sends unsafe HTML back to the browser. DOM XSS starts later: client-side code reads data such as <code>location.hash</code>, <code>postMessage</code>, or API content and feeds it into a dangerous sink. Same attacker outcome, different bug location and debugging path."
         },
         {
           "type": "list",
@@ -9830,6 +10209,11 @@
               "Only sanitize when rich HTML is required"
             ],
             [
+              "<code>insertAdjacentHTML</code> / <code>document.write</code>",
+              "Template rendering with trusted static markup only",
+              "Treat both as HTML-parsing sinks"
+            ],
+            [
               "String-based <code>setTimeout</code>",
               "Function callback form",
               "Avoid implicit eval behavior"
@@ -9857,7 +10241,24 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-key'></i> <strong>Escaping vs sanitization vs Trusted Types</strong>\n\nEscaping is context-specific output encoding. Sanitization removes unsafe markup when you intentionally allow limited HTML. Trusted Types does something different: it makes risky sinks accept only approved objects, so raw strings cannot quietly reach <code>innerHTML</code> or similar APIs."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #3: sanitize once, enforce at the sink</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const policy = trustedTypes.createPolicy('profile-html', {\n  createHTML(input) {\n    return DOMPurify.sanitize(input);\n  }\n});\n\nprofileBio.innerHTML = policy.createHTML(apiProfile.bio);\n// Pair with CSP: require-trusted-types-for 'script'"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: Is escaping enough for all sinks? A: No, sink context matters; URL, HTML, and script contexts differ.\nQ2: Why is DOM XSS tricky? A: It can be introduced entirely in client code after data leaves the server.\nQ3: First practical hardening step? A: Replace dangerous sinks with safe defaults and add CSP policy reporting."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A support widget reads <code>location.hash</code> to restore UI state and also renders agent notes from an API. If either value reaches <code>innerHTML</code> without sanitization or a trusted-types policy, an attacker-controlled link or stored profile note can execute in the agent dashboard.<br><br><strong>What to do</strong><br>Keep plain text on <code>textContent</code>, validate structured URLs separately, and gate rich HTML behind a sanitizer plus Trusted Types/CSP."
         },
         {
           "type": "text",
@@ -9886,10 +10287,10 @@
       "rereadPrompt": "Not quite. DOM XSS is about untrusted data reaching a risky sink on the client. Safe defaults like `textContent` break that chain for text, while URLs and other structured values need their own validation rules rather than one generic sanitizer."
     },
     "access": "free",
-    "updatedAt": "2026-02-16",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "How do you prevent DOM XSS in JavaScript?",
-      "description": "Prevent DOM XSS by avoiding unsafe sinks, validating untrusted input, and using safe DOM APIs with output encoding."
+      "title": "How do you prevent DOM XSS: sources, sinks, sanitization, and Trusted Types",
+      "description": "Prevent DOM XSS by tracing attacker-controlled sources to dangerous sinks, using safe DOM APIs, validating URLs, and layering sanitization with Trusted Types."
     }
   },
   {

@@ -1,0 +1,149 @@
+{
+  "contentId": "react-why-props-immutable",
+  "tech": "react",
+  "query": "Why are props immutable in React interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Components and Hooks must be pure",
+      "url": "https://react.dev/reference/rules/components-and-hooks-must-be-pure",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official React rules page that explicitly states props and state are immutable snapshots.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official rule page is authoritative, but our page is more explicit about production debugging fallout: broken memoization, hidden side effects, and in-place array mutation corrupting sibling views.",
+      "theirStrengths": [
+        "It is the canonical source for React purity rules and immutable snapshots."
+      ],
+      "theirGaps": [
+        "It is rule-oriented and lighter on production incident framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If a child mutates those inputs, rendering stops being a pure computation and you get hidden side effects, broken memoization assumptions, and shared mutable state bugs that are painful to debug in production."
+        ],
+        "followUpConfusion": [
+          "Sorting, pushing, splicing, or reversing a prop array mutates in-place and can corrupt parent/sibling views."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The rule page explains that props are immutable snapshots, but it is less bug-first about parent-child contamination and array mutation fallout."
+        ],
+        "actionableExamples": [
+          "It includes mutation-versus-copy guidance, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer about why React still behaves as if props are immutable even though JavaScript itself allows mutation."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one short fixed-code example that replaces in-place array mutation with a copied update."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Basic React Concepts for Interviews",
+      "url": "https://www.greatfrontend.com/react-interview-playbook/react-basic-concepts",
+      "category": "interview_prep",
+      "selectionReason": "This playbook page is the strongest GreatFrontEnd baseline because it explicitly covers props versus state and says props are immutable.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd states the rule clearly, but our answer goes further into why prop mutation breaks purity, memoization assumptions, and shared array/object identity in production code.",
+      "theirStrengths": [
+        "It is concise and directly aligned with interview prep on props versus state."
+      ],
+      "theirGaps": [
+        "It states that props are immutable but does not dwell on mutation bugs and timing-sensitive fallout."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Props are inputs owned by the parent."
+        ],
+        "followUpConfusion": [
+          "If you mutate props, you introduce hidden side effects: missed updates, cross-component contamination, and timing-sensitive bugs."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The playbook identifies props as immutable inputs from the parent, but it is more definitional than incident-driven."
+        ],
+        "actionableExamples": [
+          "It includes direct props and state examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the follow-up around mutated arrays/objects and why memoization can silently break."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one worked example of a child sorting a prop array in place and contaminating a sibling view."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Prop Immutability",
+      "url": "https://reactstyleguide.com/rules/prop-immutability/",
+      "category": "tutorial_reference",
+      "selectionReason": "This rule page is a strong tutorial/reference competitor because it focuses exactly on why mutating props is an anti-pattern.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is tightly scoped to prop immutability and includes strong broken-versus-fixed examples."
+      ],
+      "theirGaps": [
+        "It is more style-guide oriented than compact interview delivery."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Memoized child + mutated prop object"
+        ],
+        "actionableExamples": [
+          "Copy nested structures too when a child needs a transformed version"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "It discusses real bugs from mutating objects and arrays that came from props."
+        ],
+        "actionableExamples": [
+          "It includes more explicit before-and-after code examples than our current answer."
+        ],
+        "followUpConfusion": [
+          "Both pages explain parent ownership and why child mutation violates React's model, so this criterion stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one short scenario where a memoized child stops updating predictably because a prop object was mutated in place."
+        ],
+        "actionableExamples": [
+          "Add a copy-based fix example for arrays and nested objects."
+        ],
+        "followUpConfusion": [
+          "Keep one extra short example showing when local draft state is allowed even though props remain read-only."
+        ]
+      },
+      "winReason": "Our page now adds a memoized-child mutation bug and a nested copy-based fix, so it is stronger on production use-cases and actionable examples while the broad conceptual explanation stays close."
+    }
+  ]
+}

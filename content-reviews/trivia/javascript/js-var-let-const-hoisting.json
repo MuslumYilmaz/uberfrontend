@@ -1,0 +1,145 @@
+{
+  "contentId": "js-var-let-const-hoisting",
+  "tech": "javascript",
+  "query": "var let const hoisting interview question",
+  "reviewedAt": "2026-04-08",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN let statement",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's let reference is the canonical docs source for lexical declarations and TDZ behavior, which is central to this comparison.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is authoritative on lexical declarations, TDZ, and why let/const differ from var."
+      ],
+      "theirGaps": [
+        "It is not a concise side-by-side comparison answer in trivia form."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "High-signal answers also mention scope boundaries and redeclaration rules, because that is where production bugs show up."
+        ],
+        "actionableExamples": [
+          "for (var j = 0; j < 3; j++) {\n  setTimeout(() => console.log(j), 0);\n}\n// 3 3 3 (common var trap)"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains lexical declarations accurately, but our page now ties the comparison more directly to real loop and leakage bugs."
+        ],
+        "actionableExamples": [
+          "Its reference details are thorough, while our page now gives a direct loop trap plus a block-leak example."
+        ],
+        "followUpConfusion": [
+          "MDN still has wider reference depth, so the broad follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on top-level var in scripts versus modules so the follow-up surface is broader than a let reference."
+        ]
+      },
+      "winReason": "MDN is the canonical let reference, but our page now presents the comparison through loop traps, block leakage, and a single interview-ready takeaway instead of reference-only detail."
+    },
+    {
+      "label": "GreatFrontEnd let / var / const",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-the-differences-between-javascript-variables-created-using-let-var-or-const",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep page for this exact comparison.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the interview question and likely provides a clean comparison table."
+      ],
+      "theirGaps": [
+        "It appears less explicitly anchored to production bug prevention than our page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "High-signal answers also mention scope boundaries and redeclaration rules, because that is where production bugs show up."
+        ],
+        "followUpConfusion": [
+          "All three are hoisted. The real difference is what happens before declaration is reached."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is tightly aligned with the comparison intent, but our page now leans harder into practical bug prevention."
+        ],
+        "actionableExamples": [
+          "Its side-by-side format remains competitive enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page now states the core hoisting misconception more directly and pairs it with concrete scope traps."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact matrix that summarizes scope, TDZ, redeclaration, and reassignment rules in one place."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd stays closely aligned with the interview wording, but our page now does more to connect the comparison to actual loop bugs, block leakage, and the hoisting misconception."
+    },
+    {
+      "label": "GeeksforGeeks var vs let vs const",
+      "url": "https://www.geeksforgeeks.org/javascript/difference-between-var-let-and-const-keywords-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a common tutorial-style comparison page for var, let, and const.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more explicit about the production reason this comparison matters and about the single key confusion around what hoisting still means for all three.",
+      "theirStrengths": [
+        "It provides the standard comparison readers expect when they search this topic."
+      ],
+      "theirGaps": [
+        "It is lighter on the production-debug framing and on the precise hoisting takeaway."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "let/const reduce accidental early-use bugs."
+        ],
+        "followUpConfusion": [
+          "All three are hoisted. The real difference is what happens before declaration is reached."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks compares the keywords well, but it does not push as clearly into why the difference matters in production code."
+        ],
+        "actionableExamples": [
+          "Its comparison examples are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It is less explicit about the key interview/debug takeaway that hoisting still happens for all three."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact code matrix instead of making the reader infer the differences from prose and bullets."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

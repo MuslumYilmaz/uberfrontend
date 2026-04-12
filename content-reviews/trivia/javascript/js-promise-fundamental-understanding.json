@@ -2,7 +2,7 @@
   "contentId": "js-promise-fundamental-understanding",
   "tech": "javascript",
   "query": "javascript promise fundamentals under the hood interview question",
-  "reviewedAt": "2026-04-05",
+  "reviewedAt": "2026-04-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "manual",
@@ -16,37 +16,41 @@
       "selectionReason": "MDN is the canonical competitor for Promise chaining, composition, and general async semantics.",
       "verdicts": {
         "realWorldUseCases": "tie",
-        "actionableExamples": "theirs",
-        "followUpConfusion": "tie"
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
       },
+      "winReason": "MDN remains the broader reference, but our page now wins this interview-sized comparison because it adds one compact missing-return plus finally example and explicitly separates settlement from callback scheduling.",
       "theirStrengths": [
         "It has broad Promise coverage with chaining, composition, and many API-level examples."
       ],
       "theirGaps": [
         "It is less centered on the interview-style under-the-hood mental model than our page."
       ],
-      "ourEvidence": {},
-      "theirEvidence": {
-        "realWorldUseCases": [
-          "MDN already connects Promises to realistic chaining and composition workflows, so the real-world edge is close."
-        ],
+      "ourEvidence": {
         "actionableExamples": [
-          "MDN includes more step-by-step examples than our current trivia page."
+          "console.log('sync start');"
         ],
         "followUpConfusion": [
-          "Our chain-propagation framing is useful, but MDN still answers many likely follow-ups about error handling and composition."
+          "Promise state and callback scheduling are not the same thing: a Promise can already be fulfilled while your <code>.then()</code> callback is still waiting as a microtask."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN still connects Promises to realistic chaining and composition workflows, so the real-world criterion remains close."
+        ],
+        "actionableExamples": [
+          "Our page now includes one small but dense example covering settlement, missing return, and finally in a single debug flow."
+        ],
+        "followUpConfusion": [
+          "We now answer the likely follow-up about settlement vs scheduling more directly than the generic reference flow."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [
-          "Keep the under-the-hood framing, but show one concrete bug where missing a return changes later handlers."
+          "Add one cancellation or AbortController note if we want a clearer real-world edge over the broader MDN guide."
         ],
-        "actionableExamples": [
-          "Add one worked example that shows executor timing, a chained `then`, and a `finally` in one small snippet."
-        ],
-        "followUpConfusion": [
-          "Add one explicit note that distinguishes Promise state from callback scheduling."
-        ]
+        "actionableExamples": [],
+        "followUpConfusion": []
       }
     },
     {
@@ -55,40 +59,42 @@
       "category": "interview_prep",
       "selectionReason": "GreatFrontEnd has a directly relevant Promise fundamentals page, so it is required for interview-prep calibration.",
       "verdicts": {
-        "realWorldUseCases": "tie",
-        "actionableExamples": "tie",
-        "followUpConfusion": "ours"
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
       },
+      "winReason": "Our page is now stronger for this topic because it turns Promise fundamentals into a UI-debugging mental model, then backs that up with a compact missing-return plus finally example.",
       "theirStrengths": [
         "It directly targets the same Promise fundamentals question and includes accessible state and chaining examples."
       ],
       "theirGaps": [
-        "It is more introductory than our under-the-hood focus on executor timing, chain propagation, and `finally` behavior."
+        "It is more introductory than our under-the-hood focus on executor timing, chain propagation, and scheduling nuances."
       ],
       "ourEvidence": {
-        "followUpConfusion": [
-          "A Promise chain is like a relay race: each runner must pass the baton (return). If one runner drops it, the next runner gets nothing."
+        "realWorldUseCases": [
+          "This is the kind of production bug interviewers care about: the Promise is already settled, but the render callback still waits in the microtask queue, and one missing <code>return</code> silently turns the next value into <code>undefined</code>."
+        ],
+        "actionableExamples": [
+          "return user.name; // remove this return and the next handler gets undefined"
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "GreatFrontEnd connects Promises to async code clearly, so the real-world criterion stays close."
+          "GreatFrontEnd explains Promise states clearly, but it is lighter on the concrete UI-debugging scenario around visible callback order."
         ],
         "actionableExamples": [
-          "Its Promise constructor, `.then()`, `.catch()`, and `Promise.all()` examples keep the example quality competitive."
+          "Its examples are accessible, while ours now packs more debugging detail into one small flow."
         ],
         "followUpConfusion": [
-          "Our page is stronger on the next confusion around chain propagation and `finally`, not just state labels and basic handling."
+          "It still answers the basic state and chaining follow-up well enough that the broader follow-up comparison remains close."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one explicit frontend debugging case where Promise timing changes visible UI order."
-        ],
-        "actionableExamples": [
-          "Add one compact example that contrasts a correct chain with a broken chain missing `return`."
-        ],
-        "followUpConfusion": []
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one sentence on when Promise fundamentals intersect with AbortController or cancellation if we want a broader follow-up set."
+        ]
       }
     },
     {
@@ -98,10 +104,10 @@
       "selectionReason": "This page is a strong tutorial-style competitor for the microtask scheduling part of Promise fundamentals.",
       "verdicts": {
         "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
-        "followUpConfusion": "ours"
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
       },
-      "winReason": "Our page covers more of the full Promise mental model, while javascript.info intentionally focuses on queue timing.",
+      "winReason": "javascript.info stays intentionally narrower on queue timing, while our page now connects microtasks to the larger Promise state-machine and return-propagation model with a worked example.",
       "theirStrengths": [
         "It explains Promise handler scheduling and the microtask queue very clearly."
       ],
@@ -110,10 +116,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering. Mastering them explains async debug sessions better than memorizing APIs."
+          "A Promise is a one-way state machine: <code>pending -> fulfilled</code> or <code>pending -> rejected</code>. The useful part is understanding it <strong>under the hood</strong>: the executor runs immediately, callbacks wait as microtasks, and tiny mistakes like a missing <code>return</code> can change what the UI renders later."
         ],
-        "followUpConfusion": [
-          "A Promise chain is like a relay race: each runner must pass the baton (return). If one runner drops it, the next runner gets nothing."
+        "actionableExamples": [
+          "console.log('sync end');"
         ]
       },
       "theirEvidence": {
@@ -121,18 +127,18 @@
           "javascript.info teaches scheduling very well, but it stays narrower than a full Promise fundamentals answer."
         ],
         "actionableExamples": [
-          "Its queue-order demos are concrete enough that the example criterion remains close."
+          "Its queue-order demo is clear, but our page now adds one denser example tying queue timing to missing returns and finally."
         ],
         "followUpConfusion": [
-          "Our page resolves the follow-up about return propagation and `finally` more directly because it covers more than the queue."
+          "javascript.info remains strong on the queue concept itself, so the follow-up comparison stays close rather than clearly behind."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
-        "actionableExamples": [
-          "Add one tiny logging example that shows sync code, `then`, `catch`, and `finally` order together."
-        ],
-        "followUpConfusion": []
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one line on unhandled rejection timing if we want a broader scheduling follow-up set."
+        ]
       }
     }
   ]

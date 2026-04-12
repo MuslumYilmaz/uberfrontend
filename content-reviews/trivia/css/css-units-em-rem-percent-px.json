@@ -1,0 +1,145 @@
+{
+  "contentId": "css-units-em-rem-percent-px",
+  "tech": "css",
+  "query": "What is the difference between em, rem, percent, and px in CSS?",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "CSS values and units",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units",
+      "category": "canonical_docs",
+      "selectionReason": "This is the closest MDN canonical learning page for unit types, relative versus absolute values, and how different CSS units scale.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the unit taxonomy and on how absolute and relative units are defined."
+      ],
+      "theirGaps": [
+        "The guide is broader than this exact compare question and less focused on the practical decision path between rem, em, %, and px."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A responsive card layout uses rem for typography, % for container width, em for an inline badge that should scale with local text, and px for hairline borders."
+        ],
+        "followUpConfusion": [
+          "75% width answers a layout question: “how wide should this box be inside its parent?” 1.25rem answers a typography question: “how large should this value be relative to the root font size?”"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains unit types clearly, but it is less compressed around one production choice like typography with rem, container width with percent, and borders with px."
+        ],
+        "actionableExamples": [
+          "The guide includes useful examples for values and units, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "MDN is less explicit about the exact em-compounding pitfall and the root-font-size testing heuristic that usually comes up next."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one even shorter nested-font example that shows em compounding in two levels instead of only describing it."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical unit reference, but our page is more interview- and production-friendly because it turns unit choice into a concrete layout and accessibility decision instead of a broad unit catalog."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant and explicitly includes fluid units as a CSS fundamentals topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub and explicitly lists fluid units among the core fundamentals."
+      ],
+      "theirGaps": [
+        "The hub page is not dedicated to the rem-versus-em-versus-percent-versus-px decision path."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A responsive card layout uses rem for typography, % for container width, em for an inline badge that should scale with local text, and px for hairline borders."
+        ],
+        "followUpConfusion": [
+          "If the parent card bumps its font size from 1rem to 1.25rem, any child spacing defined in em can grow twice in practice."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd clearly treats CSS units as an interview topic, but the landing page is less specific about one concrete responsive layout scenario."
+        ],
+        "actionableExamples": [
+          "Because the bank provides quick answers and detailed explanations, the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "The hub is less explicit about the compounding trap with em and about why percent depends on the parent box rather than the root font size."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep a smaller code example where em padding compounds after the parent font size changes."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a good CSS interview hub, but our page is more focused on the practical unit-selection trade-offs and the common follow-up mistakes around compounding and accessibility."
+    },
+    {
+      "label": "CSS Length Units",
+      "url": "https://css-tricks.com/css-length-units/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks has a direct article on CSS length units and is the strongest tutorial/reference comparator for this measurement-units cluster.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article is directly on-topic and covers a broader set of CSS units with practical explanations."
+      ],
+      "theirGaps": [
+        "It is less tightly scoped to just the four compare targets in this trivia question."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "A settings panel can use rem for app-wide type, em for badge padding that scales with the badge text itself, % for card width that tracks the parent container, and px for a crisp border that should not scale with text."
+        ],
+        "followUpConfusion": [
+          "75% width answers a layout question: “how wide should this box be inside its parent?” 1.25rem answers a typography question: “how large should this value be relative to the root font size?”"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks discusses how different length units behave in real layouts and how relative units respond to different references."
+        ],
+        "actionableExamples": [
+          "The article is still a broad direct reference, but our page now gives a more compact one-screen decision example that assigns a concrete job to each unit."
+        ],
+        "followUpConfusion": [
+          "CSS-Tricks covers many unit types, while our answer is now more explicit about the percent-versus-rem distinction and why nested em spacing compounds unexpectedly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one tighter production story where a component shrinks inside a narrower parent container and percent width responds while rem typography does not."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong broad units reference, but our page is now more interview- and debugging-friendly because it gives one compact unit-selection scenario and answers the two common follow-ups: nested em compounding and why percent tracks the parent instead of the root."
+    }
+  ]
+}

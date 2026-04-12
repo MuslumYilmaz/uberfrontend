@@ -243,7 +243,7 @@
     "route": "/angular/trivia/angular-data-binding",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Angular data binding is mostly explicit one-way flow in one direction at a time: component state into the DOM, events back into the component, and two-way syntax only as sugar. The useful angle is when property versus a…",
+    "summary": "Angular data binding is mostly explicit one-way flow in one direction at a time: component state into the DOM, events back into the component, and two-way syntax only as sugar. The real production edge is debugging prop…",
     "tags": [
       "angular",
       "data-binding",
@@ -253,7 +253,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-data-binding"
   },
@@ -288,7 +288,7 @@
     "route": "/angular/trivia/angular-directives",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "A directive is a class that Angular attaches to an element (or an &lt;ng-template&gt;) to add behavior, change styling, or control whether a chunk of template exists at all. Interview focus: the 3 directive categories,…",
+    "summary": "A directive is a class that Angular attaches to an element (or an &lt;ng-template&gt;) to add behavior, change styling, or control whether a chunk of template exists at all. The senior angle is not only naming structura…",
     "tags": [
       "angular",
       "directives",
@@ -298,7 +298,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-directives"
   },
@@ -383,7 +383,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-lifecycle-hooks"
   },
@@ -607,7 +607,7 @@
     "route": "/angular/trivia/angular-ngoninit-vs-constructor",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Constructor runs when the class instance is created (mainly for DI + trivial field setup). ngOnInit() runs once after Angular has set initial @Input() bindings (after the first ngOnChanges). Put Angular-dependent initia…",
+    "summary": "Constructor runs when the class instance is created (mainly for DI + trivial field setup). ngOnInit() runs once after Angular has set initial @Input() bindings (after the first ngOnChanges). The stronger interview answe…",
     "tags": [
       "angular",
       "lifecycle",
@@ -617,7 +617,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-ngoninit-vs-constructor"
   },
@@ -686,7 +686,7 @@
     "route": "/angular/trivia/angular-hierarchical-dependency-injection-real-bug",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Angular DI is hierarchical, so provider location changes instance count and service lifetime. The useful angle is the real production bug: re-providing a service in a component or route and silently splitting shared sta…",
+    "summary": "Angular DI is hierarchical, so provider location changes instance count and service lifetime. The useful angle is the real production bug: re-providing a service in a component or standalone route and silently splitting…",
     "tags": [
       "angular",
       "dependency-injection",
@@ -696,7 +696,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-hierarchical-dependency-injection-real-bug"
   },
@@ -707,7 +707,7 @@
     "route": "/angular/trivia/angular-onpush-change-detection-debugging-real-bug",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "OnPush change detection tells Angular to skip checking a component unless one of a few specific triggers happens (Input reference change, event inside the component, async pipe emission, or manual markForCheck/detectCha…",
+    "summary": "OnPush change detection is easiest to explain as a real stale-UI debugging story. Angular skips a component unless a narrow trigger happens, so production bugs usually come from mutating references, updating state insid…",
     "tags": [
       "angular",
       "change-detection",
@@ -717,7 +717,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-onpush-change-detection-debugging-real-bug"
   },
@@ -738,7 +738,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-input-output"
   },
@@ -749,7 +749,7 @@
     "route": "/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Most Angular memory leaks come from long-lived streams, global listeners, or timers that outlive a component. The practical angle is knowing when AsyncPipe, takeUntilDestroyed, or manual teardown actually matters and wh…",
+    "summary": "Most Angular memory leaks come from long-lived streams, global listeners, or timers that outlive a component or route. The practical angle is knowing when AsyncPipe, takeUntilDestroyed, or manual teardown actually matte…",
     "tags": [
       "angular",
       "rxjs",
@@ -759,7 +759,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-prevent-memory-leaks-unsubscribe-patterns"
   },
@@ -1058,7 +1058,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#ngrx-data-flow-end-to-end-angular"
   },
@@ -1132,7 +1132,7 @@
     "route": "/angular/trivia/angular-observables-rxjs",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "In Angular, most async APIs expose RxJS Observables (HttpClient, form valueChanges, router events). An Observable is a lazy stream that can emit 0..N values over time and supports cancellation via unsubscribe. Interview…",
+    "summary": "In Angular, most async APIs expose RxJS Observables (HttpClient, form valueChanges, router events). The interview-ready angle is not just the Observable definition, but when RxJS is still better than signals, how multic…",
     "tags": [
       "angular",
       "rxjs",
@@ -1142,7 +1142,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-observables-rxjs"
   },
@@ -1269,7 +1269,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use"
   },
@@ -1344,7 +1344,7 @@
     "route": "/angular/trivia/angular-http-what-actually-cancels-request",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. This triggers the browser AbortController/XHR abort under the hood. But n…",
+    "summary": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. The production trap is that many patterns only ignore old responses inste…",
     "tags": [
       "angular",
       "http",
@@ -1354,7 +1354,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-http-what-actually-cancels-request"
   },
@@ -1386,7 +1386,7 @@
     "route": "/angular/trivia/angular-change-detection-strategies",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Change detection in Angular is the mechanism that keeps the view in sync with the component’s data. Angular provides two strategies — Default and OnPush — to determine when and how it checks for changes and updates the…",
+    "summary": "Angular change detection strategy is a production performance and debugging choice, not just a framework definition. The useful answer compares Default versus OnPush through stale-UI bugs, trigger rules, immutable updat…",
     "tags": [
       "angular",
       "change-detection",
@@ -1396,7 +1396,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-change-detection-strategies"
   },
@@ -1417,7 +1417,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-services"
   },
@@ -1438,7 +1438,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-routing"
   },
@@ -1480,7 +1480,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-dependency-injection"
   },
@@ -1627,7 +1627,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-component-vs-service-responsibilities"
   },
@@ -1638,7 +1638,7 @@
     "route": "/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "constructor is for DI + trivial class setup, ngOnInit is for initialization that depends on inputs/bindings, and ngAfterViewInit is for work that needs the component view (DOM, ViewChild). For DOM/ViewChild access, ngAf…",
+    "summary": "constructor is for DI + trivial class setup, ngOnInit is for initialization that depends on inputs/bindings, and ngAfterViewInit is for work that needs the component view (DOM, ViewChild). The production follow-ups are…",
     "tags": [
       "angular",
       "lifecycle",
@@ -1648,7 +1648,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-lifecycle-constructor-oninit-afterviewinit-dom"
   },
@@ -1669,7 +1669,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-ngfor-trackby"
   },
@@ -1724,7 +1724,7 @@
     "route": "/css/trivia/css-units-em-rem-percent-px",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "CSS provides multiple units to define sizes, each with unique reference points and use cases. Understanding how em, rem, %, and px differ is essential for creating flexible, responsive layouts that behave consistently a…",
+    "summary": "CSS units use different reference points. Use rem for root-scaled typography, em for component-local scaling, % for parent-relative sizing, and px for precision-only edges. The common production pitfall is assuming % be…",
     "tags": [
       "css",
       "units",
@@ -1734,7 +1734,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-units-em-rem-percent-px"
   },
@@ -2655,7 +2655,7 @@
     "route": "/html/trivia/web-accessibility-make-page-accessible",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "Use a production accessibility review workflow: semantic structure, keyboard order, focus management, contrast, ARIA restraint, and screen reader checks that catch real usability bugs.",
+    "summary": "Use a production accessibility review workflow: semantics first, then keyboard and focus, labels and errors, contrast, manual assistive-tech checks, and automated tooling. The real mistake is treating Lighthouse or axe…",
     "tags": [
       "accessibility",
       "semantics",
@@ -2664,7 +2664,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#web-accessibility-make-page-accessible"
   },
@@ -2845,7 +2845,7 @@
     "route": "/html/trivia/html-aria-roles",
     "tech": "html",
     "difficulty": "intermediate",
-    "summary": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren't available, but should not replace proper HTML tags. The common mistake is adding ARIA where native…",
+    "summary": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren't available, but should not replace proper HTML tags. The common mistake is treating ARIA like a shor…",
     "tags": [
       "html",
       "aria",
@@ -2855,7 +2855,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-aria-roles"
   },
@@ -2897,7 +2897,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-semantic-elements"
   },
@@ -3173,7 +3173,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-meta-tag"
   },
@@ -3184,7 +3184,7 @@
     "route": "/html/trivia/html-img-alt-attribute",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The alt attribute gives an image a text alternative for screen readers, fallback rendering, and search understanding. The common mistake is writing alt text for what the image looks like instead of what the image contri…",
+    "summary": "The alt attribute gives an image a text alternative for screen readers, fallback rendering, and search understanding. The real production decision is whether an image is decorative, informative, or functional, because l…",
     "tags": [
       "accessibility",
       "attributes",
@@ -3194,7 +3194,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-img-alt-attribute"
   },
@@ -3440,7 +3440,7 @@
     "route": "/javascript/trivia/js-arrow-vs-regular-functions",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Arrow and regular functions look similar but behave differently for this binding, constructors, arguments, and method design. Strong answers explain lexical vs dynamic this, prototype/new behavior, and when each style i…",
+    "summary": "Arrow and regular functions look similar but behave differently for callbacks, methods, constructors, arguments, and class-field memory cost. Strong answers explain lexical vs dynamic this and when each style is safer i…",
     "tags": [
       "arrow-functions",
       "regular-functions",
@@ -3451,7 +3451,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-arrow-vs-regular-functions"
   },
@@ -3462,7 +3462,7 @@
     "route": "/javascript/trivia/js-async-race-conditions",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Debug the production bug where async requests resolve out of order and overwrite newer UI state. The fix is cancellation, request identity, or takeLatest-style guards that stop stale results from winning.",
+    "summary": "Debug the production bug where async requests resolve out of order and overwrite newer UI state. The fix is cancellation, request identity, shared-controller ownership, or takeLatest-style guards that stop stale results…",
     "tags": [
       "async",
       "concurrency",
@@ -3472,7 +3472,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-async-race-conditions"
   },
@@ -4187,11 +4187,11 @@
   {
     "id": "js-xss-dom-sinks",
     "family": "question",
-    "title": "DOM XSS Prevention in JavaScript: Dangerous Sinks, Safe APIs, and CSP",
+    "title": "DOM XSS Prevention in JavaScript: Dangerous Sinks, Safe APIs, and Trusted Types",
     "route": "/javascript/trivia/js-xss-dom-sinks",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Security-focused frontend interview guide to DOM XSS: attacker-controlled sources, dangerous DOM sinks, safe rendering patterns, URL/protocol validation, and defense in depth with CSP and Trusted Types.",
+    "summary": "Security-focused frontend interview guide to DOM XSS: attacker-controlled sources like location.hash or postMessage, dangerous DOM sinks, safe rendering patterns, URL validation, and defense in depth with CSP and Truste…",
     "tags": [
       "javascript",
       "frontend-interview",
@@ -4204,7 +4204,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-16",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-xss-dom-sinks"
   },
@@ -4310,7 +4310,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-hoisting"
   },
@@ -4321,7 +4321,7 @@
     "route": "/javascript/trivia/js-closures",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Closures keep outer variables alive after the outer function returns. That powers private state, but the production pitfalls are loop-capture bugs, stale async state, and memory retention when callbacks keep old data al…",
+    "summary": "Closures keep outer variables alive after the outer function returns. The real frontend debug value is explaining stale async callbacks, loop-capture bugs, and long-lived listeners that keep old objects alive in memory.",
     "tags": [
       "closure",
       "functions",
@@ -4330,7 +4330,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-closures"
   },
@@ -4350,7 +4350,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-event-delegation"
   },
@@ -4361,7 +4361,7 @@
     "route": "/javascript/trivia/js-hoisting-tdz",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Hoisting and TDZ explain why `let` and `const` are registered before execution yet still throw before initialization. The common debug signal is `ReferenceError: Cannot access X before initialization`.",
+    "summary": "TDZ is the debug reason let, const, and class throw before initialization even though they are hoisted. Strong answers separate TDZ from undeclared identifiers and show the startup bugs this creates in real modules.",
     "tags": [
       "hoisting",
       "temporal-dead-zone",
@@ -4370,7 +4370,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-hoisting-tdz"
   },
@@ -4401,7 +4401,7 @@
     "route": "/javascript/trivia/js-this-keyword",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "The value of `this` depends on call site, strict mode, and arrow functions. The real debug problem is detached methods, callback context loss, and object methods that stop pointing at the receiver you expected.",
+    "summary": "The value of `this` is a call-site problem, not a definition-site feature. Strong answers show detached methods, callback context loss, module and class-field follow-ups, and when `bind()` or arrows are the right fix.",
     "tags": [
       "binding",
       "context",
@@ -4410,7 +4410,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-this-keyword"
   },
@@ -4421,7 +4421,7 @@
     "route": "/javascript/trivia/js-var-let-const-hoisting",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "var, let, and const are all hoisted, but they differ in initialization and access-before-declaration behavior. var initializes to undefined; let/const stay in TDZ until declaration executes.",
+    "summary": "var, let, and const are all hoisted, but interviewers usually care about three axes at once: access-before-declaration behavior, scope boundaries, and redeclaration/reassignment rules. Strong answers connect those rules…",
     "tags": [
       "hoisting",
       "variables",
@@ -4431,7 +4431,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-var-let-const-hoisting"
   },
@@ -4452,7 +4452,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-event-loop"
   },
@@ -4831,7 +4831,7 @@
     "route": "/javascript/trivia/web-performance-optimize-load-time",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Web performance optimization is a prioritization problem across network transfer, render-blocking work, images, JavaScript, and caching. Strong answers tie improvements to critical-path debugging and Core Web Vitals rat…",
+    "summary": "Web performance optimization is a prioritization problem across network transfer, render-blocking work, images, JavaScript, and caching. Strong answers tie improvements to critical-path debugging, first-visit vs repeat-…",
     "tags": [
       "performance",
       "web-performance",
@@ -4845,7 +4845,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#web-performance-optimize-load-time"
   },
@@ -4856,7 +4856,7 @@
     "route": "/javascript/trivia/js-calback-hell-resolved-with-promise",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic. Promises flatten the flow, centralize failures, and make production control flow easier to inspect, even th…",
+    "summary": "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic. Promise chains make return propagation, shared error boundaries, and staged migrations easier to reason abo…",
     "tags": [
       "callbacks",
       "promise",
@@ -4866,7 +4866,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-calback-hell-resolved-with-promise"
   },
@@ -4920,7 +4920,7 @@
     "route": "/javascript/trivia/js-compare-two-objects",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "In JavaScript, object comparison depends on intent: `===` checks reference identity, while value-based checks require shallow or deep comparison. Learn practical comparison strategies, JSON.stringify pitfalls, and when…",
+    "summary": "Object comparison in JavaScript is a strategy decision: `===` checks identity, shallow checks fit flat data, and deep checks fit nested data. Learn when each approach is enough, where JSON.stringify breaks, and which ed…",
     "tags": [
       "objects",
       "equality",
@@ -4930,7 +4930,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-compare-two-objects"
   },
@@ -5237,7 +5237,7 @@
     "route": "/javascript/trivia/js-block-scoped-or-function-scoped",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "JavaScript uses both block scope and function scope depending on declaration type. `var` is function-scoped, while `let` and `const` are block-scoped. Strong answers explain loop behavior, closure bugs, switch-case pitf…",
+    "summary": "JavaScript is both block-scoped and function-scoped depending on the declaration keyword. Strong answers compare `var`, `let`, and `const` side by side, show loop-capture and switch-case pitfalls, and explain how TDZ fi…",
     "tags": [
       "scope",
       "block-scope",
@@ -5249,7 +5249,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-block-scoped-or-function-scoped"
   },
@@ -5456,7 +5456,7 @@
     "route": "/javascript/trivia/js-microtasks-vs-macrotasks",
     "tech": "javascript",
     "difficulty": "hard",
-    "summary": "In each event loop turn, JavaScript runs synchronous code, then drains the entire microtask queue (e.g., Promise.then, queueMicrotask) before taking the next macrotask (e.g., setTimeout, DOM events). This priority expla…",
+    "summary": "In each event loop turn, JavaScript runs synchronous code, then drains the entire microtask queue before the next macrotask. That priority explains why Promises run before timers, why spinners can fail to paint, and whe…",
     "tags": [
       "event-loop",
       "async",
@@ -5468,7 +5468,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-microtasks-vs-macrotasks"
   },
@@ -5565,7 +5565,7 @@
     "route": "/javascript/trivia/js-passing-by-value-and-by-reference",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "JavaScript is pass-by-value, but for objects the copied value is a reference to the same object. That is why object property mutations can be visible outside a function, while reassignment is not. Interview-quality answ…",
+    "summary": "JavaScript is pass-by-value, but for objects the copied value is a reference to shared data. Strong answers name call-by-sharing, separate mutation from reassignment, and show the state bugs caused by mutating caller-ow…",
     "tags": [
       "pass-by-value",
       "pass-by-reference",
@@ -5576,7 +5576,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-passing-by-value-and-by-reference"
   },
@@ -5630,7 +5630,7 @@
     "route": "/javascript/trivia/js-promise-fundamental-understanding",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering. Mastering them explains async debug sessions better than memorizing APIs.",
+    "summary": "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering. Strong answers also explain UI-order debugging, missing-return bugs, and why settlement i…",
     "tags": [
       "promise",
       "asynchronous-javascript",
@@ -5640,7 +5640,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-promise-fundamental-understanding"
   },
@@ -5660,7 +5660,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-promise-combinators-all-allsettled-race-any"
   },
@@ -5692,7 +5692,7 @@
     "route": "/javascript/trivia/js-promises-async-await",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Promises and async/await use the same async model, but production pitfalls show up in accidental serialization, missing cancellation, and error paths that escape the right boundary.",
+    "summary": "Promises and async/await use the same async model, but production decisions are really about concurrency, stale-request cancellation, request identity, and error boundaries rather than syntax alone.",
     "tags": [
       "async-await",
       "concurrency",
@@ -5702,7 +5702,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-promises-async-await"
   },
@@ -6367,7 +6367,7 @@
     "route": "/javascript/trivia/js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "This is a high-frequency bug pattern: defaults that overwrite valid falsy values, loose equality coercion surprises, and accidental shared-object mutation. Robust code uses ??, ===, and controlled immutability.",
+    "summary": "This page is about a common production bug combo: falsy defaults overwrite valid values, loose equality coerces unexpectedly, and shared mutation leaks state back to the caller. Strong answers separate those failures wh…",
     "tags": [
       "truthy-falsy",
       "strict-equality",
@@ -6378,7 +6378,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-truthy-falsy-pass-by-value-reference-strict-equality-use-case"
   },
@@ -6389,7 +6389,7 @@
     "route": "/javascript/trivia/js-undefined-vs-not-defined",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "undefined is a real value on an existing identifier; not defined indicates identifier resolution failed (ReferenceError). Distinguishing value-state from scope-resolution is key to fast JS debugging.",
+    "summary": "undefined is a value state; not defined is identifier lookup failure. Strong debugging answers also separate those from TDZ and null, then show the safe check order for missing globals, payload fields, and scope mistake…",
     "tags": [
       "undefined",
       "referenceerror",
@@ -6400,7 +6400,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-undefined-vs-not-defined"
   },
@@ -6516,7 +6516,7 @@
     "route": "/javascript/trivia/js-callbacks",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Callbacks are the original control-flow hook in JavaScript. The production issues are inversion of control, callback hell, and debugging legacy async code that cannot cancel or compose cleanly.",
+    "summary": "Callbacks are the original control-flow hook in JavaScript. Strong answers explain inversion of control, callback hell, legacy async debugging, and why callbacks still fit repeated-notification APIs like DOM events.",
     "tags": [
       "async",
       "callbacks",
@@ -6526,7 +6526,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-callbacks"
   },
@@ -6580,7 +6580,7 @@
     "route": "/javascript/trivia/js-cookie-options",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Cookie options are attributes on Set-Cookie that control lifetime, scope, and security. Learn Expires vs Max-Age, Domain and Path scoping, Secure/HttpOnly/SameSite protections, and when to use Partitioned cookies.",
+    "summary": "Cookie options are production decisions about auth-cookie hardening, host-only scope, SameSite defaults, cross-site embeds, and which attributes must be set server-side in Set-Cookie.",
     "tags": [
       "cookies",
       "http",
@@ -6590,7 +6590,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-cookie-options"
   },
@@ -6643,7 +6643,7 @@
     "route": "/javascript/trivia/js-use-strict-describe",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "'use strict' enables strict mode, which blocks several error-prone JavaScript behaviors such as accidental globals and silent failures. Learn function-level vs file-level usage, strict-mode effects on this/eval, and pra…",
+    "summary": "'use strict' is mainly a migration and debugging tool: it turns sloppy-mode footguns into explicit errors. Strong answers compare accidental globals, silent failures, bare-function this, eval restrictions, and modern ES…",
     "tags": [
       "strict-mode",
       "use-strict",
@@ -6653,7 +6653,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-use-strict-describe"
   },
@@ -6684,7 +6684,7 @@
     "route": "/javascript/trivia/js-event-bubbling-capturing",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Event bubbling and capturing define the order in which events propagate through the DOM. Bubbling moves upward from the target element to its ancestors, while capturing moves downward from the root to the target.",
+    "summary": "Event bubbling and capturing matter most when nested buttons trigger parents, delegated menus read the wrong node, or stopPropagation hides the real bug. Strong answers explain phase order, target vs currentTarget, and…",
     "tags": [
       "dom",
       "events",
@@ -6694,7 +6694,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-event-bubbling-capturing"
   },
@@ -6870,7 +6870,7 @@
     "route": "/javascript/trivia/js-repaint-reflow",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Reflow (layout) recalculates element geometry, while repaint redraws visual styles without changing layout geometry. Learn what triggers each phase, why forced reflow hurts runtime performance, and how to reduce layout…",
+    "summary": "Reflow (layout) recalculates element geometry, while repaint redraws visual styles without changing layout geometry. Strong answers also explain paint-heavy visuals, composite-only updates, and why forced reflow causes…",
     "tags": [
       "performance",
       "rendering",
@@ -6881,7 +6881,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-repaint-reflow"
   },
@@ -6913,7 +6913,7 @@
     "route": "/javascript/trivia/js-null-coalescing-operator",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "The nullish coalescing operator (??) returns the right value only when the left side is null or undefined. Unlike ||, it does not treat 0, empty string, or false as missing. Strong answers cover precedence, optional cha…",
+    "summary": "The nullish coalescing operator fixes a production defaulting bug: `||` overwrites valid `0`, `''`, and `false`. Strong answers also cover `?.`, precedence rules, and the follow-up case where empty-but-intentional value…",
     "tags": [
       "nullish-coalescing",
       "operators",
@@ -6924,7 +6924,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-null-coalescing-operator"
   },
@@ -6956,7 +6956,7 @@
     "route": "/javascript/trivia/js-type-coercion",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Type coercion is JavaScript converting a value from one type to another, either implicitly (automatic) or explicitly (manual). It powers flexible syntax but can create surprising comparisons and bugs when types are mixe…",
+    "summary": "Type coercion becomes dangerous at boundaries: form input, query params, localStorage, and mixed API payloads. Strong answers explain implicit vs explicit conversion, == vs ===, and the concrete values that still surpri…",
     "tags": [
       "type-coercion",
       "equality",
@@ -6966,7 +6966,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-type-coercion"
   },
@@ -6999,7 +6999,7 @@
     "route": "/javascript/trivia/js-async-await-example-when-promise-is-preferred",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "async/await improves readability, but Promise APIs are often better for composition, concurrency combinators, and sharing in-flight work. Learn practical cases where direct Promise usage is clearer and more scalable.",
+    "summary": "async/await improves readability, but Promise APIs are often better for composition, fan-out concurrency, and shared in-flight work. Strong answers show the accidental-serialization pitfall and when raw Promise style st…",
     "tags": [
       "promise",
       "async-await",
@@ -7009,7 +7009,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-async-await-example-when-promise-is-preferred"
   },
@@ -7020,7 +7020,7 @@
     "route": "/javascript/trivia/js-why-eval-function-considered-dangerous",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Explain eval through the security pitfall lens: it turns data into code, expands injection risk, conflicts with CSP expectations, and makes production debugging or optimization much harder.",
+    "summary": "Explain eval through the security pitfall lens: it turns data into code, creates same-origin execution risk, conflicts with CSP expectations, and makes production debugging or optimization much harder.",
     "tags": [
       "eval",
       "security",
@@ -7031,7 +7031,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-why-eval-function-considered-dangerous"
   },
@@ -7236,7 +7236,7 @@
     "route": "/react/trivia/react-lifting-state-up",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Lifting state up means moving shared state to the closest common ancestor and passing it down via props. This keeps siblings in sync and avoids duplicated state. The trade-off is prop drilling vs shared state, so test u…",
+    "summary": "Explain lifting state up through sibling-sync bugs, duplicated local state drift, and the trade-off between a single source of truth, prop drilling, and over-lifting state too high.",
     "tags": [
       "react",
       "state",
@@ -7246,7 +7246,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-lifting-state-up"
   },
@@ -7267,7 +7267,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-prevent-unnecessary-rerenders"
   },
@@ -7320,7 +7320,7 @@
     "route": "/react/trivia/react-rerender-decision-and-render",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain what triggers a React component to re-render, what a “render” actually means (vs updating the DOM), and what role the class render() method (or function component body) plays in the render + commit pipeline.",
+    "summary": "Explain React rerenders through render vs commit, parent-child propagation, memo bailouts, context churn, and the follow-up confusion around remounts versus ordinary rerenders.",
     "tags": [
       "react",
       "rendering",
@@ -7330,7 +7330,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-rerender-decision-and-render"
   },
@@ -7856,7 +7856,7 @@
     "route": "/react/trivia/react-useeffect-purpose",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain useEffect as React’s sync point with the outside world, focusing on cleanup, dependency discipline, stale-closure debugging, and the pitfall of moving pure logic into effects.",
+    "summary": "Explain useEffect as React’s external sync point through cleanup, dependency discipline, stale-closure debugging, and the common mistake of putting pure derived logic into effects.",
     "tags": [
       "react",
       "hooks",
@@ -7866,7 +7866,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-useeffect-purpose"
   },
@@ -8003,7 +8003,7 @@
     "route": "/react/trivia/react-controlled-vs-uncontrolled",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Controlled components in React are those whose form data is managed by React state, while uncontrolled components manage their own state internally through the DOM. Controlled components offer more predictable, testable…",
+    "summary": "Compare controlled and uncontrolled React inputs through validation, reset behavior, defaultValue, file-input limits, and the production warning/debugging cases that appear when a field switches ownership.",
     "tags": [
       "react",
       "forms",
@@ -8013,7 +8013,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-controlled-vs-uncontrolled"
   },
@@ -8066,7 +8066,7 @@
     "route": "/react/trivia/react-keys-in-lists",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Keys are React's identity contract for list items. Use stable keys to prevent reordered rows, lost input state, and production bugs where React preserves the wrong component.",
+    "summary": "Keys are React's identity contract for list items. Use stable keys to prevent reordered rows, lost input state, random remounts, and production bugs where React preserves the wrong component.",
     "tags": [
       "react",
       "lists",
@@ -8076,7 +8076,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-keys-in-lists"
   },
@@ -8212,7 +8212,7 @@
     "route": "/react/trivia/react-component-rerendering",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain React’s rerender pipeline through render work, reconciliation, commit, bailouts, and the production identity pitfalls that make a component rerender even when the DOM barely changes.",
+    "summary": "Explain React rerendering through render work, reconciliation, commit, context fanout, and remount-vs-rerender identity bugs that make the DOM story easy to misread.",
     "tags": [
       "react",
       "rendering",
@@ -8222,7 +8222,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-component-rerendering"
   },
@@ -8265,7 +8265,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-why-props-immutable"
   },
@@ -8307,7 +8307,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-why-hooks-have-rules"
   },
@@ -8390,7 +8390,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-one-way-data-flow"
   },
@@ -8412,7 +8412,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-stale-state-closures"
   },
@@ -8452,7 +8452,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-strictmode-double-invoke-effects"
   },
@@ -9756,7 +9756,7 @@
     "route": "/vue/trivia/vue-computed-properties",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Computed properties are cached, reactive getters that recompute only when their dependencies change. Use them for derived state instead of methods to avoid unnecessary recalculation. Computed values improve performance…",
+    "summary": "Computed properties are cached derived state in Vue. Strong answers compare them with template methods, show a real performance-use case like cart totals or filtered lists, and explain why computed getters should stay p…",
     "tags": [
       "vue",
       "computed",
@@ -9766,7 +9766,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-computed-properties"
   },
@@ -9777,7 +9777,7 @@
     "route": "/vue/trivia/vue-lifecycle-hooks",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "This question is about lifecycle timing and side-effect placement in Vue components. Focus on which hooks run before/after mount, update, and unmount, plus what logic is safe in each stage. Keep Composition API fundamen…",
+    "summary": "This question is about lifecycle timing and side-effect placement in Vue components. Strong answers map real tasks like fetches, DOM reads, and cleanup to the right hook and explain why hook choice affects correctness,…",
     "tags": [
       "vue",
       "lifecycle",
@@ -9787,7 +9787,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-lifecycle-hooks"
   },
@@ -9798,7 +9798,7 @@
     "route": "/vue/trivia/vue-composition-api",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Explain the Vue Composition API with an interview and production angle: why Vue introduced it, how setup(), ref(), and reactive() improve large-component organization, and which migration trade-offs matter.",
+    "summary": "Explain the Vue Composition API with an interview and production angle: why Vue introduced it, how setup(), ref(), and reactive() help group one feature in one place, and when migration trade-offs still favor the Option…",
     "tags": [
       "vue",
       "composition-api",
@@ -9808,7 +9808,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-composition-api"
   },

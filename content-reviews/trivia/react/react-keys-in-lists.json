@@ -1,0 +1,149 @@
+{
+  "contentId": "react-keys-in-lists",
+  "tech": "react",
+  "query": "React keys in lists interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Rendering Lists",
+      "url": "https://react.dev/learn/rendering-lists",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official React page for list rendering and keys, so it is the canonical baseline.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "React docs teach keys well, but our page is more explicit about production identity bugs like checked rows jumping, wrong input state sticking, and why keys are a debugging tool rather than just a performance hint.",
+      "theirStrengths": [
+        "It is the official reference for how and why to supply keys in lists."
+      ],
+      "theirGaps": [
+        "It is lighter on list-state corruption examples and interview-style bug framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Keys are not just a performance hint. In React they define item identity, which is why a bad key can create production bugs: checked boxes jump rows, inputs keep the wrong text after reordering, or a row preserves state that belonged to a different item."
+        ],
+        "followUpConfusion": [
+          "Using array indices as keys works for static lists but can cause issues in lists that reorder or update dynamically."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain that keys identify list items, but they are less vivid about reordered-row state leakage and checkbox/input bugs."
+        ],
+        "actionableExamples": [
+          "They include concrete list examples with ids, so example quality stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct about why index keys break identity when rows reorder and why random keys are not safe."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one before-and-after example that reorders rows and shows index keys corrupting input state."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "React Interview Questions Quiz",
+      "url": "https://www.greatfrontend.com/questions/react-interview-questions/quiz",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's React question bank is directly relevant because it covers common React interview topics like reconciliation, lists, and rendering behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The question bank is broad and useful, but our page is more focused on the exact list-identity bugs interviewers usually want: reordered rows, state leakage, and why keys are not just a generic optimization hint.",
+      "theirStrengths": [
+        "It is broad, interview-focused, and covers many React rendering topics in one place."
+      ],
+      "theirGaps": [
+        "It is less focused on one concept than a dedicated keys page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Strong answers frame keys as a debugging tool for list correctness, not only as reconciliation trivia."
+        ],
+        "followUpConfusion": [
+          "Do not use random or non-deterministic values as keys — React relies on key consistency across renders."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The question bank covers React rendering topics broadly, but it is less concentrated on production list-identity failures."
+        ],
+        "actionableExamples": [
+          "Its quiz format still gives focused examples and solutions, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about index keys, state preservation, and why bad keys attach the wrong state to the wrong row."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a short example with controlled inputs inside a sortable list."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "React key attribute",
+      "url": "https://www.developerway.com/posts/react-key-attribute",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay has one of the strongest deep dives on key semantics, random keys, index keys, and reconciliation outcomes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is deeply focused on how keys affect reconciliation, remounting, and render behavior."
+      ],
+      "theirGaps": [
+        "It is longer and more tutorial-like than a short interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Random keys do not just rerender rows. They remount them"
+        ],
+        "actionableExamples": [
+          "Index keys break when rows reorder; typed text and checked state can move to the wrong todo"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article explains real consequences of missing, random, and index keys, so the real-world lens is close."
+        ],
+        "actionableExamples": [
+          "It contains more worked examples around random keys, sorting, and remount behavior than our current page."
+        ],
+        "followUpConfusion": [
+          "Both pages explain that keys are about identity, not only about suppressing warnings."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit example of random keys forcing remounts and losing local state."
+        ],
+        "actionableExamples": [
+          "Add a concrete sortable-list example with stable ids versus index keys."
+        ],
+        "followUpConfusion": [
+          "Keep one extra note on the narrow static-list case where index keys are still acceptable."
+        ]
+      },
+      "winReason": "Our page now makes the random-key remount bug and the sortable-list index-key failure explicit, so it is stronger on real-world and actionable content while the index-key nuance remains close."
+    }
+  ]
+}

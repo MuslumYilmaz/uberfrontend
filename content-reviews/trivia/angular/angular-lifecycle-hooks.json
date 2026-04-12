@@ -1,0 +1,149 @@
+{
+  "contentId": "angular-lifecycle-hooks",
+  "tech": "angular",
+  "query": "Angular lifecycle hooks interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Component Lifecycle",
+      "url": "https://angular.dev/guide/components/lifecycle",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical lifecycle reference and the strongest official competitor for a lifecycle-hooks answer.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It gives the full hook ordering, lifecycle table, and official caveats around state changes and view/content checks."
+      ],
+      "theirGaps": [
+        "It is reference-shaped rather than centered on the interview decision of which hook to choose and why."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Scenario matrix interviewers actually expect next"
+        ],
+        "actionableExamples": [
+          "Projected label is ready"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs already connect lifecycle hooks to rendering, change detection, queries, and destruction, so the real-world comparison stays close."
+        ],
+        "actionableExamples": [
+          "Angular.dev provides more lifecycle-surface area and more hook-level examples than our compact trivia page."
+        ],
+        "followUpConfusion": [
+          "It answers many common follow-ups such as execution order, ngOnChanges timing, and destroy behavior, so the broader confusion coverage remains competitive."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one scenario matrix that maps common tasks like data fetch, projection, DOM reads, and cleanup to a hook choice."
+        ],
+        "actionableExamples": [
+          "Add a second worked example showing projected content versus view queries so the practical hook choice becomes more explicit."
+        ],
+        "followUpConfusion": [
+          "Keep one compact note on when afterEveryRender-style APIs differ from the classic class hooks."
+        ]
+      },
+      "winReason": "The official lifecycle guide is broader, but our page now pairs a task-to-hook matrix with projected-content versus view-query examples, which makes the interview decision flow more actionable while broader follow-up coverage stays close."
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd includes a directly relevant lifecycle-hooks section, making it the best interview-prep baseline for this fundamentals topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more explicit about hook selection, content-versus-view distinction, and cleanup patterns than the broader interview overview.",
+      "theirStrengths": [
+        "It quickly lists the common hooks and keeps the interview summary concise."
+      ],
+      "theirGaps": [
+        "It is lighter on choosing the right hook for a concrete task and on content-versus-view distinctions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The practical skill is picking the right hook"
+        ],
+        "followUpConfusion": [
+          "know ngOnChanges (inputs), ngOnInit (init once), ngAfterViewInit (DOM/ViewChild), and ngOnDestroy (cleanup), plus the content-vs-view distinction and the common pitfalls."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd names the common hooks, but it does not go as far into the task-to-hook decision framing our page uses."
+        ],
+        "actionableExamples": [
+          "Its quick examples are clear enough that the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "The page is lighter on the content-versus-view distinction and on cleanup guidance beyond naming ngOnDestroy."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one small before-and-after example for ngAfterContentInit versus ngAfterViewInit."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University ExpressionChanged Debugging Guide",
+      "url": "https://blog.angular-university.io/angular-debugging/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is lifecycle-adjacent and useful for calibration because it focuses on a classic ngAfterViewInit/change-detection pitfall that often appears as a follow-up.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "That tutorial is strong on one lifecycle pitfall, but our page is broader on choosing hooks correctly across init, view, content, and cleanup.",
+      "theirStrengths": [
+        "It turns a common lifecycle/change-detection failure into a practical debugging walkthrough."
+      ],
+      "theirGaps": [
+        "It is narrower than a full lifecycle-hooks answer and does not cover the main hook-selection map end to end."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The practical skill is picking the right hook"
+        ],
+        "followUpConfusion": [
+          "know ngOnChanges (inputs), ngOnInit (init once), ngAfterViewInit (DOM/ViewChild), and ngOnDestroy (cleanup), plus the content-vs-view distinction and the common pitfalls."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University grounds the topic in a real ExpressionChanged debugging case, but it stays focused on one pitfall rather than the full lifecycle choice map."
+        ],
+        "actionableExamples": [
+          "Its debugging walkthrough is concrete enough that the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "It helps on the expression-changed follow-up, but our page answers more of the likely next questions about content hooks, view hooks, and cleanup."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one teardown example that pairs setup in ngOnInit with cleanup in ngOnDestroy."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

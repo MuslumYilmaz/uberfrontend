@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-watch-vs-watcheffect-differences-infinite-loops",
+  "tech": "vue",
+  "query": "When should you use watch vs watchEffect in Vue?",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Watchers",
+      "url": "https://vuejs.org/guide/essentials/watchers.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for watch, watchEffect, cleanup, immediate execution, and dependency-tracking behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on explicit versus automatic dependency tracking, cleanup APIs, and async caveats."
+      ],
+      "theirGaps": [
+        "It is less tightly framed around the most common interview footgun: accidental self-triggering loops and unexpected dependencies."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most bugs come from not realizing <em>what is being tracked</em> and from <em>mutating the same state you’re watching</em>."
+        ],
+        "followUpConfusion": [
+          "<strong>6. Subtle watchEffect trap: accidental dependencies</strong><br><br>Because <code>watchEffect</code> tracks everything you read, even a <code>console.log(someRef.value)</code> or a debug read can become a dependency and retrigger the effect."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs use concrete data-fetching and stale-request cleanup scenarios, but they are less concentrated on the infinite-loop debugging angle."
+        ],
+        "actionableExamples": [
+          "They include direct watch, watchEffect, immediate, cleanup, and flush examples, so example quality stays very competitive."
+        ],
+        "followUpConfusion": [
+          "The guide explains explicit versus automatic tracking and the first-await caveat, but it is less concise about the rule-of-thumb decision path an interviewer typically wants."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter flush timing note so post-update DOM access is covered in a single glance."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The official docs are canonical on watcher behavior, but our page is more effective as a compact interview answer because it centers the infinite-loop footgun, accidental dependencies, and the watch-versus-watchEffect decision rule."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because watcher behavior, side effects, and reactivity pitfalls are core Vue interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub with Vue fundamentals and interactive problem coverage."
+      ],
+      "theirGaps": [
+        "The landing page is broad and does not directly drill into watch-versus-watchEffect loop traps."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If your watcher <strong>mutates the same reactive state that it depends on</strong>, you can easily create a self-triggering loop."
+        ],
+        "followUpConfusion": [
+          "<strong>8. Practical rule of thumb</strong><br><br>- If you can describe the dependency in one sentence: use <code>watch()</code>.<br>- If the dependency is “whatever I touch in here”: use <code>watchEffect()</code>.<br>- If you’re syncing state: ask yourself if this should be a <code>computed</code> instead."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The hub covers Vue interview practice broadly, but it is not as explicit about the self-triggering watcher bug and cleanup scenarios on this page."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd emphasizes worked solutions, the example bar remains competitive."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about explicit-versus-automatic tracking and about when to switch from watchers to computed state."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one shorter old-value example for watch so the callback-shape difference is visible without extra prose."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is useful as a general Vue interview resource, but our page is more focused on the exact decision rule and loop/debugging follow-ups this topic usually triggers."
+    },
+    {
+      "label": "Vue 3 Composition API - watch and watchEffect",
+      "url": "https://www.thisdot.co/blog/vue-3-composition-api-watch-and-watcheffect",
+      "category": "tutorial_reference",
+      "selectionReason": "ThisDot has a direct topic article comparing watch and watchEffect, including automatic dependency tracking, stop handles, invalidation, and async side effects.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article is directly on-topic and uses realistic save-to-backend and cancellation scenarios."
+      ],
+      "theirGaps": [
+        "It is lighter on the infinite-loop footgun and on the interview-style decision rule for when a computed should replace a watcher."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Because <code>watchEffect</code> tracks everything you read, even a <code>console.log(someRef.value)</code> or a debug read can become a dependency and retrigger the effect."
+        ],
+        "followUpConfusion": [
+          "If you can describe the dependency in one sentence: use <code>watch()</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article uses notes-saving and invalidation examples, but it is less explicit about self-triggering loops and accidental debug dependencies."
+        ],
+        "actionableExamples": [
+          "Its code samples for automatic tracking, stop handles, and invalidation are strong, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "It clearly compares immediate versus lazy execution, but it is less explicit about the 'use computed instead of syncing state' follow-up."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact example that shows old/new values side by side with automatic dependency tracking."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "ThisDot is a strong direct comparator, but our page is sharper as a single interview answer because it pairs the comparison with loop creation, accidental dependencies, and a concise decision rule."
+    }
+  ]
+}

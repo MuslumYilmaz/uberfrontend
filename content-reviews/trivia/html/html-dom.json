@@ -1,0 +1,145 @@
+{
+  "contentId": "html-dom",
+  "tech": "html",
+  "query": "what is the DOM interview question",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Document Object Model (DOM)",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN page for what the DOM is, how the in-memory tree works, and how scripts interact with nodes and objects.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the DOM as an in-memory tree of nodes and objects and on how DOM APIs connect documents to scripts."
+      ],
+      "theirGaps": [
+        "The page is broader and less explicit about selector timing bugs, stale UI, and reflow or repaint costs that show up in debugging conversations."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If you query too early, mutate the DOM too often, or misunderstand which node actually changed, you get timing bugs, stale UI, and expensive reflow or repaint work in production."
+        ],
+        "followUpConfusion": [
+          "The DOM differs from the BOM, which controls the browser’s environment, not the document itself."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines the DOM well, but it stays closer to the general programming interface explanation than to one concrete production debugging story."
+        ],
+        "actionableExamples": [
+          "It includes direct API examples like querySelectorAll and shows how the tree is represented, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "The page is lighter on the next questions interviewers often ask, such as DOM versus BOM, querying too early, and why repeated mutations turn into render work."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one shorter example that contrasts a safe batched update with repeated DOM writes that trigger extra layout work."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical definition, but our page is more interview- and debugging-friendly because it translates the DOM tree into timing, stale-UI, and reflow pitfalls instead of stopping at the API definition."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant and is the strongest interview-prep comparator for general HTML fundamentals such as DOM behavior, semantics, and accessibility.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep source with detailed HTML answers and worked examples across multiple HTML fundamentals."
+      ],
+      "theirGaps": [
+        "The bank page is not dedicated to the DOM mental model and is therefore less focused on one exact debugging-oriented answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That distinction matters when you debug real UI issues."
+        ],
+        "followUpConfusion": [
+          "If you query too early, mutate the DOM too often, or misunderstand which node actually changed, you get timing bugs, stale UI, and expensive reflow or repaint work in production."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd covers HTML interview topics well, but the category page is less anchored to one concrete DOM debugging scenario."
+        ],
+        "actionableExamples": [
+          "It includes detailed answers and code for many HTML topics, so the example bar remains close."
+        ],
+        "followUpConfusion": [
+          "The landing page is less explicit about DOM timing, DOM versus BOM, and render-cost follow-ups than our dedicated answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the DOM-tree example and one DOM mutation example close together so the answer stays skimmable under interview time pressure."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is strong as a broad HTML interview hub, but our page is more specific about the under-the-hood DOM model and the next debugging questions that usually follow."
+    },
+    {
+      "label": "DOM tree",
+      "url": "https://javascript.info/dom-nodes",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info has a direct DOM tree article and is the strongest third-source comparator for the browser tree and node-relationship mental model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is very strong on the DOM tree, parent-child relationships, and direct node traversal examples."
+      ],
+      "theirGaps": [
+        "It is less explicit about production timing bugs, stale UI, and reflow or repaint consequences of repeated DOM changes."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If you query too early, mutate the DOM too often, or misunderstand which node actually changed, you get timing bugs, stale UI, and expensive reflow or repaint work in production."
+        ],
+        "followUpConfusion": [
+          "The DOM differs from the BOM, which controls the browser’s environment, not the document itself."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is excellent on tree relationships and browser parsing corrections, but it is lighter on concrete production debugging symptoms."
+        ],
+        "actionableExamples": [
+          "Its DOM tree examples and traversal explanations are strong, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The article is less explicit about DOM versus BOM and about why frequent DOM writes often surface as reflow or repaint issues."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one shorter query-too-early snippet so the page keeps at least one API-level debugging example, not only conceptual framing."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is very good on the DOM tree itself, but our page is more useful for interview follow-ups because it carries the discussion into timing bugs, stale UI, and DOM-versus-BOM confusion."
+    }
+  ]
+}

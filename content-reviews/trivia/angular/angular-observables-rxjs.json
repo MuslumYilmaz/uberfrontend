@@ -1,0 +1,148 @@
+{
+  "contentId": "angular-observables-rxjs",
+  "tech": "angular",
+  "query": "What are Observables in Angular and how does RxJS fit in?",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "RxJS Observable Guide",
+      "url": "https://rxjs.dev/guide/observable",
+      "category": "canonical_docs",
+      "selectionReason": "RxJS is the canonical source for Observable fundamentals, so it is the right baseline for laziness, subscription, teardown, and stream semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The RxJS guide is canonical for generic Observable mechanics, but our page is more directly optimized for Angular interview use cases and the follow-up traps around cold versus hot streams, async pipe, and operator choice.",
+      "theirStrengths": [
+        "It is the authoritative reference for what an Observable is, how subscription works, and how teardown behaves."
+      ],
+      "theirGaps": [
+        "It is less focused on Angular-specific APIs, interview follow-ups, and component usage patterns."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Angular exposes Observables in core APIs (most notably HttpClient, reactive forms valueChanges/statusChanges, and Router.events)."
+        ],
+        "followUpConfusion": [
+          "Cold vs hot (senior interview hotspot)",
+          "Prefer async pipe over manual subscriptions."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The guide explains Observable behavior generically, but it does not anchor the answer in Angular APIs like HttpClient, forms, or router events."
+        ],
+        "actionableExamples": [
+          "RxJS docs remain strong on raw Observable creation and subscription examples, so the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "It explains subscription and teardown well, but it is lighter on Angular-specific follow-ups like async pipe, cold HTTP streams, and common operator-selection questions."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact shared-stream example using shareReplay so the Angular side of multiple subscriptions is more concrete."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant Angular basics section covering Observables, RxJS operators, and unsubscribe advice in interview language.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers the basics cleanly, but our page goes further on Angular API surface, cold versus hot stream behavior, async pipe, and why operator choice matters in production UIs.",
+      "theirStrengths": [
+        "It is concise and interview-friendly, with a simple HttpClient example and operator callouts."
+      ],
+      "theirGaps": [
+        "It stays at the beginner level and does not go far into stream-sharing, component teardown patterns, or senior follow-up confusion."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Angular exposes Observables in core APIs (most notably HttpClient, reactive forms valueChanges/statusChanges, and Router.events)."
+        ],
+        "followUpConfusion": [
+          "Cold vs hot (senior interview hotspot)",
+          "Prefer async pipe over manual subscriptions."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article names HTTP, event handling, and routing, but it does not frame those APIs as separate Angular stream classes with different teardown and sharing behavior."
+        ],
+        "actionableExamples": [
+          "Its basic HttpClient subscribe example is concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The page mentions unsubscribing and operators, but it does not unpack cold versus hot streams or the async-pipe-first Angular mental model."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one side-by-side example contrasting a manual subscribe in a component with the same stream consumed through async pipe."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University RxJs for Beginners",
+      "url": "https://blog.angular-university.io/functional-reactive-programming-for-angular-2-developers-rxjs-and-observables/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a focused Angular-oriented RxJS tutorial, so it is the strongest long-form reference competitor for Observable fundamentals in Angular.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular University remains the stronger long-form tutorial, but our page now wins the interview-shaped Angular trade-off and follow-up layers: when RxJS still beats signals, how Router.events fits the model, and how shared streams differ from manual subscribe UI code.",
+      "theirStrengths": [
+        "It is a dedicated long-form tutorial that teaches RxJS concepts with more room for step-by-step examples."
+      ],
+      "theirGaps": [
+        "It is less compact than a trivia answer and less tuned for a fast interview-ready summary."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Signals are great for local synchronous state, but Angular still leans on RxJS when you need time, cancellation, concurrency, or multiple async producers."
+        ],
+        "followUpConfusion": [
+          "Second Angular example: Router events + shared data",
+          "Same stream, two Angular styles"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University explains RxJS in Angular app architecture and reactive style, but it is less explicit about the signals-versus-RxJS decision that Angular teams now hit in real code reviews."
+        ],
+        "actionableExamples": [
+          "As a long-form beginner guide, it has more room for walk-through examples than our compact answer."
+        ],
+        "followUpConfusion": [
+          "It explains stream concepts carefully, but our page now answers the likely next questions around Router.events, shared streams, and manual subscribe versus async pipe more directly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit invalidation or refresh example around a shared stream so the multicasting example is not only cache-shaped."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

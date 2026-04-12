@@ -1,0 +1,145 @@
+{
+  "contentId": "js-async-race-conditions",
+  "tech": "javascript",
+  "query": "debug async race conditions in javascript stale ui cancellation request guards",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "AbortController",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for request cancellation primitives, which are central to fixing stale async races.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN explains the API itself, but our page is more directly about the production bug pattern: latest-request races in search, autosave, and route changes, plus the distinction between true cancellation, non-abortable work, and stale-result guards.",
+      "theirStrengths": [
+        "It is the authoritative reference for what AbortController is and how abortable requests work in the platform."
+      ],
+      "theirGaps": [
+        "It is API-centric and less explicit about stale UI overwrites, request ordering bugs, and non-cancellation fallbacks."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This is a classic production debug problem in search, filters, autosave flows, and route-driven detail pages."
+        ],
+        "followUpConfusion": [
+          "You need either real cancellation or a stale-result guard."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page is more concrete about the actual failure mode where request A overwrites newer request B in the UI."
+        ],
+        "actionableExamples": [
+          "Our page now shows three practical patterns together: request-id guards, AbortController cancellation, and a non-abortable autosave guard, but MDN remains stronger on the raw platform API details."
+        ],
+        "followUpConfusion": [
+          "Our answer is more explicit that cancellation is not the only fix and that stale-result guards are still needed in some flows."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact shared-controller code snippet so the page covers grouped aborts as concretely as the platform docs."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "How do you abort a web request using `AbortController` in JavaScript?",
+      "url": "https://www.greatfrontend.com/questions/quiz/how-do-you-abort-a-web-request-using-abortcontrollers",
+      "category": "interview_prep",
+      "selectionReason": "This is GreatFrontEnd's closest interview-prep page for canceling in-flight requests and prioritizing the latest request in a race condition.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd is strong on aborting in-flight requests, but our page now matches the broader race-condition query better because it covers search, autosave, route changes, and the non-abortable stale-result pattern in one interview-sized answer.",
+      "theirStrengths": [
+        "It directly covers latest-request prioritization and shows AbortController usage in interview-oriented code."
+      ],
+      "theirGaps": [
+        "It is narrower on stale-result guards when true cancellation is unavailable or incomplete."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This is a classic production debug problem in search, filters, autosave flows, and route-driven detail pages."
+        ],
+        "followUpConfusion": [
+          "Promise.race does not cancel the losing promises."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page now grounds the race in search, autosave, and route-driven detail pages instead of mostly staying on aborting fetches."
+        ],
+        "actionableExamples": [
+          "Our page now shows both abortable and non-abortable race handling, but GreatFrontEnd still has tighter code-first abort examples."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the follow-up trap that debouncing or Promise.race alone does not solve out-of-order updates."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny grouped-fetch example so the page shows shared AbortController ownership in code, not only prose."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Fetch: Abort",
+      "url": "https://javascript.info/fetch-abort",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a strong tutorial reference for abortable fetches, AbortError handling, and shared-controller patterns.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "javascript.info is better on AbortController mechanics, but our answer is more targeted to the actual interview/debug question because it starts from stale UI races and calls out when cancellation is insufficient by itself.",
+      "theirStrengths": [
+        "It explains AbortController and AbortError flow cleanly and gives fuller API walkthroughs."
+      ],
+      "theirGaps": [
+        "It is less focused on the stale-data race pattern that frontend teams actually debug in search and autosave flows."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This is a classic production debug problem in search, filters, autosave flows, and route-driven detail pages."
+        ],
+        "followUpConfusion": [
+          "Debounce reduces request count but does not prevent out-of-order responses."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page does a better job turning abort semantics into a concrete stale-state bug story rather than a generic fetch API lesson."
+        ],
+        "actionableExamples": [
+          "The tutorial provides a fuller abort walkthrough and shared-controller example, so it wins on example depth."
+        ],
+        "followUpConfusion": [
+          "Our answer is more explicit about stale-result guards and why Promise.race or debounce do not actually resolve the ordering bug."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one small example that groups multiple abortable tasks under a shared controller."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "contentId": "js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
   "tech": "javascript",
   "query": "javascript truthy falsy strict equality pass by value reference bug",
-  "reviewedAt": "2026-04-05",
+  "reviewedAt": "2026-04-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "manual",
@@ -15,37 +15,41 @@
       "category": "interview_prep",
       "selectionReason": "GreatFrontEnd has a directly relevant interview-prep question on strict versus loose equality, which is one of the main subtopics in our integrated bug page.",
       "verdicts": {
-        "realWorldUseCases": "tie",
-        "actionableExamples": "tie",
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
         "followUpConfusion": "tie"
       },
+      "winReason": "Our page is now stronger as a real debugging guide because it ties equality mistakes to falsy-default and shared-mutation failures in one explicit helper example.",
       "theirStrengths": [
         "It is likely strong on the exact interview framing around coercion and equality semantics."
       ],
       "theirGaps": [
         "It is narrower than our integrated page because it does not obviously combine equality with falsy defaults and shared mutation in one bug story."
       ],
-      "ourEvidence": {},
-      "theirEvidence": {
+      "ourEvidence": {
         "realWorldUseCases": [
-          "GreatFrontEnd is directly relevant on equality semantics, so the real-world comparison stays close even if our page integrates more than one bug source."
+          "This page is about a common production bug combo: falsy defaults overwrite valid values, loose equality coerces unexpectedly, and shared mutation leaks state back to the caller."
         ],
         "actionableExamples": [
-          "Its quiz-style examples for `==` and `===` likely keep the example quality competitive."
+          "function prepare(cart) {\n  cart.retry = cart.retry || 3;            // loses valid 0\n  cart.sendReceipt = cart.sendReceipt || true; // loses valid false\n  if (cart.total == 0) cart.status = 'empty';  // coercion surprise\n  return cart;                             // mutates caller object\n}"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is directly relevant on equality semantics, but it is narrower than our page's integrated production bug framing."
+        ],
+        "actionableExamples": [
+          "Its quiz-style equality examples are useful, but our page now has a fuller before/after helper that combines defaulting, coercion, and mutation."
         ],
         "followUpConfusion": [
-          "Our page adds the combined bug pattern, but GreatFrontEnd still covers one of the main follow-up confusions directly."
+          "Our page adds the combined bug pattern, but GreatFrontEnd still covers the equality-specific follow-up directly, so the overall follow-up criterion stays close."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one explicit integrated bug where a loose comparison and a falsy default fail in the same helper."
-        ],
-        "actionableExamples": [
-          "Add one compact before/after code block that combines equality, defaulting, and shared mutation in sequence."
-        ],
+        "realWorldUseCases": [],
+        "actionableExamples": [],
         "followUpConfusion": [
-          "Add one note that separates coercion bugs from shared-reference bugs so the integrated answer remains easy to unpack."
+          "Keep one short line that the equality question is only one leg of the larger bug combo so the integrated answer stays easy to unpack."
         ]
       }
     },
@@ -68,7 +72,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "This is a high-frequency bug pattern: defaults that overwrite valid falsy values, loose equality coercion surprises, and accidental shared-object mutation."
+          "This page is about a common production bug combo: falsy defaults overwrite valid values, loose equality coerces unexpectedly, and shared mutation leaks state back to the caller."
         ],
         "followUpConfusion": [
           "Think of this as three guardrails: default correctly, compare strictly, and protect shared state."
@@ -112,7 +116,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "This is a high-frequency bug pattern: defaults that overwrite valid falsy values, loose equality coercion surprises, and accidental shared-object mutation."
+          "This page is about a common production bug combo: falsy defaults overwrite valid values, loose equality coerces unexpectedly, and shared mutation leaks state back to the caller."
         ],
         "followUpConfusion": [
           "Think of this as three guardrails: default correctly, compare strictly, and protect shared state."

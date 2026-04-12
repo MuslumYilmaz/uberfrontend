@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-lifecycle-hooks",
+  "tech": "vue",
+  "query": "Vue lifecycle hooks interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Lifecycle Hooks",
+      "url": "https://vuejs.org/guide/essentials/lifecycle.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue lifecycle guide and the strongest official baseline for hook timing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on hook timing and how lifecycle callbacks are registered."
+      ],
+      "theirGaps": [
+        "It is less explicitly shaped as an interview answer about choosing the right hook for a task."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This page is narrower: when hooks fire and where side effects belong."
+        ],
+        "actionableExamples": [
+          "Measure an element or start a DOM-only library"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain the lifecycle sequence clearly, but they are less focused on the interview question of safe placement for side effects."
+        ],
+        "actionableExamples": [
+          "They remain strong on the lifecycle API surface, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The official page is still stronger on authoritative lifecycle timing, so the follow-up criterion remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one explicit Composition API mapping note like mounted -> onMounted and unmounted -> onUnmounted."
+        ]
+      },
+      "winReason": "The official guide is canonical on lifecycle timing, but our page now adds a task-to-hook matrix and a concrete mounted-versus-updated-versus-cleanup example that makes the answer more actionable in interview and debugging contexts."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because lifecycle timing and component behavior are core Vue fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a broad Vue interview-prep resource with strong fundamentals coverage."
+      ],
+      "theirGaps": [
+        "The landing page is not a dedicated lifecycle comparison and is less focused on hook-placement follow-ups."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use them to place side effects safely: setup/init, DOM work, and cleanup at the right stage."
+        ],
+        "followUpConfusion": [
+          "The strongest interview signal is explaining why a task belongs in one hook and not another."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The question bank clearly covers Vue fundamentals, but it is less explicit about safe side-effect placement for this exact topic."
+        ],
+        "actionableExamples": [
+          "Its solved-question model keeps examples competitive, so this criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about hook-selection reasoning than our dedicated answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter checklist mapping fetch, DOM access, and cleanup to mounted, updated, and unmounted."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a strong broad interview resource, but our page is more focused on the exact hook-choice reasoning interviewers ask about next."
+    },
+    {
+      "label": "Vue Component Lifecycle Hooks",
+      "url": "https://vueschool.io/lessons/vue-component-lifecycle-hooks",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a direct topic lesson on component lifecycle hooks and how to use them.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct lifecycle-hooks lesson and therefore a strong topical tutorial baseline."
+      ],
+      "theirGaps": [
+        "The surfaced lesson summary is lighter on interview framing and on why one hook is preferred over another for the same task."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "If the interviewer asks \"Why did Vue introduce setup(), ref(), and reactive()?\" , switch to What are Vue Composition APIs (setup(), ref, reactive) and why were they introduced? ."
+        ],
+        "actionableExamples": [
+          "Read layout after a reactive update"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The lesson already explains when lifecycle hooks fire and how they are useful, so the use-case comparison stays close."
+        ],
+        "actionableExamples": [
+          "It is a direct hooks lesson, so actionable teaching remains close."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about scope boundaries and what question should move to the separate Composition API answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a more concrete DOM-read versus DOM-write example tied to mounted and updated."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "Vue School is a direct lifecycle lesson, but our page now turns the topic into a more reusable interview answer with a task-to-hook decision table and a concrete post-update measurement plus cleanup example."
+    }
+  ]
+}

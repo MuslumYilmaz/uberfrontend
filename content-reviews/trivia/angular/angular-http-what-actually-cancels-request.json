@@ -1,0 +1,154 @@
+{
+  "contentId": "angular-http-what-actually-cancels-request",
+  "tech": "angular",
+  "query": "What actually cancels an HTTP request in Angular?",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd has Angular and RxJS interview material, but it does not have a directly focused page on what actually cancels an Angular HttpClient request and the browser-abort versus server-work nuance."
+  },
+  "competitors": [
+    {
+      "label": "Angular HttpClient Making Requests Guide",
+      "url": "https://angular.dev/guide/http/making-requests",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official Angular HttpClient guide, making it the canonical baseline for request behavior and Observable-based HTTP usage.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular docs are canonical on HttpClient usage, but our page is more directly optimized for the cancellation question: unsubscribing as the real cancel trigger, switchMap behavior, and the difference between aborting the browser request and undoing server work.",
+      "theirStrengths": [
+        "It is the authoritative HttpClient reference and includes official request patterns."
+      ],
+      "theirGaps": [
+        "It is broader on HttpClient usage than on the narrow cancellation mental model developers commonly misunderstand."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The only thing that can actually cancel it is unsubscribing from that Observable."
+        ],
+        "actionableExamples": [
+          "Manual teardown also cancels",
+          "Same flow, different operator, different cancellation behavior"
+        ],
+        "followUpConfusion": [
+          "When Angular aborts the request, the browser connection is closed. The server may or may not stop processing—this depends entirely on server implementation."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide explains HttpClient requests and Observable-based usage, but our page is more tightly framed around cancellation behavior in fast-changing UIs."
+        ],
+        "actionableExamples": [
+          "Angular.dev provides solid request examples, so the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "The docs are less direct about the browser-abort versus server-work distinction that often causes follow-up confusion."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one upload or polling cancel example if we want to beat the official HttpClient guide on pure cancellation example breadth."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Stack Overflow: Angular RxJS recipe to cancel previous HTTP request",
+      "url": "https://stackoverflow.com/questions/78306727/angular-rxjs-recipe-to-cancel-previous-http-request",
+      "category": "community_qna",
+      "selectionReason": "This is a pragmatic community comparator for the exact cancellation question developers ask when wiring Angular HttpClient with switchMap.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The Stack Overflow thread is helpful for one switchMap recipe, but our page is broader and clearer because it distinguishes true cancellation from ignored results and adds the browser-versus-server nuance.",
+      "theirStrengths": [
+        "It is directly about the same cancellation problem and is pragmatic."
+      ],
+      "theirGaps": [
+        "It is narrower and more fragmented than a full answer organized around the cancellation mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The only thing that can actually cancel it is unsubscribing from that Observable."
+        ],
+        "actionableExamples": [
+          "switchMap unsubscribes from the previous inner Observable when a new value arrives."
+        ],
+        "followUpConfusion": [
+          "When Angular aborts the request, the browser connection is closed. The server may or may not stop processing—this depends entirely on server implementation."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread solves one cancel-previous-request scenario, but our answer generalizes the rule to async pipe, takeUntil, and manual unsubscribe."
+        ],
+        "actionableExamples": [
+          "Our page provides a fuller cancellation table and more than one cancel path, which is easier to reuse than a single-threaded answer."
+        ],
+        "followUpConfusion": [
+          "The community answer is lighter on the subtle difference between aborting the browser request and preventing backend work."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one cancel-button flow or imperative teardown example with UI state if we want to beat the community answer on tactical example specificity."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University HTTP Client Guide",
+      "url": "https://blog.angular-university.io/angular-http/",
+      "category": "tutorial_reference",
+      "selectionReason": "Angular University has a focused Angular HTTP guide, making it the strongest tutorial/reference competitor for request patterns and request composition.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular University is still the broader HTTP tutorial, but our page now wins the narrow cancellation question on all three criteria: it distinguishes true unsubscribe-based aborts from ignored results, shows both manual teardown and switchMap, and keeps the browser-abort versus server-work nuance explicit.",
+      "theirStrengths": [
+        "It is a dedicated HTTP guide with more space for request examples and related RxJS usage."
+      ],
+      "theirGaps": [
+        "It is broader than the narrow cancellation question and less centered on the abort mental model."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Manual teardown also cancels",
+          "Same flow, different operator, different cancellation behavior"
+        ],
+        "followUpConfusion": [
+          "When Angular aborts the request, the browser connection is closed. The server may or may not stop processing—this depends entirely on server implementation."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The guide is practical about HttpClient usage and request composition, so the real-world comparison stays close even though our page is sharper on the cancellation myth."
+        ],
+        "actionableExamples": [
+          "It has more total HTTP examples, but our page now shows the cancellation difference more directly with manual unsubscribe and switchMap-versus-mergeMap side by side."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the browser-abort versus server-side processing distinction, which is the key hidden follow-up in this topic."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one non-typeahead example, such as cancelable polling or a user-triggered export, if we want to beat a full HTTP tutorial on practical breadth."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

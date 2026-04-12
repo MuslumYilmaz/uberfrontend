@@ -1,0 +1,156 @@
+{
+  "contentId": "react-why-hooks-have-rules",
+  "tech": "react",
+  "query": "React rules of hooks interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "rules-of-hooks",
+      "url": "https://react.dev/reference/eslint-plugin-react-hooks/lints/rules-of-hooks",
+      "category": "canonical_docs",
+      "selectionReason": "This React.dev page is the clearest canonical explanation of why hook order matters, what breaks, and which invalid patterns the linter catches.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is the canonical React explanation of hook ordering, common violations, and troubleshooting patterns."
+      ],
+      "theirGaps": [
+        "It is broader lint documentation and less compressed for interview delivery than a focused trivia answer."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "React tracks Hooks by call order, not by name. If you call Hooks conditionally, the order changes between renders, so React attaches state and effects to the wrong Hook."
+        ],
+        "realWorldUseCases": [
+          "Production-flavored example: feature flag / modal toggle"
+        ],
+        "actionableExamples": [
+          "Early return: wrong vs right"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain that conditional or looped hooks lead to state mismatches and rendered fewer or more hooks than expected errors, so the bug framing is already strong."
+        ],
+        "actionableExamples": [
+          "The page shows multiple invalid and valid patterns, including conditions, early returns, callbacks, module scope, and troubleshooting examples."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the internal state-slot mental model and what values start drifting when the order changes."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one production-flavored example where a feature flag or modal toggle conditionally introduces a hook and corrupts nearby state."
+        ],
+        "actionableExamples": [
+          "Add a second wrong-versus-right example for the early-return or event-handler case."
+        ],
+        "followUpConfusion": [
+          "Keep one ultra-compact line tying hook-slot replay to the lint rule itself."
+        ]
+      },
+      "winReason": "The lint docs remain canonical, but our page now adds feature-flag and early-return corruption examples on top of the hook-slot explanation, so it is stronger on real use-cases and worked fixes while follow-up depth stays close."
+    },
+    {
+      "label": "What are the rules of React hooks?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-the-rules-of-react-hooks",
+      "category": "interview_prep",
+      "selectionReason": "This is GreatFrontEnd's direct interview-prep page for the same question, so it is the strongest interview calibration point for this topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd gives a solid interview answer, but our page goes further on the actual failure mode: state slots drifting, effects attaching to the wrong logic, and a clearer under-the-hood reason for why the rule exists.",
+      "theirStrengths": [
+        "It is concise, interview-oriented, and includes correct-versus-incorrect examples with lint guidance."
+      ],
+      "theirGaps": [
+        "It is lighter on the internal slot-matching explanation and on what the resulting bug feels like in a real component."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Values jump between variables. Effects attach to the wrong logic. Everything becomes silently wrong."
+        ],
+        "followUpConfusion": [
+          "Internally, React stores Hooks for a component in something like an array and uses a pointer while rendering:"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page explains the rules and shows incorrect usage, but it is less vivid about the resulting state-drift bug than our answer."
+        ],
+        "actionableExamples": [
+          "Its wrong-versus-right examples and ESLint setup keep the example criterion close."
+        ],
+        "followUpConfusion": [
+          "Our answer is more explicit about React tracking hooks by call order and about how slot mismatches surface as wrong state or wrong effects."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one more incorrect pattern beyond the conditional example, ideally a hook after early return or in an event handler."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "All useState Hooks Are Overwriting the Same State",
+      "url": "https://www.epicreact.dev/tutorials/build-react-hooks/all-usestate-hooks-are-overwriting-the-same-state",
+      "category": "tutorial_reference",
+      "selectionReason": "EpicReact is a strong under-the-hood hook reference and this tutorial directly explains why hook identity comes from call order rather than names.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It gives a direct internals-oriented explanation of hook IDs, state buckets, and why render order must reset consistently."
+      ],
+      "theirGaps": [
+        "It is a workshop transcript rather than a compact interview answer about rules violations."
+      ],
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is not framed as an interview answer, but it does connect hook order to concrete state corruption when multiple hook calls share the same storage."
+        ],
+        "actionableExamples": [
+          "It walks through the hook index and state bucket mechanism step by step, which is a richer worked example than our current single conditional example."
+        ],
+        "followUpConfusion": [
+          "Its explanation of hook IDs being derived from call order is stronger than our current page for readers who want the implementation-level mental model."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one scenario where toggling a branch on and off causes a later hook to inherit the wrong state."
+        ],
+        "actionableExamples": [
+          "Add a second worked example that contrasts conditional hooks with moving the condition inside useEffect."
+        ],
+        "followUpConfusion": [
+          "Keep one short note connecting hook-index replay to how React matches later Hook calls."
+        ]
+      },
+      "winReason": "Our page now covers both conditional-hook corruption and early-return repairs, plus the hook-index mental model, so it is stronger on real use-cases and worked examples while the broader implementation follow-up remains close.",
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Production-flavored example: feature flag / modal toggle"
+        ],
+        "actionableExamples": [
+          "Early return: wrong vs right"
+        ]
+      }
+    }
+  ]
+}

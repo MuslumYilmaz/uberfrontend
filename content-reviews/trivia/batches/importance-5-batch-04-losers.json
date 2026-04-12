@@ -1,0 +1,10 @@
+{
+  "batchId": "importance-5-batch-04-losers",
+  "scope": "trivia content improvement candidates from javascript competitor review batch 04",
+  "items": [
+    {
+      "tech": "javascript",
+      "id": "js-bigint-data-type"
+    }
+  ]
+}

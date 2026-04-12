@@ -57,6 +57,9 @@ The scaffolder is only a starting point. It seeds `ourEvidence` from the first s
 - Default rollout is `10 review / batch`
 - Legacy backfill starts with `importance = 5` trivia
 - New or draft-backed converted trivia still require a finished competitor review before shipping
+- Current cadence is `1 review batch -> 1 content-improvement batch`
+- Current priority order is `Angular fundamentals -> Angular advanced -> React/Vue -> CSS/HTML`
+- If a review batch creates too many honest threshold losses, pause coverage and open a loser-focused content-improvement batch before continuing
 
 Recommended batch manifest shape:
 

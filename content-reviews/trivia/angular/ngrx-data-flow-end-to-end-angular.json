@@ -1,0 +1,149 @@
+{
+  "contentId": "ngrx-data-flow-end-to-end-angular",
+  "tech": "angular",
+  "query": "NgRx data flow end to end in Angular interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "NgRx Guide",
+      "url": "https://ngrx.io/guide",
+      "category": "canonical_docs",
+      "selectionReason": "NgRx is the canonical source for Store, Effects, and selector concepts, so it is the official baseline for the data-flow topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "NgRx docs are canonical across the whole platform, but our page is more immediately useful for an interview answer because it compresses the loop into one debug-friendly operational mental model.",
+      "theirStrengths": [
+        "It is the authoritative reference for Store, Effects, Selectors, and the broader NgRx ecosystem."
+      ],
+      "theirGaps": [
+        "It is broad and navigation-heavy rather than a single compact answer to the data-flow question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "the UI dispatches intent, reducers compute immutable state, effects run async side effects beside that loop, and selectors expose a clean read model back to the template."
+        ],
+        "followUpConfusion": [
+          "components dispatch actions for user intent, reducers compute next immutable state, selectors expose memoized read models, and templates render selector output."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official docs cover the whole NgRx platform, but our page is more immediately operational for explaining the end-to-end loop in one answer."
+        ],
+        "actionableExamples": [
+          "NgRx docs still provide a large body of official examples and patterns, so the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct about why reducers stay pure and why effects live beside the loop rather than inside reducers."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact action-to-effect-to-success-action trace so the loop is visible as data, not just prose."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Experienced Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-experienced-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant state-management section contrasting services and NgRx, including actions, reducers, and selectors.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers the choice between services and NgRx, but our page is more explicit about the full one-way loop and why effects and selectors exist as separate operational pieces.",
+      "theirStrengths": [
+        "It is interview-oriented and already contrasts shared services with NgRx store architecture."
+      ],
+      "theirGaps": [
+        "It is broader on state-management choice than on the full dispatch → reducer → effect → selector loop."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "the UI dispatches intent, reducers compute immutable state, effects run async side effects beside that loop, and selectors expose a clean read model back to the template."
+        ],
+        "followUpConfusion": [
+          "reducers compute next immutable state, selectors expose memoized read models"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The experienced guide frames when to use NgRx versus a service, but our page is stronger on the mechanics of the full data loop."
+        ],
+        "actionableExamples": [
+          "Its service-versus-store examples keep the example comparison close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on why effects sit outside reducers and why selectors are a read-model boundary instead of just getters."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one failure-path example where an effect dispatches a loadFailed action and the selector drives a retry UI."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University NgRx Crash Course",
+      "url": "https://blog.angular-university.io/angular-ngrx-store-and-effects-crash-course/",
+      "category": "tutorial_reference",
+      "selectionReason": "Angular University has a dedicated NgRx crash course, making it the strongest tutorial/reference competitor for reducers, effects, and selectors together.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a focused long-form NgRx guide with more room for actions, reducers, selectors, and effects examples."
+      ],
+      "theirGaps": [
+        "It is longer and less compact than a trivia answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Pure reducer update vs effect-driven async update"
+        ],
+        "actionableExamples": [
+          "Compact trace you should be able to say out loud"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University also ties NgRx to real application state flow, so the practical-use comparison stays close."
+        ],
+        "actionableExamples": [
+          "As a crash course, it has more step-by-step NgRx examples than our compact page."
+        ],
+        "followUpConfusion": [
+          "It already covers the main NgRx building blocks in depth, so the deeper follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one example that contrasts a pure reducer update with an effect-driven async update in the same feature."
+        ],
+        "actionableExamples": [
+          "Add one compact code trace showing action, reducer, effect, selector, and template usage together."
+        ],
+        "followUpConfusion": [
+          "Keep one extra short note on failure actions and retry UI if the page later expands."
+        ]
+      },
+      "winReason": "Our page now includes a reducer-versus-effect split, a compact end-to-end trace, and an explicit selector-as-read-model note, which makes it stronger on use-cases and worked examples while broader follow-up depth stays close."
+    }
+  ]
+}

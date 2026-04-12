@@ -1,0 +1,145 @@
+{
+  "contentId": "css-media-queries",
+  "tech": "css",
+  "query": "What are CSS media queries and how should you use them in production?",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Using media queries",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries",
+      "category": "canonical_docs",
+      "selectionReason": "This is MDN's canonical guide for media query syntax, conditions, operators, and media features.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on media query syntax, condition composition, and the available media features."
+      ],
+      "theirGaps": [
+        "The guide is less interview-shaped around breakpoint strategy, overfitting pitfalls, and when viewport queries should give way to container queries."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Media queries are not just responsive CSS trivia. In production they define your breakpoint strategy, user-preference handling, and fallback rules when layouts change across devices."
+        ],
+        "followUpConfusion": [
+          "<strong>Advanced Features</strong><br><ul><li>Media queries support <em>prefers-color-scheme</em> for dark/light mode.</li><li><em>prefers-reduced-motion</em> helps accessibility by disabling animations for users who prefer reduced motion.</li><li>Container queries (in modern browsers) extend this concept to parent element widths rather than the viewport.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains how to write and combine media queries, but it is less focused on one production breakpoint strategy and the pitfalls of viewport-only thinking."
+        ],
+        "actionableExamples": [
+          "It includes direct syntax examples and feature combinations, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The guide covers media features well, but our page is more explicit about user-preference queries and the viewport-versus-container follow-up."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter component-level example that contrasts viewport media queries with a container-query handoff."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical syntax reference, but our page is more useful as an interview answer because it turns media queries into a production breakpoint strategy question and explicitly raises user preferences and container-query follow-ups."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant and explicitly includes responsive design and media-query-related CSS fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with responsive design, layout, and selector coverage."
+      ],
+      "theirGaps": [
+        "The landing page is broad and not dedicated to media-query strategy or viewport-versus-container trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Strong answers talk about <strong>mobile-first defaults</strong>, <strong>pitfalls</strong> like overfitting to a few screen widths, and when viewport queries should give way to container queries."
+        ],
+        "followUpConfusion": [
+          "Modern best practice is to start with default (mobile) styles and add media queries for larger viewports."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd covers responsive CSS topics broadly, but the hub page is less explicit about a breakpoint strategy and about user-preference media features."
+        ],
+        "actionableExamples": [
+          "Because the bank provides quick answers and detailed explanations, the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "The hub is less explicit about container queries as the likely follow-up when viewport breakpoints become too blunt."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one shorter mobile-first snippet where the default styles stay untouched and only the larger breakpoint adds layout changes."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is helpful as a broad CSS interview resource, but our page is more focused on the exact production strategy and follow-up confusion around modern media-query usage."
+    },
+    {
+      "label": "Media queries",
+      "url": "https://web.dev/learn/design/media-queries",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct media-queries guide and is the strongest tutorial/reference competitor for responsive design strategy in this cluster.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "web.dev is strong on modern responsive-design guidance and performance-minded layout decisions."
+      ],
+      "theirGaps": [
+        "The guide is less compact as a single interview answer about breakpoint strategy, user preferences, and container-query handoff."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "In production they define your breakpoint strategy, user-preference handling, and fallback rules when layouts change across devices."
+        ],
+        "followUpConfusion": [
+          "Container queries (in modern browsers) extend this concept to parent element widths rather than the viewport."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev covers responsive layout strategy well, but our page is more direct about overfitting breakpoints and about using media queries as a production decision framework."
+        ],
+        "actionableExamples": [
+          "Its examples are strong and practical, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The guide is less explicitly framed around the interview follow-up of when media queries stop being enough and container queries should take over."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter example that combines prefers-reduced-motion with a layout breakpoint so syntax and strategy stay together."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is a strong modern responsive-design reference, but our page is more compact and more explicit about the key follow-up decision points interviewers expect: mobile-first defaults, preference queries, and container-query handoff."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "js-event-loop",
+  "tech": "javascript",
+  "query": "javascript event loop interview question",
+  "reviewedAt": "2026-04-08",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN JavaScript execution model",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model",
+      "category": "canonical_docs",
+      "selectionReason": "This is MDN's canonical explanation of the event loop, call stack, and job queues, so it is the strongest docs baseline for this topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It gives the authoritative runtime model and names the queue/job concepts precisely."
+      ],
+      "theirGaps": [
+        "It is less explicitly framed around frontend paint starvation and UI-debug scenarios than our trivia."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That under-the-hood order is the real production pitfall: many developers assume any async boundary yields rendering time, but a long microtask chain can still freeze the screen."
+        ],
+        "actionableExamples": [
+          "Spinner may still not paint before the microtasks finish."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the runtime model precisely, but it is less explicit about a real paint-starvation debugging case."
+        ],
+        "actionableExamples": [
+          "Its examples explain queues well, while our page now includes a concrete spinner-plus-microtasks failure and a paint-first fix."
+        ],
+        "followUpConfusion": [
+          "MDN still has broader execution-model depth, so the larger follow-up comparison remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on scheduler APIs or requestIdleCallback so the advanced scheduling follow-up set is broader."
+        ]
+      },
+      "winReason": "MDN remains the canonical execution-model reference, but our page is now stronger on the specific frontend bug pattern of paint starvation and on how to fix it."
+    },
+    {
+      "label": "javascript.info Event loop",
+      "url": "https://javascript.info/event-loop",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is one of the clearest tutorial references for queue ordering and rendering behavior, so it is a fair tutorial comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It explains queue order, long tasks, and paint timing with concrete runnable examples."
+      ],
+      "theirGaps": [
+        "It is broader on scheduling mechanics than on the specific production-debug framing we use."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That under-the-hood order is the real production pitfall: many developers assume any async boundary yields rendering time, but a long microtask chain can still freeze the screen."
+        ],
+        "actionableExamples": [
+          "The follow-up rule is simple: await Promise.resolve() still stays in microtask territory, so it does not guarantee a paint."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info already ties the event loop to responsiveness, but our page now frames the issue through a paint-starved spinner bug."
+        ],
+        "actionableExamples": [
+          "Its worked examples are still strong, while our page now adds a direct before-fix and after-fix pattern for UI rendering."
+        ],
+        "followUpConfusion": [
+          "It still answers scheduling and rendering follow-ups well enough that the broader comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one tiny timeline diagram that shows click, microtasks, paint, and timer order in a single view."
+        ]
+      },
+      "winReason": "javascript.info remains a great queue-order tutorial, but our page is now more specific about UI paint starvation and the concrete fix pattern frontend developers need."
+    },
+    {
+      "label": "GreatFrontEnd Event loop",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep answer for the same event-loop intent, so it is the strongest interview calibration point.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page now goes further on paint starvation, microtask-heavy UI bugs, and the requestAnimationFrame/setTimeout fix pattern, while GreatFrontEnd stays closer to interview-definition level.",
+      "theirStrengths": [
+        "It is tightly aligned with the interview phrasing and cleanly separates call stack, task queue, and loop responsibilities."
+      ],
+      "theirGaps": [
+        "It is lighter on concrete UI-freeze and paint-timing pitfalls than our current trivia."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That under-the-hood order is the real production pitfall: many developers assume any async boundary yields rendering time, but a long microtask chain can still freeze the screen."
+        ],
+        "actionableExamples": [
+          "requestAnimationFrame(() => {\n    setTimeout(runHeavyWork, 0);\n  });"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd explains the loop well, but it is lighter on a concrete paint-starvation bug pattern."
+        ],
+        "actionableExamples": [
+          "Its interview walkthrough is concise, while our page now includes both the failure pattern and the paint-first fix."
+        ],
+        "followUpConfusion": [
+          "Its call-stack versus task-queue explanation remains competitive, so the broader follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on framework render queues versus raw promise queues to widen the follow-up lead."
+        ]
+      }
+    }
+  ]
+}

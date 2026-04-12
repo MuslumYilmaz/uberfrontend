@@ -1,0 +1,147 @@
+{
+  "contentId": "angular-data-binding",
+  "tech": "angular",
+  "query": "Angular data binding interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Template Binding Guide",
+      "url": "https://angular.dev/guide/templates/binding",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official binding guide and the strongest canonical competitor for interpolation, property binding, attributes, and event binding.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular.dev is authoritative on syntax, but our page is more explicit about the production bugs caused by property-versus-attribute confusion and by overusing two-way binding.",
+      "theirStrengths": [
+        "It precisely explains DOM properties, attributes, interpolation, and how Angular writes values into the DOM."
+      ],
+      "theirGaps": [
+        "It is less centered on stale-UI debugging, attr-vs-property interview traps, and when two-way binding becomes a code smell."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most bindings are one-way in one direction at a time : component state flows into the DOM, events flow back into the component, and [(...)] is just sugar on top."
+        ],
+        "followUpConfusion": [
+          "[disabled] sets the DOM property (actual runtime behavior). [attr.disabled] sets/removes the HTML attribute string.",
+          "Two-way binding is just sugar"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide describes binding mechanics precisely, but it is less anchored to the concrete UI-debug mistakes our page foregrounds."
+        ],
+        "actionableExamples": [
+          "Angular.dev already includes property and attribute binding examples, so the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "The docs explain attr prefixes and property binding, but they do not push as hard on the overused two-way-binding and stale-UI pitfall framing."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one before-and-after snippet where [attr.disabled] is wrong and [disabled] fixes a real bug."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd’s Angular basics guide has a directly relevant data-binding section and is the right interview-prep comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd explains the binding modes well, but our page is more specific about property-versus-attribute bugs and why two-way binding is just sugar, not a default mental model.",
+      "theirStrengths": [
+        "It clearly enumerates one-way versus two-way data binding with familiar examples."
+      ],
+      "theirGaps": [
+        "It is lighter on runtime binding bugs and on the property-versus-attribute trap."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most bindings are one-way in one direction at a time : component state flows into the DOM, events flow back into the component, and [(...)] is just sugar on top."
+        ],
+        "followUpConfusion": [
+          "[disabled] sets the DOM property (actual runtime behavior). [attr.disabled] sets/removes the HTML attribute string.",
+          "Two-way binding is just sugar"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd covers the binding modes, but it does not push as hard on the production bug surface around property and attribute confusion."
+        ],
+        "actionableExamples": [
+          "Its binding examples are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The guide does not spend much time on why [(...)] is only syntax sugar or on when attr.* is required."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one quick ARIA binding example to reinforce when attr.* is the right tool."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University Unidirectional Data Flow Guide",
+      "url": "https://blog.angular-university.io/angular-2-what-is-unidirectional-data-flow-development-mode/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a strong reference competitor because it goes deep on Angular’s unidirectional rendering model and the reasoning behind expression-changed errors.",
+        "verdicts": {
+          "realWorldUseCases": "ours",
+          "actionableExamples": "tie",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "Angular University remains stronger as a long-form rendering article, but our page now makes the property-versus-attribute bug and the OnPush or signals follow-up much more explicit in one compact answer.",
+      "theirStrengths": [
+        "It explains how Angular renders, why unidirectional data flow matters, and how expression-changed bugs happen."
+      ],
+      "theirGaps": [
+        "It is broader on rendering theory than on day-to-day binding syntax choices."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "<!-- ❌ Wrong mental model: attribute binding for real control state -->"
+          ],
+          "followUpConfusion": [
+            "The one-way mental model matters even more with <code>OnPush</code> and signal-driven UIs."
+          ]
+        },
+        "theirEvidence": {
+          "realWorldUseCases": [
+            "Angular University also ties binding behavior to real rendering and change-detection bugs, but our page now turns the wrong-binding-target problem into a more concrete control-state bug."
+          ],
+          "actionableExamples": [
+            "Its rendering walkthrough and error-driven examples are still more extensive than our short trivia answer, so the example criterion stays close."
+          ],
+          "followUpConfusion": [
+            "It helps with the deeper change-detection follow-up, but our page now directly links the one-way model to OnPush, signals, and dev-versus-prod debugging."
+          ]
+        },
+        "nextActions": {
+          "realWorldUseCases": [],
+          "actionableExamples": [
+            "Add one compact example that contrasts property binding, attr binding, and two-way sugar in the same component."
+          ],
+          "followUpConfusion": []
+        }
+      }
+  ]
+}

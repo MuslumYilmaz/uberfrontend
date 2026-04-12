@@ -1,0 +1,145 @@
+{
+  "contentId": "css-cascade-order",
+  "tech": "css",
+  "query": "How does the CSS cascade decide which style wins?",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Cascade",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Cascade",
+      "category": "canonical_docs",
+      "selectionReason": "This is MDN's canonical cascade guide and the strongest official baseline for origin, importance, specificity, and source order.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the full cascade algorithm and the order in which the browser resolves conflicts."
+      ],
+      "theirGaps": [
+        "The guide is broader and less compressed around one app-versus-library override story."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Practical scenario</strong><br>A component library sets button styles, and your app needs overrides. The cascade order determines whether your app styles actually win.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming later rules always win without checking specificity.</li><li>Overusing <code>!important</code> and making future overrides impossible.</li><li>Forgetting inline styles beat most stylesheet rules.</li></ul><strong>Trade-off or test tip</strong><br>Lower specificity is easier to maintain but may lose to library styles. Use DevTools to inspect the winning rule in the computed panel."
+        ],
+        "followUpConfusion": [
+          "When multiple rules target the same element, CSS evaluates them using a four-step hierarchy: <em>importance, origin, specificity, and order of appearance.</em>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the full cascade precisely, but it is less focused on one compact component-library override scenario."
+        ],
+        "actionableExamples": [
+          "It includes strong algorithm explanations and examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "MDN covers the full algorithm deeply, but our page is more concise about the common misunderstanding that later rules always win."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one before-versus-after DevTools style-pane example where specificity beats source order."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical cascade reference, but our page is more reusable as an interview answer because it turns the algorithm into a real override-debugging scenario and highlights the most common false assumption about source order."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant and includes cascade-related CSS fundamentals such as specificity and selector resolution.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub covering the selector and layout fundamentals that feed into cascade questions."
+      ],
+      "theirGaps": [
+        "The landing page is broad and less explicit about the exact four-step cascade order and the library-override debugging story."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A component library sets button styles, and your app needs overrides."
+        ],
+        "followUpConfusion": [
+          "Assuming later rules always win without checking specificity."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd covers related CSS interview topics broadly, but the hub page is less centered on the full cascade decision path."
+        ],
+        "actionableExamples": [
+          "Because the bank provides quick answers and detailed explanations, the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "The hub is less explicit about origin, importance, specificity, and source order as a single algorithm rather than isolated ideas."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one shorter example where an inline style beats an author stylesheet rule so the hierarchy feels concrete."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is useful for CSS interview prep, but our page is more specific about the exact cascade algorithm and the concrete override-debugging scenario that usually drives the question."
+    },
+    {
+      "label": "Don't Fight the Cascade, Control It!",
+      "url": "https://css-tricks.com/dont-fight-the-cascade-control-it/",
+      "category": "tutorial_reference",
+      "selectionReason": "This CSS-Tricks article is the closest topic-fit tutorial in the locked pool because it focuses on understanding and intentionally controlling the cascade rather than fighting it with ad hoc overrides.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article is strong on cascade strategy and on avoiding the reflex to pile on more specificity."
+      ],
+      "theirGaps": [
+        "It is less explicit about the exact four-step decision path that answers this trivia question directly."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The cascade order determines whether your app styles actually win."
+        ],
+        "followUpConfusion": [
+          "Assuming later rules always win without checking specificity."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks frames the cascade as something to control deliberately, but it is less compact about one app-versus-library override example."
+        ],
+        "actionableExamples": [
+          "It provides strong strategy guidance, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The article is less explicit than our page about the exact order of importance, origin, specificity, and source order."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tighter example that shows a low-specificity rule losing even though it appears later in the stylesheet."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is strong on cascade strategy, but our page is more direct for this exact question because it spells out the full decision path and ties it to a concrete override-debugging scenario."
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "batchId": "importance-5-vue-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "vue", "id": "vue-destructuring-breaks-reactivity-torefs-toref" },
+    { "tech": "vue", "id": "vue-watch-vs-watcheffect-differences-infinite-loops" },
+    { "tech": "vue", "id": "vue-v-for-keys-why-not-index" }
+  ]
+}
