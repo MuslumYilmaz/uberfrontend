@@ -1,0 +1,142 @@
+{
+  "contentId": "angular-ngmodules-vs-standalone",
+  "tech": "angular",
+  "query": "Angular NgModules vs standalone interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular NgModules Overview",
+      "url": "https://angular.dev/guide/ngmodules/overview",
+      "category": "canonical_docs",
+      "selectionReason": "The official NgModules overview is the canonical baseline for what modules group, export, and still contribute in Angular applications.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It states the official role of NgModules and how they organize declarations, imports, and exports."
+      ],
+      "theirGaps": [
+        "It is not framed around the modern interview question of what NgModules still solve after standalone became normal."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "NgModules still matter mainly as a packaging + compatibility layer for legacy declarables and module-based libraries/config APIs."
+        ],
+        "actionableExamples": [
+          "Greenfield standalone feature: no new feature NgModule required",
+          "Decision matrix: when NgModules are still solving a real problem"
+        ]
+      },
+      "winReason": "The official docs remain the mechanics baseline, but our page now answers the interview prompt more directly with a question-shaped decision matrix and concrete standalone-versus-compatibility examples.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official overview explains NgModule mechanics, but our page is more direct about the remaining real-world reasons teams still keep modules."
+        ],
+        "actionableExamples": [
+          "Angular.dev includes concrete module patterns, so the example depth remains close."
+        ],
+        "followUpConfusion": [
+          "The docs answer import/export mechanics, but they are less explicit about the standalone-era decision boundary."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "Keep the page explicit that NgModule compatibility can survive even when new feature-level NgModule creation is no longer necessary."
+        ]
+      }
+    },
+    {
+      "label": "Angular University Standalone Components Complete Guide",
+      "url": "https://blog.angular-university.io/angular-standalone-components/",
+      "category": "tutorial_reference",
+      "selectionReason": "This guide is a strong tutorial competitor because it explains why standalone components replaced much NgModule ceremony and how migration works in practice.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It goes deep on standalone components, migration, and why they reduce NgModule overhead."
+      ],
+      "theirGaps": [
+        "It is more about why standalone wins than about the narrower question of what problems NgModules still solve."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "NgModules still matter mainly as a packaging + compatibility layer for legacy declarables and module-based libraries/config APIs."
+        ],
+        "followUpConfusion": [
+          "Module compatibility means Angular can still interoperate with a module-shaped dependency or legacy declarable. Module necessity means your own new feature still needs a fresh NgModule."
+        ]
+      },
+      "winReason": "Angular University is richer as a migration article, but our page is now better calibrated for the narrower follow-up interview question: when NgModules still solve a real problem after standalone is normal.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University discusses the practical benefits of standalone components and when NgModules add overhead, so the use-case framing is close."
+        ],
+        "actionableExamples": [
+          "It includes more worked standalone-versus-module migration examples than our compact trivia answer."
+        ],
+        "followUpConfusion": [
+          "It covers interoperability and lazy-loading well, but it is less narrowly organized around the remaining legitimate NgModule use cases."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this comparison still feels close, add one more explicit example of bridging a legacy declarable export versus importing a module-shaped library provider API."
+        ]
+      }
+    },
+    {
+      "label": "Telerik Best of Both Angular Worlds: Standalone & Modules Combined",
+      "url": "https://www.telerik.com/blogs/best-both-angular-worlds-standalone-modules-combined",
+      "category": "tutorial_reference",
+      "selectionReason": "This article is a practical competitor because it explicitly discusses mixing standalone components with existing module-based Angular applications.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It explains coexistence between standalone and module-based code with concrete migration-oriented examples."
+      ],
+      "theirGaps": [
+        "It is more implementation-oriented than interview-oriented about the small remaining problem set NgModules still solve."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Greenfield standalone feature: no new feature NgModule required",
+          "That is library compatibility, not proof that your feature still needs its own NgModule."
+        ],
+        "followUpConfusion": [
+          "Packaging convenience is not the same thing as a required Angular module boundary."
+        ]
+      },
+      "winReason": "Telerik covers coexistence well, but our page now has the sharper example set and the cleaner compatibility-versus-necessity framing that this interview prompt actually tests.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Telerik frames the coexistence story well, so the practical comparison stays close."
+        ],
+        "actionableExamples": [
+          "Its article shows app.config.ts, provideRouter, and module imports concretely, keeping the example criterion close."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely follow-up more directly by naming the narrow cases where NgModules still win and where they no longer should be created."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one explicit sentence on legacy declarables and module-shaped library APIs as the two main surviving module use cases."
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "contentId": "react-strictmode-purpose",
+  "tech": "react",
+  "query": "react strictmode purpose interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<StrictMode>",
+      "url": "https://react.dev/reference/react/StrictMode",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React reference for StrictMode behavior, dev-only checks, and why React re-runs work in development.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative explanation of StrictMode checks and development-only behavior."
+      ],
+      "theirGaps": [
+        "It is less compressed around the interview framing of what StrictMode is for and what it does not change."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "StrictMode catches unsafe patterns by double-invoking in dev; ensure effects are idempotent and tested."
+        ],
+        "actionableExamples": [
+          "May cause duplicate console logs or API calls in development due to intentional double-invocation of certain functions."
+        ],
+        "followUpConfusion": [
+          "It does not affect production output."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs cover the development checks well, but our page is more direct about the practical reason teams care: catching duplicate side effects before they become production design bugs."
+        ],
+        "actionableExamples": [
+          "The official examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that StrictMode is diagnostic only and does not change production behavior."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny cleanup-safe effect example later if we want more worked code than the reference page."
+        ]
+      },
+      "winReason": "The official reference is authoritative, but our page is stronger for interview use because it compresses StrictMode into dev-only diagnostics, double-invoke behavior, and the exact production misconception candidates usually have."
+    },
+    {
+      "label": "What is React strict mode and what are its benefits?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-react-strict-mode-and-what-are-its-benefits",
+      "category": "interview_prep",
+      "selectionReason": "This is the direct GreatFrontEnd interview-prep comparator for StrictMode benefits and development-only checks.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is concise and directly aligned with the interview wording."
+      ],
+      "theirGaps": [
+        "It is less explicit about duplicate effects, diagnostic replay, and what StrictMode does not change in production."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Improves debugging and helps migrate older codebases to modern React hooks and concurrent rendering."
+        ],
+        "actionableExamples": [
+          "Only active in development mode; it has no effect in production builds."
+        ],
+        "followUpConfusion": [
+          "Does not render any UI or change component behavior; it’s purely diagnostic."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is direct interview prep, but our page is more explicit about the actual bugs StrictMode is meant to expose."
+        ],
+        "actionableExamples": [
+          "Its interview framing is strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that dev-only double invocation is diagnostic behavior, not a production regression."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one concrete duplicate-call example visible so the debugging angle stays stronger than a definition-only interview page."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it ties StrictMode benefits directly to double-invocation, idempotent effects, and production-safe mental models."
+    },
+    {
+      "label": "React 18 strict mode causing component to render twice",
+      "url": "https://stackoverflow.com/questions/72489140",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for the dev-only double-run behavior that people often misread as a bug.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on the exact duplicate-render confusion React developers hit in development."
+      ],
+      "theirGaps": [
+        "It is narrower than a full explanation of StrictMode's purpose."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "May cause duplicate console logs or API calls in development"
+        ],
+        "actionableExamples": [
+          "ensure effects are idempotent and tested."
+        ],
+        "followUpConfusion": [
+          "Only active in development mode; it has no effect in production builds."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on one common symptom, but our page is stronger because it explains the purpose behind the symptom."
+        ],
+        "actionableExamples": [
+          "Community debugging threads can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that duplicate development behavior is intentional and diagnostic."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one short effect-cleanup example if we want a stronger worked pattern than the current diagnostics summary."
+        ]
+      },
+      "winReason": "The community thread is useful on the duplicate-render symptom, but our page is stronger because it explains why StrictMode exists and what behavior developers should and should not expect from it."
+    }
+  ]
+}

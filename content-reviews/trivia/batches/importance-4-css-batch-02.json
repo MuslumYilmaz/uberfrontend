@@ -1,0 +1,10 @@
+{
+  "batchId": "importance-4-css-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "css", "id": "css-pseudo-classes-elements" },
+    { "tech": "css", "id": "css-z-index" },
+    { "tech": "css", "id": "css-make-element-responsive" },
+    { "tech": "css", "id": "css-custom-properties" }
+  ]
+}

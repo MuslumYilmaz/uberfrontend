@@ -41,6 +41,10 @@ type ApplySolutionOptions = {
   decisionGraphAsset?: string | null;
   decisionGraphKey?: string | null;
 };
+type SolutionDraftSnapshot = {
+  lang: JsLang;
+  code: string;
+};
 type ResolvedDecisionNode = {
   node: DecisionGraphNode;
   index: number;
@@ -381,6 +385,15 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   // --- restore banner state ---
   restoredFromStorage = signal(false);
   restoreDismissed = signal(false);
+  private solutionDraftSnapshot = signal<SolutionDraftSnapshot | null>(null);
+  canRevertToUserCode = computed(() => !!this.solutionDraftSnapshot());
+  restoreBannerIsSolutionContext = computed(
+    () => this.viewingSolution() || this.canRevertToUserCode()
+  );
+  restoreBannerActionLabel = computed(() => {
+    if (!this.restoreBannerIsSolutionContext()) return null;
+    return this.canRevertToUserCode() ? 'Revert to your code' : 'Reset to default';
+  });
 
   dismissRestoreBanner() { this.restoreDismissed.set(true); }
 
@@ -389,10 +402,65 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.decisionGraphPopupOpen.set(false);
   }
 
+  private clearSolutionDraftSnapshot(): void {
+    this.solutionDraftSnapshot.set(null);
+  }
+
+  private captureSolutionDraftSnapshot(): void {
+    if (this.solutionDraftSnapshot()) return;
+    this.solutionDraftSnapshot.set({
+      lang: this.jsLang(),
+      code: this.editorContent(),
+    });
+  }
+
+  async revertToUserCodeFromBanner(): Promise<void> {
+    const snapshot = this.solutionDraftSnapshot();
+    if (!snapshot) {
+      await this.resetToDefault();
+      return;
+    }
+
+    const q = this.question;
+    if (!q) return;
+
+    const targetLang = snapshot.lang;
+    const targetCode = snapshot.code;
+    this.cancelPendingPersist();
+    this._hydrating = true;
+
+    this.jsLang.set(targetLang);
+    this.langChange.emit(targetLang);
+    this.editorContent.set(targetCode);
+    this.testCode.set(this.pickTests(q as any, targetLang));
+
+    if (this.disablePersistence) {
+      this.volatileBuffers[targetLang] = targetCode;
+    } else {
+      const storageKey = this.storageKeyFor(q);
+      if (storageKey) {
+        await this.codeStore.saveJsAsync(storageKey, targetCode, targetLang, { force: true });
+        await this.codeStore.setLastLangAsync(storageKey, targetLang);
+      }
+    }
+
+    this.codeChange.emit({ lang: targetLang, code: targetCode });
+    this.clearSolutionDraftSnapshot();
+    this.restoredFromStorage.set(false);
+    this.restoreDismissed.set(true);
+    this.exitSolutionMode();
+    this.hasRunTests.set(false);
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
+    this.refreshDecisionGraphDecorations();
+    this.endHydrationSoon();
+  }
+
   async resetToDefault(): Promise<void> {
     const q = this.question;
     if (!q) return;
     this.cancelPendingPersist();
+    this.clearSolutionDraftSnapshot();
     if (this.disablePersistence) {
       const { js: starterJs, ts: starterTs } = this.startersForBoth(q);
       this.volatileBuffers = { js: starterJs, ts: starterTs };
@@ -880,6 +948,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   async initFromQuestion() {
     const q = this.question as Question; if (!q) return;
     this.resetRunnerStateForQuestionChange();
+    this.clearSolutionDraftSnapshot();
     this._hydrating = true;
     const { js: sJs, ts: sTs } = this.startersForBoth(q);
 
@@ -1365,7 +1434,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     await this.codeStore.saveJsAsync(activeKey, this.editorContent(), this.jsLang()).catch(() => { });
 
     this._hydrating = true;
-    this.viewingSolution.set(false);
+    this.clearSolutionDraftSnapshot();
+    this.exitSolutionMode();
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hasRunTests.set(false);
@@ -1446,9 +1516,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     // We are already on latest → update editor in-place.
     this._hydrating = true;
+    this.clearSolutionDraftSnapshot();
     this.editorContent.set(nextCode);
     this.testCode.set(this.pickTests(q as any, langToCopy));
-    this.viewingSolution.set(false);
+    this.exitSolutionMode();
     this.restoredFromStorage.set(true);
     this.restoreDismissed.set(false);
     this.hasRunTests.set(false);
@@ -1611,155 +1682,168 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
       const wrapped = this.wrapExportDefault(userSrc);
       const prepared = this.transformTestCode(testsSrc);
+      let sandboxOut: RunnerOutput | null = null;
 
       try {
         const runner = await this.loadRunner();
         const out = await runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
         if (runId !== this._runSeq) return;
+        sandboxOut = out;
         this.consoleEntries.set(this.sanitizeLogs(out?.entries));
-        this.testResults.set(out?.results || []);
+        const sandboxResults = out?.results || [];
+        if (sandboxResults.length === 0 && (out?.timedOut || !!out?.error)) {
+          this.testResults.set([this.buildSandboxFailureResult(out)]);
+        } else {
+          this.testResults.set(sandboxResults);
+        }
       } catch (e: any) {
         if (runId !== this._runSeq) return;
         this.testResults.set([{ name: 'Test runner error', passed: false, error: this.short(e) }]);
       }
 
       /* ---------- LOCAL FALLBACK if sandbox produced no cases ---------- */
-	      if ((this.testResults() || []).length === 0 && prepared.trim()) {
-	        try {
-	          const results: TestResult[] = [];
-	          const logs: ConsoleEntry[] = [];
-	          const MAX_LOGS = 200;
-	          const MAX_LOG_CHARS = 2000;
-	          const MAX_PREVIEW_DEPTH = 4;
-	          const MAX_PREVIEW_KEYS = 20;
-	          const MAX_PREVIEW_ARRAY_ITEMS = 20;
-	          let logLimitHit = false;
+      const canUseLocalFallback =
+        prepared.trim() &&
+        !!sandboxOut &&
+        !sandboxOut.timedOut &&
+        !sandboxOut.error &&
+        (this.testResults() || []).length === 0;
+      if (canUseLocalFallback) {
+        try {
+          const results: TestResult[] = [];
+          const logs: ConsoleEntry[] = [];
+          const MAX_LOGS = 200;
+          const MAX_LOG_CHARS = 2000;
+          const MAX_PREVIEW_DEPTH = 4;
+          const MAX_PREVIEW_KEYS = 20;
+          const MAX_PREVIEW_ARRAY_ITEMS = 20;
+          let logLimitHit = false;
 
-	          const clamp = (s: string) => s.length > MAX_LOG_CHARS ? `${s.slice(0, MAX_LOG_CHARS)}…` : s;
+          const clamp = (s: string) => s.length > MAX_LOG_CHARS ? `${s.slice(0, MAX_LOG_CHARS)}…` : s;
 
-	          const tagOf = (v: any) => Object.prototype.toString.call(v);
-	          const formatSpecial = (v: any): string | null => {
-	            if (v && (typeof v === 'object' || typeof v === 'function')) {
-	              if (tagOf(v) === '[object Promise]') return 'Promise {<pending>}';
+          const tagOf = (v: any) => Object.prototype.toString.call(v);
+          const formatSpecial = (v: any): string | null => {
+            if (v && (typeof v === 'object' || typeof v === 'function')) {
+              if (tagOf(v) === '[object Promise]') return 'Promise {<pending>}';
               if (v instanceof Error) {
                 const name = v?.name ? String(v.name) : 'Error';
                 const msg = v?.message ? String(v.message) : '';
                 return msg ? `${name}: ${msg}` : name;
               }
-	            }
-	            return null;
-	          };
-	          const safeStringify = (v: any) => {
-	            try {
-	              if (v === null) return 'null';
-	              const t = typeof v;
-	              if (t === 'string') return v.length > MAX_LOG_CHARS ? `${v.slice(0, MAX_LOG_CHARS)}…` : v;
-	              if (t === 'undefined') return 'undefined';
-	              if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
-	              if (t === 'symbol') return v.toString();
-	              if (t === 'function') return `[Function ${v.name || 'anonymous'}]`;
+            }
+            return null;
+          };
+          const safeStringify = (v: any) => {
+            try {
+              if (v === null) return 'null';
+              const t = typeof v;
+              if (t === 'string') return v.length > MAX_LOG_CHARS ? `${v.slice(0, MAX_LOG_CHARS)}…` : v;
+              if (t === 'undefined') return 'undefined';
+              if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
+              if (t === 'symbol') return v.toString();
+              if (t === 'function') return `[Function ${v.name || 'anonymous'}]`;
 
-	              const special = formatSpecial(v);
-	              if (special) return special;
+              const special = formatSpecial(v);
+              if (special) return special;
 
-	              const seen = new WeakSet<object>();
-	              const depths = new WeakMap<object, number>();
-	              const json = JSON.stringify(v, function (this: any, key: string, val: any) {
-	                const specialInner = formatSpecial(val);
-	                if (specialInner) return specialInner;
+              const seen = new WeakSet<object>();
+              const depths = new WeakMap<object, number>();
+              const json = JSON.stringify(v, function (this: any, key: string, val: any) {
+                const specialInner = formatSpecial(val);
+                if (specialInner) return specialInner;
 
-	                if (typeof val === 'string') {
-	                  return val.length > MAX_LOG_CHARS ? `${val.slice(0, MAX_LOG_CHARS)}…` : val;
-	                }
-	                if (typeof val === 'symbol') return val.toString();
-	                if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
+                if (typeof val === 'string') {
+                  return val.length > MAX_LOG_CHARS ? `${val.slice(0, MAX_LOG_CHARS)}…` : val;
+                }
+                if (typeof val === 'symbol') return val.toString();
+                if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
 
-	                if (!val || (typeof val !== 'object' && typeof val !== 'function')) return val;
+                if (!val || (typeof val !== 'object' && typeof val !== 'function')) return val;
 
-	                const holder: any = this;
-	                const holderDepth =
-	                  holder && (typeof holder === 'object' || typeof holder === 'function')
-	                    ? (depths.get(holder) ?? 0)
-	                    : 0;
-	                const nextDepth = key === '' ? 0 : holderDepth + 1;
-	                if (!depths.has(val)) depths.set(val, nextDepth);
-	                const depth = depths.get(val) ?? nextDepth;
-	                if (depth > MAX_PREVIEW_DEPTH) return tagOf(val);
+                const holder: any = this;
+                const holderDepth =
+                  holder && (typeof holder === 'object' || typeof holder === 'function')
+                    ? (depths.get(holder) ?? 0)
+                    : 0;
+                const nextDepth = key === '' ? 0 : holderDepth + 1;
+                if (!depths.has(val)) depths.set(val, nextDepth);
+                const depth = depths.get(val) ?? nextDepth;
+                if (depth > MAX_PREVIEW_DEPTH) return tagOf(val);
 
-	                if (typeof val === 'object') {
-	                  if (seen.has(val)) return '[Circular]';
-	                  seen.add(val);
+                if (typeof val === 'object') {
+                  if (seen.has(val)) return '[Circular]';
+                  seen.add(val);
 
-	                  if (Array.isArray(val)) {
-	                    if (val.length > MAX_PREVIEW_ARRAY_ITEMS) {
-	                      const head = val.slice(0, MAX_PREVIEW_ARRAY_ITEMS);
-	                      return [...head, `… +${val.length - MAX_PREVIEW_ARRAY_ITEMS} more`];
-	                    }
-	                    return val;
-	                  }
+                  if (Array.isArray(val)) {
+                    if (val.length > MAX_PREVIEW_ARRAY_ITEMS) {
+                      const head = val.slice(0, MAX_PREVIEW_ARRAY_ITEMS);
+                      return [...head, `… +${val.length - MAX_PREVIEW_ARRAY_ITEMS} more`];
+                    }
+                    return val;
+                  }
 
-	                  if (val instanceof Map) {
-	                    const entries: any[] = [];
-	                    let i = 0;
-	                    for (const [k, v] of val.entries()) {
-	                      if (i++ >= MAX_PREVIEW_KEYS) { entries.push(['…', '…']); break; }
-	                      entries.push([k, v]);
-	                    }
-	                    return { '[[Map]]': entries, size: val.size };
-	                  }
+                  if (val instanceof Map) {
+                    const entries: any[] = [];
+                    let i = 0;
+                    for (const [k, v] of val.entries()) {
+                      if (i++ >= MAX_PREVIEW_KEYS) { entries.push(['…', '…']); break; }
+                      entries.push([k, v]);
+                    }
+                    return { '[[Map]]': entries, size: val.size };
+                  }
 
-	                  if (val instanceof Set) {
-	                    const values: any[] = [];
-	                    let i = 0;
-	                    for (const item of val.values()) {
-	                      if (i++ >= MAX_PREVIEW_KEYS) { values.push('…'); break; }
-	                      values.push(item);
-	                    }
-	                    return { '[[Set]]': values, size: val.size };
-	                  }
+                  if (val instanceof Set) {
+                    const values: any[] = [];
+                    let i = 0;
+                    for (const item of val.values()) {
+                      if (i++ >= MAX_PREVIEW_KEYS) { values.push('…'); break; }
+                      values.push(item);
+                    }
+                    return { '[[Set]]': values, size: val.size };
+                  }
 
-	                  const proto = Object.getPrototypeOf(val);
-	                  const isPlain = proto === Object.prototype || proto === null;
-	                  if (isPlain) {
-	                    const out: Record<string, any> = {};
-	                    let count = 0;
-	                    for (const k in val as any) {
-	                      if (!Object.prototype.hasOwnProperty.call(val, k)) continue;
-	                      if (count++ >= MAX_PREVIEW_KEYS) { out['…'] = '…'; break; }
-	                      out[k] = (val as any)[k];
-	                    }
-	                    return out;
-	                  }
-	                }
-	                return val;
-	              });
-	              return typeof json === 'string' ? json : String(v);
-	            } catch {
-	              try { return String(v); } catch { return '[Unserializable]'; }
-	            }
-	          };
-	          const formatArgs = (args: any[]) => {
-	            let msg = '';
-	            for (const a of args) {
-	              const part = safeStringify(a);
-	              if (!msg) msg = part;
-	              else msg += ` ${part}`;
-	              if (msg.length > MAX_LOG_CHARS) return clamp(msg);
-	            }
-	            return clamp(msg);
-	          };
-	          const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
-	            if (logs.length >= MAX_LOGS) {
-	              if (!logLimitHit) {
-	                logs.push({ level: 'warn', message: `Log limit reached (${MAX_LOGS})`, timestamp: Date.now() });
-	                logLimitHit = true;
-	              }
-	              return;
-	            }
-	            logs.push({ level, message: formatArgs(args), timestamp: Date.now() });
-	          };
-	          const consoleProxy = {
-	            log: (...a: any[]) => push('log', a),
+                  const proto = Object.getPrototypeOf(val);
+                  const isPlain = proto === Object.prototype || proto === null;
+                  if (isPlain) {
+                    const out: Record<string, any> = {};
+                    let count = 0;
+                    for (const k in val as any) {
+                      if (!Object.prototype.hasOwnProperty.call(val, k)) continue;
+                      if (count++ >= MAX_PREVIEW_KEYS) { out['…'] = '…'; break; }
+                      out[k] = (val as any)[k];
+                    }
+                    return out;
+                  }
+                }
+                return val;
+              });
+              return typeof json === 'string' ? json : String(v);
+            } catch {
+              try { return String(v); } catch { return '[Unserializable]'; }
+            }
+          };
+          const formatArgs = (args: any[]) => {
+            let msg = '';
+            for (const a of args) {
+              const part = safeStringify(a);
+              if (!msg) msg = part;
+              else msg += ` ${part}`;
+              if (msg.length > MAX_LOG_CHARS) return clamp(msg);
+            }
+            return clamp(msg);
+          };
+          const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
+            if (logs.length >= MAX_LOGS) {
+              if (!logLimitHit) {
+                logs.push({ level: 'warn', message: `Log limit reached (${MAX_LOGS})`, timestamp: Date.now() });
+                logLimitHit = true;
+              }
+              return;
+            }
+            logs.push({ level, message: formatArgs(args), timestamp: Date.now() });
+          };
+          const consoleProxy = {
+            log: (...a: any[]) => push('log', a),
             info: (...a: any[]) => push('info', a),
             warn: (...a: any[]) => push('warn', a),
             error: (...a: any[]) => push('error', a),
@@ -1970,6 +2054,22 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     } finally {
       if (runId === this._runSeq) this.isRunningTests.set(false);
     }
+  }
+
+  private buildSandboxFailureResult(out: RunnerOutput | null | undefined): TestResult {
+    const error = this.short(out?.error || 'Test execution failed.');
+    if (out?.timedOut || this.isTimeoutLikeRunnerError(error)) {
+      return { name: 'Test execution timed out', passed: false, error };
+    }
+    return { name: 'Test runner failed', passed: false, error };
+  }
+
+  private isTimeoutLikeRunnerError(message: string | null | undefined): boolean {
+    const normalized = String(message || '').toLowerCase();
+    if (!normalized) return false;
+    return normalized.includes('timed out')
+      || normalized.includes('force-stopped')
+      || normalized.includes('execution blocked');
   }
 
   private processAssistAfterRun(question: Question, rawUserCode: string, results: TestResult[]): void {
@@ -2345,6 +2445,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   public async applySolution(raw: string, options?: ApplySolutionOptions) {
     const runToken = ++this.applySolutionToken;
     this.topTab.set('code');
+    this.captureSolutionDraftSnapshot();
 
     const q = this.question;
     if (this.decisionGraphEnabled && q) {

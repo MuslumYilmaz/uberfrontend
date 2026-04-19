@@ -1,0 +1,14 @@
+{
+  "batchId": "importance-4-react-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "react", "id": "react-pure-function-of-props-and-state" },
+    { "tech": "react", "id": "react-function-treated-as-component-rules" },
+    { "tech": "react", "id": "react-usestate-purpose" },
+    { "tech": "react", "id": "react-conditional-rendering" },
+    { "tech": "react", "id": "react-mixing-state-and-props-responsibilities" },
+    { "tech": "react", "id": "react-usememo-vs-usecallback" },
+    { "tech": "react", "id": "react-useref-vs-usestate" },
+    { "tech": "react", "id": "react-derived-state-anti-pattern" }
+  ]
+}

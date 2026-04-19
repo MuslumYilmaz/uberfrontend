@@ -1,0 +1,155 @@
+{
+  "contentId": "js-data-types",
+  "tech": "javascript",
+  "query": "javascript data types interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN Data types and data structures",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for JavaScript primitive values, objects, and the language's data-type model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for the full set of JavaScript data types and primitive-versus-object distinctions."
+      ],
+      "theirGaps": [
+        "It is less compact on why these distinctions matter for copying, mutation, and debugging state updates in everyday frontend code."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "JavaScript has eight main data types: seven primitives (string, number, bigint, boolean, undefined, symbol, null) and one non-primitive type (object). Understanding which values are primitive vs object helps with comparisons, copying, and mutation behavior. This affects state updates, copying, and performance; test typeof null and array detection."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Primitives Are Immutable</strong>\\n\\nPrimitive values can’t be changed directly — any modification creates a new value instead.\\n\\n```javascript\\nlet str = 'Hi';\\nstr[0] = 'Y'; // ❌ has no effect\\nconsole.log(str); // 'Hi'\\n```"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Confusion</strong>\\n\\n<code>typeof null</code> returns <code>'object'</code> — this is a well-known JavaScript quirk kept for backward compatibility."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers the type system comprehensively, but our page is more explicit about the frontend consequences for copying, mutation, and reference behavior."
+        ],
+        "actionableExamples": [
+          "The canonical docs still provide strong reference examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page surfaces the interview follow-ups more directly: typeof null, array detection, and why primitive versus object behavior changes comparison and mutation outcomes."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny Array.isArray check later if we need more example distance over the canonical docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical type reference, but our page is stronger for interview use because it ties the type list to copying, mutation, and debugging consequences instead of stopping at taxonomy."
+    },
+    {
+      "label": "javascript.info Data types",
+      "url": "https://javascript.info/types",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct tutorial for JavaScript types and the primitive-versus-object model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on the language-level explanation of primitive types, objects, and their behavior."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped on state updates, reference bugs, and the exact quirks interviewers probe next."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "JavaScript has eight main data types: seven primitives (string, number, bigint, boolean, undefined, symbol, null) and one non-primitive type (object). Understanding which values are primitive vs object helps with comparisons, copying, and mutation behavior. This affects state updates, copying, and performance; test typeof null and array detection."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Primitives Are Immutable</strong>\\n\\nPrimitive values can’t be changed directly — any modification creates a new value instead.\\n\\n```javascript\\nlet str = 'Hi';\\nstr[0] = 'Y'; // ❌ has no effect\\nconsole.log(str); // 'Hi'\\n```"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Confusion</strong>\\n\\n<code>typeof null</code> returns <code>'object'</code> — this is a well-known JavaScript quirk kept for backward compatibility."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info explains the model well, but our page is more explicit about why primitives versus objects matter to copying and mutation bugs in apps."
+        ],
+        "actionableExamples": [
+          "Its tutorial examples are strong and topic-direct, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-ups interviewers ask next: typeof null, array detection, and reference-based mutation behavior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If this page needs another pass later, add one short shallow-copy versus shared-reference example."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is a strong language tutorial, but our page is better for this prompt because it turns the type list into practical rules for comparison, copying, and mutation."
+    },
+    {
+      "label": "Stack Overflow object vs primitive",
+      "url": "https://stackoverflow.com/questions/8643276/object-vs-primitive",
+      "category": "community_qna",
+      "selectionReason": "This is a focused community Q&A source for the primitive-versus-object distinction that drives most follow-up confusion after listing JavaScript data types.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is focused on the exact primitive-versus-object distinction that often confuses developers."
+      ],
+      "theirGaps": [
+        "It is narrower than the interview question and does not cover the full eight-type overview in one compact answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "JavaScript has eight main data types: seven primitives (string, number, bigint, boolean, undefined, symbol, null) and one non-primitive type (object). Understanding which values are primitive vs object helps with comparisons, copying, and mutation behavior. This affects state updates, copying, and performance; test typeof null and array detection."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Primitives Are Immutable</strong>\\n\\nPrimitive values can’t be changed directly — any modification creates a new value instead.\\n\\n```javascript\\nlet str = 'Hi';\\nstr[0] = 'Y'; // ❌ has no effect\\nconsole.log(str); // 'Hi'\\n```"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Confusion</strong>\\n\\n<code>typeof null</code> returns <code>'object'</code> — this is a well-known JavaScript quirk kept for backward compatibility."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is useful for one distinction, but our page covers the whole interview question and ties it to copying, mutation, and performance decisions."
+        ],
+        "actionableExamples": [
+          "A focused Q&A still gives concrete examples of primitive versus object behavior, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page resolves more of the expected follow-ups in one answer instead of centering only on object-versus-primitive semantics."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the primitive immutability example close to the object mutability explanation so the contrast stays concrete."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The Stack Overflow thread is strong on one subtopic, but our page is a better interview answer because it covers the full type set and the mutation bugs that make the distinction matter."
+    }
+  ]
+}

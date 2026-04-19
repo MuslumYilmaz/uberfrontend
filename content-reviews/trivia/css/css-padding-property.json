@@ -1,0 +1,145 @@
+{
+  "contentId": "css-padding-property",
+  "tech": "css",
+  "query": "What does the CSS padding property do in production?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "padding",
+      "url": "https://developer.mozilla.org/en/docs/Web/CSS/padding",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the padding property, including shorthand behavior, percentage padding, and how padding participates in the box model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on padding syntax, shorthand mapping, percentages, and box-model interaction."
+      ],
+      "theirGaps": [
+        "The reference is less interview-shaped and less explicit about clickable-area growth and the common confusion between padding and pushing neighbors away."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: CSS, padding, box model, layout, spacing."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Padding is the <em>internal</em> space of a box, sitting between the content area (text, images, etc.) and the border. Increasing padding makes the element look larger because the background color and border expand outward to include that extra space."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines padding thoroughly, but it is lighter on the concrete UI decision behind this property: grow the clickable area without creating outer separation."
+        ],
+        "actionableExamples": [
+          "It includes canonical syntax and percentage examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion teams hit first: padding changes the box from the inside and can affect total size through the box model."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the shorthand-order note visible so the page stays practical without turning into a full box-model guide."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical padding reference, but our page is stronger as an interview answer because it turns padding into a concrete inside-spacing, clickable-area, and box-sizing decision."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because spacing, box model, and layout behavior are core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage of spacing, sizing, and layout fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to padding behavior, so it is less focused on the exact internal-spacing and box-size effects behind this question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: CSS, padding, box model, layout, spacing."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Padding is the <em>internal</em> space of a box, sitting between the content area (text, images, etc.) and the border. Increasing padding makes the element look larger because the background color and border expand outward to include that extra space."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the actual UI reason developers reach for padding: making a component roomier without adding external gaps."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: padding changes the inside of the box and can change total rendered size unless box-sizing changes the calculation."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the box-model interaction visible so the answer stays operational under interview time pressure."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact inner-spacing and sizing consequences that make padding worth understanding in production."
+    },
+    {
+      "label": "padding",
+      "url": "https://css-tricks.com/almanac/properties/p/padding/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks has a direct padding almanac entry and is the strongest tutorial comparator for inner spacing, shorthand behavior, and width-calculation consequences.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on padding syntax, width calculations, and practical box-model behavior."
+      ],
+      "theirGaps": [
+        "It is less compact as a single interview answer and less centered on clickable-area and neighboring-element trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: CSS, padding, box model, layout, spacing."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Padding is the <em>internal</em> space of a box, sitting between the content area (text, images, etc.) and the border. Increasing padding makes the element look larger because the background color and border expand outward to include that extra space."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks is strong on padding behavior, but our answer is more compact about the actual UI decision between adding internal breathing room and changing external separation."
+        ],
+        "actionableExamples": [
+          "Its shorthand and width examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next debugging question teams hit in practice: why padding grows the box and how that interacts with width and border-box sizing."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the shorthand-order guidance visible so the page retains one practical syntax checkpoint."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong padding explainer, but our page is more useful as an interview answer because it turns padding into a concrete inside-spacing, size-calculation, and clickable-area decision."
+    }
+  ]
+}

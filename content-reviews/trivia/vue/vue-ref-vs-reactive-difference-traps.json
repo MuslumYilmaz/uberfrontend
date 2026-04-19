@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-ref-vs-reactive-difference-traps",
+  "tech": "vue",
+  "query": "Vue ref vs reactive interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Reactivity API: Core",
+      "url": "https://vuejs.org/api/reactivity-core.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue API reference for ref, reactive, shallow variants, and core reactivity behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "The official API reference is authoritative on what ref and reactive return and how the APIs behave."
+      ],
+      "theirGaps": [
+        "It is less focused on the practical trap patterns developers hit when destructuring or replacing reactive objects."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most bugs come from destructuring , replacing reactive objects , and losing reactivity by pulling values out of proxies ."
+        ],
+        "actionableExamples": [
+          "Fix: use toRefs() (or toRef() ) so destructured fields stay reactive."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The API docs define ref and reactive precisely, but they are less centered on the 'why isn't this updating?' debugging scenarios."
+        ],
+        "actionableExamples": [
+          "They are authoritative on the API, yet our page gives a more direct trap-and-fix walkthrough."
+        ],
+        "followUpConfusion": [
+          "The official docs still go deeper on the full API surface and shallow variants, so the follow-up criterion remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one small note on shallowRef or shallowReactive so the API-surface follow-up is less lopsided."
+        ]
+      },
+      "winReason": "The API reference is canonical, but our page is more directly useful for debugging because it centers the destructuring and replacement traps developers actually hit."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because reactivity and Composition API choices are core Vue interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong broad Vue interview-prep hub with reactivity and Composition API coverage."
+      ],
+      "theirGaps": [
+        "The landing page is not a direct ref-versus-reactive explainer and is lighter on concrete trap patterns."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This is the #1 “why isn’t my UI updating?” moment."
+        ],
+        "followUpConfusion": [
+          "use ref for single values (especially primitives) and for values you’ll replace ; use reactive for “state objects” you mostly mutate ."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is directly relevant at the Vue fundamentals level, but it is less focused on this exact destructuring or replacement bug."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd emphasizes solved examples, the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about choosing ref for replaceable values and reactive for mutable state objects."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact replace-whole-object example so the ref choice stays grounded."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a strong broad Vue interview resource, but our page is more specific on the practical decision rule and the debugging traps around destructuring and replacement."
+    },
+    {
+      "label": "Vue 3 Composition API: ref() and reactive()",
+      "url": "https://www.thisdot.co/blog/vue-3-composition-api-ref-and-reactive",
+      "category": "tutorial_reference",
+      "selectionReason": "ThisDot has a direct topic article comparing ref and reactive in Vue 3.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct topic article that explains the mechanics of both APIs clearly."
+      ],
+      "theirGaps": [
+        "It is less focused on the two highest-friction trap patterns: destructuring and replacing a reactive object."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Trap #2: replacing a reactive object breaks consumers"
+        ],
+        "followUpConfusion": [
+          "If you reassign the variable, anything holding the old proxy won’t see the new object."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article explains the API differences directly, but it is less centered on the exact stale-proxy and destructuring failure modes."
+        ],
+        "actionableExamples": [
+          "It remains a strong direct comparator with practical examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about why replacing a reactive proxy breaks consumers and why toRefs preserves destructured reactivity."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one smaller primitive-versus-object decision example so the page stays balanced and not only trap-focused."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "ThisDot is a strong direct comparison article, but our page is more useful for follow-up debugging because it makes the destructuring and stale-proxy traps explicit."
+    }
+  ]
+}

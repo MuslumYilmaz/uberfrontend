@@ -1,0 +1,145 @@
+{
+  "contentId": "html-div-vs-span",
+  "tech": "html",
+  "query": "html div vs span interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<div>: The Content Division element",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/div",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the div element and the clearest official starting point for generic container behavior and its lack of semantic meaning.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on what div is, where generic containers fit, and why semantic HTML is usually preferable when a meaningful element exists."
+      ],
+      "theirGaps": [
+        "The element reference is less interview-shaped and less explicit about the day-to-day production mistake of mixing up block wrappers and inline text-level hooks."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use &lt;div&gt; and &lt;span&gt; as generic containers only when semantic HTML does not fit. The real pitfall is layout or DOM-hook misuse: &lt;div&gt; changes flow as a block wrapper, while &lt;span&gt; stays inline for text-level targeting."
+        ],
+        "followUpConfusion": [
+          "Neither adds semantics, so if you really mean navigation, article content, emphasis, or a button, a semantic element is usually the better choice."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines div clearly, but it stays closer to the reference semantics than to one concrete production decision about block wrappers versus inline hooks."
+        ],
+        "actionableExamples": [
+          "It includes canonical examples and semantic guidance, so the example criterion stays competitive rather than flipping fully to us."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion teams actually hit: div and span are not interchangeable, and neither is a substitute for a semantic element."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the block-versus-inline contrast near the opening so the page stays faster to scan than a full reference entry."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical div reference, but our page is stronger as an interview answer because it translates div-versus-span into the concrete production mistake developers make most: using layout wrappers and text-level hooks interchangeably."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because container semantics, structure, and layout-related markup decisions are core HTML interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of core structure, semantics, and markup fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to div versus span, so it is less focused on the exact block-wrapper versus inline-hook distinction behind this question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use &lt;div&gt; and &lt;span&gt; as generic containers only when semantic HTML does not fit. The real pitfall is layout or DOM-hook misuse: &lt;div&gt; changes flow as a block wrapper, while &lt;span&gt; stays inline for text-level targeting."
+        ],
+        "followUpConfusion": [
+          "Neither adds semantics, so if you really mean navigation, article content, emphasis, or a button, a semantic element is usually the better choice."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the layout-flow and DOM-hook consequences of choosing div instead of span."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied rather than becoming an automatic win for us."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: when div or span should be replaced by a semantic element instead of just restyled with CSS."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the common-mistakes section visible so the answer stays operational under interview time pressure."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the exact layout and semantics trade-offs that make div-versus-span answers strong in practice."
+    },
+    {
+      "label": "Document structure",
+      "url": "https://web.dev/learn/html/document-structure/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev's document-structure module is the strongest third-source comparator for generic containers versus meaningful structure and for how HTML elements shape page flow.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on document structure, semantic grouping, and the idea that generic wrappers should not replace meaningful markup."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question and less centered on the direct inline-versus-block contrast between div and span."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use &lt;div&gt; and &lt;span&gt; as generic containers only when semantic HTML does not fit. The real pitfall is layout or DOM-hook misuse: &lt;div&gt; changes flow as a block wrapper, while &lt;span&gt; stays inline for text-level targeting."
+        ],
+        "followUpConfusion": [
+          "Neither adds semantics, so if you really mean navigation, article content, emphasis, or a button, a semantic element is usually the better choice."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds the topic in structure and semantics, but our answer is more compact about the specific flow and DOM-hook consequences of choosing div versus span."
+        ],
+        "actionableExamples": [
+          "The tutorial remains strong on structural examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next question developers hit in practice: when CSS can change display and when semantics still remain missing."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact example that contrasts a block wrapper with inline text targeting so the answer retains a concrete scan point."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on document structure broadly, but our page is better as a short interview answer because it packages div-versus-span around layout flow, DOM hooks, and semantic fallback decisions."
+    }
+  ]
+}

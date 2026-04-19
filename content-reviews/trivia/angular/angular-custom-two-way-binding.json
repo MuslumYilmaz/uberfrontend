@@ -1,0 +1,149 @@
+{
+  "contentId": "angular-custom-two-way-binding",
+  "tech": "angular",
+  "query": "Angular custom two-way binding Input Output xChange interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular Two-Way Binding Guide",
+      "url": "https://angular.dev/guide/templates/two-way-binding",
+      "category": "canonical_docs",
+      "selectionReason": "The official two-way binding guide is the canonical reference for banana-in-a-box syntax, model inputs, and the binding contract.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular.dev is authoritative on the syntax, but our page is more interview-useful because it now pairs the exact alias contract with the local draft sync bug and the ControlValueAccessor boundary.",
+      "theirStrengths": [
+        "It authoritatively explains two-way binding syntax and shows the built-in and component-level patterns."
+      ],
+      "theirGaps": [
+        "It is less tightly centered on the custom Input/Output naming contract and the failure modes that break [(x)] in interviews."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Broken alias pair: Angular expands [(checked)] to [checked] + (checkedChange)"
+        ],
+        "followUpConfusion": [
+          "If you keep a local draft, sync it from the input and emit the next value instead of letting two sources of truth drift apart.",
+          "It stops being enough when the component must behave like a real Angular form control"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide explains two-way binding well, so the practical framing stays close."
+        ],
+        "actionableExamples": [
+          "Angular.dev includes concrete examples, but our page now shows the broken alias pair, the fixed alias pair, and the local draft sync pattern in one compact worked example."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about two sources of truth drifting apart and about when ControlValueAccessor is the better abstraction."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one concrete case where plain Input plus Output is enough and a real Angular Forms integration would be overkill."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Telerik Two-Way Data Binding Guide",
+      "url": "https://www.telerik.com/blogs/angular-basics-data-binding-part-8-two-way-data-binding",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a direct competitor because it focuses on banana-in-a-box syntax and the mechanics of two-way updates.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Telerik explains banana-in-a-box well, but our page is more specific about the alias mismatch bug, two-sources-of-truth drift, and when custom binding should give way to ControlValueAccessor.",
+      "theirStrengths": [
+        "It is tightly focused on the same binding syntax and gives straightforward examples."
+      ],
+      "theirGaps": [
+        "It is broader on general two-way binding and less specific on custom component naming traps."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Broken alias pair: Angular expands [(checked)] to [checked] + (checkedChange)"
+        ],
+        "followUpConfusion": [
+          "If you keep a local draft, sync it from the input and emit the next value instead of letting two sources of truth drift apart.",
+          "That is the point where <code>ControlValueAccessor</code> becomes the right abstraction."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Telerik stays directly on the same mechanism, so the practical use-case framing is close."
+        ],
+        "actionableExamples": [
+          "Telerik explains the syntax cleanly, but our page now gives the more interview-specific broken-versus-fixed alias example and the shadow-state sync pattern."
+        ],
+        "followUpConfusion": [
+          "Our page is now more explicit about why mutating the input is not enough, how local draft state drifts, and when CVA is the right next step."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the answer centered on custom component APIs rather than letting it drift into generic ngModel syntax."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Swiftorial Two Way Data Binding",
+      "url": "https://www.swiftorial.com/tutorials/web_development/angular/components_and_templates/two_way_data_binding/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial competitor that covers banana-in-a-box and even includes a custom Input plus valueChange example.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Swiftorial has a direct custom-binding example, but our page is stronger on the failure modes interviewers usually probe next: alias mismatch, local shadow-state drift, and the Angular Forms boundary.",
+      "theirStrengths": [
+        "It directly covers two-way binding and includes a custom child-component example."
+      ],
+      "theirGaps": [
+        "It is less explicit about aliasing rules, failure modes, and when to switch to ControlValueAccessor for real form controls."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "[(x)] works only if Angular can find:"
+        ],
+        "followUpConfusion": [
+          "If you keep a local draft, sync it from the input and emit the next value instead of letting two sources of truth drift apart.",
+          "It stops being enough when the component must behave like a real Angular form control"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Swiftorial covers custom two-way binding directly, but our page is more interview-shaped on the exact contract and what breaks it."
+        ],
+        "actionableExamples": [
+          "Swiftorial still has a direct custom binding example, so the pure worked-example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on aliasing failures, two-sources-of-truth drift, and the decision boundary between plain Input/Output and ControlValueAccessor."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one explicit broken-versus-fixed alias example so the banana-in-a-box expansion stays visible at a glance."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

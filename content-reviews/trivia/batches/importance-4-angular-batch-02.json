@@ -1,0 +1,46 @@
+{
+  "batchId": "importance-4-angular-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    {
+      "tech": "angular",
+      "id": "angular-lazy-loading"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-zonejs-change-detection"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-ngonchanges-vs-ngdocheck"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-performance-optimization"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-controlvalueaccessor-vs-custom-two-way-binding"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-template-driven-vs-reactive-forms-which-scales"
+    },
+    {
+      "tech": "angular",
+      "id": "rxjs-sharereplay-angular-how-it-breaks-your-app"
+    },
+    {
+      "tech": "angular",
+      "id": "rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject"
+    },
+    {
+      "tech": "angular",
+      "id": "rxjs-tap-vs-map-angular-when-to-use"
+    },
+    {
+      "tech": "angular",
+      "id": "ngrx-store-vs-component-state-angular-when-to-use"
+    }
+  ]
+}

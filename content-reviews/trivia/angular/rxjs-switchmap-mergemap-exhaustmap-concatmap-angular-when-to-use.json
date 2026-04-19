@@ -1,0 +1,154 @@
+{
+  "contentId": "rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
+  "tech": "angular",
+  "query": "switchMap vs mergeMap vs exhaustMap vs concatMap Angular interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd covers RxJS pitfalls and mentions switchMap or concatMap, but it does not have a directly focused page that compares all four flattening operators with Angular use-case selection."
+  },
+  "competitors": [
+    {
+      "label": "RxJS Operator Guide",
+      "url": "https://rxjs.dev/guide/operators",
+      "category": "canonical_docs",
+      "selectionReason": "RxJS is the canonical source for operator behavior, even though its guidance is split across operator docs rather than one Angular-specific comparison page.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "RxJS docs remain canonical on operator semantics, but our page is more directly useful for Angular developers because it compares all four operators side by side and anchors them to race conditions, double submits, and latest-wins UI flows.",
+      "theirStrengths": [
+        "It is the authoritative reference for what each operator does."
+      ],
+      "theirGaps": [
+        "It does not package the four operators into one Angular decision framework."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "All four operators take a stream of “triggers” (typing, clicks, route params) and map each trigger to an inner Observable (usually an HTTP call)."
+        ],
+        "actionableExamples": [
+          "Real Angular examples",
+          "switchMap = cancel old, keep latest"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "RxJS docs explain each operator separately, but our page ties them directly to Angular typeahead, submit, queue, and overlap scenarios."
+        ],
+        "actionableExamples": [
+          "Because the official docs are split per operator, our side-by-side Angular table is more immediately actionable than reading four separate references."
+        ],
+        "followUpConfusion": [
+          "RxJS docs still remain strong on raw operator semantics, so the deeper follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on operator choice with non-HTTP inner streams so the answer is not read as HTTP-only."
+        ]
+      }
+    },
+    {
+      "label": "Angular University Higher-Order Mapping Guide",
+      "url": "https://blog.angular-university.io/rxjs-higher-order-mapping/",
+      "category": "tutorial_reference",
+      "selectionReason": "Angular University has a focused long-form guide on higher-order mapping, making it the strongest tutorial/reference competitor for this topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a dedicated comparison guide that goes deep on why and when to use each mapping operator."
+      ],
+      "theirGaps": [
+        "It is longer and less compact than a trivia answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Ordered intent example: when concatMap beats switchMap"
+        ],
+        "actionableExamples": [
+          "Same trigger, four different policies"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University also frames the operators around real overlap behavior and request timing, so the use-case comparison stays close."
+        ],
+        "actionableExamples": [
+          "As a dedicated higher-order mapping article, it provides more step-by-step examples than our compact answer."
+        ],
+        "followUpConfusion": [
+          "It already answers the usual switchMap versus mergeMap versus concatMap follow-ups in detail, so the follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit example where concatMap is better than switchMap because user intent must stay ordered."
+        ],
+        "actionableExamples": [
+          "Add one compact table row or code sample for all four operators in the same Angular component flow."
+        ],
+        "followUpConfusion": [
+          "Keep one extra note on when exhaustMap is wrong because every trigger must still be honored eventually."
+        ]
+      },
+      "winReason": "Our page now adds an explicit ordered-intent concatMap example plus a same-trigger policy comparison across all four operators, making it stronger on use-case framing and worked examples while follow-up depth stays close."
+    },
+    {
+      "label": "Stack Overflow: concatMap vs switchMap vs mergeMap in Angular",
+      "url": "https://stackoverflow.com/questions/51111852/when-should-i-use-concatmap-mergemap-switchmap-and-exhaustmap-in-rxjs",
+      "category": "community_qna",
+      "selectionReason": "This is a strong community comparator because developers often learn the operator differences through pragmatic Q&A rather than official docs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our answer is broader and more structured on operator policy, but the Stack Overflow thread remains close on practical trade-offs, so the follow-up criterion stays tied.",
+      "theirStrengths": [
+        "It is pragmatic and directly phrased around the same operator-comparison confusion developers usually have."
+      ],
+      "theirGaps": [
+        "It is fragmented by the Q&A format and not organized as a single Angular decision framework."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Best Angular use-cases"
+        ],
+        "actionableExamples": [
+          "Real Angular examples"
+        ],
+        "followUpConfusion": [
+          "switchMap unsubscribes from the previous inner Observable. For Angular HttpClient, unsubscribing typically aborts the underlying request (via browser APIs). But if the server already processed it, cancellation won’t rewind time—it mainly prevents your app from handling stale results."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Stack Overflow thread is practical, but our page gives a more systematic mapping from operator behavior to Angular UI scenarios."
+        ],
+        "actionableExamples": [
+          "Our table and pitfall sections are easier to apply quickly than a long threaded answer."
+        ],
+        "followUpConfusion": [
+          "The thread helps with operator differences, but our page is clearer on subtle follow-ups like switchMap not necessarily undoing server-side work."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one compact note on non-HTTP inner streams so the answer stays broader than request-only examples."
+        ]
+      }
+    }
+  ]
+}

@@ -53,7 +53,7 @@ test('seo: css display flex page keeps route identity + structured data', async 
   await page.goto('/css/trivia/css-display-flex');
   const base = new URL(page.url()).origin;
 
-  await expect(page).toHaveTitle(/what does display:\s*flex do in css\?.*\| frontendatlas/i);
+  await expect(page).toHaveTitle(/display:\s*flex.*\| frontendatlas/i);
   await expect(page.locator('h1').first()).toContainText(/what does display:\s*flex do\?/i);
   await expect.poll(() => getMeta(page, 'description')).not.toBeNull();
   await expect.poll(() => getCanonical(page)).toBe(`${base}/css/trivia/css-display-flex`);

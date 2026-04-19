@@ -701,12 +701,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain what happens to a component instance when a v-if condition toggles: when it is created (mounted), when it is destroyed (unmounted), what lifecycle hooks run, and why local state resets. Contrast with v-show and mention when you should prefer one over the other.",
+    "description": "Explain v-if as a structural mount/unmount decision, focusing on local-state resets, lifecycle cleanup, and the production pitfall of treating it like cheap visibility toggling.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>v-if</code> controls whether a template branch <em>exists</em>. For plain elements it means “insert/remove DOM”. For components it means “mount/unmount the component instance” — so the instance is created when the condition becomes true and destroyed when it becomes false."
+          "text": "<strong>Production pitfall</strong><br><br><code>v-if</code> is not just a visibility toggle. For components, it is a mount or unmount decision. That means local state, timers, watchers, focus, and in-flight UI context can disappear each time the condition turns false. The common mistake is treating <code>v-if</code> like cheap show or hide behavior when it actually resets the branch."
         },
         {
           "type": "list",
@@ -829,10 +829,10 @@
       "lifecycle",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "How Does v-if Affect Component Creation and Destruction in Vue?",
-      "description": "v-if removes and recreates components, so Vue tracks mount/unmount cycles and local component state resets on each toggle."
+      "title": "Vue v-if in production: mount/unmount resets, lifecycle cleanup, and toggle pitfalls",
+      "description": "v-if destroys and recreates component instances. The real production question is when that reset behavior is useful and when it becomes a pitfall."
     },
     "incidentCard": {
       "title": "Toggle Lifecycle Check",
@@ -1156,12 +1156,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "v-if adds/removes elements from the DOM (mount/unmount lifecycle), while v-show toggles display via CSS and keeps elements in the DOM. Use v-if for expensive components; v-show for frequent toggles.",
+    "description": "Compare v-show and v-if through DOM cost, lifecycle impact, preserved state, and the performance/debug trade-off between cheap toggles and true unmounting.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core difference</strong><br><br><code>v-if</code> is <em>structural</em>: the branch exists only when the condition is true (DOM nodes are created/inserted and later removed).<br><code>v-show</code> is <em>presentational</em>: the element/component is always rendered once, and Vue toggles visibility by setting <code>style.display</code> (typically <code>display: none</code>)."
+          "text": "<strong>Performance trade-off</strong><br><br><code>v-if</code> and <code>v-show</code> solve different problems. <code>v-if</code> removes the branch and pays mount/unmount cost each time. <code>v-show</code> keeps the instance alive and only toggles CSS display. The real production/debug question is whether you want cheap toggles with preserved state or true teardown with zero hidden work."
         },
         {
           "type": "list",
@@ -1268,10 +1268,10 @@
       "performance",
       "lifecycle"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What Is the Difference Between v-show and v-if in Vue?",
-      "description": "v-if adds or removes DOM nodes, while v-show toggles display on mounted nodes, and Vue tracks state without destroying the element."
+      "title": "v-show vs v-if in Vue: lifecycle cost, preserved state, and toggle-performance trade-offs",
+      "description": "v-show keeps the instance mounted while v-if unmounts it. The practical decision is state preservation versus zero hidden work."
     },
     "incidentCard": {
       "title": "Visibility Strategy Check",
@@ -1300,12 +1300,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Computed properties are cached, reactive getters that recompute only when their dependencies change. Use them for derived state instead of methods to avoid unnecessary recalculation. Computed values improve performance by caching, so test dependency changes and edge cases.",
+    "description": "Computed properties are cached derived state in Vue. Strong answers compare them with template methods, show a real performance-use case like cart totals or filtered lists, and explain why computed getters should stay pure and synchronous.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Computed properties in Vue are a powerful way to define reactive logic that depends on existing data. They act like dynamic properties that automatically re-evaluate when the data they depend on changes — and they cache the result until dependencies are updated again."
+          "text": "<strong>Overview</strong><br><br>Computed properties in Vue are cached <em>derived state</em>. They are the right tool when you want to calculate a value from reactive inputs and reuse that value across renders without recomputing it on every unrelated UI change."
         },
         {
           "type": "code",
@@ -1351,6 +1351,15 @@
           "caption": "Comparison Between Computed Properties and Methods"
         },
         {
+          "type": "text",
+          "text": "<strong>Worked scenario: computed vs method in a real component</strong><br><br>A cart drawer renders subtotal and filtered line items. If you calculate that data with a method called from the template, Vue reruns the work on <em>every</em> component render — even when an unrelated flag like a theme toggle changes. A computed getter caches the derived result until the reactive inputs it used actually change."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<script setup>\nimport { ref, computed } from 'vue';\n\nconst items = ref([{ id: 1, price: 20, qty: 2 }]);\nconst theme = ref('light');\n\nfunction subtotalViaMethod() {\n  return items.value.reduce((sum, item) => sum + item.price * item.qty, 0);\n}\n\nconst subtotal = computed(() =>\n  items.value.reduce((sum, item) => sum + item.price * item.qty, 0)\n);\n</script>\n\n<template>\n  <p>Method total: {{ subtotalViaMethod() }}</p>\n  <p>Computed total: {{ subtotal }}</p>\n  <button @click=\"theme = theme === 'light' ? 'dark' : 'light'\">Toggle theme</button>\n</template>\n\n<!-- Toggling theme rerenders the component.\n     The method runs again; the computed value is reused until items change. -->"
+        },
+        {
           "type": "code",
           "language": "javascript",
           "code": "computed: {\n  reversedMessage() {\n    return this.message.split('').reverse().join('');\n  }\n}"
@@ -1371,6 +1380,10 @@
         {
           "type": "text",
           "text": "Now, assigning a value like <code>this.fullName = 'Jane Doe'</code> automatically updates <code>firstName</code> and <code>lastName</code>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important follow-up</strong><br><br>Computed getters should stay <strong>pure and synchronous</strong>. If you need to fetch data, write to storage, log analytics, or trigger any other side effect when reactive state changes, that belongs in <a href=\"/vue/trivia/vue-computed-vs-watchers\"><code>watch</code> / <code>watchEffect</code></a>, not in a computed getter."
         },
         {
           "type": "text",
@@ -1395,10 +1408,10 @@
       "derived-state",
       "performance"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "What Are Computed Properties in Vue and When Should You Use Them?",
-      "description": "Computed properties are cached derived values, and Vue tracks their dependencies so recalculation happens only when source state changes."
+      "title": "Vue computed properties: cached derived state, method pitfalls, and purity rules",
+      "description": "Learn when computed properties beat template methods, why computed getters should stay pure and synchronous, and how caching helps real Vue components."
     },
     "incidentCard": {
       "title": "Derived State Caching Check",
@@ -1994,12 +2007,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "This question is about lifecycle timing and side-effect placement in Vue components. Focus on which hooks run before/after mount, update, and unmount, plus what logic is safe in each stage. Keep Composition API fundamentals (setup/ref/reactive design) in the dedicated Composition API question.",
+    "description": "This question is about lifecycle timing and side-effect placement in Vue components. Strong answers map real tasks like fetches, DOM reads, and cleanup to the right hook and explain why hook choice affects correctness, not just style.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Every Vue component goes through a series of lifecycle stages — creation, mounting, updating, and unmounting. Vue provides lifecycle hooks, which are special functions you can define to run code automatically at these stages."
+          "text": "<strong>Overview</strong><br><br>Lifecycle hooks are Vue's timing boundaries. The practical value is not memorizing names in order; it is knowing <em>when</em> the DOM exists, <em>when</em> reactive state is ready, and <em>when</em> cleanup must happen so timers, listeners, or observers do not leak."
         },
         {
           "type": "text",
@@ -2074,6 +2087,37 @@
           "text": "<strong>Lifecycle Hook Flow</strong><br>1️⃣ <code>beforeCreate</code> → 2️⃣ <code>created</code> → 3️⃣ <code>beforeMount</code> → 4️⃣ <code>mounted</code><br>Then for updates: 5️⃣ <code>beforeUpdate</code> → 6️⃣ <code>updated</code><br>And finally for teardown: 7️⃣ <code>beforeUnmount</code> → 8️⃣ <code>unmounted</code>."
         },
         {
+          "type": "list",
+          "columns": [
+            "Task",
+            "Best hook",
+            "Why this timing matters"
+          ],
+          "rows": [
+            [
+              "Initialize data that does not need the DOM",
+              "created() / setup()",
+              "Reactive state exists, but DOM nodes do not."
+            ],
+            [
+              "Measure an element or start a DOM-only library",
+              "mounted() / onMounted()",
+              "The DOM is guaranteed to exist only after mount."
+            ],
+            [
+              "Read layout after a reactive update",
+              "updated() + nextTick()",
+              "beforeUpdate sees the old DOM; nextTick waits for the patched DOM."
+            ],
+            [
+              "Stop timers, listeners, or observers",
+              "beforeUnmount() / onBeforeUnmount()",
+              "Cleanup must run before the instance disappears to avoid leaks across route changes or v-if toggles."
+            ]
+          ],
+          "caption": "Hook choice depends on what is ready at that moment"
+        },
+        {
           "type": "text",
           "text": "<strong>Use Case Example</strong><br>Fetching data when a component mounts is one of the most common lifecycle hook patterns:"
         },
@@ -2085,6 +2129,15 @@
         {
           "type": "text",
           "text": "In this example, the <code>mounted()</code> hook ensures the component is attached to the DOM before fetching and displaying data."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { ref, onMounted, onUpdated, onBeforeUnmount, nextTick } from 'vue';\n\nconst panel = ref(null);\nlet resizeObserver;\n\nonMounted(() => {\n  resizeObserver = new ResizeObserver(() => {\n    console.log('mounted size:', panel.value?.getBoundingClientRect().width);\n  });\n\n  if (panel.value) resizeObserver.observe(panel.value);\n});\n\nonUpdated(async () => {\n  await nextTick();\n  console.log('updated size:', panel.value?.getBoundingClientRect().width);\n});\n\nonBeforeUnmount(() => {\n  resizeObserver?.disconnect();\n});"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Composition API mapping</strong><br><br><code>mounted</code> maps to <code>onMounted</code>, <code>updated</code> maps to <code>onUpdated</code>, and <code>beforeUnmount</code>/<code>unmounted</code> map to <code>onBeforeUnmount</code>/<code>onUnmounted</code>. The timing rule is the same; only the API shape changes."
         },
         {
           "type": "text",
@@ -2105,10 +2158,10 @@
       "components",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "What Are Vue Lifecycle Hooks and When Should You Use Them?",
-      "description": "Lifecycle hooks are callbacks like created, mounted, updated, and unmounted, and Vue tracks when each runs during render, update, and teardown."
+      "title": "Vue lifecycle hooks: DOM timing, cleanup, and hook-choice debugging",
+      "description": "Learn when to use created, mounted, updated, and unmounted in Vue, how DOM timing changes hook choice, and where cleanup belongs."
     },
     "incidentCard": {
       "title": "Hook Timing Check",
@@ -2922,12 +2975,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Vue Router enables client-side navigation with routes mapped to components. It supports dynamic params, nested routes, and navigation guards for auth and data loading. Routing impacts UX and data fetching; test guards, async navigation, and scroll restoration.",
+    "description": "Explain Vue Router as navigation infrastructure: route matching, nested views, guards, and the production bugs that come from async navigation, auth checks, and scroll restoration.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue Router is an official library that enables navigation between different views or components in a Vue application. It transforms a Vue app into a Single-Page Application (SPA) by mapping URLs (routes) to specific components and handling transitions dynamically without reloading the page."
+          "text": "<strong>Production navigation layer</strong><br><br>Vue Router is not only a way to swap components by URL. It is the app's navigation control plane: route matching, nested rendering, async guards, params, and history updates. The bugs teams debug in production usually involve auth redirects, stale route data, canceled navigation, or scroll behavior, not just defining a path."
         },
         {
           "type": "text",
@@ -3028,10 +3081,10 @@
       "routes",
       "guards"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What Is Vue Router and How Does Navigation Work?",
-      "description": "Vue Router maps URLs to components for SPA navigation with router-link and router-view, and it tracks route changes through guards and params."
+      "title": "Vue Router in production: guards, async navigation, and route-debugging mental models",
+      "description": "Vue Router is more than router-link and router-view. The practical issues are auth guards, async navigation flow, params, and scroll/debug behavior."
     },
     "incidentCard": {
       "title": "Navigation Flow Check",
@@ -3217,7 +3270,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain the Vue Composition API with an interview and production angle: why Vue introduced it, how setup(), ref(), and reactive() improve large-component organization, and which migration trade-offs matter.",
+    "description": "Explain the Vue Composition API with an interview and production angle: why Vue introduced it, how setup(), ref(), and reactive() help group one feature in one place, and when migration trade-offs still favor the Options API.",
     "answer": {
       "blocks": [
         {
@@ -3227,6 +3280,15 @@
         {
           "type": "text",
           "text": "<strong>Why the Composition API Was Introduced</strong><br>In large applications, the Options API (using data, methods, computed, etc.) often leads to scattered logic — related code gets separated into different options, making it harder to maintain and reuse. The Composition API solves this by allowing developers to group related logic together using plain JavaScript functions."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Worked scenario: one feature, one composable</strong><br><br>Imagine a product-search panel with query state, loading state, result count, keyboard shortcuts, request cleanup, and derived filters. In the Options API, that feature gets split across <code>data</code>, <code>computed</code>, <code>methods</code>, <code>watch</code>, and lifecycle hooks. In the Composition API, you can move the whole feature into one composable and keep the state, effects, and cleanup together."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// useProductSearch.js\nimport { ref, computed, watch } from 'vue';\n\nexport function useProductSearch(api) {\n  const query = ref('');\n  const results = ref([]);\n  const isLoading = ref(false);\n  const resultCount = computed(() => results.value.length);\n\n  watch(query, async (q, _prev, onCleanup) => {\n    if (!q.trim()) {\n      results.value = [];\n      return;\n    }\n\n    const ctrl = new AbortController();\n    onCleanup(() => ctrl.abort());\n    isLoading.value = true;\n\n    try {\n      results.value = await api.search(q, { signal: ctrl.signal });\n    } finally {\n      isLoading.value = false;\n    }\n  });\n\n  return { query, results, isLoading, resultCount };\n}"
         },
         {
           "type": "code",
@@ -3279,6 +3341,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Migration / when not to force it</strong><br><br>A small leaf component with a couple of props and one click handler can stay in the Options API and still be perfectly maintainable. Composition API pays off most when one feature spans <code>state + computed + watch + lifecycle</code> or when you want to reuse that feature across multiple components. Vue lets both styles coexist, so migration can happen incrementally instead of as a rewrite."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Composition API as building blocks: instead of being restricted to predefined sections (data, methods, computed), you freely compose logic like LEGO pieces — reusable, organized, and scalable."
         },
         {
@@ -3296,10 +3362,10 @@
       "reactivity",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Vue Composition API: setup(), ref(), reactive(), and migration trade-offs",
-      "description": "Learn why Vue introduced the Composition API, how setup(), ref(), and reactive() improve large-component organization, and which migration trade-offs matter in practice."
+      "title": "Vue Composition API: feature-first organization, composables, and migration trade-offs",
+      "description": "Learn why Vue introduced the Composition API, how composables keep one feature together, and when migration trade-offs still favor the Options API."
     },
     "incidentCard": {
       "title": "Composition API Reasoning Check",
@@ -3328,12 +3394,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "Vuex is a centralized state management pattern for large Vue apps. It provides a single store, predictable mutations, and devtools time-travel debugging. Centralized state helps predictability and debugging, but it adds boilerplate and affects test setup and performance.",
+    "description": "Explain Vuex as centralized shared-state infrastructure, including predictable writes, devtools tracing, boilerplate cost, and when global store usage becomes a performance or architecture pitfall.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vuex is Vue’s official <strong>state management pattern and library</strong>. It serves as a centralized store that manages shared data and ensures all components access and modify it in a consistent, predictable way. This is crucial in large-scale applications where multiple components depend on or modify the same state."
+          "text": "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
         },
         {
           "type": "text",
@@ -3432,10 +3498,10 @@
       "mutations",
       "architecture"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "What Is Vuex and How Does It Manage State in Vue Apps?",
-      "description": "Vuex centralizes shared state in a single store with predictable mutation flow, and it tracks updates so large Vue apps stay consistent."
+      "title": "Vuex in large apps: shared-state control, debugging flow, and global-store trade-offs",
+      "description": "Vuex centralizes shared state, but the real production discussion is predictable write flow, debugging, boilerplate, and when a global store becomes overkill."
     },
     "incidentCard": {
       "title": "Shared State Check",
@@ -3464,12 +3530,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance. Diffing optimizes updates, but keys and stable identity matter for performance and correctness.",
+    "description": "Explain Vue virtual DOM diffing through keyed identity, patch flags, and the production debugging gap between efficient updates and reused nodes with the wrong identity.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue’s virtual DOM is a lightweight JavaScript representation of the real DOM. Instead of directly manipulating the browser’s DOM — which is slow — Vue updates a virtual copy in memory and then compares it to the previous version using a process called <strong>diffing</strong>. After detecting the differences, Vue efficiently updates only the parts of the real DOM that have changed, resulting in faster rendering performance."
+          "text": "<strong>Under the hood</strong><br><br>Vue's virtual DOM is useful because it separates render calculation from real DOM mutation, but the production/debug value comes from understanding identity. Vue can patch very efficiently when nodes are stable, yet the wrong key or the wrong mental model still produces reused DOM bugs, focus jumps, or incorrect list state."
         },
         {
           "type": "text",
@@ -3588,10 +3654,10 @@
       "performance",
       "rendering"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-05",
     "seo": {
-      "title": "How Does Vue Virtual DOM Diffing Optimize Updates?",
-      "description": "Vue optimizes updates by diffing virtual DOM trees and patching only changed nodes, and Vue tracks dependencies so unchanged branches are skipped."
+      "title": "Vue virtual DOM under the hood: diffing, keyed identity, and patch-debugging pitfalls",
+      "description": "Vue diffing is fast when identity is stable. The practical debugging angle is keyed reuse, compiler patch flags, and why efficient updates can still go wrong."
     },
     "incidentCard": {
       "title": "Diffing Strategy Check",

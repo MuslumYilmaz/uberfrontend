@@ -1,0 +1,16 @@
+{
+  "batchId": "importance-5-react-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "react", "id": "react-rerender-decision-and-render" },
+    { "tech": "react", "id": "react-one-way-data-flow" },
+    { "tech": "react", "id": "react-why-props-immutable" },
+    { "tech": "react", "id": "react-keys-in-lists" },
+    { "tech": "react", "id": "react-controlled-vs-uncontrolled" },
+    { "tech": "react", "id": "react-useeffect-purpose" },
+    { "tech": "react", "id": "react-component-rerendering" },
+    { "tech": "react", "id": "react-lifting-state-up" },
+    { "tech": "react", "id": "react-prevent-unnecessary-rerenders" },
+    { "tech": "react", "id": "react-stale-state-closures" }
+  ]
+}

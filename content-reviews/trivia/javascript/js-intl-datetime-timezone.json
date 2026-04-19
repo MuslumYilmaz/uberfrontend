@@ -1,0 +1,149 @@
+{
+  "contentId": "js-intl-datetime-timezone",
+  "tech": "javascript",
+  "query": "Intl.DateTimeFormat timezone DST interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this browser, network, security, or state-management prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN Intl.DateTimeFormat",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for Intl.DateTimeFormat options, locale formatting, and time zone handling in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on Intl.DateTimeFormat API options and supported timeZone behavior."
+      ],
+      "theirGaps": [
+        "It is less explicit on the production rule of UTC storage plus IANA zone formatting and on why fixed offsets fail across DST boundaries."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Intl.DateTimeFormat solves the production bug of formatting across time zones and DST without unsafe manual offset math. The useful angle is IANA zone IDs, locale formatting, and why fixed offsets break scheduling or audit displays."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: stable zone-aware formatting</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Store timestamps in UTC, transport as ISO strings, and convert at the presentation edge with an IANA time zone (for example <code>America/New_York</code>). Do not store local wall-clock strings as source-of-truth."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the API correctly, but our page is more explicit about the production bug this API solves: DST-safe formatting without manual offset math."
+        ],
+        "actionableExamples": [
+          "The canonical docs still have strong API examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up confusion: use UTC as the source of truth, IANA zones for display, and avoid fixed-offset assumptions."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one smaller DST-boundary example later if we need more example distance over MDN."
+        ]
+      },
+      "winReason": "MDN is the canonical Intl.DateTimeFormat reference, but our page is stronger for this prompt because it centers the DST and fixed-offset bugs that make the API necessary."
+    },
+    {
+      "label": "FormatJS React Intl formatted date",
+      "url": "https://formatjs.github.io/docs/react-intl/components/#formatteddate",
+      "category": "tutorial_reference",
+      "selectionReason": "FormatJS is a strong practical reference for locale-aware date formatting and is a direct engineering comparator for presentation-edge date handling.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on locale-aware date formatting in real application UI."
+      ],
+      "theirGaps": [
+        "It is less explicit on the interview-sized mental model around UTC storage, DST transitions, and why fixed offsets are unsafe."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Intl.DateTimeFormat solves the production bug of formatting across time zones and DST without unsafe manual offset math. The useful angle is IANA zone IDs, locale formatting, and why fixed offsets break scheduling or audit displays."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: stable zone-aware formatting</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Store timestamps in UTC, transport as ISO strings, and convert at the presentation edge with an IANA time zone (for example <code>America/New_York</code>). Do not store local wall-clock strings as source-of-truth."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "FormatJS is practical on UI date formatting, but our page is more explicit about the system-level rule that prevents DST and scheduling bugs."
+        ],
+        "actionableExamples": [
+          "Its examples are still practical and relevant, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up about IANA zones, UTC source-of-truth, and why fixed offsets fail during DST changes."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the UTC-plus-IANA mental model close to the runnable example so the answer stays more reusable than a library-specific formatting guide."
+        ]
+      },
+      "winReason": "FormatJS is practical for date formatting in UI code, but our page is stronger because it ties formatting choices to timezone correctness and DST safety."
+    },
+    {
+      "label": "Moment Timezone docs",
+      "url": "https://momentjs.com/timezone/docs/",
+      "category": "tutorial_reference",
+      "selectionReason": "Moment Timezone documentation is still a strong direct reference for timezone and DST concepts that frequently surface in scheduling and audit-display discussions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on timezone and DST concepts that explain why local offset math is fragile."
+      ],
+      "theirGaps": [
+        "It is library-centric and less centered on the modern built-in Intl.DateTimeFormat answer interviewers expect."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Intl.DateTimeFormat solves the production bug of formatting across time zones and DST without unsafe manual offset math. The useful angle is IANA zone IDs, locale formatting, and why fixed offsets break scheduling or audit displays."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: stable zone-aware formatting</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Store timestamps in UTC, transport as ISO strings, and convert at the presentation edge with an IANA time zone (for example <code>America/New_York</code>). Do not store local wall-clock strings as source-of-truth."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Moment Timezone is strong on timezone concepts, but our page is more explicit about the built-in browser answer and the production rule that avoids scheduling bugs."
+        ],
+        "actionableExamples": [
+          "Its examples are still practical on timezone behavior, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up interview point: format with IANA zones at the edge, do not store local wall-clock strings, and avoid fixed offsets."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one shorter audit-log example to make the built-in Intl workflow even more concrete."
+        ]
+      },
+      "winReason": "Moment Timezone is strong on DST concepts, but our page is a better interview answer because it shows how to solve the problem with the built-in Intl stack and a safer data model."
+    }
+  ]
+}

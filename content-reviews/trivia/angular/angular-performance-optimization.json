@@ -1,0 +1,146 @@
+{
+  "contentId": "angular-performance-optimization",
+  "tech": "angular",
+  "query": "Angular performance optimization for large applications interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Angular DevTools Profiler",
+      "url": "https://angular.dev/tools/devtools/profiler",
+      "category": "canonical_docs",
+      "selectionReason": "Angular DevTools profiler is the clearest official source for the profiling-first workflow behind Angular performance work in large applications.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the canonical Angular source for profiling change detection and identifying heavy components and directives."
+      ],
+      "theirGaps": [
+        "It focuses on profiling tooling rather than summarizing the broader interview checklist of lists, bundle size, and template cost."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Profile-first mindset</strong><br><br>Angular performance work should start with <strong>profiling</strong>, not with a random checklist. Real production slowdowns usually come from a few hotspots: too much change-detection work, expensive list rendering, unstable identity, or oversized route chunks. The job is to measure first, name the bottleneck, then apply the right fix."
+        ],
+        "followUpConfusion": [
+          "<strong>Optimization split</strong><br><ul><li><strong>Runtime</strong>: cut change-detection and render work.</li><li><strong>Rendering</strong>: fix list identity, DOM size, and expensive bindings.</li><li><strong>Bundle</strong>: lazy load or remove code so the app boots faster.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular Performance Tuning: Complete Guide To Bundle Optimization",
+      "url": "https://blog.angular-university.io/angular-performance-tuning/",
+      "category": "tutorial_reference",
+      "selectionReason": "This Angular University guide is the strongest tutorial competitor for profiling-first bundle analysis, lazy-loading, and route-level optimization in larger Angular apps.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a practical performance guide with bundle analysis, chunk splitting, and lazy-loading decisions."
+      ],
+      "theirGaps": [
+        "It leans more on bundle optimization than on the full mix of template, list, and change-detection hotspots."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Profile-first mindset</strong><br><br>Angular performance work should start with <strong>profiling</strong>, not with a random checklist. Real production slowdowns usually come from a few hotspots: too much change-detection work, expensive list rendering, unstable identity, or oversized route chunks. The job is to measure first, name the bottleneck, then apply the right fix."
+        ],
+        "followUpConfusion": [
+          "<strong>Optimization split</strong><br><ul><li><strong>Runtime</strong>: cut change-detection and render work.</li><li><strong>Rendering</strong>: fix list identity, DOM size, and expensive bindings.</li><li><strong>Bundle</strong>: lazy load or remove code so the app boots faster.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: Angular: Is using trackBy index good practice?",
+      "url": "https://stackoverflow.com/questions/53853534/angular-is-using-trackby-index-good-practice",
+      "category": "community_qna",
+      "selectionReason": "This is a directly relevant community comparator because large-list rendering and trackBy decisions are a common practical performance hotspot in Angular apps.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical and grounded in the exact performance discussion teams have around large collections and DOM churn."
+      ],
+      "theirGaps": [
+        "It covers one hotspot well, but it does not summarize the larger profiling-first optimization strategy."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Profile-first mindset</strong><br><br>Angular performance work should start with <strong>profiling</strong>, not with a random checklist. Real production slowdowns usually come from a few hotspots: too much change-detection work, expensive list rendering, unstable identity, or oversized route chunks. The job is to measure first, name the bottleneck, then apply the right fix."
+        ],
+        "followUpConfusion": [
+          "<strong>Optimization split</strong><br><ul><li><strong>Runtime</strong>: cut change-detection and render work.</li><li><strong>Rendering</strong>: fix list identity, DOM size, and expensive bindings.</li><li><strong>Bundle</strong>: lazy load or remove code so the app boots faster.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-composition-api-vs-mixins",
+  "tech": "vue",
+  "query": "Why does Vue recommend the Composition API over mixins today?",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Composition API FAQ",
+      "url": "https://vuejs.org/guide/extras/composition-api-faq",
+      "category": "canonical_docs",
+      "selectionReason": "This is the strongest official Vue page for why Composition API exists, how it improves logic organization, and why mixins are no longer the preferred reuse model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official FAQ is authoritative on motivation, trade-offs, coexistence with Options API, and long-term design guidance."
+      ],
+      "theirGaps": [
+        "It is broader and less compressed around the interview-specific mixins-versus-composables decision."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "mixins scale poorly: they hide where logic/state comes from, can collide/override silently, and are hard to type and refactor.",
+          "Composition API fixes that by making reuse explicit (import + call a composable), composable (combine multiple functions safely), and TypeScript-friendly (inference works through function signatures)."
+        ],
+        "followUpConfusion": [
+          "If multiple sources define the same key, you can get overrides or merged behavior (hooks).",
+          "you read a component and can’t confidently tell what runs, in what order, and which definition “wins”."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The FAQ already frames Composition API around scaling logic organization, composables, and type inference."
+        ],
+        "actionableExamples": [
+          "The official page includes useful examples and migration framing, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The docs explain design trade-offs well, but our page is more direct on collision, override, and hidden-source debugging follow-ups."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one shorter composable extraction example to make the before-versus-after contrast even faster to scan."
+        ]
+      },
+      "winReason": "The official FAQ is broader on framework rationale, but our page is stronger as a compact interview answer because it centers mixin collisions, hidden dependencies, and the explicit composable alternative."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because mixins, composables, and reuse patterns are core Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong Vue interview-prep hub with broad category coverage."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact mixins-versus-composables architecture question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Composition API approach: explicit, local, and composable",
+          "Practical scenario You want to reuse form validation across multiple Vue components, choosing between a composable or a mixin."
+        ],
+        "followUpConfusion": [
+          "Naming is explicit (and renameable), collisions are controlled, and types are predictable.",
+          "Hidden dependencies in mixins that are hard to trace."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is relevant at the topic level, but it is less focused on this exact reuse trade-off."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on worked interview examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about action-at-a-distance, merge behavior, and why composables reduce those follow-up problems."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the answer short enough that the practical scenario remains visible instead of getting buried under architecture prose."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it answers the exact mixins-versus-Composition-API question directly and ties it to real refactor pain."
+    },
+    {
+      "label": "What is a Vue.js Composable?",
+      "url": "https://vueschool.io/articles/vuejs-tutorials/what-is-a-vue-js-composable/",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a topic-direct article that explicitly positions composables as the Composition API answer to the same reuse problems that mixins historically solved.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct tutorial on composables and why they are preferable for reusable logic."
+      ],
+      "theirGaps": [
+        "It is less tightly focused on the hidden merge behavior and collision footguns that make mixins age poorly."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Composition API fixes that by making reuse explicit (import + call a composable), composable (combine multiple functions safely), and TypeScript-friendly (inference works through function signatures).",
+          "With composables, logic reuse is just function composition: you import what you need, call it, and use returned refs/functions."
+        ],
+        "followUpConfusion": [
+          "Mixins merge into the component options.",
+          "The result: you read a component and can’t confidently tell what runs, in what order, and which definition “wins”."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article is directly aligned on composables and reuse, so the use-case comparison is close."
+        ],
+        "actionableExamples": [
+          "Vue School remains competitive on practical code examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the exact follow-up an interviewer asks next: what breaks when multiple mixins merge into one component."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one smaller rename-on-destructure example to make collision avoidance even more concrete."
+        ]
+      },
+      "winReason": "Vue School is a strong composables tutorial, but our page is stronger on the specific reasons Vue moved away from mixins in real codebases: hidden APIs, merge behavior, and collision-driven refactor pain."
+    }
+  ]
+}

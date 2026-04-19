@@ -1,0 +1,158 @@
+{
+  "contentId": "react-controlled-vs-uncontrolled",
+  "tech": "react",
+  "query": "Controlled vs uncontrolled React components interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<input> – React",
+      "url": "https://react.dev/reference/react-dom/components/input",
+      "category": "canonical_docs",
+      "selectionReason": "The official input docs are the strongest canonical source for value/defaultValue, controlled/uncontrolled warnings, and caret-jump pitfalls.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official input docs remain the canonical API reference, but our page is now stronger as an interview answer on ownership, uncontrolled-to-controlled warnings, defaultValue versus value, and the file-input exception that usually appears as the follow-up.",
+      "theirStrengths": [
+        "It is the canonical reference for controlled inputs, defaultValue, and switching-mode warnings."
+      ],
+      "theirGaps": [
+        "It is input-focused rather than framed as an interview comparison page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production bugs appear when one field tries to switch owners halfway through its lifecycle."
+        ],
+        "followUpConfusion": [
+          "defaultValue sets the initial DOM value for uncontrolled inputs; value makes React the owner on every render.",
+          "File inputs: Browsers own file input values for security reasons, so file inputs are effectively uncontrolled."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs include caret-jump bugs and controlled-to-uncontrolled warnings, so the real-world lens is strong."
+        ],
+        "actionableExamples": [
+          "They include multiple concrete examples for controlled text inputs, checkboxes, and defaultValue-based uncontrolled inputs."
+        ],
+        "followUpConfusion": [
+          "They directly answer tricky follow-ups like why value cannot switch from undefined to a string and why caret jumps on every keystroke."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one production bug example around switching a field from uncontrolled to controlled after async data loads."
+        ],
+        "actionableExamples": [
+          "Add a side-by-side defaultValue vs value example with reset and validation behavior."
+        ],
+        "followUpConfusion": [
+          "Add explicit notes for file inputs, defaultValue, and the uncontrolled-to-controlled warning."
+        ]
+      }
+    },
+    {
+      "label": "What is the difference between controlled and uncontrolled React Components?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-the-difference-between-controlled-and-uncontrolled-react-components",
+      "category": "interview_prep",
+      "selectionReason": "This is a direct GreatFrontEnd quiz page on the exact question, so it is the strongest interview-prep comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd answers the basic comparison well, but our page now goes further on the warning/debug path: async data causing uncontrolled-to-controlled flips, defaultValue versus value, reset behavior, and why file inputs stay DOM-owned.",
+      "theirStrengths": [
+        "It is directly aligned with the exact interview question and includes controlled and uncontrolled examples."
+      ],
+      "theirGaps": [
+        "It is lighter on production warnings like switching modes mid-lifecycle."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A controlled input is owned by React state, which makes validation, derived UI, and reset flows predictable. An uncontrolled input is owned by the DOM, which is often simpler for one-off forms, file inputs, and low-friction submissions."
+        ],
+        "followUpConfusion": [
+          "The warning A component is changing an uncontrolled input to be controlled usually means the same field started with DOM ownership and later received a React-controlled value."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The quiz covers validation, complex interactions, and simple-form use cases, so the real-world criterion is close."
+        ],
+        "actionableExamples": [
+          "It includes explicit controlled and uncontrolled form examples for the exact question."
+        ],
+        "followUpConfusion": [
+          "It explains refs versus state clearly, though it is less explicit about React warnings and reset edge cases."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one login-form versus file-input scenario to sharpen when each pattern is preferred."
+        ],
+        "actionableExamples": [
+          "Add a defaultValue example and a controlled warning example, not just state and ref basics."
+        ],
+        "followUpConfusion": [
+          "Add one sentence on why a field cannot switch from uncontrolled to controlled after mount."
+        ]
+      }
+    },
+    {
+      "label": "Controlled vs Uncontrolled Components",
+      "url": "https://www.stanza.dev/courses/react/controlled-components/react-controlled-vs-uncontrolled",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a strong focused reference because it covers real-world context, common pitfalls, and React 19 form-action tradeoffs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Stanza still has the broader tutorial treatment, but our page is now better compressed around the production decision points interviewers usually probe: ownership, switching warnings, defaultValue, reset behavior, and file-input constraints.",
+      "theirStrengths": [
+        "It is tightly focused on the topic and includes modern FormData and performance trade-offs."
+      ],
+      "theirGaps": [
+        "It is tutorial-style and slightly broader than a compact interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "An uncontrolled input is owned by the DOM, which is often simpler for one-off forms, file inputs, and low-friction submissions."
+        ],
+        "followUpConfusion": [
+          "Controlled inputs reset from React state; uncontrolled inputs reset through the DOM or form reset APIs."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "It names autocomplete, simple contact forms, and React 19 form actions as concrete use cases."
+        ],
+        "actionableExamples": [
+          "It includes controlled and uncontrolled code examples, plus value versus defaultValue and FormData guidance."
+        ],
+        "followUpConfusion": [
+          "It explicitly covers switching between controlled and uncontrolled and when uncontrolled becomes attractive again."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one scenario about file inputs and server actions where uncontrolled is the right default."
+        ],
+        "actionableExamples": [
+          "Add a ref-based uncontrolled example that uses FormData or a file input."
+        ],
+        "followUpConfusion": [
+          "Add explicit coverage of defaultValue, read-only value props, and mixing controlled/uncontrolled modes."
+        ]
+      }
+    }
+  ]
+}

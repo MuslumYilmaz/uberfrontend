@@ -1,0 +1,147 @@
+{
+  "contentId": "js-esm-vs-cjs",
+  "tech": "javascript",
+  "query": "esm vs commonjs javascript interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Node.js ECMAScript modules",
+      "url": "https://nodejs.org/api/esm.html",
+      "category": "canonical_docs",
+      "selectionReason": "Node.js documentation is the canonical reference for ESM behavior, interop rules, and runtime packaging decisions around modules.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on ESM behavior, Node interop, loaders, and package-boundary details."
+      ],
+      "theirGaps": [
+        "It is heavier on runtime details and less compressed around the interview contrast between static analysis, bundling, and interop trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Interviewers care less about syntax and more about interop and packaging decisions in real projects."
+        ],
+        "followUpConfusion": [
+          "Static analysis enables better tree-shaking and optimization."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Node docs are authoritative, but our page is more explicit about the actual decision teams face: how module format changes bundling, optimization, and interop quality."
+        ],
+        "actionableExamples": [
+          "The official docs are deeper on runtime mechanics and interop edge cases, so they win on example and API detail."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely interview follow-up: ESM is statically analyzable, CommonJS is runtime-evaluated, and that difference changes tree-shaking and package behavior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact dual-package hazard example later if we want to compete more directly with Node's interop documentation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The Node docs are deeper on runtime specifics, but our page is stronger for the interview prompt because it compresses ESM/CJS into the real packaging and optimization trade-offs."
+    },
+    {
+      "label": "GreatFrontEnd CommonJS vs ES modules",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-differences-between-commonjs-modules-and-es-modules",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview-prep page for CommonJS versus ES modules.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It matches the exact interview wording and likely covers the main feature differences directly."
+      ],
+      "theirGaps": [
+        "It is less explicit on the package-boundary and optimization consequences in real projects."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Interviewers care less about syntax and more about interop and packaging decisions in real projects."
+        ],
+        "actionableExamples": [
+          "Runnable example #1: equivalent module exports"
+        ],
+        "followUpConfusion": [
+          "Same behavior is possible in both systems, but the package boundary and import style define interoperability and optimization quality."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is direct interview prep, but our page is more explicit about the real-world consequence of module format on bundling and package consumption."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and interview-shaped, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the follow-up set around live bindings, static analyzability, and why ESM tends to optimize better than CJS."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the exports-map example visible so the answer stays more package-boundary oriented than a syntax-only interview page."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it carries the answer into packaging, optimization, and interop decisions teams actually face."
+    },
+    {
+      "label": "Better Stack CommonJS vs ES modules",
+      "url": "https://betterstack.com/community/guides/scaling-nodejs/commonjs-vs-esm/",
+      "category": "tutorial_reference",
+      "selectionReason": "Better Stack is a practical tutorial reference for CommonJS versus ESM trade-offs in Node and build tooling.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on module-system trade-offs and migration context."
+      ],
+      "theirGaps": [
+        "It is less compact on the specific interview framing around static analysis, live bindings, and bundling impact."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Think of ESM as statically analyzable graph edges and CJS as runtime-evaluated module loading."
+        ],
+        "actionableExamples": [
+          "Runnable example #2: package exports map for safer consumption"
+        ],
+        "followUpConfusion": [
+          "Runtime flexibility in CJS can help legacy systems but complicates analysis."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Better Stack is practical, but our page is more explicit about how the two module systems change optimization quality and package-consumer experience."
+        ],
+        "actionableExamples": [
+          "Its migration examples are useful, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the interview follow-ups around live bindings, static import graphs, and why tree-shaking depends on that difference."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one small default-import interop example to create more example distance over generic module comparison articles."
+        ]
+      },
+      "winReason": "This tutorial is practical, but our page is stronger because it packages the comparison around analyzability, optimization, and package-boundary behavior."
+    }
+  ]
+}

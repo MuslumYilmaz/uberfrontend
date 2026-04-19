@@ -1,0 +1,145 @@
+{
+  "contentId": "js-block-scoped-or-function-scoped",
+  "tech": "javascript",
+  "query": "javascript block scope vs function scope var let const interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN let",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the strongest canonical reference for block scope, TDZ behavior, and loop binding semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page now does a better job surfacing the real production traps and the exact interview follow-up about how TDZ fits into block scope, while MDN remains the broader reference.",
+      "theirStrengths": [
+        "It documents block scope, temporal dead zone behavior, and loop-binding semantics accurately."
+      ],
+      "theirGaps": [
+        "It is keyword-reference material rather than a compact interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Strong answers compare `var`, `let`, and `const` side by side, show loop-capture and switch-case pitfalls, and explain how TDZ fits into block scope."
+        ],
+        "followUpConfusion": [
+          "Say it this way: JavaScript is function-scoped for <code>var</code> and block-scoped for <code>let</code>/<code>const</code>. TDZ is part of that block scope: the binding exists for the whole block, but you cannot use it until initialization runs."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers loop bindings and scope visibility well, but our page now foregrounds switch-case and legacy-script production failures more directly."
+        ],
+        "actionableExamples": [
+          "Its loop and block examples are concrete enough to keep the example criterion close."
+        ],
+        "followUpConfusion": [
+          "MDN goes deeper overall, but our page now answers the most likely interview follow-up about TDZ and block scope more directly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one extra compact before/after example only if this page needs a stronger example edge against MDN later."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd let / var / const",
+      "url": "https://www.greatfrontend.com/questions/quiz/javascript-interview-questions?language=js&tab=quiz#what-are-the-differences-between-variables-created-using-let-var-or-const",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep answer for the same var/let/const comparison.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page now gives a tighter worked comparison for shared loop bindings and a clearer direct answer to the TDZ/block-scope follow-up that interviewers usually ask next.",
+      "theirStrengths": [
+        "It is directly aligned with the interview phrasing and likely includes a clean side-by-side comparison."
+      ],
+      "theirGaps": [
+        "It is less obviously focused on switch-case pitfalls and module-vs-script behavior."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log('var', i), 0);\n}"
+        ],
+        "followUpConfusion": [
+          "Say it this way: JavaScript is function-scoped for <code>var</code> and block-scoped for <code>let</code>/<code>const</code>. TDZ is part of that block scope: the binding exists for the whole block, but you cannot use it until initialization runs."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd targets the same interview framing, so the practical use-case criterion stays close."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd is still strong on concise comparison, but our page now includes a more explicit broken-versus-fixed loop example plus switch-case nuance."
+        ],
+        "followUpConfusion": [
+          "Our page now directly answers the 'both or which one?' follow-up and ties TDZ back to block scope in one compact note."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one module-vs-script example explicit so the practical angle stays differentiated from pure interview-prep competitors."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GeeksforGeeks let",
+      "url": "https://www.geeksforgeeks.org/javascript/javascript-let/",
+      "category": "tutorial_reference",
+      "selectionReason": "This beginner-focused tutorial is a common reference competitor for `let` semantics and block scoping basics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is stronger on the interview trap itself and on why JavaScript presents both function and block scoping depending on the declaration keyword.",
+      "theirStrengths": [
+        "It explains `let`, block scope, and redeclaration rules clearly for beginners."
+      ],
+      "theirGaps": [
+        "It is not structured around the bigger comparison between function-scoped `var` and block-scoped `let`/`const`."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Strong answers compare `var`, `let`, and `const` side by side, show loop-capture and switch-case pitfalls, and explain how TDZ fits into block scope."
+        ],
+        "followUpConfusion": [
+          "So the right interview answer is not one word. It is: 'Both, depending on declaration keyword.'"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks focuses on `let` semantics, but it does not connect the topic as strongly to loop-capture bugs and interview traps."
+        ],
+        "actionableExamples": [
+          "It includes straightforward scope examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It explains `let` itself, but not the larger follow-up of why JavaScript can be both function-scoped and block-scoped."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one more compact example that contrasts block, function, and module scope in one place."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

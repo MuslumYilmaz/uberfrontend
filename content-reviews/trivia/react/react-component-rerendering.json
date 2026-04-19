@@ -1,0 +1,149 @@
+{
+  "contentId": "react-component-rerendering",
+  "tech": "react",
+  "query": "React component rerendering interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Render and Commit",
+      "url": "https://react.dev/learn/render-and-commit",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of render work, commit work, and why a rerender does not equal a DOM mutation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official docs cover the pipeline, but our page is more explicit about real rerender root causes: unstable identities, context fanout, remounts from key/type changes, and StrictMode dev confusion.",
+      "theirStrengths": [
+        "It is the authoritative explanation of render and commit phases."
+      ],
+      "theirGaps": [
+        "It is less focused on rerender root-cause debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "many rerender bugs are really identity bugs, context fanout, or remount problems"
+        ],
+        "followUpConfusion": [
+          "Changing a component’s key or swapping wrappers (e.g., Fragment ↔ div) can cause a remount (state reset), not just a re-render."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain how rendering and commit work, but they do not spend as much time on identity bugs, remounts, and context blast radius."
+        ],
+        "actionableExamples": [
+          "They still provide concrete pipeline examples, so the example criterion is close."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the follow-up distinction between rerender, remount, and StrictMode-only double logs."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one concrete example where a key change remounts a subtree and wipes local form state."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "What does re-rendering mean in React?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-does-re-rendering-mean-in-react",
+      "category": "interview_prep",
+      "selectionReason": "This is the closest GreatFrontEnd interview-prep page for rerender semantics and render-cycle follow-ups.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd defines rerendering well, but our page is more complete on bailout preconditions, StrictMode double logs, and key/type changes causing remounts instead of plain rerenders.",
+      "theirStrengths": [
+        "It is concise, interview-shaped, and directly relevant to rerender terminology."
+      ],
+      "theirGaps": [
+        "It is less explicit about remounts, unstable identities, and context-driven rerenders."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Unnecessary re-renders usually come from unclear state ownership, unstable prop identities (inline objects/functions), broad context updates, or bad keys."
+        ],
+        "followUpConfusion": [
+          "StrictMode (dev): React may intentionally run render logic more than once to surface unsafe side effects."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The quiz explains rerendering broadly, but our page names more concrete production causes of unexpected rerendering."
+        ],
+        "actionableExamples": [
+          "Both pages provide interview-scale explanations, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer about rerender versus remount and about why key changes reset state."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a short context-provider example that rerenders many consumers after one value change."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "React re-renders guide",
+      "url": "https://www.developerway.com/posts/react-re-renders-guide",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is the strongest long-form tutorial on rerender causes, memoization, and prop identity for React.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It provides a broader catalog of rerender causes and optimization patterns."
+      ],
+      "theirGaps": [
+        "It is less compressed for quick interview delivery."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Before/after bug: memoized child still hot because prop identity changes"
+        ],
+        "actionableExamples": [
+          "const filters = React.useMemo(() => ({ region, includeArchived: false }), [region]);"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The guide is explicitly organized around real rerender triggers like parent rerenders, props identity churn, and memo boundaries."
+        ],
+        "actionableExamples": [
+          "It contains more worked examples and deeper rerender taxonomies than our current answer."
+        ],
+        "followUpConfusion": [
+          "Both pages separate rerendering from DOM mutation and discuss memoization, so the follow-up criterion stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a second real bug example around inline objects and callbacks breaking memoized children."
+        ],
+        "actionableExamples": [
+          "Add one small before-and-after memo example with unstable versus stable props."
+        ],
+        "followUpConfusion": [
+          "Keep one extra line on how key changes cause identity loss even when DOM output looks similar."
+        ]
+      },
+      "winReason": "Our page now adds a second unstable-prop example and a remount-by-key snippet, which moves it ahead on production use-cases and actionable examples while conceptual depth stays close."
+    }
+  ]
+}

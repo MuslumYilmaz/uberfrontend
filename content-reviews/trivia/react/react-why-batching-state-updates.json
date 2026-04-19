@@ -1,0 +1,149 @@
+{
+  "contentId": "react-why-batching-state-updates",
+  "tech": "react",
+  "query": "why react batches state updates interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Queueing a Series of State Updates",
+      "url": "https://react.dev/learn/queueing-a-series-of-state-updates",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of queued state updates, render snapshots, and batching behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative source on queued updates and render snapshots."
+      ],
+      "theirGaps": [
+        "It is less compressed around the production confusion that setters do not synchronously mutate current state."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "one coherent render instead of many partial ones."
+        ],
+        "actionableExamples": [
+          "\"Update → update → update → render once\""
+        ],
+        "followUpConfusion": [
+          "only exposes the new snapshot on the next render."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain queueing accurately, but our page is more explicit about the real bug source: expecting setter calls to synchronously change the current render's state."
+        ],
+        "actionableExamples": [
+          "The official examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that batching is about queued snapshots and render reduction, not immediate mutation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one small stale-read example later if we want more code than the current queueing summary."
+        ]
+      },
+      "winReason": "The official docs are authoritative on queueing, but our page is stronger for interview use because it keeps the answer centered on coherent renders, queued snapshots, and the immediate-mutation misconception."
+    },
+    {
+      "label": "Why is React useState with functional update form needed?",
+      "url": "https://stackoverflow.com/questions/57828368",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for stale state, queued updates, and why React provides functional state updates.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on stale reads and functional-update reasoning."
+      ],
+      "theirGaps": [
+        "It is narrower than a full explanation of batching across events and async boundaries."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production confusion happens when developers expect each setter call to mutate state immediately."
+        ],
+        "actionableExamples": [
+          "Within the same event or task, React waits until your logic finishes, then renders once using the final state."
+        ],
+        "followUpConfusion": [
+          "React queues work, applies batching rules across async boundaries"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on stale state, but our page is stronger because it connects that confusion to the full reason React batches updates."
+        ],
+        "actionableExamples": [
+          "Community answers can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that batching changed in React 18 and now crosses more async boundaries."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one functional-updater note visible so the queued-snapshot explanation stays concrete."
+        ]
+      },
+      "winReason": "The thread is useful on stale state, but our page is stronger because it explains batching as the broader system that makes functional updates necessary."
+    },
+    {
+      "label": "Automatic batching for fewer renders in React 18",
+      "url": "https://github.com/reactwg/react-18/discussions/21",
+      "category": "community_qna",
+      "selectionReason": "This React 18 working-group discussion is a primary-source explanation of automatic batching and what changed outside React event handlers.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on the React 18 automatic batching change and its motivation."
+      ],
+      "theirGaps": [
+        "It is less compressed than a trivia answer around queued snapshots and the immediate-mutation misconception."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Before React 18, batching only happened in React event handlers. In React 18+, batching happens almost everywhere"
+        ],
+        "actionableExamples": [
+          "timeouts"
+        ],
+        "followUpConfusion": [
+          "then renders once using the final state."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The working-group discussion is authoritative on the React 18 change, but our page is stronger because it ties that change back to render cost and snapshot semantics."
+        ],
+        "actionableExamples": [
+          "Its concrete before-and-after examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that batching does not mean setters mutate state immediately."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one promise-callback example later if we want a more explicit React 18 before-and-after."
+        ]
+      },
+      "winReason": "The working-group discussion is authoritative on the React 18 change, but our page is stronger because it explains both the behavior change and the deeper queued-snapshot reason batching exists."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-why-declare-emits-type-safety-maintenance",
+  "tech": "vue",
+  "query": "Why should you declare emits in Vue? What breaks if you don’t, and how does it affect type safety and maintenance?",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Component Events",
+      "url": "https://vuejs.org/guide/components/events",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for component events, defineEmits, emits declarations, validation, and fallthrough behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on defineEmits, validation, payload typing, and listener behavior."
+      ],
+      "theirGaps": [
+        "It is less sharply framed around the maintenance and event-contract risks of leaving emits undeclared."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Declaring emits makes a component’s event API explicit .",
+          "It prevents accidental event typos, enables runtime validation (optional), improves tooling/autocomplete, and gives you strong TypeScript inference for event names + payloads."
+        ],
+        "followUpConfusion": [
+          "Without it, emit is effectively untyped, so mistakes sneak through.",
+          "declaring emits helps Vue distinguish between component events and native DOM listeners passed to the root element."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain declared events and validation clearly, but our page is stronger on the production maintenance consequences of leaving the contract implicit."
+        ],
+        "actionableExamples": [
+          "The official page includes direct defineEmits and emits examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is more compact on the most common follow-ups: untyped emit, fallthrough listener confusion, and explicit contract design."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one smaller before-versus-after defineEmits example so the contract gain is visible instantly."
+        ]
+      },
+      "winReason": "The official docs are stronger as a reference, but our page is stronger as a compact interview answer because it explains why declaring emits matters for contracts, type safety, and fallthrough behavior in one pass."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because component events, props, and public-component contracts are core Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong Vue interview-prep hub for component communication questions."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact emits-contract explanation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "you’re basically saying: “this component might emit anything, anytime,” which is a maintenance trap.",
+          "Props define what comes in ; emits define what goes out ."
+        ],
+        "followUpConfusion": [
+          "wrong event names, wrong payload shapes, and broken refactors that only show up in QA",
+          "listener fallthrough control"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is relevant for Vue component questions, but it is less focused on this exact emits-contract and type-safety prompt."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on interview-style examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about listener fallthrough, event-payload shape drift, and why undeclared emits complicate refactors."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the emits-contract framing prominent so the answer does not collapse into a general $emit tutorial."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it answers the exact 'why declare emits?' question with a contract, typing, and maintenance lens instead of only showing event usage."
+    },
+    {
+      "label": "Vue Emit Guide",
+      "url": "https://learnvue.co/articles/vue-emit-guide",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue has a direct article on emit, defineEmits, validation, and best practices that closely matches the emitted-event contract in this prompt.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly on-topic for emit, defineEmits, validators, and event best practices."
+      ],
+      "theirGaps": [
+        "It is less tightly focused on the maintenance argument around undeclared component contracts and fallthrough edge cases."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Optional runtime validation can catch incorrect payloads even without TS.",
+          "When both are explicit, the component becomes easier to reuse, test, and refactor."
+        ],
+        "followUpConfusion": [
+          "With declared emits, TypeScript can enforce both the event name and the payload type .",
+          "This reduces confusing edge cases where you think you’re listening to a component event but you’re actually attaching a DOM listener"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is directly relevant on emit and defineEmits usage, so the baseline practical coverage is strong."
+        ],
+        "actionableExamples": [
+          "It includes concrete emit and defineEmits code examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the exact interview follow-up around explicit component contracts, fallthrough control, and why undeclared emits create maintenance debt."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one short emits validator snippet to make the runtime-validation point even more concrete."
+        ]
+      },
+      "winReason": "LearnVue is a strong direct guide, but our page is stronger because it frames declared emits as a component-contract decision with concrete consequences for typing, refactors, and listener behavior."
+    }
+  ]
+}

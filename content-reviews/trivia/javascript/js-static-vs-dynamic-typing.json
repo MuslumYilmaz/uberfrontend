@@ -1,0 +1,140 @@
+{
+  "contentId": "js-static-vs-dynamic-typing",
+  "tech": "javascript",
+  "query": "javascript dynamic typing interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "I did not confirm a GreatFrontEnd page directly focused on static versus dynamic typing in JavaScript. Nearby interview pages cover coercion or specific operators, but not this exact type-system comparison."
+  },
+  "competitors": [
+    {
+      "label": "MDN Data types and data structures",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical baseline for JavaScript's type system, values, primitives, objects, and runtime behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is the authoritative language reference for JavaScript types and values."
+      ],
+      "theirGaps": [
+        "It is broader than the exact static-versus-dynamic-typing interview question and less focused on runtime validation trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "An analytics pipeline ingests mixed payloads from browser events."
+        ],
+        "actionableExamples": [
+          "const n = Number(input);"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the JavaScript type system accurately, but our page ties the topic more directly to mixed payloads and runtime validation failures."
+        ],
+        "actionableExamples": [
+          "Our page now includes concrete coercion and runtime-guard examples, while the MDN page is more of a reference overview."
+        ],
+        "followUpConfusion": [
+          "MDN remains strong on the full type-model background, so the broader follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "Add one short note on union-style runtime narrowing or schema validation if we later want a clearer docs-level follow-up edge."
+        ]
+      },
+      "winReason": "MDN is the broad language reference, but our page is stronger for this interview question because it turns dynamic typing into concrete runtime validation and payload-shape trade-offs."
+    },
+    {
+      "label": "Data types and structures",
+      "url": "https://web.dev/learn/javascript/data-types",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a strong tutorial-style competitor for JavaScript types and runtime behavior, even though it is broader than the static-vs-dynamic framing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a practical learning resource that explains JavaScript values and runtime type behavior clearly."
+      ],
+      "theirGaps": [
+        "It is less directly framed as the static-versus-dynamic typing interview contrast and lighter on the TypeScript comparison."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "An analytics pipeline ingests mixed payloads from browser events."
+        ],
+        "followUpConfusion": [
+          "JavaScript is dynamically typed, not statically typed."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is practical on data types, but our page is more directly tied to runtime data-shape drift and developer workflow trade-offs."
+        ],
+        "actionableExamples": [
+          "Its examples are still practical enough that the actionable-example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page handles the likely follow-up more directly by contrasting JavaScript with TypeScript and explaining why runtime validation still matters."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one shorter before-and-after TypeScript-versus-runtime-validation example."
+        ]
+      },
+      "winReason": "web.dev is a good general types tutorial, but our page is better for this exact question because it keeps the answer centered on dynamic typing, weak typing, and the TypeScript follow-up."
+    },
+    {
+      "label": "JavaScript - How is JS Dynamically Typed?",
+      "url": "https://www.geeksforgeeks.org/javascript/javascript-how-is-js-dynamically-typed/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial-style competitor for the exact dynamic-typing search intent.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It appears directly aligned with the dynamic-typing question intent."
+      ],
+      "theirGaps": [
+        "It is likely more definitional than our runtime-validation and TypeScript workflow framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "An analytics pipeline ingests mixed payloads from browser events."
+        ],
+        "followUpConfusion": [
+          "Runtime validation is still needed"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks is direct on the concept, but our page gives a stronger product-facing reason dynamic typing matters in frontend systems."
+        ],
+        "actionableExamples": [
+          "A direct tutorial page still offers concrete examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page goes further on the likely next questions: weak typing, coercion, and why TypeScript does not remove runtime validation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the parsePrice runtime-guard example near the JavaScript-versus-TypeScript block so the page stays practical."
+        ]
+      },
+      "winReason": "This tutorial is direct on dynamic typing, but our page is more complete for interview use because it connects the concept to coercion, TypeScript workflow, and runtime validation."
+    }
+  ]
+}

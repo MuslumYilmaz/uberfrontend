@@ -1,0 +1,145 @@
+{
+  "contentId": "css-inline-internal-external",
+  "tech": "css",
+  "query": "What is the difference between inline, internal, and external CSS?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Getting started with CSS",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Syntax",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN syntax guide is the canonical official source that introduces the three primary ways of applying CSS to an HTML document.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the basic CSS application modes and on the relationship between inline, internal, and external styles."
+      ],
+      "theirGaps": [
+        "The guide is less interview-shaped and less explicit about maintainability, caching, and specificity side effects in real projects."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a &lt;style&gt; tag in the &lt;head&gt;, and external CSS is loaded from a separate .css file via &lt;link&gt;. External styles are reusable and best for maintainability."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>CSS can be written directly inside HTML (inline), embedded within a &lt;style&gt; block (internal), or stored in a separate file (external). Understanding their differences is key to managing scalability, performance, and consistency in design."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the three application modes clearly, but it is lighter on the project-scale trade-offs around reuse, caching, and escalating specificity."
+        ],
+        "actionableExamples": [
+          "It includes direct examples of the three CSS application methods, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the likely follow-up: external CSS wins for maintainability, while inline and internal styles come with scope and override trade-offs."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compare-and-decide summary visible so the answer stays faster to scan than a broad intro guide."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical intro, but our page is stronger as an interview answer because it turns the three CSS application modes into a concrete maintainability, reuse, and specificity decision."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because stylesheet organization and selector behavior are foundational CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage of CSS organization, selectors, and layout fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to comparing inline, internal, and external CSS, so it is less focused on one exact scaling and maintainability answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a &lt;style&gt; tag in the &lt;head&gt;, and external CSS is loaded from a separate .css file via &lt;link&gt;. External styles are reusable and best for maintainability."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>CSS can be written directly inside HTML (inline), embedded within a &lt;style&gt; block (internal), or stored in a separate file (external). Understanding their differences is key to managing scalability, performance, and consistency in design."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the real project trade-offs around reuse, file size, and specificity."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: when inline is acceptable, when internal is page-local, and why external scales best."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the one-line compare framing high in the page so the answer stays interview-ready."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact maintainability and specificity consequences that make inline-versus-internal-versus-external worth distinguishing carefully."
+    },
+    {
+      "label": "Difference between Inline, Internal and External CSS",
+      "url": "https://www.geeksforgeeks.org/css/difference-between-inline-internal-and-external-css/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct topic-specific tutorial comparator that explicitly contrasts the three CSS application modes and their trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on the exact compare question and includes straightforward examples of each CSS application method."
+      ],
+      "theirGaps": [
+        "It is weaker on production-scale reasoning and less explicit about caching, maintainability, and override debt."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a &lt;style&gt; tag in the &lt;head&gt;, and external CSS is loaded from a separate .css file via &lt;link&gt;. External styles are reusable and best for maintainability."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>CSS can be written directly inside HTML (inline), embedded within a &lt;style&gt; block (internal), or stored in a separate file (external). Understanding their differences is key to managing scalability, performance, and consistency in design."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial compares the three modes directly, but our page is more compact about the actual project decision: which approach scales, which overrides too aggressively, and which is page-local only."
+        ],
+        "actionableExamples": [
+          "It includes good direct examples for each mode, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the next question teams hit in practice: why external CSS is usually the default and when inline or internal still make sense."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the comparison concise so the page preserves one quick scan path instead of turning into a long style-organization tutorial."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The tutorial is direct on the basics, but our page is more useful as an interview answer because it packages the three CSS modes around scalability, reuse, and override trade-offs instead of only listing definitions."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-virtual-dom-diffing",
+  "tech": "vue",
+  "query": "How does Vue’s virtual DOM and diffing algorithm optimize updates?",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Rendering Mechanism",
+      "url": "https://vuejs.org/guide/extras/rendering-mechanism",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for virtual DOM, render functions, patching, and compiler optimizations such as patch flags and block tree tracking.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on render pipeline, virtual DOM, patching, and compiler-level optimizations."
+      ],
+      "theirGaps": [
+        "It is less tightly framed around the production debugging value of identity mistakes such as wrong keys and reused DOM state."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Vue can patch very efficiently when nodes are stable, yet the wrong key or the wrong mental model still produces reused DOM bugs, focus jumps, or incorrect list state.",
+          "This allows Vue to compute the minimal set of changes needed before touching the real DOM."
+        ],
+        "followUpConfusion": [
+          "If two nodes have different tags, Vue replaces the old one entirely.",
+          "Patch Flags: Vue marks which parts of the template are dynamic, so it updates only those parts."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide covers the render pipeline deeply, but our page is stronger on the concrete failure modes teams see when identity is wrong."
+        ],
+        "actionableExamples": [
+          "The docs include direct patching and render-mechanism examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is more compact on the exact follow-ups interviewers ask next: same-type replacement, keyed reuse, batching, patch flags, and block tree optimization."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one shorter keyed reorder example so the identity bug is visible before the internals paragraph."
+        ]
+      },
+      "winReason": "The official guide is deeper on the rendering pipeline, but our page is stronger as a compact interview answer because it connects virtual DOM theory to real keyed-identity bugs and patch-cost intuition."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because virtual DOM, diffing, and keyed updates are common Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue rendering and identity topics."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact virtual-DOM and diffing explanation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "the production/debug value comes from understanding identity.",
+          "A list reorders frequently; diffing decides which DOM nodes to reuse to keep scrolling smooth."
+        ],
+        "followUpConfusion": [
+          "Children Comparison: For lists or nested elements, Vue compares keys and reuses existing DOM nodes whenever possible.",
+          "Block Tree Optimization: Groups dynamic nodes together for faster diffing."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is relevant for Vue rendering topics, but it is less explicit about the real-world DOM-reuse bugs this concept explains."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on interview-style examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less specific about keyed identity, patch flags, and block tree optimization as follow-up explanations."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the internals compact enough that the keyed-identity scenario still stays visible at the top."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it answers the exact 'why does diffing matter in practice?' question with keyed identity bugs, batching, and patching behavior."
+    },
+    {
+      "label": "Tips and Gotchas for Using key with v-for in Vue.js 3",
+      "url": "https://vueschool.io/articles/vuejs-tutorials/tips-and-gotchas-for-using-key-with-v-for-in-vue-js-3/",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a topic-direct article on keyed identity, DOM reuse, and the practical diffing consequences that matter most in Vue updates.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly relevant on keyed identity and the diffing behavior that shows up most often in production."
+      ],
+      "theirGaps": [
+        "It is narrower on compiler-level optimizations such as patch flags and block tree grouping."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Without a proper key , Vue may re-render entire lists unnecessarily because it cannot tell which item corresponds to which DOM element.",
+          "Missing or unstable keys, causing DOM reuse bugs."
+        ],
+        "followUpConfusion": [
+          "With keys, Vue can reorder elements instead of recreating them, which saves performance.",
+          "Static Tree Hoisting: Static parts of the template are skipped during updates."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is strong on keys and DOM reuse, so the real-world keyed-list portion is solid."
+        ],
+        "actionableExamples": [
+          "It provides direct keyed-list examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on connecting keyed identity to the broader virtual DOM pipeline, including same-type replacement, patching, batching, and compiler optimizations."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one smaller no-key versus stable-key snippet to make the DOM-reuse bug visible without scanning the longer scenario."
+        ]
+      },
+      "winReason": "Vue School is strong on key-related diffing behavior, but our page is stronger because it connects keyed identity to the full virtual-DOM and patching model instead of stopping at list best practices."
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "contentId": "react-useref-vs-usestate",
+  "tech": "react",
+  "query": "useRef vs useState in React: what is the difference?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "useRef",
+      "url": "https://react.dev/reference/react/useRef",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React reference for refs, including the key caveat that changing a ref does not trigger a rerender and should not hold render-driving state.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative explanation of refs as persistent mutable containers and why they do not trigger renders."
+      ],
+      "theirGaps": [
+        "It is focused on refs, while our page answers the compare-and-choose question against state more directly."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<code>useState</code> is for data that should <strong>drive what you render</strong> (changing it re-renders). <code>useRef</code> is for data you want to <strong>persist across renders</strong> but changing it should <strong>not</strong> trigger a re-render",
+          "Use state for anything that affects UI, and refs for DOM access, timers, latest values in async callbacks, and other non-visual bookkeeping."
+        ],
+        "followUpConfusion": [
+          "People do this to avoid re-renders, but it’s usually a bug factory. If the UI depends on it and you store it in a ref, the UI won’t update and you’ll get out-of-sync screens.",
+          "<strong>useState</strong> = \"React should re-render when this changes.\"<br><strong>useRef</strong> = \"I need to remember something between renders, but it’s not part of the UI.\""
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain refs precisely, but our page is stronger for interview use because it frames the decision as UI-driving state versus silent persistent storage."
+        ],
+        "actionableExamples": [
+          "The official ref examples are strong and concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up mistakes: using refs as render state, using state for timer IDs, and combining both to avoid stale async reads."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one DOM-focus example later if we want a more explicit imperative-ref case next to timers and previous values."
+        ]
+      },
+      "winReason": "The official docs are authoritative on refs, but our page is stronger because it turns the hook comparison into a clear render-versus-no-rerender decision rule."
+    },
+    {
+      "label": "useState vs useRef: A Comprehensive Comparison",
+      "url": "https://khanhpham.dev/articles/usestate-vs-useref-comparison",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a topic-direct tutorial that compares useState and useRef across rerenders, persistence, batching, and common use cases.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly about useState versus useRef and covers batching, closures, timers, DOM refs, and previous values."
+      ],
+      "theirGaps": [
+        "It is longer and less compressed around the single interview rule that decides between the two hooks."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use <code>useState</code> when the value affects rendering: text, visibility, selection, form inputs, loading state, errors, filters, toggles, etc.",
+          "Use <code>useRef</code> when you need a value to persist, but you don’t want a render every time it changes."
+        ],
+        "followUpConfusion": [
+          "Sometimes you want <em>rendering</em> plus a <em>latest value for async callbacks</em> (avoiding stale closures). Keep the UI in state and mirror it into a ref:",
+          "If yes → <strong>useState</strong>.<br>If no (but you still need the value to persist) → <strong>useRef</strong>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is broad and practical, but our page is stronger because it compresses the compare-and-choose decision into a simpler interview answer without losing the async-latest-value nuance."
+        ],
+        "actionableExamples": [
+          "Its worked examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the biggest follow-up trap: using refs as hidden state to avoid rerenders and ending up with stale UI."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one explicit previous-value or timer-id example visible so the non-visual bookkeeping case stays concrete."
+        ]
+      },
+      "winReason": "This tutorial is directly on-topic, but our page is stronger because it reduces the choice to the core render-driving question and then adds the async-latest-value edge case."
+    },
+    {
+      "label": "React: useState or useRef?",
+      "url": "https://stackoverflow.com/questions/56455887/react-usestate-or-useref",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for when refs should hold mutable values without driving rerenders and when state should remain the source of visible UI.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical about timers, refs for internal values, and the fact that state rerenders while refs do not."
+      ],
+      "theirGaps": [
+        "It is narrower and less interview-structured than our page's hook-selection rule."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "DOM refs, timers, previous values, avoiding stale closures, and render-driving state.",
+          "Use <code>useRef</code> when you need a value to persist, but you don’t want a render every time it changes."
+        ],
+        "followUpConfusion": [
+          "The big trap: using useRef as \"state\"",
+          "If the UI depends on it and you store it in a ref, the UI won’t update and you’ll get out-of-sync screens."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread gives practical timer and effect examples, but our page covers a wider set of real choices including form state, DOM refs, async callbacks, and previous values."
+        ],
+        "actionableExamples": [
+          "Its examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on when useRef is legitimate versus when it becomes a bug-avoidance hack that silently desynchronizes the UI."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one example where a ref mirrors state only to feed an async callback, not to replace the render state."
+        ]
+      },
+      "winReason": "The community thread is practical, but our page is stronger because it frames the comparison as a clean UI-driving versus non-visual-persistent decision."
+    }
+  ]
+}

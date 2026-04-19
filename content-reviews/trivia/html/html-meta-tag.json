@@ -1,0 +1,139 @@
+{
+  "contentId": "html-meta-tag",
+  "tech": "html",
+  "query": "html meta tag interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "The metadata element",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN element reference for the meta tag, its attributes, and how browsers interpret metadata in the head.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is the authoritative reference for the meta element and its permitted attributes and behaviors."
+      ],
+      "theirGaps": [
+        "The reference format is less interview-shaped and less explicit about broken previews, indexing surprises, or viewport debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A page can look perfect in the browser and still fail in production because the head metadata is wrong"
+        ],
+        "followUpConfusion": [
+          "keywords is largely legacy and not the reason modern pages rank"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines the element precisely, but our answer now grounds the topic in a concrete viewport or social-preview debugging scenario."
+        ],
+        "actionableExamples": [
+          "It remains the canonical tag reference, so the concrete-example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is now more explicit about legacy keywords, canonical-link confusion, and which meta tags usually matter most in practice."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the essential-head snippet compact so the page stays faster to scan than a full reference page."
+        ]
+      },
+      "winReason": "MDN is the canonical reference, but our page is stronger as an interview answer because it organizes metadata around the production failures developers actually debug: viewport, indexing, and broken social previews."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because metadata, head behavior, and SEO-adjacent questions belong in core HTML interview fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep hub with detailed answers across many foundational topics."
+      ],
+      "theirGaps": [
+        "The landing page is not dedicated to metadata debugging, so it is less focused on one exact meta-tag answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A page can look perfect in the browser and still fail in production because the head metadata is wrong"
+        ],
+        "followUpConfusion": [
+          "keywords is largely legacy and not the reason modern pages rank"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML interviews, but the category page is less explicit about broken-head debugging scenarios."
+        ],
+        "actionableExamples": [
+          "It is still a worked-answer source, so example quality remains close."
+        ],
+        "followUpConfusion": [
+          "Our page now answers the likely follow-up more directly by separating must-have meta tags from legacy keywords and from canonical-link responsibilities."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the essential-head snippet visible near the opening so the page stays interview-ready."
+        ]
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the metadata failures and follow-up confusions that actually matter when this question comes up."
+    },
+    {
+      "label": "Metadata",
+      "url": "https://web.dev/learn/html/metadata",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct metadata article that covers social cards, viewport, alternate and canonical links, and broader head configuration.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is very strong on concrete metadata examples, especially Open Graph and Twitter card configuration."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question because it goes beyond meta tags into wider head metadata concerns."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A page can look perfect in the browser and still fail in production because the head metadata is wrong"
+        ],
+        "followUpConfusion": [
+          "keywords is largely legacy and not the reason modern pages rank"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is grounded in realistic metadata scenarios, but our answer now packages the broken-preview and broken-viewport story more directly."
+        ],
+        "actionableExamples": [
+          "web.dev still has strong social-metadata examples, so the example criterion stays tied rather than flipping to us outright."
+        ],
+        "followUpConfusion": [
+          "Our page now answers the likely follow-ups more directly by clarifying legacy keywords and canonical-link confusion in one compact note."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this page needs another pass later, add one tiny preview-debug checklist without turning the answer into a long metadata guide."
+        ]
+      },
+      "winReason": "web.dev is broader, but our page is now stronger as a compact interview answer because it combines the essential-head example, a real debug scenario, and the modern follow-up clarifications teams often miss."
+    }
+  ]
+}

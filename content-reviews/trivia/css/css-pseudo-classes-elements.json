@@ -1,0 +1,145 @@
+{
+  "contentId": "css-pseudo-classes-elements",
+  "tech": "css",
+  "query": "What is the difference between pseudo-classes and pseudo-elements in CSS?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Pseudo-classes and pseudo-elements",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Pseudo_classes_and_elements",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN learning guide is the closest canonical documentation page for the exact compare question because it explains pseudo-classes and pseudo-elements together, not as isolated references.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN directly explains the conceptual difference between state-based pseudo-classes and virtual-part pseudo-elements with official examples."
+      ],
+      "theirGaps": [
+        "The guide is less interview-shaped and less compact about how to remember the distinction under pressure or how combined selectors like a:hover::after fit into one mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>Pseudo-classes and pseudo-elements allow developers to target special states or parts of elements beyond basic selectors. A <strong>pseudo-class</strong> represents a state (like hover or focus), while a <strong>pseudo-element</strong> targets a portion of content (like the first line or a generated content block)."
+        ],
+        "followUpConfusion": [
+          "<strong>Notable Differences</strong><br><ul><li>Pseudo-classes use a single colon (<code>:</code>), e.g. <code>:hover</code>.</li><li>Pseudo-elements use a double colon (<code>::</code>) to distinguish structural parts, e.g. <code>::before</code>.</li><li>They can be combined — for instance: <code>a:hover::after</code> adds content only when hovered.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the two selector families accurately, but our page is more explicit about why the distinction matters in real UI work: interaction state versus generated or partial content."
+        ],
+        "actionableExamples": [
+          "Its examples for :hover, :focus, ::before, and ::first-line are strong, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our answer is more direct on the common follow-up confusion: single colon means state selection, double colon means a virtual part or generated piece, and they can be combined in one selector."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the combined-selector example visible so the page stays faster to scan than a broader learning guide."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical explainer, but our page is stronger as an interview answer because it compresses the distinction into one practical rule: pseudo-classes answer when state changes, pseudo-elements answer which part or generated piece is being styled."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because selector behavior, state styling, and generated content are core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad selector and state-styling coverage."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to pseudo-classes versus pseudo-elements, so it is less focused on the exact conceptual contrast."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>Pseudo-classes and pseudo-elements allow developers to target special states or parts of elements beyond basic selectors. A <strong>pseudo-class</strong> represents a state (like hover or focus), while a <strong>pseudo-element</strong> targets a portion of content (like the first line or a generated content block)."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <strong>pseudo-classes</strong> as describing <em>when</em> an element behaves differently, and <strong>pseudo-elements</strong> as describing <em>which part</em> of it you’re styling or creating."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the state-versus-part mental model this question is really testing."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview-prep resource, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: how to remember the difference and why selectors like a:hover::after are valid instead of contradictory."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the quick compare framing near the top so the answer stays interview-ready."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact state-versus-part distinction that interviewers usually want articulated clearly."
+    },
+    {
+      "label": "Difference Between Pseudo-Classes and Pseudo-Elements in CSS",
+      "url": "https://www.geeksforgeeks.org/css/difference-between-pseudo-classes-and-pseudo-elements-in-css/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct topic-specific tutorial comparator that contrasts pseudo-classes and pseudo-elements with concrete syntax and examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on the exact compare question and includes direct syntax examples for each selector type."
+      ],
+      "theirGaps": [
+        "It is weaker on the production mental model and less explicit about combining state selectors with pseudo-elements in one practical workflow."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Practical Applications</strong><br><ul><li>Creating tooltips with <code>::after</code> and <code>content</code>.</li><li>Animating buttons on <code>:hover</code> or <code>:active</code>.</li><li>Styling dynamic elements in forms and navigation bars.</li></ul>"
+        ],
+        "followUpConfusion": [
+          "<strong>Notable Differences</strong><br><ul><li>Pseudo-classes use a single colon (<code>:</code>), e.g. <code>:hover</code>.</li><li>Pseudo-elements use a double colon (<code>::</code>) to distinguish structural parts, e.g. <code>::before</code>.</li><li>They can be combined — for instance: <code>a:hover::after</code> adds content only when hovered.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial compares the two selector types directly, but our page is more compact about the practical jobs they solve: state-based interaction versus styling or generating a render-tree fragment."
+        ],
+        "actionableExamples": [
+          "Its direct examples are solid, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the next confusion point developers usually hit: why the colon difference matters and why combining pseudo-classes with pseudo-elements is valid."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the one-line memory hook intact so the answer stays easier to retain than a longer tutorial."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The tutorial is direct on the basics, but our page is more useful as an interview answer because it turns the syntax distinction into a practical selector mental model that also explains combined usage."
+    }
+  ]
+}

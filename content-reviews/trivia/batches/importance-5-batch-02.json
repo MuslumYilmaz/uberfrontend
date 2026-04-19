@@ -1,0 +1,16 @@
+{
+  "batchId": "importance-5-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "javascript", "id": "js-event-loop" },
+    { "tech": "javascript", "id": "js-event-bubbling-capturing" },
+    { "tech": "javascript", "id": "js-event-delegation" },
+    { "tech": "javascript", "id": "js-callbacks" },
+    { "tech": "javascript", "id": "js-hoisting" },
+    { "tech": "javascript", "id": "js-hoisting-tdz" },
+    { "tech": "javascript", "id": "js-var-let-const-hoisting" },
+    { "tech": "javascript", "id": "js-undefined-vs-not-defined" },
+    { "tech": "javascript", "id": "js-type-coercion" },
+    { "tech": "javascript", "id": "js-passing-by-value-and-by-reference" }
+  ]
+}

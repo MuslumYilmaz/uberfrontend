@@ -1,0 +1,153 @@
+{
+  "contentId": "angular-services",
+  "tech": "angular",
+  "query": "Angular services interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Services Tutorial",
+      "url": "https://angular.dev/tutorials/first-app/09-services",
+      "category": "canonical_docs",
+      "selectionReason": "This is the clearest official service-introduction page and the strongest canonical baseline for why Angular teams use services.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It clearly explains that services separate shared data and logic from components and shows how DI wires them in."
+      ],
+      "theirGaps": [
+        "It is more introductory and lighter on provider scope, root versus local lifetime, and architectural boundary decisions."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "The value is not the class itself — it’s the lifetime + sharing + testability you get from DI and a clean separation from UI code.",
+          "Service lifetime is determined by where it’s provided . Angular DI is hierarchical: child injectors can override parent providers."
+        ],
+        "realWorldUseCases": [
+          "When root scope is the wrong choice"
+        ],
+        "actionableExamples": [
+          "Each CheckoutWizardComponent gets its own WizardStateService"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial already grounds services in shared data access and reuse across components, so the practical-use comparison stays close."
+        ],
+        "actionableExamples": [
+          "It includes a concrete service extraction walkthrough, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on provider-scope trade-offs and on why lifetime changes the behavior of a service in production code."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one example where root scope is wrong because a service should be isolated per component instance."
+        ],
+        "actionableExamples": [
+          "Add a compact root-provided versus component-provided code pair."
+        ],
+        "followUpConfusion": [
+          "Keep one compact note on keeping purely presentational transforms out of services."
+        ]
+      },
+      "winReason": "Our page now pairs DI scope with a concrete root-versus-component provider example, which makes the service-lifetime and ownership explanation more actionable than the tutorial."
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd’s Angular basics guide includes a dedicated services section, making it the strongest interview-prep comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd explains what a service is, but our page is more explicit about lifetime, sharing, testability, and how provider scope changes behavior.",
+      "theirStrengths": [
+        "It gives a clean definition of services, common uses, and the providedIn root follow-up."
+      ],
+      "theirGaps": [
+        "It is lighter on scope guardrails and on the deeper architectural reason teams move logic into services."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The value is not the class itself — it’s the lifetime + sharing + testability you get from DI and a clean separation from UI code."
+        ],
+        "followUpConfusion": [
+          "Service lifetime is determined by where it’s provided . Angular DI is hierarchical: child injectors can override parent providers."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd explains shared business logic and data operations, but not as strongly through lifetime and architectural boundaries."
+        ],
+        "actionableExamples": [
+          "Its service examples are concrete enough that the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "The guide leaves more of the provider-scope and service-lifetime follow-up to the reader."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one example showing a root singleton and a component-scoped wizard state service side by side."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Stack Overflow: Why do we need services when we have components?",
+      "url": "https://stackoverflow.com/questions/50385344/why-do-we-need-services-when-we-have-components",
+      "category": "community_qna",
+      "selectionReason": "This community thread is a direct comparator because it addresses the practical reason Angular teams split work into services.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The Stack Overflow answers justify reuse and sharing, but our page is stronger on lifetime, scope, and architectural boundary design.",
+      "theirStrengths": [
+        "It gives an intuitive reuse-and-sharing explanation that many developers recognize immediately."
+      ],
+      "theirGaps": [
+        "It does not go as far into scope, override behavior, or how services keep UI code predictable over time."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The value is not the class itself — it’s the lifetime + sharing + testability you get from DI and a clean separation from UI code."
+        ],
+        "followUpConfusion": [
+          "Service lifetime is determined by where it’s provided . Angular DI is hierarchical: child injectors can override parent providers."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread explains that services are reusable and can be shared more broadly than components, but it stays at a generic level."
+        ],
+        "actionableExamples": [
+          "The examples and explanations are practical enough that the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "It is much lighter on provider scope and on the root-versus-local instance follow-up that interviewers often ask."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a tiny example where providing a service at the component level intentionally isolates state between two copies of the same component."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "batchId": "importance-5-batch-04",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "javascript", "id": "js-check-data-type-with-typeof" },
+    { "tech": "javascript", "id": "js-bigint-data-type" },
+    { "tech": "javascript", "id": "js-static-vs-dynamic-typing" },
+    { "tech": "javascript", "id": "js-spread-vs-rest-parameters" },
+    { "tech": "javascript", "id": "js-prototype-vs-proto" },
+    { "tech": "javascript", "id": "js-mutability-vs-immutability" }
+  ]
+}

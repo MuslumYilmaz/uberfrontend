@@ -1,0 +1,147 @@
+{
+  "contentId": "js-mock-vs-stub-vs-spy",
+  "tech": "javascript",
+  "query": "mocks vs stubs vs spies javascript interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Sinon.JS Mocks",
+      "url": "https://sinonjs.org/releases/latest/mocks/",
+      "category": "canonical_docs",
+      "selectionReason": "Sinon is an established testing library whose docs are a strong canonical reference for mocks, stubs, and spies in JavaScript testing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on the concrete mechanics of how spies, stubs, and mocks behave in a real JavaScript testing tool."
+      ],
+      "theirGaps": [
+        "It is library-specific and less explicit on the broader testing strategy question of when interaction assertions are contract-level versus brittle over-mocking."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Test doubles (mocks/stubs/spies) let you isolate a unit from slow, flaky, or external dependencies (network, storage, time, analytics)."
+        ],
+        "followUpConfusion": [
+          "Mocks are useful for strict contracts, but I avoid over-mocking because it makes tests brittle."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Sinon is strong on the tool mechanics, but our page is more explicit about the behavior boundary question interviewers actually care about."
+        ],
+        "actionableExamples": [
+          "The Sinon docs are deeper on concrete spy/stub/mock APIs and thus win on actionable example detail."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up confusion: when to assert outputs first, when interaction assertions are justified, and why over-mocking creates brittle tests."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact spy-versus-stub code example later if we want to compete more directly with Sinon API docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "Sinon is deeper on tool specifics, but our page is stronger for the interview prompt because it frames mocks, stubs, and spies around boundary choice and test brittleness."
+    },
+    {
+      "label": "GreatFrontEnd mocks and stubs",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-mocks-and-stubs-and-how-are-they-used-in-testing",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep page for mocks and stubs, which overlaps strongly with this prompt's test-double taxonomy.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is interview-shaped and likely strong on the core terminology around mocks and stubs."
+      ],
+      "theirGaps": [
+        "It is less explicit on spies, async boundary examples, and the strategic difference between useful interaction checks and brittle over-mocking."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "testing isn't about writing 200 assertions—it’s about verifying behavior at the right boundary."
+        ],
+        "actionableExamples": [
+          "Stub the HTTP client to return a controlled response. - Spy on the client to assert it was called correctly. - Optionally mock the client to both define expectations and fail if they’re not met."
+        ],
+        "followUpConfusion": [
+          "I prefer dependency injection so I can stub inputs and spy on boundaries."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant interview prep, but our page is more explicit about the real testing decision: what boundary to isolate and when interaction assertions are part of the contract."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and directly relevant, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up set: spies, async flakiness, dependency injection, and avoiding brittle tests that assert internal steps."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the practical searchUsers scenario visible so the answer stays more concrete than a vocabulary-only interview page."
+        ]
+      },
+      "winReason": "GreatFrontEnd is relevant interview prep, but our page is stronger because it expands the taxonomy into a better strategy for boundaries, async behavior, and brittleness."
+    },
+    {
+      "label": "Mocks Aren't Stubs",
+      "url": "https://martinfowler.com/articles/mocksArentStubs.html",
+      "category": "tutorial_reference",
+      "selectionReason": "Martin Fowler's article is a classic reference for the conceptual difference between mocks and stubs and the testing philosophy behind them.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is excellent on the conceptual distinction between state verification and behavior verification."
+      ],
+      "theirGaps": [
+        "It is less JavaScript-specific and less direct on spies, async examples, and modern frontend dependency boundaries."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Test doubles (mocks/stubs/spies) let you isolate a unit from slow, flaky, or external dependencies (network, storage, time, analytics)."
+        ],
+        "actionableExamples": [
+          "You have searchUsers(query) that calls an HTTP client and returns parsed JSON."
+        ],
+        "followUpConfusion": [
+          "A strong strategy uses both: - Unit tests for core logic + edge cases. - A few integration tests for the most important flows (auth, payments, critical UI paths)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Fowler is strong on testing philosophy, but our page is more explicit about the concrete JavaScript boundaries engineers isolate in unit tests."
+        ],
+        "actionableExamples": [
+          "Its conceptual examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the follow-up confusion modern frontend interviews often probe: spies versus mocks, async flakiness, and dependency injection."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one short state-verification versus interaction-verification contrast to create more example distance over Fowler's conceptual framing."
+        ]
+      },
+      "winReason": "Fowler is excellent on the concept, but our page is stronger for this prompt because it translates the philosophy into modern JavaScript testing boundaries and async examples."
+    }
+  ]
+}

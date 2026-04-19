@@ -1,0 +1,142 @@
+{
+  "contentId": "angular-component-metadata",
+  "tech": "angular",
+  "query": "Angular @Component metadata interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular Component API",
+      "url": "https://angular.dev/api/core/Component",
+      "category": "canonical_docs",
+      "selectionReason": "The official Component API is the canonical reference for selector, template, standalone, imports, providers, host, and change-detection metadata.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for every @Component metadata field and its runtime meaning."
+      ],
+      "theirGaps": [
+        "It is reference-first, so it is less centered on the interview-grade debug surface of metadata mistakes."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Fixed: metadata now tells Angular template scope, provider scope, and runtime policy",
+          "The fastest way to map a real bug back to the right @Component field"
+        ],
+        "followUpConfusion": [
+          "In the standalone era, component metadata now owns template scope directly instead of relying on an NgModule declaration/export chain"
+        ]
+      },
+      "winReason": "Our page stays compact but now answers the question in the exact debugging shape interviewers ask for: a broken-vs-fixed decorator example, symptom-to-field mapping, and a standalone-era scope clarification.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular.dev explains the metadata contract clearly, while our page adds the same concept through a debugging lens, so the practical framing is close."
+        ],
+        "actionableExamples": [
+          "The API page enumerates the metadata surface in a more field-by-field way than our compact trivia answer."
+        ],
+        "followUpConfusion": [
+          "It answers follow-up questions about individual flags well, but it is still more reference-shaped than interview-shaped."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the page anchored on rendering, template-scope, and DI-debug scenarios instead of drifting back toward a plain decorator reference."
+        ]
+      }
+    },
+    {
+      "label": "Telerik Practical Guide to Angular Components and NgModules",
+      "url": "https://www.telerik.com/blogs/a-practical-guide-to-angular-components-ngmodules",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a practical broad competitor because it explains how components are wired and how decorators connect classes to Angular application structure.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It gives a beginner-friendly walk through components, decorators, and application structure in one place."
+      ],
+      "theirGaps": [
+        "It is broader than our prompt and less explicitly about metadata as the first debugging surface."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Broken: the class exists, but metadata still leaves template scope + DI wrong",
+          "Each card or tab gets its own unexpected service state"
+        ],
+        "followUpConfusion": [
+          "check this component’s imports, providers, and runtime metadata before hunting elsewhere"
+        ]
+      },
+      "winReason": "The Telerik article gives broad setup context, but our page is now more actionable for the exact interview prompt because it connects concrete production symptoms to the specific metadata field to inspect first.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Telerik guide is practical and component-focused, so the use-case framing stays close."
+        ],
+        "actionableExamples": [
+          "It includes concrete decorator and module examples, so the example depth is comparable."
+        ],
+        "followUpConfusion": [
+          "Because it covers components and modules together, it gives more surrounding context to newcomers who confuse component metadata with module wiring."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one explicit sentence on which metadata mistakes usually break rendering, DI scope, or style scoping in production."
+        ]
+      }
+    },
+    {
+      "label": "Swiftorial Component Metadata",
+      "url": "https://www.swiftorial.com/tutorials/web_development/angular/components_and_templates/component_metadata",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial competitor focused on component metadata fields such as selector, template, styleUrls, and providers.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It directly walks through selector, template, styles, providers, and animations with simple examples."
+      ],
+      "theirGaps": [
+        "It stays tutorial-basic and does not frame metadata through real rendering, scoping, or update-debug scenarios."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When a component renders, scopes, or updates incorrectly, this metadata is often the first debug surface."
+        ],
+        "actionableExamples": [
+          "Fixed: metadata now tells Angular template scope, provider scope, and runtime policy"
+        ]
+      },
+      "winReason": "Swiftorial covers the fields clearly, but our page now wins on both real debugging relevance and concrete broken-vs-fixed examples while staying equally compact.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Swiftorial explains what selector, template, and providers are, but it does not connect them to the production debug situations our page highlights."
+        ],
+        "actionableExamples": [
+          "Its field-by-field examples are concrete enough that the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "It covers the metadata properties clearly, but it is lighter on follow-up nuance around scope and runtime behavior."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "If follow-up confusion still shows up in review, add one even sharper note about which metadata fields stay local to the component and which runtime policies they influence."
+        ]
+      }
+    }
+  ]
+}

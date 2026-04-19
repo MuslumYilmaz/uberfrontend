@@ -1,0 +1,145 @@
+{
+  "contentId": "css-specificity-hierarchy",
+  "tech": "css",
+  "query": "How does CSS specificity work?",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Specificity",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Specificity",
+      "category": "canonical_docs",
+      "selectionReason": "This is MDN's canonical specificity guide and the strongest official baseline for selector scoring and how weights are compared.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on selector-weight calculation, pseudo-class nuances, and how specificity fits inside the cascade."
+      ],
+      "theirGaps": [
+        "The guide is broader and less focused on the specific interview guardrail that specificity is not the whole cascade."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When a \"simple\" override refuses to apply, specificity is often the first debug clue."
+        ],
+        "followUpConfusion": [
+          "<strong>Scope guard</strong><br><br>This page answers <em>“How are selectors scored?”</em> If the interviewer asks about full conflict resolution order (origin, <code>!important</code>, layers, then source order), jump to <a href=\"/css/trivia/css-cascade-order\">How does the CSS cascade determine which styles are applied?</a>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains specificity well, but it is less compressed around the concrete debugging question of a selector override unexpectedly losing."
+        ],
+        "actionableExamples": [
+          "The guide uses strong examples and covers weight calculation clearly, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "MDN explains the algorithm in depth, but our page is more explicit about the crucial follow-up that specificity is only one step inside the broader cascade."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny class-versus-ID-versus-inline example where the losing selector is highlighted in DevTools terms."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical specificity guide, but our page is more interview-efficient because it frames specificity as a debugging clue and explicitly separates it from the full cascade question."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant and explicitly includes specificity as a core CSS interview topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep source for selector and cascade concepts."
+      ],
+      "theirGaps": [
+        "The landing page is broad and less explicit about the specificity-versus-cascade boundary that often appears as the next follow-up."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use it to debug why one rule wins, why another loses, and why !important often hides the real specificity problem."
+        ],
+        "followUpConfusion": [
+          "If specificity ties, later source order wins (unless higher-priority cascade rules apply)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd clearly covers specificity as a CSS interview concept, but the hub page is less focused on the 'why didn't my override apply?' debugging angle."
+        ],
+        "actionableExamples": [
+          "Because the bank emphasizes quick answers and detailed explanations, the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "The hub is less explicit about when the answer should pivot from selector scoring to the dedicated cascade question."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one smaller selector-weight example that shows equal specificity and the source-order tie-break."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is useful for interview prep, but our page is more focused on the precise debug framing and on the important boundary between specificity and the wider cascade."
+    },
+    {
+      "label": "Specifics on CSS Specificity",
+      "url": "https://css-tricks.com/specifics-on-css-specificity/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks has a direct specificity explainer and is the strongest tutorial comparator in this selector-scoring cluster.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article is directly on-topic and memorable about selector scoring and why higher specificity wins."
+      ],
+      "theirGaps": [
+        "It is less explicit about the scope guard that this question is selector scoring only, not the whole cascade algorithm."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When a \"simple\" override refuses to apply, specificity is often the first debug clue."
+        ],
+        "followUpConfusion": [
+          "This page answers <em>“How are selectors scored?”</em> If the interviewer asks about full conflict resolution order (origin, <code>!important</code>, layers, then source order), jump to <a href=\"/css/trivia/css-cascade-order\">How does the CSS cascade determine which styles are applied?</a>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks explains specificity well, but it is less centered on the production override-debugging story and the 'don't hide the real issue with !important' framing."
+        ],
+        "actionableExamples": [
+          "Its selector examples are strong, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The article is less explicit about when the answer should stop at specificity and redirect to the broader cascade order."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one example using pseudo-classes or attributes so the score breakdown feels less toy-like."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong specificity explainer, but our page is more disciplined about the question boundary and more useful for debugging real selector conflicts without confusing specificity with the whole cascade."
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "contentId": "angular-prevent-memory-leaks-unsubscribe-patterns",
+  "tech": "angular",
+  "query": "Angular unsubscribe patterns and memory leaks interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular takeUntilDestroyed Guide",
+      "url": "https://angular.dev/ecosystem/rxjs-interop/take-until-destroyed",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official Angular guide for the modern teardown helper, so it is the canonical baseline for unsubscribe guidance.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The Angular guide is authoritative on takeUntilDestroyed, but our page is broader because it compares async pipe, takeUntilDestroyed, classic takeUntil, manual teardown, and non-RxJS leaks in one answer.",
+      "theirStrengths": [
+        "It is the official reference for takeUntilDestroyed and DestroyRef usage."
+      ],
+      "theirGaps": [
+        "It is intentionally focused on one teardown tool rather than the full unsubscribe decision tree."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most Angular memory leaks are not mysterious framework bugs. They come from long-lived streams, timers, or global listeners that outlive a component."
+        ],
+        "actionableExamples": [
+          "Outside an injection context",
+          "connect(stream$: Observable<string>, destroyRef: DestroyRef)"
+        ],
+        "followUpConfusion": [
+          "The production question is not “unsubscribe from everything?” but “which sources complete on their own, and which ones keep consuming memory, CPU, or network until I tear them down?”"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The guide prevents a common leak pattern, but it is narrower than our broader teardown taxonomy."
+        ],
+        "actionableExamples": [
+          "Angular.dev includes a solid takeUntilDestroyed example, so the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "It explains injection-context nuances for takeUntilDestroyed, but our page better answers when unsubscribe boilerplate is unnecessary and when non-RxJS cleanup still matters."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one resolver-focused teardown helper example that combines DestroyRef and route cleanup in the same snippet if we want to beat the official guide on pure examples."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Experienced Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-experienced-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd directly covers unhandled subscriptions, async pipe, takeUntilDestroyed, and RxJS pitfalls in Angular apps.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd surfaces unsubscribe pitfalls, but our page is broader and more decision-complete because it compares auto-completing sources, async pipe, takeUntilDestroyed, classic takeUntil, and non-RxJS leaks.",
+      "theirStrengths": [
+        "It is concise, interview-friendly, and already names manual subscribe leaks and takeUntilDestroyed."
+      ],
+      "theirGaps": [
+        "It is more checklist-like and less exhaustive about source lifetimes and non-RxJS cleanup."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most Angular memory leaks are not mysterious framework bugs. They come from long-lived streams, timers, or global listeners that outlive a component."
+        ],
+        "actionableExamples": [
+          "Outside an injection context",
+          "Route-level pitfall: resolver streams that never complete"
+        ],
+        "followUpConfusion": [
+          "Leaks don’t only come from Observables. addEventListener, setInterval, and 3rd-party libraries must also be cleaned up in ngOnDestroy."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The experienced guide calls out unhandled subscriptions and RxJS pitfalls, but it is less complete on which sources complete automatically and which do not."
+        ],
+        "actionableExamples": [
+          "Its takeUntilDestroyed and switchMap snippet keeps the example comparison close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on the non-RxJS leak surface and on the nuance that some Angular Observables complete on their own."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact before-versus-after snippet that keeps HttpClient one-shot and valueChanges leak patterns in the same code block."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University 3 Common RxJs Pitfalls",
+      "url": "https://blog.angular-university.io/angular-2-rxjs-common-pitfalls/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a strong tutorial/reference competitor because it explains several real RxJS failure modes in Angular, including duplicate requests and resolver completion.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Angular University remains strong on RxJS pitfalls, but our page now wins as a teardown guide because it combines component lifetimes, non-RxJS cleanup, explicit DestroyRef usage, and the resolver-completion trap in one answer.",
+      "theirStrengths": [
+        "It is practical and organized around real RxJS pitfalls developers hit in Angular."
+      ],
+      "theirGaps": [
+        "It is narrower than our teardown-focused answer because it does not aim to be a full unsubscribe decision guide."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most Angular memory leaks are not mysterious framework bugs. They come from long-lived streams, timers, or global listeners that outlive a component."
+        ],
+        "actionableExamples": [
+          "Route-level pitfall: resolver streams that never complete",
+          "connect(stream$: Observable<string>, destroyRef: DestroyRef)"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article covers real Angular RxJS failure modes, but our page is broader on leak sources and teardown choices."
+        ],
+        "actionableExamples": [
+          "Its pitfall walkthroughs are practical enough that the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "It helps with async-pipe and resolver-related follow-ups, so the deeper confusion comparison remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one route transition example that shows a resolver hanging navigation and then finishing once the stream is capped or completed."
+        ]
+      }
+    }
+  ]
+}

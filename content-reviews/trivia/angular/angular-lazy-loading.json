@@ -1,0 +1,146 @@
+{
+  "contentId": "angular-lazy-loading",
+  "tech": "angular",
+  "query": "Angular lazy loading in production: route boundaries, preloading, and bundle trade-offs",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Angular Route Loading Strategies",
+      "url": "https://angular.dev/guide/routing/loading-strategies",
+      "category": "canonical_docs",
+      "selectionReason": "This is the most direct official Angular guide for eager versus lazy routes, loadComponent or loadChildren decisions, and preloading trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the canonical Angular source for route loading strategy, lazy routes, and built-in preloading guidance."
+      ],
+      "theirGaps": [
+        "It is docs-shaped and less compressed around the interview trade-off of route boundaries, preloading, and over-fragmentation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Route-boundary decision</strong><br><br>Lazy loading is not just \"load later.\" In a production Angular app, it decides <strong>which routes stay out of the startup bundle</strong>, whether a feature should load with <code>loadChildren</code> or a standalone screen with <code>loadComponent</code>, and whether background preloading is worth the extra network work. The common failure mode is over-fragmenting features and turning one navigation into a chunk waterfall."
+        ],
+        "followUpConfusion": [
+          "<strong>Debug rule</strong><br><ul><li>Lazy loading helps startup only when the feature is genuinely deferred.</li><li>Too many tiny route chunks create network waterfalls and hurt perceived navigation speed.</li><li>Check route boundaries in DevTools before splitting more.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular Standalone Components: Complete Guide",
+      "url": "https://blog.angular-university.io/angular-standalone-components/",
+      "category": "tutorial_reference",
+      "selectionReason": "This Angular University guide is the strongest tutorial competitor for modern lazy-loading because it directly contrasts module-era and standalone route lazy loading.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It gives practical standalone lazy-loading examples and explains how loadComponent reduces module ceremony."
+      ],
+      "theirGaps": [
+        "It spends more time on standalone migration than on the narrower interview trade-off of preloading and over-splitting features."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Route-boundary decision</strong><br><br>Lazy loading is not just \"load later.\" In a production Angular app, it decides <strong>which routes stay out of the startup bundle</strong>, whether a feature should load with <code>loadChildren</code> or a standalone screen with <code>loadComponent</code>, and whether background preloading is worth the extra network work. The common failure mode is over-fragmenting features and turning one navigation into a chunk waterfall."
+        ],
+        "followUpConfusion": [
+          "<strong>Debug rule</strong><br><ul><li>Lazy loading helps startup only when the feature is genuinely deferred.</li><li>Too many tiny route chunks create network waterfalls and hurt perceived navigation speed.</li><li>Check route boundaries in DevTools before splitting more.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: How to think about Lazy Loading in Angular",
+      "url": "https://stackoverflow.com/questions/67499816/how-to-think-about-lazy-loading-in-angular",
+      "category": "community_qna",
+      "selectionReason": "This is a directly relevant community comparator for the mental model behind lazy loading, preloading, and when route splitting helps or hurts.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly about the mental model, which makes it a fair interview-style comparison."
+      ],
+      "theirGaps": [
+        "It is shorter and less systematic about preloading strategy and feature-fragmentation trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Route-boundary decision</strong><br><br>Lazy loading is not just \"load later.\" In a production Angular app, it decides <strong>which routes stay out of the startup bundle</strong>, whether a feature should load with <code>loadChildren</code> or a standalone screen with <code>loadComponent</code>, and whether background preloading is worth the extra network work. The common failure mode is over-fragmenting features and turning one navigation into a chunk waterfall."
+        ],
+        "followUpConfusion": [
+          "<strong>Debug rule</strong><br><ul><li>Lazy loading helps startup only when the feature is genuinely deferred.</li><li>Too many tiny route chunks create network waterfalls and hurt perceived navigation speed.</li><li>Check route boundaries in DevTools before splitting more.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

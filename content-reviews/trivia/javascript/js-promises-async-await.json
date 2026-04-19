@@ -1,0 +1,145 @@
+{
+  "contentId": "js-promises-async-await",
+  "tech": "javascript",
+  "query": "promises vs async await javascript interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "async function",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for async functions, await behavior, and promise-returning semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN is the better syntax reference, but our page now wins this interview-focused comparison because it is more explicit about concurrency mistakes, stale-request handling, and the production pattern that combines Promise.all, AbortController, and request identity.",
+      "theirStrengths": [
+        "It is the canonical reference for async function syntax, returned promises, and await semantics."
+      ],
+      "theirGaps": [
+        "It is less focused on interview follow-ups like accidental serialization and stale-request handling."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A strong production answer usually shows both independent work started together and one stale-request guard, because syntax is not the hard part."
+        ],
+        "followUpConfusion": [
+          "Promise is the contract for future data. await is just cleaner punctuation when reading that contract."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains async function usage clearly, but our page is more directly tied to production scenarios like stale UI requests and accidental serialization."
+        ],
+        "actionableExamples": [
+          "It provides multiple runnable syntax examples for await, returned values, and rejection flow."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the interview confusion that async/await is the same promise model, not a different async engine."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a second code example that pairs try/catch with AbortController-based cancellation."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "What is async/await and how does it simplify asynchronous code?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-asyncawait-and-how-does-it-simplify-asynchronous-code",
+      "category": "interview_prep",
+      "selectionReason": "This is GreatFrontEnd's direct async/await interview page and the closest interview-prep comparator for the same concept.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd explains the syntax well, but our page is sharper on production trade-offs: accidental serialization, stale request cancellation, and the fact that async/await does not replace the promise model underneath.",
+      "theirStrengths": [
+        "It is concise, interview-oriented, and shows the basic async/await flow clearly."
+      ],
+      "theirGaps": [
+        "It is lighter on cancellation, stale-request control, and the cost of serializing independent work."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "the production pitfall is assuming await is always clearer when it may accidentally serialize independent work."
+        ],
+        "followUpConfusion": [
+          "Promises and async/await are the same async model."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page covers simplification and try/catch, but our answer is more specific about autocomplete races, cancellation, and when await hurts latency."
+        ],
+        "actionableExamples": [
+          "Both pages include concrete async examples and readable code, so the examples criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our answer is more explicit that async/await is syntax over promises rather than a different asynchronous mechanism."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a compact example showing Promise.all for independent fetches next to an accidentally serialized await chain."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Async/await",
+      "url": "https://javascript.info/async-await",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a strong tutorial reference for async/await semantics, promise chaining, and await control flow.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "javascript.info is richer as a general async/await tutorial, but our page is now stronger for the production interview angle because it centers on stale-request handling, concurrency mistakes, and the fact that async/await does not change the underlying promise model.",
+      "theirStrengths": [
+        "It teaches async/await thoroughly and gives richer walkthroughs of promise flow and try/catch usage."
+      ],
+      "theirGaps": [
+        "It is more tutorial-shaped than interview-compressed."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Start independent requests together, keep one try/catch boundary, and pair AbortController with a request-identity guard when older work must never overwrite newer UI state."
+        ],
+        "followUpConfusion": [
+          "Promises and async/await are the same async model."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial covers practical async tasks, but our page is more explicit about stale-request cancellation and latest-result guards in UI code."
+        ],
+        "actionableExamples": [
+          "It provides more step-by-step code examples and edge-case discussion than our compact answer."
+        ],
+        "followUpConfusion": [
+          "Our page now closes the common follow-up confusion more directly by pairing the 'same async model' explanation with a latest-request-wins example."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a second code sample showing independent tasks parallelized with Promise.all."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

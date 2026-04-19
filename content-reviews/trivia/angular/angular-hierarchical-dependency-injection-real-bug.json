@@ -1,0 +1,154 @@
+{
+  "contentId": "angular-hierarchical-dependency-injection-real-bug",
+  "tech": "angular",
+  "query": "Angular hierarchical dependency injection real bug interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Hierarchical Injectors Guide",
+      "url": "https://angular.dev/guide/di/hierarchical-dependency-injection",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official Angular guide for hierarchical DI, making it the canonical competitor for injector tree behavior and provider scope.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular docs are the canonical DI reference, but our page is more immediately useful for the specific production failure mode: silently splitting state by re-providing a service lower in the injector tree.",
+      "theirStrengths": [
+        "It is the official explanation of injector hierarchy and provider scope."
+      ],
+      "theirGaps": [
+        "It is less bug-first than our focused answer about broken singleton assumptions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "that becomes a production bug when a root service is accidentally re-provided in a component or route and your “singleton” cache, auth flag, or shared state quietly splits into multiple instances."
+        ],
+        "actionableExamples": [
+          "Standalone route providers are their own injector boundary"
+        ],
+        "followUpConfusion": [
+          "1) Check the component’s injector 2) If not found, check parent component injectors 3) Then module/route injectors 4) Finally root injector",
+          "In modern Angular, route-level providers create an EnvironmentInjector for that branch."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide explains hierarchical injectors clearly, but our page puts the broken-singleton bug front and center instead of presenting hierarchy more abstractly."
+        ],
+        "actionableExamples": [
+          "Angular.dev is still strong enough on provider placement and injector behavior that the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "The docs explain scope and hierarchy, but our page is more direct about the first-match-wins rule and lazy-module split-state bug."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one full before-versus-after snippet that shows the same token resolved inside and outside the route subtree if we want to beat the official DI guide on example explicitness."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd directly covers Angular services, provider scope, and dependency injection as interview topics, so it is the right interview-prep comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers DI and service scope basics well, but our page is stronger on the concrete bug pattern where a re-provided service silently splits shared state.",
+      "theirStrengths": [
+        "It introduces services, provider scope, and DI in interview-friendly language."
+      ],
+      "theirGaps": [
+        "It does not focus as strongly on the broken-singleton production bug and lazy-route split-state behavior."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The usual answer: you accidentally created multiple instances of the same service."
+        ],
+        "actionableExamples": [
+          "Standalone route providers are their own injector boundary"
+        ],
+        "followUpConfusion": [
+          "The first match wins.",
+          "In modern Angular, route-level providers create an EnvironmentInjector for that branch."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The basic guide explains provider scope, but our page anchors the concept in cache resets, auth-state splits, and other real failure modes."
+        ],
+        "actionableExamples": [
+          "Its service-scope examples keep the example comparison close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on the full injector-resolution path and why lazy-loaded modules can create a second instance."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one even more compact root-versus-route provider diff if we want to beat an interview-prep page on glanceable example density."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University Dependency Injection Guide",
+      "url": "https://blog.angular-university.io/angular-dependency-injection/",
+      "category": "tutorial_reference",
+      "selectionReason": "Angular University has a dedicated DI guide, making it the strongest tutorial/reference competitor for injector mechanics and provider patterns.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular University is still the fuller DI tutorial, but our page now wins the specific route-provider follow-up: it shows the same token resolving differently at the root and route level and explains standalone route EnvironmentInjector behavior more directly.",
+      "theirStrengths": [
+        "It is a focused long-form DI tutorial with more room for provider mechanics and examples."
+      ],
+      "theirGaps": [
+        "It is less compact and less narrowly shaped around a bug-first interview answer."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Standalone route providers are their own injector boundary"
+        ],
+        "followUpConfusion": [
+          "In modern Angular, route-level providers create an EnvironmentInjector for that branch.",
+          "Outside /reports => root FeatureFlagsService"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University also ties DI to practical app architecture and provider placement, so the real-world comparison stays close."
+        ],
+        "actionableExamples": [
+          "It walks through more total DI mechanics, but our updated page now shows the exact root-versus-route split with less indirection."
+        ],
+        "followUpConfusion": [
+          "It covers injector behavior in depth, but our page now answers the standalone route-provider EnvironmentInjector follow-up more explicitly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit note on how route-level providers differ from component providers in standalone Angular."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

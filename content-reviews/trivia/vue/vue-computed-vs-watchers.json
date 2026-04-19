@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-computed-vs-watchers",
+  "tech": "vue",
+  "query": "Vue computed vs watch interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Watchers",
+      "url": "https://vuejs.org/guide/essentials/watchers.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for watch, watchEffect, cleanup, flush timing, and side effects.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "The docs are strong on cleanup, flush timing, deep watchers, and watchEffect behavior."
+      ],
+      "theirGaps": [
+        "They are less compact on the interview-level comparison of computed for values versus watch for side effects."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When a value changes and you need to do something (fetch, analytics, sync URL, write to storage), use watch ."
+        ],
+        "actionableExamples": [
+          "Use cleanup to avoid race conditions (old request finishing after a new one)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs already ground watch in async side effects, DOM mutation, and cleanup-driven behavior."
+        ],
+        "actionableExamples": [
+          "They provide concrete watcher and cleanup examples, so the example criterion is competitive."
+        ],
+        "followUpConfusion": [
+          "The docs cover cleanup and timing deeply, but they are less concise on the anti-pattern of using watch for duplicated derived state."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one shorter sentence on why computed should stay pure while watch exists for effects."
+        ]
+      },
+      "winReason": "The official docs are deeper on the watcher API surface, but our page is more compact and interview-ready on the central decision: computed for values, watch for effects."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because reactivity, watchers, and lifecycle choices are common Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong broad interview-prep resource with Vue-specific answers and worked solutions."
+      ],
+      "theirGaps": [
+        "The page is not dedicated to the computed-versus-watch decision and therefore exposes less concept-specific nuance."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This duplicates state and can drift out of sync. Prefer computed unless you truly need an effect."
+        ],
+        "followUpConfusion": [
+          "If the result is a value you want to render (filtering, formatting, totals) → computed . If you need to do something when it changes (fetch, sync, log, imperative updates) → watch ."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank covers Vue interview topics broadly, but it is less explicit about this exact duplicate-state versus side-effect decision."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd emphasizes solutions and scenarios, the example bar remains close."
+        ],
+        "followUpConfusion": [
+          "The category page does not spell out cleanup, flush timing, and derived-state drift as directly as our dedicated answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the async fetch example compact so the page does not drift into a long watcher tutorial."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is useful as an interview hub, but our answer is more specific on the common anti-pattern and gives a tighter decision rule for follow-up questions."
+    },
+    {
+      "label": "Computed Props and Watchers — What's the Difference?",
+      "url": "https://michaelnthiessen.com/difference-between-computed-property-and-watcher",
+      "category": "tutorial_reference",
+      "selectionReason": "Michael Thiessen has a direct comparison article focused on when to use computed versus watch.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a direct topic match and explains declarative versus side-effect-driven usage well."
+      ],
+      "theirGaps": [
+        "It is lighter on async cancellation and on Vue-specific watcher options such as flush timing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Watchers (the right use): side effects + async + cancellation"
+        ],
+        "actionableExamples": [
+          "watch(query, async (q, _prev, onCleanup) => {"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article clearly says watch is for side effects and computed is for derived values, so the conceptual use-case framing is strong."
+        ],
+        "actionableExamples": [
+          "It includes practical rules of thumb, but our page adds a concrete async watcher with cleanup and race-condition handling."
+        ],
+        "followUpConfusion": [
+          "Its follow-up coverage is solid, though it is less specific on flush timing and cleanup-driven network races."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one shorter note on when watchEffect is better than watch to round out the follow-up path."
+        ]
+      },
+      "winReason": "Michael Thiessen's article is a strong direct comparator, but our page is more actionable because it pairs the core distinction with an abortable async watcher example."
+    }
+  ]
+}

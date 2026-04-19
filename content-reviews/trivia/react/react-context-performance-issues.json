@@ -1,0 +1,149 @@
+{
+  "contentId": "react-context-performance-issues",
+  "tech": "react",
+  "query": "react context performance rerender interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "useContext",
+      "url": "https://react.dev/reference/react/useContext",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React reference for context consumption and value propagation, which is the foundation of context rerender behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for how context values are provided and consumed."
+      ],
+      "theirGaps": [
+        "It is less direct on the performance failure mode of broad rerender fan-out from unstable provider values."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "when a Provider’s value changes, React notifies all consumers"
+        ],
+        "actionableExamples": [
+          "Fix #1: Memoize the Provider value"
+        ],
+        "followUpConfusion": [
+          "Context is not a \"subscription by field\" system."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain context correctly, but our page is more explicit about the real performance problem: provider value identity changing too often and causing fan-out rerenders."
+        ],
+        "actionableExamples": [
+          "The official examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that context tracks reference identity, not deep field-level subscriptions."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny inline-object provider example later if we want more literal before-and-after code."
+        ]
+      },
+      "winReason": "The official docs are authoritative, but our page is stronger because it names the exact rerender fan-out mechanism and the practical fixes teams actually apply."
+    },
+    {
+      "label": "How to write performant React apps with Context",
+      "url": "https://www.developerway.com/posts/how-to-write-performant-react-apps-with-context",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is a strong practical guide for context rerender fan-out, provider design, and mitigation patterns.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on provider design and rerender control."
+      ],
+      "theirGaps": [
+        "It is less concise on the exact interview mental model of reference identity and fan-out."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "causing a fan-out of re-renders even when the “real data” didn’t change."
+        ],
+        "actionableExamples": [
+          "memoizing Provider values, splitting contexts, narrowing provider scope"
+        ],
+        "followUpConfusion": [
+          "React tracks context updates by comparing the Provider’s value by reference"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DeveloperWay is practical, but our page is more direct about the core production trap: new provider identity creating unnecessary rerender blast radius."
+        ],
+        "actionableExamples": [
+          "Its examples are strong, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that context does not subscribe consumers by field and therefore needs structural fixes, not wishful thinking."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the fix list visible so the page stays more prescriptive than a problem-only article."
+        ]
+      },
+      "winReason": "This tutorial is practical, but our page is stronger because it compresses context performance into the exact identity, fan-out, and mitigation model interviewers usually care about."
+    },
+    {
+      "label": "React Context performance and suggestions",
+      "url": "https://stackoverflow.com/questions/75060633",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for context rerender concerns and common mitigation advice.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on the exact rerender concern developers have with context."
+      ],
+      "theirGaps": [
+        "It is narrower than a full explanation of the provider-value identity mechanism."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "re-renders every component using useContext(AppContext)"
+        ],
+        "actionableExamples": [
+          "Stabilize the value identity so consumers only re-render when the actual data changes:"
+        ],
+        "followUpConfusion": [
+          "\"Provider rerenders → new object → consumers rerender\""
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on the symptom, but our page is stronger because it explains the actual identity rule that creates the symptom."
+        ],
+        "actionableExamples": [
+          "Community answers can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that reference identity, not deep equality, drives context notifications."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one explicit split-context example later if we want more concrete mitigation than the current fix list."
+        ]
+      },
+      "winReason": "The community thread is useful on the symptom, but our page is stronger because it explains the identity mechanism and the concrete mitigation patterns that follow from it."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "js-hoisting",
+  "tech": "javascript",
+  "query": "javascript hoisting interview question",
+  "reviewedAt": "2026-04-08",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Hoisting",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Hoisting",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's hoisting glossary page is the canonical docs reference for how different declarations behave before execution.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It distinguishes declaration types precisely and links hoisting to the broader language model."
+      ],
+      "theirGaps": [
+        "It is less explicitly optimized around debugging and interview misconceptions than our trivia voice."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A feature module may call a helper before its function expression is assigned, or instantiate a class before its declaration line. Those failures look similar at first, but they come from different hoisting outcomes."
+        ],
+        "actionableExamples": [
+          "speak(); // TypeError: speak is not a function"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains declaration behavior well, but our page now anchors the topic more clearly in frontend debugging symptoms."
+        ],
+        "actionableExamples": [
+          "Its examples are precise, while our page now puts function declaration, var function expression, and class behavior side by side."
+        ],
+        "followUpConfusion": [
+          "MDN still has broader docs depth, so the overall follow-up comparison remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one direct cross-link or note that separates classic hoisting confusion from TDZ errors so the follow-up set is broader."
+        ]
+      },
+      "winReason": "MDN remains the canonical definition, but our page is now stronger on the concrete debugging symptoms and the side-by-side function-expression/class failures developers actually hit."
+    },
+    {
+      "label": "GreatFrontEnd Hoisting pitfalls",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-the-potential-issues-caused-by-hoisting",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep question focused on hoisting pitfalls.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is closely aligned with the interview angle and already focuses on pitfalls rather than definition only."
+      ],
+      "theirGaps": [
+        "It appears narrower than docs pages that unpack multiple declaration categories in detail."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A feature module may call a helper before its function expression is assigned, or instantiate a class before its declaration line. Those failures look similar at first, but they come from different hoisting outcomes."
+        ],
+        "followUpConfusion": [
+          "Function declarations are callable early because the function value is ready during setup."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd focuses on pitfalls, but our page now pushes further into concrete production-style failure modes."
+        ],
+        "actionableExamples": [
+          "Its pitfall examples remain competitive enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page now separates function declarations, var function expressions, and class TDZ behavior more explicitly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny matrix that compares function declarations, function expressions, and classes in one glance."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a strong interview comparator, but our page now does more to map hoisting to real debugging outcomes and declaration-type-specific failures."
+    },
+    {
+      "label": "GeeksforGeeks Hoisting in JavaScript",
+      "url": "https://www.geeksforgeeks.org/javascript/what-is-hoisting-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a common tutorial-style comparator that covers the standard hoisting explanation and examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is sharper on under-the-hood debugging signals and common misreadings of hoisting, while GeeksforGeeks stays more introductory.",
+      "theirStrengths": [
+        "It gives the standard introductory explanation and beginner-friendly examples."
+      ],
+      "theirGaps": [
+        "It is lighter on the debugging lens and on the distinction between different failing declaration types."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That under-the-hood setup explains several debug traps: var reads as undefined, function declarations work early, and function expressions or classes fail for different reasons."
+        ],
+        "followUpConfusion": [
+          "Hoisting is not code movement. It is how the engine prepares scope before running the script, registering declarations first."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks explains hoisting correctly, but it spends less time on the concrete debugging traps that show up in production code."
+        ],
+        "actionableExamples": [
+          "Its short examples are serviceable enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "It is less explicit about why different declaration forms fail in different ways before initialization."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one combined matrix or trace that compares var, function declaration, function expression, and class reads before declaration."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

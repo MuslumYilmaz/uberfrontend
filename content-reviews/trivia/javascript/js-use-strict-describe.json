@@ -1,0 +1,145 @@
+{
+  "contentId": "js-use-strict-describe",
+  "tech": "javascript",
+  "query": "what does use strict do in javascript",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Strict mode",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the strongest canonical reference for strict mode semantics, syntax changes, and module defaults.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page now has a tighter migration/debug framing and a more compact comparison snippet for the exact sloppy-mode bugs candidates usually need to explain, while MDN remains the broader reference.",
+      "theirStrengths": [
+        "It is the most complete reference for strict-mode behavior changes, syntax restrictions, and module defaults."
+      ],
+      "theirGaps": [
+        "It is less condensed around the shortest interview-ready answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "'use strict' is mainly a migration and debugging tool: it turns sloppy-mode footguns into explicit errors."
+        ],
+        "actionableExamples": [
+          "function strictShow() {\n  'use strict';\n  leakedTotal = 10; // ReferenceError\n  return this;      // undefined\n}"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers accidental globals, silent failures, and modern strict-mode defaults well, but our page now leans harder into the migration/debug story."
+        ],
+        "actionableExamples": [
+          "Its examples are concrete, but our page now has a tighter single comparison that bundles accidental globals, sloppy `this`, and silent write failures together."
+        ],
+        "followUpConfusion": [
+          "MDN still handles more long-tail follow-ups, including syntax restrictions and deeper eval semantics."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one shorter note on duplicate parameters or `arguments` behavior if this page needs another long-tail follow-up pass."
+        ]
+      }
+    },
+    {
+      "label": "GreatFrontEnd use strict",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-use-strict-what-are-the-advantages-and-disadvantages-to-using-it",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep question for `use strict`, so it should calibrate our interview framing.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page now packages the bug comparison and the modern ESM/eval follow-ups more directly, while GreatFrontEnd stays closer to a classic interview summary.",
+      "theirStrengths": [
+        "It is aligned with the same interview question and includes the advantages/disadvantages framing candidates are likely to face."
+      ],
+      "theirGaps": [
+        "It is less explicit about module defaults and modern code already running in strict mode."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "function strictShow() {\n  'use strict';\n  leakedTotal = 10; // ReferenceError\n  return this;      // undefined\n}"
+        ],
+        "followUpConfusion": [
+          "Strict mode also changes some <code>eval</code> behavior and blocks older syntax like <code>with</code>. In ES modules and class bodies you already have strict semantics, so adding the literal there is usually redundant rather than harmful."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is tuned to the exact interview framing, so the practical criterion is close."
+        ],
+        "actionableExamples": [
+          "Its interview-prep answer is likely concise, but our page now gives a denser all-in-one bug comparison snippet."
+        ],
+        "followUpConfusion": [
+          "Our page now adds the modern ESM default plus eval-related follow-up in one place, which gives it the better follow-up answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one migration bug story explicit so the practical angle stays strong against interview-prep competitors."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GeeksforGeeks use strict",
+      "url": "https://www.geeksforgeeks.org/use-strict-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a common beginner-facing competitor for strict mode basics and examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page gives a cleaner modern mental model with module-default coverage, while GeeksforGeeks stays closer to a feature inventory.",
+      "theirStrengths": [
+        "It covers accidental globals, silent errors, and default `this` behavior with accessible examples."
+      ],
+      "theirGaps": [
+        "It is more feature-list oriented and less focused on the strongest interview framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "'use strict' is mainly a migration and debugging tool: it turns sloppy-mode footguns into explicit errors."
+        ],
+        "followUpConfusion": [
+          "Also important: ES modules and class bodies are strict by default, even without writing 'use strict'."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks highlights accidental globals and silent failures, but it stays more like a feature inventory than a concise modern answer."
+        ],
+        "actionableExamples": [
+          "It includes enough examples that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on module defaults and when the directive still matters in modern code."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact file-scope versus function-scope snippet so the comparison stays strong on examples too."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

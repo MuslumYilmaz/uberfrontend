@@ -1,0 +1,14 @@
+{
+  "batchId": "importance-4-html-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "html", "id": "html-head-tag" },
+    { "tech": "html", "id": "html-title-tag" },
+    { "tech": "html", "id": "html-a-tag" },
+    { "tech": "html", "id": "html-href-attribute" },
+    { "tech": "html", "id": "html-anchor-target" },
+    { "tech": "html", "id": "html-form-default-method" },
+    { "tech": "html", "id": "html-data-attribute" },
+    { "tech": "html", "id": "html-clickable-image" }
+  ]
+}

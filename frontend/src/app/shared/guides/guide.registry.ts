@@ -111,7 +111,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'javascript interview patterns',
             keywords: ['javascript interview patterns', 'javascript interview questions', 'javascript interview answers'],
             publishedAt: '2025-09-27',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/js-problems-article.component')
@@ -145,7 +145,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'frontend ui interviews',
             keywords: ['frontend ui interviews', 'frontend ui interview prep', 'frontend component interview'],
             publishedAt: '2025-09-27',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/fe-ui-in-60.component')
@@ -162,7 +162,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'component api design for frontend interviews',
             keywords: ['component api design for frontend interviews', 'frontend component api design', 'props events tradeoffs'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/component-api-design-article.component')
@@ -179,7 +179,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'javascript prep path',
             keywords: ['javascript prep path', 'javascript interview study plan', 'javascript async closures state'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-04-19',
         },
         load: () =>
             import('../../features/guides/playbook/javascript-prep-path-article.component')
@@ -196,7 +196,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'react prep path',
             keywords: ['react prep path', 'react interview study plan', 'react state effects performance'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-04-19',
         },
         load: () =>
             import('../../features/guides/playbook/react-prep-path-article.component')
@@ -213,7 +213,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'angular prep path',
             keywords: ['angular prep path', 'angular interview study plan', 'angular rxjs architecture tests'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-04-19',
         },
         load: () =>
             import('../../features/guides/playbook/angular-prep-path-article.component')
@@ -230,7 +230,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'vue prep path',
             keywords: ['vue prep path', 'vue interview study plan', 'vue reactivity rendering state'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-04-19',
         },
         load: () =>
             import('../../features/guides/playbook/vue-prep-path-article.component')
@@ -264,7 +264,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'frontend interview fundamentals quiz',
             keywords: ['frontend interview fundamentals quiz', 'frontend fundamentals check', 'browser css javascript http quiz'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/playbook/fundamentals-check-article.component')
@@ -399,7 +399,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'requirements deep dive for frontend system design interviews',
             keywords: ['requirements deep dive for frontend system design interviews', 'frontend system design requirements', 'radio requirements frontend'],
             publishedAt: '2026-02-18',
-            updatedAt: '2026-02-23',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-requirements')
@@ -416,7 +416,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'frontend system design architecture guide',
             keywords: ['frontend system design architecture guide', 'frontend architecture interview guide', 'rendering caching boundaries'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-03-06',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-architecture')
@@ -433,7 +433,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'data model deep dive for frontend system design interviews',
             keywords: ['data model deep dive for frontend system design interviews', 'frontend state and data model', 'cache invalidation interview'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-02-23',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-state')
@@ -450,7 +450,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'interface deep dive for frontend system design interviews',
             keywords: ['interface deep dive for frontend system design interviews', 'frontend system design interface guide', 'a11y interaction states'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-02-23',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-ux')
@@ -484,7 +484,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'frontend system design interview signals',
             keywords: ['frontend system design interview signals', 'what interviewers score in system design', 'system design evaluation criteria'],
             publishedAt: '2025-09-28',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-evaluation')
@@ -501,7 +501,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'frontend system design interview pitfalls',
             keywords: ['frontend system design interview pitfalls', 'system design anti patterns', 'system design mistakes to avoid'],
             publishedAt: '2025-09-28',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-pitfalls')
@@ -518,7 +518,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'frontend system design interview checklist',
             keywords: ['frontend system design interview checklist', 'system design final review checklist', 'system design prep checklist'],
             publishedAt: '2025-09-28',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-checklist')
@@ -564,7 +564,7 @@ export const BEHAVIORAL: GuideEntry[] = [
             primaryKeyword: 'behavioral interview big picture',
             keywords: ['behavioral interview big picture', 'behavioral screening and onsite', 'behavioral interview process'],
             publishedAt: '2025-10-01',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-big-picture')
@@ -581,7 +581,7 @@ export const BEHAVIORAL: GuideEntry[] = [
             primaryKeyword: 'behavioral interview scorecard',
             keywords: ['behavioral interview scorecard', 'behavioral evaluation areas', 'behavioral interview competencies'],
             publishedAt: '2025-10-01',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-evaluation-areas')
@@ -598,7 +598,7 @@ export const BEHAVIORAL: GuideEntry[] = [
             primaryKeyword: 'behavioral interview prep plan',
             keywords: ['behavioral interview prep plan', 'behavioral interview preparation', 'behavioral story bank'],
             publishedAt: '2025-10-01',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-prep')
@@ -615,7 +615,7 @@ export const BEHAVIORAL: GuideEntry[] = [
             primaryKeyword: 'star stories for behavioral interviews',
             keywords: ['star stories for behavioral interviews', 'behavioral story framework', 'how to craft star stories'],
             publishedAt: '2025-10-01',
-            updatedAt: '2025-12-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-stories')
@@ -632,7 +632,7 @@ export const BEHAVIORAL: GuideEntry[] = [
             primaryKeyword: 'behavioral interview questions',
             keywords: ['behavioral interview questions', 'common behavioral prompts', 'behavioral interview answers'],
             publishedAt: '2025-10-01',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-common-questions')
@@ -649,7 +649,7 @@ export const BEHAVIORAL: GuideEntry[] = [
             primaryKeyword: 'frontend behavioral interview scenarios',
             keywords: ['frontend behavioral interview scenarios', 'technical behavioral interview examples', 'frontend collaboration tradeoffs stories'],
             publishedAt: '2025-10-01',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-fe-advanced')
@@ -666,7 +666,7 @@ export const BEHAVIORAL: GuideEntry[] = [
             primaryKeyword: 'behavioral interview tips',
             keywords: ['behavioral interview tips', 'behavioral interview mistakes', 'better behavioral answers'],
             publishedAt: '2025-10-01',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-practical-tips')
@@ -683,7 +683,7 @@ export const BEHAVIORAL: GuideEntry[] = [
             primaryKeyword: 'behavioral interview checklist',
             keywords: ['behavioral interview checklist', 'last minute behavioral interview prep', 'behavioral interview review'],
             publishedAt: '2025-10-01',
-            updatedAt: '2026-02-09',
+            updatedAt: '2026-04-04',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-checklist')

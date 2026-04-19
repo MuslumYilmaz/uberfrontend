@@ -1,0 +1,149 @@
+{
+  "contentId": "react-diffing-algorithm",
+  "tech": "react",
+  "query": "react diffing algorithm keys heuristics interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Rendering Lists",
+      "url": "https://react.dev/learn/rendering-lists",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of key-based child identity, which is central to how the diffing heuristic behaves in list updates.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on keys and child identity."
+      ],
+      "theirGaps": [
+        "It is less explicit about the heuristic trade-off: React is not computing a perfect tree edit distance."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "list reordering with bad keys creates state bugs"
+        ],
+        "actionableExamples": [
+          "When lists change, React uses keys to identify additions, deletions, and reorderings efficiently."
+        ],
+        "followUpConfusion": [
+          "Instead of computing the perfect tree edit distance, React makes a few bets about element type and keys."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain keys well, but our page is more direct about the production bug pattern that follows when the heuristic's assumptions are violated."
+        ],
+        "actionableExamples": [
+          "The official keys guidance is concrete enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up that the algorithm is heuristic and intentionally not a perfect semantic diff."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one small prepend-versus-append list example if we want more explicit key-order illustration later."
+        ]
+      },
+      "winReason": "The official docs are authoritative on keys, but our page is stronger on the interview-grade explanation of why React uses heuristics and how that leads to surprising list bugs."
+    },
+    {
+      "label": "Reconciliation in React",
+      "url": "https://www.developerway.com/posts/reconciliation-in-react",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is a strong practical explanation of tree matching, key identity, and the consequences of React's heuristics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on tree matching and identity bugs."
+      ],
+      "theirGaps": [
+        "It is less concise on the exact interview distinction between heuristic diffing and perfect minimal updates."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Those bets are why list reordering with bad keys creates state bugs"
+        ],
+        "actionableExamples": [
+          "Step 4: When lists change, React uses keys to identify additions, deletions, and reorderings efficiently."
+        ],
+        "followUpConfusion": [
+          "the algorithm can feel surprising if you expect a full semantic understanding of your UI."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DeveloperWay is practical, but our page more directly connects the heuristic to real list-state bugs and wrong intuitions about minimal DOM changes."
+        ],
+        "actionableExamples": [
+          "Its examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that React trades perfect diff optimality for predictable O(n)-ish behavior."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one attribute-only update example visible so the list-key heuristic is not the only concrete case."
+        ]
+      },
+      "winReason": "This tutorial is practical, but our page is stronger because it names the exact heuristic bets React makes and why those bets produce surprising results."
+    },
+    {
+      "label": "How React can change components with key attribute?",
+      "url": "https://stackoverflow.com/questions/62489451/how-react-can-change-components-with-key-attribute",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a focused reference on how keys influence identity and remount behavior during React's diffing process.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is focused on a specific key-and-identity surprise that often shows up in interviews."
+      ],
+      "theirGaps": [
+        "It is narrower than a full explanation of the diffing heuristic."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "why list reordering with bad keys creates state bugs"
+        ],
+        "actionableExamples": [
+          "If attributes differ (e.g., <code>className</code>), React updates only those attributes in the real DOM."
+        ],
+        "followUpConfusion": [
+          "React makes a few bets about element type and keys."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is useful on one key bug, but our page is stronger because it connects that bug to the full diffing heuristic."
+        ],
+        "actionableExamples": [
+          "Community answers can still be concrete, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that keys are one heuristic input, not the entire diffing algorithm."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one prepend-list example if we want a more visual identity failure case than the current generic key warning."
+        ]
+      },
+      "winReason": "The thread is useful on key-driven identity, but our page is stronger because it explains the whole heuristic model instead of only one edge case."
+    }
+  ]
+}

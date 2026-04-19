@@ -31,7 +31,17 @@ function yamlArray(items) {
   return items.map((item) => `  - "${String(item || '').replace(/"/g, '\\"')}"`).join('\n');
 }
 
-function convertedDraft({ family, slug, tech = 'frontend', primaryKeyword = `${slug} keyword`, body = '' }) {
+function convertedDraft({
+  family,
+  slug,
+  tech = 'frontend',
+  primaryKeyword = `${slug} keyword`,
+  body = '',
+  competitorReviewFile = family === 'trivia' ? `content-reviews/trivia/${tech}/${slug}.json` : '',
+}) {
+  const competitorReviewLine = family === 'trivia'
+    ? `competitor_review_file: "${competitorReviewFile}"\n`
+    : '';
   return `---
 title: "${slug} title"
 slug: "${slug}"
@@ -49,7 +59,7 @@ reader_promise: "Help readers understand ${slug} with stronger tradeoff reasonin
 unique_angle: "Adds an interview-aware angle for ${slug}."
 what_this_adds_beyond_basics: "Shows how ${slug} changes under real constraints."
 competitor_query: "${slug} query"
-competitor_takeaways:
+${competitorReviewLine}competitor_takeaways:
   - "Competitors cover the basics."
   - "Competitors include one example."
 competitor_gaps:
@@ -68,7 +78,7 @@ ${body || longText(`The ${slug} draft keeps the ${primaryKeyword} concept concre
 `;
 }
 
-function editorialBlock({ family, slug, primaryKeyword = `${slug} keyword`, draftPath, overrides = {} }) {
+function editorialBlock({ family, slug, tech = 'frontend', primaryKeyword = `${slug} keyword`, draftPath, overrides = {} }) {
   return {
     draftSource: draftPath,
     primaryKeyword,
@@ -77,6 +87,111 @@ function editorialBlock({ family, slug, primaryKeyword = `${slug} keyword`, draf
     uniqueAngle: `Adds an interview-aware angle for ${slug}.`,
     factCheckedAt: '2026-04-02',
     reviewedBy: 'FrontendAtlas Editor',
+    ...(family === 'trivia' ? { competitorReview: `content-reviews/trivia/${tech}/${slug}.json` } : {}),
+    ...overrides,
+  };
+}
+
+function competitiveReview({ slug, tech, overrides = {}, competitors } = {}) {
+  return {
+    contentId: slug,
+    tech,
+    query: `${slug} interview question`,
+    reviewedAt: '2026-04-03',
+    reviewedBy: 'FrontendAtlas Editor',
+    selection: {
+      querySource: 'manual',
+      greatFrontendRelevant: false,
+      greatFrontendReasonIfOmitted: 'No directly relevant GreatFrontEnd page was selected for this exact shipped trivia prompt.',
+    },
+    competitors: competitors || [
+      {
+        label: 'Competitor A',
+        url: 'https://example.com/competitor-a',
+        category: 'tutorial_reference',
+        selectionReason: 'Targets the same shipped-trivia query with a tutorial-style explanation.',
+        verdicts: {
+          realWorldUseCases: 'ours',
+          actionableExamples: 'ours',
+          followUpConfusion: 'tie',
+        },
+        winReason: 'Our shipped trivia is stronger on real-world use cases and direct interview follow-ups.',
+        theirStrengths: ['Explains the core definition.'],
+        theirGaps: ['Does not connect the answer to real interview follow-ups.'],
+        ourEvidence: {
+          realWorldUseCases: ['The event-delegation keyword appears in shipped content.'],
+          actionableExamples: ['The event-delegation keyword appears in shipped content.'],
+          followUpConfusion: ['The event-delegation keyword appears in shipped content.'],
+        },
+        theirEvidence: {
+          realWorldUseCases: ['Their page keeps the use case generic.'],
+          actionableExamples: ['Their example stays abstract.'],
+          followUpConfusion: ['They mention a follow-up briefly.'],
+        },
+        nextActions: {
+          realWorldUseCases: [],
+          actionableExamples: [],
+          followUpConfusion: ['Add one tighter follow-up clarification if needed.'],
+        },
+      },
+      {
+        label: 'Competitor B',
+        url: 'https://docs.example.org/competitor-b',
+        category: 'canonical_docs',
+        selectionReason: 'Represents the canonical reference competitor for the same concept.',
+        verdicts: {
+          realWorldUseCases: 'ours',
+          actionableExamples: 'ours',
+          followUpConfusion: 'theirs',
+        },
+        winReason: 'Our shipped trivia is more interview-directed while still giving concrete examples.',
+        theirStrengths: ['Has a compact FAQ section.'],
+        theirGaps: ['Skips the concrete implementation example.'],
+        ourEvidence: {
+          realWorldUseCases: ['The event-delegation keyword appears in shipped content.'],
+          actionableExamples: ['The event-delegation keyword appears in shipped content.'],
+        },
+        theirEvidence: {
+          realWorldUseCases: ['Their use case stays generic.'],
+          actionableExamples: ['Their examples are not actionable.'],
+          followUpConfusion: ['Their FAQ is stronger.'],
+        },
+        nextActions: {
+          realWorldUseCases: [],
+          actionableExamples: [],
+          followUpConfusion: ['Tighten the likely interviewer follow-up.'],
+        },
+      },
+      {
+        label: 'Competitor C',
+        url: 'https://another.example.net/competitor-c',
+        category: 'community_qna',
+        selectionReason: 'Represents a short community Q&A competitor for the same interview prompt.',
+        verdicts: {
+          realWorldUseCases: 'ours',
+          actionableExamples: 'tie',
+          followUpConfusion: 'ours',
+        },
+        winReason: 'Our shipped trivia keeps the production use case and likely follow-up confusion in one page.',
+        theirStrengths: ['Provides one worked example.'],
+        theirGaps: ['Does not explain when the answer changes.'],
+        ourEvidence: {
+          realWorldUseCases: ['The event-delegation keyword appears in shipped content.'],
+          actionableExamples: ['The event-delegation keyword appears in shipped content.'],
+          followUpConfusion: ['The event-delegation keyword appears in shipped content.'],
+        },
+        theirEvidence: {
+          realWorldUseCases: ['Their use cases stay narrow.'],
+          actionableExamples: ['Their example is acceptable but short.'],
+          followUpConfusion: ['They skip the likely follow-up confusion.'],
+        },
+        nextActions: {
+          realWorldUseCases: [],
+          actionableExamples: ['Add a second concrete example if this entry grows.'],
+          followUpConfusion: [],
+        },
+      },
+    ],
     ...overrides,
   };
 }
@@ -88,6 +203,7 @@ function runLinter(tempRoot) {
     env: {
       ...process.env,
       CONTENT_DRAFTS_DIR: path.join(tempRoot, 'content-drafts'),
+      CONTENT_REVIEWS_DIR: path.join(tempRoot, 'content-reviews'),
       CDN_INCIDENTS_DIR: path.join(tempRoot, 'cdn', 'incidents'),
       CDN_TRADEOFF_BATTLES_DIR: path.join(tempRoot, 'cdn', 'tradeoff-battles'),
       CDN_QUESTIONS_DIR: path.join(tempRoot, 'cdn', 'questions'),
@@ -144,6 +260,10 @@ function testMetadataMismatchFails() {
     slug,
     tech: 'javascript',
   }));
+  writeJson(tempRoot, 'content-reviews/trivia/javascript/event-delegation.json', competitiveReview({
+    slug,
+    tech: 'javascript',
+  }));
   writeJson(tempRoot, 'cdn/questions/javascript/trivia.json', [
     {
       id: slug,
@@ -152,6 +272,7 @@ function testMetadataMismatchFails() {
       editorial: editorialBlock({
         family: 'trivia',
         slug,
+        tech: 'javascript',
         draftPath,
         overrides: {
           readerPromise: 'Different promise entirely.',
@@ -165,6 +286,190 @@ function testMetadataMismatchFails() {
 
   const failure = expectFailure(tempRoot);
   assert.match(String(failure.stderr || ''), /editorial\.readerPromise does not match the draft/);
+}
+
+function testMissingTriviaCompetitorReviewFails() {
+  const tempRoot = makeTempRoot();
+  const slug = 'event-delegation';
+  const draftPath = `content-drafts/trivia/${slug}.md`;
+  writeFile(tempRoot, draftPath, convertedDraft({
+    family: 'trivia',
+    slug,
+    tech: 'javascript',
+  }));
+  writeJson(tempRoot, 'cdn/questions/javascript/trivia.json', [
+    {
+      id: slug,
+      title: 'Event delegation',
+      description: 'Event delegation description',
+      editorial: editorialBlock({
+        family: 'trivia',
+        slug,
+        tech: 'javascript',
+        draftPath,
+        overrides: {
+          competitorReview: '',
+        },
+      }),
+      answer: {
+        blocks: [{ type: 'text', text: longText('The event-delegation keyword appears in shipped content.', 30) }],
+      },
+    },
+  ]);
+
+  const failure = expectFailure(tempRoot);
+  assert.match(String(failure.stderr || ''), /editorial\.competitorReview is required/);
+}
+
+function testWeakTriviaCompetitiveThresholdFails() {
+  const tempRoot = makeTempRoot();
+  const slug = 'event-delegation';
+  const draftPath = `content-drafts/trivia/${slug}.md`;
+  writeFile(tempRoot, draftPath, convertedDraft({
+    family: 'trivia',
+    slug,
+    tech: 'javascript',
+  }));
+  writeJson(tempRoot, 'content-reviews/trivia/javascript/event-delegation.json', competitiveReview({
+    slug,
+    tech: 'javascript',
+    competitors: [
+      {
+        label: 'Competitor A',
+        url: 'https://example.com/competitor-a',
+        verdicts: {
+          realWorldUseCases: 'ours',
+          actionableExamples: 'tie',
+          followUpConfusion: 'theirs',
+        },
+        theirStrengths: ['Has better follow-up handling.'],
+        theirGaps: ['Use cases are weaker.'],
+        ourEvidence: {
+          realWorldUseCases: ['The event-delegation keyword appears in shipped content.'],
+        },
+        theirEvidence: {
+          realWorldUseCases: ['Their use cases stay generic.'],
+          actionableExamples: ['Their examples are acceptable.'],
+          followUpConfusion: ['Their FAQ is stronger.'],
+        },
+        nextActions: {
+          realWorldUseCases: [],
+          actionableExamples: ['Add one more example.'],
+          followUpConfusion: ['Expand follow-up clarity.'],
+        },
+      },
+      {
+        label: 'Competitor B',
+        url: 'https://docs.example.org/competitor-b',
+        verdicts: {
+          realWorldUseCases: 'ours',
+          actionableExamples: 'ours',
+          followUpConfusion: 'tie',
+        },
+        theirStrengths: ['Has a short FAQ.'],
+        theirGaps: ['Examples stay abstract.'],
+        ourEvidence: {
+          realWorldUseCases: ['The event-delegation keyword appears in shipped content.'],
+          actionableExamples: ['The event-delegation keyword appears in shipped content.'],
+        },
+        theirEvidence: {
+          realWorldUseCases: ['Their use cases stay generic.'],
+          actionableExamples: ['Their examples are weak.'],
+          followUpConfusion: ['Their FAQ is compact.'],
+        },
+        nextActions: {
+          realWorldUseCases: [],
+          actionableExamples: [],
+          followUpConfusion: ['Tighten follow-up wording.'],
+        },
+      },
+      {
+        label: 'Competitor C',
+        url: 'https://another.example.net/competitor-c',
+        verdicts: {
+          realWorldUseCases: 'ours',
+          actionableExamples: 'ours',
+          followUpConfusion: 'ours',
+        },
+        theirStrengths: ['Has one worked example.'],
+        theirGaps: ['Skips likely follow-ups.'],
+        ourEvidence: {
+          realWorldUseCases: ['The event-delegation keyword appears in shipped content.'],
+          actionableExamples: ['The event-delegation keyword appears in shipped content.'],
+          followUpConfusion: ['The event-delegation keyword appears in shipped content.'],
+        },
+        theirEvidence: {
+          realWorldUseCases: ['Their use cases stay narrow.'],
+          actionableExamples: ['Their example is acceptable.'],
+          followUpConfusion: ['They skip the likely follow-up confusion.'],
+        },
+        nextActions: {
+          realWorldUseCases: [],
+          actionableExamples: [],
+          followUpConfusion: [],
+        },
+      },
+    ],
+  }));
+  writeJson(tempRoot, 'cdn/questions/javascript/trivia.json', [
+    {
+      id: slug,
+      title: 'Event delegation',
+      description: 'Event delegation description',
+      editorial: editorialBlock({
+        family: 'trivia',
+        slug,
+        tech: 'javascript',
+        draftPath,
+      }),
+      answer: {
+        blocks: [{ type: 'text', text: longText('The event-delegation keyword appears in shipped content.', 30) }],
+      },
+    },
+  ]);
+
+  const failure = expectFailure(tempRoot);
+  assert.match(String(failure.stderr || ''), /only gives us 1\/3 wins/);
+}
+
+function testRelevantGreatFrontendOmissionFailsForConvertedTrivia() {
+  const tempRoot = makeTempRoot();
+  const slug = 'event-delegation';
+  const draftPath = `content-drafts/trivia/${slug}.md`;
+  writeFile(tempRoot, draftPath, convertedDraft({
+    family: 'trivia',
+    slug,
+    tech: 'javascript',
+  }));
+  writeJson(tempRoot, 'content-reviews/trivia/javascript/event-delegation.json', competitiveReview({
+    slug,
+    tech: 'javascript',
+    overrides: {
+      selection: {
+        querySource: 'manual',
+        greatFrontendRelevant: true,
+      },
+    },
+  }));
+  writeJson(tempRoot, 'cdn/questions/javascript/trivia.json', [
+    {
+      id: slug,
+      title: 'Event delegation',
+      description: 'Event delegation description',
+      editorial: editorialBlock({
+        family: 'trivia',
+        slug,
+        tech: 'javascript',
+        draftPath,
+      }),
+      answer: {
+        blocks: [{ type: 'text', text: longText('The event-delegation keyword appears in shipped content.', 30) }],
+      },
+    },
+  ]);
+
+  const failure = expectFailure(tempRoot);
+  assert.match(String(failure.stderr || ''), /GreatFrontEnd is marked relevant but no greatfrontend\.com competitor is present/);
 }
 
 function testThinShippedSystemDesignFails() {
@@ -242,6 +547,9 @@ function testMissingPrimaryKeywordInShippedContentFails() {
 testMissingShippedFileFails();
 testMissingEditorialBlockFails();
 testMetadataMismatchFails();
+testMissingTriviaCompetitorReviewFails();
+testWeakTriviaCompetitiveThresholdFails();
+testRelevantGreatFrontendOmissionFailsForConvertedTrivia();
 testThinShippedSystemDesignFails();
 testMissingPrimaryKeywordInShippedContentFails();
 

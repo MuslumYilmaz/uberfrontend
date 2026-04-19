@@ -1,0 +1,146 @@
+{
+  "contentId": "js-why-eval-function-considered-dangerous",
+  "tech": "javascript",
+  "query": "why is eval dangerous javascript",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd does not appear to have a directly relevant quiz or guide focused on why `eval()` is dangerous."
+  },
+  "competitors": [
+    {
+      "label": "MDN eval",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical competitor for `eval()`, especially around security, scope, and safer replacements.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "MDN remains the broader reference, but our page now wins this interview-sized comparison because it adds a sharper same-origin attack path and explicit before/after replacements for bracket access and JSON.parse.",
+      "theirStrengths": [
+        "It covers arbitrary code execution, CSP restrictions, and safer alternatives in detail."
+      ],
+      "theirGaps": [
+        "It is more reference-style and less aggressively framed around interview-grade risk language."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<code>eval()</code> turns data into executable code. In production that creates injection risk, CSP friction, and runtime behavior that is much harder to debug or optimize. In the browser, a query param, CMS field, or localStorage value can become same-origin script with DOM access and user-session privileges."
+        ],
+        "actionableExamples": [
+          "console.log(user[field]);"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN already explains code-execution risk, but our page is now sharper on the browser-origin attack path from untrusted data to executable code."
+        ],
+        "actionableExamples": [
+          "MDN has solid safer-replacement guidance, while our page now adds one compact before/after example for both bracket access and JSON.parse."
+        ],
+        "followUpConfusion": [
+          "MDN is still broader on related reference details, so the advanced follow-up set remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on eval-like alternatives such as the Function constructor if we want a broader advanced follow-up set."
+        ]
+      }
+    },
+    {
+      "label": "DigitalOcean eval tutorial",
+      "url": "https://www.digitalocean.com/community/tutorials/js-eval",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a common explanatory competitor for `eval()` risks and trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is tighter on same-origin attack surface, CSP, and runtime predictability, while DigitalOcean stays more general.",
+      "theirStrengths": [
+        "It calls out malicious input, performance cost, and the small class of metaprogramming cases where `eval` still appears."
+      ],
+      "theirGaps": [
+        "It is weaker on CSP friction and on the debugging/optimizer cost as a frontend mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<code>eval()</code> turns data into executable code. In production that creates injection risk, CSP friction, and runtime behavior that is much harder to debug or optimize. In the browser, a query param, CMS field, or localStorage value can become same-origin script with DOM access and user-session privileges."
+        ],
+        "followUpConfusion": [
+          "JavaScript engines optimize code when structure is predictable. <code>eval</code> adds dynamic unknown code paths, which can force conservative assumptions and reduce optimization opportunities in surrounding scope."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DigitalOcean covers malicious input and performance cost, but our page now connects that risk more directly to same-origin browser privileges."
+        ],
+        "actionableExamples": [
+          "Its examples of risky eval usage are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page does a better job connecting the security answer to CSP and engine-optimization side effects."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit function-dispatch replacement for user-selected formulas if we want a larger example edge over general tutorials."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Stack Overflow eval bad idea",
+      "url": "https://stackoverflow.com/questions/86513/why-is-using-the-javascript-eval-function-a-bad-idea",
+      "category": "community_qna",
+      "selectionReason": "This thread is a direct community-Q&A competitor for the exact search intent behind the question.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The Stack Overflow thread covers the classic warnings, but our page now wins this comparison because it turns them into a sharper browser-security mental model with cleaner grouped replacements.",
+      "theirStrengths": [
+        "It covers the two classic concerns clearly: code injection and performance."
+      ],
+      "theirGaps": [
+        "It is an answer thread, so the reasoning is less consolidated than a purpose-built editorial page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A rules engine receives a string from an admin panel and runs it with <code>eval</code>. A malformed or malicious rule can crash checkout logic or expose sensitive browser data because the payload now executes as code inside your origin, not as inert data."
+        ],
+        "followUpConfusion": [
+          "JavaScript engines optimize code when structure is predictable. <code>eval</code> adds dynamic unknown code paths, which can force conservative assumptions and reduce optimization opportunities in surrounding scope."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Stack Overflow thread clearly mentions code injection and performance, but our page now describes the browser-origin consequence more concretely."
+        ],
+        "actionableExamples": [
+          "Its examples are practical enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next question of why eval affects both security policy and engine optimization."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny before/after example for allowlisted expression parsing if we want a stronger alternative-pattern edge over community threads."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "html-dom-tree-structure",
+  "tech": "html",
+  "query": "html dom tree structure interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Document Object Model (DOM)",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN page for the DOM mental model and the official starting point for understanding nodes, trees, and script-facing document structure.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the DOM as a tree of nodes and on how documents are represented and manipulated in memory."
+      ],
+      "theirGaps": [
+        "The page is broader and less explicit about why tree depth and unstable structure turn into traversal, style-recalculation, and layout costs in production debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "DOM tree structure matters under the hood because deep or unstable trees increase traversal, style recalculation, and layout cost, which turns into real debugging and performance pitfalls."
+        ],
+        "followUpConfusion": [
+          "In real debug and performance work, tree depth matters because each element still has one parent and zero or more children, and overly nested branches make traversal, style recalculation, and layout work harder to reason about."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines the DOM tree well, but it is lighter on the concrete performance and debugging consequences of deep or unstable trees."
+        ],
+        "actionableExamples": [
+          "It includes strong conceptual DOM examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion teams hit next: depth matters not just theoretically, but because traversal and rendering work scale with tree complexity."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the depth-cost explanation close to the opening so the page stays operational, not only conceptual."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical DOM reference, but our page is stronger as an interview answer because it turns DOM tree structure into a concrete traversal, style-recalc, and layout-cost discussion."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because DOM structure and node relationships sit inside core HTML and browser-fundamentals interview coverage.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of DOM-adjacent and markup fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to DOM tree depth and performance, so it is less focused on one exact answer about structural cost."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "DOM tree structure matters under the hood because deep or unstable trees increase traversal, style recalculation, and layout cost, which turns into real debugging and performance pitfalls."
+        ],
+        "followUpConfusion": [
+          "In real debug and performance work, tree depth matters because each element still has one parent and zero or more children, and overly nested branches make traversal, style recalculation, and layout work harder to reason about."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the performance and debugging consequences of deep DOM structure."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: DOM trees are not just theory; depth changes traversal cost, readability, and rendering work."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the why-depth-matters section visible so the answer stays grounded in a real frontend performance discussion."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the exact performance and debugging consequences that make DOM-tree-structure answers useful in practice."
+    },
+    {
+      "label": "DOM tree",
+      "url": "https://javascript.info/dom-nodes",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info has a direct DOM tree tutorial and is the strongest third-source comparator for parent-child relationships, node types, and tree traversal mental models.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is very strong on node types, parent-child relationships, and the in-memory tree model behind DOM traversal."
+      ],
+      "theirGaps": [
+        "It is less explicit about the concrete rendering and performance consequences of deep or unstable DOM trees in production apps."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "DOM tree structure matters under the hood because deep or unstable trees increase traversal, style recalculation, and layout cost, which turns into real debugging and performance pitfalls."
+        ],
+        "followUpConfusion": [
+          "In real debug and performance work, tree depth matters because each element still has one parent and zero or more children, and overly nested branches make traversal, style recalculation, and layout work harder to reason about."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is excellent on the DOM tree itself, but our answer is more compact about why depth and instability turn into real frontend performance costs."
+        ],
+        "actionableExamples": [
+          "Its DOM tree examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the next question developers hit in practice: why a deep tree is not only harder to reason about but also more expensive to traverse and re-style."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the traversal-cost note visible so the answer stays closer to production debugging than a pure DOM tutorial."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is very good on the DOM tree mental model, but our page is more useful as an interview answer because it carries the discussion into traversal, style-recalculation, and layout-cost consequences."
+    }
+  ]
+}

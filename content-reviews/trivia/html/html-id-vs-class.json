@@ -1,0 +1,145 @@
+{
+  "contentId": "html-id-vs-class",
+  "tech": "html",
+  "query": "html id vs class interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "HTML id global attribute",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/id",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the id global attribute and the clearest official starting point for uniqueness, fragment targeting, and selector behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on uniqueness rules, fragment identifiers, and the DOM or CSS behavior tied to the id attribute."
+      ],
+      "theirGaps": [
+        "The single-attribute reference is less explicit about the production trade-off between unique ids and reusable classes across real UI systems."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "id vs class is not just selector syntax: it affects fragment links, CSS specificity, JS hooks, and the common mistake of duplicating ids across reusable UI."
+        ],
+        "followUpConfusion": [
+          "In production, the common mistake is treating both as generic labels: <code>id</code> is a unique identity hook for one node, while <code>class</code> is a reusable grouping hook for styling, behavior, fragment links, and test selectors."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines id semantics clearly, but it is lighter on the broader production comparison between unique identity hooks and reusable grouping hooks."
+        ],
+        "actionableExamples": [
+          "It includes direct id examples and fragment behavior, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion teams hit in practice: duplicate ids in reusable UI and overusing ids where classes should group styles or behavior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the uniqueness-versus-reuse framing near the opening so the page stays faster to scan than two separate attribute references."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical id reference, but our page is stronger as an interview answer because it turns id-versus-class into a concrete uniqueness, specificity, fragment-link, and reusable-UI decision."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because selector hooks, attributes, and structure are core HTML interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of common attributes, structure, and markup decisions."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to id-versus-class semantics, so it is less focused on one exact answer about uniqueness, grouping, and selector consequences."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "id vs class is not just selector syntax: it affects fragment links, CSS specificity, JS hooks, and the common mistake of duplicating ids across reusable UI."
+        ],
+        "followUpConfusion": [
+          "In production, the common mistake is treating both as generic labels: <code>id</code> is a unique identity hook for one node, while <code>class</code> is a reusable grouping hook for styling, behavior, fragment links, and test selectors."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the duplicate-id and reusable-component consequences behind this comparison."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: ids are unique anchors and JS hooks, while classes are reusable style and behavior groupings."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the name-tag versus team-jersey framing out of evidence but leave the key-differences list visible for scan speed."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the real production trade-offs that make id-versus-class worth distinguishing carefully."
+    },
+    {
+      "label": "Attributes",
+      "url": "https://web.dev/learn/html/attributes/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev's attributes module is the strongest third-source comparator for how global attributes configure behavior, selectors, and browser interpretation in HTML.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on the general attribute mental model and how HTML attributes affect browser behavior and developer ergonomics."
+      ],
+      "theirGaps": [
+        "It is broader than the exact id-versus-class question and less centered on uniqueness, fragment links, and reusable UI grouping specifically."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "id vs class is not just selector syntax: it affects fragment links, CSS specificity, JS hooks, and the common mistake of duplicating ids across reusable UI."
+        ],
+        "followUpConfusion": [
+          "In production, the common mistake is treating both as generic labels: <code>id</code> is a unique identity hook for one node, while <code>class</code> is a reusable grouping hook for styling, behavior, fragment links, and test selectors."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is useful for attribute mental models, but our answer is more compact about the exact production failure developers hit first: duplicated ids in reusable markup."
+        ],
+        "actionableExamples": [
+          "The tutorial context remains useful for examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next question teams usually ask: when CSS specificity, fragment navigation, or JS hooks justify an id instead of a class."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the fragment-link and specificity note visible so the page preserves one practical debugging angle."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on HTML attributes broadly, but our page is better as a short interview answer because it packages id-versus-class around uniqueness, selector behavior, and reusable UI pitfalls."
+    }
+  ]
+}

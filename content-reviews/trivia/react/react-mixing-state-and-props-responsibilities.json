@@ -1,0 +1,146 @@
+{
+  "contentId": "react-mixing-state-and-props-responsibilities",
+  "tech": "react",
+  "query": "react state vs props responsibilities interview question",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Sharing State Between Components",
+      "url": "https://react.dev/learn/sharing-state-between-components",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of single-source-of-truth ownership and lifted state, which is the official baseline for props-owned versus state-owned data.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative React explanation of ownership, lifted state, and single source of truth."
+      ],
+      "theirGaps": [
+        "It is more tutorial-oriented than bug-oriented for stale UI, cursor jumps, loops, and memo drift inside a single component boundary."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When the same value is “owned” by both (prop + local state trying to represent the same truth), you create <em>two sources of truth</em>.",
+          "If two different places can write the “same” value, you will eventually get drift, overwrites, loops, or UI jumps."
+        ],
+        "followUpConfusion": [
+          "Decide who owns it (parent via props, or child via local state/DOM), then design the API around that ownership.",
+          "Keep a single source of truth. Test by changing props and verifying UI updates correctly."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs define single-source ownership clearly, but our page is more explicit about the production failure modes created by mixed ownership."
+        ],
+        "actionableExamples": [
+          "The official accordion example remains a strong baseline for lifting state, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up boundaries between controlled, uncontrolled, and derived-state patterns once the same value appears in both props and local state."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny code example showing a child copying a prop into local input state, then drifting after a parent reset."
+        ]
+      },
+      "winReason": "The React docs are authoritative on ownership, but our page is stronger for interview delivery because it names the exact multi-writer bugs teams actually debug."
+    },
+    {
+      "label": "State Scope",
+      "url": "https://reactstyleguide.com/rules/state-scope/",
+      "category": "tutorial_reference",
+      "selectionReason": "This rule page is a strong tutorial competitor because it focuses on state ownership, lowest-common-ancestor placement, and avoiding unclear ownership boundaries.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical about keeping ownership obvious and lifting state only when multiple siblings truly need it."
+      ],
+      "theirGaps": [
+        "It spends less time on the concrete symptoms that appear when a prop-derived local copy starts racing the parent."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Common symptoms (stale UI, input jumps, infinite loops, memo bugs)",
+          "Out-of-sync updates when props change."
+        ],
+        "followUpConfusion": [
+          "Props are <em>inputs</em> owned by the parent. State is <em>local memory</em> owned by the component.",
+          "Decide who owns it (parent via props, or child via local state/DOM)"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The style guide covers ownership well, but our page is more incident-driven about drift, overwrite races, and cursor-jump failures."
+        ],
+        "actionableExamples": [
+          "Its lowest-common-ancestor examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on mixed ownership inside one component, especially around derived state and controlled versus uncontrolled inputs."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one short broken-versus-fixed example around copying props into local state so the ownership rule stays concrete."
+        ]
+      },
+      "winReason": "This tutorial is strong on ownership placement, but our page is stronger because it turns the abstract rule into the exact bugs caused by duplicate writers."
+    },
+    {
+      "label": "Unable to pass props from parent to child and save it in state of child component",
+      "url": "https://stackoverflow.com/questions/66507203/unable-to-pass-props-from-parent-to-child-and-save-it-in-state-of-child-componen",
+      "category": "community_qna",
+      "selectionReason": "This community thread is a direct practical reference for the anti-pattern of copying props into state and then struggling to keep them in sync.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It states the anti-pattern plainly: copying props into state creates redundant state that is hard to keep in sync."
+      ],
+      "theirGaps": [
+        "It is narrower than the broader interview question about local drafts, controlled inputs, loops, and memo-related drift."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Input “jumps” / cursor issues",
+          "Infinite update loops"
+        ],
+        "followUpConfusion": [
+          "Duplicating source of truth in props and state.",
+          "Keep a single source of truth."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread names the sync problem, but our page is stronger because it covers the wider set of symptoms beyond prop-copying alone."
+        ],
+        "actionableExamples": [
+          "It still gives a direct before/after recommendation, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on when local state is still valid, such as intentional drafts, and how to decide who owns the authoritative value."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a minimal local-draft example later so the difference between intentional draft state and accidental duplication is even sharper."
+        ]
+      },
+      "winReason": "The community thread states the anti-pattern directly, but our page is stronger because it explains the full single-source-of-truth failure surface."
+    }
+  ]
+}

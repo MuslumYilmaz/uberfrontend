@@ -1,0 +1,145 @@
+{
+  "contentId": "css-z-index",
+  "tech": "css",
+  "query": "How does z-index really work in CSS?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "z-index",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/z-index",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN property reference for z-index, including stacking behavior, syntax, and the relationship between descendants and local stacking contexts.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on z-index syntax, applicability, and the rule that descendants stay within their parent's stacking context."
+      ],
+      "theirGaps": [
+        "The property reference is less interview-shaped and less explicit about the debugging workflow teams actually use when huge z-index values still lose."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Debug lens</strong><br><br>Most <code>z-index</code> bugs are not about picking a larger number. They happen because the wrong stacking context owns the layer order. Once opacity, transform, filters, or positioned ancestors create a new context, your huge z-index value may still lose. That is why z-index debugging is really stacking-context debugging."
+        ],
+        "followUpConfusion": [
+          "<strong>Debugging Tip</strong><br>Use browser developer tools to inspect stacking contexts. Understanding which context your element belongs to is key to resolving unexpected layering issues."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines z-index correctly, but our page is more explicit about the real production failure mode: the wrong ancestor owns the stacking context, so bigger numbers stop helping."
+        ],
+        "actionableExamples": [
+          "Its canonical examples and formal property behavior keep the example criterion competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the usual follow-up confusion: z-index bugs are really stacking-context bugs, not just insufficiently large integers."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the dropdown-versus-overlay debugging frame visible so the page stays operational instead of purely definitional."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical z-index reference, but our page is stronger as an interview answer because it reframes z-index as a stacking-context debugging problem instead of a number-picking problem."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because layering, positioning, and stacking behavior are recurring CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage of positioning and layout fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to stacking contexts, so it is less focused on the exact bug pattern that makes z-index difficult in practice."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Practical scenario</strong><br>Ensure a dropdown appears above a sticky header and modal overlay.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting z-index only works on positioned elements.</li><li>Creating new stacking contexts with transforms or opacity.</li><li>Using huge z-index values without a scale.</li></ul><strong>Trade-off or test tip</strong><br>Central z-index scales reduce chaos. Test overlays in combination (dropdown + modal).</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of z-index like layers in Photoshop — each element lives on a sheet. The higher the z-index, the closer to your eyes it appears. But if it's in a different folder (stacking context), it can’t overlap layers in another folder."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the exact overlay, sticky-header, and parent-context failures developers usually debug."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: why z-index feels broken when the actual problem is context isolation."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the stacking-context metaphor visible so the answer stays memorable under interview pressure."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact layering failures and debugging steps that make z-index worth asking about."
+    },
+    {
+      "label": "Z-index and stacking contexts",
+      "url": "https://web.dev/learn/css/z-index/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is the strongest tutorial comparator for the exact z-index mental model because it centers stacking contexts, positioned elements, and layered UI debugging.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on the connection between z-index and stacking contexts and includes concrete overlapping examples."
+      ],
+      "theirGaps": [
+        "It is less compact as a single interview answer and less explicit about keeping a team-wide z-index scale for real UI systems."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Debug lens</strong><br><br>Most <code>z-index</code> bugs are not about picking a larger number. They happen because the wrong stacking context owns the layer order. Once opacity, transform, filters, or positioned ancestors create a new context, your huge z-index value may still lose. That is why z-index debugging is really stacking-context debugging."
+        ],
+        "followUpConfusion": [
+          "<strong>Common Pitfalls</strong><br><ul><li>Setting <code>z-index</code> on an element without a positioning context (e.g., <code>position: static</code>) has no effect.</li><li>Nested stacking contexts can cause confusion — an element may appear behind another even if it has a higher z-index, depending on its parent’s context.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is strong on stacking contexts, but our page is more compact about the production rule developers need first: inspect the owning context before touching the number scale."
+        ],
+        "actionableExamples": [
+          "Its layered examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next debugging question teams usually ask: why a child with 9999 still loses to a sibling in a higher parent context."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the parent-context warning explicit so the answer stays shorter and more operational than a broader tutorial."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is a strong z-index explainer, but our page is more useful as an interview answer because it packages the issue as one concrete debugging workflow: find the stacking context owner, then reason about the number."
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "contentId": "js-async-await-example-when-promise-is-preferred",
+  "tech": "javascript",
+  "query": "when to use promises instead of async await javascript",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd has Promise fundamentals material, but not a directly matching page about when direct Promise style is preferable to async/await."
+  },
+  "competitors": [
+    {
+      "label": "MDN Using promises",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the strongest canonical competitor for Promise chaining, composition, and concurrency combinators.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN remains the broader reference, but our page now wins this decision-oriented comparison because it pairs the accidental-serialization pitfall with shared in-flight work and a direct rule of thumb for choosing raw Promise style.",
+      "theirStrengths": [
+        "It explains Promise chains, composition, and combinators with strong reference coverage."
+      ],
+      "theirGaps": [
+        "It is not explicitly organized around the decision question of when raw Promise style is preferable to async/await."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The common production pitfall is hiding independent work behind sequential <code>await</code> calls and accidentally adding latency."
+        ],
+        "followUpConfusion": [
+          "Use <code>async/await</code> when the main thing you are expressing is a story-like sequence of business steps. Use raw Promise style when the main thing you are expressing is the <strong>relationship between async tasks</strong>: start together, dedupe, race, join, or hand one in-flight result to multiple callers."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains Promise composition well, but our page is more explicitly framed around the product decision of when Promise style is the better tool."
+        ],
+        "actionableExamples": [
+          "MDN still has strong composition examples, so the actionable-example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "Our page now answers the false-dichotomy and 'when exactly' follow-up more directly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny allSettled or race example if we want a clearer code-level edge over MDN's broader combinator reference."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "DEV createSharedPromise",
+      "url": "https://dev.to/karbashevskyi/efficient-request-deduplication-with-createsharedpromise-in-jsts-fbf",
+      "category": "tutorial_reference",
+      "selectionReason": "This article is a strong real-world example of Promise-based in-flight sharing, which is one of our core use cases.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "The DEV article is strong on one dedupe abstraction, but our page now wins the broader decision question by pairing that use case with a sequential-await vs Promise.all comparison and an explicit rule of thumb.",
+      "theirStrengths": [
+        "It has a very concrete in-flight deduplication example built around a reusable Promise abstraction."
+      ],
+      "theirGaps": [
+        "It is narrower and does not cover the broader decision space of composition and combinators."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A product page needs recommendations, inventory, and pricing from separate APIs. Running them sequentially with <code>await</code> adds unnecessary latency, while Promise combinators make fan-out/fan-in concurrency explicit. Meanwhile, product detail fetches may need one shared in-flight Promise so two widgets do not trigger duplicate requests."
+        ],
+        "actionableExamples": [
+          "function invalidateProduct(productId) {"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The DEV article has one strong production use case around request deduplication, but our page now covers both shared in-flight work and fan-out/fan-in concurrency."
+        ],
+        "actionableExamples": [
+          "Its createSharedPromise example is concrete, while our page now adds both the dedupe cache and the side-by-side concurrency example."
+        ],
+        "followUpConfusion": [
+          "The article stays focused on one utility pattern, so the broader follow-up comparison remains close rather than clearly behind."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one note on error-reset vs stale-cache policy if we want a sharper follow-up edge on shared-Promise caching."
+        ]
+      }
+    },
+    {
+      "label": "Stack Overflow async/await vs promises",
+      "url": "https://stackoverflow.com/questions/53057110/difference-of-using-async-await-vs-promises",
+      "category": "community_qna",
+      "selectionReason": "This thread is a direct community-Q&A competitor for the exact comparison users often search.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more editorially cohesive on composition, in-flight sharing, and the false Promise-vs-async/await dichotomy than the scattered thread format.",
+      "theirStrengths": [
+        "It surfaces the common point that Promise.all-style concurrency is a real reason to stay with raw Promises."
+      ],
+      "theirGaps": [
+        "It is thread-style Q&A, so the explanation is narrower and less structured than a dedicated editorial page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The common production pitfall is hiding independent work behind sequential <code>await</code> calls and accidentally adding latency."
+        ],
+        "followUpConfusion": [
+          "Strong interview answer: it is not Promise <em>vs</em> async/await as enemies; async/await is built on Promises. You choose the style that best expresses the control flow."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Stack Overflow thread mentions concurrency and Promise.all, but our page gives a more complete production framing around latency and shared work."
+        ],
+        "actionableExamples": [
+          "The examples are practical enough that the code-example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "Our page answers the false-dichotomy follow-up more directly than the scattered answers do."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny Promise.race or Promise.allSettled example if we want a stronger code-surface edge over general Q&A threads."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

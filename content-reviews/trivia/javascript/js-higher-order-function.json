@@ -1,0 +1,154 @@
+{
+  "contentId": "js-higher-order-function",
+  "tech": "javascript",
+  "query": "higher-order function javascript interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN First-class function",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's first-class function glossary entry is the closest canonical reference for why JavaScript can treat functions as values and therefore support higher-order functions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on the prerequisite idea that functions are values and can be passed or returned."
+      ],
+      "theirGaps": [
+        "It is less explicit about why higher-order functions matter for callbacks, composition, and reusable control flow in real code."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A higher-order function accepts or returns functions, but the interview-level value is understanding why callbacks and composition depend on it and when extra abstraction becomes a pitfall."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Example 2: Returning a Function</strong>  A function can return another function that 'remembers' the outer scope — this is often used in currying or closures."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Why It Matters</strong>  Higher-order functions are the foundation of modern JavaScript patterns like: - **Callbacks** (e.g., event handlers) - **Promises and async/await** - **Functional utilities** like <code>map</code>, <code>reduce</code>, <code>filter</code> - **Middleware and decorators** in frameworks like Express or Redux."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the prerequisite concept well, but our page goes further into the actual interview question: why callbacks and composition depend on higher-order functions."
+        ],
+        "actionableExamples": [
+          "The docs still give concrete function-as-value framing, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page answers the next question more directly: not just the definition, but what design patterns become possible and when extra abstraction becomes noise."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny middleware-style example later if we need more distance over the glossary-style explanation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN covers the first-class-function foundation, but our page is stronger for the interview prompt because it explains why higher-order functions matter in real JavaScript patterns."
+    },
+    {
+      "label": "GreatFrontEnd higher-order function",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-the-definition-of-a-higher-order-function",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview-prep page for the definition of a higher-order function.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the interview wording and includes argument-taking and function-returning examples."
+      ],
+      "theirGaps": [
+        "It is less explicit on when abstraction becomes a pitfall and why the concept matters beyond the definition itself."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A higher-order function accepts or returns functions, but the interview-level value is understanding why callbacks and composition depend on it and when extra abstraction becomes a pitfall."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Example 2: Returning a Function</strong>  A function can return another function that 'remembers' the outer scope — this is often used in currying or closures."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Why It Matters</strong>  Higher-order functions are the foundation of modern JavaScript patterns like: - **Callbacks** (e.g., event handlers) - **Promises and async/await** - **Functional utilities** like <code>map</code>, <code>reduce</code>, <code>filter</code> - **Middleware and decorators** in frameworks like Express or Redux."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd matches the question directly, but our page is more explicit about why higher-order functions exist in production code instead of stopping at the definition."
+        ],
+        "actionableExamples": [
+          "Its examples are topic-direct and interview-friendly, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page is better on the likely follow-up: not just what higher-order means, but why callbacks, closures, and middleware rely on it."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the why-it-matters block close to the opening so the page stays stronger than a definition-first quiz answer."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it moves beyond the definition and explains the practical value of higher-order functions in application architecture."
+    },
+    {
+      "label": "Stack Overflow what does higher-order function mean",
+      "url": "https://stackoverflow.com/questions/15728334/what-does-higher-order-function-mean-in-javascript",
+      "category": "community_qna",
+      "selectionReason": "This is a direct community Q&A source for the definition and examples of higher-order functions in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on the core definition and simple examples of taking or returning functions."
+      ],
+      "theirGaps": [
+        "It is narrower than the interview question and lighter on production use cases like middleware, callbacks, and composition."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A higher-order function accepts or returns functions, but the interview-level value is understanding why callbacks and composition depend on it and when extra abstraction becomes a pitfall."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Example 2: Returning a Function</strong>  A function can return another function that 'remembers' the outer scope — this is often used in currying or closures."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Why It Matters</strong>  Higher-order functions are the foundation of modern JavaScript patterns like: - **Callbacks** (e.g., event handlers) - **Promises and async/await** - **Functional utilities** like <code>map</code>, <code>reduce</code>, <code>filter</code> - **Middleware and decorators** in frameworks like Express or Redux."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread defines the concept cleanly, but our page is more explicit about how higher-order functions power common JavaScript patterns developers already use."
+        ],
+        "actionableExamples": [
+          "A focused Q&A still gives concrete examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page does more to answer the next question interviewers care about: why the abstraction exists and when it becomes overkill."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If needed later, add one short higher-order utility example that contrasts reusable control flow with copy-pasted branching."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The Stack Overflow answer defines higher-order functions well, but our page is a better interview answer because it connects the definition to callbacks, composition, and framework patterns."
+    }
+  ]
+}

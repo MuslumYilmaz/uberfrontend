@@ -1,0 +1,145 @@
+{
+  "contentId": "js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
+  "tech": "javascript",
+  "query": "javascript truthy falsy strict equality pass by value reference bug",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "GreatFrontEnd == vs ===",
+      "url": "https://www.greatfrontend.com/questions/quiz/javascript-interview-questions?language=js&tab=quiz#what-is-the-difference-between-double-equal-and-triple-equal",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep question on strict versus loose equality, which is one of the main subtopics in our integrated bug page.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page is now stronger as a real debugging guide because it ties equality mistakes to falsy-default and shared-mutation failures in one explicit helper example.",
+      "theirStrengths": [
+        "It is likely strong on the exact interview framing around coercion and equality semantics."
+      ],
+      "theirGaps": [
+        "It is narrower than our integrated page because it does not obviously combine equality with falsy defaults and shared mutation in one bug story."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This page is about a common production bug combo: falsy defaults overwrite valid values, loose equality coerces unexpectedly, and shared mutation leaks state back to the caller."
+        ],
+        "actionableExamples": [
+          "function prepare(cart) {\n  cart.retry = cart.retry || 3;            // loses valid 0\n  cart.sendReceipt = cart.sendReceipt || true; // loses valid false\n  if (cart.total == 0) cart.status = 'empty';  // coercion surprise\n  return cart;                             // mutates caller object\n}"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is directly relevant on equality semantics, but it is narrower than our page's integrated production bug framing."
+        ],
+        "actionableExamples": [
+          "Its quiz-style equality examples are useful, but our page now has a fuller before/after helper that combines defaulting, coercion, and mutation."
+        ],
+        "followUpConfusion": [
+          "Our page adds the combined bug pattern, but GreatFrontEnd still covers the equality-specific follow-up directly, so the overall follow-up criterion stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one short line that the equality question is only one leg of the larger bug combo so the integrated answer stays easy to unpack."
+        ]
+      }
+    },
+    {
+      "label": "MDN Strict equality",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical competitor for strict-equality semantics and object identity, both of which are central subtopics in this integrated bug page.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is broader on the integrated bug pattern because it combines defaults, equality, and shared mutation rather than explaining equality in isolation.",
+      "theirStrengths": [
+        "It states strict-equality semantics clearly and correctly, including object identity."
+      ],
+      "theirGaps": [
+        "It only covers one part of the integrated bug pattern and does not connect equality to falsy defaults or shared mutation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This page is about a common production bug combo: falsy defaults overwrite valid values, loose equality coerces unexpectedly, and shared mutation leaks state back to the caller."
+        ],
+        "followUpConfusion": [
+          "Think of this as three guardrails: default correctly, compare strictly, and protect shared state."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains how `===` behaves, but it does not connect the operator to the multi-step bug pattern seen in real UI code."
+        ],
+        "actionableExamples": [
+          "It provides simple equality examples, so the example criterion stays close rather than clearly losing."
+        ],
+        "followUpConfusion": [
+          "It does not answer the next question of how equality, falsy defaults, and shared object mutation interact in one bug."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one integrated before/after code block so the multi-step bug pattern is immediately visible."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GeeksforGeeks Call by Value vs Reference",
+      "url": "https://www.geeksforgeeks.org/javascript/call-by-value-vs-call-by-reference-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a strong competitor for the shared-mutation portion of the integrated bug pattern.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is stronger as an integrated debugging guide because it connects shared mutation to falsy-default and equality mistakes instead of teaching reference behavior in isolation.",
+      "theirStrengths": [
+        "It clearly explains primitives by value and objects by shared reference with a mutation example."
+      ],
+      "theirGaps": [
+        "It does not connect that reference behavior to falsy-default bugs or equality mistakes in one debugging flow."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This page is about a common production bug combo: falsy defaults overwrite valid values, loose equality coerces unexpectedly, and shared mutation leaks state back to the caller."
+        ],
+        "followUpConfusion": [
+          "Think of this as three guardrails: default correctly, compare strictly, and protect shared state."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks explains shared-object mutation well, but it treats that topic in isolation rather than as one leg of a combined bug pattern."
+        ],
+        "actionableExamples": [
+          "Its by-value and by-reference examples are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page better resolves why a fallback, a loose comparison, and a shared object bug can all appear in the same broken helper."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one slightly more explicit before/after code block where the same function shows all three mistakes in sequence."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

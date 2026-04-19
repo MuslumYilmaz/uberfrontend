@@ -1,0 +1,139 @@
+{
+  "contentId": "html-aria-roles",
+  "tech": "html",
+  "query": "ARIA roles interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "ARIA roles",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for ARIA roles and how they map meaning into the accessibility tree.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the role taxonomy and how ARIA roles communicate semantics to assistive technologies."
+      ],
+      "theirGaps": [
+        "The reference treatment is less direct about the common production mistake of replacing correct native HTML with ARIA that still lacks keyboard behavior and state updates."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If you are building a custom menu button, tabs widget, or combobox that native HTML cannot express on its own, ARIA can expose the missing semantics."
+        ],
+        "followUpConfusion": [
+          "Use native HTML first. Reach for ARIA only when native semantics are missing, and treat keyboard behavior, focus handling, and state updates as separate implementation work."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains what roles are for, but our answer is now more grounded in the real custom-widget scenario where ARIA is justified."
+        ],
+        "actionableExamples": [
+          "It remains a strong reference page, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page now handles the crucial follow-up more directly: ARIA changes semantics, not keyboard behavior or state management."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the native-button-versus-div-role-button contrast near the opening so the do-versus-don't example stays obvious."
+        ]
+      },
+      "winReason": "MDN is authoritative on role taxonomy, but our page is now more useful for interviews and production reasoning because it turns ARIA into a native-first decision and a custom-widget responsibility model."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because ARIA, accessibility, and semantic HTML are core HTML interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong broad HTML interview-prep source."
+      ],
+      "theirGaps": [
+        "The category page is less focused on the exact native-first versus custom-widget trade-off in ARIA usage."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If you are building a custom menu button, tabs widget, or combobox that native HTML cannot express on its own, ARIA can expose the missing semantics."
+        ],
+        "followUpConfusion": [
+          "Use native HTML first. Reach for ARIA only when native semantics are missing, and treat keyboard behavior, focus handling, and state updates as separate implementation work."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant at the HTML interview level, but the landing page is less anchored to the exact custom-widget accessibility scenario."
+        ],
+        "actionableExamples": [
+          "It remains a competitive worked-answer interview source, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our answer now exposes the native-first rule and the semantics-versus-behavior distinction more directly than the category-level interview bank."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the custom-widget example and the native-first rule tightly coupled so the page stays easy to skim."
+        ]
+      },
+      "winReason": "GreatFrontEnd is broad interview prep, but our page is more specific about the ARIA failure mode interviewers usually care about: roles without the behavior and state model that make the control actually usable."
+    },
+    {
+      "label": "ARIA and HTML",
+      "url": "https://web.dev/learn/accessibility/aria-html",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a topic-direct ARIA and HTML guide with explicit native-first rules, keyboard requirements, and concrete do/don't examples.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is very strong on native-first guidance, keyboard accessibility rules, and concrete do-versus-don't code examples."
+      ],
+      "theirGaps": [
+        "It is broader and more tutorial-like than a short trivia answer."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "still needs Enter/Space handlers, visible focus styling, and correct aria-pressed updates to behave like a real button."
+        ],
+        "followUpConfusion": [
+          "Use native HTML first. Reach for ARIA only when native semantics are missing, and treat keyboard behavior, focus handling, and state updates as separate implementation work."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is still strong on grounding ARIA in the accessibility tree and custom-control constraints, so the real-world criterion stays close."
+        ],
+        "actionableExamples": [
+          "Our paired native-versus-custom control example is now more compact and directly actionable for the common interview follow-up."
+        ],
+        "followUpConfusion": [
+          "Our page now answers the likely next question more directly by spelling out that semantics are not the same as keyboard behavior or state updates."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "If this page needs a later pass, add one slightly richer tabs or menu-button example without growing the answer too much."
+        ]
+      },
+      "winReason": "web.dev is a strong tutorial source, but our page is now better as a short interview answer because the native-versus-custom example and the semantics-versus-behavior rule answer the two follow-ups people hit first."
+    }
+  ]
+}

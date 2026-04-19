@@ -1,0 +1,145 @@
+{
+  "contentId": "js-promise-combinators-all-allsettled-race-any",
+  "tech": "javascript",
+  "query": "promise all vs allSettled vs race vs any interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Promise API",
+      "url": "https://javascript.info/promise-api",
+      "category": "canonical_docs",
+      "selectionReason": "javascript.info has one of the clearest single-page references for Promise.all, allSettled, race, and any, including rejection behavior and ordering.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "javascript.info is still the deeper API reference, but our page is now stronger for the interview-sized decision problem because it maps each combinator to a product behavior and adds explicit AggregateError handling plus the non-cancellation warning.",
+      "theirStrengths": [
+        "It covers all four combinators in one place and explains how their settlement rules differ."
+      ],
+      "theirGaps": [
+        "It is tutorial/reference shaped rather than compressed for interview delivery."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Interviewers usually want one real use case per combinator: all for dependencies, allSettled for partial-failure UIs, race for timeout guards, and any for fallback mirrors."
+        ],
+        "followUpConfusion": [
+          "these combinators do not cancel the other promises; they just decide what result to produce."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info frames the combinators well, but our page is now more explicit about the product behavior behind each choice."
+        ],
+        "actionableExamples": [
+          "It provides more comprehensive API examples across all four combinators than our compact page."
+        ],
+        "followUpConfusion": [
+          "Our page now closes the follow-up confusion more directly by pairing output-shape differences with an explicit non-cancellation warning."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a small AggregateError example for Promise.any and a timeout-with-race snippet."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "How is Promise.all() different from Promise.allSettled()?",
+      "url": "https://www.greatfrontend.com/questions/quiz/how-is-promiseall-different-from-promiseallsettled",
+      "category": "interview_prep",
+      "selectionReason": "This GreatFrontEnd page is directly relevant because all versus allSettled is the most common interview confusion inside the broader combinator question.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers the common all-vs-allSettled confusion well, but our page is broader and more interview-complete because it adds race, any, AggregateError, output-shape differences, and the shared non-cancellation warning.",
+      "theirStrengths": [
+        "It directly explains the most commonly confused pair and does so in a concise interview-prep format."
+      ],
+      "theirGaps": [
+        "It does not cover race or any, so it leaves the broader combinator landscape incomplete."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "all fails fast, allSettled always returns results, race resolves/rejects with the first settled promise, and any resolves with the first fulfilled promise"
+        ],
+        "followUpConfusion": [
+          "these combinators do not cancel the other promises; they just decide what result to produce."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page covers one frequent real-world choice, but our answer maps all four combinators to different coordination goals."
+        ],
+        "actionableExamples": [
+          "Both pages include concise promise examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our answer more completely closes follow-up confusion because it adds race, any, AggregateError, and the non-cancellation warning."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one short code sample for Promise.any success and all-reject AggregateError behavior."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Using promises",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises",
+      "category": "tutorial_reference",
+      "selectionReason": "MDN's promise guide is still a strong calibration point because it covers composition, chaining, and the practical trade-offs around promise orchestration.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN is broader on chaining and composition, but our answer is more efficient on the exact interview confusion this page is targeting: fail-fast versus keep-going, first settled versus first fulfilled, and no automatic cancellation.",
+      "theirStrengths": [
+        "It provides a strong general guide for promise composition and coordination."
+      ],
+      "theirGaps": [
+        "It is less compact on the exact combinator comparison interviewers usually want."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Interviewers usually want one real use case per combinator: all for dependencies, allSettled for partial-failure UIs, race for timeout guards, and any for fallback mirrors."
+        ],
+        "followUpConfusion": [
+          "Promise.any rejects with an AggregateError"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN treats promise composition as a practical orchestration tool, but our page is now more direct about which product behavior maps to each combinator."
+        ],
+        "actionableExamples": [
+          "It has more extensive promise composition examples than our compact comparison page."
+        ],
+        "followUpConfusion": [
+          "Our answer is more explicit about output shapes, fail-fast rules, and no cancellation, which are the exact follow-ups people miss."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny code example per combinator instead of only selected patterns."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

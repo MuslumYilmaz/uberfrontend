@@ -1,0 +1,145 @@
+{
+  "contentId": "css-position-relative-absolute-fixed",
+  "tech": "css",
+  "query": "What is the difference between relative, absolute, and fixed positioning?",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "CSS positioned layout",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN module is the canonical positioned-layout reference for relative, absolute, fixed, sticky, offsets, and stacking behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on how positioned layout works and how positioning interacts with painting and stacking behavior."
+      ],
+      "theirGaps": [
+        "It is broader than the exact compare question and less focused on common production failures like the wrong containing block or fixed overlays covering content."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Practical scenario</strong><br>Pin a badge to a card corner and a header to the top on scroll.<br><br><strong>Common pitfalls</strong><br><ul><li>Absolute elements escaping because the parent isn’t positioned.</li><li>Fixed elements causing overlay or z-index conflicts.</li><li>Ignoring mobile viewport and safe areas.</li></ul><strong>Trade-off or test tip</strong><br>Absolute positioning is simple but brittle. Test on scroll, resize, and mobile viewports.</strong>"
+        ],
+        "followUpConfusion": [
+          "Fixed elements always align with the viewport unless inside a transformed parent (e.g., <code>transform: translateZ(0)</code> creates a new stacking context)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the positioned-layout model well, but it is less centered on one compact badge-plus-header use case and the bugs it creates."
+        ],
+        "actionableExamples": [
+          "The docs cover the positioning module and properties thoroughly, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The module covers stacking and offsets, but our page is more direct about transformed parents, overlay conflicts, and mobile viewport caveats that often appear as follow-up questions."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter containing-block snippet that shows a child escaping before the parent gets positioned."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the authoritative positioned-layout reference, but our page is sharper as an interview answer because it ties the concepts to concrete UI bugs and includes the transformed-parent and safe-area follow-ups teams miss."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant and explicitly includes a positioned-elements question in its CSS fundamentals set.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The bank covers positioning as a standard CSS interview topic and provides broad interview-style practice."
+      ],
+      "theirGaps": [
+        "The hub page is not dedicated to relative/absolute/fixed trade-offs or to the common scroll and overlay bugs they create."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use Cases<br><ul><li><code>relative</code>: fine-tune an element’s position for minor alignment.</li><li><code>absolute</code>: create dropdown menus or tooltips detached from normal layout flow.</li><li><code>fixed</code>: keep navigation bars or chat buttons visible during scrolling.</li></ul>"
+        ],
+        "followUpConfusion": [
+          "Nested <code>absolute</code> elements look for the nearest ancestor with <code>position: relative</code> or <code>absolute</code> to align against."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd clearly covers CSS fundamentals, but the landing page is less explicit about containing-block bugs, transformed parents, and mobile overlay concerns."
+        ],
+        "actionableExamples": [
+          "Because the bank includes detailed explanations, the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "The hub is less focused on exactly why absolute positioning appears to 'escape' and how fixed positioning changes inside transformed ancestors."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one reduced card-badge example with the positioned parent highlighted more explicitly."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a useful CSS interview hub, but our page is more focused on the exact positioning decisions and the follow-up bugs interviewers often ask about next."
+    },
+    {
+      "label": "Absolute, Relative, Fixed Positioning: How Do They Differ?",
+      "url": "https://css-tricks.com/absolute-relative-fixed-positioining-how-do-they-differ/",
+      "category": "tutorial_reference",
+      "selectionReason": "This CSS-Tricks article is a direct topic match and is the strongest tutorial comparator for relative, absolute, and fixed positioning.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article is directly on-topic and clearly explains that fixed positions to the viewport and absolute is removed from normal flow."
+      ],
+      "theirGaps": [
+        "It is lighter on transformed-parent behavior, safe areas, and the exact UI trade-offs around overlays and scroll."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Absolute elements escaping because the parent isn’t positioned."
+        ],
+        "followUpConfusion": [
+          "Fixed elements always align with the viewport unless inside a transformed parent (e.g., <code>transform: translateZ(0)</code> creates a new stacking context)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks explains that overuse or improper use of absolute positioning can limit layout flexibility and that fixed elements can overlap content."
+        ],
+        "actionableExamples": [
+          "It is a direct explainer with concrete examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The article is less explicit about transformed ancestors, mobile safe areas, and z-index debugging than our page."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one even shorter scroll demo snippet that isolates fixed overlap from absolute anchoring."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong direct comparator, but our page goes further on the real-world failure modes: escaped absolute children, transformed parents affecting fixed positioning, and the scroll-safe testing checklist."
+    }
+  ]
+}

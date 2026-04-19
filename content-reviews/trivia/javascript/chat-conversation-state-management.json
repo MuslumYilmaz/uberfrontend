@@ -1,0 +1,149 @@
+{
+  "contentId": "chat-conversation-state-management",
+  "tech": "javascript",
+  "query": "chat conversation state management interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this browser, network, security, or state-management prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "OpenAI Conversation state guide",
+      "url": "https://platform.openai.com/docs/guides/conversation-state",
+      "category": "canonical_docs",
+      "selectionReason": "OpenAI's official conversation state guide is the strongest canonical source for message state, continuity, and conversation lifecycle when building AI chat systems.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the official product guidance for conversation state and message continuity in OpenAI-powered systems."
+      ],
+      "theirGaps": [
+        "It is less explicit on frontend reducer transitions, optimistic render states, and stale-stream rejection as UI state-machine concerns."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Conversation state in chat apps is a production state-machine problem: stable message IDs, streaming draft buffers, retries, reconnects, truncation, and ordering guarantees all need explicit transitions."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: reducer transitions</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Use a finite-state message lifecycle: <code>pending -> streaming -> done | error</code>. Keep canonical message entities separate from UI-only controls (composer text, active request id, autoscroll lock) so retries and reconnects are predictable."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "OpenAI's guide is authoritative on conversation continuity, but our page is more explicit about the frontend state-machine transitions that prevent duplicate messages and stale streaming state."
+        ],
+        "actionableExamples": [
+          "The official docs still provide strong state guidance, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely implementation follow-ups: optimistic submit, stream append, finalize, retry, reconnect, and stale-request rejection."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny reconnect resume example later if we need more example distance over the official docs."
+        ]
+      },
+      "winReason": "OpenAI's guide is the canonical state reference, but our page is stronger for this prompt because it turns conversation continuity into an explicit frontend message-state machine."
+    },
+    {
+      "label": "Vercel AI SDK chatbot message persistence",
+      "url": "https://sdk.vercel.ai/docs/ai-sdk-ui/chatbot-message-persistence",
+      "category": "tutorial_reference",
+      "selectionReason": "The Vercel AI SDK docs are a strong direct reference for persistence, message continuity, and stream-aware chat UI state.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is direct on message persistence and practical AI chat UI implementation details."
+      ],
+      "theirGaps": [
+        "It is less compact on the full state-machine framing that includes retries, reconnects, truncation, and ordering guarantees as one system."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Conversation state in chat apps is a production state-machine problem: stable message IDs, streaming draft buffers, retries, reconnects, truncation, and ordering guarantees all need explicit transitions."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: reducer transitions</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Use a finite-state message lifecycle: <code>pending -> streaming -> done | error</code>. Keep canonical message entities separate from UI-only controls (composer text, active request id, autoscroll lock) so retries and reconnects are predictable."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Vercel docs are practical on persistence, but our page is more explicit about state transitions that prevent duplicate or out-of-order message updates."
+        ],
+        "actionableExamples": [
+          "Its docs are strong and implementation-oriented, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page goes further on the next follow-up: separating canonical messages from UI-only controls and rejecting stale chunks by active request id."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the reducer example directly above the retry/finalize path so the answer stays more state-machine-centric than a persistence guide."
+        ]
+      },
+      "winReason": "The Vercel AI SDK docs are strong on chat persistence, but our page is stronger because it frames persistence as only one part of a larger streaming and retry state machine."
+    },
+    {
+      "label": "Vercel AI Chatbot reference app",
+      "url": "https://github.com/vercel/ai-chatbot",
+      "category": "tutorial_reference",
+      "selectionReason": "The Vercel AI Chatbot reference app is a strong engineering reference for practical chat state, streaming, and persistence patterns in a production-style app.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a concrete engineering reference for how a real chat product handles streaming and persisted conversation state."
+      ],
+      "theirGaps": [
+        "It is broader than the interview prompt and less explicit about the abstract message lifecycle and failure-state model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Conversation state in chat apps is a production state-machine problem: stable message IDs, streaming draft buffers, retries, reconnects, truncation, and ordering guarantees all need explicit transitions."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: retry + finalize path</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Use a finite-state message lifecycle: <code>pending -> streaming -> done | error</code>. Keep canonical message entities separate from UI-only controls (composer text, active request id, autoscroll lock) so retries and reconnects are predictable."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The reference app is practical and realistic, but our page is more explicit about the abstract state model that explains why the implementation is structured that way."
+        ],
+        "actionableExamples": [
+          "A reference app still offers strong engineering examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more interview-friendly on the likely follow-up: stable IDs, stream states, retries, reconnects, truncation, and ordering guarantees as explicit transitions."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one shorter stale-chunk rejection snippet to create more example distance over the full reference app."
+        ]
+      },
+      "winReason": "The Vercel reference app is a strong engineering example, but our page is stronger for the interview prompt because it extracts the underlying state-machine model instead of leaving it implicit in app code."
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "contentId": "rxjs-sharereplay-angular-how-it-breaks-your-app",
+  "tech": "angular",
+  "query": "What does shareReplay do in RxJS and why break Angular apps?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "RxJS shareReplay",
+      "url": "https://rxjs.dev/api/operators/shareReplay",
+      "category": "canonical_docs",
+      "selectionReason": "The official shareReplay operator docs are the canonical source for what the operator does and how replayed shared subscriptions behave.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the official operator reference for shareReplay semantics, parameters, and replay behavior."
+      ],
+      "theirGaps": [
+        "It is operator-first and less Angular-shaped around stale cache bugs and service misuse."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Cache-and-share operator</strong><br><br><code>shareReplay</code> does two things at once: it <strong>shares</strong> one subscription across subscribers and it <strong>replays</strong> the last emitted values to late subscribers. That is perfect for caching a cold HTTP request, but dangerous for long-lived streams when stale cached values or never-reset subscriptions stick around longer than you expected."
+        ],
+        "followUpConfusion": [
+          "<strong>Rule of thumb</strong><br><ul><li>Cold HTTP caching is the safe default use case.</li><li>Long-lived app-state streams need explicit thinking about <code>refCount</code>, reset behavior, and stale data.</li><li>If you cannot explain when the cached value disappears, you have not finished the operator design.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Learn RxJS shareReplay",
+      "url": "https://www.learnrxjs.io/learn-rxjs/operators/multicasting/sharereplay",
+      "category": "tutorial_reference",
+      "selectionReason": "Learn RxJS is the strongest tutorial-style competitor for shareReplay because it explains sharing side effects and replaying values in a practical way.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It explains why shareReplay is useful when you want to avoid repeated side effects and support late subscribers."
+      ],
+      "theirGaps": [
+        "It is general RxJS guidance and lighter on Angular service cache pitfalls."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Cache-and-share operator</strong><br><br><code>shareReplay</code> does two things at once: it <strong>shares</strong> one subscription across subscribers and it <strong>replays</strong> the last emitted values to late subscribers. That is perfect for caching a cold HTTP request, but dangerous for long-lived streams when stale cached values or never-reset subscriptions stick around longer than you expected."
+        ],
+        "followUpConfusion": [
+          "<strong>Rule of thumb</strong><br><ul><li>Cold HTTP caching is the safe default use case.</li><li>Long-lived app-state streams need explicit thinking about <code>refCount</code>, reset behavior, and stale data.</li><li>If you cannot explain when the cached value disappears, you have not finished the operator design.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular HTTP Client - QuickStart Guide",
+      "url": "https://blog.angular-university.io/angular-http/",
+      "category": "tutorial_reference",
+      "selectionReason": "This Angular University guide is a topic-direct Angular competitor because it uses shareReplay in HTTP flows to prevent duplicate requests from multiple subscribers.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is Angular-specific and directly shows shareReplay in an HTTP use case."
+      ],
+      "theirGaps": [
+        "It is broader on Angular HTTP and does not center the operator around stale data and long-lived cache bugs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Cache-and-share operator</strong><br><br><code>shareReplay</code> does two things at once: it <strong>shares</strong> one subscription across subscribers and it <strong>replays</strong> the last emitted values to late subscribers. That is perfect for caching a cold HTTP request, but dangerous for long-lived streams when stale cached values or never-reset subscriptions stick around longer than you expected."
+        ],
+        "followUpConfusion": [
+          "<strong>Rule of thumb</strong><br><ul><li>Cold HTTP caching is the safe default use case.</li><li>Long-lived app-state streams need explicit thinking about <code>refCount</code>, reset behavior, and stale data.</li><li>If you cannot explain when the cached value disappears, you have not finished the operator design.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

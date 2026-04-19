@@ -32,6 +32,7 @@ import { buildCodingListSeoMeta } from './coding-list-seo.util';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
+import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
@@ -235,6 +236,7 @@ function inferCategory(q: any): CategoryKey {
     PrepSignalGridComponent,
     FaButtonComponent,
     FaCardComponent,
+    FaGlyphComponent,
     FaSpinnerComponent,
   ],
   templateUrl: './coding-list.component.html',

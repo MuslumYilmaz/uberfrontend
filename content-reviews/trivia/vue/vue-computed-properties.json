@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-computed-properties",
+  "tech": "vue",
+  "query": "Vue computed properties interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Computed Properties",
+      "url": "https://vuejs.org/guide/essentials/computed",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue page for computed refs, caching, getters and setters, and side-effect-free best practices.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "The docs are strong on dependency tracking, side-effect-free getters, and the 'derived snapshot' mental model."
+      ],
+      "theirGaps": [
+        "They are less interview-shaped and lighter on compact production pitfall framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical scenario You compute a cart total from line items and want it to update only when inputs change."
+        ],
+        "actionableExamples": [
+          "Worked scenario: computed vs method in a real component A cart drawer renders subtotal and filtered line items."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain why computed values update when dependencies change, but they are less focused on one short production scenario."
+        ],
+        "actionableExamples": [
+          "They include clear getter, writable computed, and side-effect guidance examples, so example quality stays close."
+        ],
+        "followUpConfusion": [
+          "The page covers important follow-ups like pure getters and not mutating computed snapshots, so the follow-up criterion remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one explicit line that computed should stay synchronous and pure, and defer side effects to watch."
+        ]
+      },
+      "winReason": "The official docs are canonical on computed behavior, but our page now adds a tighter worked example showing the method-versus-computed trade-off inside a real component."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because computed properties and reactivity fundamentals are core interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a broad interview-prep source with structured Vue question coverage and worked solutions."
+      ],
+      "theirGaps": [
+        "The landing page is not dedicated to computed properties, so it is less explicit about caching and getter/setter follow-ups."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical scenario You compute a cart total from line items and want it to update only when inputs change."
+        ],
+        "followUpConfusion": [
+          "Common pitfalls Using methods instead of computed, causing unnecessary recalculation. Mutating state inside computed getters. Forgetting computed must return a value."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Vue bank is relevant at the interview-topic level, but it is not as focused on this exact derived-state scenario."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd emphasizes worked answers, the example bar remains reasonably competitive."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about caching, setter support, and common getter mistakes than a dedicated computed answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tighter getter-versus-method snippet instead of relying mostly on prose."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is useful as a broad Vue interview resource, but our page is more focused on concrete computed-property pitfalls and the derived-state mental model."
+    },
+    {
+      "label": "Computed Properties",
+      "url": "https://vueschool.io/lessons/vuejs-computed-properties",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a topic-direct lesson on computed properties and is a strong tutorial/reference comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a dedicated computed-properties lesson and clearly positions them as reusable up-to-date values in templates."
+      ],
+      "theirGaps": [
+        "The visible lesson summary is lighter on setters, production pitfalls, and interview follow-ups."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical scenario You compute a cart total from line items and want it to update only when inputs change."
+        ],
+        "actionableExamples": [
+          "Computed Getters and Setters Computed properties can also include a setter to handle updates in both directions."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The lesson explains computed properties as reusable transformed data, but the visible framing is less grounded in a specific production scenario."
+        ],
+        "actionableExamples": [
+          "It is a lesson with examples, but the surfaced summary is lighter on concrete setter and pitfall examples than our page."
+        ],
+        "followUpConfusion": [
+          "The lesson summary is less explicit about common mistakes like mutating state inside getters or forgetting to return a value."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one compact line contrasting computed with watch so the follow-up path is clearer."
+        ]
+      },
+      "winReason": "Vue School is a direct comparator, but our page gives a slightly more reusable interview answer by pairing the core concept with setters and a short pitfall checklist."
+    }
+  ]
+}

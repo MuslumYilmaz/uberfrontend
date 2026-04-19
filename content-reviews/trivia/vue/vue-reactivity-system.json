@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-reactivity-system",
+  "tech": "vue",
+  "query": "What is the Vue reactivity system and how does it work internally?",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Reactivity in Depth",
+      "url": "https://vuejs.org/guide/extras/reactivity-in-depth.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue deep dive on Proxy-based tracking, effect registration, trigger behavior, and common reactivity gotchas.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on track, trigger, effects, WeakMap storage, and runtime reactivity trade-offs."
+      ],
+      "theirGaps": [
+        "It is broader and less compressed around the simplest production mental model for how Vue updates the UI."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It allows your UI to automatically update when underlying data changes — without manually manipulating the DOM.",
+          "When data changes, Vue automatically re-runs or re-renders the parts of the app that depend on that data."
+        ],
+        "followUpConfusion": [
+          "Vue wraps them in a proxy that intercepts reads and writes to track changes.",
+          "When a component renders and accesses reactive properties, Vue records which reactive values were used."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide already grounds reactivity in dependency tracking and automatic UI updates, so the conceptual baseline is strong."
+        ],
+        "actionableExamples": [
+          "The docs include direct pseudo-code and lower-level examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is more compact on the exact internal loop interviewers probe first: proxy read, dependency map, trigger, rerender."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one smaller destructuring-loses-tracking example to make that gotcha visible at a glance."
+        ]
+      },
+      "winReason": "The official guide is deeper on internals, but our page is stronger as a concise interview answer because it compresses Proxy tracking, dependency storage, and rerender behavior into one readable mental model."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because reactivity internals, refs, and update mechanics are core Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue fundamentals and internals-adjacent questions."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact internal reactivity walkthrough."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Reactive objects trigger updates only for the affected properties.",
+          "Combined with virtual DOM diffing, this provides excellent runtime performance even for large applications."
+        ],
+        "followUpConfusion": [
+          "These dependencies are stored in an internal data structure called a Dependency Map (a WeakMap under the hood).",
+          "Every time a reactive property is accessed during rendering, Vue calls track() to register the current watcher or computed effect as a dependency."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is clearly relevant for Vue reactivity questions, but it is less explicit about the exact internal dependency-map story."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on interview-style worked examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less specific about track, trigger, WeakMap storage, and the bridge from reactivity to rerendering."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the internal explanation grounded in one reactive-object example so it does not turn into a framework-implementation essay."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it explains the actual dependency-tracking loop instead of only naming reactivity as a concept."
+    },
+    {
+      "label": "Understanding Vue's Reactive Data",
+      "url": "https://www.thisdot.co/blog/understanding-vues-reactive-data",
+      "category": "tutorial_reference",
+      "selectionReason": "ThisDot has a topic-direct article on Vue reactive data and how Vue 3 tracks and responds to state changes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly focused on Vue's reactive data model and user-facing update behavior."
+      ],
+      "theirGaps": [
+        "It is lighter on the exact internal dependency map and trigger pipeline than our dedicated answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It allows your UI to automatically update when underlying data changes — without manually manipulating the DOM.",
+          "This ensures that only the parts of the app that depend on the modified property are re-run, leading to efficient updates instead of full-page re-renders."
+        ],
+        "followUpConfusion": [
+          "Vue records which reactive values were used.",
+          "When a reactive value changes, Vue triggers an update by looking up all the effects"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is strong on the user-facing meaning of reactivity and automatic updates."
+        ],
+        "actionableExamples": [
+          "It includes understandable reactive-data examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the next-level interview follow-up around dependency tracking, WeakMap storage, and how computed and watch build on the same foundation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one smaller computed-versus-watch example to show how they sit on top of the same reactivity core."
+        ]
+      },
+      "winReason": "ThisDot is a solid reactivity explainer, but our page is stronger because it bridges the user-visible behavior to the actual internal dependency-tracking and rerender mechanics."
+    }
+  ]
+}

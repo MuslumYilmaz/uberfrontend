@@ -1,0 +1,140 @@
+{
+  "contentId": "js-check-data-type-with-typeof",
+  "tech": "javascript",
+  "query": "javascript typeof operator interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "I did not confirm a GreatFrontEnd page directly focused on the typeof operator, its null/array/NaN traps, or the undeclared-versus-TDZ nuance. Using an adjacent interview page would be weaker than direct typeof-focused references."
+  },
+  "competitors": [
+    {
+      "label": "MDN typeof",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for typeof semantics, return values, and special cases such as null and undeclared identifiers.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for typeof behavior and edge-case semantics."
+      ],
+      "theirGaps": [
+        "The reference format is less compact as an interview answer and less grounded in one production normalization scenario."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You receive mixed analytics events from multiple clients and must normalize payload fields before storing them."
+        ],
+        "followUpConfusion": [
+          "typeof notDeclared"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains operator behavior accurately, but our page anchors the topic in a concrete analytics-payload normalization problem instead of staying reference-first."
+        ],
+        "actionableExamples": [
+          "MDN still has strong operator examples and edge-case coverage, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the undeclared-versus-TDZ distinction and about when typeof must be combined with Array.isArray and Number.isNaN."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one compact Object.prototype.toString.call example if we need a clearer edge over the canonical docs later."
+        ]
+      },
+      "winReason": "MDN is the canonical typeof reference, but our page is stronger as an interview answer because it ties typeof to a real normalization workflow and calls out the TDZ and layered-type-check follow-ups more directly."
+    },
+    {
+      "label": "GeeksforGeeks typeof operator",
+      "url": "https://www.geeksforgeeks.org/javascript-typeof-operator/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial-style competitor for the typeof operator search intent.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is topic-direct and likely includes quick operator examples readers expect from the exact typeof query."
+      ],
+      "theirGaps": [
+        "It is more introductory and less focused on production detection strategy."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You receive mixed analytics events from multiple clients and must normalize payload fields before storing them."
+        ],
+        "followUpConfusion": [
+          "Accessing them (even with typeof) inside TDZ throws ReferenceError."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks is direct on the operator, but our page goes further into where typeof fails in production payload handling."
+        ],
+        "actionableExamples": [
+          "A tutorial page for typeof still provides concrete examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page does more to separate plain-object checks from arrays, NaN, null, undeclared identifiers, and TDZ behavior."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the layered detection helper and the typeof-null code snippet close together so the page stays easy to reuse."
+        ]
+      },
+      "winReason": "GeeksforGeeks covers the operator directly, but our page is more useful because it turns typeof into a layered type-detection strategy instead of only an operator definition with examples."
+    },
+    {
+      "label": "Why is typeof null \"object\"?",
+      "url": "https://stackoverflow.com/questions/18808226/why-is-typeof-null-object",
+      "category": "community_qna",
+      "selectionReason": "This is a focused community Q&A source for the single follow-up confusion that comes up most often in typeof interviews.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on the classic typeof-null confusion and usually gives historical context."
+      ],
+      "theirGaps": [
+        "It is intentionally narrow and does not cover the broader runtime type-checking workflow."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You receive mixed analytics events from multiple clients and must normalize payload fields before storing them."
+        ],
+        "followUpConfusion": [
+          "Treating typeof value === 'object' as enough to detect plain objects."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Stack Overflow thread is useful for one quirk, but our page covers a broader production type-checking scenario."
+        ],
+        "actionableExamples": [
+          "The thread can still be concrete on the null edge case, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page now answers the bigger follow-up set in one place: typeof null, arrays, NaN, undeclared identifiers, and TDZ."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this page needs another pass later, add one shorter plain-object helper example for teams that rely on generic payload guards."
+        ]
+      },
+      "winReason": "The Stack Overflow thread is strong on one quirk, but our page is better for this interview topic because it turns that quirk into a wider checklist for robust runtime type detection."
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "batchId": "importance-4-html-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "html", "id": "html-div-vs-span" },
+    { "tech": "html", "id": "html-block-inline-elements" },
+    { "tech": "html", "id": "html-ol-ul-dl-difference" },
+    { "tech": "html", "id": "html-id-vs-class" },
+    { "tech": "html", "id": "html-img-srcset" },
+    { "tech": "html", "id": "html-parsing-rendering" },
+    { "tech": "html", "id": "html-dom-tree-structure" }
+  ]
+}

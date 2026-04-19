@@ -1,0 +1,151 @@
+{
+  "contentId": "react-useeffect-purpose",
+  "tech": "react",
+  "query": "React useEffect purpose interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Synchronizing with Effects",
+      "url": "https://react.dev/learn/synchronizing-with-effects",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of what effects are, when you need them, and why many effects are unnecessary.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The React docs remain the canonical effect reference, but our page is now more compact on the interview traps that follow the definition: derived state that should stay in render, stale fetches, and cleanup-driven debugging.",
+      "theirStrengths": [
+        "It is the official explanation of effects, cleanup, dependency control, and the 'you might not need an Effect' principle."
+      ],
+      "theirGaps": [
+        "It is not optimized for short interview delivery."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If a value can be computed from props/state during render, storing it via useEffect usually creates extra renders, loops, and stale-state bugs."
+        ],
+        "followUpConfusion": [
+          "The common mistake is treating it like a general-purpose run code after render hook."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs frame effects around external systems such as widgets, subscriptions, analytics, and network calls, so the real-world lens is strong."
+        ],
+        "actionableExamples": [
+          "They include multiple concrete effect patterns and cleanup guidance."
+        ],
+        "followUpConfusion": [
+          "Our answer is more compressed on the interview follow-up that pure derived logic should stay in render and not be pushed into effects."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit comparison between a derived value in render and a buggy derived value stored via effect."
+        ],
+        "actionableExamples": [
+          "Add a second code example showing a cleanup leak and its corrected version."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "React Hooks for Interviews",
+      "url": "https://www.greatfrontend.com/react-interview-playbook/react-hooks",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's React Hooks playbook is directly relevant because useEffect purpose, dependencies, and stale closures are common React interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The hooks playbook is broad and useful, but our page is more explicit about when effect logic should stay out of render, how stale closures happen, and how to reason about fetch cancellation or ignore patterns.",
+      "theirStrengths": [
+        "It is interview-focused and covers hooks, dependencies, and common React pitfalls."
+      ],
+      "theirGaps": [
+        "It spreads hook guidance across a broader page rather than compressing it into one focused useEffect answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "useEffect() is for synchronizing React with something outside render: network, subscriptions, timers, browser APIs, or analytics."
+        ],
+        "followUpConfusion": [
+          "The common issue is: the component re-renders with a new userId while an older request is still in flight. You need a cancellation/ignore strategy."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The playbook covers effects and hook pitfalls broadly, but our page is more concrete about stale fetches, cleanup leaks, and external-system synchronization."
+        ],
+        "actionableExamples": [
+          "Both pages provide practical examples and hook guidance, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our answer is more direct about the common interview trap of treating useEffect as a generic post-render hook."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit 'you might not need an effect' example with derived state moved back into render."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Introduction to useEffect",
+      "url": "https://www.epicreact.dev/tutorials/build-react-hooks/introduction-to-useeffect",
+      "category": "tutorial_reference",
+      "selectionReason": "EpicReact is a strong hook-oriented reference and a good calibration check for whether our useEffect explanation is still more actionable than a dedicated tutorial.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a focused teaching resource around hook behavior and effect usage."
+      ],
+      "theirGaps": [
+        "It is course/tutorial shaped rather than a compact interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Subscriptions are the classic useEffect case because you must both start listening and stop listening when the external source changes or the component disappears."
+        ],
+        "actionableExamples": [
+          "Cleanup + dependency mistake side by side"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is directly about when and how to use effects, so the real-world lens is close."
+        ],
+        "actionableExamples": [
+          "As a dedicated effect tutorial, it provides more worked examples than our current compact answer."
+        ],
+        "followUpConfusion": [
+          "Both pages help separate effect code from event code and pure render logic, so the follow-up criterion remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one concrete subscription example alongside the fetch example."
+        ],
+        "actionableExamples": [
+          "Add a cleanup example and a dependency mistake example side by side."
+        ],
+        "followUpConfusion": [
+          "Keep one even tighter one-line contrast between event handlers, effects, and pure render derivations."
+        ]
+      },
+      "winReason": "EpicReact remains a strong hook tutorial, but our page now pairs effect boundaries with explicit subscription, cleanup, and dependency examples, which makes the interview use-case and actionability stronger while follow-up depth stays close."
+    }
+  ]
+}

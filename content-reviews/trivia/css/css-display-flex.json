@@ -1,0 +1,145 @@
+{
+  "contentId": "css-display-flex",
+  "tech": "css",
+  "query": "How does display:flex work in CSS?",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Basic concepts of flexbox",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox",
+      "category": "canonical_docs",
+      "selectionReason": "This is MDN's canonical flexbox concepts guide for axes, flex items, wrapping, alignment, and initial flex behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on flexbox concepts, default item behavior, and the relationship between axes, alignment, and wrapping."
+      ],
+      "theirGaps": [
+        "The guide is broader and less focused on the specific production bugs caused by misunderstanding direct-child scope, shrinking, or one-dimensional limits."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most flexbox debugging problems come from misunderstanding those rules, not from flex itself being unpredictable."
+        ],
+        "followUpConfusion": [
+          "<strong>Common mistakes</strong><br><ul><li><strong>Only direct children participate.</strong> Grandchildren do not become flex items unless their own parent is also a flex container.</li><li><strong>Flexbox is one-dimensional.</strong> It is great for rows or columns, but if you need to control both rows and columns together, grid is usually a better fit.</li><li><strong>Wrapping is not automatic.</strong> Items stay on one line until you add <code>flex-wrap: wrap</code>.</li><li><strong>Alignment and sizing are separate concerns.</strong> <code>justify-content</code> and <code>align-items</code> place items; <code>flex</code> decides how they grow and shrink.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the layout model clearly, but it is less compressed around one production debugging story such as overflow, wrong wrapping, or nested children not becoming flex items."
+        ],
+        "actionableExamples": [
+          "The guide includes strong examples for axes, wrapping, and item behavior, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "MDN covers the model thoroughly, but our page is more explicit about the exact next questions interviewers ask: direct children only, flex is one-dimensional, and wrapping is opt-in."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter overflow example showing a child that needs min-width: 0 before shrink behavior makes sense."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical flexbox guide, but our page is more focused on the production and interview follow-ups that explain why flex layouts feel 'broken' in real UI code."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant and explicitly includes flexbox as a core CSS interview topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with flexbox, grid, box model, and responsive design coverage."
+      ],
+      "theirGaps": [
+        "The landing page is broad rather than a dedicated display:flex answer, so it is less focused on concrete flex debugging traps."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Parent vs. children</strong><br><br>The important detail is that flexbox is a parent-child layout model. Setting the parent to flex does not automatically affect every nested descendant."
+        ],
+        "followUpConfusion": [
+          "Only the direct children become flex items."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd clearly covers flexbox as an interview topic, but the hub page is less explicit about nested descendants, wrap defaults, and shrink-versus-alignment confusion."
+        ],
+        "actionableExamples": [
+          "Because the bank provides quick answers and detailed explanations, the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "The landing page is less specific about direct-child scope and about the one-dimensional limit that often triggers the follow-up 'should this be grid instead?'"
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one smaller before-versus-after nested layout snippet where only the parent becomes a flex container."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a useful CSS interview hub, but our page is more topic-specific about the exact flexbox traps that cause production bugs and interview follow-ups."
+    },
+    {
+      "label": "A Complete Guide to Flexbox",
+      "url": "https://css-tricks.com/snippets/css/a-guide-to-flexbox/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks has the most widely referenced flexbox guide and is the strongest tutorial comparator for display:flex fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a very strong property-by-property flexbox reference with dense visual examples."
+      ],
+      "theirGaps": [
+        "It is more catalog-like and less focused on one interview-style mental model for why layouts fail in production."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Common mistake"
+        ],
+        "followUpConfusion": [
+          "<strong>Alignment and sizing are separate concerns.</strong> <code>justify-content</code> and <code>align-items</code> place items; <code>flex</code> decides how they grow and shrink."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks is strong on flexbox behavior and syntax, but it is less centered on one production debugging story like nested descendants, overflow, and grid-versus-flex choice."
+        ],
+        "actionableExamples": [
+          "Its visual examples and property reference are strong, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The guide is less explicit about the interview-ready distinction between alignment, sizing, wrapping, and one-dimensional limits."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one direct child that refuses to shrink until min-width is adjusted, not just the general parent-child explanation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is the stronger property reference, but our page is more reusable as a concise answer because it turns flexbox into a production debugging mental model instead of a syntax catalog."
+    }
+  ]
+}

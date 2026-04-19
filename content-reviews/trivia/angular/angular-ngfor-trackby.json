@@ -1,0 +1,145 @@
+{
+  "contentId": "angular-ngfor-trackby",
+  "tech": "angular",
+  "query": "Angular trackBy interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Control Flow Guide",
+      "url": "https://angular.dev/guide/templates/control-flow",
+      "category": "canonical_docs",
+      "selectionReason": "The official control-flow guide is the strongest canonical baseline because it explains why track/trackBy matters for DOM reuse and rendering performance.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official guide explains DOM reuse and tracking keys well, but our trivia is stronger on the production symptom list like lost focus, reset inputs, and row state sticking to the wrong item.",
+      "theirStrengths": [
+        "It clearly explains that tracking preserves the relationship between data items and DOM nodes and improves rendering performance."
+      ],
+      "theirGaps": [
+        "It is less explicit about the user-visible bugs that appear when identity is wrong in editable lists."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "trackBy tells Angular which row is the same logical item , so the framework can reuse DOM nodes and child components instead of destroying them. That is why bad identity causes real production bugs like lost focus, reset inputs, and row state sticking to the wrong item."
+        ],
+        "followUpConfusion": [
+          "Use a stable unique id; avoid index unless the list is truly static."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The control-flow guide already explains DOM-node reuse and performance, but it is less centered on user-visible list bugs like focus loss and state churn."
+        ],
+        "actionableExamples": [
+          "Angular.dev includes direct track examples and good best-practice guidance, so the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "The guide recommends unique IDs and warns against weaker tracking strategies, but it does not spell out the lost-focus and wrong-row-state symptoms as directly as our page does."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one before-and-after list refresh example that visibly loses focus without trackBy and preserves it with a stable id."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Experienced Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-experienced-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant experienced Angular question on trackBy and list performance, making it the strongest interview-prep comparator.",
+        "verdicts": {
+          "realWorldUseCases": "ours",
+          "actionableExamples": "tie",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "GreatFrontEnd explains trackBy well, but our page is now stronger on the wrong-row-state bug caused by index tracking and on the API-refresh explanation of why reference identity is not enough.",
+      "theirStrengths": [
+        "It directly answers why trackBy matters, includes an example, and mentions preserving component state during updates."
+      ],
+      "theirGaps": [
+        "It is shorter on the exact list-bug symptoms and on the wrong-identity scenarios after API refreshes."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "If you sort or insert rows, index-based tracking makes the DOM state follow the row position instead of the logical item."
+          ],
+          "followUpConfusion": [
+            "If the backend returns fresh objects on every refresh, object reference is useless for preserving DOM state."
+          ]
+        },
+        "theirEvidence": {
+          "realWorldUseCases": [
+            "GreatFrontEnd already frames trackBy through performance optimization and preserved component state, but our page now spells out the wrong-row-state bug after sort or insert more explicitly."
+          ],
+          "actionableExamples": [
+            "Its experienced-interview guide includes a clear trackBy example, so the example criterion remains close."
+          ],
+          "followUpConfusion": [
+            "It also mentions preserving component state, but our page now answers the reference-identity versus logical-identity follow-up more directly."
+          ]
+        },
+        "nextActions": {
+          "realWorldUseCases": [],
+          "actionableExamples": [
+            "Add one example where using index breaks after sort or insertion, not just after simple re-render."
+          ],
+          "followUpConfusion": []
+        }
+      },
+    {
+      "label": "Angular University ngFor Guide",
+      "url": "https://blog.angular-university.io/angular-2-ngfor/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a strong tutorial competitor because it goes deep on ngFor tracking, object identity, DOM reuse, and when trackBy matters for performance.",
+        "verdicts": {
+          "realWorldUseCases": "ours",
+          "actionableExamples": "tie",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "Angular University stays stronger as a long tutorial, but our page is now more explicit about the index-tracking bug and about why reference equality fails after API refreshes.",
+      "theirStrengths": [
+        "It explains default object-identity tracking, why DOM reuse matters, and when trackBy becomes valuable."
+      ],
+      "theirGaps": [
+        "It is more tutorial-like and less explicit about interview-style user-visible bugs than our page."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "If you sort or insert rows, index-based tracking makes the DOM state follow the row position instead of the logical item."
+          ],
+          "followUpConfusion": [
+            "If the backend returns fresh objects on every refresh, object reference is useless for preserving DOM state."
+          ]
+        },
+        "theirEvidence": {
+          "realWorldUseCases": [
+            "Angular University also grounds the topic in backend refreshes, DOM reuse, and performance costs, but our page now turns the index-tracking bug into a more explicit interview-ready scenario."
+          ],
+          "actionableExamples": [
+            "Its long-form ngFor guide still provides more step-by-step examples and background than our compact trivia answer, so the example criterion stays close."
+          ],
+          "followUpConfusion": [
+            "It already explains default object identity and when trackBy matters, but our page now answers the reference-equality trap more directly."
+          ]
+        },
+        "nextActions": {
+          "realWorldUseCases": [],
+          "actionableExamples": [
+            "Add a small API-refresh example that rebuilds objects and shows why stable IDs beat reference identity."
+          ],
+          "followUpConfusion": []
+        }
+      }
+  ]
+}

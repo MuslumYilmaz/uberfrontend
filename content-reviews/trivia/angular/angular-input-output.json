@@ -1,0 +1,152 @@
+{
+  "contentId": "angular-input-output",
+  "tech": "angular",
+  "query": "Angular input output interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Outputs Guide",
+      "url": "https://angular.dev/guide/components/outputs",
+      "category": "canonical_docs",
+      "selectionReason": "Angular.dev splits inputs and outputs into separate official guides; the outputs guide is the stronger canonical competitor because it covers event semantics, naming, and non-bubbling behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official guide is authoritative for outputs, but our page is stronger on the combined parent-child contract and on the senior pitfalls around EventEmitter misuse, input timing, and custom two-way binding.",
+      "theirStrengths": [
+        "It is the authoritative reference for custom events, emit semantics, naming, and the fact that Angular outputs do not bubble."
+      ],
+      "theirGaps": [
+        "It is centered on outputs and does not combine parent-to-child inputs, change-over-time behavior, and child-to-parent events into one decision model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Interviewers expect you to explain timing (updates over time), typing, OnPush/immutability implications, and when NOT to use EventEmitter (cross-component event bus)."
+        ],
+        "followUpConfusion": [
+          "The correct answers are: ngOnChanges , an @Input setter, or (in newer Angular) signals-based inputs.",
+          "This is a common interview topic (and a common place to make naming mistakes)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The outputs guide is authoritative on event semantics, but it is not as centered on the full parent-child API contract and its production misuse patterns."
+        ],
+        "actionableExamples": [
+          "Angular.dev has concrete emit and alias examples, so the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "The docs explain non-bubbling, aliases, and naming, but they do not answer as much about input updates over time or when EventEmitter becomes the wrong abstraction."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit before-and-after example where a child incorrectly mutates parent state and then switches to emit intent up."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "This guide is GreatFrontEnd’s main Angular fundamentals article and a fair interview-prep baseline for component communication concepts.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more explicit about data down / intent up, how inputs evolve after first render, and why EventEmitter is not a cross-component event bus.",
+      "theirStrengths": [
+        "It covers Angular fundamentals in a concise interview-prep tone."
+      ],
+      "theirGaps": [
+        "It is lighter on the pitfalls seniors usually mention around input timing, custom two-way binding, and event semantics."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "@Input() is the child component’s public data API .",
+          "@Output() is the child component’s public event API ."
+        ],
+        "followUpConfusion": [
+          "The correct answers are: ngOnChanges , an @Input setter, or (in newer Angular) signals-based inputs.",
+          "This is a common interview topic (and a common place to make naming mistakes)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd stays at the broader Angular-fundamentals level, while our page is directly about parent-child data contracts and event boundaries."
+        ],
+        "actionableExamples": [
+          "Its examples are concise enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The guide is lighter on input-change timing and on the EventEmitter misuse follow-up that often appears in senior interviews."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny custom two-way binding example that shows the exact x and xChange contract side by side."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University @Output Guide",
+      "url": "https://blog.angular-university.io/angular-output/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a strong direct competitor because it goes deep on EventEmitter semantics, event naming, and the command-versus-event pitfall.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It goes deep on event design mistakes, naming, and what an output should represent."
+      ],
+      "theirGaps": [
+        "It is output-centric and less balanced across the full input/output contract than our page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Integrated example: input immutability + typed output event"
+        ],
+        "actionableExamples": [
+          "renameRequested.emit({ id: this.user.id, nextName: this.draftName || this.user.name });"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University also frames outputs through a real design pitfall, so the practical use-case comparison stays close."
+        ],
+        "actionableExamples": [
+          "It offers more worked output examples and more detailed event-design guidance than our compact trivia."
+        ],
+        "followUpConfusion": [
+          "It answers command-versus-event confusion well, so the follow-up comparison remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one example that combines input immutability with output event design in a single parent-child component pair."
+        ],
+        "actionableExamples": [
+          "Add a second worked example showing a typed payload object and how the parent consumes $event."
+        ],
+        "followUpConfusion": [
+          "Keep one extra note on how wrapped native elements do not automatically bubble component outputs upward."
+        ]
+      },
+      "winReason": "Our page now combines input immutability, typed output payloads, and non-bubbling event behavior in one parent-child example, making it stronger on use-cases and examples while follow-up depth stays close."
+    }
+  ]
+}

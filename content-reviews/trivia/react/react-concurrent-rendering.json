@@ -1,0 +1,149 @@
+{
+  "contentId": "react-concurrent-rendering",
+  "tech": "react",
+  "query": "react concurrent rendering performance interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "useTransition",
+      "url": "https://react.dev/reference/react/useTransition",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React reference for transitions and non-urgent work, which is the most concrete official entry point into concurrent rendering behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for how React marks work as non-urgent."
+      ],
+      "theirGaps": [
+        "It is less direct on the interview misconception that concurrent rendering means parallel DOM work."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "urgent updates like typing stay responsive."
+        ],
+        "actionableExamples": [
+          "React can interrupt rendering mid-way to handle urgent updates first, then continue rendering where it left off."
+        ],
+        "followUpConfusion": [
+          "Concurrent rendering is not “React rendering in parallel.”"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs are authoritative on transitions, but our page is more explicit about the production problem being solved: jank from mixing expensive tree work with urgent input."
+        ],
+        "actionableExamples": [
+          "The official examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that concurrency is scheduling and interruption, not parallel UI mutation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny startTransition search example later if we want more API-shaped example depth than the current scheduling summary."
+        ]
+      },
+      "winReason": "The official docs are authoritative on transitions, but our page is stronger because it compresses concurrent rendering into the exact responsiveness and mental-model distinction interviewers usually want."
+    },
+    {
+      "label": "Say no to flickering UI: useTransition",
+      "url": "https://www.developerway.com/posts/use-transition",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is a strong practical explainer for transitions, interruptible rendering, and UI responsiveness under heavier work.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is highly practical on transitions and responsiveness."
+      ],
+      "theirGaps": [
+        "It is less concise on the exact interview distinction between scheduling and parallel rendering."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production pitfall it solves is coupling expensive tree updates to urgent input, which creates jank"
+        ],
+        "actionableExamples": [
+          "By marking some updates as ‘transitions’, React knows they are not urgent"
+        ],
+        "followUpConfusion": [
+          "doesn’t mean React renders components in parallel"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DeveloperWay is practical, but our page is more direct about the core production lesson: keep urgent and non-urgent work separate."
+        ],
+        "actionableExamples": [
+          "Its examples are strong, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that concurrent rendering is a scheduler capability, not automatic async DOM mutation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the API list visible so the answer stays concrete about which React primitives expose concurrency."
+        ]
+      },
+      "winReason": "This tutorial is practical, but our page is stronger for interview use because it stays anchored on urgent-versus-non-urgent work, interruption, and the non-parallel mental model."
+    },
+    {
+      "label": "Does useEffect not work with useTransition?",
+      "url": "https://stackoverflow.com/questions/64363882",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a focused practical reference for how transition scheduling interacts with React updates and developer expectations.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on one confusing edge where transition scheduling changes expectations."
+      ],
+      "theirGaps": [
+        "It is narrower than a full explanation of concurrent rendering."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "urgent updates like typing stay responsive"
+        ],
+        "actionableExamples": [
+          "useTransition(): Defers expensive updates to improve responsiveness."
+        ],
+        "followUpConfusion": [
+          "It is a scheduling model"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on one edge case, but our page is stronger because it explains the whole scheduling model behind that edge case."
+        ],
+        "actionableExamples": [
+          "Community examples can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that transitions change priority, not the fact that React still executes one UI tree."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one explicit urgent typing plus deferred filter example if we want more tangible API usage later."
+        ]
+      },
+      "winReason": "The community thread is useful on one transition-related confusion, but our page is stronger because it explains the scheduling model and why it improves responsiveness."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "js-callbacks",
+  "tech": "javascript",
+  "query": "javascript callbacks interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Callback function",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Callback_function",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's callback glossary page is the canonical docs baseline for this concept and a likely comparator for simple callback definitions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page now goes beyond the glossary definition by pairing inversion-of-control framing with a DOM-event example and a callback-to-Promise refactor, while MDN remains intentionally brief.",
+      "theirStrengths": [
+        "It provides the authoritative baseline definition very concisely."
+      ],
+      "theirGaps": [
+        "It is intentionally brief and does not push far into production-debug tradeoffs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A <strong>callback</strong> is a function you hand to another API so it can decide when to call you. The real production/debug issue is inversion of control: DOM events, file APIs, or legacy libraries own the timing, the error path, and whether the work can be canceled or composed cleanly."
+        ],
+        "actionableExamples": [
+          "loadUser(userId, (err, user) => {"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines callbacks correctly, but it stays closer to a glossary baseline than to inversion-of-control tradeoffs in real UI or legacy-async code."
+        ],
+        "actionableExamples": [
+          "Its concise examples are useful, but they are smaller than our DOM-event example plus the callback-to-Promise before/after flow."
+        ],
+        "followUpConfusion": [
+          "MDN still explains the basic callback idea clearly, so the broader follow-up set is close rather than clearly behind."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on cancellation or cleanup concerns in callback-style APIs compared with AbortSignal-aware Promise APIs."
+        ]
+      }
+    },
+    {
+      "label": "javascript.info Callbacks",
+      "url": "https://javascript.info/callbacks",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info has a dedicated tutorial on callbacks with concrete async examples, making it a strong tutorial comparator.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "javascript.info has a strong async loader walkthrough, but our page now wins this interview-sized comparison by combining a before/after callback-to-Promise refactor with the repeated-notification follow-up that explains when callbacks still fit.",
+      "theirStrengths": [
+        "It walks through a realistic async callback example and then shows how the pattern leads toward promises."
+      ],
+      "theirGaps": [
+        "It is longer and less directly interview-oriented than our trivia format."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "loadUserPromise(userId)"
+        ],
+        "followUpConfusion": [
+          "Promises settle once; callbacks can be called many times."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info still has a very strong single real-world async scenario, so the real-world criterion stays close."
+        ],
+        "actionableExamples": [
+          "Its loadScript example is concrete, but our page now adds both nested-callback pain and the Promise-based cleanup path."
+        ],
+        "followUpConfusion": [
+          "Our page now answers the key follow-up of when callbacks remain the right tool more directly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one callback cleanup or unsubscribe example if we want a clearer edge on lifecycle-heavy real-world flows."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Callback functions",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-callback-functions-and-how-are-they-used",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep answer for callback functions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page is now stronger for this topic because it frames callbacks as an inversion-of-control debugging problem, then shows both an event-driven callback and a callback-to-Promise refactor.",
+      "theirStrengths": [
+        "It is aligned with the interview intent and stays on the callback concept without too much unrelated detail."
+      ],
+      "theirGaps": [
+        "It appears lighter on the inversion-of-control tradeoff than our current framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A <strong>callback</strong> is a function you hand to another API so it can decide when to call you. The real production/debug issue is inversion of control: DOM events, file APIs, or legacy libraries own the timing, the error path, and whether the work can be canceled or composed cleanly."
+        ],
+        "actionableExamples": [
+          "const searchInput = document.querySelector('#search');"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd explains where callbacks are used, but it is lighter on the concrete inversion-of-control debugging angle."
+        ],
+        "actionableExamples": [
+          "Its examples are concise, while our page now includes both an event callback and a before/after Promise refactor."
+        ],
+        "followUpConfusion": [
+          "Its interview-prep framing already covers the baseline follow-up, so the comparison remains close rather than clearly behind."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one tiny cleanup example that removes an event listener or unsubscribes a callback to strengthen the lifecycle follow-up."
+        ]
+      }
+    }
+  ]
+}

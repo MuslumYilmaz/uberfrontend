@@ -1,0 +1,140 @@
+{
+  "contentId": "react-pure-function-of-props-and-state",
+  "tech": "react",
+  "query": "react pure functions of props and state interview question",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Components and Hooks must be pure",
+      "url": "https://react.dev/reference/rules/components-and-hooks-must-be-pure",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React rule page for purity, idempotent rendering, and side-effect-free component bodies.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative explanation of idempotent rendering and why React needs pure component logic."
+      ],
+      "theirGaps": [
+        "It is more rule-centric and less compressed around the production consequences of impurity in StrictMode and concurrent rendering."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That purity lets React freely re-run renders, pause/abort work, and diff trees safely without causing “real-world” side effects."
+        ],
+        "followUpConfusion": [
+          "If running the component body twice would cause anything “real” to happen twice"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain purity accurately, but our page is more explicit about the real production failures: duplicate network calls, analytics, mutations, and render-time races."
+        ],
+        "actionableExamples": [
+          "The canonical page still includes strong examples of idempotent and non-idempotent code, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that side effects belong in effects and event handlers because React may replay render work."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny render-time fetch versus effect-based fetch example later if we want more literal code than the current rule-of-thumb block."
+        ]
+      },
+      "winReason": "The official docs are authoritative, but our page is stronger for interview delivery because it ties purity directly to replayable rendering, StrictMode, and concrete side-effect failures."
+    },
+    {
+      "label": "Pure Render",
+      "url": "https://reactstyleguide.com/rules/pure-render",
+      "category": "tutorial_reference",
+      "selectionReason": "React Style Guide has a topic-direct rule page on pure render logic, side-effect isolation, and StrictMode/concurrent implications.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on common render-time mistakes like fetches, mutations, and duplicate work in StrictMode."
+      ],
+      "theirGaps": [
+        "It is longer and less compact around the exact interview framing of UI as a pure computation of props, state, and context."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Pure rendering improves predictability and testing, but side effects must live in effects/hooks."
+        ],
+        "followUpConfusion": [
+          "Render phase should only compute the next UI tree."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The style guide is practical, but our page is more explicit about why purity unlocks pause, abort, restart, and safe reconciliation behavior."
+        ],
+        "actionableExamples": [
+          "Its broken-versus-fixed examples are solid, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that purity is about render determinism, not about never using effects."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one localStorage-in-render example later if we want another concrete impurity case next to fetch and subscription examples."
+        ]
+      },
+      "winReason": "This tutorial is practical, but our page is stronger because it frames purity as the contract that lets React replay render work safely, not just as a style rule."
+    },
+    {
+      "label": "Must React components act like pure functions with respect to their props?",
+      "url": "https://stackoverflow.com/questions/41133473/must-react-components-act-like-pure-functions-with-respect-to-their-props",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for the purity expectation around component inputs and rendering semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It addresses the exact purity question in plain language."
+      ],
+      "theirGaps": [
+        "It is narrower and less complete on render versus commit, side-effect placement, and restartable rendering."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Connect it to render vs commit, Concurrent Rendering, StrictMode double-invocation, memoization, and predictable reconciliation."
+        ],
+        "followUpConfusion": [
+          "Side effects belong in event handlers (user actions) or effects"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread explains the idea, but our page is stronger on the concrete React runtime features that depend on purity."
+        ],
+        "actionableExamples": [
+          "Community explanations can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that a component can read props, state, and context during render without losing purity as long as the computation stays deterministic."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one explicit 'render twice' example visible so the duplicate-side-effect failure mode stays concrete."
+        ]
+      },
+      "winReason": "The community thread defines the idea, but our page is stronger because it connects purity to the exact runtime guarantees React relies on."
+    }
+  ]
+}

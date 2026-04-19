@@ -1,0 +1,149 @@
+{
+  "contentId": "js-secure-cors-handling",
+  "tech": "javascript",
+  "query": "secure CORS handling frontend interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this browser, network, security, or state-management prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN CORS",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for cross-origin requests, preflight behavior, credential rules, and browser-enforced CORS boundaries.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on CORS semantics, preflights, headers, and credential restrictions."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped on the architectural answer that frontend code cannot bypass CORS and should move to a proxy or BFF when necessary."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Secure CORS handling is mostly a server-policy and preflight debugging problem, not a frontend workaround. The production-safe fixes are trusted origin allowlists, correct headers, and a BFF or proxy when direct browser access is the wrong architecture."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-route'></i> <strong>Preflight (OPTIONS) requests</strong>  Browsers send a preflight when a request is not “simple” (custom headers, non-GET/POST, or JSON content type). Your server must respond to <code>OPTIONS</code> with the same CORS headers or the real request will be blocked."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Avoid these</strong>  - Disabling CORS in the browser or using extensions (not a real fix). - Using <code>mode: 'no-cors'</code> (opaque responses you cannot read). - Setting <code>Access-Control-Allow-Origin: *</code> with credentials."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines CORS correctly, but our page is more explicit about the operational answer interviewers want: server policy, preflight debug, and a BFF when browser access is the wrong design."
+        ],
+        "actionableExamples": [
+          "The canonical docs still have strong header and preflight examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up traps: no-cors is not a fix, wildcard origins break with credentials, and browser extensions are not production answers."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one shorter credentialed-request example later if we need more example distance over MDN."
+        ]
+      },
+      "winReason": "MDN is the canonical CORS reference, but our page is stronger for this interview question because it translates the spec into server-policy decisions and safe frontend architecture."
+    },
+    {
+      "label": "web.dev Same-origin fetch codelab",
+      "url": "https://web.dev/articles/codelab-same-origin-fetch",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev provides practical browser-network guidance and is a strong tutorial comparator for same-origin and cross-origin request behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on browser request behavior and origin boundaries."
+      ],
+      "theirGaps": [
+        "It is less explicit on the secure production answer for third-party APIs: use a BFF or proxy rather than hunting for a frontend-only workaround."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Secure CORS handling is mostly a server-policy and preflight debugging problem, not a frontend workaround. The production-safe fixes are trusted origin allowlists, correct headers, and a BFF or proxy when direct browser access is the wrong architecture."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-route'></i> <strong>Preflight (OPTIONS) requests</strong>  Browsers send a preflight when a request is not “simple” (custom headers, non-GET/POST, or JSON content type). Your server must respond to <code>OPTIONS</code> with the same CORS headers or the real request will be blocked."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Avoid these</strong>  - Disabling CORS in the browser or using extensions (not a real fix). - Using <code>mode: 'no-cors'</code> (opaque responses you cannot read). - Setting <code>Access-Control-Allow-Origin: *</code> with credentials."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is practical on browser behavior, but our page is more explicit about the production boundary between frontend code and server-enforced origin policy."
+        ],
+        "actionableExamples": [
+          "Its guidance is still practical and example-driven, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the next architectural questions: proxy/BFF fallback, credentials, and why frontend workarounds are the wrong mental model."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the avoid-these list close to the preflight section so the answer stays more operational than a browser-network tutorial."
+        ]
+      },
+      "winReason": "web.dev is practical on origin rules, but our page is stronger because it frames CORS as a server-policy and architecture problem instead of a frontend trick question."
+    },
+    {
+      "label": "Stack Overflow no Access-Control-Allow-Origin header",
+      "url": "https://stackoverflow.com/questions/43871637/no-access-control-allow-origin-header-is-present-on-the-requested-resource-whe",
+      "category": "community_qna",
+      "selectionReason": "This is a widely referenced community Q&A for the classic CORS error and preflight confusion frontend developers actually hit.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on the exact runtime error most developers see first."
+      ],
+      "theirGaps": [
+        "It is narrower than the interview prompt and less explicit on trusted-origin policy, proxy architecture, and credential safety."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Secure CORS handling is mostly a server-policy and preflight debugging problem, not a frontend workaround. The production-safe fixes are trusted origin allowlists, correct headers, and a BFF or proxy when direct browser access is the wrong architecture."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-route'></i> <strong>Preflight (OPTIONS) requests</strong>  Browsers send a preflight when a request is not “simple” (custom headers, non-GET/POST, or JSON content type). Your server must respond to <code>OPTIONS</code> with the same CORS headers or the real request will be blocked."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Avoid these</strong>  - Disabling CORS in the browser or using extensions (not a real fix). - Using <code>mode: 'no-cors'</code> (opaque responses you cannot read). - Setting <code>Access-Control-Allow-Origin: *</code> with credentials."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is useful for one error message, but our page gives the fuller production answer: fix server policy or move the call behind a backend you control."
+        ],
+        "actionableExamples": [
+          "A focused Q&A still gives practical debugging examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page resolves more of the likely follow-up set in one place: preflight, no-cors, credentials, and when wildcard origins are unsafe."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one short proxy/BFF example request flow to make the architecture fallback even more concrete."
+        ]
+      },
+      "winReason": "The Stack Overflow thread is useful for the common error symptom, but our page is a better interview answer because it explains the secure fixes and the architecture boundary behind the error."
+    }
+  ]
+}

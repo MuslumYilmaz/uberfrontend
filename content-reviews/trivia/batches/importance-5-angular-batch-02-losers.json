@@ -1,0 +1,34 @@
+{
+  "batchId": "importance-5-angular-batch-02-losers",
+  "scope": "trivia content improvement candidates from angular competitor review batch 02",
+  "items": [
+    {
+      "tech": "angular",
+      "id": "angular-change-detection-strategies"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-hierarchical-dependency-injection-real-bug"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-http-what-actually-cancels-request"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-observables-rxjs"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-onpush-change-detection-debugging-real-bug"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-prevent-memory-leaks-unsubscribe-patterns"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-routing"
+    }
+  ]
+}

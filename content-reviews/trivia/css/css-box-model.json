@@ -1,0 +1,145 @@
+{
+  "contentId": "css-box-model",
+  "tech": "css",
+  "query": "Explain the CSS box model and box-sizing in practice",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "The box model",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model",
+      "category": "canonical_docs",
+      "selectionReason": "This is MDN's canonical lesson on the box model, including margin, padding, border, alternative box models, and developer-tools debugging.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on standard versus alternate box models and explains how browser DevTools expose the box layers."
+      ],
+      "theirGaps": [
+        "The guide is broader and less centered on the overflow-debug interview framing of content-box versus border-box."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Practical scenario</strong><br>Space cards inside a grid using padding and borders without breaking layout widths.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting <code>box-sizing: border-box</code> and causing overflow.</li><li>Mixing margin and padding inconsistently.</li><li>Assuming border width doesn’t affect layout.</li></ul><strong>Trade-off or test tip</strong><br>Border-box is simpler but must be applied consistently. Test with different paddings and fixed widths.</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Box-Sizing Property</strong><br>By default, CSS uses <code>box-sizing: content-box;</code> which excludes padding and border from the declared width/height. Switching to <code>box-sizing: border-box;</code> includes them, making layout calculations simpler and more predictable."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN teaches the box model thoroughly, but it is less compressed around one debugging scenario like overflow caused by width plus padding plus border."
+        ],
+        "actionableExamples": [
+          "It includes concrete calculations and interactive tasks, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The guide explains the alternate box model and DevTools, but our page is more direct about why teams standardize on border-box and how width math breaks in production."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one even shorter content-box versus border-box width calculation snippet for faster scanning."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical reference, but our page is tighter as an interview answer because it turns the model into a width-debugging story and explicitly centers the box-sizing decision teams use in real layouts."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant and includes box model as one of the core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The bank is strong on interview-style coverage and includes a direct box model question plus box-sizing follow-up."
+      ],
+      "theirGaps": [
+        "The page is a broad quiz hub, not a single dedicated explanation of width math and overflow debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When a layout looks 320px wide but actually overflows, the problem is usually not magic; it is whether width applies to content only or to content plus padding and border."
+        ],
+        "followUpConfusion": [
+          "In this example:<br><ul><li>Content width = 200px</li><li>Total horizontal space = 200 + (20×2) + (5×2) + (15×2) = 280px</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd covers the box model and box-sizing directly, but the hub page is less focused on one concise overflow-debug mental model."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd provides quick answers and detailed explanations, the example bar remains competitive."
+        ],
+        "followUpConfusion": [
+          "The hub is less explicit about mixing margin and padding inconsistently or assuming borders do not change total layout width."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one shorter card-width example that shows the same width bug with fewer numbers."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is strong and directly relevant, but our page is more focused on the exact overflow and width-calculation confusion teams actually debug in production."
+    },
+    {
+      "label": "The CSS Box Model",
+      "url": "https://css-tricks.com/the-css-box-model/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks has a direct box-model explainer and is the strongest tutorial comparator in this spacing and sizing cluster.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article has a strong conceptual explanation and a memorable framing for how boxes interact with surrounding layout."
+      ],
+      "theirGaps": [
+        "It is less compact about border-box standardization and the exact width-overflow bug path that shows up in component layouts."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Debug mental model</strong><br><br>The box model is where many CSS sizing bugs start. When a layout looks 320px wide but actually overflows, the problem is usually not magic; it is whether width applies to content only or to content plus padding and border."
+        ],
+        "followUpConfusion": [
+          "Use developer tools to inspect the box model visually in browsers."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks emphasizes that every element is a box and that margin affects surrounding content, but it is less centered on a single production overflow story."
+        ],
+        "actionableExamples": [
+          "Its diagrams and examples are useful, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The article is lighter on a concise border-box rollout recommendation and on the interview-ready explanation of why width math surprises teams."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit global reset snippet, not just the recommendation to use border-box consistently."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong explainer, but our page is more immediately reusable for production debugging because it ties the concept to overflow, border-box, and a concrete layout-width calculation."
+    }
+  ]
+}

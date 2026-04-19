@@ -1,0 +1,145 @@
+{
+  "contentId": "js-calback-hell-resolved-with-promise",
+  "tech": "javascript",
+  "query": "how promises solve callback hell javascript interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Using promises",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN guide directly contrasts callback hell with promise chains and documents chaining, composition, cancellation, and wrapping old callback APIs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN is more comprehensive on promises generally, but our page now wins this narrower callback-hell comparison because it anchors the topic in a concrete upload-plus-audit flow and adds both a reusable promisify helper and a broken-chain return example.",
+      "theirStrengths": [
+        "It directly shows callback hell, promise chains, floating promises, and old callback API wrapping."
+      ],
+      "theirGaps": [
+        "It is broader documentation rather than a compact interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This matters most in flows like file upload -> metadata save -> audit log -> analytics, where one late failure should still hit one predictable error boundary."
+        ],
+        "followUpConfusion": [
+          "Callback hell is not just ugly indentation. It is a production reliability problem where sequencing becomes implicit, failures get duplicated, and async control flow is hard to debug."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN frames the old nested pattern well, but our page is now more concrete about one production workflow where late failures and duplicated error handling become painful."
+        ],
+        "actionableExamples": [
+          "It includes more complete before-and-after code and covers floating promises and return requirements in detail."
+        ],
+        "followUpConfusion": [
+          "Our answer is more direct about the debugging cost: duplicated failures, hidden sequencing, and the fact that promises still do not solve cancellation automatically."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a small wrapper example that converts an error-first callback API into a reusable promise utility."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "What are the pros and cons of using Promises instead of callbacks in JavaScript?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-the-pros-and-cons-of-using-promises-instead-of-callbacks",
+      "category": "interview_prep",
+      "selectionReason": "This GreatFrontEnd page is the closest interview-prep comparator because it directly frames promises as an answer to callback hell and error propagation problems.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers the standard callback-hell pitch well, but our page is stronger on migration mistakes, centralized failure handling, and the debugging reason teams move callback APIs behind promise wrappers.",
+      "theirStrengths": [
+        "It is concise, interview-oriented, and directly covers callback hell plus centralized error handling."
+      ],
+      "theirGaps": [
+        "It is lighter on migration mistakes such as mixing styles, broken returns, and implicit serialization."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic."
+        ],
+        "followUpConfusion": [
+          "Wrapping everything in Promises but still nesting deeply."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page explains callback hell well, but our answer is more explicit about why debugging and sequencing reliability improve in production code."
+        ],
+        "actionableExamples": [
+          "Both pages include callback and promise examples, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer about migration traps such as forgetting to return inside then and mixing callback and promise styles in one function."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit example where independent tasks move from nested callbacks to Promise.all."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "JavaScript Promises: an introduction",
+      "url": "https://web.dev/articles/promises",
+      "category": "tutorial_reference",
+      "selectionReason": "This web.dev article is a strong practical explanation of promise chaining, thenables, and asynchronous control flow beyond the narrow callback-hell definition.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "web.dev is broader on Promise fundamentals, but our page is now better for the exact callback-hell question because it stays focused on migration pain points: production sequencing, reusable promisify boundaries, missing-return bugs, and explicit cancellation limits.",
+      "theirStrengths": [
+        "It is thorough on promise terminology, chaining, and practical interoperability details."
+      ],
+      "theirGaps": [
+        "It is much broader than the interview-sized callback-hell question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "An upload flow saves metadata, writes an audit log, and triggers analytics after the file reaches storage."
+        ],
+        "followUpConfusion": [
+          "Assuming Promises solve cancellation automatically."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev explains why promises matter broadly, but our page is now more concrete about the exact production migration story behind callback hell."
+        ],
+        "actionableExamples": [
+          "It provides richer walk-throughs of then, catch, promise construction, and interoperability than our compact answer."
+        ],
+        "followUpConfusion": [
+          "Our page is now clearer on callback-to-promise migration bugs such as missing returns and the fact that cancellation still needs separate support."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a concise code sample showing return propagation through then and a broken example without return."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

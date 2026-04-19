@@ -1,0 +1,148 @@
+{
+  "contentId": "debounce-vs-throttle-search-input",
+  "tech": "javascript",
+  "query": "debounce vs throttle for search input javascript interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "GreatFrontEnd debouncing and throttling",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-concept-of-debouncing-and-throttling",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview page for debouncing and throttling.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is exact-topic interview prep and likely strong on the basic conceptual contrast between debounce and throttle."
+      ],
+      "theirGaps": [
+        "It is less explicit on the search-input default, rate-limit trade-offs, and tuning the delay based on UX and backend cost."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Calling an API on each keystroke is wasteful, slow, and can even get you rate-limited."
+        ],
+        "actionableExamples": [
+          "Debounce vs Throttle — the mental model"
+        ],
+        "followUpConfusion": [
+          "Almost always: Debounce."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is direct interview prep, but our page is more explicit about the concrete search-input trade-off between request spam, UX latency, and rate limiting."
+        ],
+        "actionableExamples": [
+          "Its conceptual examples are likely strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely follow-ups more directly: why search usually wants debounce, when throttle is better, and why 200ms is only a starting point."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny leading-versus-trailing example later if we need more example distance over the quiz-style explanation."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it pushes the answer into the real search-input decision and tuning trade-offs."
+    },
+    {
+      "label": "CSS-Tricks Debouncing and Throttling Explained Through Examples",
+      "url": "https://css-tricks.com/debouncing-throttling-explained-examples/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks is a widely cited topic-direct explainer for debouncing and throttling with practical examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical and example-heavy on debounce/throttle behavior."
+      ],
+      "theirGaps": [
+        "It is less compact on the specific interview framing of live search, request cost, and tuning the delay window."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This question is not about definitions. It's about this: \"How do you prevent expensive work from running too often when the user types?\""
+        ],
+        "actionableExamples": [
+          "Typing in a search input can easily trigger 10–20 events per second."
+        ],
+        "followUpConfusion": [
+          "We should measure and tune this based on UX and backend cost."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks is strong on the concept, but our page is more explicit about the concrete product scenario interviewers usually mean: a live search box."
+        ],
+        "actionableExamples": [
+          "Its examples are strong and topic-direct, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up set: debounce by default for search, throttle for steady updates, and tune the delay instead of hard-coding folklore."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one short scroll-progress example so the throttle case is as concrete as the search case."
+        ]
+      },
+      "winReason": "CSS-Tricks is a strong explainer, but our page is better for this prompt because it is more specific about the search-input use case and the tuning decisions teams actually make."
+    },
+    {
+      "label": "Lodash debounce docs",
+      "url": "https://lodash.com/docs/#debounce",
+      "category": "tutorial_reference",
+      "selectionReason": "Lodash docs are a practical reference for the operational options people actually use when implementing debounce in production.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on leading, trailing, and timing options developers often use in real code."
+      ],
+      "theirGaps": [
+        "It is implementation-focused and narrower on the broader debounce-versus-throttle decision."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Almost always: Debounce."
+        ],
+        "actionableExamples": [
+          "Common range: 150–300ms"
+        ],
+        "followUpConfusion": [
+          "Too small → still spams API - Too big → UI feels laggy"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Lodash is practical on implementation options, but our page is more explicit about which strategy is the better fit for search input in the first place."
+        ],
+        "actionableExamples": [
+          "Its operational examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the interview follow-up about why 200ms is a starting point rather than a magic number."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the debounce-value guidance close to the search example so the answer stays more decision-oriented than a pure API reference."
+        ]
+      },
+      "winReason": "The Lodash docs are practical for implementation details, but our page is stronger overall because it answers the higher-level decision of debounce versus throttle for search."
+    }
+  ]
+}

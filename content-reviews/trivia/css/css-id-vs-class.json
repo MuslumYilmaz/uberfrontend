@@ -1,0 +1,145 @@
+{
+  "contentId": "css-id-vs-class",
+  "tech": "css",
+  "query": "What is the difference between id and class selectors in CSS?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Selectors and combinators",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors/Selectors_and_combinators",
+      "category": "canonical_docs",
+      "selectionReason": "This is the best MDN canonical source for the relationship between class and ID selectors, their syntax, and how they participate in compound selectors.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on selector syntax, compound selectors, and the formal difference between class and ID selectors."
+      ],
+      "theirGaps": [
+        "The guide is less interview-shaped and less explicit about the production pitfalls around duplicate IDs, reusable UI, and specificity debt."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "An id is unique on a page and selected with #id; a class can be reused and selected with .class. IDs have higher specificity and are often used for anchors or JS hooks, while classes are for styling groups."
+        ],
+        "followUpConfusion": [
+          "IDs are unique identifiers for single elements, while classes group multiple elements under a shared style."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the selector differences clearly, but it is lighter on the practical production trade-off between unique hooks and reusable styling systems."
+        ],
+        "actionableExamples": [
+          "It includes direct examples of class, ID, and compound selectors, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the next mistake teams hit in practice: duplicate IDs in reusable UI and overusing IDs for styling instead of classes."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the styling example visible so the answer stays concrete instead of purely conceptual."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical selectors guide, but our page is stronger as an interview answer because it turns id-versus-class into a concrete uniqueness, specificity, and reusable-UI decision."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because selector choice and specificity are core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad selector, specificity, and styling coverage."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to id-versus-class trade-offs, so it is less focused on one exact answer about uniqueness, reuse, and specificity."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "An id is unique on a page and selected with #id; a class can be reused and selected with .class. IDs have higher specificity and are often used for anchors or JS hooks, while classes are for styling groups."
+        ],
+        "followUpConfusion": [
+          "IDs are unique identifiers for single elements, while classes group multiple elements under a shared style."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the real production pitfalls behind this comparison: duplicate IDs and unnecessary specificity."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: IDs are for unique hooks, classes are for reusable styling groups, and mixing those roles creates maintenance problems."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the uniqueness-versus-reuse framing high in the page so the answer stays interview-efficient."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact uniqueness and specificity pitfalls that make id-versus-class matter in real UI code."
+    },
+    {
+      "label": "Selectors",
+      "url": "https://web.dev/learn/css/selectors",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct selectors module that covers classes, IDs, and attribute-based targeting from a practical frontend workflow perspective.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on practical selector mental models and on how classes and IDs are used in real stylesheet targeting."
+      ],
+      "theirGaps": [
+        "It is broader than the exact compare question and less centered on the uniqueness-versus-reuse production rule."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "An id is unique on a page and selected with #id; a class can be reused and selected with .class. IDs have higher specificity and are often used for anchors or JS hooks, while classes are for styling groups."
+        ],
+        "followUpConfusion": [
+          "IDs are unique identifiers for single elements, while classes group multiple elements under a shared style."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is useful for selector mental models, but our answer is more compact about the exact production trade-off between reusable styles and one-off hooks."
+        ],
+        "actionableExamples": [
+          "The tutorial includes direct selector examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next debugging question teams hit in practice: why ID specificity and duplicate IDs become a maintenance problem in reusable components."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one short selector example visible so the answer stays concrete, not only rule-based."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on selectors broadly, but our page is better as a short interview answer because it packages id-versus-class around uniqueness, specificity, and reusable styling rules."
+    }
+  ]
+}

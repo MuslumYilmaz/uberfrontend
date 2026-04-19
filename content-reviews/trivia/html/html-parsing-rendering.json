@@ -1,0 +1,145 @@
+{
+  "contentId": "html-parsing-rendering",
+  "tech": "html",
+  "query": "html parsing and rendering interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "How browsers work",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN performance guide for parsing, DOM and CSSOM construction, render-tree work, and the blocking points that affect what users see.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the browser rendering pipeline and on how HTML, CSS, and scripts interact during parsing and paint."
+      ],
+      "theirGaps": [
+        "The guide is broader and less interview-shaped than a compact answer focused on render-blocking CSS, synchronous scripts, and common parse-order debugging failures."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Browsers parse HTML progressively, build the DOM and CSSOM, then layout and paint what users see. Under the hood, synchronous scripts and render-blocking CSS can pause this pipeline and create hard-to-debug performance issues."
+        ],
+        "followUpConfusion": [
+          "Browsers do not wait for the full HTML file before starting work. They parse the document progressively, build the <strong>DOM</strong>, parse CSS into the <strong>CSSOM</strong>, then combine both into render data for layout and paint."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the pipeline comprehensively, but it is lighter on the exact production debugging hooks this question usually targets: render-blocking CSS, parser-blocking scripts, and DOM-ready timing mistakes."
+        ],
+        "actionableExamples": [
+          "It includes strong pipeline diagrams and examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the next confusion developers hit in practice: parsing is progressive, CSS blocks rendering, and synchronous scripts can pause the parser outright."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the short pipeline timeline visible so the page stays faster to scan than a long browser-architecture guide."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical browser-pipeline guide, but our page is stronger as an interview answer because it compresses parsing and rendering into the exact blocking and timing failures developers debug in real apps."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because parsing, rendering, and browser behavior are common fundamentals in frontend interviews.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of browser-facing markup fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to the browser pipeline, so it is less focused on one exact answer about parser blocking and render timing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Browsers parse HTML progressively, build the DOM and CSSOM, then layout and paint what users see. Under the hood, synchronous scripts and render-blocking CSS can pause this pipeline and create hard-to-debug performance issues."
+        ],
+        "followUpConfusion": [
+          "Browsers do not wait for the full HTML file before starting work. They parse the document progressively, build the <strong>DOM</strong>, parse CSS into the <strong>CSSOM</strong>, then combine both into render data for layout and paint."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for frontend prep, but the category page is less explicit about the concrete render-blocking and DOM-ready timing mistakes that make this topic operationally useful."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: what blocks parsing, what blocks rendering, and why the page can feel slow before the full HTML arrives."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the practical slow-page scenario visible so the answer stays anchored to a real debugging workflow."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad frontend prep, but our page is more specific about the exact parse-order and render-blocking pitfalls that make browser-pipeline answers strong in interviews."
+    },
+    {
+      "label": "How browsers work",
+      "url": "https://web.dev/articles/howbrowserswork",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct how-browsers-work article that covers HTML parsing, CSSOM construction, layout, paint, and the performance cost of blocking resources.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on browser-pipeline concepts and on how rendering work turns into user-visible performance costs."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question and less centered on the compact interview distinction between parser blocking and render blocking."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Browsers parse HTML progressively, build the DOM and CSSOM, then layout and paint what users see. Under the hood, synchronous scripts and render-blocking CSS can pause this pipeline and create hard-to-debug performance issues."
+        ],
+        "followUpConfusion": [
+          "Browsers do not wait for the full HTML file before starting work. They parse the document progressively, build the <strong>DOM</strong>, parse CSS into the <strong>CSSOM</strong>, then combine both into render data for layout and paint."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds the pipeline in practical rendering behavior, but our answer is more compact about the exact slow-page failures teams hit first in production."
+        ],
+        "actionableExamples": [
+          "The article includes strong pipeline explanations and timing examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next question developers hit in practice: how parser-blocking scripts and render-blocking CSS show up in performance timelines and broken DOM-ready assumptions."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the key-behavior notes short and high in the page so the answer preserves one practical debugging checklist."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on browser internals broadly, but our page is better as a short interview answer because it frames parsing and rendering around exact DOM, CSSOM, and blocking-resource debugging hooks."
+    }
+  ]
+}

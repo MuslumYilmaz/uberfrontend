@@ -1,0 +1,145 @@
+{
+  "contentId": "css-grid-vs-flexbox",
+  "tech": "css",
+  "query": "When should you use CSS Grid vs Flexbox?",
+  "reviewedAt": "2026-04-11",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Relationship of grid layout with other layout methods",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Relationship_of_grid_layout_with_other_layout_methods",
+      "category": "canonical_docs",
+      "selectionReason": "This is the closest MDN canonical guide comparing Grid with Flexbox and other layout methods.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the structural relationship between grid and other layout systems."
+      ],
+      "theirGaps": [
+        "The guide is broader and less compact around the practical layout-ownership decision of when Grid, Flexbox, or both should be used together."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>When to Use</strong><br><ul><li>Use <strong>Flexbox</strong> for one-dimensional layouts — e.g., aligning items horizontally in a navbar or vertically stacking cards.</li><li>Use <strong>Grid</strong> when you need both row and column control — e.g., creating structured dashboards or templates.</li><li>Combine both: Grid for overall structure, Flexbox for internal alignment.</li></ul>"
+        ],
+        "followUpConfusion": [
+          "<strong>Example 3: Combining Grid and Flexbox</strong><br>Many modern UIs mix the two systems — for example, using Grid for the page layout and Flexbox inside components for aligning content."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the relationship between layout methods well, but it is less compressed around a simple 'which one owns this layout problem?' decision."
+        ],
+        "actionableExamples": [
+          "The guide includes strong structural explanations and examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "MDN is less concise about the common follow-up that Grid and Flexbox are complementary rather than mutually exclusive."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one smaller dashboard-versus-toolbar contrast where the wrong tool choice visibly complicates the layout."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical layout-method reference, but our page is more efficient as an interview answer because it turns Grid versus Flexbox into an ownership decision and explicitly shows the common 'use both' follow-up."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant and explicitly includes flexbox and grid as core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep resource for modern CSS layout topics."
+      ],
+      "theirGaps": [
+        "The landing page is broad and less explicit about the exact one-dimensional versus two-dimensional ownership decision."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use <strong>Grid</strong> when you need both row and column control — e.g., creating structured dashboards or templates."
+        ],
+        "followUpConfusion": [
+          "They are complementary tools — not competitors."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd covers flexbox and grid broadly, but the hub page is less specific about deciding which layout system owns the page shell versus the component interior."
+        ],
+        "actionableExamples": [
+          "Because the bank provides quick answers and detailed explanations, the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "The hub is less explicit about the key follow-up that mixing Grid and Flexbox is often the right answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep a tiny example where the same UI is awkward in Flexbox but straightforward in Grid."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is a useful CSS interview bank, but our page is more focused on the exact decision framework and the 'combine both' follow-up this topic usually triggers."
+    },
+    {
+      "label": "Quick! What's the Difference Between Flexbox and Grid?",
+      "url": "https://css-tricks.com/quick-whats-the-difference-between-flexbox-and-grid/",
+      "category": "tutorial_reference",
+      "selectionReason": "This CSS-Tricks article is a direct topic match and the strongest tutorial comparator in the Grid-versus-Flexbox cluster.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article is directly on-topic and strong on the high-level distinction between one-dimensional and two-dimensional layout."
+      ],
+      "theirGaps": [
+        "It is less explicit about the worked 'use both' examples and about maintenance-oriented ownership boundaries."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Grid provides better structure when both rows and columns need to be controlled simultaneously."
+        ],
+        "followUpConfusion": [
+          "Combine both: Grid for overall structure, Flexbox for internal alignment."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks distinguishes Grid and Flexbox clearly, but our page is more concrete about dashboard-versus-toolbar ownership and where each tool should live."
+        ],
+        "actionableExamples": [
+          "Its examples are strong, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The article is less explicit about the maintainability follow-up that modern UIs often mix both systems intentionally."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one small anti-example where using Flexbox for a dashboard forces brittle manual widths."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong direct comparator, but our page is more reusable as a decision answer because it combines the dimensional distinction with worked examples and the explicit 'use both' follow-up."
+    }
+  ]
+}

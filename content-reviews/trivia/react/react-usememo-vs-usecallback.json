@@ -1,0 +1,144 @@
+{
+  "contentId": "react-usememo-vs-usecallback",
+  "tech": "react",
+  "query": "useMemo vs useCallback in React: what is the difference?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "useCallback",
+      "url": "https://react.dev/reference/react/useCallback",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React reference because it explicitly explains how useCallback relates to useMemo and when caching function identity matters.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative React explanation of cached function identity, child rerender avoidance, and the relation between useCallback and useMemo."
+      ],
+      "theirGaps": [
+        "It is centered on useCallback itself, while our page answers the exact compare-and-choose interview question more directly."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<code>useMemo()</code> and <code>useCallback()</code> help improve performance by caching results or function references between re-renders.",
+          "Overusing them can make code complex without significant performance gain."
+        ],
+        "followUpConfusion": [
+          "<code>useMemo()</code> recalculates a value only when dependencies change.",
+          "<code>useCallback()</code> returns the same function reference between renders unless its dependencies change."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs are authoritative, but our page is more compressed around the exact real-world choice: expensive value versus stable callback prop."
+        ],
+        "actionableExamples": [
+          "The official examples are strong and detailed, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that both hooks are optimization tools and that overusing them can make code slower or harder to reason about."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one paired memoized-child example later so the function-identity case is visible next to the expensive-computation case."
+        ]
+      },
+      "winReason": "The official docs are authoritative, but our page is stronger for interviews because it answers the compare-and-choose question directly instead of teaching one hook in isolation."
+    },
+    {
+      "label": "Memoization On Demand",
+      "url": "https://reactstyleguide.com/rules/memoization-on-demand/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a strong competitor because it focuses on when memoization helps, when it backfires, and why premature optimization creates overhead.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical about profiling-first memoization and the cost of unnecessary useMemo and useCallback usage."
+      ],
+      "theirGaps": [
+        "It is about memoization discipline broadly, not the exact semantic difference between caching a value and caching a function."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When passing callback props to child components to prevent unnecessary re-renders.",
+          "When you have an expensive calculation that depends on specific values."
+        ],
+        "followUpConfusion": [
+          "<code>useMemo()</code> optimizes values, <code>useCallback()</code> optimizes functions",
+          "Both hooks should be used selectively."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The style guide is strong on over-optimization pitfalls, but our page is better matched to the actual value-versus-function decision candidates are asked to explain."
+        ],
+        "actionableExamples": [
+          "Its correct and incorrect code examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the common confusion that useMemo caches a computed result while useCallback caches the function reference itself."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one small example showing a memoized child receiving a stable callback so the identity use case stays concrete."
+        ]
+      },
+      "winReason": "This tutorial is strong on avoiding premature optimization, but our page is stronger because it explains the semantic difference between the two hooks as well as the performance caution."
+    },
+    {
+      "label": "What's the difference between useCallback and useMemo in practice?",
+      "url": "https://stackoverflow.com/questions/54963248/whats-the-difference-between-usecallback-and-usememo-in-practice",
+      "category": "community_qna",
+      "selectionReason": "This community thread is a direct practical reference for the one-line difference between what useMemo remembers and what useCallback remembers.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It gives a very concise community explanation of memoized value versus memoized function."
+      ],
+      "theirGaps": [
+        "It is lighter on when not to use these hooks and on the broader rerender trade-off framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "React components re-render when their props or state change, and these hooks prevent expensive re-computations or re-creations that could slow the app down."
+        ],
+        "followUpConfusion": [
+          "Both hooks should be used selectively. Overusing them can make code complex without significant performance gain."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread explains the core distinction clearly, but our page gives more concrete guidance on when each hook matters in real component trees."
+        ],
+        "actionableExamples": [
+          "The one-line explanation and simple examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the likely follow-up around why memoization is not automatically a win and why stable references matter mainly when they unblock skipped work."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one explicit bad-overuse example where memoizing a trivial string adds complexity with no benefit."
+        ]
+      },
+      "winReason": "The community thread nails the short distinction, but our page is stronger because it turns that distinction into concrete selection guidance and overuse warnings."
+    }
+  ]
+}

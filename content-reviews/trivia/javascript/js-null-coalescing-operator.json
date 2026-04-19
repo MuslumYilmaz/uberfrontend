@@ -1,0 +1,146 @@
+{
+  "contentId": "js-null-coalescing-operator",
+  "tech": "javascript",
+  "query": "nullish coalescing operator javascript",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd does not appear to have a directly relevant page dedicated to nullish coalescing or the `??` vs `||` defaulting bug."
+  },
+  "competitors": [
+    {
+      "label": "MDN Nullish coalescing",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical competitor for operator semantics, precedence rules, and optional chaining interaction.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page now does a better job foregrounding the real frontend defaulting bug and the likely follow-up about when `??` is still not enough, while MDN remains stronger as a broad reference.",
+      "theirStrengths": [
+        "It explains operator semantics, short-circuiting, and the relationship to optional chaining precisely."
+      ],
+      "theirGaps": [
+        "It is less focused on the specific production bug where `||` overwrites legitimate falsy values."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It solves a common production bug from <code>||</code> defaults where valid values like <code>0</code>, <code>''</code>, or <code>false</code> get replaced unintentionally."
+        ],
+        "followUpConfusion": [
+          "<code>??</code> only answers 'is the value missing?'. It does <strong>not</strong> answer business rules like 'an empty string should be replaced' or '0 should be rejected.'"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the main defaulting use case well, but it is less explicit about the UI-state bug where valid falsy values are rewritten in production."
+        ],
+        "actionableExamples": [
+          "Its examples with `null`, `undefined`, and optional chaining keep the example criterion close."
+        ],
+        "followUpConfusion": [
+          "MDN covers precedence and operator mixing thoroughly, but our page now also answers the next question of when `??` is still the wrong business-rule tool."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact example that contrasts `||`, `??`, and validation in the same helper if this page needs another upgrade."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GeeksforGeeks Nullish Coalescing",
+      "url": "https://www.geeksforgeeks.org/javascript-nullish-coalescing-operator/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a common beginner-facing competitor for `??` syntax, defaults, and basic examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page is now stronger on realistic UI-state examples, nested optional-chaining defaults, and the follow-up about when nullish handling is not the whole business rule.",
+      "theirStrengths": [
+        "It shows the default-value use case clearly and keeps the syntax accessible."
+      ],
+      "theirGaps": [
+        "It is lighter on precedence pitfalls and on the optional-chaining pairing pattern used in real apps."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It solves a common production bug from <code>||</code> defaults where valid values like <code>0</code>, <code>''</code>, or <code>false</code> get replaced unintentionally."
+        ],
+        "actionableExamples": [
+          "const locale = apiState.preferences?.locale ?? 'en-US';      // 'en-US'"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks shows default-value behavior, but it does not emphasize the production bug pattern as strongly as ours."
+        ],
+        "actionableExamples": [
+          "It includes basic examples with defaults and object properties, but our page now has a more realistic state object plus nested API-data access."
+        ],
+        "followUpConfusion": [
+          "It stays lighter on precedence and on pairing `??` with optional chaining, but the follow-up coverage is now close rather than decisively weaker."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep the 'empty but still invalid' business-rule note concise so the follow-up advantage stays clearly differentiated from tutorial pages."
+        ]
+      }
+    },
+    {
+      "label": "Mastering JS Nullish Coalescing",
+      "url": "https://masteringjs.io/tutorials/fundamentals/nullish-coalescing",
+      "category": "tutorial_reference",
+      "selectionReason": "This page is a compact tutorial competitor focused on `??` versus `||` with concise examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is now stronger on production-context framing and still leads on the likely follow-up around operator mixing and business-rule validation.",
+      "theirStrengths": [
+        "It cleanly contrasts `??` with `||` and shows the assignment form too."
+      ],
+      "theirGaps": [
+        "It is shorter and does not go as far into the likely follow-up around operator mixing and nested optional chaining."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A product dashboard stores <code>0</code> as a valid retry count, <code>''</code> as an intentionally blank subtitle, and <code>false</code> as a real saved toggle."
+        ],
+        "followUpConfusion": [
+          "<code>??</code> only answers 'is the value missing?'. It does <strong>not</strong> answer business rules like 'an empty string should be replaced' or '0 should be rejected.'"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Mastering JS explains the default-value bug clearly, but our page now anchors the operator in a more explicit UI-state production scenario."
+        ],
+        "actionableExamples": [
+          "Its side-by-side examples are concrete enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page now goes further on both operator mixing and on the follow-up where `??` still needs a separate validation rule."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one more full before/after helper example if this page needs another actionable-example boost."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

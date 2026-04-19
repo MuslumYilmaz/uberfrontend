@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-v-for-keys",
+  "tech": "vue",
+  "query": "Vue v-for keys interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "List Rendering",
+      "url": "https://vuejs.org/guide/essentials/list#maintaining-state-with-key",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue explanation of in-place patching, node identity, and why keyed lists matter.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "The official docs explain the in-place patch strategy clearly and state when keyed identity is required."
+      ],
+      "theirGaps": [
+        "The page is lighter on concrete debugging symptoms such as focus jumps, wrong input values, and child-state leakage after reordering."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Typical real bugs when keys are missing or unstable: Inputs show the wrong value after sorting/filtering because the DOM input element is reused for a different item."
+        ],
+        "actionableExamples": [
+          "Index as key: when it’s wrong vs acceptable :key=\"index\" is effectively “no stable identity” when the list can reorder, filter, insert, or delete."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain that unkeyed lists are only suitable when output does not rely on child component state or temporary DOM state such as form input values."
+        ],
+        "actionableExamples": [
+          "They show the keyed v-for pattern and explain that Vue reuses and reorders existing elements when identity is provided."
+        ],
+        "followUpConfusion": [
+          "The follow-up coverage is strong on the identity rule, but it is less explicit about transition glitches, focus loss, and when index keys are only narrowly acceptable."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one shorter note on why transition-group animations also depend on stable keys."
+        ]
+      },
+      "winReason": "The official guide is canonical, but our page turns the identity rule into more vivid production bugs and adds a sharper index-key debugging explanation."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because it covers reactivity, bindings, lifecycle, and interactive Vue component questions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub with detailed answers, solutions, and Vue-specific practice coverage."
+      ],
+      "theirGaps": [
+        "As a broad question bank, it is less focused on one exact list-identity bug pattern than a dedicated answer page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Checkboxes/toggles flip on the wrong row (DOM state vs data association breaks)."
+        ],
+        "followUpConfusion": [
+          "It’s only acceptable when the list is truly static (never changes order/length) or when each row has no meaningful state (rare in real apps)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The hub covers Vue interview topics broadly, but it does not go as deep into keyed-list state corruption on this landing page."
+        ],
+        "actionableExamples": [
+          "It promises detailed answers and worked solutions, so the example bar remains competitive."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about the index-key trap and identity-versus-position nuance that usually appears as the follow-up."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one even shorter reverse-list snippet that demonstrates the wrong-input-value bug in a single glance."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is strong as an interview hub, but our page is more specific about what actually breaks when keys are unstable and why index keys corrupt identity."
+    },
+    {
+      "label": "Vue for Loop Tips",
+      "url": "https://learnvue.co/articles/vue-for-loop-tips",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue has a focused article on v-for keys, in-place patching, and why index keys behave like missing identity.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It directly explains in-place patching and uses reorder plus input examples to show why keys matter."
+      ],
+      "theirGaps": [
+        "It is lighter on transition-group behavior, focus bugs, and the full debugging checklist around state leakage."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Child component local state leaks (e.g., expanded/collapsed, internal caches, timers) to a different item after reordering."
+        ],
+        "followUpConfusion": [
+          "Keys aren’t about “performance only”. They’re primarily about correctness : ensuring DOM nodes and component instances stay attached to the same logical data item across updates."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article already uses reordered products and stateful inputs to make the bug concrete."
+        ],
+        "actionableExamples": [
+          "Its before-and-after keyed reorder example is strong, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It explains why index keys act like missing keys, but it is less explicit about when static lists are the narrow exception and how child instances leak state."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one short child-component example, not only a raw input example, so the state-leak story stays concrete."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "LearnVue is already strong on reorder examples, but our page is broader on the real debugging fallout and clearer on the identity-first mental model."
+    }
+  ]
+}

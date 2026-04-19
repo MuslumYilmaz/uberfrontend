@@ -1,0 +1,139 @@
+{
+  "contentId": "html-semantic-elements",
+  "tech": "html",
+  "query": "semantic HTML elements interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Semantics",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Semantics",
+      "category": "canonical_docs",
+      "selectionReason": "This is the closest canonical MDN page for semantics in HTML and why choosing meaningful elements changes how content is interpreted.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "MDN is concise and authoritative on what semantics means and why some elements are meaningful while others are generic."
+      ],
+      "theirGaps": [
+        "The glossary treatment is shorter and less concrete on landmarks, debugging, and the practical failure mode of div soup."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "help screen readers navigate, help search engines understand structure, and make large layouts easier to debug."
+        ],
+        "actionableExamples": [
+          "screen-reader landmarks disappear and DevTools gives you less structure to debug."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains semantics clearly, but our answer now ties semantics to landmarks, search structure, and debugging in one production-focused frame."
+        ],
+        "actionableExamples": [
+          "The glossary is still lighter on concrete before-and-after examples than our div-soup comparison."
+        ],
+        "followUpConfusion": [
+          "MDN still makes the semantic-versus-nonsemantic distinction clear, so the follow-up criterion remains close."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "Keep the section-versus-article note visible so the answer stays strong on likely follow-up questions."
+        ]
+      },
+      "winReason": "MDN is authoritative on the definition, but our page is now more useful as an interview answer because it turns semantics into concrete landmarks, div-soup debugging, and a visible before-and-after example."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because semantic structure, accessibility, and document meaning are central HTML interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with worked answers across semantics and related fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is less focused on the exact landmark and div-soup pitfalls of semantic HTML."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "help screen readers navigate, help search engines understand structure, and make large layouts easier to debug."
+        ],
+        "followUpConfusion": [
+          "the content can stand alone or be reused outside the page."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant at the HTML interview level, but the bank page is less anchored to the specific landmark and debugging gains of semantic structure."
+        ],
+        "actionableExamples": [
+          "Because it is an interview-answer hub, the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page now answers the section-versus-article-versus-div follow-up more directly than the category-level interview bank."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the div-soup before-and-after example near the opening so the concrete contrast stays easy to scan."
+        ]
+      },
+      "winReason": "GreatFrontEnd is broadly useful for HTML prep, but our page is more specific about the exact structural mistakes and follow-up distinctions that make semantic HTML answers strong in practice."
+    },
+    {
+      "label": "Semantic HTML",
+      "url": "https://web.dev/learn/html/semantic-html",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct semantic HTML article that explains landmarks, document meaning, and the accessibility tree with clear before-and-after examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is very strong on semantic versus non-semantic examples, landmarks, and how semantic HTML affects the accessibility object model."
+      ],
+      "theirGaps": [
+        "It is broader and less compressed into a short trivia answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "help screen readers navigate, help search engines understand structure, and make large layouts easier to debug."
+        ],
+        "followUpConfusion": [
+          "a themed part of the page that usually has its own heading."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev connects semantics to the accessibility tree well, but our answer now packages the landmark, SEO, and debugging payoffs more directly for a real-world interview response."
+        ],
+        "actionableExamples": [
+          "web.dev still has very strong examples, so the actionable-example criterion stays tied rather than becoming a full sweep."
+        ],
+        "followUpConfusion": [
+          "Our page now handles the likely follow-up more directly with explicit section, article, and div decision rules."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this page needs a later pass, add one more accessibility-panel or landmark-navigation example without expanding the answer too much."
+        ]
+      },
+      "winReason": "web.dev is broader, but our page is now stronger as a compact interview answer because it combines landmarks, div-soup debugging, and the section-versus-article follow-up in one short scan."
+    }
+  ]
+}

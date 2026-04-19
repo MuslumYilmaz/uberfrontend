@@ -1,0 +1,14 @@
+{
+  "batchId": "importance-4-vue-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "vue", "id": "vue-composition-api-vs-mixins" },
+    { "tech": "vue", "id": "vue-conditional-list-rendering" },
+    { "tech": "vue", "id": "vue-router-navigation" },
+    { "tech": "vue", "id": "vue-reactivity-system" },
+    { "tech": "vue", "id": "vue-virtual-dom-diffing" },
+    { "tech": "vue", "id": "vue-provide-inject-vs-prop-drilling-tradeoffs" },
+    { "tech": "vue", "id": "vue-why-declare-emits-type-safety-maintenance" },
+    { "tech": "vue", "id": "vue-nexttick-dom-update-queue" }
+  ]
+}

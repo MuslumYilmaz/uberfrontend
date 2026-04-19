@@ -4,7 +4,7 @@ import assert from 'assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { execFileSync } from 'child_process';
+import { execFileSync, spawnSync } from 'child_process';
 import { repoRoot } from './content-paths.mjs';
 
 const LINTER_PATH = path.join(repoRoot, 'frontend', 'scripts', 'lint-content-drafts.mjs');
@@ -44,6 +44,7 @@ function buildTriviaDraft(status, options = {}) {
     unique_angle: 'Frames event delegation as an interview tradeoff instead of a generic performance slogan.',
     what_this_adds_beyond_basics: 'Explains the boundary cases and the maintainability reasoning interviewers actually care about.',
     competitor_query: 'event delegation javascript interview question',
+    competitor_review_file: 'content-reviews/trivia/javascript/event-delegation.json',
     competitor_takeaways: ['Competing pages explain bubbling and parent listeners.', 'Most pages include a simple todo-list example.'],
     competitor_gaps: ['Most pages do not explain when direct listeners are still better.', 'Most pages overclaim performance instead of discussing maintainability.'],
     sources: ['https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling'],
@@ -70,6 +71,7 @@ reader_promise: "${frontmatter.reader_promise}"
 unique_angle: "${frontmatter.unique_angle}"
 what_this_adds_beyond_basics: "${frontmatter.what_this_adds_beyond_basics}"
 competitor_query: "${frontmatter.competitor_query}"
+competitor_review_file: "${frontmatter.competitor_review_file}"
 competitor_takeaways:
 ${yamlStringArray(frontmatter.competitor_takeaways)}
 competitor_gaps:
@@ -212,6 +214,17 @@ function runFailureCase(tempRoot) {
   }
 }
 
+function runLinterDetailed(tempRoot) {
+  return spawnSync('node', [LINTER_PATH], {
+    cwd: path.join(repoRoot, 'frontend'),
+    env: {
+      ...process.env,
+      CONTENT_DRAFTS_DIR: tempRoot,
+    },
+    encoding: 'utf8',
+  });
+}
+
 function testApprovedDraftPasses() {
   const tempRoot = makeTempRoot();
   writeFile(tempRoot, 'trivia/event-delegation.md', buildTriviaDraft('approved'));
@@ -310,6 +323,29 @@ function testApprovedDraftFailsWithWeakCompetitorBrief() {
   assert.match(stderr, /frontmatter competitor_gaps must contain at least 2 non-empty items/);
 }
 
+function testEditingTriviaDraftWarnsWithoutCompetitorReviewFile() {
+  const tempRoot = makeTempRoot();
+  writeFile(tempRoot, 'trivia/event-delegation.md', buildTriviaDraft('editing', {
+    frontmatter: {
+      competitor_review_file: '',
+    },
+  }));
+  const result = runLinterDetailed(tempRoot);
+  assert.equal(result.status, 0);
+  assert.match(String(result.stderr || ''), /frontmatter competitor_review_file is required for trivia editing\/approved\/converted drafts/);
+}
+
+function testApprovedTriviaDraftFailsWithoutCompetitorReviewFile() {
+  const tempRoot = makeTempRoot();
+  writeFile(tempRoot, 'trivia/event-delegation.md', buildTriviaDraft('approved', {
+    frontmatter: {
+      competitor_review_file: '',
+    },
+  }));
+  const failure = runFailureCase(tempRoot);
+  assert.match(String(failure.stderr || ''), /frontmatter competitor_review_file is required for trivia editing\/approved\/converted drafts/);
+}
+
 function testSystemDesignDraftRequiresTwoSources() {
   const tempRoot = makeTempRoot();
   writeFile(tempRoot, 'system-design/frontend-radio-framework.md', buildSystemDesignDraft('approved', {
@@ -327,6 +363,8 @@ testApprovedDraftFailsWithoutSources();
 testApprovedDraftFailsWithInvalidFactCheckDate();
 testApprovedDraftFailsWithInvalidConfidence();
 testApprovedDraftFailsWithWeakCompetitorBrief();
+testEditingTriviaDraftWarnsWithoutCompetitorReviewFile();
+testApprovedTriviaDraftFailsWithoutCompetitorReviewFile();
 testSystemDesignDraftRequiresTwoSources();
 
 console.log('[lint-content-drafts.test] ok');

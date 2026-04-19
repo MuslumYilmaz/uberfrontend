@@ -1,0 +1,141 @@
+{
+  "contentId": "vue-v-bind-reactive-attributes",
+  "tech": "vue",
+  "query": "How does v-bind connect reactive state to DOM attributes?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Template Syntax",
+      "url": "https://vuejs.org/guide/essentials/template-syntax.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for template compilation, attribute bindings, directives, and the render-time dependency reads that power v-bind.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on how template bindings are compiled and how reactive state drives DOM updates."
+      ],
+      "theirGaps": [
+        "It is less explicit about the attribute-versus-property patching distinction and the interview-style patch-flag mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "not a runtime “watcher on attributes”.",
+          "When those reactive values change, Vue re-runs the component render and then patches only the changed attributes/DOM props on the affected elements."
+        ],
+        "followUpConfusion": [
+          "Vue’s patcher decides whether a binding should be applied as a DOM <em>property</em>",
+          "or as an HTML <em>attribute</em>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain dynamic binding well, but our page is more explicit about how reactive reads during render lead to targeted DOM/property patching later."
+        ],
+        "actionableExamples": [
+          "The official examples remain strong on binding syntax, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up around boolean attrs, class/style special handling, and why value/checked behave like DOM properties."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny input example later that contrasts :value with a plain attribute update."
+        ]
+      },
+      "winReason": "The official docs own the syntax and compilation basics, but our page is stronger because it turns v-bind into a concrete render-read plus patch-write mental model."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because template bindings, directives, and reactive DOM updates are core Vue interview fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue binding and template questions."
+      ],
+      "theirGaps": [
+        "The landing page is not dedicated to the under-the-hood v-bind update path."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "template compilation into a render function, dependency tracking during render, scheduled component updates"
+        ],
+        "followUpConfusion": [
+          "The runtime uses patch flags / dynamic props so it can update only what’s dynamic."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is relevant at the topic level, but it is less focused on the precise render-to-patch flow of a v-bind update."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on example-driven practice, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about why v-bind is not a special attribute watcher and how Vue decides property versus attribute writes."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the VNode-props explanation short so the answer stays interview-sized instead of becoming a renderer deep dive."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue fundamentals hub, but our page is stronger because it explains the exact runtime path from reactive read to patched attribute or property."
+    },
+    {
+      "label": "Vue.js Directives: A Beginner's Guide",
+      "url": "https://vueschool.io/articles/vuejs-tutorials/vue-js-directives-a-beginners-guide/",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a directive-focused article that provides a strong tutorial baseline for how v-bind participates in reactive template behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct directive-focused tutorial and a good baseline for binding syntax and reactive DOM updates."
+      ],
+      "theirGaps": [
+        "It is less explicit about patch flags, property-versus-attribute rules, and form-control edge cases."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "mapping them to DOM properties or HTML attributes (with special handling for class/style/booleans)."
+        ],
+        "followUpConfusion": [
+          "The exact output varies, but conceptually <code>:src</code>/<code>:disabled</code>/<code>:class</code> become a props object on the VNode."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial explains directive usage well, but our page is more specific about the exact DOM/property patching consequences of v-bind."
+        ],
+        "actionableExamples": [
+          "Its syntax examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the interview follow-up around VNode props and why some bindings are applied as properties rather than HTML attributes."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one class/style object binding example to make the special-case handling more visible."
+        ]
+      },
+      "winReason": "Vue School is a useful directive primer, but our page is stronger because it explains the exact patching model behind v-bind instead of stopping at syntax."
+    }
+  ]
+}

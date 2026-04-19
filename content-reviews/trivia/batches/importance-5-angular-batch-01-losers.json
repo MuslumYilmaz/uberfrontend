@@ -1,0 +1,30 @@
+{
+  "batchId": "importance-5-angular-batch-01-losers",
+  "scope": "trivia content improvement candidates from angular competitor review batch 01",
+  "items": [
+    {
+      "tech": "angular",
+      "id": "angular-ngoninit-vs-constructor"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-dependency-injection"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-ngfor-trackby"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-lifecycle-constructor-oninit-afterviewinit-dom"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-data-binding"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-directives"
+    }
+  ]
+}

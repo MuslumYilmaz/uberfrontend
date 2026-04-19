@@ -1,0 +1,34 @@
+{
+  "batchId": "importance-5-react-batch-01-losers",
+  "scope": "trivia content improvement candidates from react competitor review batch 01",
+  "items": [
+    {
+      "tech": "react",
+      "id": "react-controlled-vs-uncontrolled"
+    },
+    {
+      "tech": "react",
+      "id": "react-lifting-state-up"
+    },
+    {
+      "tech": "react",
+      "id": "react-one-way-data-flow"
+    },
+    {
+      "tech": "react",
+      "id": "react-rerender-decision-and-render"
+    },
+    {
+      "tech": "react",
+      "id": "react-useeffect-purpose"
+    },
+    {
+      "tech": "react",
+      "id": "react-component-rerendering"
+    },
+    {
+      "tech": "react",
+      "id": "react-keys-in-lists"
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-v-show-vs-v-if-dom-lifecycle",
+  "tech": "vue",
+  "query": "Vue v-if vs v-show interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Conditional Rendering",
+      "url": "https://vuejs.org/guide/essentials/conditional#v-if-vs-v-show",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for v-if, v-show, lazy rendering, and toggle-cost trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The docs clearly explain lazy rendering, DOM presence, and the classic higher-toggle-cost versus higher-initial-cost trade-off."
+      ],
+      "theirGaps": [
+        "They are lighter on component-instance state preservation, watcher work while hidden, and the cleanup-versus-hidden-work debugging angle."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real production/debug question is whether you want cheap toggles with preserved state or true teardown with zero hidden work."
+        ],
+        "followUpConfusion": [
+          "Hidden-with- v-show components can still run watchers/computed updates; v-if removes them entirely."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official page already frames the decision around runtime toggle frequency and initial render cost."
+        ],
+        "actionableExamples": [
+          "It gives direct v-if and v-show examples and explains DOM presence clearly, so example quality stays close."
+        ],
+        "followUpConfusion": [
+          "The docs say v-if destroys and recreates listeners and child components, but they are less explicit about preserved local state, hidden reactive work, and cleanup behavior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one ultra-short parent-child toggle example that shows state reset under v-if and preserved state under v-show."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The official docs cover the baseline trade-off well, but our page is more concrete on lifecycle, hidden reactive work, and preserved-state debugging."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because conditional rendering, lifecycle, and dynamic UI state are all part of its Vue fundamentals coverage.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a broad interview-prep resource with worked Vue questions and lifecycle-related practice."
+      ],
+      "theirGaps": [
+        "The landing page is not a dedicated v-if versus v-show explanation, so the concept-specific trade-offs are less explicit."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use v-show for frequent toggles; use v-if when the branch is rarely needed or expensive and you want zero cost while it’s off."
+        ],
+        "followUpConfusion": [
+          "v-show does not support v-else / v-else-if chains; v-if does."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank clearly covers dynamic Vue UI behavior and interview fundamentals, but it is less focused on this exact toggle-cost decision."
+        ],
+        "actionableExamples": [
+          "Its solved-question model keeps the example bar reasonably high, so examples stay close."
+        ],
+        "followUpConfusion": [
+          "The category page does not spell out the v-else support difference, hidden watcher work, or local-state reset behavior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one tiny note that hidden v-show branches can still consume reactive work even when not visible."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is valuable as an interview hub, but our answer is much more explicit about preserved state, hidden work, and the practical toggle decision."
+    },
+    {
+      "label": "v-if vs. v-show - Vue Conditional Rendering",
+      "url": "https://learnvue.co/articles/v-if-vs-v-show",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue has a topic-direct comparison article for the v-if versus v-show decision.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a direct topic match and gives the core performance distinction in an accessible way."
+      ],
+      "theirGaps": [
+        "It is lighter on component lifecycle consequences, hidden reactive work, and cleanup-driven debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "With v-if , toggling false unmounts the child component (cleanup runs, subscriptions stop, DOM removed). Toggling true creates a fresh instance, so local state resets."
+        ],
+        "actionableExamples": [
+          "With v-show , the child stays mounted the whole time; toggling only changes visibility. The instance, refs, and local state remain intact."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article explains the core rendering difference and performance trade-off clearly."
+        ],
+        "actionableExamples": [
+          "It includes practical guidance on when each directive fits, but with less component-lifecycle depth than our example."
+        ],
+        "followUpConfusion": [
+          "The follow-up discussion is less detailed on watchers continuing to run while hidden and on v-else support limitations."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one small note on accessibility-tree removal under display:none so the follow-up remains rounded out."
+        ]
+      },
+      "winReason": "LearnVue is a good direct comparator, but our page adds the stronger parent-child lifecycle example and turns the choice into a more practical debugging decision."
+    }
+  ]
+}

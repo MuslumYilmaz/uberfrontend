@@ -1,0 +1,16 @@
+{
+  "batchId": "importance-5-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "javascript", "id": "js-closures" },
+    { "tech": "javascript", "id": "js-this-keyword" },
+    { "tech": "javascript", "id": "js-block-scoped-or-function-scoped" },
+    { "tech": "javascript", "id": "js-promise-fundamental-understanding" },
+    { "tech": "javascript", "id": "js-async-await-example-when-promise-is-preferred" },
+    { "tech": "javascript", "id": "js-use-strict-describe" },
+    { "tech": "javascript", "id": "js-why-eval-function-considered-dangerous" },
+    { "tech": "javascript", "id": "js-null-coalescing-operator" },
+    { "tech": "javascript", "id": "js-compare-two-objects" },
+    { "tech": "javascript", "id": "js-truthy-falsy-pass-by-value-reference-strict-equality-use-case" }
+  ]
+}

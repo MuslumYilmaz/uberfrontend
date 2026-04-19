@@ -263,7 +263,7 @@
           <a *ngFor="let q of questions; trackBy: trackByQuestionId"
             faCard interactive class="list-row fa-question-card fa-question-card--compact"
             [attr.data-testid]="'question-card-' + q.id"
-            [class.is-solved]="auth.isLoggedIn() && solvedSet().has(q.id)"
+            [class.is-solved]="isSolved(q.id)"
             [class.is-locked]="isLocked(q)"
             [attr.aria-disabled]="isLocked(q) ? true : null"
             [routerLink]="linkTo(q)"
@@ -276,10 +276,12 @@
                   <span>{{ q.__kind === 'trivia' ? 'Concept' : 'Coding' }} prompt</span>
                   <span class="premium-pill" *ngIf="isLocked(q)">Locked</span>
                 </div>
-                <div class="fa-question-card__title fa-card-title">{{ q.title }}</div>
-                <div class="solved-pill" *ngIf="auth.isLoggedIn() && solvedSet().has(q.id)" aria-label="Solved">
-                  <i class="pi pi-check"></i>
-                  <span>Solved</span>
+                <div class="fa-question-card__title-row">
+                  <div class="fa-question-card__title fa-card-title">{{ q.title }}</div>
+                  <span class="fa-question-card__solved-mark" *ngIf="isSolved(q.id)"
+                    [attr.data-testid]="'question-card-solved-mark-' + q.id" aria-label="Solved" title="Solved">
+                    <app-fa-glyph icon="check-circle" size="16"></app-fa-glyph>
+                  </span>
                 </div>
 
                 <div class="fa-question-card__description fa-meta-text desc-tip-target" [pTooltip]="descriptionText(q)"
@@ -306,14 +308,6 @@
               </div>
 
               <div class="fa-question-card__meta-row">
-                <div class="fa-question-card__meta-item" *ngIf="auth.isLoggedIn() && solvedSet().has(q.id)">
-                  <span class="fa-meta-label">Status</span>
-                  <span class="fa-chip fa-chip--status">
-                    <i class="pi pi-check" aria-hidden="true"></i>
-                    Solved
-                  </span>
-                </div>
-
                 <div class="fa-question-card__meta-item">
                   <span class="fa-meta-label">Difficulty</span>
                   <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="q.difficulty">

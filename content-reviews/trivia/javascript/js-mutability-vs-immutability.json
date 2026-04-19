@@ -1,0 +1,139 @@
+{
+  "contentId": "js-mutability-vs-immutability",
+  "tech": "javascript",
+  "query": "javascript mutability vs immutability interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Object.freeze()",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's Object.freeze reference is the closest canonical baseline for immutability mechanics and the limits of freezing objects in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is the canonical reference for freeze semantics and the limits of shallow immutability in JavaScript."
+      ],
+      "theirGaps": [
+        "It is narrower than the broader mutability-versus-immutability trade-off and less centered on UI state bugs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most bugs in UI state management come from mutating something you thought was 'a copy'."
+        ],
+        "actionableExamples": [
+          "const nextState = {"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN is authoritative on freezing objects, but our page connects mutability directly to state bugs, shared references, and framework update behavior."
+        ],
+        "actionableExamples": [
+          "Our page now shows both the mutation bug and the immutable-update fix, while MDN focuses on the freeze API itself."
+        ],
+        "followUpConfusion": [
+          "MDN still offers strong reference depth on what freezing does and does not do, so the broader follow-up comparison remains close."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "Add one short note on deep freeze versus shallow freeze later if we want a clearer docs-level follow-up edge."
+        ]
+      },
+      "winReason": "MDN is the canonical freeze reference, but our page is stronger for this interview question because it turns mutability into a concrete state-bug story with before-and-after update patterns."
+    },
+    {
+      "label": "GreatFrontEnd mutable vs immutable objects",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-difference-between-mutable-and-immutable-objects",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep page for mutable versus immutable objects.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the exact mutability-versus-immutability interview intent."
+      ],
+      "theirGaps": [
+        "It appears less explicit on the framework-specific reference-equality consequences and the shallow-copy trap."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "React, Angular (OnPush), Redux, NgRx, etc. rely heavily on reference equality"
+        ],
+        "followUpConfusion": [
+          "Immutability is a discipline, not a JavaScript language rule."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd fits the interview wording well, but our page does more to connect the distinction to reference-equality behavior in mainstream frontend stacks."
+        ],
+        "actionableExamples": [
+          "Its interview examples are likely strong enough that the actionable-example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the likely follow-up that const does not make nested objects immutable and that immutability is a discipline, not a built-in rule."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the mutation bug and immutable update snippets near the framework note so the answer stays interview-ready."
+        ]
+      },
+      "winReason": "GreatFrontEnd is tightly aligned with the interview wording, but our page is more useful because it connects mutability to reference-equality rendering behavior and the shallow-copy bug developers actually ship."
+    },
+    {
+      "label": "Immutability in JavaScript",
+      "url": "https://www.sitepoint.com/immutability-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "SitePoint is a strong tutorial-style competitor for immutability patterns and update strategies in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong practical explainer for immutability techniques and why updates should avoid mutation."
+      ],
+      "theirGaps": [
+        "It is broader and less compressed than our interview-sized answer."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "nextState.user.name = 'Bob';"
+        ],
+        "followUpConfusion": [
+          "const does not"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "SitePoint is practical on immutability patterns, so the real-world criterion remains close."
+        ],
+        "actionableExamples": [
+          "Our page now gives a tighter before-and-after pair: the mutation bug and the corrected immutable update in one short scan."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely next confusion more directly by stating that const does not freeze nested objects and that immutability is a discipline."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "If needed later, add one short structural-sharing note so the performance trade-off is even more concrete."
+        ]
+      },
+      "winReason": "SitePoint is a good immutability tutorial, but our page is more effective for this question because it compresses the shared-reference bug, the immutable fix, and the const-not-frozen clarification into one answer."
+    }
+  ]
+}

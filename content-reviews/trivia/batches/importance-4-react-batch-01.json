@@ -1,0 +1,16 @@
+{
+  "batchId": "importance-4-react-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "react", "id": "react-virtual-dom" },
+    { "tech": "react", "id": "react-reconciliation" },
+    { "tech": "react", "id": "react-diffing-algorithm" },
+    { "tech": "react", "id": "react-strictmode-purpose" },
+    { "tech": "react", "id": "react-portals" },
+    { "tech": "react", "id": "react-concurrent-rendering" },
+    { "tech": "react", "id": "react-why-batching-state-updates" },
+    { "tech": "react", "id": "react-useeffect-vs-uselayouteffect" },
+    { "tech": "react", "id": "react-error-boundaries-what-they-solve" },
+    { "tech": "react", "id": "react-context-performance-issues" }
+  ]
+}

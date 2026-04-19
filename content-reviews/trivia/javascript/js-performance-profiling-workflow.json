@@ -1,0 +1,148 @@
+{
+  "contentId": "js-performance-profiling-workflow",
+  "tech": "javascript",
+  "query": "javascript performance profiling workflow browser devtools interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Chrome DevTools Performance panel",
+      "url": "https://developer.chrome.com/docs/devtools/performance",
+      "category": "canonical_docs",
+      "selectionReason": "Chrome DevTools documentation is the canonical source for the Performance panel and CPU/render/network tracing workflow.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for recording traces and reading the Performance panel."
+      ],
+      "theirGaps": [
+        "It is tool-detail heavy and less compressed around the repeatable interview answer: baseline, isolate the bottleneck, fix it, and verify with the same scenario."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Profiling turns a vague \"the page feels slow\" into one bottleneck you can debug."
+        ],
+        "followUpConfusion": [
+          "Profiling in dev builds only (prod bundles behave differently)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The DevTools docs are authoritative, but our page is more explicit about the production workflow teams should actually repeat before they change code."
+        ],
+        "actionableExamples": [
+          "The official docs are deeper on trace tooling and panel details, so they win on example and operational depth."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up confusion: optimize after a baseline, profile production-like builds, and re-measure the same interaction instead of guessing."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact screenshot-style explanation of CPU, render, and network lanes if we later want to compete more directly with the DevTools docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The DevTools docs are deeper on tool operation, but our page is stronger for the interview prompt because it compresses profiling into a repeatable production workflow."
+    },
+    {
+      "label": "Optimize long tasks",
+      "url": "https://web.dev/articles/optimize-long-tasks",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a strong practical performance reference for long tasks, responsiveness, and what profiling is meant to uncover.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on responsiveness issues and on why long tasks matter to real users."
+      ],
+      "theirGaps": [
+        "It is narrower on the full profiling workflow from metric selection to trace capture and re-verification."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "pick the user-facing metric, capture the same scenario, identify the slowest stage, fix that first, and verify the result with the exact same interaction instead of guessing."
+        ],
+        "actionableExamples": [
+          "Pick a metric, record a trace, fix the biggest bottleneck, and verify with the same scenario."
+        ],
+        "followUpConfusion": [
+          "Optimizing without a baseline metric."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is strong on user-facing performance impact, but our page is more explicit about the actual workflow engineers should run in DevTools."
+        ],
+        "actionableExamples": [
+          "Its long-task examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the common mistakes: profiling only dev builds, chasing tiny wins, and forgetting to verify after the fix."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one compact long-task example linked to a specific user-facing metric like interaction latency."
+        ]
+      },
+      "winReason": "web.dev is practical on long tasks, but our page is stronger because it explains the full production profiling loop instead of one symptom area."
+    },
+    {
+      "label": "DebugBear guide to Chrome DevTools Performance",
+      "url": "https://www.debugbear.com/blog/devtools-performance",
+      "category": "tutorial_reference",
+      "selectionReason": "DebugBear provides a topic-direct practical walkthrough of Chrome DevTools performance profiling.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on reading traces and finding browser bottlenecks."
+      ],
+      "theirGaps": [
+        "It is less explicit on the strategy layer of choosing the metric first and resisting optimization before a baseline."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production workflow is repeatable: pick the user-facing metric, capture the same scenario, identify the slowest stage, fix that first, and verify the result with the exact same interaction instead of guessing."
+        ],
+        "actionableExamples": [
+          "Pick a metric, record a trace, fix the biggest bottleneck, and verify with the same scenario."
+        ],
+        "followUpConfusion": [
+          "Ignoring long tasks and focusing on tiny wins."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DebugBear is good on practical profiling, but our page is more direct about the production workflow and decision sequence."
+        ],
+        "actionableExamples": [
+          "Its examples are useful and topic-direct, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the decision mistakes that derail profiling work: no baseline, dev-only traces, and no same-scenario verification."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the goal and pitfalls blocks close together so the page stays more workflow-oriented than tool-tour articles."
+        ]
+      },
+      "winReason": "This competitor is practical, but our page is stronger because it frames profiling as a disciplined decision workflow instead of a feature tour of DevTools."
+    }
+  ]
+}

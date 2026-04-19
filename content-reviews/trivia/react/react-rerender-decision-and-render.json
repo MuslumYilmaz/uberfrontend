@@ -1,0 +1,155 @@
+{
+  "contentId": "react-rerender-decision-and-render",
+  "tech": "react",
+  "query": "React re-render interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Render and Commit",
+      "url": "https://react.dev/learn/render-and-commit",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of the render and commit pipeline, so it is the baseline for rerender semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official docs still own the canonical pipeline explanation, but our page now does a better job turning that pipeline into interview-ready debugging language: parent-child rerender logs, inline callback identity churn, and the distinction between rerender, remount, and no-op commit.",
+      "theirStrengths": [
+        "It is the official explanation of when React renders and when DOM commits actually happen."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped about parent-triggered child renders and explicit bailout rules."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Imagine a search page where typing updates local input state in the parent. React may re-run the child result pane too, especially if you pass inline callbacks or config objects."
+        ],
+        "followUpConfusion": [
+          "Re-render",
+          "Remount",
+          "No-op commit"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page explains rerender and commit with concrete UI updates, but it stays more lifecycle-oriented than incident-oriented."
+        ],
+        "actionableExamples": [
+          "It walks through the trigger-render-commit sequence step by step, which is a stronger canonical example set than our compact answer."
+        ],
+        "followUpConfusion": [
+          "It separates rendering from DOM updates clearly, but it is lighter on interview follow-ups like render does not trigger updates and how bailouts fit in."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one explicit parent-child rerender bug where logs appear every keypress but the DOM barely changes."
+        ],
+        "actionableExamples": [
+          "Add a second worked example covering memoized children and stable prop identities."
+        ],
+        "followUpConfusion": [
+          "Add one short note comparing initial mount, rerender from new props, and a forced render path."
+        ]
+      }
+    },
+    {
+      "label": "What does re-rendering mean in React?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-does-re-rendering-mean-in-react",
+      "category": "interview_prep",
+      "selectionReason": "This is a direct React interview-prep page on rerendering, so it is the strongest GreatFrontEnd comparator for this topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers the definition well, but our answer is stronger on render-versus-DOM confusion, the role of render(), and the bailout follow-up that interviewers typically ask next.",
+      "theirStrengths": [
+        "It is concise, interview-oriented, and directly relevant to rerender terminology."
+      ],
+      "theirGaps": [
+        "It is lighter on bailout rules and the distinction between computing UI and mutating the DOM."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "React re-renders a component when it thinks that component’s inputs might have changed (state/props/context)."
+        ],
+        "followUpConfusion": [
+          "render() does not trigger updates. It’s the function React calls after an update is scheduled, to compute the next UI description."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The quiz explains rerendering at a high level, but it does not spend as much time on parent-to-child rerender propagation and bailout trade-offs."
+        ],
+        "actionableExamples": [
+          "It includes a compact interview explanation, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The page defines rerendering, but our answer is clearer about render phase versus commit phase and about render not being the thing that schedules updates."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one incident card where the same state update rerenders multiple siblings but only one DOM node actually changes."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "React re-renders guide",
+      "url": "https://www.developerway.com/posts/react-re-renders-guide",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay has one of the strongest deep dives on rerender causes, memoization, and real product rerender behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It goes deep on what actually triggers rerenders and how memoization and prop identity interact."
+      ],
+      "theirGaps": [
+        "It is longer and less compressed for interview delivery than a trivia answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Another production bug: context churn"
+        ],
+        "actionableExamples": [
+          "Even theme-only renders recreate value, so consumers can rerender too."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The guide is explicitly about real rerender causes such as parent renders, props identity churn, and memo boundaries."
+        ],
+        "actionableExamples": [
+          "It includes richer worked examples and a broader taxonomy of rerender scenarios than our compact page."
+        ],
+        "followUpConfusion": [
+          "Both pages explain that rerendering is not the same as DOM mutation, so this criterion is effectively close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one more production example around context churn and inline callback props."
+        ],
+        "actionableExamples": [
+          "Add a short before/after memoization example that shows why a child still rerenders after a parent update."
+        ],
+        "followUpConfusion": [
+          "Keep one compact line about forced renders versus ordinary parent-driven rerenders if this page expands again."
+        ]
+      },
+      "winReason": "DeveloperWay remains a deep dive, but our page now adds the context-churn example, a tighter memo before/after, and a clearer rerender-remount-commit distinction for interview delivery."
+    }
+  ]
+}

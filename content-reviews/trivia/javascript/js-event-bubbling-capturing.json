@@ -1,0 +1,145 @@
+{
+  "contentId": "js-event-bubbling-capturing",
+  "tech": "javascript",
+  "query": "javascript event bubbling and capturing interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Event bubbling",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical frontend docs source for event propagation, bubbling, capture, and delegation-related behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page now answers this interview question with two concrete bug families at once: nested modal/backdrop clicks and delegated menu handling, plus one combined propagation trace.",
+      "theirStrengths": [
+        "It covers target/currentTarget, stopPropagation, and delegation-oriented follow-ups in one place."
+      ],
+      "theirGaps": [
+        "It is less interview-oriented than our shipped trivia."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When an event (like a click) occurs in the DOM, it does not belong to only one element. It travels through a <strong>three-phase path</strong>: capture -> target -> bubble. The real production/debug value is understanding why a nested button can trigger its panel and backdrop, why delegated menus sometimes read the wrong node, and why blindly calling <code>stopPropagation()</code> often hides the wrong bug."
+        ],
+        "actionableExamples": [
+          "shell capture -> menu capture -> item target -> menu bubble -> shell bubble"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers nested events and propagation well, but our page is more directly framed around concrete modal and delegated-menu bugs."
+        ],
+        "actionableExamples": [
+          "MDN still has strong runnable examples, yet our single combined trace plus delegated-menu snippet is tighter for this interview-sized page."
+        ],
+        "followUpConfusion": [
+          "MDN remains broader on related propagation details, so the follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one note on retargeting behavior across web components if we want a clearer advanced edge beyond composedPath()."
+        ]
+      }
+    },
+    {
+      "label": "javascript.info Bubbling and capturing",
+      "url": "https://javascript.info/bubbling-and-capturing",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a strong tutorial reference for propagation phases and common propagation controls.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "javascript.info explains the phases well, but our page now wins this comparison by pairing a combined phase trace with a tighter follow-up set around delegated handlers, stopPropagation misuse, and composedPath().",
+      "theirStrengths": [
+        "It explains propagation phases with practical examples and clearly shows how handlers fire."
+      ],
+      "theirGaps": [
+        "It is less concise for rapid interview recall than our trivia format."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "function trace(label) {"
+        ],
+        "followUpConfusion": [
+          "If a component uses shadow DOM, <code>composedPath()</code> can reveal the full path more accurately than guessing from one node."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info still has a strong practical explanation of nested DOM propagation, so the real-world criterion remains close."
+        ],
+        "actionableExamples": [
+          "Its examples are solid, but our page now adds one combined trace and one delegated-menu snippet tailored to UI debugging."
+        ],
+        "followUpConfusion": [
+          "Our follow-up section now answers stopPropagation misuse and shadow-DOM path questions more directly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one outside-click listener example if we want a stronger real-world edge than the current modal plus delegated-menu set."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Event phases",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-event-phases-in-a-browser",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep answer focused on the browser event phases.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Our page now goes beyond the phase definition by grounding the answer in modal/backdrop bugs, a single propagation trace, and a delegated-menu example that matches real UI debugging better.",
+      "theirStrengths": [
+        "It is closely matched to the interview phrasing and stays focused on the three event phases."
+      ],
+      "theirGaps": [
+        "It appears lighter on concrete nested-DOM examples than longer tutorial sources."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When an event (like a click) occurs in the DOM, it does not belong to only one element. It travels through a <strong>three-phase path</strong>: capture -> target -> bubble. The real production/debug value is understanding why a nested button can trigger its panel and backdrop, why delegated menus sometimes read the wrong node, and why blindly calling <code>stopPropagation()</code> often hides the wrong bug."
+        ],
+        "actionableExamples": [
+          "menu.addEventListener('click', (event) => {"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd explains the phase order clearly, but it is lighter on the concrete bug framing around modals and delegated handlers."
+        ],
+        "actionableExamples": [
+          "Its examples are concise, while our page now includes both the phase trace and the delegated-menu implementation."
+        ],
+        "followUpConfusion": [
+          "GreatFrontEnd still answers the core phase-order follow-up well enough that the broader follow-up comparison stays close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one quick note on which native events do not bubble if we want a broader advanced follow-up set."
+        ]
+      }
+    }
+  ]
+}

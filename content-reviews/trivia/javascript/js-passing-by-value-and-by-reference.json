@@ -1,0 +1,146 @@
+{
+  "contentId": "js-passing-by-value-and-by-reference",
+  "tech": "javascript",
+  "query": "javascript pass by value vs reference interview question",
+  "reviewedAt": "2026-04-08",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No directly relevant GreatFrontEnd page about JavaScript argument passing or call-by-sharing surfaced during authoring; nearby equality or reference topics would be too indirect."
+  },
+  "competitors": [
+    {
+      "label": "MDN Functions",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's functions guide is the closest canonical docs source because it explicitly states that arguments are passed by value and explains object mutation behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It gives the canonical docs explanation of argument passing and object mutation semantics."
+      ],
+      "theirGaps": [
+        "It is broader than the specific interview question and less concise than our trivia format."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A reducer or helper mutates the object it received, the caller keeps the same reference, and stale UI or failed snapshot tests appear because the function changed caller-owned data instead of returning a new object."
+        ],
+        "actionableExamples": [
+          "shallowCopy.user.name = 'Ada';\nconsole.log(original.user.name); // 'Ada' -> nested object is still shared"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains argument semantics accurately, but our page now ties the issue more directly to modern state-management bugs."
+        ],
+        "actionableExamples": [
+          "Its examples are strong, while our page now adds both mutation-vs-reassignment and shallow-copy nested-state examples."
+        ],
+        "followUpConfusion": [
+          "MDN still has canonical language precision, so the broader follow-up comparison remains close."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one even more explicit opening line that starts from “all arguments are passed by value” before introducing call-by-sharing."
+        ]
+      },
+      "winReason": "MDN is the canonical semantics reference, but our page now makes the bug pattern and call-by-sharing explanation more explicit for frontend state debugging."
+    },
+    {
+      "label": "GeeksforGeeks Pass by value and pass by reference",
+      "url": "https://www.geeksforgeeks.org/javascript/pass-by-value-and-pass-by-reference-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a common tutorial result for the exact pass-by-value vs reference query.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page is more explicit about the reference-value copy model and about mutation vs reassignment, while GeeksforGeeks stays closer to the standard introductory comparison.",
+      "theirStrengths": [
+        "It directly targets the exact comparison query and gives beginner-friendly examples."
+      ],
+      "theirGaps": [
+        "It is lighter on the call-by-sharing nuance and on the mutation-vs-reassignment debugging distinction."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The confusion starts because object values are references (addresses). So when you pass an object, JavaScript copies the reference value, not the whole object."
+        ],
+        "followUpConfusion": [
+          "For objects, these two lines are very different: - obj.name = 'X' -> mutates shared object - obj = { name: 'X' } -> rebinds local parameter only"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks covers the core distinction, but it is less explicit about the bug pattern caused by shared object mutation."
+        ],
+        "actionableExamples": [
+          "Its examples are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It is less clear on why JavaScript is still pass-by-value even when two variables point to the same object."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one example with arrays or nested objects so the mutation-vs-reassignment rule is even more concrete."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Stack Overflow JavaScript by reference vs by value",
+      "url": "https://stackoverflow.com/questions/6605640/javascript-by-reference-vs-by-value",
+      "category": "community_qna",
+      "selectionReason": "This is a durable community Q&A for the exact confusion developers search when they ask whether JavaScript passes by reference.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It mirrors the exact wording and confusion developers commonly search in practice."
+      ],
+      "theirGaps": [
+        "Community answers are useful but not always as tightly structured as a curated explanation."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "function resetList(list) {\n  list = [];                     // reassignment: local only\n}"
+        ],
+        "followUpConfusion": [
+          "Call-by-sharing is the precise mental model: mutation is shared, reassignment is local."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Q&A still mirrors a real developer confusion, so the practical angle remains close."
+        ],
+        "actionableExamples": [
+          "Community answers include examples, but our page now offers a cleaner sequence of primitive, object, list, and shallow-copy cases."
+        ],
+        "followUpConfusion": [
+          "Our page now states the call-by-sharing model and the mutation-versus-reassignment distinction more directly than a thread of community answers."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one props-style or reducer-style scenario even earlier in the page so the real-world angle clearly beats a community thread."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "The Q&A mirrors the real confusion, but our page now resolves it more cleanly with mutation/reassignment examples and an explicit call-by-sharing mental model."
+    }
+  ]
+}

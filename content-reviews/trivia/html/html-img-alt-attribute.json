@@ -1,0 +1,139 @@
+{
+  "contentId": "html-img-alt-attribute",
+  "tech": "html",
+  "query": "img alt attribute interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "HTML images",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/HTML_images",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN guide is the closest canonical page for alt text, image fallback behavior, and the accessibility role of the img element.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is strong on core image markup, what alt is for, and how images behave when they fail to load."
+      ],
+      "theirGaps": [
+        "The page is less direct about the production decision between decorative, informative, and functional images."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real production decision is whether an image is decorative, informative, or functional"
+        ],
+        "followUpConfusion": [
+          "If a logo links back home, alt like \"FrontendAtlas home\" is usually more helpful than \"Company logo\"."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains image fallback and alternative text clearly, but it is less centered on the production choice between decorative, informative, and functional images."
+        ],
+        "actionableExamples": [
+          "It still has direct image-markup examples, so the actionable-example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our answer is now more explicit about linked logos, icon-only actions, and when alt should describe the destination or action instead of the picture."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the three-way decision table visible and add a complex-image follow-up only if future reviews still need it."
+        ]
+      },
+      "winReason": "MDN is the canonical image reference, but our page now does a better job of turning alt text into a practical decision: decorative, informative, or functional, with the linked-logo follow-up people usually miss."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because accessibility, semantics, and image-related questions are part of core HTML interview coverage.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub with broad HTML fundamentals coverage."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to the exact alt-text decision path or the functional-image edge cases."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real production decision is whether an image is decorative, informative, or functional"
+        ],
+        "followUpConfusion": [
+          "If nearby text already says the same thing, keep the alt short and avoid repeating the visible label or stuffing extra SEO keywords."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is clearly relevant for HTML interviews, but the bank page is less anchored to the specific alt-text review decision that teams trip over in production."
+        ],
+        "actionableExamples": [
+          "It remains a competitive interview-prep source, so the example bar stays close."
+        ],
+        "followUpConfusion": [
+          "Our answer now handles the likely follow-up confusion more directly: decorative versus functional images, linked logos, and redundant nearby text."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the functional-image example and three-way decision block near the opening so the page stays skimmable."
+        ]
+      },
+      "winReason": "GreatFrontEnd is broadly useful for HTML prep, but our page is more specific about the concrete alt-text decisions and follow-up mistakes that make an answer operationally useful."
+    },
+    {
+      "label": "Images",
+      "url": "https://web.dev/learn/accessibility/images",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a topic-direct accessibility guide for image purpose, context, decorative versus informative images, and alternative text best practices.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is very strong on the image-purpose decision path, including decorative, informative, functional, and complex images."
+      ],
+      "theirGaps": [
+        "It is broader and less compressed as a trivia-style interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The real production decision is whether an image is decorative, informative, or functional"
+        ],
+        "followUpConfusion": [
+          "If an icon-only button opens search, the alt or accessible name should expose the action, not the artwork."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is strong on image-purpose framing, but our page now turns that framing into a tighter production decision that is easier to apply quickly."
+        ],
+        "actionableExamples": [
+          "web.dev still has stronger breadth, especially across more image categories, so the example criterion stays tied rather than flipping fully to us."
+        ],
+        "followUpConfusion": [
+          "Our answer now gives clearer short follow-ups for linked logos, icon buttons, redundant nearby text, and SEO stuffing."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this page needs another pass later, add one compact complex-image note without turning the trivia answer into a long guide."
+        ]
+      },
+      "winReason": "web.dev is broader, but our page is now stronger as a compact interview answer because it converts the alt-text topic into a direct production decision and answers the common functional-image follow-ups cleanly."
+    }
+  ]
+}

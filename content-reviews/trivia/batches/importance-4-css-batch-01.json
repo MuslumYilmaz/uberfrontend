@@ -1,0 +1,12 @@
+{
+  "batchId": "importance-4-css-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "css", "id": "css-link-html" },
+    { "tech": "css", "id": "css-inline-internal-external" },
+    { "tech": "css", "id": "css-margin-property" },
+    { "tech": "css", "id": "css-padding-property" },
+    { "tech": "css", "id": "css-id-vs-class" },
+    { "tech": "css", "id": "css-visibility-vs-display" }
+  ]
+}

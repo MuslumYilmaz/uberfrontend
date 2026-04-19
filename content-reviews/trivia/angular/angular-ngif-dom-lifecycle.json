@@ -1,0 +1,149 @@
+{
+  "contentId": "angular-ngif-dom-lifecycle",
+  "tech": "angular",
+  "query": "Angular *ngIf DOM lifecycle interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular Component Lifecycle Guide",
+      "url": "https://angular.dev/guide/components/lifecycle",
+      "category": "canonical_docs",
+      "selectionReason": "The official lifecycle guide is the canonical source for when Angular creates, checks, and destroys component instances.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "The lifecycle guide is authoritative, but our page is more useful for this specific ngIf question because it ties teardown to form resets, recreated providers, and a direct ngIf-versus-hidden toggle example.",
+      "theirStrengths": [
+        "It authoritatively explains initialization, check, render, and destroy hooks for Angular components."
+      ],
+      "theirGaps": [
+        "It is not centered on the very specific ngIf mental model of subtree teardown versus simple hiding."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Debug mental model</strong><br><br><code>*ngIf</code> does not hide a subtree; it <strong>creates and destroys</strong> an embedded view. In production, that difference shows up as reset form state, fresh child instances, repeated init work, and cleanup bugs when subscriptions or listeners are tied to that subtree."
+        ],
+        "actionableExamples": [
+          "<app-profile-form *ngIf=\"showForm\"></app-profile-form>",
+          "<app-profile-form [hidden]=\"!showForm\"></app-profile-form>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The lifecycle guide explains destruction and ngOnDestroy clearly, but our page is more direct about the real ngIf bugs teams hit."
+        ],
+        "actionableExamples": [
+          "The lifecycle guide explains hook timing well, but our page now gives the more direct destroy-versus-hide toggle example with preserved versus reset state."
+        ],
+        "followUpConfusion": [
+          "It explains lifecycle ordering well, but it is less explicitly framed around ngIf versus hide/show decisions."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one short line on how repeated teardown affects child cleanup and re-init work when the branch flips often."
+        ]
+      }
+    },
+    {
+      "label": "Angular University ngIf Complete Guide",
+      "url": "https://blog.angular-university.io/angular-ngif/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a strong tutorial competitor because it focuses directly on ngIf and the real template patterns teams use around it.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular University stays broader on ngIf usage, but our page now wins the lifecycle-reset question with a sharper destroy-versus-hide example and clearer follow-up around recreated subscriptions.",
+      "theirStrengths": [
+        "It goes deep on ngIf usage patterns and common structural-template patterns."
+      ],
+      "theirGaps": [
+        "It is broader on template composition and less tightly centered on the lifecycle-reset interview answer."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "<app-profile-form *ngIf=\"showForm\"></app-profile-form>",
+          "<app-profile-form [hidden]=\"!showForm\"></app-profile-form>"
+        ],
+        "followUpConfusion": [
+          "<strong>Worked toggle scenario</strong><br><br>If a child component keeps local draft text, a pending timer, or a component-scoped service, flipping <code>*ngIf</code> false tears all of that down. Flipping it true creates a fresh child, reruns init hooks, and starts new subscriptions or <code>async</code>-pipe subscriptions inside that subtree. Use hiding when the requirement is \"keep the current instance and its local state alive\"; use <code>*ngIf</code> when the requirement is real teardown."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University keeps the page tightly focused on ngIf in real templates, so the use-case framing stays close."
+        ],
+        "actionableExamples": [
+          "Angular University has more breadth, but our page now gives the tighter destroy-versus-hide worked example that targets the exact lifecycle reset bug interviewers ask about."
+        ],
+        "followUpConfusion": [
+          "Our page is now more explicit about recreated async-pipe subscriptions, fresh child instances, and the hide-versus-destroy decision boundary."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the answer focused on teardown, state reset, and hide-versus-destroy instead of drifting into generic control-flow syntax."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Swiftorial Template Syntax",
+      "url": "https://www.swiftorial.com/tutorials/web_development/angular/components_and_templates/template_syntax/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a direct competitor because it covers *ngIf inside template syntax and contrasts structural versus attribute directives at a basics level.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Swiftorial explains ngIf in context, but our page now gives the stronger toggle example and the clearer destroy-versus-hide follow-up that this question is really testing.",
+      "theirStrengths": [
+        "It covers *ngIf alongside other template syntax and shows the directive in context."
+      ],
+      "theirGaps": [
+        "It does not go far into state reset, component recreation, or lifecycle cleanup when the branch flips."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "<app-profile-form *ngIf=\"showForm\"></app-profile-form>",
+          "<app-profile-form [hidden]=\"!showForm\"></app-profile-form>"
+        ],
+        "followUpConfusion": [
+          "<strong>Summary</strong><br><br><code>*ngIf</code> creates/destroys an embedded view. True = build DOM + instantiate components/directives and run init hooks. False = remove DOM + destroy instances and run <code>ngOnDestroy</code>. Use it when you want real teardown and to skip change detection for that subtree; use hiding when you need to keep state alive."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Swiftorial explains *ngIf as a structural directive, so the practical framing is close."
+        ],
+        "actionableExamples": [
+          "Its examples are clear, but our page now gives the more actionable toggle example that makes state reset and instance reuse visible immediately."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the likely next confusion: *ngIf destroys and recreates, while hiding keeps state alive."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one example where local form or child component state is visibly lost after a toggle."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

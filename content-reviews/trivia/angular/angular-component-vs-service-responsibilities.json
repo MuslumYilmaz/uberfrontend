@@ -1,0 +1,154 @@
+{
+  "contentId": "angular-component-vs-service-responsibilities",
+  "tech": "angular",
+  "query": "Angular component vs service interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Creating an Injectable Service",
+      "url": "https://v18.angular.dev/guide/di/creating-injectable-service/",
+      "category": "canonical_docs",
+      "selectionReason": "This Angular guide is the most direct official source for the component-versus-service responsibility split, including the \"component job\" framing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It directly states that components should stay lean and delegate non-view processing to services."
+      ],
+      "theirGaps": [
+        "It is less explicit about per-component service scope and the \"view concern versus meaning concern\" rule of thumb."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "If the code depends on how something is shown (DOM, template state, view events) → component. If it depends on what something means (rules, data fetching, caching, orchestration) → service.",
+          "If you need per-component instance state (e.g., a wizard session), provide the service at the component level via providers: [WizardStateService]"
+        ],
+        "realWorldUseCases": [
+          "Worked example: duplicated business rule across two screens"
+        ],
+        "actionableExamples": [
+          "Move the reusable rule behind a service boundary"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide already frames components as view-focused and services as the place for fetching, validation, and logging, so the practical split is close."
+        ],
+        "actionableExamples": [
+          "It includes concrete service examples and delegation examples, so the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "The docs do not go as far into component-scoped service state or into the how-versus-what decision heuristic used in our trivia."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one example where business rules inside a component cause duplication across two screens and then move into a service."
+        ],
+        "actionableExamples": [
+          "Add a compact before-and-after snippet showing a fat component refactored behind a facade/service boundary."
+        ],
+        "followUpConfusion": [
+          "Keep one crisp example of a view-only transformation that should stay inside the component."
+        ]
+      },
+      "winReason": "The Angular docs teach service creation, but our page is stronger on the component-versus-service boundary because it now includes duplicated business-rule and refactor examples."
+    },
+    {
+      "label": "GreatFrontEnd Angular Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/angular-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd’s Angular guide is relevant because it positions components, services, state, and reusable architecture as a practical interview-prep set.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Our page answers the ownership split more directly and includes the component-scoped-service edge case that the broader GreatFrontEnd guide does not spell out.",
+      "theirStrengths": [
+        "It is explicitly practical and stresses reusable components, state, and DI as interview-worthy architecture topics."
+      ],
+      "theirGaps": [
+        "It is broad and not centered on the exact component-versus-service ownership decision."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use components for rendering + wiring UI events to actions. Use services for reusable logic and side effects (HTTP, caching, state, orchestration)."
+        ],
+        "followUpConfusion": [
+          "If the code depends on how something is shown (DOM, template state, view events) → component. If it depends on what something means (rules, data fetching, caching, orchestration) → service.",
+          "If you need per-component instance state (e.g., a wizard session), provide the service at the component level via providers: [WizardStateService]"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd highlights practical Angular architecture, but not the exact ownership rule between component and service responsibilities."
+        ],
+        "actionableExamples": [
+          "Its broader Angular guide still gives practical examples, so the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "The guide does not drill into scoped service instances or how to classify borderline code between view composition and business meaning."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one example of a view-model-only transformation that should stay inside the component instead of moving to a service."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Stack Overflow: Why do we need services when we have components?",
+      "url": "https://stackoverflow.com/questions/50385344/why-do-we-need-services-when-we-have-components",
+      "category": "community_qna",
+      "selectionReason": "This is a directly relevant community comparator for the exact ownership-split question.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The Stack Overflow answers justify why services exist, but our page is more systematic about ownership boundaries and scoped-service edge cases.",
+      "theirStrengths": [
+        "It gives an intuitive reuse and sharing argument that mirrors how many developers first understand services."
+      ],
+      "theirGaps": [
+        "It is less systematic on view-model shaping versus business logic versus per-component state ownership."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use components for rendering + wiring UI events to actions. Use services for reusable logic and side effects (HTTP, caching, state, orchestration)."
+        ],
+        "followUpConfusion": [
+          "If you need per-component instance state (e.g., a wizard session), provide the service at the component level via providers: [WizardStateService]"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The accepted answers explain reuse, shared instances, and why services have less view overhead, but they stay at the generic justification level."
+        ],
+        "actionableExamples": [
+          "The thread is practical enough that the example comparison stays close."
+        ],
+        "followUpConfusion": [
+          "It does not answer the component-scoped service follow-up or the how-versus-what classification rule very clearly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one example where a service should be scoped to the component instead of provided in root."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

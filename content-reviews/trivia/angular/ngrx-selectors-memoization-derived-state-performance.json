@@ -1,0 +1,146 @@
+{
+  "contentId": "ngrx-selectors-memoization-derived-state-performance",
+  "tech": "angular",
+  "query": "NgRx selectors memoization and derived state performance interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "NgRx Selector Guide",
+      "url": "https://ngrx.io/guide/store/selectors",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official NgRx reference for selector composition, memoization behavior, and feature-state read patterns.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the canonical source for createSelector, selector composition, and official memoization semantics."
+      ],
+      "theirGaps": [
+        "It is reference-oriented and less compressed around the interview distinction between raw getters and memoized read models."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Memoized read model</strong><br><br>Selectors are not just getters. They are the memoized <strong>read layer</strong> of an NgRx app: compose feature state into a view model once, reuse the last result while inputs are unchanged, and keep transformation logic out of components. The performance value comes from derived-state reuse, not from magical rerender prevention."
+        ],
+        "followUpConfusion": [
+          "<strong>Failure pattern</strong><br><ul><li>If reducers mutate state in place, selector inputs keep the same reference and memoization expectations break.</li><li>Selectors work best when reducers stay immutable and composition stays small.</li><li>The goal is reusable derived state, not hiding bad state updates.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular University NgRx Crash Course",
+      "url": "https://blog.angular-university.io/angular-ngrx-store-and-effects-crash-course/",
+      "category": "tutorial_reference",
+      "selectionReason": "Angular University is the strongest topic-direct tutorial competitor because it covers selectors in the broader NgRx architecture and read-model flow.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It connects selectors to the broader Store, reducer, and effect architecture in a practical walkthrough."
+      ],
+      "theirGaps": [
+        "It is broader on NgRx overall and less tightly focused on selector memoization as an interview question on its own."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Memoized read model</strong><br><br>Selectors are not just getters. They are the memoized <strong>read layer</strong> of an NgRx app: compose feature state into a view model once, reuse the last result while inputs are unchanged, and keep transformation logic out of components. The performance value comes from derived-state reuse, not from magical rerender prevention."
+        ],
+        "followUpConfusion": [
+          "<strong>Failure pattern</strong><br><ul><li>If reducers mutate state in place, selector inputs keep the same reference and memoization expectations break.</li><li>Selectors work best when reducers stay immutable and composition stays small.</li><li>The goal is reusable derived state, not hiding bad state updates.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: Ngrx selector not triggering when the reducer alters the slice",
+      "url": "https://stackoverflow.com/questions/53089707/ngrx-selector-not-triggering-when-the-reducer-alters-the-slice",
+      "category": "community_qna",
+      "selectionReason": "This is a directly relevant community comparator because it exposes the exact memoization pitfall where mutation keeps references stable and selectors stop recomputing as expected.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is anchored in a real selector-memoization bug caused by in-place mutation."
+      ],
+      "theirGaps": [
+        "It is a single debugging thread and does not explain selectors as a broader read-model layer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Memoized read model</strong><br><br>Selectors are not just getters. They are the memoized <strong>read layer</strong> of an NgRx app: compose feature state into a view model once, reuse the last result while inputs are unchanged, and keep transformation logic out of components. The performance value comes from derived-state reuse, not from magical rerender prevention."
+        ],
+        "followUpConfusion": [
+          "<strong>Failure pattern</strong><br><ul><li>If reducers mutate state in place, selector inputs keep the same reference and memoization expectations break.</li><li>Selectors work best when reducers stay immutable and composition stays small.</li><li>The goal is reusable derived state, not hiding bad state updates.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

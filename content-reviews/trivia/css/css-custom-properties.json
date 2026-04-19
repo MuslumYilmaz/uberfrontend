@@ -1,0 +1,145 @@
+{
+  "contentId": "css-custom-properties",
+  "tech": "css",
+  "query": "What are CSS custom properties and how are they used in production?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Using CSS custom properties (variables)",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN guide for CSS custom properties, including declaration, var() usage, scope, inheritance, fallbacks, and runtime behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on custom property syntax, inheritance, fallbacks, and runtime behavior."
+      ],
+      "theirGaps": [
+        "The guide is less interview-shaped and less compact about the specific production distinction between runtime browser variables and build-time preprocessor variables."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>CSS custom properties are variables defined with the <code>--</code> prefix and accessed using the <code>var()</code> function. They differ from preprocessor variables (like SASS or LESS) because they’re live in the browser — inheritable, changeable with JavaScript, and scoped within selectors."
+        ],
+        "followUpConfusion": [
+          "<strong>Fallback Values</strong><br>Use fallback values when a variable might not exist:<br><code>color: var(--heading-color, #333);</code>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains custom properties thoroughly, but our page is more explicit about why teams actually adopt them: runtime theming, scoped overrides, and browser-level values instead of build-time substitution."
+        ],
+        "actionableExamples": [
+          "Its examples for declaration, var(), and fallback usage are strong, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up: CSS custom properties are not Sass variables, and inheritance plus fallback behavior is exactly what makes them useful in design systems."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the :root example and runtime-update example visible so the answer stays faster to scan than a long reference guide."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical custom-properties guide, but our page is stronger as an interview answer because it packages syntax, scope, inheritance, fallback, and runtime theming into one production-focused mental model."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because variables, theming, and selector-level styling conventions are common CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage of modern CSS concepts and design-system-adjacent topics."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to custom properties, so it is less focused on inheritance, fallbacks, and runtime theme toggling."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Practical scenario</strong><br>Implement light/dark themes by switching CSS variables on <code>:root</code> and letting components react automatically.<br><br><strong>Common pitfalls</strong><br><ul><li>Missing fallbacks when variables are undefined.</li><li>Confusing CSS variables (runtime) with preprocessor variables (build-time).</li><li>Scoping variables too narrowly so children cannot inherit them.</li></ul><strong>Trade-off or test tip</strong><br>Variables allow runtime theming but require careful defaults. Test by toggling themes and verifying contrast and inheritance."
+        ],
+        "followUpConfusion": [
+          "<strong>Scoping & Inheritance</strong><br>Variables defined in <code>:root</code> are global. They can be overridden locally inside specific components or containers, enabling theming or context-aware customization."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the exact runtime theming and inheritance questions that make custom properties useful in production."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up confusion: scope, inheritance, and fallback behavior are features, not implementation accidents."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the dark-theme override example near the top so the answer stays interview-ready."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact scope, inheritance, and runtime-theme behavior that interviewers usually want explained."
+    },
+    {
+      "label": "Custom properties",
+      "url": "https://web.dev/learn/css/custom-properties",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a strong topic-direct tutorial comparator for CSS variables because it focuses on reuse, var(), fallbacks, root scope, and override patterns in modern CSS.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "web.dev is strong on practical custom-property usage, including organization, fallback values, and cascade-driven overrides."
+      ],
+      "theirGaps": [
+        "It is less compact as an interview answer and less explicit about the exact runtime-versus-build-time distinction that often causes confusion."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Dynamic Updates with JavaScript</strong><br>Unlike preprocessor variables, custom properties exist in the DOM and can be modified at runtime."
+        ],
+        "followUpConfusion": [
+          "<strong>Best Practices</strong><br><ul><li>Define global tokens in <code>:root</code> for theme consistency.</li><li>Use local overrides for component variants or dark/light modes.</li><li>Combine with media queries for responsive design (<code>@media (prefers-color-scheme: dark)</code>).</li><li>Maintain a naming convention like <code>--color-primary</code>, <code>--spacing-md</code>.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is strong on practical CSS variable usage, but our page is more focused on the production decision points: when to scope locally, when to keep values global, and how to test theme toggles safely."
+        ],
+        "actionableExamples": [
+          "Its custom-property examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the follow-up teams usually hit first: custom properties inherit, can be changed at runtime, and need fallbacks and sensible scope boundaries."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the runtime update and root override examples visible so the answer stays more operational than a broader tutorial."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is a strong custom-properties tutorial, but our page is more useful as an interview answer because it ties syntax, inheritance, fallbacks, and runtime theming into one production-oriented explanation."
+    }
+  ]
+}

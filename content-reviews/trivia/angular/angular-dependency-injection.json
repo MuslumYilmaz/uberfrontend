@@ -1,0 +1,146 @@
+{
+  "contentId": "angular-dependency-injection",
+  "tech": "angular",
+  "query": "dependency injection in angular interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Dependency Injection Overview",
+      "url": "https://angular.dev/guide/di",
+      "category": "canonical_docs",
+      "selectionReason": "This is the authoritative Angular DI overview and the strongest canonical baseline for provider and injector concepts.",
+        "verdicts": {
+          "realWorldUseCases": "ours",
+          "actionableExamples": "tie",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "The official docs remain the canonical reference, but our page now surfaces the real subtree-instance bug and the Optional/Self/SkipSelf follow-up more directly in one interview-shaped answer.",
+      "theirStrengths": [
+        "It is the authoritative description of DI concepts, what services are, and how values are provided and injected."
+      ],
+      "theirGaps": [
+        "It is broader and less interview-shaped around the most common pitfalls and provider variants."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "closest provider wins"
+          ],
+          "followUpConfusion": [
+            "<code>@Optional()</code> says “return <code>null</code> if missing.” <code>@Self()</code> says “only check the current injector.” <code>@SkipSelf()</code> says “start at the parent injector.”"
+          ]
+        },
+        "theirEvidence": {
+          "realWorldUseCases": [
+            "The official guide already grounds DI in maintainability, scalability, testing, and shared services, but our page now foregrounds the concrete subtree-override bug more directly."
+          ],
+          "actionableExamples": [
+            "Angular.dev still walks through the concepts and provider mechanics in more depth than our compact trivia answer, so the example criterion stays close."
+          ],
+          "followUpConfusion": [
+            "It covers the provider/inject vocabulary well enough that the conceptual follow-ups remain competitive, but our page now spells out Optional, Self, and SkipSelf more explicitly."
+          ]
+        },
+        "nextActions": {
+          "realWorldUseCases": [],
+          "actionableExamples": [
+            "Add one compact provider-shapes example covering useClass, useExisting, useFactory, and useValue in a single block."
+          ],
+          "followUpConfusion": []
+        }
+      },
+    {
+      "label": "GreatFrontEnd Angular Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/angular-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd’s Angular interview guide is directly relevant because it highlights dependency injection hierarchy as an interview topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The GreatFrontEnd guide is broad, but our DI page goes deeper on provider shapes, injector proximity, and the pitfall surface interviewers usually ask about next.",
+      "theirStrengths": [
+        "It frames DI as a core Angular interview topic and keeps the architecture context practical."
+      ],
+      "theirGaps": [
+        "It is not as specific about provider shapes, multi providers, or resolution modifiers."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A root-provided service can look “global” until a feature route or component provides the same token again."
+        ],
+        "followUpConfusion": [
+          "When Angular needs a dependency, it checks the current injector (e.g., component injector), and if not found it walks up to parent injectors until it finds a provider. If multiple levels provide the same token, the nearest one is used.",
+          "Multi providers (common in real apps)"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd marks DI hierarchy as important, but it stays at the topic-map level rather than unpacking the pitfall-heavy parts of DI resolution."
+        ],
+        "actionableExamples": [
+          "Its guide is practical and interview-oriented enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "The guide is lighter on provider-shape mechanics, nearest-provider wins, and multi-provider behavior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit provider-resolution diagram showing root, route, and component providers for the same token."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University Dependency Injection Guide",
+      "url": "https://blog.angular-university.io/angular-dependency-injection/",
+      "category": "tutorial_reference",
+      "selectionReason": "Angular University has a dedicated DI guide, making it a strong tutorial/reference competitor for injector mechanics and provider patterns.",
+        "verdicts": {
+          "realWorldUseCases": "ours",
+          "actionableExamples": "tie",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "Angular University is deeper overall, but our page is now stronger on the concrete provider-scope bug and on the fast interview follow-up around Optional, Self, and SkipSelf.",
+      "theirStrengths": [
+        "It is a topic-specific long-form tutorial that goes deeper than short interview answers normally do."
+      ],
+      "theirGaps": [
+        "It is less compact and less directly shaped around a quick interview explanation."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "A root-provided service can look “global” until a feature route or component provides the same token again."
+          ],
+          "followUpConfusion": [
+            "<code>@Optional()</code> says “return <code>null</code> if missing.” <code>@Self()</code> says “only check the current injector.” <code>@SkipSelf()</code> says “start at the parent injector.”"
+          ]
+        },
+        "theirEvidence": {
+          "realWorldUseCases": [
+            "Angular University is also focused on DI in practice, but our page now opens with the provider-scope bug pattern that many interview answers miss."
+          ],
+          "actionableExamples": [
+            "As a dedicated long-form DI tutorial, it still offers more step-by-step examples than our compact trivia page, so the example criterion stays close."
+          ],
+          "followUpConfusion": [
+            "Because it is a focused guide, it still answers many DI follow-ups deeply, but our page now covers the key resolution modifiers much more directly."
+          ]
+        },
+        "nextActions": {
+          "realWorldUseCases": [],
+          "actionableExamples": [
+            "Add a short useFactory example with environment-dependent configuration so provider shapes feel less abstract."
+          ],
+          "followUpConfusion": []
+        }
+      }
+  ]
+}

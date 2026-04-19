@@ -1,0 +1,140 @@
+{
+  "contentId": "js-bigint-data-type",
+  "tech": "javascript",
+  "query": "javascript bigint interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "I did not confirm a GreatFrontEnd page directly focused on BigInt precision, arithmetic mixing rules, and JSON serialization boundaries. Nearby general JavaScript pages would be weaker competitors than topic-direct BigInt references."
+  },
+  "competitors": [
+    {
+      "label": "MDN BigInt",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for BigInt behavior, syntax, comparisons, and arithmetic rules.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for BigInt syntax, supported operators, and comparison semantics."
+      ],
+      "theirGaps": [
+        "The reference format is less centered on one product scenario such as 64-bit IDs and JSON serialization boundaries."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A payment platform ingests 64-bit transaction IDs from multiple services."
+        ],
+        "followUpConfusion": [
+          "JSON.stringify does not serialize BigInt by default and throws."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains BigInt correctly, but our page turns it into a production-safe-integer and serialization decision instead of staying reference-first."
+        ],
+        "actionableExamples": [
+          "MDN still provides strong syntax and operator examples, so the actionable-example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the two follow-ups interviewers often ask next: arithmetic mixing with Number and JSON/API boundaries."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one explicit BigInt-to-DB or API-contract example if we later want a clearer example edge over the canonical docs."
+        ]
+      },
+      "winReason": "MDN is the canonical BigInt reference, but our page is stronger as an interview answer because it frames BigInt through precision loss, transaction-ID safety, and JSON boundary failures."
+    },
+    {
+      "label": "javascript.info BigInt",
+      "url": "https://javascript.info/bigint",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a strong topic-direct explainer for BigInt operations, conversions, and caveats.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a focused tutorial on BigInt arithmetic, conversions, and operator behavior."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped and less explicitly anchored to serialization or product-identifier boundaries."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "JSON contracts usually keep large integers as strings at the boundary, then parse to bigint inside the app and convert back to string when serializing."
+        ],
+        "followUpConfusion": [
+          "Do not mix Number and BigInt in arithmetic."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is direct and practical on the language behavior, so the real-world criterion stays close."
+        ],
+        "actionableExamples": [
+          "Its operator examples are strong, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page does more to answer the likely follow-up about JSON serialization and API contracts, not only arithmetic rules."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this comparison still feels close later, add one explicit mixed sort/comparator snippet so the actionable example edge is stronger than the language tutorial baseline."
+        ]
+      },
+      "winReason": "javascript.info is a strong language explainer, but our page now wins the interview calibration because it ties BigInt to real JSON/API boundary contracts and still answers the follow-up traps around mixed arithmetic."
+    },
+    {
+      "label": "BigInt: arbitrary-precision integers in JavaScript",
+      "url": "https://v8.dev/features/bigint",
+      "category": "tutorial_reference",
+      "selectionReason": "The V8 team article is a strong implementation-oriented explainer for why BigInt exists and what problem it solves.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It explains the precision problem and the language motivation behind BigInt very clearly."
+      ],
+      "theirGaps": [
+        "It is more engine- and language-motivation-focused than interview-focused on serialization and mixed-type traps."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A payment platform ingests 64-bit transaction IDs from multiple services."
+        ],
+        "followUpConfusion": [
+          "JSON.stringify does not serialize BigInt by default and throws."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The V8 article explains why BigInt exists, but our page is more directly tied to application-level integer-ID and API-boundary problems."
+        ],
+        "actionableExamples": [
+          "It still provides useful language examples, so the actionable-example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page covers the operational follow-ups more directly: cannot mix Number and BigInt in arithmetic, division truncates, and JSON conversion is explicit."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one compact comparison example around BigInt sorting or API parsing to strengthen the example edge."
+        ]
+      },
+      "winReason": "The V8 article is strong on why BigInt exists, but our page is better for this interview question because it ties BigInt to practical ID safety, mixed-arithmetic traps, and serialization boundaries."
+    }
+  ]
+}

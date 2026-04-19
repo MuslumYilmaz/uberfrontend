@@ -1,0 +1,148 @@
+{
+  "contentId": "react-portals",
+  "tech": "react",
+  "query": "react portals modal overlay event bubbling interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "createPortal",
+      "url": "https://react.dev/reference/react-dom/createPortal",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React reference for portals, DOM placement outside the parent hierarchy, and React-tree event behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative API reference for how portals work."
+      ],
+      "theirGaps": [
+        "It is less interview-compressed around focus management, scroll lock, and why event bubbling still follows the React tree."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "useful for modals, tooltips, and overlays"
+        ],
+        "actionableExamples": [
+          "For global notifications, menus, or context-sensitive actions."
+        ],
+        "followUpConfusion": [
+          "preserving React event bubbling."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs are authoritative, but our page is more explicit about the actual overlay cases frontend teams debug in production."
+        ],
+        "actionableExamples": [
+          "The API reference still provides solid examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that portals move DOM placement, not React parentage, so context and event propagation still behave through the React tree."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one short modal root snippet later if we want more literal API usage than the current use-case list."
+        ]
+      },
+      "winReason": "The API docs are authoritative, but our page is stronger for the interview prompt because it connects portals directly to overlay bugs, event bubbling, and accessibility checks."
+    },
+    {
+      "label": "What are React portals used for?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-react-portals-used-for",
+      "category": "interview_prep",
+      "selectionReason": "This is the direct GreatFrontEnd interview-prep comparator for React portal use cases and behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It matches the interview wording directly."
+      ],
+      "theirGaps": [
+        "It is less explicit about focus management, scroll lock, and why event bubbling still works."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Portals help overlays but require focus management and accessibility checks; test event bubbling and scroll lock."
+        ],
+        "actionableExamples": [
+          "Modals and Dialogs"
+        ],
+        "followUpConfusion": [
+          "keeps it part of the React component hierarchy"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is direct interview prep, but our answer is more explicit about the operational problems portals actually solve and introduce."
+        ],
+        "actionableExamples": [
+          "Its interview framing is strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the follow-up that portal children move in the DOM but still behave like descendants in the React tree."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the createPortal explanation visible so the answer stays more concrete than a use-case-only interview page."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it pushes beyond the definition into accessibility, bubbling, and overlay debugging."
+    },
+    {
+      "label": "Teleportation in React: Positioning, Stacking Context, and Portals",
+      "url": "https://www.developerway.com/posts/positioning-and-portals-in-react",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is a strong practical guide for why portals matter when overlays hit positioning, clipping, and stacking-context constraints.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical about stacking context, clipping, and overlay positioning."
+      ],
+      "theirGaps": [
+        "It is less compressed around the exact interview distinction between DOM placement and React-tree behavior."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "avoiding nested CSS stacking contexts."
+        ],
+        "actionableExamples": [
+          "Tooltips and Popovers"
+        ],
+        "followUpConfusion": [
+          "it still shares state, context, and event propagation with its parent."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DeveloperWay is highly practical, but our answer is more concise on the exact overlay cases and checks interviewers usually want."
+        ],
+        "actionableExamples": [
+          "Its worked examples are strong, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the follow-up that portals change DOM placement without breaking context or React event bubbling."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a tiny overflow-hidden tooltip example later if we want more visual example distance over long-form portal tutorials."
+        ]
+      },
+      "winReason": "This tutorial is strong on portal positioning problems, but our page is stronger for interview use because it keeps the answer anchored on overlay use cases, React-tree bubbling, and accessibility implications."
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "contentId": "js-spread-vs-rest-parameters",
+  "tech": "javascript",
+  "query": "javascript spread vs rest interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Spread syntax",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for spread syntax behavior in function calls, arrays, and objects.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for spread behavior across arrays, function calls, and objects."
+      ],
+      "theirGaps": [
+        "It is not centered on the spread-versus-rest contrast, so it answers only half of the usual interview confusion directly."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You are normalizing API payloads in a frontend dashboard."
+        ],
+        "followUpConfusion": [
+          "spread = expand"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN is strong on syntax behavior, but our page connects the operator choice to payload normalization and immutable state updates more directly."
+        ],
+        "actionableExamples": [
+          "MDN still has strong syntax examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page answers the exact interview confusion more directly by pairing spread with rest and reducing the distinction to direction and context."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny function-call-versus-destructuring example if we later want a clearer example edge over the docs."
+        ]
+      },
+      "winReason": "MDN is the canonical spread reference, but our page is stronger for the interview-sized question because it compares spread and rest directly and ties the syntax choice to practical frontend update patterns."
+    },
+    {
+      "label": "GreatFrontEnd spread vs rest",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-the-benefits-of-using-spread-syntax-and-how-is-it-different-from-rest-syntax",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep page for the exact spread-versus-rest question.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly aligned with the exact interview wording and likely emphasizes the conceptual contrast directly."
+      ],
+      "theirGaps": [
+        "It appears less explicit on shallow-copy caveats and payload-forwarding scenarios."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You are normalizing API payloads in a frontend dashboard."
+        ],
+        "followUpConfusion": [
+          "rest = gather"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd matches the interview wording well, but our page gives a more concrete product-side reason this distinction matters."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page pushes the likely follow-up further by covering shallow copies, object updates, and rest-in-destructuring along with the core contrast."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the shallow-copy pitfall and the practical scenario visible near the opening so the answer stays clearly better than a pure concept comparison."
+        ]
+      },
+      "winReason": "GreatFrontEnd is directly aligned with the interview wording, but our page is more useful because it pairs the core distinction with shallow-copy caveats and a real payload-normalization scenario."
+    },
+    {
+      "label": "javascript.info Rest parameters and spread syntax",
+      "url": "https://javascript.info/rest-parameters-spread",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct explainer for both rest parameters and spread syntax in one page.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly relevant and usually strong on the syntax rules for both concepts."
+      ],
+      "theirGaps": [
+        "It is less compact as an interview answer and less explicit about the frontend shallow-copy trap."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Spread is heavily used for immutable updates (React/Redux-style state updates)."
+        ],
+        "followUpConfusion": [
+          "Spread and rest share the same syntax (...) but do opposite jobs"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is direct on syntax and use, but our page ties the choice more clearly to immutable updates and payload normalization."
+        ],
+        "actionableExamples": [
+          "Its examples are strong and topic-direct, so the actionable-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit on the exact interview follow-up: same token, opposite direction, plus the shallow-copy caveat that often surprises teams."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one more code sample for rest in object destructuring without expanding the page too much."
+        ]
+      },
+      "winReason": "javascript.info is strong and topic-direct, but our page is better for this question because it compresses the mental model, the common pitfall, and the frontend use case into one faster answer."
+    }
+  ]
+}

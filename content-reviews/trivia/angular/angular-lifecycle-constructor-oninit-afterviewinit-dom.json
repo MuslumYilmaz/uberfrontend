@@ -1,0 +1,147 @@
+{
+  "contentId": "angular-lifecycle-constructor-oninit-afterviewinit-dom",
+  "tech": "angular",
+  "query": "Angular constructor vs ngOnInit vs ngAfterViewInit: when to use",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Component Lifecycle",
+      "url": "https://angular.dev/guide/components/lifecycle",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official lifecycle reference and the strongest canonical baseline for constructor, ngOnInit, and ngAfterViewInit timing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The Angular docs remain authoritative, but our shipped trivia is more directly shaped around the DOM/ViewChild decision and the exact pitfalls interviewers usually ask next.",
+      "theirStrengths": [
+        "It gives the authoritative lifecycle table, execution order, and the official wording for when each hook runs."
+      ],
+      "theirGaps": [
+        "It is not organized as a direct decision guide for DOM/ViewChild access versus constructor or ngOnInit."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use ngAfterViewInit() for DOM/ViewChild access in most cases."
+        ],
+        "followUpConfusion": [
+          "@ViewChild(..., { static: true }) resolves earlier (before/at init), so it can be used in ngOnInit() if the element is always present",
+          "If you change a bound value inside ngAfterViewInit , you can trigger ExpressionChangedAfterItHasBeenCheckedError in dev mode."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide explains each lifecycle phase and mentions that ngAfterViewInit is where view queries can be read, but it is less question-shaped around the DOM/ViewChild choice itself."
+        ],
+        "actionableExamples": [
+          "The docs include a lifecycle summary table plus concrete hook examples, so the example quality stays competitive with ours."
+        ],
+        "followUpConfusion": [
+          "Angular.dev covers view-query timing and ExpressionChangedAfterItHasBeenCheckedError, but it does not combine constructor, ngOnInit, static queries, and DOM access into one interview-style answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one broken-before-fixed-after example showing a ViewChild under *ngIf so the applied example edge stays clearer than the docs."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant Angular basics guide that includes lifecycle hooks, so it is the strongest interview-prep calibration point for this fundamentals topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers the hook names well, but our page is much more specific about DOM/ViewChild access, static queries, and the expression-changed pitfall.",
+      "theirStrengths": [
+        "It maps the common lifecycle hooks in a concise interview-friendly format and includes quick code examples."
+      ],
+      "theirGaps": [
+        "It is lighter on the DOM/ViewChild decision tree and on the static:true nuance that usually trips candidates."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use ngAfterViewInit() for DOM/ViewChild access in most cases."
+        ],
+        "followUpConfusion": [
+          "@ViewChild(..., { static: true }) resolves earlier (before/at init), so it can be used in ngOnInit() if the element is always present",
+          "If you change a bound value inside ngAfterViewInit , you can trigger ExpressionChangedAfterItHasBeenCheckedError in dev mode."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd names ngOnInit and ngAfterViewInit, but it stays at the lifecycle-hooks overview level rather than centering the DOM/ViewChild use case."
+        ],
+        "actionableExamples": [
+          "Its examples are concise and interview-ready enough that the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "The guide does not go as far into static ViewChild timing or the common expression-changed follow-up."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny constructor-vs-ngOnInit-vs-ngAfterViewInit anti-example so the practical delta is visible even faster."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University ViewChild Guide",
+      "url": "https://blog.angular-university.io/angular-viewchild/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a strong tutorial competitor because it goes deep on ViewChild timing and AfterViewInit behavior, which are the core follow-ups for this trivia.",
+        "verdicts": {
+          "realWorldUseCases": "ours",
+          "actionableExamples": "tie",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "Angular University is still deeper on ViewChild as a tutorial, but our page now makes the wrong static:true fix and the afterNextRender follow-up much more explicit in one lifecycle-decision answer.",
+      "theirStrengths": [
+        "It goes deep on ViewChild timing and shows several scenarios beyond the bare lifecycle definitions."
+      ],
+      "theirGaps": [
+        "It is more ViewChild-centric than constructor-versus-ngOnInit-versus-ngAfterViewInit comparative."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "Static queries are not “faster DOM access.” They only work early when the queried node is guaranteed to be present in the initial template."
+          ],
+          "followUpConfusion": [
+            "newer Angular also gives you render callbacks like <code>afterNextRender</code>."
+          ]
+        },
+        "theirEvidence": {
+          "realWorldUseCases": [
+            "Angular University is also built around the real ViewChild timing question, but our page now highlights the broken static:true-under-*ngIf case more directly."
+          ],
+          "actionableExamples": [
+            "Its walkthrough is still broader and more example-heavy than our single-page trivia answer, so the example criterion stays close."
+          ],
+          "followUpConfusion": [
+            "It addresses timing and AfterViewInit well, but our page now adds the afterNextRender follow-up and the specific static-query failure mode."
+          ]
+        },
+        "nextActions": {
+          "realWorldUseCases": [],
+          "actionableExamples": [
+            "Add one second code example that contrasts default ViewChild timing with static:true timing more explicitly."
+          ],
+          "followUpConfusion": []
+        }
+      }
+  ]
+}

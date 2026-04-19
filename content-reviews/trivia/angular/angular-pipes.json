@@ -1,0 +1,149 @@
+{
+  "contentId": "angular-pipes",
+  "tech": "angular",
+  "query": "Angular pipes async pipe pure vs impure interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular Pipes Guide",
+      "url": "https://angular.dev/guide/templates/pipes",
+      "category": "canonical_docs",
+      "selectionReason": "The official pipes guide is the canonical source for built-in pipes, async pipe behavior, and pure versus impure pipe semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Angular.dev is authoritative on pipes, but our page is more interview-useful because it now pairs the pure-pipe mutation miss with the async-pipe-versus-manual-subscribe decision in one compact answer.",
+      "theirStrengths": [
+        "It is authoritative on built-in pipes, custom pipes, async pipe behavior, and pure versus impure semantics."
+      ],
+      "theirGaps": [
+        "It is less tightly framed around the real production pitfalls of mutation-in-place and template performance hotspots."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "async subscribes/unsubscribes automatically, avoids manual subscription leaks, and marks the view for update when a new value arrives"
+        ],
+        "actionableExamples": [
+          "this.items.push(newItem); // same array reference => pure pipe may not rerun",
+          "letting the async pipe manage subscription and teardown in the template."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official guide explains pipes thoroughly, but our page is more direct about the specific production bugs around leaks, OnPush, and mutation traps."
+        ],
+        "actionableExamples": [
+          "Angular.dev provides strong pipe examples, but our page now pairs the pure-pipe mutation miss with the async-pipe-versus-manual-subscribe contrast in one compact worked block."
+        ],
+        "followUpConfusion": [
+          "It covers the concepts well, but our page is a little more direct on why pure pipes miss in-place mutations."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep one short line on when expensive transforms should move out of template pipes and into selectors or computed state."
+        ]
+      }
+    },
+    {
+      "label": "Telerik Pure vs Impure Pipes",
+      "url": "https://www.telerik.com/blogs/angular-basics-pure-vs-impure-pipes",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial competitor for the pure-versus-impure performance trade-off and pipe behavior.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Telerik is strong on pure-versus-impure behavior, but our page now wins the broader prompt by pairing mutation traps with async-pipe usage and a clearer rule for moving heavy work out of the template.",
+      "theirStrengths": [
+        "It is tightly focused on the exact pure-versus-impure distinction and the performance consequences."
+      ],
+      "theirGaps": [
+        "It is narrower on async pipe and the interview-grade advice about keeping pipes deterministic and side-effect free."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "this.items.push(newItem); // same array reference => pure pipe may not rerun",
+          "letting the async pipe manage subscription and teardown in the template."
+        ],
+        "followUpConfusion": [
+          "If the transform is heavy, list-sized, or needs memoization keys, move it out of the template into a selector, computed signal, facade, or RxJS pipeline instead of reaching for an impure pipe."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Telerik keeps the page centered on real performance consequences of pure versus impure pipes, so the use-case framing is close."
+        ],
+        "actionableExamples": [
+          "Telerik is strong on pure versus impure behavior, but our page now gives the stronger compact pair: pure-pipe mutation miss plus async-pipe-versus-manual-subscribe."
+        ],
+        "followUpConfusion": [
+          "Our page is now more rounded on the actual decision boundary: async pipe for rendering streams, pure pipes for cheap transforms, and selectors or computed state for heavy work."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the answer anchored on async pipe plus mutation traps rather than letting it drift into formatting-only examples."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Swiftorial Angular Pipes",
+      "url": "https://www.swiftorial.com/tutorials/web_development/angular/introduction_to_angular/angular_pipes",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a broad direct competitor for built-in pipes, custom pipes, and template transformations.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Swiftorial covers pipe basics well, but our page is stronger on the production follow-ups that matter most: mutation-in-place, async-pipe rendering, and when template transforms should move upstream.",
+      "theirStrengths": [
+        "It explains what pipes are, how built-in pipes work, and how to create custom pipes."
+      ],
+      "theirGaps": [
+        "It is lighter on performance pitfalls, mutation traps, and async pipe behavior in real Angular apps."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "this.items.push(newItem); // same array reference => pure pipe may not rerun",
+          "letting the async pipe manage subscription and teardown in the template."
+        ],
+        "followUpConfusion": [
+          "If the transform is heavy, list-sized, or needs memoization keys, move it out of the template into a selector, computed signal, facade, or RxJS pipeline instead of reaching for an impure pipe."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Swiftorial explains pipe basics well, so the practical framing is close."
+        ],
+        "actionableExamples": [
+          "Its built-in and custom-pipe examples are solid, but our page now gives the stronger worked contrast between mutation-in-place, immutable replacement, and async pipe rendering."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit on the likely follow-up confusion around pure pipes missing in-place mutations, when async pipe matters most, and when to move work out of the template."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one example that connects async pipe to template rendering so the answer does not collapse into pure custom-pipe basics."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-composition-api",
+  "tech": "vue",
+  "query": "Vue Composition API interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Composition API FAQ",
+      "url": "https://vuejs.org/guide/extras/composition-api-faq",
+      "category": "canonical_docs",
+      "selectionReason": "This is the strongest official Vue page for why the Composition API exists and when it helps versus the Options API.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "The official FAQ is strong on motivation, trade-offs, type inference, and how Composition API fits Vue's long-term design."
+      ],
+      "theirGaps": [
+        "It is less compact as a trivia-style interview answer and less centered on one architectural takeaway."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The Composition API is not just new syntax. In production and in interviews, its value is architectural: it lets you group one feature's state, effects, and derived values together instead of scattering them across Options API sections."
+        ],
+        "actionableExamples": [
+          "In the Composition API, you can move the whole feature into one composable and keep the state, effects, and cleanup together."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The FAQ already frames Composition API around scaling logic organization, composables, and TypeScript, so the use-case comparison stays close."
+        ],
+        "actionableExamples": [
+          "The official page gives broader design reasoning and examples, so actionable coverage remains close."
+        ],
+        "followUpConfusion": [
+          "The FAQ is stronger on deeper migration and design follow-ups than our shorter page."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one explicit line on when Options API is still perfectly fine so the migration trade-off is more balanced."
+        ]
+      },
+      "winReason": "The official FAQ is broader on design rationale, but our page now adds a concrete composable extraction scenario that makes the architectural benefit more actionable in one short answer."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because Composition API, reactivity, and large-component organization are core Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong Vue interview-prep hub with broad coverage of Composition API and reactivity-adjacent questions."
+      ],
+      "theirGaps": [
+        "The landing page is less focused on the exact architecture and migration trade-off of Composition API."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That makes large components easier to reason about, reuse through composables, and scale with TypeScript."
+        ],
+        "followUpConfusion": [
+          "Fully compatible with existing Options API — both can coexist in the same project."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is directly relevant at the interview-topic level, but it is less focused on one architecture-specific explanation."
+        ],
+        "actionableExamples": [
+          "Because GreatFrontEnd emphasizes solved examples, the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about coexistence with Options API and the migration trade-off."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a smaller composable extraction example so the answer is not mostly conceptual."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is more specific on why Composition API exists and what large-component pain it solves."
+    },
+    {
+      "label": "Introduction to the Vue 3 Composition API",
+      "url": "https://vueschool.io/lessons/introduction-to-the-vue-js-3-composition-api",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a direct introductory lesson on the Composition API and how setup, ref, and reactive fit together.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a direct topic lesson and therefore strong on the basic Composition API building blocks."
+      ],
+      "theirGaps": [
+        "The surfaced lesson framing is lighter on architecture trade-offs, migration nuance, and the 'why now' angle."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "In large applications, the Options API (using data, methods, computed, etc.) often leads to scattered logic — related code gets separated into different options, making it harder to maintain and reuse."
+        ],
+        "actionableExamples": [
+          "Worked scenario: one feature, one composable"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The lesson explains the Composition API entry points well, but the visible framing is less grounded in large-component architecture pain."
+        ],
+        "actionableExamples": [
+          "It is a direct hands-on lesson, so actionable coverage remains close."
+        ],
+        "followUpConfusion": [
+          "The lesson is lighter on migration and coexistence follow-ups than a dedicated FAQ."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one line on when sticking with Options API is still a reasonable choice."
+        ]
+      },
+      "winReason": "Vue School is a strong direct introduction, but our page now gives a more interview-ready composable example and makes the feature-first organization benefit more concrete."
+    }
+  ]
+}

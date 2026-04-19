@@ -1,0 +1,154 @@
+{
+  "contentId": "js-null-undefined-undeclared",
+  "tech": "javascript",
+  "query": "null undefined undeclared javascript interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN undefined",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for undefined semantics and safe checks such as typeof, which are central to separating undefined from undeclared variables.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on undefined semantics and on why typeof is the safe check for undeclared identifiers."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped on when null is intentional and why undeclared should be treated as a scope or typo bug."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "undefined means declared but currently no value, null means intentionally empty, and undeclared means the identifier does not exist in scope. Treat them differently in logic and debugging."
+        ],
+        "actionableExamples": [
+          "<strong>Where undefined appears naturally</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Practical rule</strong><br>Use <code>null</code> when you intentionally clear/reset a value. Treat <code>undefined</code> as \"not provided yet\". Treat undeclared as a bug (scope/typo/load-order)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines undefined accurately, but our page turns the distinction into a debugging rule for logic branches, resets, and scope mistakes."
+        ],
+        "actionableExamples": [
+          "MDN still has strong examples around typeof and undefined behavior, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the three-way interview trap: intentional null, natural undefined, and undeclared as a separate runtime bug class."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny typeof-safe-check snippet if we later need a clearer example edge over the canonical docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical reference for undefined, but our page is stronger for this interview question because it separates null, undefined, and undeclared as distinct debugging states instead of treating undefined in isolation."
+    },
+    {
+      "label": "GreatFrontEnd null vs undefined vs undeclared",
+      "url": "https://www.greatfrontend.com/questions/quiz/whats-the-difference-between-a-variable-that-is-null-undefined-or-undeclared-how-would-you-go-about-checking-for-any-of-these-states",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview-prep page for the same null, undefined, and undeclared distinction.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It matches the exact interview wording and covers check strategies for all three states."
+      ],
+      "theirGaps": [
+        "It is less compact on the product-facing rule of when to intentionally assign null and when to treat undeclared as a bug."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "undefined means declared but currently no value, null means intentionally empty, and undeclared means the identifier does not exist in scope. Treat them differently in logic and debugging."
+        ],
+        "actionableExamples": [
+          "<strong>Where undefined appears naturally</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Practical rule</strong><br>Use <code>null</code> when you intentionally clear/reset a value. Treat <code>undefined</code> as \"not provided yet\". Treat undeclared as a bug (scope/typo/load-order)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is directly relevant, but our page is more explicit about how the distinction affects branching logic and reset semantics in application code."
+        ],
+        "actionableExamples": [
+          "Its examples are topic-direct and interview-ready, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page is more concise on the next confusion interviewers probe: when typeof is safe, when null is intentional, and why undeclared should usually be treated as a bug."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the practical rule and the natural undefined examples close together so the answer stays faster to scan than a longer interview-prep article."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it compresses the distinction into clearer runtime decisions: intentional empty, unassigned value, and missing identifier."
+    },
+    {
+      "label": "Stack Overflow undefined vs undeclared",
+      "url": "https://stackoverflow.com/questions/64406377/how-to-check-if-a-variable-is-undefined-versus-it-is-undeclared-in-javascript",
+      "category": "community_qna",
+      "selectionReason": "This is a focused community Q&A source for the exact undeclared-versus-undefined follow-up that usually comes up after the core distinction.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on the safe runtime difference between undeclared and undefined values."
+      ],
+      "theirGaps": [
+        "It is narrower than the interview question and does not cover null as intentionally empty in the same compact answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "undefined means declared but currently no value, null means intentionally empty, and undeclared means the identifier does not exist in scope. Treat them differently in logic and debugging."
+        ],
+        "actionableExamples": [
+          "<strong>Where undefined appears naturally</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Practical rule</strong><br>Use <code>null</code> when you intentionally clear/reset a value. Treat <code>undefined</code> as \"not provided yet\". Treat undeclared as a bug (scope/typo/load-order)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is useful for one edge case, but our page covers the fuller runtime distinction teams actually debug: intentional null, unassigned undefined, and missing identifiers."
+        ],
+        "actionableExamples": [
+          "The Q&A still provides a concrete typeof-safe-check discussion, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page resolves more of the likely follow-up set in one place instead of centering only on the undeclared check."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If we need another pass later, add one short try/catch or typeof example that shows undeclared access failing while typeof stays safe."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The Stack Overflow thread is strong on one follow-up, but our page is a better interview answer because it covers all three states and ties them back to concrete debugging choices."
+    }
+  ]
+}

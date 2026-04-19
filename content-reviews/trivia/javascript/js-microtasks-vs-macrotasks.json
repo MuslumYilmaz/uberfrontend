@@ -1,0 +1,145 @@
+{
+  "contentId": "js-microtasks-vs-macrotasks",
+  "tech": "javascript",
+  "query": "microtasks vs macrotasks javascript interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Using microtasks in JavaScript with queueMicrotask()",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN guide is the clearest canonical explanation of how the event loop drains microtasks, how tasks differ, and why recursive microtasks can starve progress.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN is the stronger API guide, but our page is now better on the interview-sized production story: why a spinner may never paint, when to yield with a macrotask, and how browser rendering fits into the queue priority rule.",
+      "theirStrengths": [
+        "It clearly documents the timing rules for tasks versus microtasks and the starvation risk from recursive microtasks."
+      ],
+      "theirGaps": [
+        "It is more API-guide shaped than interview-compressed."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That is why a loading spinner can stay invisible if a recursive Promise chain keeps the current turn alive."
+        ],
+        "followUpConfusion": [
+          "Browsers may render between macrotasks, but not while the microtask queue is still draining."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN connects microtask draining to rendering, but our page is now more concrete about the visible UI failure where a spinner never paints after user input."
+        ],
+        "actionableExamples": [
+          "It gives clearer task-versus-microtask execution rules and queueMicrotask examples than our current compact answer."
+        ],
+        "followUpConfusion": [
+          "Our page now closes the rendering follow-up more directly by stating that browsers may render between macrotasks but not during a microtask drain."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a small runnable order-of-logs example mixing Promise.then and setTimeout."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Explain the concept of a microtask queue",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-concept-of-a-microtask-queue",
+      "category": "interview_prep",
+      "selectionReason": "This is GreatFrontEnd's direct microtask-queue interview page, so it is the closest interview-prep comparator for the same concept.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd defines the queue well, but our answer is better on browser rendering consequences, starvation, and when to intentionally yield with macrotasks or requestAnimationFrame.",
+      "theirStrengths": [
+        "It is concise and interview-oriented, with the core queue ordering rule."
+      ],
+      "theirGaps": [
+        "It is lighter on rendering starvation and practical yielding guidance."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "a long/recursive microtask chain can delay painting and make the UI feel frozen."
+        ],
+        "followUpConfusion": [
+          "Promises run before timers because microtasks are drained before the next macrotask."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page explains queue priority, but our answer is more explicit about UI starvation, render delays, and when to use macrotasks to yield."
+        ],
+        "actionableExamples": [
+          "Both pages give concise ordering examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct about browser rendering happening between macrotasks and not during a microtask drain."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one code example that demonstrates Promise.then beating setTimeout and then starving rendering with recursive queueMicrotask."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Event loop: microtasks and macrotasks",
+      "url": "https://javascript.info/event-loop",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is one of the strongest tutorial references for event loop timing, task splitting, and paint starvation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "javascript.info is still stronger on long-form event-loop teaching, but our page is now more targeted to the browser interview version of this question: spinner-not-painting incidents, yielding guidance, and the exact rendering rule candidates often miss.",
+      "theirStrengths": [
+        "It is deeply practical about task splitting, rendering pauses, and keeping the browser responsive."
+      ],
+      "theirGaps": [
+        "It is more tutorial-shaped than a short interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A search page sets loading=true, then kicks off a recursive Promise chain to normalize 20k rows before painting the next frame."
+        ],
+        "followUpConfusion": [
+          "Browsers may render between macrotasks, but not while the microtask queue is still draining."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info ties the event loop to UI freezing well, but our page is now more explicit about one frontend incident where a spinner never paints because the same turn never ends."
+        ],
+        "actionableExamples": [
+          "It provides richer examples of chunking heavy work and showing how paints relate to queued tasks."
+        ],
+        "followUpConfusion": [
+          "Our answer now adds the paint-between-macrotasks rule directly, which is one of the most common browser follow-ups."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a chunking example that contrasts setTimeout, requestAnimationFrame, and queueMicrotask."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

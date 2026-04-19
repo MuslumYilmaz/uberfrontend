@@ -1,0 +1,146 @@
+{
+  "contentId": "rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject",
+  "tech": "angular",
+  "query": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "RxJS Subject API",
+      "url": "https://rxjs.dev/api/index/class/Subject",
+      "category": "canonical_docs",
+      "selectionReason": "The official Subject API is the canonical baseline for RxJS subject primitives, with the comparison page then extending into variant selection.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the official RxJS baseline for subject semantics and multicasting."
+      ],
+      "theirGaps": [
+        "It does not itself answer the full interview comparison across all four variants and their late-subscriber trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Late-subscriber decision</strong><br><br>These Subject variants differ mainly by <strong>what late subscribers receive and when</strong>. <code>Subject</code> has no initial value and no replay. <code>BehaviorSubject</code> always has a current value. <code>ReplaySubject</code> replays buffered history. <code>AsyncSubject</code> emits only the final value after completion. Pick the wrong one and the UI either misses state, replays too much history, or never emits when you expect."
+        ],
+        "followUpConfusion": [
+          "<strong>Failure pattern</strong><br><ul><li>Use <code>Subject</code> for app state and late subscribers miss the current value.</li><li>Use <code>ReplaySubject</code> carelessly and memory or history grows more than intended.</li><li>Use <code>AsyncSubject</code> for a stream that never completes and subscribers see nothing.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Learn RxJS Subjects",
+      "url": "https://www.learnrxjs.io/learn-rxjs/subjects",
+      "category": "tutorial_reference",
+      "selectionReason": "Learn RxJS has the strongest single tutorial page comparing Subject, BehaviorSubject, ReplaySubject, and AsyncSubject with late-subscriber examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It directly compares all four subject variants and includes emitted-value timelines."
+      ],
+      "theirGaps": [
+        "It is RxJS-focused and less tuned to Angular-specific service or component-state decisions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Late-subscriber decision</strong><br><br>These Subject variants differ mainly by <strong>what late subscribers receive and when</strong>. <code>Subject</code> has no initial value and no replay. <code>BehaviorSubject</code> always has a current value. <code>ReplaySubject</code> replays buffered history. <code>AsyncSubject</code> emits only the final value after completion. Pick the wrong one and the UI either misses state, replays too much history, or never emits when you expect."
+        ],
+        "followUpConfusion": [
+          "<strong>Failure pattern</strong><br><ul><li>Use <code>Subject</code> for app state and late subscribers miss the current value.</li><li>Use <code>ReplaySubject</code> carelessly and memory or history grows more than intended.</li><li>Use <code>AsyncSubject</code> for a stream that never completes and subscribers see nothing.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: Subject vs BehaviorSubject vs ReplaySubject in Angular",
+      "url": "https://stackoverflow.com/questions/43118769/subject-vs-behaviorsubject-vs-replaysubject-in-angular",
+      "category": "community_qna",
+      "selectionReason": "This community thread is directly on the exact comparison and is useful because it captures the common misconceptions around BehaviorSubject and ReplaySubject.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It directly answers the comparison question and includes the common BehaviorSubject versus ReplaySubject confusion."
+      ],
+      "theirGaps": [
+        "It is a thread rather than a compact interview answer with one decision table and fast rule set."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Late-subscriber decision</strong><br><br>These Subject variants differ mainly by <strong>what late subscribers receive and when</strong>. <code>Subject</code> has no initial value and no replay. <code>BehaviorSubject</code> always has a current value. <code>ReplaySubject</code> replays buffered history. <code>AsyncSubject</code> emits only the final value after completion. Pick the wrong one and the UI either misses state, replays too much history, or never emits when you expect."
+        ],
+        "followUpConfusion": [
+          "<strong>Failure pattern</strong><br><ul><li>Use <code>Subject</code> for app state and late subscribers miss the current value.</li><li>Use <code>ReplaySubject</code> carelessly and memory or history grows more than intended.</li><li>Use <code>AsyncSubject</code> for a stream that never completes and subscribers see nothing.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

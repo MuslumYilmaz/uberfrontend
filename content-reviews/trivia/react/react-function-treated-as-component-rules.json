@@ -1,0 +1,140 @@
+{
+  "contentId": "react-function-treated-as-component-rules",
+  "tech": "react",
+  "query": "react function treated as component rules interview question",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "React calls Components and Hooks",
+      "url": "https://react.dev/reference/rules/react-calls-components-and-hooks",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React rules page for how React treats components as element types and why components and Hooks must not be called directly.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative explanation of why React must orchestrate component calls and Hook ordering."
+      ],
+      "theirGaps": [
+        "It is less compact around the JSX capitalization rule and valid-node return rule that interviewers often bundle into this question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Calling a Hook-using component like Comp() is a common mistake."
+        ],
+        "followUpConfusion": [
+          "React treats a function as a component when you use it as an element type"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain direct-call hazards well, but our page is more complete on the actual runtime gotchas: lowercase JSX, invalid returns, and Hook misuse."
+        ],
+        "actionableExamples": [
+          "The canonical examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that JSX capitalization controls whether React sees a host tag or a component reference."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny lowercase-versus-uppercase JSX example later if we want more concrete syntax contrast."
+        ]
+      },
+      "winReason": "The official rule page is authoritative, but our page is stronger because it compresses element type, capitalization, valid returns, and Hook-safe invocation into one interview-ready answer."
+    },
+    {
+      "label": "Why should React component names start with capital letter?",
+      "url": "https://iq.js.org/questions/react/why-should-component-names-start-with-capital-letter",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a topic-direct explainer for the JSX capitalization rule that determines whether React treats a function as a component.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is focused on the capitalization rule in plain language."
+      ],
+      "theirGaps": [
+        "It is narrower than the full set of rules around component treatment, valid returns, and Hook invocation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Include common runtime errors and gotchas."
+        ],
+        "followUpConfusion": [
+          "it’s capitalized in JSX, and it returns a valid React node."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page covers capitalization well, but our answer is stronger because it also covers direct calls and invalid Hook usage, which are the real runtime failures teams hit."
+        ],
+        "actionableExamples": [
+          "Its syntax explanation is concrete enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that uppercase naming is necessary but not sufficient if the function is called outside React's render pipeline."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one direct-call example visible so the answer stays broader than naming alone."
+        ]
+      },
+      "winReason": "This tutorial explains capitalization well, but our page is stronger because it turns the question into a full runtime rule set instead of a naming-only convention."
+    },
+    {
+      "label": "ReactJS component names must begin with capital letters?",
+      "url": "https://stackoverflow.com/questions/30373343/reactjs-component-names-must-begin-with-capital-letters",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for how JSX capitalization changes React's interpretation of a function.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on the exact JSX capitalization confusion many developers hit."
+      ],
+      "theirGaps": [
+        "It is narrower than the full interview answer around valid return values and Hook-safe invocation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Uppercase naming and hook rules are common edge cases"
+        ],
+        "followUpConfusion": [
+          "If the function uses Hooks, it must be treated as a real component"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on one common syntax bug, but our page is stronger because it bundles the other failures that usually come with it."
+        ],
+        "actionableExamples": [
+          "Community examples can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that React must invoke Hook-using functions itself to preserve Hook ordering."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one invalid-return example later if we want another concrete runtime failure next to capitalization."
+        ]
+      },
+      "winReason": "The community thread is useful on capitalization, but our page is stronger because it explains the full set of rules React uses to treat a function as a component."
+    }
+  ]
+}

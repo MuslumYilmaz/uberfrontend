@@ -1,0 +1,155 @@
+{
+  "contentId": "js-call-apply-bind",
+  "tech": "javascript",
+  "query": "call apply bind javascript interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN Function.prototype.bind()",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's bind reference is the closest canonical reference for explicit this control and contrasts bind with immediate invocation through call and apply.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on bind behavior and on how explicit this binding works at runtime."
+      ],
+      "theirGaps": [
+        "It is less compact on the three-way interview contrast of call, apply, and bind plus the common performance and allocation follow-ups."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "All three methods are used to control the value of `this` when calling a function. The difference is how they pass arguments and when the function is executed. These affect this-binding and performance, so test with bound handlers and avoid unnecessary allocations."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>3. bind()</strong>  <code>bind()</code> does not run the function immediately. Instead, it returns a new function with a permanently bound <code>this</code> value."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>  A frequent confusion is expecting <code>bind()</code> to call the function immediately. Remember: it only returns a new function — you have to call it manually later."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains bind precisely, but our page is more explicit about handler reuse, allocation cost, and the immediate-versus-later execution distinction across all three methods."
+        ],
+        "actionableExamples": [
+          "The canonical docs still provide strong syntax examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the interview follow-up people often miss: bind creates a function for later, while call and apply execute immediately."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny event-handler rebinding example if we later need a clearer example edge over the docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical reference for bind, but our page is stronger for this interview question because it compares all three methods directly and carries the answer into handler and allocation pitfalls."
+    },
+    {
+      "label": "javascript.info Function binding",
+      "url": "https://javascript.info/bind",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is the strongest topic-direct tutorial for this binding and partial application, which are central follow-ups to call, apply, and bind questions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on runtime this binding and practical examples of bind."
+      ],
+      "theirGaps": [
+        "It is less centered on the concise three-way comparison interviewers usually want first."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "All three methods are used to control the value of `this` when calling a function. The difference is how they pass arguments and when the function is executed. These affect this-binding and performance, so test with bound handlers and avoid unnecessary allocations."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>3. bind()</strong>  <code>bind()</code> does not run the function immediately. Instead, it returns a new function with a permanently bound <code>this</code> value."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>  - **call()** → Calls immediately, arguments as a list. - **apply()** → Calls immediately, arguments as an array. - **bind()** → Returns a new function (call it later).  All three methods let you control what <code>this</code> refers to."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on bind in practice, but our page is more explicit about the interview-sized choice between immediate invocation and returned bound functions."
+        ],
+        "actionableExamples": [
+          "Its binding examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is faster on the likely follow-up: call list arguments, apply array arguments, and bind later execution with extra allocation."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If we need another pass later, add one partial-application snippet to make the tutorial comparison less even."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is strong on bind, but our page is better calibrated for the interview prompt because it makes the call/apply/bind contrast explicit and operational."
+    },
+    {
+      "label": "Stack Overflow call vs apply vs bind",
+      "url": "https://stackoverflow.com/questions/15677738/whats-the-difference-between-call-apply-and-bind",
+      "category": "community_qna",
+      "selectionReason": "This is a focused community Q&A source for the exact distinction between call, apply, and bind.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is narrowly focused on the exact three-way difference and includes practical this-binding examples."
+      ],
+      "theirGaps": [
+        "It is less structured as a compact interview answer and lighter on the handler-allocation follow-up."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "All three methods are used to control the value of `this` when calling a function. The difference is how they pass arguments and when the function is executed. These affect this-binding and performance, so test with bound handlers and avoid unnecessary allocations."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>3. bind()</strong>  <code>bind()</code> does not run the function immediately. Instead, it returns a new function with a permanently bound <code>this</code> value."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>  - **call()** → Calls immediately, arguments as a list. - **apply()** → Calls immediately, arguments as an array. - **bind()** → Returns a new function (call it later).  All three methods let you control what <code>this</code> refers to."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread explains the difference directly, but our page is more explicit about where the choice matters in handler code and why repeated bind calls can matter."
+        ],
+        "actionableExamples": [
+          "A focused Q&A still gives concrete examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page packages the likely interview follow-up better by emphasizing later invocation, argument shape, and the cost of unnecessary bound allocations."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the summary and common-mistake sections together so the answer remains more skimmable than a long Q&A thread."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The Stack Overflow thread is topic-direct, but our page is a better interview answer because it compresses the three-way distinction and the handler-level consequences into one faster explanation."
+    }
+  ]
+}

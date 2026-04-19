@@ -1,0 +1,145 @@
+{
+  "contentId": "js-xss-dom-sinks",
+  "tech": "javascript",
+  "query": "prevent dom xss in javascript sinks interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Cross-site scripting (XSS)",
+      "url": "https://developer.mozilla.org/docs/Web/Security/Attacks/XSS",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical security reference for XSS classes, defenses, and browser-level mitigations such as CSP and Trusted Types.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "MDN is the broader canonical XSS reference, but our page is now stronger for this DOM-sink interview query because it stays on client-side source-to-sink debugging, shows concrete safe-sink examples, and contrasts DOM XSS with reflected or stored XSS directly.",
+      "theirStrengths": [
+        "It covers stored, reflected, and DOM XSS with deeper remediation guidance and broader security context."
+      ],
+      "theirGaps": [
+        "It is broader than our page and less compressed for interview delivery."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A support widget reads location.hash to restore UI state and also renders agent notes from an API."
+        ],
+        "actionableExamples": [
+          "profileBio.innerHTML = policy.createHTML(apiProfile.bio);"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page now grounds DOM XSS in a concrete widget-and-profile flow instead of staying at the broader XSS-harms level."
+        ],
+        "actionableExamples": [
+          "Our page now has three concrete mitigation shapes together: safe text rendering, URL allowlists, and a Trusted Types policy example."
+        ],
+        "followUpConfusion": [
+          "Both pages now answer the main follow-up questions about escaping, sanitization, Trusted Types, and the difference between DOM and server-originated XSS."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Add one short note on framework-specific escape hatches such as dangerouslySetInnerHTML so the framework follow-up is stronger."
+        ]
+      }
+    },
+    {
+      "label": "What is Cross-Site Scripting (XSS) and how can you prevent it?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-cross-site-scripting-xss-and-how-can-you-prevent-it",
+      "category": "interview_prep",
+      "selectionReason": "This is GreatFrontEnd's direct interview-prep page on XSS prevention and the closest interview comparator for our DOM-XSS-focused page.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd covers general XSS well, but our page is more targeted to the DOM sink problem itself: source-to-sink flow, safe sink defaults, and a runnable unsafe-versus-safe rendering example.",
+      "theirStrengths": [
+        "It gives a concise overview of stored, reflected, and DOM-based XSS plus standard defenses like sanitization and CSP."
+      ],
+      "theirGaps": [
+        "It is broader and less specific about the dangerous DOM sink model and safe DOM API choices."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Using textContent prevents markup execution and should be the default for user-controlled text."
+        ],
+        "followUpConfusion": [
+          "Model this as source -> transform -> sink."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Both pages describe realistic consequences such as session theft and malicious script execution."
+        ],
+        "actionableExamples": [
+          "Our answer is more targeted because it demonstrates safe text rendering and names sink-safe defaults, not just generic sanitization and CSP."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the specific mental model interviewers usually want for DOM XSS: attacker-controlled source reaching an executable or HTML-parsing sink."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one short example involving location.hash or postMessage so the client-side trigger feels even more concrete."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Prevent DOM-based cross-site scripting vulnerabilities with Trusted Types",
+      "url": "https://web.dev/articles/trusted-types",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a strong practical reference for DOM-XSS sink control, Trusted Types, and enforcement at risky APIs like innerHTML and eval.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "web.dev is stronger on deep Trusted Types rollout details, but our page is now better for the broader DOM-XSS interview question because it connects concrete browser-side triggers, safe sink defaults, and the mitigation stack in one compact answer.",
+      "theirStrengths": [
+        "It gives much deeper implementation guidance for enforcing sink safety with CSP and Trusted Types."
+      ],
+      "theirGaps": [
+        "It assumes more security maturity and is less compact for a fast interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A support widget reads location.hash to restore UI state and also renders agent notes from an API."
+        ],
+        "followUpConfusion": [
+          "Escaping is context-specific output encoding. Sanitization removes unsafe markup when you intentionally allow limited HTML. Trusted Types does something different: it makes risky sinks accept only approved objects, so raw strings cannot quietly reach innerHTML or similar APIs."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page now frames DOM XSS through a more product-like support-widget and API-content scenario, not only through generic sink mechanics."
+        ],
+        "actionableExamples": [
+          "web.dev still goes deeper on policy setup, reporting, and rollout details for Trusted Types itself."
+        ],
+        "followUpConfusion": [
+          "Our page now explains the mitigation stack more directly by separating escaping, sanitization, and Trusted Types in one block."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one CSP violation-reporting example so the page covers rollout and monitoring, not only safe sink usage."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

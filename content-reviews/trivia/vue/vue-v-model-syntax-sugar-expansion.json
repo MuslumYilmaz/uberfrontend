@@ -1,0 +1,142 @@
+{
+  "contentId": "vue-v-model-syntax-sugar-expansion",
+  "tech": "vue",
+  "query": "Why is v-model syntax sugar in Vue?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Component v-model",
+      "url": "https://vuejs.org/guide/components/v-model.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for component v-model expansion, modelValue/update:modelValue, arguments, and modifiers.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on the exact expansion of v-model for native inputs, custom components, arguments, and modifiers."
+      ],
+      "theirGaps": [
+        "It is more reference-oriented than interview-compressed on the idea that v-model is just prop binding plus event listening."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "it doesn’t add a new runtime “two-way binding engine”.",
+          "So it’s just a shorter way to write “bind value + update on event”."
+        ],
+        "followUpConfusion": [
+          "Arguments just swap the prop/event names.",
+          "Modifiers don’t change the “prop + event” structure"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain expansion accurately, but our page is stronger on the mental model that v-model is compile-time sugar rather than a magical two-way binding subsystem."
+        ],
+        "actionableExamples": [
+          "The official examples are comprehensive, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely debugging follow-up: custom component bindings fail when one side of the prop-plus-event contract is missing."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one short checkbox or select expansion visible so the per-control property and event differences stay concrete."
+        ]
+      },
+      "winReason": "The official guide is authoritative on the API, but our page is stronger for interview use because it frames v-model as a compiler rewrite and then explains the exact debugging contract that falls out of that."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because v-model, component communication, and template syntax are core Vue interview fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue bindings, forms, and component communication topics."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact v-model expansion and debugging contract."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This is the under-the-hood answer interviewers use to debug custom component bindings."
+        ],
+        "followUpConfusion": [
+          "For components, <code>v-model</code> becomes a normal prop + a normal emitted event.",
+          "Arguments just swap the prop/event names. This enables multiple v-model bindings on one component."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is clearly relevant for Vue fundamentals, but it is less focused on the exact compile-time expansion story behind v-model."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on example-driven interview practice, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The landing page is less explicit about arguments, modifiers, and why modelValue plus update:modelValue is just a named prop-event pair."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the custom-component long form short so the page stays trivia-sized instead of becoming a full forms guide."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it answers the exact 'what does v-model expand to?' question directly."
+    },
+    {
+      "label": "V Model Guide",
+      "url": "https://learnvue.co/articles/v-model-guide",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue has a topic-direct article on v-model, including the prop-plus-event expansion for custom components.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly focused on how v-model works with custom components and shows the long-form expansion clearly."
+      ],
+      "theirGaps": [
+        "It is lighter on arguments, modifiers, and the broader interview framing around syntax sugar."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "it’s compiled into a prop binding + an event listener."
+        ],
+        "followUpConfusion": [
+          "For components in Vue 3 it maps to <code>modelValue</code> + <code>update:modelValue</code>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article is strong on custom component bindings, but our page is stronger on the broader under-the-hood explanation that covers native controls, arguments, and modifiers together."
+        ],
+        "actionableExamples": [
+          "Its custom-component examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that modifiers change value handling or event timing without changing the underlying prop-plus-listener shape."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one compact multiple-v-model example to make argument-based expansion even more visible."
+        ]
+      },
+      "winReason": "LearnVue is a strong direct comparator, but our page is stronger because it covers the full expansion story instead of only the basic custom-input case."
+    }
+  ]
+}

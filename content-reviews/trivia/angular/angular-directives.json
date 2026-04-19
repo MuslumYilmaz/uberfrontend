@@ -1,0 +1,146 @@
+{
+  "contentId": "angular-directives",
+  "tech": "angular",
+  "query": "Angular structural directive vs attribute directive interview question",
+  "reviewedAt": "2026-04-09",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Angular Directives Overview",
+      "url": "https://angular.dev/guide/directives",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official directives overview and the strongest canonical baseline for component, attribute, and structural directive categories.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official docs define the directive categories well, but our page goes further on the * microsyntax rewrite and on the senior signal of TemplateRef and ViewContainerRef.",
+      "theirStrengths": [
+        "It cleanly defines the three directive categories and connects them to Angular’s template model."
+      ],
+      "theirGaps": [
+        "It is lighter on the * desugaring details and on custom structural-directive implementation follow-ups."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "The directive can: • add behavior (listen to events, update host properties) • change styling (classes/styles/attributes) • control the DOM tree by creating/destroying embedded views (structural directives)."
+          ],
+          "followUpConfusion": [
+            "* is just syntax sugar. Angular rewrites it into an ng-template and binds inputs to the directive on that template.",
+            "Structural directives control a template block . They inject TemplateRef (what to render) and ViewContainerRef (where to render)."
+          ]
+        },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs define directive types precisely, but they are less explicit about how those types map to the practical host-behavior versus DOM-creation distinction in our answer."
+        ],
+        "actionableExamples": [
+          "Angular.dev includes enough directive examples that the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "The overview page does not go as far into the microsyntax rewrite or into TemplateRef/ViewContainerRef as our page does."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny desugared ng-template example beside the star syntax so the transformation is visible at a glance."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "GreatFrontEnd Angular Basic Interview Questions",
+      "url": "https://www.greatfrontend.com/blog/angular-basic-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd includes a directly relevant directives section, so it is the right interview-prep comparator for this fundamentals topic.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd names the directive categories well, but our page goes deeper on what the star syntax rewrites to and on how custom structural directives actually work.",
+      "theirStrengths": [
+        "It gives a clear and concise directive-type breakdown with simple examples."
+      ],
+      "theirGaps": [
+        "It stays lighter on the * desugaring and on the senior-level custom structural-directive mechanics."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "The directive can: • add behavior (listen to events, update host properties) • change styling (classes/styles/attributes) • control the DOM tree by creating/destroying embedded views (structural directives)."
+          ],
+          "followUpConfusion": [
+            "* is just syntax sugar. Angular rewrites it into an ng-template and binds inputs to the directive on that template."
+          ]
+        },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd explains structural versus attribute directives, but it does not push as far into how they map to DOM-creation behavior."
+        ],
+        "actionableExamples": [
+          "Its directive examples are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "The page is lighter on what the star syntax desugars to and on the TemplateRef/ViewContainerRef follow-up."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one small custom attribute directive example beside the structural example to show the contrast more visibly."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University ng-template/ng-container Guide",
+      "url": "https://blog.angular-university.io/angular-ng-template-ng-container-ngtemplateoutlet/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a strong competitor because it goes deep on structural-directive desugaring, ng-template, and dynamic template outlets.",
+        "verdicts": {
+          "realWorldUseCases": "ours",
+          "actionableExamples": "tie",
+          "followUpConfusion": "ours"
+        },
+        "winReason": "Angular University stays stronger as a deep structural-directives tutorial, but our page now more clearly answers when TemplateRef/ViewContainerRef matters and when an attribute directive is the safer answer because state must survive.",
+      "theirStrengths": [
+        "It gives a thorough under-the-hood walkthrough of structural directives, ng-template, ng-container, and dynamic template usage."
+      ],
+      "theirGaps": [
+        "It is more specialized around structural directives than around the full structural-vs-attribute-vs-component classification."
+      ],
+        "ourEvidence": {
+          "realWorldUseCases": [
+            "An attribute directive keeps the same host element alive and just changes host behavior or styling."
+          ],
+          "followUpConfusion": [
+            "Bring up <code>TemplateRef</code>/<code>ViewContainerRef</code> only when they ask about <code>*</code> syntax, custom structural directives, or why <code>*ngIf</code> destroys component state while an attribute directive does not."
+          ]
+        },
+        "theirEvidence": {
+          "realWorldUseCases": [
+            "Angular University also grounds the topic in real template composition scenarios, but our page now makes the preserve-state versus destroy-state contrast much more explicit."
+          ],
+          "actionableExamples": [
+            "It still provides more step-by-step examples for ng-template and structural-desugaring patterns than our short trivia page, so the example criterion stays close."
+          ],
+          "followUpConfusion": [
+            "It answers the ng-template follow-up well, but our page now better calibrates when to stop at the category level and when to bring up TemplateRef/ViewContainerRef."
+          ]
+        },
+        "nextActions": {
+          "realWorldUseCases": [],
+          "actionableExamples": [
+            "Add one mini custom structural directive snippet that shows createEmbeddedView in context."
+          ],
+          "followUpConfusion": []
+        }
+      }
+  ]
+}

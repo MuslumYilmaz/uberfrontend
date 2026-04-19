@@ -1,0 +1,145 @@
+{
+  "contentId": "html-href-attribute",
+  "tech": "html",
+  "query": "html href attribute interview question",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<a>: The Anchor element",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
+      "category": "canonical_docs",
+      "selectionReason": "The anchor element reference is the canonical MDN page for href-backed hyperlink behavior, target semantics, fragment links, and security notes on linked navigation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on how href turns anchors into hyperlinks and what destination forms and security behaviors the browser supports."
+      ],
+      "theirGaps": [
+        "The element reference is less explicit about href as a broader destination primitive shared by anchors, linked resources, base URLs, and image-map areas."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior."
+        ],
+        "followUpConfusion": [
+          "The same idea powers anchors, stylesheets, base URLs, and image-map areas."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers href-backed navigation well, but it stays closer to anchor semantics than to the cross-element destination model our page surfaces."
+        ],
+        "actionableExamples": [
+          "It includes canonical link examples and target-rel notes, so the example criterion stays competitive rather than flipping cleanly to us."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusions teams hit in practice: fake href values, linked resources beyond anchors, and broken keyboard behavior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the supported-elements section visible so the answer stays broader than a link-only explanation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical anchor reference, but our page is stronger as an interview answer because it explains href as the browser's general destination reference, not just a link decoration."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because href semantics, link behavior, and attribute-driven navigation belong to core HTML interview coverage.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep hub with broad coverage of links, attributes, and markup fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to href, so it is less focused on one exact destination-reference answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior."
+        ],
+        "followUpConfusion": [
+          "The same idea powers anchors, stylesheets, base URLs, and image-map areas."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about href as a shared destination primitive and about the accessibility bugs caused by fake destinations."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied rather than becoming an automatic win for us."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the follow-up questions developers usually hit: missing href, fake href for buttons, and absolute versus relative or fragment destinations."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the basic example and the supported-elements list close together so the answer stays skimmable under interview pressure."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the production bugs and cross-element destination model that make href worth understanding."
+    },
+    {
+      "label": "Links",
+      "url": "https://web.dev/learn/html/links/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev's links module directly covers href usage for hyperlinks, internal fragments, external destinations, downloads, and other browser navigation behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on practical href usage across internal, external, and special-link destinations like mailto or tel."
+      ],
+      "theirGaps": [
+        "It is more tutorial-broad than the exact trivia question and less explicit about href misuse as a fake-button or debugging footgun."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior."
+        ],
+        "followUpConfusion": [
+          "The same idea powers anchors, stylesheets, base URLs, and image-map areas."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds href in practical links, but our page is more compact about the broken destinations and keyboard or accessibility symptoms teams actually debug."
+        ],
+        "actionableExamples": [
+          "The tutorial has clear href examples for multiple destination types, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the follow-up confusion between destination semantics, decorative markup, and fake button-like links."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one fragment-link example and one fake-href warning visible so the answer stays practical, not only definitional."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on links generally, but our page is better as a short interview answer because it frames href around destination semantics and the production bugs caused by getting that wrong."
+    }
+  ]
+}

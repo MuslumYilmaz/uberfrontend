@@ -1,0 +1,145 @@
+{
+  "contentId": "html-clickable-image",
+  "tech": "html",
+  "query": "html clickable image interview question",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<a>: The Anchor element",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
+      "category": "canonical_docs",
+      "selectionReason": "The anchor element reference is the canonical MDN page for wrapping content in links, hyperlink semantics, and the accessibility or security behavior that still applies when the linked content is an image.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on anchor semantics, linked content, target and rel behavior, and accessibility expectations for hyperlinks."
+      ],
+      "theirGaps": [
+        "The reference is less explicit about the specific production pitfall behind clickable images: forgetting that the image still behaves like a link with destination clarity and alt-text requirements."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link."
+        ],
+        "followUpConfusion": [
+          "Good linked images need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers anchor semantics well, but it is lighter on the concrete clickable-image failure mode where teams forget link purpose, alt text, or new-tab safety."
+        ],
+        "actionableExamples": [
+          "It includes strong anchor examples and security notes, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the next question developers usually miss: how alt text should describe the linked destination or action, not just the pixels."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the accessibility tip close to the first example so the answer stays link-semantic, not only markup-oriented."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical anchor reference, but our page is stronger as an interview answer because it packages clickable images around the exact production mistakes teams make: weak alt text, unclear destinations, and unsafe new-tab behavior."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because links, images, and accessibility all belong to core HTML interview prep.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of links, images, and accessibility-related fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to clickable images, so it is less focused on the specific linked-image semantics behind this question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link."
+        ],
+        "followUpConfusion": [
+          "Good linked images need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the clickable-image production traps around destination clarity and alt text."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: linked images need the same semantic and security discipline as any other anchor."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the linked-image accessibility guidance visible so the page stays operational under interview time pressure."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the semantics and accessibility follow-ups that make clickable-image answers useful in practice."
+    },
+    {
+      "label": "Links",
+      "url": "https://web.dev/learn/html/links/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev's links module is the strongest third-source comparator for hyperlink semantics, destination handling, and what linked content means in actual HTML navigation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on practical hyperlink behavior and on how links work across different kinds of linked content."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question and less centered on the image-specific accessibility and alt-text follow-up."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link."
+        ],
+        "followUpConfusion": [
+          "Good linked images need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds links in practical navigation, but our answer is more compact about the linked-image mistakes developers actually ship."
+        ],
+        "actionableExamples": [
+          "The tutorial remains strong on link examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the follow-up confusion between image content and link purpose, especially for alt text and new-tab safety."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one simple linked-image example near the top so the answer remains easy to scan."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on links generally, but our page is better as a short interview answer because it turns clickable images into a concrete semantic, accessibility, and destination-clarity decision."
+    }
+  ]
+}

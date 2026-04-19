@@ -1,0 +1,145 @@
+{
+  "contentId": "js-arrow-vs-regular-functions",
+  "tech": "javascript",
+  "query": "arrow vs regular functions javascript interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Arrow function expressions",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for lexical this, missing arguments/prototype, and constructor limitations of arrow functions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN is the canonical semantic reference, but our page is now stronger for the compare-and-choose interview query because it ties the choice to callbacks, event listeners, methods, constructors, and class-field memory trade-offs in one compact answer.",
+      "theirStrengths": [
+        "It is authoritative on the actual runtime semantics: lexical this, no own arguments, no constructor support, and method caveats."
+      ],
+      "theirGaps": [
+        "It is reference-oriented rather than tightly optimized for an interview-style compare-and-choose answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use arrow functions for short callbacks, array transforms, and places where lexical this is the safe default."
+        ],
+        "followUpConfusion": [
+          "In classes, prototype methods (regular method syntax) are shared across instances. Arrow methods defined as class fields create a function per instance."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page now maps the choice across callbacks, event listeners, methods, constructors, and class-field trade-offs more directly as an interview decision."
+        ],
+        "actionableExamples": [
+          "Both pages include code that demonstrates this binding, detached callbacks, and constructor limitations."
+        ],
+        "followUpConfusion": [
+          "Our page now answers a likely follow-up that MDN does not foreground as much in one place: why class-field arrows trade easier binding for per-instance memory cost."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny example of an arrow callback inside a class method to complement the event-listener case."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "What advantage is there for using the JavaScript arrow syntax for a method in a constructor?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-advantage-is-there-for-using-the-arrow-syntax-for-a-method-in-a-constructor",
+      "category": "interview_prep",
+      "selectionReason": "This is GreatFrontEnd's closest interview-prep page on arrow versus regular function behavior, focusing on call-site rebinding and constructor-defined methods.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd is strong on the constructor-method use case, but our page better matches the broader query by comparing arrows and regular functions across callbacks, methods, constructors, arguments, prototype, and common misuse cases.",
+      "theirStrengths": [
+        "It uses strong runnable examples for this rebinding, detached callbacks, and constructor-defined arrow methods."
+      ],
+      "theirGaps": [
+        "It is centered on one narrow use case rather than the broader choose-the-right-function decision."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use regular functions when you need dynamic this, constructor behavior, event-listener receiver semantics, or function-level features like arguments and prototype."
+        ],
+        "followUpConfusion": [
+          "Putting arrow functions directly as object methods can surprise you when you expect dynamic receiver-based this."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page is broader on practical use cases because it covers callbacks, methods, constructors, and function-level features, not just constructor-defined methods."
+        ],
+        "actionableExamples": [
+          "Both pages include strong code examples for this-binding behavior, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our answer is more explicit about method-definition pitfalls, prototype absence, and when regular functions are the right tool."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one code example that contrasts an object method defined with concise method syntax versus an arrow property."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Arrow functions, the basics",
+      "url": "https://javascript.info/arrow-functions-basics",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a strong tutorial reference for arrow syntax, concise returns, and the baseline function-expression comparison.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "javascript.info teaches arrow syntax cleanly, but our page is better for the actual compare-and-choose interview intent because it emphasizes when not to use arrows, dynamic this behavior, and prototype-related trade-offs.",
+      "theirStrengths": [
+        "It is clear and approachable for syntax basics and concise one-line examples."
+      ],
+      "theirGaps": [
+        "It is much lighter on the practical question of when regular functions are still the better choice."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use arrow functions for short callbacks, array transforms, and places where lexical this is the safe default."
+        ],
+        "followUpConfusion": [
+          "Arrow functions cannot be constructors and have no prototype."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Our page is more directly tied to practical selection decisions instead of mostly syntax introduction."
+        ],
+        "actionableExamples": [
+          "javascript.info gives clearer step-by-step syntax examples for basic arrow forms and implicit return."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the likely follow-up confusion about dynamic versus lexical this and method-definition pitfalls."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one very short syntax-only example so the page still helps juniors who need a quick reminder of arrow shorthand."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

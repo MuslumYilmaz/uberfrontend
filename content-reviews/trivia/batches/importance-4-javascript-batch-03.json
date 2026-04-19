@@ -1,0 +1,34 @@
+{
+  "batchId": "importance-4-javascript-batch-03",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    {
+      "tech": "javascript",
+      "id": "js-memoization"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-shallow-vs-deep-copy"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-map-filter-reduce"
+    },
+    {
+      "tech": "javascript",
+      "id": "debounce-vs-throttle-search-input"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-map-vs-object"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-map-set-get"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-big-o-notation"
+    }
+  ]
+}

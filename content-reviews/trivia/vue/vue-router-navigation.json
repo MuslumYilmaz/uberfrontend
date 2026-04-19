@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-router-navigation",
+  "tech": "vue",
+  "query": "What is the Vue Router and how is it used for navigation?",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Programmatic Navigation",
+      "url": "https://router.vuejs.org/guide/essentials/navigation",
+      "category": "canonical_docs",
+      "selectionReason": "Vue Router's official navigation guide is the canonical reference for router-link, router.push, route params, and navigation behavior in Vue SPAs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official router docs are authoritative on API usage, navigation methods, and route semantics."
+      ],
+      "theirGaps": [
+        "They are less compressed around the production-debug framing of navigation as control flow rather than just URL mapping."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It is the app's navigation control plane: route matching, nested rendering, async guards, params, and history updates.",
+          "The bugs teams debug in production usually involve auth redirects, stale route data, canceled navigation, or scroll behavior, not just defining a path."
+        ],
+        "followUpConfusion": [
+          "router-view element acts as a placeholder that dynamically displays the active route’s component.",
+          "Navigation guards help manage route access and user flow."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official docs explain routing APIs well, but our page is stronger on the practical production framing of what teams actually debug."
+        ],
+        "actionableExamples": [
+          "The router docs remain competitive on direct API examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is more compact on likely follow-ups such as auth redirects, async guards, route params, and programmatic navigation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one short programmatic navigation example with query and params together."
+        ]
+      },
+      "winReason": "The router docs are canonical on API details, but our page is stronger as an interview answer because it frames Vue Router as the app's navigation control plane and highlights the production issues that matter most."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because routing, guards, and SPA navigation are core Vue interview fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue application architecture topics."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact navigation-layer explanation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Protect a dashboard route behind auth and redirect unauthenticated users to login.",
+          "Triggering infinite redirect loops."
+        ],
+        "followUpConfusion": [
+          "router-link creates navigable links without refreshing the page.",
+          "You can also navigate using JavaScript instead of router-link components:"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is relevant at the topic level, but it is less specific on the navigation bugs teams see in production."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on interview-style examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about nested rendering, navigation guards, and route-control flow in one place."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the route-guard scenario visible without turning the answer into a full router course."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it gives a tighter SPA-navigation mental model and surfaces the auth-redirect and guard pitfalls that usually drive follow-up questions."
+    },
+    {
+      "label": "How to Use Vue Router: A Complete Tutorial",
+      "url": "https://vueschool.io/articles/vuejs-tutorials/how-to-use-vue-router-a-complete-tutorial/",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a direct Vue Router tutorial covering router-link, params, lazy loading, and navigation flows in Vue 3.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a topic-direct router tutorial with practical API coverage."
+      ],
+      "theirGaps": [
+        "It is less interview-compressed on the idea that routing is an app-level control plane with guard and scroll footguns."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "route matching, nested rendering, async guards, params, and history updates",
+          "Not handling scroll behavior on navigation."
+        ],
+        "followUpConfusion": [
+          "Supports dynamic, nested, and programmatic navigation.",
+          "Navigation guards help manage route access and user flow."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Vue School is strong on route setup, params, and lazy loading, so the practical baseline is solid."
+        ],
+        "actionableExamples": [
+          "It provides direct code examples for routing, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the exact production debugging follow-ups around canceled navigation, stale route data, and redirect loops."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one smaller nested-route example to make the router-view mental model even faster to scan."
+        ]
+      },
+      "winReason": "Vue School is a strong direct tutorial, but our page is stronger as a concise interview answer because it connects the API surface to real navigation-control bugs and debugging flow."
+    }
+  ]
+}

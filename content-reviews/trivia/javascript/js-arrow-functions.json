@@ -1,0 +1,154 @@
+{
+  "contentId": "js-arrow-functions",
+  "tech": "javascript",
+  "query": "arrow functions javascript interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Arrow function expressions",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for arrow syntax, lexical this, and the missing constructor and prototype behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on lexical this, arguments behavior, and the syntax rules of arrow functions."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped on the practical rule of when not to use arrows in object methods, constructors, and rebinding-heavy code."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Arrow functions are concise, but the important production rule is when not to use them: object methods, constructors, and APIs that expect dynamic `this` or `arguments`."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Arrow functions and `this`</strong>  In regular functions, <code>this</code> depends on how the function is called. But in arrow functions, <code>this</code> is <strong>lexically bound</strong> — it refers to the value of <code>this</code> in the outer scope."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Be careful:</strong>  - You can’t use arrow functions as constructors (<code>new</code> keyword will throw an error). - They also don’t have their own <code>prototype</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains arrow semantics well, but our page is more explicit about the production rule developers actually need: when arrow functions are the wrong tool."
+        ],
+        "actionableExamples": [
+          "The canonical docs still have strong syntax examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is faster on the likely follow-up confusion around constructors, prototype absence, and dynamic this expectations."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one short broken-object-method example later if we need more example distance over the canonical docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical reference for arrow functions, but our page is stronger for the interview prompt because it organizes the answer around the high-value production rule: when not to use arrows."
+    },
+    {
+      "label": "GreatFrontEnd arrow syntax in constructors",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-advantage-is-there-for-using-the-arrow-syntax-for-a-method-in-a-constructor",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep page for a practical arrow-function use case involving lexical this and constructor patterns.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is topic-direct on one of the most common practical arrow-function discussions: lexical this inside constructor-created methods."
+      ],
+      "theirGaps": [
+        "It is narrower than the full interview prompt and less explicit on constructors, prototypes, and non-use cases outside that one pattern."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Arrow functions are concise, but the important production rule is when not to use them: object methods, constructors, and APIs that expect dynamic `this` or `arguments`."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Arrow functions and `this`</strong>  In regular functions, <code>this</code> depends on how the function is called. But in arrow functions, <code>this</code> is <strong>lexically bound</strong> — it refers to the value of <code>this</code> in the outer scope."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Be careful:</strong>  - You can’t use arrow functions as constructors (<code>new</code> keyword will throw an error). - They also don’t have their own <code>prototype</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is directly relevant, but our page covers a wider set of production decisions instead of only one constructor-related use case."
+        ],
+        "actionableExamples": [
+          "Its examples are practical and interview-friendly, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page answers more of the likely follow-up set in one place: lexical this, missing arguments, no constructor support, and no prototype."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the do-not-use cases close to the lexical-this explanation so the answer stays broader than one interview-prep pattern."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd gives a strong practical arrow-function angle, but our page is stronger because it covers the broader production rule set around lexical this, constructors, and prototype behavior."
+    },
+    {
+      "label": "javascript.info Arrow functions, the basics",
+      "url": "https://javascript.info/arrow-functions-basics",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct tutorial for arrow syntax, lexical this, and the trade-offs versus regular functions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on arrow syntax rules and lexical this behavior."
+      ],
+      "theirGaps": [
+        "It is less compact as an interview answer and less explicit on the full set of non-use cases that cause production bugs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Arrow functions are concise, but the important production rule is when not to use them: object methods, constructors, and APIs that expect dynamic `this` or `arguments`."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Arrow functions and `this`</strong>  In regular functions, <code>this</code> depends on how the function is called. But in arrow functions, <code>this</code> is <strong>lexically bound</strong> — it refers to the value of <code>this</code> in the outer scope."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Be careful:</strong>  - You can’t use arrow functions as constructors (<code>new</code> keyword will throw an error). - They also don’t have their own <code>prototype</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on the language behavior, but our page is more explicit about where arrow functions become the wrong choice in production code."
+        ],
+        "actionableExamples": [
+          "Its syntax examples are strong and topic-direct, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page pushes the follow-up further by bundling lexical this with the missing constructor, prototype, and arguments behavior in one answer."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If needed later, add one event-listener or object-method failure example to create more example separation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is a strong arrow-functions tutorial, but our page is better calibrated for this interview prompt because it emphasizes the specific cases where arrows break expectations."
+    }
+  ]
+}

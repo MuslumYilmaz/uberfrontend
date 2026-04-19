@@ -1,0 +1,148 @@
+{
+  "contentId": "angular-interpolation-vs-property-binding",
+  "tech": "angular",
+  "query": "Angular interpolation vs property binding interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular Binding Guide",
+      "url": "https://angular.dev/guide/templates/binding",
+      "category": "canonical_docs",
+      "selectionReason": "The official binding guide is the canonical reference for text interpolation, property binding, attribute binding, and related template syntax.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular.dev is authoritative on binding syntax, but our page now answers the interview trap more directly by pairing boolean-state bugs, ARIA attributes, and object-input stringification in one compact answer.",
+      "theirStrengths": [
+        "It authoritatively explains interpolation, property binding, attribute binding, and signals in Angular templates."
+      ],
+      "theirGaps": [
+        "It is less explicitly framed around the interview trap of boolean-ish attributes and the bugs caused by string coercion."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "<button [disabled]=\"isSaving\">Save</button>",
+          "<app-chart [config]=\"chartConfig\"></app-chart>"
+        ],
+        "followUpConfusion": [
+          "Use <code>[attr.*]</code> only when the target is truly an attribute such as ARIA."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular.dev explains the binding surface clearly, so the practical use-case comparison stays close."
+        ],
+        "actionableExamples": [
+          "The official guide includes concrete binding examples, but our page now puts boolean state, ARIA attributes, and non-string component inputs in one worked contrast."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the boolean-attribute trap, object-stringification bugs, and when to switch from [prop] to [attr.*]."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one example anchored on runtime element state so the answer does not collapse into a syntax-only comparison."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Telerik Property Binding and Interpolation Guide",
+      "url": "https://www.telerik.com/blogs/understanding-angular-property-binding-and-interpolation",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a direct competitor because it focuses on the same interpolation-versus-property-binding comparison.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Telerik explains the syntax well, but our page is more interview-ready because it now shows the broken boolean attribute, the correct property-versus-attribute split, and the non-string input follow-up together.",
+      "theirStrengths": [
+        "It is directly focused on the same comparison and shows the template syntax concretely."
+      ],
+      "theirGaps": [
+        "It is less explicit about the interview-grade follow-up on boolean attributes and attr-vs-prop boundaries."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "<button [disabled]=\"isSaving\">Save</button>",
+          "<app-chart [config]=\"chartConfig\"></app-chart>"
+        ],
+        "followUpConfusion": [
+          "Use <code>[attr.*]</code> only when the target is truly an attribute such as ARIA."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Telerik stays directly on the same practical distinction, so the use-case framing is close."
+        ],
+        "actionableExamples": [
+          "Telerik explains the syntax well, but our page now gives the stronger compact example set across boolean state, ARIA attributes, and object inputs."
+        ],
+        "followUpConfusion": [
+          "Our page is now more explicit about when attribute interpolation becomes a bug and why [attr.*] is the right escape hatch for ARIA."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the answer anchored on DOM state and coercion bugs rather than letting it read like a syntax glossary."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Swiftorial Property Binding",
+      "url": "https://www.swiftorial.com/tutorials/web_development/angular/components_and_templates/property_binding",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial competitor for property binding and related template examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Swiftorial is clear on property binding basics, but our page is stronger on the runtime bug pattern and the property-versus-attribute follow-up that usually decides these interviews.",
+      "theirStrengths": [
+        "It gives clear property-binding examples and stays tightly focused on the syntax."
+      ],
+      "theirGaps": [
+        "It does not compare property binding against interpolation through real boolean-attribute or coercion bugs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "use property binding for element state"
+        ],
+        "followUpConfusion": [
+          "Use <code>[attr.*]</code> only when the target is truly an attribute such as ARIA."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Swiftorial explains property binding clearly, but our page is stronger on when the distinction prevents real UI bugs."
+        ],
+        "actionableExamples": [
+          "Its focused examples stay competitive enough that the pure worked-example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "It is lighter on follow-up nuance about boolean attributes, [attr.*], and object-stringification bugs in runtime element state."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the boolean-state and non-string-input example pair visible so the runtime difference stays easy to scan."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

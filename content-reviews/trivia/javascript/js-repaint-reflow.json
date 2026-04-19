@@ -1,0 +1,145 @@
+{
+  "contentId": "js-repaint-reflow",
+  "tech": "javascript",
+  "query": "reflow vs repaint javascript interview question",
+  "reviewedAt": "2026-04-10",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Animation performance and frame rate",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Animation_performance_and_frame_rate",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for the rendering waterfall, property cost, and why layout-triggering animations create jank.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "MDN is authoritative on rendering cost, but our answer is tighter for this exact interview question because it pairs the layout-vs-paint distinction with a direct forced-reflow bug example and a more explicit explanation of why geometry changes cascade.",
+      "theirStrengths": [
+        "It clearly explains the rendering waterfall and which CSS properties trigger layout, repaint, or compositing work."
+      ],
+      "theirGaps": [
+        "It is broader animation guidance, while our page is more directly shaped around reflow-vs-repaint interview confusion and runtime debugging."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "A common performance bug: write styles, then immediately read layout metrics, repeatedly in a loop."
+        ],
+        "followUpConfusion": [
+          "Reflow is usually more expensive because geometry changes can cascade through large parts of the DOM tree."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page ties layout cost to animation jank and frame-budget pressure, so its real-world use-case framing is at least as strong as ours."
+        ],
+        "actionableExamples": [
+          "Our answer is more concrete for this narrow question because it shows repaint-only vs layout-changing updates and then names forced synchronous reflow as a common bug."
+        ],
+        "followUpConfusion": [
+          "Our page is sharper on the exact distinction candidates usually mix up: geometry changes cascading through the DOM versus pixel-only updates."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one sentence tying reflow spikes to INP or scroll jank in a production trace, not just animation smoothness."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "What are some techniques for reducing reflows and repaints?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-some-techniques-for-reducing-reflows-and-repaints",
+      "category": "interview_prep",
+      "selectionReason": "This is GreatFrontEnd's direct interview-prep page on reflows and repaints, so it is the closest same-intent interview comparator.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "GreatFrontEnd gives a longer mitigation checklist, but our page is now stronger on the exact interview answer because it pairs a richer production scenario with a clearer explanation of paint-heavy work versus layout work versus composite updates.",
+      "theirStrengths": [
+        "It gives a broad checklist of practical mitigations such as batching DOM changes, using requestAnimationFrame, and avoiding layout thrashing."
+      ],
+      "theirGaps": [
+        "It is lighter on the conceptual distinction between layout, repaint, and composite cost."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A filter sidebar and analytics dashboard both update card dimensions on every keystroke, causing repeated layout reads and writes that create visible typing lag."
+        ],
+        "followUpConfusion": [
+          "The two most asked stages are: - Reflow (layout): recalculate element size/position. - Repaint: redraw pixels (colors, shadows, visibility) without changing geometry."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd anchors the topic in performance work too, but our page now tells a richer production story that combines layout reads, dashboard jank, and paint-heavy visuals."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd gives a longer mitigation list with document fragments, CSS classes, requestAnimationFrame, will-change, and read/write separation."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the under-the-hood difference between layout and repaint instead of jumping directly to optimization tips."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a short bullet list covering document fragments, CSS class batching, and requestAnimationFrame as mitigation patterns."
+        ],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Avoid large, complex layouts and layout thrashing",
+      "url": "https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a strong performance reference for forced synchronous layout and layout-thrashing debugging patterns.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "web.dev is still more detailed on one layout-thrashing pattern, but our page is now better at the broader interview comparison because it explains layout, paint, and composite together and ties them to a concrete dashboard-style jank incident.",
+      "theirStrengths": [
+        "It gives a very concrete read-then-write example and explains exactly why offsetWidth inside a write loop forces repeated layout."
+      ],
+      "theirGaps": [
+        "It is more focused on layout thrashing than on the broader reflow-vs-repaint distinction."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A filter sidebar and analytics dashboard both update card dimensions on every keystroke, causing repeated layout reads and writes that create visible typing lag."
+        ],
+        "followUpConfusion": [
+          "Paint-only changes can still be expensive when they redraw large backgrounds, shadows, filters, or blur effects."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev frames layout thrashing as a production problem too, but our page is now broader on the kind of UI incident interviewers often ask about: layout jank plus heavy paint work together."
+        ],
+        "actionableExamples": [
+          "It walks through a concrete offsetWidth loop, explains the read-write-read-write cycle, and then shows the fixed read-first pattern."
+        ],
+        "followUpConfusion": [
+          "web.dev is excellent on why repeated reads and writes force layout, but our page now explains the additional follow-up confusion around repaint-heavy effects and composite-only updates more directly."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add a second code example that explicitly batches DOM reads before writes."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}
