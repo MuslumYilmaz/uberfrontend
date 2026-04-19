@@ -1,0 +1,149 @@
+{
+  "contentId": "ai-streaming-data-handling",
+  "tech": "javascript",
+  "query": "How should a front-end handle streaming data from an AI model?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Streaming API responses",
+      "url": "https://platform.openai.com/docs/guides/streaming-responses",
+      "category": "canonical_docs",
+      "selectionReason": "OpenAI docs are the primary reference for streaming response lifecycle, SSE events, and moderation trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Streaming API responses is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Streaming API responses is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> Treat AI streaming as a production UI state machine, not just a transport detail. You open a stream (SSE, WebSocket, or fetch + ReadableStream), append partial output as chunks arrive, keep partial and final message state consistent, and stop cleanly when the user cancels or the stream fails."
+        ],
+        "actionableExamples": [
+          "<strong>Production scenario</strong><br>Suppose a chat answer streams for 20 seconds and the user switches prompts halfway through. If you do not model <em>streaming</em>, <em>completed</em>, <em>cancelled</em>, and <em>failed</em> states explicitly, you can show mixed output, mark a partial answer as final, or append late tokens into the wrong conversation. Good implementations treat partial text, final text, retry UI, and cancellation as separate states."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> Treat AI streaming as a production UI state machine, not just a transport detail. You open a stream (SSE, WebSocket, or fetch + ReadableStream), append partial output as chunks arrive, keep partial and final message state consistent, and stop cleanly when the user cancels or the stream fails."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Streaming API responses covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Streaming API responses includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Streaming API responses is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Streaming API responses is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "AI SDK UI: Stream Protocols",
+      "url": "https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol",
+      "category": "tutorial_reference",
+      "selectionReason": "AI SDK stream protocol docs are the strongest frontend-side reference for chunk handling, SSE framing, and UI stream semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "AI SDK UI: Stream Protocols is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "AI SDK UI: Stream Protocols is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> Treat AI streaming as a production UI state machine, not just a transport detail. You open a stream (SSE, WebSocket, or fetch + ReadableStream), append partial output as chunks arrive, keep partial and final message state consistent, and stop cleanly when the user cancels or the stream fails."
+        ],
+        "actionableExamples": [
+          "<strong>Production scenario</strong><br>Suppose a chat answer streams for 20 seconds and the user switches prompts halfway through. If you do not model <em>streaming</em>, <em>completed</em>, <em>cancelled</em>, and <em>failed</em> states explicitly, you can show mixed output, mark a partial answer as final, or append late tokens into the wrong conversation. Good implementations treat partial text, final text, retry UI, and cancellation as separate states."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> Treat AI streaming as a production UI state machine, not just a transport detail. You open a stream (SSE, WebSocket, or fetch + ReadableStream), append partial output as chunks arrive, keep partial and final message state consistent, and stop cleanly when the user cancels or the stream fails."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "AI SDK UI: Stream Protocols covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "AI SDK UI: Stream Protocols includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "AI SDK UI: Stream Protocols is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "AI SDK UI: Stream Protocols is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "ReadableStream",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical browser reference for the stream primitive many frontend AI implementations consume.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "ReadableStream is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "ReadableStream is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> Treat AI streaming as a production UI state machine, not just a transport detail. You open a stream (SSE, WebSocket, or fetch + ReadableStream), append partial output as chunks arrive, keep partial and final message state consistent, and stop cleanly when the user cancels or the stream fails."
+        ],
+        "actionableExamples": [
+          "<strong>Production scenario</strong><br>Suppose a chat answer streams for 20 seconds and the user switches prompts halfway through. If you do not model <em>streaming</em>, <em>completed</em>, <em>cancelled</em>, and <em>failed</em> states explicitly, you can show mixed output, mark a partial answer as final, or append late tokens into the wrong conversation. Good implementations treat partial text, final text, retry UI, and cancellation as separate states."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> Treat AI streaming as a production UI state machine, not just a transport detail. You open a stream (SSE, WebSocket, or fetch + ReadableStream), append partial output as chunks arrive, keep partial and final message state consistent, and stop cleanly when the user cancels or the stream fails."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "ReadableStream covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "ReadableStream includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "ReadableStream is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "ReadableStream is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

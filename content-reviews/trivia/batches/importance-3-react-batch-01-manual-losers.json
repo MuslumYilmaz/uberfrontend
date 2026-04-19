@@ -1,0 +1,20 @@
+{
+  "batchId": "importance-3-react-batch-01-manual-losers",
+  "scope": "manual competitive rewrite candidates from react importance-3 batch 01",
+  "items": [
+    {
+      "contentId": "react-hooks-youve-used",
+      "severity": "watchlist",
+      "hardestCompetitors": [
+        "greatfrontend.com",
+        "react.dev"
+      ],
+      "reasons": [
+        "the page still reads more like a hook inventory than a clear hook-selection decision matrix",
+        "follow-up trade-offs such as useState vs useReducer and useRef vs state are underdeveloped",
+        "differentiation is weaker than stronger interview-first hook guides"
+      ],
+      "recommendedAction": "if revisited later, replace part of the hook inventory with a decision table and one component-level example that shows why different hooks solve different jobs"
+    }
+  ]
+}

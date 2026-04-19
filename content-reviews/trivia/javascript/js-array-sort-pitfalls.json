@@ -1,0 +1,149 @@
+{
+  "contentId": "js-array-sort-pitfalls",
+  "tech": "javascript",
+  "query": "Array.sort pitfalls in JavaScript",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Array.prototype.sort()",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical baseline for Array.sort default behavior, mutation, and comparator rules.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Array.prototype.sort() is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Array.prototype.sort() is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Production pitfall</strong> <strong><code>Array.prototype.sort()</code> looks harmless but it mutates the original array and sorts values as <em>strings</em> by default.</strong> That is why numeric lists, shared state, and custom ordering logic fail in ways that are frustrating to debug."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-check'></i> <strong>The correct numeric sort</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Production pitfall</strong> <strong><code>Array.prototype.sort()</code> looks harmless but it mutates the original array and sorts values as <em>strings</em> by default.</strong> That is why numeric lists, shared state, and custom ordering logic fail in ways that are frustrating to debug."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Array.prototype.sort() covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Array.prototype.sort() includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Array.prototype.sort() is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Array.prototype.sort() is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Array methods",
+      "url": "https://javascript.info/array-methods",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info covers sort behavior in the broader array-methods tutorial and is the strongest practical tutorial anchor.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Array methods is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Array methods is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Production pitfall</strong> <strong><code>Array.prototype.sort()</code> looks harmless but it mutates the original array and sorts values as <em>strings</em> by default.</strong> That is why numeric lists, shared state, and custom ordering logic fail in ways that are frustrating to debug."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-check'></i> <strong>The correct numeric sort</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Production pitfall</strong> <strong><code>Array.prototype.sort()</code> looks harmless but it mutates the original array and sorts values as <em>strings</em> by default.</strong> That is why numeric lists, shared state, and custom ordering logic fail in ways that are frustrating to debug."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Array methods covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Array methods includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Array methods is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Array methods is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "How to sort an array of numbers correctly",
+      "url": "https://stackoverflow.com/questions/1063007/how-to-sort-an-array-of-integers-correctly",
+      "category": "community_qna",
+      "selectionReason": "This Stack Overflow thread is a direct comparator for the most common numeric-sort pitfall in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "How to sort an array of numbers correctly is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "How to sort an array of numbers correctly is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Production pitfall</strong> <strong><code>Array.prototype.sort()</code> looks harmless but it mutates the original array and sorts values as <em>strings</em> by default.</strong> That is why numeric lists, shared state, and custom ordering logic fail in ways that are frustrating to debug."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-check'></i> <strong>The correct numeric sort</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Production pitfall</strong> <strong><code>Array.prototype.sort()</code> looks harmless but it mutates the original array and sorts values as <em>strings</em> by default.</strong> That is why numeric lists, shared state, and custom ordering logic fail in ways that are frustrating to debug."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "How to sort an array of numbers correctly covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "How to sort an array of numbers correctly includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "How to sort an array of numbers correctly is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "How to sort an array of numbers correctly is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "contentId": "vue-reactive-interpolation-into-dom",
+  "tech": "vue",
+  "query": "How does Vue interpolate reactive state into the DOM?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Rendering Mechanism",
+      "url": "https://vuejs.org/guide/extras/rendering-mechanism.html",
+      "category": "canonical_docs",
+      "selectionReason": "Vue rendering mechanism docs are the canonical baseline for template compilation, VNode generation, and patching.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Rendering Mechanism is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Rendering Mechanism is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>The core idea</strong><br><br>Vue doesn’t “re-run the whole DOM.” It compiles <code>{{ ... }}</code> into a render function that creates a Virtual DOM (VNode) tree. During render, Vue tracks which reactive properties were read. When one of those properties changes, Vue schedules the component update, re-runs the render function, diffs old vs new VNodes, and patches only the affected DOM nodes (e.g., a single text node)."
+        ],
+        "actionableExamples": [
+          "<strong>What the compiler roughly generates</strong><br><br>Vue compiles templates to a render function that produces VNodes. For a dynamic text binding, the runtime can optimize patching using compiler hints (e.g., patch flags). Exact output varies, but the shape looks like this:"
+        ],
+        "followUpConfusion": [
+          "<strong>The core idea</strong><br><br>Vue doesn’t “re-run the whole DOM.” It compiles <code>{{ ... }}</code> into a render function that creates a Virtual DOM (VNode) tree. During render, Vue tracks which reactive properties were read. When one of those properties changes, Vue schedules the component update, re-runs the render function, diffs old vs new VNodes, and patches only the affected DOM nodes (e.g., a single text node)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Rendering Mechanism covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Rendering Mechanism includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Rendering Mechanism is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Rendering Mechanism is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd Vue category is the approved interview-prep fallback for Vue fundamentals and runtime questions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Vue Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Vue Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>The core idea</strong><br><br>Vue doesn’t “re-run the whole DOM.” It compiles <code>{{ ... }}</code> into a render function that creates a Virtual DOM (VNode) tree. During render, Vue tracks which reactive properties were read. When one of those properties changes, Vue schedules the component update, re-runs the render function, diffs old vs new VNodes, and patches only the affected DOM nodes (e.g., a single text node)."
+        ],
+        "actionableExamples": [
+          "<strong>What the compiler roughly generates</strong><br><br>Vue compiles templates to a render function that produces VNodes. For a dynamic text binding, the runtime can optimize patching using compiler hints (e.g., patch flags). Exact output varies, but the shape looks like this:"
+        ],
+        "followUpConfusion": [
+          "<strong>The core idea</strong><br><br>Vue doesn’t “re-run the whole DOM.” It compiles <code>{{ ... }}</code> into a render function that creates a Virtual DOM (VNode) tree. During render, Vue tracks which reactive properties were read. When one of those properties changes, Vue schedules the component update, re-runs the render function, diffs old vs new VNodes, and patches only the affected DOM nodes (e.g., a single text node)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Vue Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Vue Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Vue Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Vue Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Understanding Vue's Reactive Data",
+      "url": "https://www.thisdot.co/blog/understanding-vues-reactive-data",
+      "category": "tutorial_reference",
+      "selectionReason": "ThisDot is a topic-direct explainer for reactive data and automatic UI updates in Vue 3.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Understanding Vue's Reactive Data is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Understanding Vue's Reactive Data is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>The core idea</strong><br><br>Vue doesn’t “re-run the whole DOM.” It compiles <code>{{ ... }}</code> into a render function that creates a Virtual DOM (VNode) tree. During render, Vue tracks which reactive properties were read. When one of those properties changes, Vue schedules the component update, re-runs the render function, diffs old vs new VNodes, and patches only the affected DOM nodes (e.g., a single text node)."
+        ],
+        "actionableExamples": [
+          "<strong>What the compiler roughly generates</strong><br><br>Vue compiles templates to a render function that produces VNodes. For a dynamic text binding, the runtime can optimize patching using compiler hints (e.g., patch flags). Exact output varies, but the shape looks like this:"
+        ],
+        "followUpConfusion": [
+          "<strong>The core idea</strong><br><br>Vue doesn’t “re-run the whole DOM.” It compiles <code>{{ ... }}</code> into a render function that creates a Virtual DOM (VNode) tree. During render, Vue tracks which reactive properties were read. When one of those properties changes, Vue schedules the component update, re-runs the render function, diffs old vs new VNodes, and patches only the affected DOM nodes (e.g., a single text node)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Understanding Vue's Reactive Data covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Understanding Vue's Reactive Data includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Understanding Vue's Reactive Data is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Understanding Vue's Reactive Data is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

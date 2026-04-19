@@ -1,0 +1,148 @@
+{
+  "contentId": "css-font-family",
+  "tech": "css",
+  "query": "What is the purpose of the font-family property?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "font-family",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/font-family",
+      "category": "canonical_docs",
+      "selectionReason": "MDN font-family is the canonical baseline for font stack syntax and fallback behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "font-family is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "font-family is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Production pitfall</strong><br><br><code>font-family</code> is not just choose a font. It is a fallback plan. The browser walks the stack until it finds a font that exists and can render the text. Bad stacks create subtle production issues: layout shifts, missing glyphs, unreadable fallbacks, or a brand voice that changes across devices."
+        ],
+        "actionableExamples": [
+          "<strong>Example: Applying Font Family to Text</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Production pitfall</strong><br><br><code>font-family</code> is not just choose a font. It is a fallback plan. The browser walks the stack until it finds a font that exists and can render the text. Bad stacks create subtle production issues: layout shifts, missing glyphs, unreadable fallbacks, or a brand voice that changes across devices."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "font-family covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "font-family includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "font-family is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "font-family is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd CSS bank is the approved interview-prep fallback for CSS property fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "CSS Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "CSS Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Production pitfall</strong><br><br><code>font-family</code> is not just choose a font. It is a fallback plan. The browser walks the stack until it finds a font that exists and can render the text. Bad stacks create subtle production issues: layout shifts, missing glyphs, unreadable fallbacks, or a brand voice that changes across devices."
+        ],
+        "actionableExamples": [
+          "<strong>Example: Applying Font Family to Text</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Production pitfall</strong><br><br><code>font-family</code> is not just choose a font. It is a fallback plan. The browser walks the stack until it finds a font that exists and can render the text. Bad stacks create subtle production issues: layout shifts, missing glyphs, unreadable fallbacks, or a brand voice that changes across devices."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "CSS Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "CSS Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "CSS Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Typography",
+      "url": "https://web.dev/learn/css/typography",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev typography guidance is a direct comparator for font stacks, fallback, and text rendering quality.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Typography is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Typography is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Production pitfall</strong><br><br><code>font-family</code> is not just choose a font. It is a fallback plan. The browser walks the stack until it finds a font that exists and can render the text. Bad stacks create subtle production issues: layout shifts, missing glyphs, unreadable fallbacks, or a brand voice that changes across devices."
+        ],
+        "actionableExamples": [
+          "<strong>Example: Applying Font Family to Text</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Production pitfall</strong><br><br><code>font-family</code> is not just choose a font. It is a fallback plan. The browser walks the stack until it finds a font that exists and can render the text. Bad stacks create subtle production issues: layout shifts, missing glyphs, unreadable fallbacks, or a brand voice that changes across devices."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Typography covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Typography includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Typography is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Typography is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

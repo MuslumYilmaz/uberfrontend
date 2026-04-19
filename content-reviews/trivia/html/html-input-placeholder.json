@@ -1,0 +1,148 @@
+{
+  "contentId": "html-input-placeholder",
+  "tech": "html",
+  "query": "What is the placeholder attribute used for in input fields?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "placeholder",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/placeholder",
+      "category": "canonical_docs",
+      "selectionReason": "MDN placeholder attribute docs are the canonical baseline for purpose, limitations, and accessibility notes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "placeholder is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "placeholder is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>The <code>placeholder</code> attribute is a lightweight hint, not a durable instruction. The common mistake in production forms is replacing the real label with placeholder text, which hurts accessibility, validation clarity, and autofill UX once the user starts typing."
+        ],
+        "actionableExamples": [
+          "<strong>Example</strong><br><br>This example shows how the placeholder helps users understand what to type:"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>placeholder</code> attribute is a lightweight hint, not a durable instruction. The common mistake in production forms is replacing the real label with placeholder text, which hurts accessibility, validation clarity, and autofill UX once the user starts typing."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "placeholder covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "placeholder includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "placeholder is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "placeholder is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "HTML Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd HTML bank is the approved interview-prep fallback for HTML form fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "HTML Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "HTML Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>The <code>placeholder</code> attribute is a lightweight hint, not a durable instruction. The common mistake in production forms is replacing the real label with placeholder text, which hurts accessibility, validation clarity, and autofill UX once the user starts typing."
+        ],
+        "actionableExamples": [
+          "<strong>Example</strong><br><br>This example shows how the placeholder helps users understand what to type:"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>placeholder</code> attribute is a lightweight hint, not a durable instruction. The common mistake in production forms is replacing the real label with placeholder text, which hurts accessibility, validation clarity, and autofill UX once the user starts typing."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "HTML Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "HTML Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "HTML Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "HTML Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "The form element",
+      "url": "https://web.dev/learn/forms/form-element",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev forms guidance is a direct comparator for labels, hints, and input usability.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The form element is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "The form element is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>The <code>placeholder</code> attribute is a lightweight hint, not a durable instruction. The common mistake in production forms is replacing the real label with placeholder text, which hurts accessibility, validation clarity, and autofill UX once the user starts typing."
+        ],
+        "actionableExamples": [
+          "<strong>Example</strong><br><br>This example shows how the placeholder helps users understand what to type:"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>placeholder</code> attribute is a lightweight hint, not a durable instruction. The common mistake in production forms is replacing the real label with placeholder text, which hurts accessibility, validation clarity, and autofill UX once the user starts typing."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The form element covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "The form element includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The form element is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "The form element is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "contentId": "js-currying",
+  "tech": "javascript",
+  "query": "What is currying in JavaScript?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "What is currying and how does it work?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-currying-and-how-does-it-work",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a direct currying interview page for the exact concept and mental model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct interview-prep explainer with a clean definition and worked examples."
+      ],
+      "theirGaps": [
+        "It is less explicit about when currying becomes unnecessary indirection and when plain parameters are the better trade-off."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Currying is worth using when you want to lock in one argument at a time and reuse the partially configured result later.",
+          "You might first fix a base URL, then auth, then an endpoint: <code>api(baseUrl)(token)(path)</code>."
+        ],
+        "actionableExamples": [
+          "const buildRequest = baseUrl => token => path =>",
+          "const authed = forProd('abc123');"
+        ],
+        "followUpConfusion": [
+          "Currying changes a multi-argument function into unary steps. Partial application means some arguments are pre-filled ahead of time.",
+          "Do not curry a function just because it looks functional."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The GreatFrontEnd page covers the topic directly and includes practical examples, so it remains a strong exact-topic comparator."
+        ],
+        "actionableExamples": [
+          "Its worked examples are concrete and interview-friendly, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "It is lighter on the explicit 'when not to curry' rule and the currying-versus-partial-application distinction than the rewritten shipped page."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this page needs more separation later, add one second worked example beyond API preconfiguration."
+        ]
+      },
+      "winReason": "The rewritten page now leads with the decision boundary, keeps a practical API-helper scenario above the fold, and answers the common follow-up confusion without losing example quality."
+    },
+    {
+      "label": "Currying and partial application",
+      "url": "https://javascript.info/currying-partials",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is the strongest direct tutorial on currying, partial application, and function transformation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a high-quality tutorial reference with a practical logging example and broader library context."
+      ],
+      "theirGaps": [
+        "It is broader and more tutorial-shaped than a compact interview answer that makes the readability trade-off explicit up front."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Currying is worth using when you want to lock in one argument at a time and reuse the partially configured result later.",
+          "If the function is only called once, the extra nesting is usually noise."
+        ],
+        "actionableExamples": [
+          "const buildRequest = baseUrl => token => path =>",
+          "You might first fix a base URL, then auth, then an endpoint: <code>api(baseUrl)(token)(path)</code>."
+        ],
+        "followUpConfusion": [
+          "Currying changes a multi-argument function into unary steps. Partial application means some arguments are pre-filled ahead of time.",
+          "If the abstraction is one-off or harder to read, skip it and keep a normal function."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info has a strong real-life logging example, but it takes longer to reach the explicit 'use it when repeated arguments matter' rule."
+        ],
+        "actionableExamples": [
+          "Its `curry(f)` walkthrough and logging example are strong enough that the example axis stays tied."
+        ],
+        "followUpConfusion": [
+          "It explains currying and partial application well, but the rewritten shipped page is sharper on when not to use the abstraction."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one small library-style example later if we want more separation from tutorial references."
+        ]
+      },
+      "winReason": "The rewritten page is more interview-compressed than the tutorial reference while still keeping practical examples and a clearer 'do not curry this' boundary."
+    },
+    {
+      "label": "How to Use Currying and Composition in JavaScript",
+      "url": "https://www.freecodecamp.org/news/how-to-use-currying-and-composition-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "This freeCodeCamp article is a direct practical explainer for currying and composition in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It shows currying in a practical mapping and composition workflow instead of stopping at the raw definition."
+      ],
+      "theirGaps": [
+        "It is broader and more composition-focused than the interview question, and it is less direct on misuse and readability costs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You might first fix a base URL, then auth, then an endpoint: <code>api(baseUrl)(token)(path)</code>.",
+          "Its real value is reusable partial steps, not extra parentheses."
+        ],
+        "actionableExamples": [
+          "const buildRequest = baseUrl => token => path =>",
+          "const addTax = rate => price => price * (1 + rate);"
+        ],
+        "followUpConfusion": [
+          "Currying changes a multi-argument function into unary steps. Partial application means some arguments are pre-filled ahead of time.",
+          "Do not curry a function just because it looks functional."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "freeCodeCamp has a concrete currying workflow, but the rewritten shipped page is more explicit about the decision boundary for interview use."
+        ],
+        "actionableExamples": [
+          "Its practical examples are concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "It is weaker on the immediate 'when not to curry' rule and on separating currying from partial application in one compact block."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If we revisit this page later, add one debugging-oriented example where currying goes wrong."
+        ]
+      },
+      "winReason": "The rewritten page stays practical while becoming more decision-first than the broader tutorial article, especially on misuse and follow-up confusion."
+    }
+  ]
+}

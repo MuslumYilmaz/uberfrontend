@@ -1,0 +1,149 @@
+{
+  "contentId": "ai-ux-integration-challenges",
+  "tech": "javascript",
+  "query": "AI UX in frontend apps latency streaming trust failures",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Conversation state",
+      "url": "https://platform.openai.com/docs/guides/conversation-state",
+      "category": "canonical_docs",
+      "selectionReason": "OpenAI docs are the primary source for conversation-state handling, manual state management, and context-window trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Conversation state is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Conversation state is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-robot'></i> <strong>Definition (above the fold)</strong> AI UX is hard because model output is probabilistic, latency varies, and failures are common. A high-quality frontend makes this uncertainty visible and controllable: users must understand <strong>what is happening now</strong>, <strong>what could go wrong</strong>, and <strong>what they can do next</strong>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core product model</strong> Treat AI responses as a state machine, not a single API call: <code>idle -> submitting -> streaming -> done | error | canceled</code>. Separate canonical message state from transient UI state (typing indicator, partial tokens, retry banner) to avoid race conditions and duplicate output."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-robot'></i> <strong>Definition (above the fold)</strong> AI UX is hard because model output is probabilistic, latency varies, and failures are common. A high-quality frontend makes this uncertainty visible and controllable: users must understand <strong>what is happening now</strong>, <strong>what could go wrong</strong>, and <strong>what they can do next</strong>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Conversation state covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Conversation state includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Conversation state is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Conversation state is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "AI SDK UI: Chatbot Resume Streams",
+      "url": "https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-resume-streams",
+      "category": "tutorial_reference",
+      "selectionReason": "AI SDK docs are directly relevant for reconnect, stream resumption, and persistence trade-offs in AI chat UX.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "AI SDK UI: Chatbot Resume Streams is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "AI SDK UI: Chatbot Resume Streams is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-robot'></i> <strong>Definition (above the fold)</strong> AI UX is hard because model output is probabilistic, latency varies, and failures are common. A high-quality frontend makes this uncertainty visible and controllable: users must understand <strong>what is happening now</strong>, <strong>what could go wrong</strong>, and <strong>what they can do next</strong>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core product model</strong> Treat AI responses as a state machine, not a single API call: <code>idle -> submitting -> streaming -> done | error | canceled</code>. Separate canonical message state from transient UI state (typing indicator, partial tokens, retry banner) to avoid race conditions and duplicate output."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-robot'></i> <strong>Definition (above the fold)</strong> AI UX is hard because model output is probabilistic, latency varies, and failures are common. A high-quality frontend makes this uncertainty visible and controllable: users must understand <strong>what is happening now</strong>, <strong>what could go wrong</strong>, and <strong>what they can do next</strong>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "AI SDK UI: Chatbot Resume Streams covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "AI SDK UI: Chatbot Resume Streams includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "AI SDK UI: Chatbot Resume Streams is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "AI SDK UI: Chatbot Resume Streams is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Basic Chatbot",
+      "url": "https://vercel.com/academy/ai-sdk/basic-chatbot",
+      "category": "tutorial_reference",
+      "selectionReason": "Vercel Academy is a primary engineering reference for production chat UX concerns such as message flow, persistence, and streaming behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Basic Chatbot is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "It is implementation-oriented, but our shipped answer is tighter on the UX failure modes interviewers usually probe."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-robot'></i> <strong>Definition (above the fold)</strong> AI UX is hard because model output is probabilistic, latency varies, and failures are common. A high-quality frontend makes this uncertainty visible and controllable: users must understand <strong>what is happening now</strong>, <strong>what could go wrong</strong>, and <strong>what they can do next</strong>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core product model</strong> Treat AI responses as a state machine, not a single API call: <code>idle -> submitting -> streaming -> done | error | canceled</code>. Separate canonical message state from transient UI state (typing indicator, partial tokens, retry banner) to avoid race conditions and duplicate output."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-robot'></i> <strong>Definition (above the fold)</strong> AI UX is hard because model output is probabilistic, latency varies, and failures are common. A high-quality frontend makes this uncertainty visible and controllable: users must understand <strong>what is happening now</strong>, <strong>what could go wrong</strong>, and <strong>what they can do next</strong>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Basic Chatbot covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Basic Chatbot includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Basic Chatbot is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Basic Chatbot is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

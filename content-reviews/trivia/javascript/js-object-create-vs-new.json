@@ -1,0 +1,148 @@
+{
+  "contentId": "js-object-create-vs-new",
+  "tech": "javascript",
+  "query": "Object.create vs new in JavaScript",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Explain the concept of the Prototype pattern",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-concept-of-the-prototype-pattern",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd covers the prototype-side mental model that sits directly behind Object.create and constructor-based creation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Explain the concept of the Prototype pattern is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Explain the concept of the Prototype pattern is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong> Both create objects, but: - <strong><code>new</code></strong> creates an object by <strong>calling a constructor function</strong>. - <strong><code>Object.create</code></strong> creates an object with a <strong>given prototype</strong> <em>without calling any constructor</em>. So the real difference is: <strong>constructor-based creation vs pure prototype-based creation</strong>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>What actually happens with <code>new</code></strong> When you write: <pre class='md-pre'>const obj = new Foo(a, b);</pre> JavaScript does roughly this: 1) Create an empty object 2) Set its <code>[[Prototype]]</code> to <code>Foo.prototype</code> 3) Call <code>Foo</code> with <code>this = obj</code> 4) If <code>Foo</code> returns an object, use it; otherwise return <code>obj</code>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong> Both create objects, but: - <strong><code>new</code></strong> creates an object by <strong>calling a constructor function</strong>. - <strong><code>Object.create</code></strong> creates an object with a <strong>given prototype</strong> <em>without calling any constructor</em>. So the real difference is: <strong>constructor-based creation vs pure prototype-based creation</strong>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Explain the concept of the Prototype pattern covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Explain the concept of the Prototype pattern includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Explain the concept of the Prototype pattern is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Explain the concept of the Prototype pattern is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Object.create()",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical source for Object.create, prototype assignment, and property descriptor behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Object.create() is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Object.create() is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong> Both create objects, but: - <strong><code>new</code></strong> creates an object by <strong>calling a constructor function</strong>. - <strong><code>Object.create</code></strong> creates an object with a <strong>given prototype</strong> <em>without calling any constructor</em>. So the real difference is: <strong>constructor-based creation vs pure prototype-based creation</strong>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>What actually happens with <code>new</code></strong> When you write: <pre class='md-pre'>const obj = new Foo(a, b);</pre> JavaScript does roughly this: 1) Create an empty object 2) Set its <code>[[Prototype]]</code> to <code>Foo.prototype</code> 3) Call <code>Foo</code> with <code>this = obj</code> 4) If <code>Foo</code> returns an object, use it; otherwise return <code>obj</code>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong> Both create objects, but: - <strong><code>new</code></strong> creates an object by <strong>calling a constructor function</strong>. - <strong><code>Object.create</code></strong> creates an object with a <strong>given prototype</strong> <em>without calling any constructor</em>. So the real difference is: <strong>constructor-based creation vs pure prototype-based creation</strong>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Object.create() covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Object.create() includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Object.create() is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Object.create() is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Understanding the difference between Object.create and new SomeFunction()",
+      "url": "https://stackoverflow.com/questions/4166616/understanding-the-difference-between-object-create-and-new-somefunction",
+      "category": "community_qna",
+      "selectionReason": "This long-running Stack Overflow thread is a direct comparator for the exact Object.create versus new confusion interviewers often ask.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Understanding the difference between Object.create and new SomeFunction() is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Understanding the difference between Object.create and new SomeFunction() is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong> Both create objects, but: - <strong><code>new</code></strong> creates an object by <strong>calling a constructor function</strong>. - <strong><code>Object.create</code></strong> creates an object with a <strong>given prototype</strong> <em>without calling any constructor</em>. So the real difference is: <strong>constructor-based creation vs pure prototype-based creation</strong>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>What actually happens with <code>new</code></strong> When you write: <pre class='md-pre'>const obj = new Foo(a, b);</pre> JavaScript does roughly this: 1) Create an empty object 2) Set its <code>[[Prototype]]</code> to <code>Foo.prototype</code> 3) Call <code>Foo</code> with <code>this = obj</code> 4) If <code>Foo</code> returns an object, use it; otherwise return <code>obj</code>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong> Both create objects, but: - <strong><code>new</code></strong> creates an object by <strong>calling a constructor function</strong>. - <strong><code>Object.create</code></strong> creates an object with a <strong>given prototype</strong> <em>without calling any constructor</em>. So the real difference is: <strong>constructor-based creation vs pure prototype-based creation</strong>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Understanding the difference between Object.create and new SomeFunction() covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Understanding the difference between Object.create and new SomeFunction() includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Understanding the difference between Object.create and new SomeFunction() is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Understanding the difference between Object.create and new SomeFunction() is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

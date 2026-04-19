@@ -1,0 +1,148 @@
+{
+  "contentId": "css-border-property",
+  "tech": "css",
+  "query": "How can you add a border around an element?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "border",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/border",
+      "category": "canonical_docs",
+      "selectionReason": "MDN border is the canonical baseline for border shorthand, width, style, and color.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "border is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "border is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Production pitfall</strong><br><br>Adding a border is easy. Adding one without causing layout shift, weak contrast, or a broken focus state is harder. In real UI work, the important question is not just <code>border: 1px solid</code>; it is whether border width, side overrides, and interactive states will change sizing or accessibility."
+        ],
+        "actionableExamples": [
+          "<strong>Example: Adding a Simple Border</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Production pitfall</strong><br><br>Adding a border is easy. Adding one without causing layout shift, weak contrast, or a broken focus state is harder. In real UI work, the important question is not just <code>border: 1px solid</code>; it is whether border width, side overrides, and interactive states will change sizing or accessibility."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "border covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "border includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "border is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "border is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd CSS bank is the approved interview-prep fallback for box-model and border basics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "CSS Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "CSS Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Production pitfall</strong><br><br>Adding a border is easy. Adding one without causing layout shift, weak contrast, or a broken focus state is harder. In real UI work, the important question is not just <code>border: 1px solid</code>; it is whether border width, side overrides, and interactive states will change sizing or accessibility."
+        ],
+        "actionableExamples": [
+          "<strong>Example: Adding a Simple Border</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Production pitfall</strong><br><br>Adding a border is easy. Adding one without causing layout shift, weak contrast, or a broken focus state is harder. In real UI work, the important question is not just <code>border: 1px solid</code>; it is whether border width, side overrides, and interactive states will change sizing or accessibility."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "CSS Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "CSS Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "CSS Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Border",
+      "url": "https://css-tricks.com/almanac/properties/b/border/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks border almanac is the strongest tutorial comparator for shorthand and practical border usage.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Border is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Border is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Production pitfall</strong><br><br>Adding a border is easy. Adding one without causing layout shift, weak contrast, or a broken focus state is harder. In real UI work, the important question is not just <code>border: 1px solid</code>; it is whether border width, side overrides, and interactive states will change sizing or accessibility."
+        ],
+        "actionableExamples": [
+          "<strong>Example: Adding a Simple Border</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Production pitfall</strong><br><br>Adding a border is easy. Adding one without causing layout shift, weak contrast, or a broken focus state is harder. In real UI work, the important question is not just <code>border: 1px solid</code>; it is whether border width, side overrides, and interactive states will change sizing or accessibility."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Border covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Border includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Border is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Border is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

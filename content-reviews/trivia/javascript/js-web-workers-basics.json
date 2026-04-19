@@ -1,0 +1,149 @@
+{
+  "contentId": "js-web-workers-basics",
+  "tech": "javascript",
+  "query": "Web Workers off-main-thread JavaScript basics",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Using Web Workers",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical baseline for Web Worker lifecycle, messaging, and structured-clone behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Using Web Workers is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Using Web Workers is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>What is a Web Worker?</strong> A Web Worker runs JavaScript on a separate thread from the main UI thread. Use it for CPU-heavy work (parsing, compression, image processing) so the UI stays responsive and scrolling stays smooth."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong> Example: you need to parse a 50MB JSON export and compute stats while the user keeps scrolling. Doing this on the main thread will jank the UI. Offload the parsing + aggregation to a worker, then send the small result back to the UI thread."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>What is a Web Worker?</strong> A Web Worker runs JavaScript on a separate thread from the main UI thread. Use it for CPU-heavy work (parsing, compression, image processing) so the UI stays responsive and scrolling stays smooth."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Using Web Workers covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Using Web Workers includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Using Web Workers is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Using Web Workers is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Workers overview",
+      "url": "https://web.dev/articles/workers-overview",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a strong practical explainer for when workers help and what they cannot do.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Workers overview is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Workers overview is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>What is a Web Worker?</strong> A Web Worker runs JavaScript on a separate thread from the main UI thread. Use it for CPU-heavy work (parsing, compression, image processing) so the UI stays responsive and scrolling stays smooth."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong> Example: you need to parse a 50MB JSON export and compute stats while the user keeps scrolling. Doing this on the main thread will jank the UI. Offload the parsing + aggregation to a worker, then send the small result back to the UI thread."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>What is a Web Worker?</strong> A Web Worker runs JavaScript on a separate thread from the main UI thread. Use it for CPU-heavy work (parsing, compression, image processing) so the UI stays responsive and scrolling stays smooth."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Workers overview covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Workers overview includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Workers overview is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Workers overview is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "HTML Web Workers API",
+      "url": "https://www.w3schools.com/html/html5_webworkers.asp",
+      "category": "tutorial_reference",
+      "selectionReason": "W3Schools gives a simple, widely-read baseline for the core worker mental model and message passing setup.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "HTML Web Workers API is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "It is accessible but lighter on the architecture boundaries and main-thread trade-offs our shipped answer calls out."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>What is a Web Worker?</strong> A Web Worker runs JavaScript on a separate thread from the main UI thread. Use it for CPU-heavy work (parsing, compression, image processing) so the UI stays responsive and scrolling stays smooth."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong> Example: you need to parse a 50MB JSON export and compute stats while the user keeps scrolling. Doing this on the main thread will jank the UI. Offload the parsing + aggregation to a worker, then send the small result back to the UI thread."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>What is a Web Worker?</strong> A Web Worker runs JavaScript on a separate thread from the main UI thread. Use it for CPU-heavy work (parsing, compression, image processing) so the UI stays responsive and scrolling stays smooth."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "HTML Web Workers API covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "HTML Web Workers API includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "HTML Web Workers API is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "HTML Web Workers API is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

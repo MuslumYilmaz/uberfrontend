@@ -1,0 +1,148 @@
+{
+  "contentId": "css-center-text",
+  "tech": "css",
+  "query": "How do you center text horizontally in CSS?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "text-align",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/text-align",
+      "category": "canonical_docs",
+      "selectionReason": "MDN text-align is the canonical baseline for horizontal text alignment semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "text-align is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "text-align is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Common mistake</strong><br><br><code>text-align: center</code> centers inline content inside a container; it does not magically center every layout problem. The production/debug issue is using text centering for boxes, buttons, or whole sections that actually need flexbox, grid, or auto margins. Start by asking: am I aligning text, or am I aligning a layout object?"
+        ],
+        "actionableExamples": [
+          "<strong>Example: Centering Text in a Div</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Common mistake</strong><br><br><code>text-align: center</code> centers inline content inside a container; it does not magically center every layout problem. The production/debug issue is using text centering for boxes, buttons, or whole sections that actually need flexbox, grid, or auto margins. Start by asking: am I aligning text, or am I aligning a layout object?"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "text-align covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "text-align includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "text-align is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "text-align is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd CSS bank is the approved interview-prep fallback for CSS fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "CSS Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "CSS Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Common mistake</strong><br><br><code>text-align: center</code> centers inline content inside a container; it does not magically center every layout problem. The production/debug issue is using text centering for boxes, buttons, or whole sections that actually need flexbox, grid, or auto margins. Start by asking: am I aligning text, or am I aligning a layout object?"
+        ],
+        "actionableExamples": [
+          "<strong>Example: Centering Text in a Div</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Common mistake</strong><br><br><code>text-align: center</code> centers inline content inside a container; it does not magically center every layout problem. The production/debug issue is using text centering for boxes, buttons, or whole sections that actually need flexbox, grid, or auto margins. Start by asking: am I aligning text, or am I aligning a layout object?"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "CSS Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "CSS Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "CSS Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Alignment",
+      "url": "https://web.dev/learn/css/alignment",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev alignment guidance is a direct comparator for when text alignment differs from box alignment.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Alignment is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Alignment is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Common mistake</strong><br><br><code>text-align: center</code> centers inline content inside a container; it does not magically center every layout problem. The production/debug issue is using text centering for boxes, buttons, or whole sections that actually need flexbox, grid, or auto margins. Start by asking: am I aligning text, or am I aligning a layout object?"
+        ],
+        "actionableExamples": [
+          "<strong>Example: Centering Text in a Div</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Common mistake</strong><br><br><code>text-align: center</code> centers inline content inside a container; it does not magically center every layout problem. The production/debug issue is using text centering for boxes, buttons, or whole sections that actually need flexbox, grid, or auto margins. Start by asking: am I aligning text, or am I aligning a layout object?"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Alignment covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Alignment includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Alignment is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Alignment is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

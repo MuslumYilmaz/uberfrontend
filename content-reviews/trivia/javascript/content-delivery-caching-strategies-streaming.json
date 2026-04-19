@@ -1,0 +1,149 @@
+{
+  "contentId": "content-delivery-caching-strategies-streaming",
+  "tech": "javascript",
+  "query": "Streaming platform caching architecture CDN HTTP cache frontend delivery",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "HTTP caching",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical baseline for HTTP cache directives, validators, and browser-cache behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "HTTP caching is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "HTTP caching is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-tower-broadcast'></i> <strong>Definition (above the fold)</strong> Designing caching for a streaming platform means deciding <strong>where each byte should be served from</strong>: browser cache, service worker, CDN edge, regional shield, or origin. The goal is not only speed. It is the right balance of startup latency, rebuffering rate, origin load, and delivery cost. A strong interview answer explains each layer and the invalidation policy that keeps content correct under high scale."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong> Treat content delivery as a pyramid: serve from the closest valid cache first, and only fall back to expensive upstream layers on miss. For video, use immutable segmented media; for metadata, use short-lived cache + revalidation."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-tower-broadcast'></i> <strong>Definition (above the fold)</strong> Designing caching for a streaming platform means deciding <strong>where each byte should be served from</strong>: browser cache, service worker, CDN edge, regional shield, or origin. The goal is not only speed. It is the right balance of startup latency, rebuffering rate, origin load, and delivery cost. A strong interview answer explains each layer and the invalidation policy that keeps content correct under high scale."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "HTTP caching covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "HTTP caching includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "HTTP caching is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "HTTP caching is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Prevent unnecessary network requests with the HTTP Cache",
+      "url": "https://web.dev/articles/http-cache",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev gives a practical browser and asset-caching baseline that complements the canonical MDN HTTP caching reference.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Prevent unnecessary network requests with the HTTP Cache is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Prevent unnecessary network requests with the HTTP Cache is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-tower-broadcast'></i> <strong>Definition (above the fold)</strong> Designing caching for a streaming platform means deciding <strong>where each byte should be served from</strong>: browser cache, service worker, CDN edge, regional shield, or origin. The goal is not only speed. It is the right balance of startup latency, rebuffering rate, origin load, and delivery cost. A strong interview answer explains each layer and the invalidation policy that keeps content correct under high scale."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong> Treat content delivery as a pyramid: serve from the closest valid cache first, and only fall back to expensive upstream layers on miss. For video, use immutable segmented media; for metadata, use short-lived cache + revalidation."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-tower-broadcast'></i> <strong>Definition (above the fold)</strong> Designing caching for a streaming platform means deciding <strong>where each byte should be served from</strong>: browser cache, service worker, CDN edge, regional shield, or origin. The goal is not only speed. It is the right balance of startup latency, rebuffering rate, origin load, and delivery cost. A strong interview answer explains each layer and the invalidation policy that keeps content correct under high scale."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Prevent unnecessary network requests with the HTTP Cache covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Prevent unnecessary network requests with the HTTP Cache includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Prevent unnecessary network requests with the HTTP Cache is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Prevent unnecessary network requests with the HTTP Cache is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "The Vercel AI Frontend Stack",
+      "url": "https://elements.ai-sdk.dev/docs/vercel-ai-frontend",
+      "category": "tutorial_reference",
+      "selectionReason": "This Vercel engineering page is a useful comparator for frontend-side caching, streaming, and delivery architecture thinking in modern apps.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The Vercel AI Frontend Stack is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "The Vercel AI Frontend Stack is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-tower-broadcast'></i> <strong>Definition (above the fold)</strong> Designing caching for a streaming platform means deciding <strong>where each byte should be served from</strong>: browser cache, service worker, CDN edge, regional shield, or origin. The goal is not only speed. It is the right balance of startup latency, rebuffering rate, origin load, and delivery cost. A strong interview answer explains each layer and the invalidation policy that keeps content correct under high scale."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong> Treat content delivery as a pyramid: serve from the closest valid cache first, and only fall back to expensive upstream layers on miss. For video, use immutable segmented media; for metadata, use short-lived cache + revalidation."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-tower-broadcast'></i> <strong>Definition (above the fold)</strong> Designing caching for a streaming platform means deciding <strong>where each byte should be served from</strong>: browser cache, service worker, CDN edge, regional shield, or origin. The goal is not only speed. It is the right balance of startup latency, rebuffering rate, origin load, and delivery cost. A strong interview answer explains each layer and the invalidation policy that keeps content correct under high scale."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Vercel AI Frontend Stack covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "The Vercel AI Frontend Stack includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The Vercel AI Frontend Stack is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "The Vercel AI Frontend Stack is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

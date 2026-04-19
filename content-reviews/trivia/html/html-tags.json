@@ -1,0 +1,148 @@
+{
+  "contentId": "html-tags",
+  "tech": "html",
+  "query": "What are HTML tags?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "HTML elements reference",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements",
+      "category": "canonical_docs",
+      "selectionReason": "MDN HTML elements reference is the canonical baseline for tags, semantics, and element behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "HTML elements reference is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "HTML elements reference is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>HTML tags are not just angle-bracket syntax. They are the browser's structural hints for building the DOM tree, exposing semantics to assistive tech, and giving CSS and JavaScript reliable hooks. In production, the common mistake is treating every tag like a generic container when headings, landmarks, forms, and links carry meaning that changes accessibility and debugging."
+        ],
+        "actionableExamples": [
+          "<strong>Paired vs void tags</strong><br><br>Most tags have opening + closing forms (<code>&lt;p&gt;...&lt;/p&gt;</code>). Some are void/self-contained like <code>&lt;img&gt;</code> and <code>&lt;br&gt;</code>."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>HTML tags are not just angle-bracket syntax. They are the browser's structural hints for building the DOM tree, exposing semantics to assistive tech, and giving CSS and JavaScript reliable hooks. In production, the common mistake is treating every tag like a generic container when headings, landmarks, forms, and links carry meaning that changes accessibility and debugging."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "HTML elements reference covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "HTML elements reference includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "HTML elements reference is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "HTML elements reference is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "HTML Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd HTML bank is the approved interview-prep fallback for HTML fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "HTML Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "HTML Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>HTML tags are not just angle-bracket syntax. They are the browser's structural hints for building the DOM tree, exposing semantics to assistive tech, and giving CSS and JavaScript reliable hooks. In production, the common mistake is treating every tag like a generic container when headings, landmarks, forms, and links carry meaning that changes accessibility and debugging."
+        ],
+        "actionableExamples": [
+          "<strong>Paired vs void tags</strong><br><br>Most tags have opening + closing forms (<code>&lt;p&gt;...&lt;/p&gt;</code>). Some are void/self-contained like <code>&lt;img&gt;</code> and <code>&lt;br&gt;</code>."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>HTML tags are not just angle-bracket syntax. They are the browser's structural hints for building the DOM tree, exposing semantics to assistive tech, and giving CSS and JavaScript reliable hooks. In production, the common mistake is treating every tag like a generic container when headings, landmarks, forms, and links carry meaning that changes accessibility and debugging."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "HTML Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "HTML Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "HTML Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "HTML Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Document structure",
+      "url": "https://web.dev/learn/html/document-structure/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev document-structure guidance is a direct comparator for how tags create structure and semantics in practice.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Document structure is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Document structure is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>HTML tags are not just angle-bracket syntax. They are the browser's structural hints for building the DOM tree, exposing semantics to assistive tech, and giving CSS and JavaScript reliable hooks. In production, the common mistake is treating every tag like a generic container when headings, landmarks, forms, and links carry meaning that changes accessibility and debugging."
+        ],
+        "actionableExamples": [
+          "<strong>Paired vs void tags</strong><br><br>Most tags have opening + closing forms (<code>&lt;p&gt;...&lt;/p&gt;</code>). Some are void/self-contained like <code>&lt;img&gt;</code> and <code>&lt;br&gt;</code>."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>HTML tags are not just angle-bracket syntax. They are the browser's structural hints for building the DOM tree, exposing semantics to assistive tech, and giving CSS and JavaScript reliable hooks. In production, the common mistake is treating every tag like a generic container when headings, landmarks, forms, and links carry meaning that changes accessibility and debugging."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Document structure covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Document structure includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Document structure is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Document structure is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

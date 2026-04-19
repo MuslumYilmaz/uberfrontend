@@ -1,0 +1,148 @@
+{
+  "contentId": "vue-sfc-vs-global-components",
+  "tech": "vue",
+  "query": "single-file components vs global components in Vue",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Single-File Components",
+      "url": "https://vuejs.org/guide/scaling-up/sfc.html",
+      "category": "canonical_docs",
+      "selectionReason": "Vue SFC docs are the canonical baseline for single-file component structure and purpose.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Single-File Components is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Single-File Components is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>, but they optimize for different trade-offs. The production pitfall is registering too much globally: you save imports, but lose clear ownership, dependency tracing, and bundle discipline."
+        ],
+        "actionableExamples": [
+          "<strong>Single-File Components (SFCs)</strong><br>Single-File Components are stored in <code>.vue</code> files and include three main sections — &lt;template&gt;, &lt;script&gt;, and &lt;style&gt;. They provide a modular, maintainable way to build complex applications."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>, but they optimize for different trade-offs. The production pitfall is registering too much globally: you save imports, but lose clear ownership, dependency tracing, and bundle discipline."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Single-File Components covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Single-File Components includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Single-File Components is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Single-File Components is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd Vue category is the approved interview-prep fallback for Vue component architecture topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Vue Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Vue Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>, but they optimize for different trade-offs. The production pitfall is registering too much globally: you save imports, but lose clear ownership, dependency tracing, and bundle discipline."
+        ],
+        "actionableExamples": [
+          "<strong>Single-File Components (SFCs)</strong><br>Single-File Components are stored in <code>.vue</code> files and include three main sections — &lt;template&gt;, &lt;script&gt;, and &lt;style&gt;. They provide a modular, maintainable way to build complex applications."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>, but they optimize for different trade-offs. The production pitfall is registering too much globally: you save imports, but lose clear ownership, dependency tracing, and bundle discipline."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Vue Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Vue Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Vue Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Vue Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Vue 3 Global Component",
+      "url": "https://learnvue.co/articles/vue-3-global-component",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue provides a direct comparator for when global registration is attractive and where it becomes messy.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Vue 3 Global Component is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Vue 3 Global Component is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>, but they optimize for different trade-offs. The production pitfall is registering too much globally: you save imports, but lose clear ownership, dependency tracing, and bundle discipline."
+        ],
+        "actionableExamples": [
+          "<strong>Single-File Components (SFCs)</strong><br>Single-File Components are stored in <code>.vue</code> files and include three main sections — &lt;template&gt;, &lt;script&gt;, and &lt;style&gt;. They provide a modular, maintainable way to build complex applications."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>, but they optimize for different trade-offs. The production pitfall is registering too much globally: you save imports, but lose clear ownership, dependency tracing, and bundle discipline."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Vue 3 Global Component covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Vue 3 Global Component includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Vue 3 Global Component is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Vue 3 Global Component is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

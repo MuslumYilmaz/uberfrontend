@@ -1,0 +1,148 @@
+{
+  "contentId": "react-18-whats-new",
+  "tech": "react",
+  "query": "What is new in React 18?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "React v18.0",
+      "url": "https://react.dev/blog/2022/03/29/react-v18",
+      "category": "canonical_docs",
+      "selectionReason": "The React 18 release post is the canonical baseline for concurrent rendering, transitions, and adoption changes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "React v18.0 is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "React v18.0 is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> React 18 is not just a feature list. It is a new rendering foundation plus migration changes that show up in production and interview discussions: more responsive update scheduling, transitions for non-urgent work, and stricter dev checks that expose effect bugs you must actually fix."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Migration notes</strong> Move to <code>createRoot</code> to opt into React 18 behavior, and audit effects for StrictMode double-invocation in dev. Use transitions for non-urgent updates and keep effects idempotent."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> React 18 is not just a feature list. It is a new rendering foundation plus migration changes that show up in production and interview discussions: more responsive update scheduling, transitions for non-urgent work, and stricter dev checks that expose effect bugs you must actually fix."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "React v18.0 covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "React v18.0 includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "React v18.0 is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "React v18.0 is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "React Interview Playbook",
+      "url": "https://www.greatfrontend.com/react-interview-playbook",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd React playbook is the direct interview-prep comparator for what candidates are expected to know about modern React.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "React Interview Playbook is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "React Interview Playbook is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> React 18 is not just a feature list. It is a new rendering foundation plus migration changes that show up in production and interview discussions: more responsive update scheduling, transitions for non-urgent work, and stricter dev checks that expose effect bugs you must actually fix."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Migration notes</strong> Move to <code>createRoot</code> to opt into React 18 behavior, and audit effects for StrictMode double-invocation in dev. Use transitions for non-urgent updates and keep effects idempotent."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> React 18 is not just a feature list. It is a new rendering foundation plus migration changes that show up in production and interview discussions: more responsive update scheduling, transitions for non-urgent work, and stricter dev checks that expose effect bugs you must actually fix."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "React Interview Playbook covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "React Interview Playbook includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "React Interview Playbook is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "React Interview Playbook is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Everything You Need To Know About the React 18 RC",
+      "url": "https://www.telerik.com/blogs/everything-need-know-react-18-rc",
+      "category": "tutorial_reference",
+      "selectionReason": "This Telerik React 18 article is a strong comparator for concurrency, batching, and migration framing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Everything You Need To Know About the React 18 RC is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "It is feature-focused, but our shipped answer is tighter on interview framing and the practical migration implications."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> React 18 is not just a feature list. It is a new rendering foundation plus migration changes that show up in production and interview discussions: more responsive update scheduling, transitions for non-urgent work, and stricter dev checks that expose effect bugs you must actually fix."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Migration notes</strong> Move to <code>createRoot</code> to opt into React 18 behavior, and audit effects for StrictMode double-invocation in dev. Use transitions for non-urgent updates and keep effects idempotent."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> React 18 is not just a feature list. It is a new rendering foundation plus migration changes that show up in production and interview discussions: more responsive update scheduling, transitions for non-urgent work, and stricter dev checks that expose effect bugs you must actually fix."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Everything You Need To Know About the React 18 RC covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Everything You Need To Know About the React 18 RC includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Everything You Need To Know About the React 18 RC is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Everything You Need To Know About the React 18 RC is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

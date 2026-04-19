@@ -1,0 +1,149 @@
+{
+  "contentId": "js-nan-property",
+  "tech": "javascript",
+  "query": "What is the NaN property in JavaScript?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "NaN",
+      "url": "https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical baseline for NaN semantics, equality behavior, and numeric error cases.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "NaN is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "NaN is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>Common mistake</strong> <code>NaN</code> is not just a trivia definition. It is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is usually <code>Number.isNaN</code>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Why not just 'isNaN'?</strong> The global <code>isNaN()</code> function tries to coerce values before checking, which can give confusing results. Always prefer <code>Number.isNaN()</code> because it doesn’t perform type coercion."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Common mistake</strong> <code>NaN</code> is not just a trivia definition. It is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is usually <code>Number.isNaN</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "NaN covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "NaN includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "NaN is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "NaN is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Number",
+      "url": "https://javascript.info/number",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info covers NaN, number coercion, and comparison behavior in a practical tutorial format.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Number is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Number is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>Common mistake</strong> <code>NaN</code> is not just a trivia definition. It is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is usually <code>Number.isNaN</code>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Why not just 'isNaN'?</strong> The global <code>isNaN()</code> function tries to coerce values before checking, which can give confusing results. Always prefer <code>Number.isNaN()</code> because it doesn’t perform type coercion."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Common mistake</strong> <code>NaN</code> is not just a trivia definition. It is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is usually <code>Number.isNaN</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Number covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Number includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Number is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Number is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Is it possible to detect NaN without using isNaN?",
+      "url": "https://stackoverflow.com/questions/14127678/is-it-possible-to-detect-nan-without-using-isnan",
+      "category": "community_qna",
+      "selectionReason": "This Stack Overflow thread is a direct comparator for the exact NaN follow-up confusion candidates usually hit in interviews.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Is it possible to detect NaN without using isNaN? is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "It resolves one confusion point well, but it is narrower than a shipped answer that also warns about coercion and safer validation defaults."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>Common mistake</strong> <code>NaN</code> is not just a trivia definition. It is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is usually <code>Number.isNaN</code>."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Why not just 'isNaN'?</strong> The global <code>isNaN()</code> function tries to coerce values before checking, which can give confusing results. Always prefer <code>Number.isNaN()</code> because it doesn’t perform type coercion."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Common mistake</strong> <code>NaN</code> is not just a trivia definition. It is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is usually <code>Number.isNaN</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Is it possible to detect NaN without using isNaN? covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Is it possible to detect NaN without using isNaN? includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Is it possible to detect NaN without using isNaN? is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Is it possible to detect NaN without using isNaN? is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

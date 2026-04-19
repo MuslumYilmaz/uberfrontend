@@ -1,0 +1,10 @@
+{
+  "batchId": "importance-3-vue-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "vue", "id": "vue-reactive-interpolation-into-dom" },
+    { "tech": "vue", "id": "vue-architecture-decisions-scalability" },
+    { "tech": "vue", "id": "vue-sfc-vs-global-components" },
+    { "tech": "vue", "id": "vuex-state-management" }
+  ]
+}

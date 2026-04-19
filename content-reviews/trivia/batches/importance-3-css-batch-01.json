@@ -1,0 +1,10 @@
+{
+  "batchId": "importance-3-css-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "css", "id": "css-center-text" },
+    { "tech": "css", "id": "css-font-family" },
+    { "tech": "css", "id": "css-border-property" },
+    { "tech": "css", "id": "css-hardware-acceleration" }
+  ]
+}

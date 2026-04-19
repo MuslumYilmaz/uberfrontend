@@ -1,0 +1,20 @@
+{
+  "batchId": "importance-3-javascript-batch-02-manual-losers",
+  "scope": "manual competitive rewrite candidates from javascript importance-3 batch 02",
+  "items": [
+    {
+      "contentId": "ai-streaming-data-handling",
+      "severity": "watchlist",
+      "hardestCompetitors": [
+        "developers.openai.com",
+        "ai-sdk.dev"
+      ],
+      "reasons": [
+        "state-machine framing is strong but the page is short for the topic",
+        "request correlation, reconnect, and resume edge cases are underdeveloped",
+        "only one substantial production scenario is surfaced"
+      ],
+      "recommendedAction": "if revisited later, add one stale-request example with request IDs and one reconnect or resume failure scenario"
+    }
+  ]
+}

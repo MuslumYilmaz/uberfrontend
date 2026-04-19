@@ -1,0 +1,149 @@
+{
+  "contentId": "js-design-patterns",
+  "tech": "javascript",
+  "query": "What do you mean by JavaScript design patterns?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "JavaScript Design Patterns Tutorial",
+      "url": "https://www.geeksforgeeks.org/javascript-design-patterns/",
+      "category": "tutorial_reference",
+      "selectionReason": "GeeksforGeeks is a direct explainer for JavaScript design patterns and the common pattern families.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "JavaScript Design Patterns Tutorial is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "JavaScript Design Patterns Tutorial is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>Practical angle</strong> Design patterns are not labels to memorize for an interview. In production they are useful only when they reduce coupling or clarify ownership. The <strong>common mistake</strong> is forcing module, factory, or observer patterns into simple code and ending up with abstraction layers that are harder to debug than the original problem."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-layer-group'></i> <strong>Why Design Patterns Matter</strong> JavaScript applications, especially large ones, often become complex with many interdependent components. Design patterns help structure this complexity by: - Promoting **code reusability** and **modularity**. - Making code easier to maintain, test, and extend. - Encouraging **clear communication** among developers using shared vocabulary. - Preventing reinventing the wheel by reusing established best practices."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Practical angle</strong> Design patterns are not labels to memorize for an interview. In production they are useful only when they reduce coupling or clarify ownership. The <strong>common mistake</strong> is forcing module, factory, or observer patterns into simple code and ending up with abstraction layers that are harder to debug than the original problem."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "JavaScript Design Patterns Tutorial covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "JavaScript Design Patterns Tutorial includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "JavaScript Design Patterns Tutorial is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "JavaScript Design Patterns Tutorial is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "patterns.dev Vanilla JavaScript Patterns",
+      "url": "https://www.patterns.dev/vanilla",
+      "category": "tutorial_reference",
+      "selectionReason": "patterns.dev is a high-quality reference for practical JavaScript design patterns and when they fit.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "patterns.dev Vanilla JavaScript Patterns is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "patterns.dev Vanilla JavaScript Patterns is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>Practical angle</strong> Design patterns are not labels to memorize for an interview. In production they are useful only when they reduce coupling or clarify ownership. The <strong>common mistake</strong> is forcing module, factory, or observer patterns into simple code and ending up with abstraction layers that are harder to debug than the original problem."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-layer-group'></i> <strong>Why Design Patterns Matter</strong> JavaScript applications, especially large ones, often become complex with many interdependent components. Design patterns help structure this complexity by: - Promoting **code reusability** and **modularity**. - Making code easier to maintain, test, and extend. - Encouraging **clear communication** among developers using shared vocabulary. - Preventing reinventing the wheel by reusing established best practices."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Practical angle</strong> Design patterns are not labels to memorize for an interview. In production they are useful only when they reduce coupling or clarify ownership. The <strong>common mistake</strong> is forcing module, factory, or observer patterns into simple code and ending up with abstraction layers that are harder to debug than the original problem."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "patterns.dev Vanilla JavaScript Patterns covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "patterns.dev Vanilla JavaScript Patterns includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "patterns.dev Vanilla JavaScript Patterns is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "patterns.dev Vanilla JavaScript Patterns is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "JavaScript design patterns",
+      "url": "https://stackoverflow.com/questions/3168805/javascript-design-patterns",
+      "category": "community_qna",
+      "selectionReason": "This Stack Overflow thread is a credible community comparator for how developers explain JavaScript design patterns and recommended resources.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "JavaScript design patterns is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "It points to useful resources, but it is less structured than a single answer that separates pattern value from pattern cargo-culting."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>Practical angle</strong> Design patterns are not labels to memorize for an interview. In production they are useful only when they reduce coupling or clarify ownership. The <strong>common mistake</strong> is forcing module, factory, or observer patterns into simple code and ending up with abstraction layers that are harder to debug than the original problem."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-layer-group'></i> <strong>Why Design Patterns Matter</strong> JavaScript applications, especially large ones, often become complex with many interdependent components. Design patterns help structure this complexity by: - Promoting **code reusability** and **modularity**. - Making code easier to maintain, test, and extend. - Encouraging **clear communication** among developers using shared vocabulary. - Preventing reinventing the wheel by reusing established best practices."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Practical angle</strong> Design patterns are not labels to memorize for an interview. In production they are useful only when they reduce coupling or clarify ownership. The <strong>common mistake</strong> is forcing module, factory, or observer patterns into simple code and ending up with abstraction layers that are harder to debug than the original problem."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "JavaScript design patterns covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "JavaScript design patterns includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "JavaScript design patterns is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "JavaScript design patterns is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

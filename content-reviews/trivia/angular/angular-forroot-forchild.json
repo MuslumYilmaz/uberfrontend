@@ -1,0 +1,149 @@
+{
+  "contentId": "angular-forroot-forchild",
+  "tech": "angular",
+  "query": "What are Angular modules forRoot and forChild used for?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "RouterModule",
+      "url": "https://angular.dev/api/router/RouterModule",
+      "category": "canonical_docs",
+      "selectionReason": "RouterModule docs are the canonical baseline because forRoot and forChild are defined directly on the Angular router module API.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "RouterModule is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "RouterModule is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br><code>forRoot()</code> and <code>forChild()</code> matter because they prevent a classic Angular production bug: importing a module in the wrong place and accidentally duplicating singleton providers or router setup. In legacy NgModule-based apps, this pattern separates root-only configuration from feature-level extension so lazy modules can add routes without re-registering global services."
+        ],
+        "actionableExamples": [
+          "<strong>The Problem They Solve</strong><br>When you import the same module (such as a routing or service module) into multiple feature modules, Angular might create multiple instances of services or conflicting route definitions. <code>forRoot()</code> and <code>forChild()</code> prevent this by clearly defining which module provides shared singletons (root-level) and which only extends configuration (child-level)."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br><code>forRoot()</code> and <code>forChild()</code> matter because they prevent a classic Angular production bug: importing a module in the wrong place and accidentally duplicating singleton providers or router setup. In legacy NgModule-based apps, this pattern separates root-only configuration from feature-level extension so lazy modules can add routes without re-registering global services."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "RouterModule covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "RouterModule includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "RouterModule is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "RouterModule is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Lazy-loading feature modules",
+      "url": "https://v18.angular.dev/guide/ngmodules/lazy-loading/",
+      "category": "canonical_docs",
+      "selectionReason": "The Angular guide shows forRoot versus forChild in the practical routing and lazy-module context where the difference matters most.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Lazy-loading feature modules is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Lazy-loading feature modules is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br><code>forRoot()</code> and <code>forChild()</code> matter because they prevent a classic Angular production bug: importing a module in the wrong place and accidentally duplicating singleton providers or router setup. In legacy NgModule-based apps, this pattern separates root-only configuration from feature-level extension so lazy modules can add routes without re-registering global services."
+        ],
+        "actionableExamples": [
+          "<strong>The Problem They Solve</strong><br>When you import the same module (such as a routing or service module) into multiple feature modules, Angular might create multiple instances of services or conflicting route definitions. <code>forRoot()</code> and <code>forChild()</code> prevent this by clearly defining which module provides shared singletons (root-level) and which only extends configuration (child-level)."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br><code>forRoot()</code> and <code>forChild()</code> matter because they prevent a classic Angular production bug: importing a module in the wrong place and accidentally duplicating singleton providers or router setup. In legacy NgModule-based apps, this pattern separates root-only configuration from feature-level extension so lazy modules can add routes without re-registering global services."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Lazy-loading feature modules covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Lazy-loading feature modules includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Lazy-loading feature modules is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Lazy-loading feature modules is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "forRoot and forChild in Angular",
+      "url": "https://www.geeksforgeeks.org/forroot-vs-forchild-method-in-angular/",
+      "category": "tutorial_reference",
+      "selectionReason": "GeeksforGeeks is a direct comparator for the forRoot versus forChild explanation and provider-scope mental model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "forRoot and forChild in Angular is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "forRoot and forChild in Angular is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br><code>forRoot()</code> and <code>forChild()</code> matter because they prevent a classic Angular production bug: importing a module in the wrong place and accidentally duplicating singleton providers or router setup. In legacy NgModule-based apps, this pattern separates root-only configuration from feature-level extension so lazy modules can add routes without re-registering global services."
+        ],
+        "actionableExamples": [
+          "<strong>The Problem They Solve</strong><br>When you import the same module (such as a routing or service module) into multiple feature modules, Angular might create multiple instances of services or conflicting route definitions. <code>forRoot()</code> and <code>forChild()</code> prevent this by clearly defining which module provides shared singletons (root-level) and which only extends configuration (child-level)."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br><code>forRoot()</code> and <code>forChild()</code> matter because they prevent a classic Angular production bug: importing a module in the wrong place and accidentally duplicating singleton providers or router setup. In legacy NgModule-based apps, this pattern separates root-only configuration from feature-level extension so lazy modules can add routes without re-registering global services."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "forRoot and forChild in Angular covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "forRoot and forChild in Angular includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "forRoot and forChild in Angular is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "forRoot and forChild in Angular is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

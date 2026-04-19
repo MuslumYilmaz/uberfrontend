@@ -1,0 +1,148 @@
+{
+  "contentId": "html-iframe-tag",
+  "tech": "html",
+  "query": "How does the iframe tag work and what is it used for?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "iframe",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
+      "category": "canonical_docs",
+      "selectionReason": "MDN iframe docs are the canonical baseline for embedded browsing contexts, sandboxing, and permissions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "iframe is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "iframe is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>The <code>iframe</code> tag creates a separate browsing context inside your page. In production, the key question is not just whether an embed works, but what permissions, loading cost, accessibility impact, and security risk that third-party content brings with it."
+        ],
+        "actionableExamples": [
+          "<strong>Basic Example</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>iframe</code> tag creates a separate browsing context inside your page. In production, the key question is not just whether an embed works, but what permissions, loading cost, accessibility impact, and security risk that third-party content brings with it."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "iframe covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "iframe includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "iframe is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "iframe is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "HTML Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd HTML bank is the approved interview-prep fallback for embedding and document fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "HTML Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "HTML Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>The <code>iframe</code> tag creates a separate browsing context inside your page. In production, the key question is not just whether an embed works, but what permissions, loading cost, accessibility impact, and security risk that third-party content brings with it."
+        ],
+        "actionableExamples": [
+          "<strong>Basic Example</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>iframe</code> tag creates a separate browsing context inside your page. In production, the key question is not just whether an embed works, but what permissions, loading cost, accessibility impact, and security risk that third-party content brings with it."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "HTML Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "HTML Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "HTML Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "HTML Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Loading third-party JavaScript",
+      "url": "https://web.dev/learn/performance/third-parties",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev performance guidance is a useful comparator for third-party embed cost, loading, and isolation trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Loading third-party JavaScript is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Loading third-party JavaScript is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>The <code>iframe</code> tag creates a separate browsing context inside your page. In production, the key question is not just whether an embed works, but what permissions, loading cost, accessibility impact, and security risk that third-party content brings with it."
+        ],
+        "actionableExamples": [
+          "<strong>Basic Example</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>iframe</code> tag creates a separate browsing context inside your page. In production, the key question is not just whether an embed works, but what permissions, loading cost, accessibility impact, and security risk that third-party content brings with it."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Loading third-party JavaScript covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Loading third-party JavaScript includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Loading third-party JavaScript is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Loading third-party JavaScript is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

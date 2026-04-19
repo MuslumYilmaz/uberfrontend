@@ -1,0 +1,19 @@
+{
+  "batchId": "importance-3-javascript-batch-01-manual-losers",
+  "scope": "manual competitive rewrite candidates from javascript importance-3 batch 01",
+  "items": [
+    {
+      "contentId": "js-design-patterns",
+      "severity": "watchlist",
+      "hardestCompetitors": [
+        "patterns.dev",
+        "freecodecamp.org"
+      ],
+      "reasons": [
+        "pattern inventory is broader and more generic than the strongest competitor",
+        "framework tie-ins feel less concrete than a problem-to-pattern decision model"
+      ],
+      "recommendedAction": "if revisited later, replace part of the inventory with a short problem-to-pattern decision matrix and one stronger JavaScript-native example"
+    }
+  ]
+}
