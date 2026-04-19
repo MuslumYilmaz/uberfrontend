@@ -1,0 +1,148 @@
+{
+  "contentId": "react-fragments-dom-and-reconciliation",
+  "tech": "react",
+  "query": "How do fragments affect the rendered DOM and reconciliation?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Fragment",
+      "url": "https://react.dev/reference/react/Fragment",
+      "category": "canonical_docs",
+      "selectionReason": "react.dev Fragment reference is the canonical baseline for fragment behavior in the rendered tree.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Fragment is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Fragment is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>A fragment (<code>&lt;&gt;...&lt;/&gt;</code> / <code>React.Fragment</code>) is <em>invisible in the browser DOM</em> (no extra element node), but it is <em>still a node in React’s internal tree</em>. That means it affects reconciliation (how React matches old vs new children), even though it doesn’t produce a DOM wrapper."
+        ],
+        "actionableExamples": [
+          "<strong>How reconciliation sees fragments</strong><br><br>Reconciliation matches elements by <em>type + key + position</em>. A fragment has a distinct element type (<code>Fragment</code>). So introducing/removing a fragment wrapper can change the element type at that position, and React may tear down and recreate that subtree."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>A fragment (<code>&lt;&gt;...&lt;/&gt;</code> / <code>React.Fragment</code>) is <em>invisible in the browser DOM</em> (no extra element node), but it is <em>still a node in React’s internal tree</em>. That means it affects reconciliation (how React matches old vs new children), even though it doesn’t produce a DOM wrapper."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Fragment covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Fragment includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Fragment is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Fragment is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "React Interview Playbook",
+      "url": "https://www.greatfrontend.com/react-interview-playbook",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd React playbook is the interview-prep baseline for React tree identity and rendering concepts.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "React Interview Playbook is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "React Interview Playbook is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>A fragment (<code>&lt;&gt;...&lt;/&gt;</code> / <code>React.Fragment</code>) is <em>invisible in the browser DOM</em> (no extra element node), but it is <em>still a node in React’s internal tree</em>. That means it affects reconciliation (how React matches old vs new children), even though it doesn’t produce a DOM wrapper."
+        ],
+        "actionableExamples": [
+          "<strong>How reconciliation sees fragments</strong><br><br>Reconciliation matches elements by <em>type + key + position</em>. A fragment has a distinct element type (<code>Fragment</code>). So introducing/removing a fragment wrapper can change the element type at that position, and React may tear down and recreate that subtree."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>A fragment (<code>&lt;&gt;...&lt;/&gt;</code> / <code>React.Fragment</code>) is <em>invisible in the browser DOM</em> (no extra element node), but it is <em>still a node in React’s internal tree</em>. That means it affects reconciliation (how React matches old vs new children), even though it doesn’t produce a DOM wrapper."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "React Interview Playbook covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "React Interview Playbook includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "React Interview Playbook is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "React Interview Playbook is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Returning Multiple Children Using React Fragments",
+      "url": "https://www.digitalocean.com/community/tutorials/react-fragments",
+      "category": "tutorial_reference",
+      "selectionReason": "This DigitalOcean tutorial is a practical comparator for fragment usage without adding extra DOM nodes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Returning Multiple Children Using React Fragments is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "It explains fragment mechanics well, but it is less explicit about reconciliation and DOM-shape consequences than our answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>A fragment (<code>&lt;&gt;...&lt;/&gt;</code> / <code>React.Fragment</code>) is <em>invisible in the browser DOM</em> (no extra element node), but it is <em>still a node in React’s internal tree</em>. That means it affects reconciliation (how React matches old vs new children), even though it doesn’t produce a DOM wrapper."
+        ],
+        "actionableExamples": [
+          "<strong>How reconciliation sees fragments</strong><br><br>Reconciliation matches elements by <em>type + key + position</em>. A fragment has a distinct element type (<code>Fragment</code>). So introducing/removing a fragment wrapper can change the element type at that position, and React may tear down and recreate that subtree."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>A fragment (<code>&lt;&gt;...&lt;/&gt;</code> / <code>React.Fragment</code>) is <em>invisible in the browser DOM</em> (no extra element node), but it is <em>still a node in React’s internal tree</em>. That means it affects reconciliation (how React matches old vs new children), even though it doesn’t produce a DOM wrapper."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Returning Multiple Children Using React Fragments covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Returning Multiple Children Using React Fragments includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Returning Multiple Children Using React Fragments is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Returning Multiple Children Using React Fragments is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

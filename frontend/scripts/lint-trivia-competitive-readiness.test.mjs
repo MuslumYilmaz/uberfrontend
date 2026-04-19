@@ -204,12 +204,26 @@ function testImportanceFourWithoutReviewWarns() {
   assert.match(result.stdout, /missing-competitor-review=1/);
 }
 
-function testImportanceThreeWithoutReviewDoesNotWarn() {
+function testImportanceThreeWithoutReviewWarns() {
   const tempRoot = makeTempRoot();
   writeJson(tempRoot, 'cdn/questions/javascript/trivia.json', [
     triviaEntry({
       id: 'importance-three',
       importance: 3,
+      updatedAt: '2026-04-04',
+    }),
+  ]);
+  const result = runLinter(tempRoot);
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /missing-competitor-review=1/);
+}
+
+function testImportanceTwoWithoutReviewDoesNotWarn() {
+  const tempRoot = makeTempRoot();
+  writeJson(tempRoot, 'cdn/questions/javascript/trivia.json', [
+    triviaEntry({
+      id: 'importance-two',
+      importance: 2,
       updatedAt: '2026-04-04',
     }),
   ]);
@@ -483,7 +497,8 @@ function testHardCompetitorSweepWarns() {
 
 testImportanceFiveWithoutReviewWarns();
 testImportanceFourWithoutReviewWarns();
-testImportanceThreeWithoutReviewDoesNotWarn();
+testImportanceThreeWithoutReviewWarns();
+testImportanceTwoWithoutReviewDoesNotWarn();
 testInvalidJsonFails();
 testMissingOurEvidenceSnippetFails();
 testMissingTheirEvidenceFails();

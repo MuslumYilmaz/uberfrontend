@@ -1,0 +1,13 @@
+{
+  "batchId": "importance-3-javascript-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "javascript", "id": "js-nan-property" },
+    { "tech": "javascript", "id": "js-currying" },
+    { "tech": "javascript", "id": "js-design-patterns" },
+    { "tech": "javascript", "id": "js-object-creation-methods" },
+    { "tech": "javascript", "id": "js-object-create-vs-new" },
+    { "tech": "javascript", "id": "js-array-sort-pitfalls" },
+    { "tech": "javascript", "id": "js-queue-vs-stack" }
+  ]
+}

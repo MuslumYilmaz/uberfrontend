@@ -1,0 +1,10 @@
+{
+  "batchId": "importance-3-javascript-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "javascript", "id": "content-delivery-caching-strategies-streaming" },
+    { "tech": "javascript", "id": "ai-streaming-data-handling" },
+    { "tech": "javascript", "id": "ai-ux-integration-challenges" },
+    { "tech": "javascript", "id": "js-web-workers-basics" }
+  ]
+}

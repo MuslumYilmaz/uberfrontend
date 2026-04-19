@@ -1,0 +1,149 @@
+{
+  "contentId": "angular-vs-angularjs",
+  "tech": "angular",
+  "query": "What is the difference between Angular and AngularJS?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Overview",
+      "url": "https://angular.dev/overview",
+      "category": "canonical_docs",
+      "selectionReason": "angular.dev overview is the canonical baseline for modern Angular architecture, TypeScript-first design, and component model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Overview is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Overview is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Migration-first distinction</strong><br><br><strong>AngularJS (1.x)</strong> is built around controllers, <code>$scope</code>, and the digest cycle. <strong>Modern Angular</strong> is a TypeScript-first component framework with DI, RxJS-heavy async patterns, and a different compiler/rendering model. That is why real migrations are <strong>rewrite projects with production trade-offs</strong>, not a package-version bump."
+        ],
+        "actionableExamples": [
+          "<strong>Why Angular was a rewrite</strong><br><br>AngularJS scaled poorly when apps grew: lots of watchers + digest cycles made performance and maintainability harder. Angular (2+) moved to a component model, stronger typing, and a modern compilation/tooling pipeline to make large apps more predictable."
+        ],
+        "followUpConfusion": [
+          "<strong>Migration-first distinction</strong><br><br><strong>AngularJS (1.x)</strong> is built around controllers, <code>$scope</code>, and the digest cycle. <strong>Modern Angular</strong> is a TypeScript-first component framework with DI, RxJS-heavy async patterns, and a different compiler/rendering model. That is why real migrations are <strong>rewrite projects with production trade-offs</strong>, not a package-version bump."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Overview covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Overview includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Overview is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Overview is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Difference Between Angular and AngularJS",
+      "url": "https://www.geeksforgeeks.org/difference-between-angular-and-angularjs/",
+      "category": "tutorial_reference",
+      "selectionReason": "GeeksforGeeks is a direct comparator for Angular versus AngularJS differences and migration-era framing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Difference Between Angular and AngularJS is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Difference Between Angular and AngularJS is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Migration-first distinction</strong><br><br><strong>AngularJS (1.x)</strong> is built around controllers, <code>$scope</code>, and the digest cycle. <strong>Modern Angular</strong> is a TypeScript-first component framework with DI, RxJS-heavy async patterns, and a different compiler/rendering model. That is why real migrations are <strong>rewrite projects with production trade-offs</strong>, not a package-version bump."
+        ],
+        "actionableExamples": [
+          "<strong>Why Angular was a rewrite</strong><br><br>AngularJS scaled poorly when apps grew: lots of watchers + digest cycles made performance and maintainability harder. Angular (2+) moved to a component model, stronger typing, and a modern compilation/tooling pipeline to make large apps more predictable."
+        ],
+        "followUpConfusion": [
+          "<strong>Migration-first distinction</strong><br><br><strong>AngularJS (1.x)</strong> is built around controllers, <code>$scope</code>, and the digest cycle. <strong>Modern Angular</strong> is a TypeScript-first component framework with DI, RxJS-heavy async patterns, and a different compiler/rendering model. That is why real migrations are <strong>rewrite projects with production trade-offs</strong>, not a package-version bump."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Difference Between Angular and AngularJS covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Difference Between Angular and AngularJS includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Difference Between Angular and AngularJS is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Difference Between Angular and AngularJS is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Making the Switch from AngularJS to Angular in an Enterprise Dev Shop",
+      "url": "https://www.telerik.com/blogs/making-switch-angularjs-angular-enterprise-dev-shop",
+      "category": "tutorial_reference",
+      "selectionReason": "This Telerik migration write-up is a strong comparator for how clearly AngularJS-to-Angular rewrite realities are explained.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Making the Switch from AngularJS to Angular in an Enterprise Dev Shop is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "It is more migration-story focused than a compact interview answer that crisply separates AngularJS architecture from modern Angular."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Migration-first distinction</strong><br><br><strong>AngularJS (1.x)</strong> is built around controllers, <code>$scope</code>, and the digest cycle. <strong>Modern Angular</strong> is a TypeScript-first component framework with DI, RxJS-heavy async patterns, and a different compiler/rendering model. That is why real migrations are <strong>rewrite projects with production trade-offs</strong>, not a package-version bump."
+        ],
+        "actionableExamples": [
+          "<strong>Why Angular was a rewrite</strong><br><br>AngularJS scaled poorly when apps grew: lots of watchers + digest cycles made performance and maintainability harder. Angular (2+) moved to a component model, stronger typing, and a modern compilation/tooling pipeline to make large apps more predictable."
+        ],
+        "followUpConfusion": [
+          "<strong>Migration-first distinction</strong><br><br><strong>AngularJS (1.x)</strong> is built around controllers, <code>$scope</code>, and the digest cycle. <strong>Modern Angular</strong> is a TypeScript-first component framework with DI, RxJS-heavy async patterns, and a different compiler/rendering model. That is why real migrations are <strong>rewrite projects with production trade-offs</strong>, not a package-version bump."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Making the Switch from AngularJS to Angular in an Enterprise Dev Shop covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Making the Switch from AngularJS to Angular in an Enterprise Dev Shop includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Making the Switch from AngularJS to Angular in an Enterprise Dev Shop is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Making the Switch from AngularJS to Angular in an Enterprise Dev Shop is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

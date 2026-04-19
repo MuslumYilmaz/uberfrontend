@@ -1,0 +1,148 @@
+{
+  "contentId": "js-object-creation-methods",
+  "tech": "javascript",
+  "query": "What are the different ways to create objects in JavaScript?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "What are the various ways to create objects in JavaScript?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-are-the-various-ways-to-create-objects-in-javascript",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic object-creation interview page that matches the same concept cluster.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "What are the various ways to create objects in JavaScript? is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "What are the various ways to create objects in JavaScript? is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> JavaScript gives you multiple ways to create objects, and they are not interchangeable. The real production question is when not to use a pattern: object literals are simple, factories avoid <code>new</code>, constructors and classes share prototype methods, and <code>Object.create()</code> gives lower-level control over inheritance."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-list-ol'></i> <strong>1. Object Literal Syntax</strong> This is the simplest and most common way to create objects in JavaScript. You directly define key-value pairs inside curly braces."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> JavaScript gives you multiple ways to create objects, and they are not interchangeable. The real production question is when not to use a pattern: object literals are simple, factories avoid <code>new</code>, constructors and classes share prototype methods, and <code>Object.create()</code> gives lower-level control over inheritance."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "What are the various ways to create objects in JavaScript? covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "What are the various ways to create objects in JavaScript? includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "What are the various ways to create objects in JavaScript? is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "What are the various ways to create objects in JavaScript? is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Working with objects",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical baseline for object literals, constructors, prototypes, and object behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Working with objects is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Working with objects is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> JavaScript gives you multiple ways to create objects, and they are not interchangeable. The real production question is when not to use a pattern: object literals are simple, factories avoid <code>new</code>, constructors and classes share prototype methods, and <code>Object.create()</code> gives lower-level control over inheritance."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-list-ol'></i> <strong>1. Object Literal Syntax</strong> This is the simplest and most common way to create objects in JavaScript. You directly define key-value pairs inside curly braces."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> JavaScript gives you multiple ways to create objects, and they are not interchangeable. The real production question is when not to use a pattern: object literals are simple, factories avoid <code>new</code>, constructors and classes share prototype methods, and <code>Object.create()</code> gives lower-level control over inheritance."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Working with objects covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Working with objects includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Working with objects is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Working with objects is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Different ways to create objects in JavaScript",
+      "url": "https://www.geeksforgeeks.org/javascript/different-ways-to-create-objects-in-javascript/",
+      "category": "tutorial_reference",
+      "selectionReason": "GeeksforGeeks provides a topic-direct comparison of the common object creation approaches.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Different ways to create objects in JavaScript is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Different ways to create objects in JavaScript is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> JavaScript gives you multiple ways to create objects, and they are not interchangeable. The real production question is when not to use a pattern: object literals are simple, factories avoid <code>new</code>, constructors and classes share prototype methods, and <code>Object.create()</code> gives lower-level control over inheritance."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-list-ol'></i> <strong>1. Object Literal Syntax</strong> This is the simplest and most common way to create objects in JavaScript. You directly define key-value pairs inside curly braces."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> JavaScript gives you multiple ways to create objects, and they are not interchangeable. The real production question is when not to use a pattern: object literals are simple, factories avoid <code>new</code>, constructors and classes share prototype methods, and <code>Object.create()</code> gives lower-level control over inheritance."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Different ways to create objects in JavaScript covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Different ways to create objects in JavaScript includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Different ways to create objects in JavaScript is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Different ways to create objects in JavaScript is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

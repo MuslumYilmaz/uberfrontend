@@ -1,0 +1,156 @@
+{
+  "contentId": "js-queue-vs-stack",
+  "tech": "javascript",
+  "query": "Stack vs Queue in JavaScript",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Difference between Array, Queue and Stack",
+      "url": "https://www.geeksforgeeks.org/dsa/difference-between-array-queue-and-stack/",
+      "category": "tutorial_reference",
+      "selectionReason": "GeeksforGeeks has a direct stack-versus-queue comparison and explicitly contrasts the structures.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a direct side-by-side explainer for stack-versus-queue interview questions."
+      ],
+      "theirGaps": [
+        "It is less JavaScript-specific about the dequeue-cost trap and implementation choices once the queue grows."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Choose by removal order first, then by implementation cost.",
+          "Queue: job processing, BFS, notification delivery, event buffering."
+        ],
+        "actionableExamples": [
+          "A queue written as <code>items.push(v)</code> plus <code>items.shift()</code> is easy to explain, but it is usually the wrong default once the queue grows or runs in a hot path.",
+          "Head-index queue"
+        ],
+        "followUpConfusion": [
+          "Choose by removal order first, then by implementation cost."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The GeeksforGeeks page is a direct comparison, but it stays more textbook-level than the rewritten shipped answer's JS-specific order-plus-cost framing."
+        ],
+        "actionableExamples": [
+          "It lists the structures clearly, but the rewritten shipped page does more to connect the comparison to concrete JavaScript implementation choices such as `shift()` versus a head pointer."
+        ],
+        "followUpConfusion": [
+          "Its direct side-by-side explanation is still competitive enough that high-level confusion coverage stays tied."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "If this page needs more separation later, add one short note on when a linked-list queue matters outside array-backed JavaScript implementations."
+        ]
+      },
+      "winReason": "The rewritten page now earns its implementation-focused promise by surfacing the `shift()` trap immediately and tying the abstract difference to real JavaScript queue choices."
+    },
+    {
+      "label": "what is the basic difference between stack and queue?",
+      "url": "https://stackoverflow.com/questions/10974922/what-is-the-basic-difference-between-stack-and-queue",
+      "category": "community_qna",
+      "selectionReason": "This Stack Overflow thread is a direct community comparator for the common FIFO-versus-LIFO interview explanation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It answers the basic LIFO-versus-FIFO confusion very directly."
+      ],
+      "theirGaps": [
+        "It stops at the concept explanation and does not help much with JavaScript implementation cost or real queue design."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If work must leave in submission order, use queue semantics.",
+          "If your bug is about <em>order</em>, ask which item must leave first."
+        ],
+        "actionableExamples": [
+          "A queue written as <code>items.push(v)</code> plus <code>items.shift()</code> is easy to explain, but it is usually the wrong default once the queue grows or runs in a hot path.",
+          "For real queues, prefer a head index or two-stack implementation when throughput matters."
+        ],
+        "followUpConfusion": [
+          "A <strong>queue</strong> removes the oldest item first (<strong>FIFO</strong>)"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Stack Overflow thread explains the difference clearly, but it stays at analogy level instead of turning the choice into a production decision."
+        ],
+        "actionableExamples": [
+          "It does not offer comparable JavaScript implementation guidance beyond the basic concept explanation."
+        ],
+        "followUpConfusion": [
+          "The question-and-answer format is still strong at the simplest FIFO-versus-LIFO clarification, so the confusion axis stays tied."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "If we revisit this page later, add one tiny diagram or step-by-step trace to separate it further from analogy-only explainers."
+        ]
+      },
+      "winReason": "The rewritten page now beats the community baseline on both production relevance and implementation guidance while remaining just as clear on the basic concept."
+    },
+    {
+      "label": "Difference Between Stack and Queue",
+      "url": "https://www.tutorialspoint.com/article/difference-between-stack-and-queue",
+      "category": "tutorial_reference",
+      "selectionReason": "This Tutorialspoint article is a direct stack-versus-queue comparison, which is a better fit than the older queue-only fallback.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It is a direct stack-versus-queue explainer instead of a single-structure tutorial."
+      ],
+      "theirGaps": [
+        "It stays generic on JavaScript implementation cost and does not help much with the `shift()` trap or better queue designs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Choose the structure by removal order first, then by implementation cost.",
+          "Stack: call stack, undo/redo, backtracking, recursive traversal."
+        ],
+        "actionableExamples": [
+          "Naive array queue",
+          "Head-index queue",
+          "Queue with two stacks (amortized O(1))"
+        ],
+        "followUpConfusion": [
+          "Queue = FIFO, but a naive <code>push()</code>/<code>shift()</code> queue can make dequeue O(n)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article contrasts the structures directly, but it does not connect the comparison to JavaScript-specific queue trade-offs as aggressively as the rewritten shipped page."
+        ],
+        "actionableExamples": [
+          "The rewritten shipped page now does more with implementation comparison by contrasting naive queues, head-index queues, and two-stack queues in one answer."
+        ],
+        "followUpConfusion": [
+          "Its direct stack-versus-queue framing still keeps the high-level confusion axis competitive, so that criterion stays tied."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "If this page needs more separation later, add one explicit note on amortized complexity for the two-stack queue."
+        ]
+      },
+      "winReason": "The stronger first fold and JavaScript-specific implementation comparison make the rewritten page more useful than a generic DSA comparison while keeping the high-level distinction just as clear."
+    }
+  ]
+}

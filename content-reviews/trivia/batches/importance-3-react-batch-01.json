@@ -1,0 +1,12 @@
+{
+  "batchId": "importance-3-react-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "react", "id": "react-core-problem-and-non-goals" },
+    { "tech": "react", "id": "react-functional-vs-class-components" },
+    { "tech": "react", "id": "react-why-event-delegation" },
+    { "tech": "react", "id": "react-fragments-dom-and-reconciliation" },
+    { "tech": "react", "id": "react-hooks-youve-used" },
+    { "tech": "react", "id": "react-18-whats-new" }
+  ]
+}

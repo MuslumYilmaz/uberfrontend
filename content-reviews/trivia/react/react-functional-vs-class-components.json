@@ -1,0 +1,148 @@
+{
+  "contentId": "react-functional-vs-class-components",
+  "tech": "react",
+  "query": "Functional vs class components in React",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Component",
+      "url": "https://react.dev/reference/react/Component",
+      "category": "canonical_docs",
+      "selectionReason": "react.dev Component reference is the canonical baseline for class component capabilities and lifecycle semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Component is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Component is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>Both function and class components can render the same UI. The difference is <em>how</em> they express state, side effects, and reuse.<br><br><strong>Function components</strong> use Hooks (<code>useState</code>, <code>useEffect</code>, etc.). <strong>Class components</strong> use instance state (<code>this.state</code>) and lifecycle methods (<code>componentDidMount</code>, <code>componentDidUpdate</code>, <code>componentWillUnmount</code>)."
+        ],
+        "actionableExamples": [
+          "<strong>Lifecycle mapping (common interview ask)</strong><br><br>Hooks are not “magic faster”. They’re a different API that can express the same lifecycle behaviors with explicit dependencies + cleanup."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>Both function and class components can render the same UI. The difference is <em>how</em> they express state, side effects, and reuse.<br><br><strong>Function components</strong> use Hooks (<code>useState</code>, <code>useEffect</code>, etc.). <strong>Class components</strong> use instance state (<code>this.state</code>) and lifecycle methods (<code>componentDidMount</code>, <code>componentDidUpdate</code>, <code>componentWillUnmount</code>)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Component covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Component includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Component is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Component is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Basic React Concepts for Interviews",
+      "url": "https://www.greatfrontend.com/pt-BR/react-interview-playbook/react-basic-concepts",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd basic React concepts directly covers function versus class component differences for interview prep.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Basic React Concepts for Interviews is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Basic React Concepts for Interviews is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>Both function and class components can render the same UI. The difference is <em>how</em> they express state, side effects, and reuse.<br><br><strong>Function components</strong> use Hooks (<code>useState</code>, <code>useEffect</code>, etc.). <strong>Class components</strong> use instance state (<code>this.state</code>) and lifecycle methods (<code>componentDidMount</code>, <code>componentDidUpdate</code>, <code>componentWillUnmount</code>)."
+        ],
+        "actionableExamples": [
+          "<strong>Lifecycle mapping (common interview ask)</strong><br><br>Hooks are not “magic faster”. They’re a different API that can express the same lifecycle behaviors with explicit dependencies + cleanup."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>Both function and class components can render the same UI. The difference is <em>how</em> they express state, side effects, and reuse.<br><br><strong>Function components</strong> use Hooks (<code>useState</code>, <code>useEffect</code>, etc.). <strong>Class components</strong> use instance state (<code>this.state</code>) and lifecycle methods (<code>componentDidMount</code>, <code>componentDidUpdate</code>, <code>componentWillUnmount</code>)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Basic React Concepts for Interviews covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Basic React Concepts for Interviews includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Basic React Concepts for Interviews is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Basic React Concepts for Interviews is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Functions vs Classes in React? Whats the difference?",
+      "url": "https://forum.freecodecamp.org/t/functions-vs-classes-in-react-whats-the-difference/497578",
+      "category": "community_qna",
+      "selectionReason": "This discussion is a direct comparator for how developers explain function versus class components in modern React.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Functions vs Classes in React? Whats the difference? is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Functions vs Classes in React? Whats the difference? is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>Both function and class components can render the same UI. The difference is <em>how</em> they express state, side effects, and reuse.<br><br><strong>Function components</strong> use Hooks (<code>useState</code>, <code>useEffect</code>, etc.). <strong>Class components</strong> use instance state (<code>this.state</code>) and lifecycle methods (<code>componentDidMount</code>, <code>componentDidUpdate</code>, <code>componentWillUnmount</code>)."
+        ],
+        "actionableExamples": [
+          "<strong>Lifecycle mapping (common interview ask)</strong><br><br>Hooks are not “magic faster”. They’re a different API that can express the same lifecycle behaviors with explicit dependencies + cleanup."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>Both function and class components can render the same UI. The difference is <em>how</em> they express state, side effects, and reuse.<br><br><strong>Function components</strong> use Hooks (<code>useState</code>, <code>useEffect</code>, etc.). <strong>Class components</strong> use instance state (<code>this.state</code>) and lifecycle methods (<code>componentDidMount</code>, <code>componentDidUpdate</code>, <code>componentWillUnmount</code>)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Functions vs Classes in React? Whats the difference? covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Functions vs Classes in React? Whats the difference? includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Functions vs Classes in React? Whats the difference? is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Functions vs Classes in React? Whats the difference? is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

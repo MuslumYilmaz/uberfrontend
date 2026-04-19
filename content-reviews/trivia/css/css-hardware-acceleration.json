@@ -1,0 +1,148 @@
+{
+  "contentId": "css-hardware-acceleration",
+  "tech": "css",
+  "query": "How do hardware acceleration and compositing affect CSS animation performance?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "CSS and JavaScript animation performance",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Performance/CSS_JavaScript_animation_performance",
+      "category": "canonical_docs",
+      "selectionReason": "MDN performance guidance is the canonical baseline for animation cost, jank, and rendering stages.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "CSS and JavaScript animation performance is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "CSS and JavaScript animation performance is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>Hardware acceleration matters when you are <strong>debugging</strong> why one animation stays smooth and another stutters. The useful mental model is layout → paint → composite: properties like <code>transform</code> and <code>opacity</code> often stay on a compositor layer, while layout-heavy changes do not. In production, the pitfall is assuming the GPU makes every animation free; too many promoted layers or careless <code>will-change</code> hints can create new performance problems."
+        ],
+        "actionableExamples": [
+          "<strong>The Rendering Pipeline</strong><br><br>The browser converts CSS and HTML into pixels in three major steps:<br><ol><li><strong>Layout:</strong> Calculates positions and dimensions of elements.</li><li><strong>Paint:</strong> Fills pixels (colors, borders, shadows, etc.) for each element.</li><li><strong>Composite:</strong> Combines painted layers into the final image rendered on screen.</li></ol>Animations that skip layout and paint and only use compositing are significantly faster."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Hardware acceleration matters when you are <strong>debugging</strong> why one animation stays smooth and another stutters. The useful mental model is layout → paint → composite: properties like <code>transform</code> and <code>opacity</code> often stay on a compositor layer, while layout-heavy changes do not. In production, the pitfall is assuming the GPU makes every animation free; too many promoted layers or careless <code>will-change</code> hints can create new performance problems."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS and JavaScript animation performance covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "CSS and JavaScript animation performance includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "CSS and JavaScript animation performance is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "CSS and JavaScript animation performance is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd CSS bank is the approved interview-prep fallback for CSS rendering and performance topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "CSS Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "CSS Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>Hardware acceleration matters when you are <strong>debugging</strong> why one animation stays smooth and another stutters. The useful mental model is layout → paint → composite: properties like <code>transform</code> and <code>opacity</code> often stay on a compositor layer, while layout-heavy changes do not. In production, the pitfall is assuming the GPU makes every animation free; too many promoted layers or careless <code>will-change</code> hints can create new performance problems."
+        ],
+        "actionableExamples": [
+          "<strong>The Rendering Pipeline</strong><br><br>The browser converts CSS and HTML into pixels in three major steps:<br><ol><li><strong>Layout:</strong> Calculates positions and dimensions of elements.</li><li><strong>Paint:</strong> Fills pixels (colors, borders, shadows, etc.) for each element.</li><li><strong>Composite:</strong> Combines painted layers into the final image rendered on screen.</li></ol>Animations that skip layout and paint and only use compositing are significantly faster."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Hardware acceleration matters when you are <strong>debugging</strong> why one animation stays smooth and another stutters. The useful mental model is layout → paint → composite: properties like <code>transform</code> and <code>opacity</code> often stay on a compositor layer, while layout-heavy changes do not. In production, the pitfall is assuming the GPU makes every animation free; too many promoted layers or careless <code>will-change</code> hints can create new performance problems."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "CSS Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "CSS Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "CSS Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "High-performance CSS animations",
+      "url": "https://web.dev/articles/animations-guide",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev animation performance guidance is a strong comparator for compositing, transform/opacity, and pipeline cost.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "High-performance CSS animations is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "High-performance CSS animations is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>Hardware acceleration matters when you are <strong>debugging</strong> why one animation stays smooth and another stutters. The useful mental model is layout → paint → composite: properties like <code>transform</code> and <code>opacity</code> often stay on a compositor layer, while layout-heavy changes do not. In production, the pitfall is assuming the GPU makes every animation free; too many promoted layers or careless <code>will-change</code> hints can create new performance problems."
+        ],
+        "actionableExamples": [
+          "<strong>The Rendering Pipeline</strong><br><br>The browser converts CSS and HTML into pixels in three major steps:<br><ol><li><strong>Layout:</strong> Calculates positions and dimensions of elements.</li><li><strong>Paint:</strong> Fills pixels (colors, borders, shadows, etc.) for each element.</li><li><strong>Composite:</strong> Combines painted layers into the final image rendered on screen.</li></ol>Animations that skip layout and paint and only use compositing are significantly faster."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>Hardware acceleration matters when you are <strong>debugging</strong> why one animation stays smooth and another stutters. The useful mental model is layout → paint → composite: properties like <code>transform</code> and <code>opacity</code> often stay on a compositor layer, while layout-heavy changes do not. In production, the pitfall is assuming the GPU makes every animation free; too many promoted layers or careless <code>will-change</code> hints can create new performance problems."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "High-performance CSS animations covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "High-performance CSS animations includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "High-performance CSS animations is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "High-performance CSS animations is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

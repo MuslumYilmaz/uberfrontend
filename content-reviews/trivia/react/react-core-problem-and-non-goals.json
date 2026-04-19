@@ -1,0 +1,148 @@
+{
+  "contentId": "react-core-problem-and-non-goals",
+  "tech": "react",
+  "query": "What core problem does React solve, and what does it deliberately not solve?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Thinking in React",
+      "url": "https://react.dev/learn/thinking-in-react",
+      "category": "canonical_docs",
+      "selectionReason": "react.dev is the canonical baseline for React’s declarative UI model and data-driven rendering philosophy.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Thinking in React is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Thinking in React is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>React solves one main problem: <em>reliably keeping the UI in sync with changing data</em> (state/props/context) without manually mutating the DOM. It gives you a component model + a declarative rendering system so you describe <em>what the UI should look like</em>, and React figures out <em>how to update</em> the DOM efficiently."
+        ],
+        "actionableExamples": [
+          "<strong>What React deliberately does NOT solve</strong><br><br>React is intentionally a <em>UI library</em>, not a full framework. It avoids forcing a single “one true way” for the rest of the app (routing, data, architecture), so teams can choose what fits their needs."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>React solves one main problem: <em>reliably keeping the UI in sync with changing data</em> (state/props/context) without manually mutating the DOM. It gives you a component model + a declarative rendering system so you describe <em>what the UI should look like</em>, and React figures out <em>how to update</em> the DOM efficiently."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Thinking in React covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Thinking in React includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Thinking in React is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Thinking in React is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "React Interview Playbook",
+      "url": "https://www.greatfrontend.com/react-interview-playbook",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd React playbook is the direct interview-prep comparator for React fundamentals and evaluation framing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "React Interview Playbook is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "React Interview Playbook is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>React solves one main problem: <em>reliably keeping the UI in sync with changing data</em> (state/props/context) without manually mutating the DOM. It gives you a component model + a declarative rendering system so you describe <em>what the UI should look like</em>, and React figures out <em>how to update</em> the DOM efficiently."
+        ],
+        "actionableExamples": [
+          "<strong>What React deliberately does NOT solve</strong><br><br>React is intentionally a <em>UI library</em>, not a full framework. It avoids forcing a single “one true way” for the rest of the app (routing, data, architecture), so teams can choose what fits their needs."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>React solves one main problem: <em>reliably keeping the UI in sync with changing data</em> (state/props/context) without manually mutating the DOM. It gives you a component model + a declarative rendering system so you describe <em>what the UI should look like</em>, and React figures out <em>how to update</em> the DOM efficiently."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "React Interview Playbook covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "React Interview Playbook includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "React Interview Playbook is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "React Interview Playbook is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "What Is React?",
+      "url": "https://www.telerik.com/faqs/react/what-is-react",
+      "category": "tutorial_reference",
+      "selectionReason": "This Telerik React FAQ is a direct high-level comparator for what problem React solves and what it does not try to own.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "What Is React? is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "It is broader and more introductory than a compact answer that separates React’s actual job from common non-goals."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>React solves one main problem: <em>reliably keeping the UI in sync with changing data</em> (state/props/context) without manually mutating the DOM. It gives you a component model + a declarative rendering system so you describe <em>what the UI should look like</em>, and React figures out <em>how to update</em> the DOM efficiently."
+        ],
+        "actionableExamples": [
+          "<strong>What React deliberately does NOT solve</strong><br><br>React is intentionally a <em>UI library</em>, not a full framework. It avoids forcing a single “one true way” for the rest of the app (routing, data, architecture), so teams can choose what fits their needs."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>React solves one main problem: <em>reliably keeping the UI in sync with changing data</em> (state/props/context) without manually mutating the DOM. It gives you a component model + a declarative rendering system so you describe <em>what the UI should look like</em>, and React figures out <em>how to update</em> the DOM efficiently."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "What Is React? covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "What Is React? includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "What Is React? is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "What Is React? is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "contentId": "react-why-event-delegation",
+  "tech": "react",
+  "query": "Why does React use event delegation instead of native listeners?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Responding to Events",
+      "url": "https://react.dev/learn/responding-to-events",
+      "category": "canonical_docs",
+      "selectionReason": "react.dev is the canonical baseline for React event handling, synthetic events, and handler patterns.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Responding to Events is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Responding to Events is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>React usually doesn’t attach a native DOM listener to every element that has <code>onClick</code>/<code>onChange</code>, etc. Instead, it attaches a small set of listeners at the <em>root container</em> and uses <em>event delegation</em>: when the browser event bubbles up, React catches it once and dispatches it to the correct component handler via its internal tree."
+        ],
+        "actionableExamples": [
+          "<strong>How it works (mental model)</strong><br><br>1) Browser fires a native event on a target node.<br>2) The event bubbles up to the root container.<br>3) React’s root listener runs once, finds the closest React component instance for the target, then runs the matching handler(s) in the right order (capture/bubble)."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>React usually doesn’t attach a native DOM listener to every element that has <code>onClick</code>/<code>onChange</code>, etc. Instead, it attaches a small set of listeners at the <em>root container</em> and uses <em>event delegation</em>: when the browser event bubbles up, React catches it once and dispatches it to the correct component handler via its internal tree."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Responding to Events covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Responding to Events includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Responding to Events is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Responding to Events is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "React Interview Playbook",
+      "url": "https://www.greatfrontend.com/react-interview-playbook",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd React playbook is the direct interview-prep comparator for React event and rendering fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "React Interview Playbook is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "React Interview Playbook is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>React usually doesn’t attach a native DOM listener to every element that has <code>onClick</code>/<code>onChange</code>, etc. Instead, it attaches a small set of listeners at the <em>root container</em> and uses <em>event delegation</em>: when the browser event bubbles up, React catches it once and dispatches it to the correct component handler via its internal tree."
+        ],
+        "actionableExamples": [
+          "<strong>How it works (mental model)</strong><br><br>1) Browser fires a native event on a target node.<br>2) The event bubbles up to the root container.<br>3) React’s root listener runs once, finds the closest React component instance for the target, then runs the matching handler(s) in the right order (capture/bubble)."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>React usually doesn’t attach a native DOM listener to every element that has <code>onClick</code>/<code>onChange</code>, etc. Instead, it attaches a small set of listeners at the <em>root container</em> and uses <em>event delegation</em>: when the browser event bubbles up, React catches it once and dispatches it to the correct component handler via its internal tree."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "React Interview Playbook covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "React Interview Playbook includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "React Interview Playbook is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "React Interview Playbook is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Event bubbling and capturing",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling",
+      "category": "tutorial_reference",
+      "selectionReason": "MDN event bubbling guidance is a strong comparator for the browser-level model that React event delegation builds on.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Event bubbling and capturing is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Event bubbling and capturing is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Core idea</strong><br><br>React usually doesn’t attach a native DOM listener to every element that has <code>onClick</code>/<code>onChange</code>, etc. Instead, it attaches a small set of listeners at the <em>root container</em> and uses <em>event delegation</em>: when the browser event bubbles up, React catches it once and dispatches it to the correct component handler via its internal tree."
+        ],
+        "actionableExamples": [
+          "<strong>How it works (mental model)</strong><br><br>1) Browser fires a native event on a target node.<br>2) The event bubbles up to the root container.<br>3) React’s root listener runs once, finds the closest React component instance for the target, then runs the matching handler(s) in the right order (capture/bubble)."
+        ],
+        "followUpConfusion": [
+          "<strong>Core idea</strong><br><br>React usually doesn’t attach a native DOM listener to every element that has <code>onClick</code>/<code>onChange</code>, etc. Instead, it attaches a small set of listeners at the <em>root container</em> and uses <em>event delegation</em>: when the browser event bubbles up, React catches it once and dispatches it to the correct component handler via its internal tree."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Event bubbling and capturing covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Event bubbling and capturing includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Event bubbling and capturing is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Event bubbling and capturing is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

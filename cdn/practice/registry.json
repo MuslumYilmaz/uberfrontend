@@ -6136,14 +6136,14 @@
     "route": "/javascript/trivia/js-queue-vs-stack",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Explain the difference between stack (LIFO) and queue (FIFO) in JavaScript, list core operations, compare time complexity, and show clean O(1) implementations (array head index or two-stacks). Include practical use case…",
+    "summary": "Choose a stack when the newest item should leave first and a queue when work must stay FIFO. Strong JavaScript answers surface the Array.shift() O(n) trap early and compare naive queues with head-index or two-stack impl…",
     "tags": [
       "algorithms",
       "arrays"
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-04-19",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-queue-vs-stack"
   },
@@ -6664,7 +6664,7 @@
     "route": "/javascript/trivia/js-currying",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Currying is a functional programming technique in JavaScript where a function is transformed into a sequence of functions, each taking a single argument. Trade-offs include readability vs reuse, so test partial applicat…",
+    "summary": "Currying is useful when you want to lock in one argument at a time and reuse the partially configured result later. Strong JavaScript answers separate currying from partial application and explain when the extra indirec…",
     "tags": [
       "currying",
       "functional-programming",
@@ -6673,7 +6673,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-19",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-currying"
   },

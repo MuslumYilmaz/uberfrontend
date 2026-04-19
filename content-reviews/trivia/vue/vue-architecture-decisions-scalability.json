@@ -1,0 +1,148 @@
+{
+  "contentId": "vue-architecture-decisions-scalability",
+  "tech": "vue",
+  "query": "Vue architecture decisions and scalability",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Scaling Up",
+      "url": "https://vuejs.org/guide/scaling-up/tooling.html",
+      "category": "canonical_docs",
+      "selectionReason": "Vue scaling-up guidance is the canonical baseline for tooling and structural decisions in larger Vue apps.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Scaling Up is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Scaling Up is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>“Scalability” in Vue isn’t just about performance — it’s mainly about keeping complexity manageable as features and teams grow. Early architectural choices determine whether your codebase stays modular, testable, and predictable."
+        ],
+        "actionableExamples": [
+          "<strong>Recommended baseline for a scalable Vue 3 app</strong><br><br>• Vite + Vue 3 + TypeScript<br>• Vue Router with lazy-loaded routes<br>• Pinia for true shared state only; keep UI state local<br>• Composition API + composables for shared logic<br>• Feature-based folder structure (domain modules)<br>• Central API layer (services) + consistent error handling<br>• Vitest for unit/component tests + Playwright/Cypress for E2E<br>• ESLint/Prettier + typecheck in CI"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>“Scalability” in Vue isn’t just about performance — it’s mainly about keeping complexity manageable as features and teams grow. Early architectural choices determine whether your codebase stays modular, testable, and predictable."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Scaling Up covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Scaling Up includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Scaling Up is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Scaling Up is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd Vue category is the approved interview-prep fallback for Vue architecture and scalability topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Vue Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Vue Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>“Scalability” in Vue isn’t just about performance — it’s mainly about keeping complexity manageable as features and teams grow. Early architectural choices determine whether your codebase stays modular, testable, and predictable."
+        ],
+        "actionableExamples": [
+          "<strong>Recommended baseline for a scalable Vue 3 app</strong><br><br>• Vite + Vue 3 + TypeScript<br>• Vue Router with lazy-loaded routes<br>• Pinia for true shared state only; keep UI state local<br>• Composition API + composables for shared logic<br>• Feature-based folder structure (domain modules)<br>• Central API layer (services) + consistent error handling<br>• Vitest for unit/component tests + Playwright/Cypress for E2E<br>• ESLint/Prettier + typecheck in CI"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>“Scalability” in Vue isn’t just about performance — it’s mainly about keeping complexity manageable as features and teams grow. Early architectural choices determine whether your codebase stays modular, testable, and predictable."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Vue Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Vue Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Vue Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Vue Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Vue Best Practices",
+      "url": "https://learnvue.co/articles/vue-best-practices",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue best-practices coverage is a direct comparator for architectural conventions and scalability decisions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Vue Best Practices is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Vue Best Practices is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>“Scalability” in Vue isn’t just about performance — it’s mainly about keeping complexity manageable as features and teams grow. Early architectural choices determine whether your codebase stays modular, testable, and predictable."
+        ],
+        "actionableExamples": [
+          "<strong>Recommended baseline for a scalable Vue 3 app</strong><br><br>• Vite + Vue 3 + TypeScript<br>• Vue Router with lazy-loaded routes<br>• Pinia for true shared state only; keep UI state local<br>• Composition API + composables for shared logic<br>• Feature-based folder structure (domain modules)<br>• Central API layer (services) + consistent error handling<br>• Vitest for unit/component tests + Playwright/Cypress for E2E<br>• ESLint/Prettier + typecheck in CI"
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>“Scalability” in Vue isn’t just about performance — it’s mainly about keeping complexity manageable as features and teams grow. Early architectural choices determine whether your codebase stays modular, testable, and predictable."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Vue Best Practices covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Vue Best Practices includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Vue Best Practices is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Vue Best Practices is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

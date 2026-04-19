@@ -1,0 +1,148 @@
+{
+  "contentId": "vuex-state-management",
+  "tech": "vue",
+  "query": "What is the purpose of Vuex and how does it help manage state in large applications?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "What is Vuex?",
+      "url": "https://vuex.vuejs.org/",
+      "category": "canonical_docs",
+      "selectionReason": "Vuex docs are the canonical baseline for what Vuex does and when the trade-off is worth it.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "What is Vuex? is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "What is Vuex? is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+        ],
+        "actionableExamples": [
+          "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
+        ],
+        "followUpConfusion": [
+          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "What is Vuex? covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "What is Vuex? includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "What is Vuex? is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "What is Vuex? is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd Vue category is the approved interview-prep fallback for Vue state-management topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Vue Interview Questions is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "Vue Interview Questions is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+        ],
+        "actionableExamples": [
+          "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
+        ],
+        "followUpConfusion": [
+          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Vue Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "Vue Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Vue Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "Vue Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    },
+    {
+      "label": "State Management",
+      "url": "https://cn.vuejs.org/guide/scaling-up/state-management",
+      "category": "canonical_docs",
+      "selectionReason": "Vue state-management guidance is a strong comparator for local state, shared state, and when a store becomes necessary.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "State Management is a direct, credible comparator for this topic."
+      ],
+      "theirGaps": [
+        "State Management is less compressed around the specific interview framing and likely follow-up confusion this page targets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+        ],
+        "actionableExamples": [
+          "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
+        ],
+        "followUpConfusion": [
+          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "State Management covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+        ],
+        "actionableExamples": [
+          "State Management includes a credible baseline explanation or example, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "State Management is less direct on the likely follow-up confusion than our shipped answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tighter worked example later if this page needs more separation on the example axis."
+        ]
+      },
+      "winReason": "State Management is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+    }
+  ]
+}

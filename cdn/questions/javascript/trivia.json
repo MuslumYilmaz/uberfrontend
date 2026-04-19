@@ -4817,7 +4817,7 @@
   {
     "id": "js-currying",
     "title": "What is currying in JavaScript?",
-    "description": "Currying is a functional programming technique in JavaScript where a function is transformed into a sequence of functions, each taking a single argument. Trade-offs include readability vs reuse, so test partial application and edge cases.",
+    "description": "Currying is useful when you want to lock in one argument at a time and reuse the partially configured result later. Strong JavaScript answers separate currying from partial application and explain when the extra indirection is worth it.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -4835,62 +4835,62 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nCurrying transforms a function that takes multiple arguments into a chain of functions, each taking one argument at a time. It allows partial application — creating new functions by pre-filling some arguments."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nCurrying is worth using when you want to lock in one argument at a time and reuse the partially configured result later. If the function is only called once, the extra nesting is usually noise. In JavaScript, the practical value is not <code>f(a)(b)(c)</code> syntax by itself; it is that each step can capture one value and return a smaller helper."
+        },
+        {
+          "type": "text",
+          "text": "<strong>When it pays off</strong><br><br>You might first fix a base URL, then auth, then an endpoint: <code>api(baseUrl)(token)(path)</code>. That lets one call create reusable helpers for all prod requests or all authenticated requests instead of re-passing the same arguments every time.<br><br><strong>Currying vs partial application</strong><br>Currying changes a multi-argument function into unary steps. Partial application means some arguments are pre-filled ahead of time. Currying often enables partial application, but they are not the same thing."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Normal function\nfunction add(a, b, c) {\n  return a + b + c;\n}\n\n// Curried version\nfunction curriedAdd(a) {\n  return function(b) {\n    return function(c) {\n      return a + b + c;\n    };\n  };\n}\n\nconsole.log(curriedAdd(2)(3)(4)); // 9"
+          "code": "const buildRequest = baseUrl => token => path =>\n  `${baseUrl}/${path}?token=${token}`;\n\nconst forProd = buildRequest('/api');\nconst authed = forProd('abc123');\n\nconsole.log(authed('users')); // /api/users?token=abc123"
         },
         {
           "type": "list",
           "columns": [
             "Concept",
-            "Explanation",
+            "Why it helps",
             "Example"
           ],
           "rows": [
             [
-              "Partial Application",
-              "You can call a curried function one step at a time and reuse intermediate results.",
-              "<code>const add5 = curriedAdd(5);<br>add5(2)(3); // 10</code>"
+              "Reusable partial steps",
+              "Each call can return a helper that already knows one argument.",
+              "<code>const authed = buildRequest('/api')('abc123');</code>"
             ],
             [
-              "Function Composition",
-              "Currying makes it easier to build reusable pipelines of small functions.",
-              "<code>const multiply = a => b => a * b;<br>const double = multiply(2);<br>double(10); // 20</code>"
+              "Composition-friendly callbacks",
+              "Unary helpers are easier to pass into mappers and pipelines.",
+              "<code>const addTax = rate => price => price * (1 + rate);</code>"
             ],
             [
               "Closures in Action",
-              "Each inner function 'remembers' the outer function’s arguments through closure.",
-              "<code>curriedAdd(1)(2)(3); // Works because of lexical scope</code>"
+              "Each inner function keeps access to earlier values without global state.",
+              "<code>forProd('abc123')('users')</code> still knows <code>/api</code>."
             ]
           ],
-          "caption": "Key benefits and characteristics of currying."
+          "caption": "Why currying can be useful when the same early arguments repeat."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Modern Short Syntax</strong>\n\nYou can write curried functions using arrow functions for brevity:\n\n```javascript\nconst add = a => b => c => a + b + c;\n\nconsole.log(add(1)(2)(3)); // 6\n```"
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Modern Short Syntax</strong>\n\nArrow functions make curried helpers compact, but shorter syntax does not automatically make the abstraction better.\n\n```javascript\nconst multiply = a => b => a * b;\nconst double = multiply(2);\n\nconsole.log(double(10)); // 20\n```"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Currying transforms multi-argument functions into nested single-argument ones.\n- Enables partial application and functional composition.\n- Helps create reusable, modular logic in a clean, declarative way.\n- Commonly used in frameworks like React, Redux, and functional libraries like Lodash or Ramda."
+          "text": "<strong>When not to curry</strong><br><br>Do not curry a function just because it looks functional. If the API is only called once, if teammates must mentally unwrap three layers to understand it, or if the function depends on method <code>this</code> context, plain parameters are usually clearer.<br><br><strong>Common pitfalls</strong><br><ul><li>Confusing currying with default parameters or partial application.</li><li>Over-currying simple code until readability drops.</li><li>Losing <code>this</code> when a curried wrapper calls an object method.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of currying like a vending machine: instead of inserting all coins at once, you insert them one by one — and after the last coin, you finally get your snack."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>You build an API client where you first fix the base URL, then inject auth, then pass endpoint params: <code>api(baseUrl)(token)(path)</code>.<br><br><strong>Common pitfalls</strong><br><ul><li>Losing <code>this</code> context when curried functions call methods.</li><li>Over-currying for simple cases, which hurts readability.</li><li>Confusing currying with default parameters or partial application.</li></ul><strong>Trade-off or test tip</strong><br>Currying improves reuse but adds layers of functions. Unit-test each partial step to ensure the right value is captured."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Currying transforms <code>f(a, b, c)</code> into <code>f(a)(b)(c)</code>.\n- Its real value is reusable partial steps, not extra parentheses.\n- Use it when you repeatedly preconfigure arguments or compose small functions.\n- If the abstraction is one-off or harder to read, skip it and keep a normal function.\n- Unit-test each partial step so you catch the wrong captured value early."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-04-19",
     "seo": {
       "title": "What is currying in JavaScript?",
-      "description": "Currying transforms a function with multiple arguments into a sequence of functions that each take one argument."
+      "description": "Currying turns f(a, b, c) into f(a)(b)(c). Use it for reusable partially configured helpers, not for one-off JavaScript code that becomes harder to read."
     },
     "incidentCard": {
       "title": "Currying Use-Case Check",
@@ -9542,7 +9542,7 @@
     ],
     "difficulty": "easy",
     "importance": 3,
-    "description": "Explain the difference between stack (LIFO) and queue (FIFO) in JavaScript, list core operations, compare time complexity, and show clean O(1) implementations (array head index or two-stacks). Include practical use cases (call stack, BFS, task queue) and common pitfalls.",
+    "description": "Choose a stack when the newest item should leave first and a queue when work must stay FIFO. Strong JavaScript answers surface the Array.shift() O(n) trap early and compare naive queues with head-index or two-stack implementations.",
     "type": "trivia",
     "tags": [
       "algorithms",
@@ -9552,36 +9552,43 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>stack</strong> is <strong>LIFO</strong> (last in, first out). A <strong>queue</strong> is <strong>FIFO</strong> (first in, first out). Same elements, different removal end."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nChoose by removal order first, then by implementation cost. A <strong>stack</strong> removes the newest item first (<strong>LIFO</strong>) and maps cleanly to <code>push()</code>/<code>pop()</code>. A <strong>queue</strong> removes the oldest item first (<strong>FIFO</strong>), but in JavaScript a naive queue often uses <code>shift()</code>, which can be <strong>O(n)</strong> because the array is re-indexed."
         },
         {
           "type": "text",
-          "text": "<strong>When to use which</strong><br><br>\n- Stack: call stack, undo/redo, backtracking/DFS.\n- Queue: task scheduling, BFS, message processing, event loops."
+          "text": "<strong>First implementation decision</strong><br><br>If the most recent item should come out first, use stack semantics. If work must leave in submission order, use queue semantics. After that, decide whether a tiny demo can live with plain array methods or whether a real queue needs a head index or two-stack design to keep dequeue cheap.<br><br><strong>Implementation trap</strong><br>A queue written as <code>items.push(v)</code> plus <code>items.shift()</code> is easy to explain, but it is usually the wrong default once the queue grows or runs in a hot path."
         },
         {
           "type": "table",
-          "title": "Operations & complexity",
+          "title": "Order and dequeue cost",
           "columns": [
             "Structure",
-            "Add",
-            "Remove",
-            "Peek",
-            "Typical Big-O"
+            "Order",
+            "Common JS operations",
+            "Dequeue / remove cost",
+            "Good fit"
           ],
           "rows": [
             [
               "Stack",
-              "push",
-              "pop",
-              "peek",
-              "O(1)"
+              "LIFO",
+              "push / pop",
+              "O(1)",
+              "Undo, call stack, DFS, backtracking"
             ],
             [
-              "Queue",
-              "enqueue",
-              "dequeue",
-              "peek",
-              "O(1) with head index"
+              "Naive array queue",
+              "FIFO",
+              "push / shift",
+              "O(n) dequeue",
+              "Tiny demos only"
+            ],
+            [
+              "Head-index queue",
+              "FIFO",
+              "push / head pointer",
+              "O(1) amortized dequeue",
+              "Task queues, BFS, job runners"
             ]
           ]
         },
@@ -9597,15 +9604,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Pitfalls</strong><br><br>\n- <code>Array.shift()</code> is O(n) because it re-indexes.\n- If you use a head index, compact occasionally to avoid unbounded memory.\n- Don't mix stack/queue semantics in the same API."
+          "text": "<strong>When to use which</strong><br><br>\n- Stack: call stack, undo/redo, backtracking, recursive traversal.\n- Queue: job processing, BFS, notification delivery, event buffering.\n- Same data, different removal policy: the bug is often in the order choice, not the container name."
         },
         {
           "type": "text",
-          "text": "<strong>Real-world choice</strong><br><br>If your bug is about <em>order</em>, ask which item must leave first. Undo history, recursive traversal, and browser backtracking usually want stack semantics. Upload workers, notification delivery, and breadth-first exploration usually want queue semantics. Once the order is correct, then decide whether a simple array API is enough or whether you need an O(1) dequeue implementation."
+          "text": "<strong>Pitfalls and real-world choice</strong><br><br>\n- <code>Array.shift()</code> is O(n) because it re-indexes the remaining items.\n- If you use a head index, compact occasionally so old slots do not accumulate forever.\n- Do not mix stack and queue semantics in one API just because both can use an array.<br><br>If your bug is about <em>order</em>, ask which item must leave first. Once the order is correct, then choose the cheapest implementation that preserves that rule."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Stack = LIFO, queue = FIFO.\n- Choose based on access order: last-first vs first-first.\n- Use O(1) operations with push/pop and head index (or two stacks)."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Stack = LIFO and usually fits plain <code>push()</code>/<code>pop()</code>.\n- Queue = FIFO, but a naive <code>push()</code>/<code>shift()</code> queue can make dequeue O(n).\n- For real queues, prefer a head index or two-stack implementation when throughput matters.\n- Choose the structure by removal order first, then by implementation cost."
         }
       ]
     },
@@ -9630,10 +9637,10 @@
       "rereadPrompt": "Not quite. The key decision is access order: a queue is FIFO, so it matches job processing in submission order. For larger workloads, avoid paying `shift()` reindexing cost on every dequeue and use a head index or two-stack queue instead."
     },
     "access": "free",
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-04-19",
     "seo": {
       "title": "Stack vs queue in JavaScript: what is the difference?",
-      "description": "A stack follows LIFO order, while a queue follows FIFO order for insertion and removal operations."
+      "description": "Choose a stack when the latest item should leave first. Choose a queue when order must stay FIFO, and avoid Array.shift() for larger JavaScript queues."
     }
   },
   {
