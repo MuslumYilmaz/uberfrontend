@@ -1,0 +1,154 @@
+{
+  "contentId": "js-object-destructuring",
+  "tech": "javascript",
+  "query": "object destructuring javascript interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Destructuring",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for destructuring syntax, defaults, renaming, and nested extraction rules.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative syntax reference for destructuring, defaults, and nested patterns."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped on where destructuring breaks in production: missing API fields, nullish values, and misleading defaults."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Object destructuring is concise, but production bugs usually show up around missing properties, nested undefined values, renaming, and misleading defaults."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>Destructuring in Function Parameters</strong>  You can destructure objects directly inside function parameters. This makes your functions cleaner and self-documenting, especially when handling configuration objects or API responses."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common Pitfalls</strong>  - Variable names must match property names unless you rename them explicitly. - If you try to destructure <code>null</code> or <code>undefined</code>, it throws an error because they aren’t objects. - Always ensure the object exists before destructuring — or use default values to avoid runtime errors."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains destructuring syntax thoroughly, but our page is more explicit about the failure modes that make this topic show up in production debugging."
+        ],
+        "actionableExamples": [
+          "The canonical docs still include strong syntax examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the next interview confusion: missing nested values, nullish destructuring throws, and defaults that look safer than they are."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one tiny nested API-response example later if we need more example separation over the docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical destructuring reference, but our page is stronger for the interview prompt because it centers the real production pitfalls instead of only the syntax."
+    },
+    {
+      "label": "GreatFrontEnd destructuring assignment",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-concept-of-destructuring-assignment-for-objects-and-arrays",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has a directly relevant interview-prep page for destructuring assignment in objects and arrays.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the interview wording and likely strong on syntax examples."
+      ],
+      "theirGaps": [
+        "It is less explicit on the production bugs around nested undefined values and misleading defaults."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Object destructuring is concise, but production bugs usually show up around missing properties, nested undefined values, renaming, and misleading defaults."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>Destructuring in Function Parameters</strong>  You can destructure objects directly inside function parameters. This makes your functions cleaner and self-documenting, especially when handling configuration objects or API responses."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common Pitfalls</strong>  - Variable names must match property names unless you rename them explicitly. - If you try to destructure <code>null</code> or <code>undefined</code>, it throws an error because they aren’t objects. - Always ensure the object exists before destructuring — or use default values to avoid runtime errors."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is exact-topic interview prep, but our page is more explicit about where destructuring turns into runtime failures in real API and config handling."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and interview-ready, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-ups: nullish destructuring throws, nested missing values, and defaults that do not fix every shape issue."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the pitfalls block near the opening so the answer stays more production-oriented than a syntax-focused interview page."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is strong interview prep, but our page is stronger because it frames destructuring around the actual bugs developers hit with missing or malformed data."
+    },
+    {
+      "label": "javascript.info Destructuring assignment",
+      "url": "https://javascript.info/destructuring-assignment",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct tutorial for destructuring syntax, defaults, renaming, and nested patterns.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on the syntax and range of destructuring patterns developers can use."
+      ],
+      "theirGaps": [
+        "It is less compact on the production-failure framing around missing fields and unsafe nested destructuring."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Object destructuring is concise, but production bugs usually show up around missing properties, nested undefined values, renaming, and misleading defaults."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>Destructuring in Function Parameters</strong>  You can destructure objects directly inside function parameters. This makes your functions cleaner and self-documenting, especially when handling configuration objects or API responses."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common Pitfalls</strong>  - Variable names must match property names unless you rename them explicitly. - If you try to destructure <code>null</code> or <code>undefined</code>, it throws an error because they aren’t objects. - Always ensure the object exists before destructuring — or use default values to avoid runtime errors."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on syntax and examples, but our page is more explicit about the runtime failures that make destructuring worth discussing in interviews."
+        ],
+        "actionableExamples": [
+          "Its examples are strong and topic-direct, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page makes the likely follow-up confusion more explicit by centering missing nested values, renaming, and default-value limits."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If needed later, add one nested API payload example to create more example distance over the tutorial baseline."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is a strong destructuring tutorial, but our page is better calibrated for the interview prompt because it emphasizes the failure cases that actually break production code."
+    }
+  ]
+}

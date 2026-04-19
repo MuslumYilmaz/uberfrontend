@@ -1,0 +1,142 @@
+{
+  "contentId": "vue-v-if-component-creation-destruction",
+  "tech": "vue",
+  "query": "How does v-if affect component creation and destruction?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Conditional Rendering",
+      "url": "https://vuejs.org/guide/essentials/conditional.html#v-if-vs-v-show",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for v-if, v-show, mount versus hide behavior, and toggle-cost trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on conditional rendering semantics and the higher-toggle-cost versus higher-initial-cost distinction."
+      ],
+      "theirGaps": [
+        "It is lighter on the practical debugging fallout around local-state resets, cleanup, and hidden reactive work."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "it is a mount or unmount decision.",
+          "local state, timers, watchers, focus, and in-flight UI context can disappear each time the condition turns false."
+        ],
+        "followUpConfusion": [
+          "v-if</code> is structural: it creates and destroys DOM and component instances.",
+          "Use <code>v-show</code> for frequent toggles"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain the core rendering trade-off well, but our page is more explicit about the exact state-reset and cleanup bugs developers see."
+        ],
+        "actionableExamples": [
+          "The official examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that v-if is not a cheap visibility toggle and that changing key can force recreation even when the branch stays visible."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny child-form example later showing draft reset under v-if versus preserved state under v-show."
+        ]
+      },
+      "winReason": "The official guide is authoritative on the toggle trade-off, but our page is stronger because it translates that rule into concrete state-reset and lifecycle-cleanup behavior."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because conditional rendering, lifecycle, and state-preservation trade-offs are common Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue rendering and lifecycle fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact mount-versus-hide decision."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The common mistake is treating <code>v-if</code> like cheap show or hide behavior when it actually resets the branch."
+        ],
+        "followUpConfusion": [
+          "Toggling it re-runs setup/data and resets local state."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is clearly relevant, but it is less specific on the exact preservation-versus-teardown trade-off of v-if versus v-show."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on example-driven practice, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The landing page is less explicit about lifecycle cleanup, local state resets, and when a key change deliberately forces recreation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the v-if versus v-show comparison short and centered on mount/unmount versus CSS-only toggling."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it answers this exact lifecycle and state-persistence decision directly."
+    },
+    {
+      "label": "v-if vs. v-show - Vue Conditional Rendering",
+      "url": "https://learnvue.co/articles/v-if-vs-v-show",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue has a topic-direct comparison article for the v-if versus v-show decision and its performance implications.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct topic match and clearly explains DOM removal versus CSS display toggling."
+      ],
+      "theirGaps": [
+        "It is lighter on local-state resets, watcher behavior, and forced recreation through keys."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "For components, it is a mount or unmount decision",
+          "The common mistake is treating <code>v-if</code> like cheap show or hide behavior"
+        ],
+        "followUpConfusion": [
+          "If you want to deliberately reset a component, you can change its <code>key</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article already explains the core DOM and performance difference, but our page is more explicit about the component-instance and cleanup implications."
+        ],
+        "actionableExamples": [
+          "Its direct comparisons are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the likely follow-up that keys can force recreation and that v-if resets setup/data rather than just hiding the branch."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one watcher-or-timer cleanup example to make teardown semantics even more concrete."
+        ]
+      },
+      "winReason": "LearnVue is a strong direct comparator, but our page is stronger because it explains the exact component-lifecycle consequences behind the v-if choice."
+    }
+  ]
+}

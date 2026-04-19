@@ -1,0 +1,145 @@
+{
+  "contentId": "html-data-attribute",
+  "tech": "html",
+  "query": "html data attribute interview question",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "HTML data-* global attribute",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-%2A",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for data-* global attributes, dataset access, naming rules, and the role of custom data on HTML elements.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the data-* attribute model, dataset naming behavior, and the browser API surface for custom element metadata."
+      ],
+      "theirGaps": [
+        "The reference is less interview-shaped and less explicit about the common production mistake of treating data-* as hidden application state."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "data-* attributes are lightweight DOM hooks for custom metadata, testing selectors, or UI behavior flags that JavaScript reads via dataset."
+        ],
+        "followUpConfusion": [
+          "The common production mistake is treating them as private storage or stuffing too much application state into markup."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines data-* and dataset precisely, but it is lighter on the production trade-off between lightweight hooks and leaking too much state into the DOM."
+        ],
+        "actionableExamples": [
+          "It includes direct dataset examples and naming guidance, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusions teams hit first: all values are strings, secrets do not belong in the DOM, and data-* is not a state store."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the practical scenario and the string-parsing warning visible so the page stays operational, not only definitional."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical data-* reference, but our page is stronger as an interview answer because it frames the attribute around the exact misuse developers make in production: treating DOM metadata like hidden app state."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because attributes, DOM hooks, and basic metadata patterns are core HTML interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad attribute and DOM-fundamentals coverage."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to data-* semantics, so it is less focused on one exact answer about dataset strings and DOM-state trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "data-* attributes are lightweight DOM hooks for custom metadata, testing selectors, or UI behavior flags that JavaScript reads via dataset."
+        ],
+        "followUpConfusion": [
+          "The common production mistake is treating them as private storage or stuffing too much application state into markup."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the trade-off between small DOM metadata and overloading markup with state."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: dataset values are strings, secrets leak into the DOM, and data-* should stay lightweight."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the test-hook and UI-config examples visible so the answer stays grounded in everyday frontend use."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the production boundaries that make data-* either useful or risky."
+    },
+    {
+      "label": "Attributes",
+      "url": "https://web.dev/learn/html/attributes/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev's attributes module is the strongest third-source comparator for global attribute patterns and for understanding how HTML attributes drive browser behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on HTML attribute mental models and on how attributes configure element behavior in practice."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question and less centered on data-* as a dataset and DOM-hook pattern specifically."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "data-* attributes are lightweight DOM hooks for custom metadata, testing selectors, or UI behavior flags that JavaScript reads via dataset."
+        ],
+        "followUpConfusion": [
+          "The common production mistake is treating them as private storage or stuffing too much application state into markup."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is useful for attribute mental models, but our answer is more compact about the exact production cases where data-* works well versus where it becomes a misuse."
+        ],
+        "actionableExamples": [
+          "The tutorial context remains useful for examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next question developers hit in practice: how dataset values behave and why secrets or large blobs should not live in markup."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the dataset-string caveat close to the opening so the page keeps one memorable debugging rule."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on HTML attributes broadly, but our page is better as a short interview answer because it turns data-* into a concrete DOM-hook versus hidden-state trade-off."
+    }
+  ]
+}

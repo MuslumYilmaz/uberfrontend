@@ -1,0 +1,143 @@
+{
+  "contentId": "react-conditional-rendering",
+  "tech": "react",
+  "query": "react conditional rendering patterns gotchas interview question",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Conditional Rendering",
+      "url": "https://react.dev/learn/conditional-rendering",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of returning different ReactNode branches, rendering holes, and inline patterns like ternaries and &&.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative explanation of how React treats conditional branches, null, and false."
+      ],
+      "theirGaps": [
+        "It is less explicit about state-reset consequences and the classic 0-with-&& bug."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Conditional UI affects accessibility and layout stability."
+        ],
+        "followUpConfusion": [
+          "Most bugs come from (1) non-boolean values with &&"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs teach the patterns well, but our page is more explicit about the operational consequences: layout shifts, focus, and mount-reset behavior."
+        ],
+        "actionableExamples": [
+          "The official examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that conditional rendering often means mount and unmount, which resets local state."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one small hide-versus-unmount example later if we want more concrete state-preservation contrast."
+        ]
+      },
+      "winReason": "The official docs are authoritative on the syntax, but our page is stronger for interview use because it ties the patterns directly to gotchas like 0 rendering and state reset on unmount."
+    },
+    {
+      "label": "React Conditional Rendering",
+      "url": "https://www.geeksforgeeks.org/reactjs-conditional-rendering/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a topic-direct tutorial reference for common conditional rendering patterns and their trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is broad on conditional rendering patterns and examples."
+      ],
+      "theirGaps": [
+        "It is less focused on the exact gotchas interviewers usually care about."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Test empty states, transitions, and focus behavior."
+        ],
+        "followUpConfusion": [
+          "Returning null (or false) means “render nothing”."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial covers patterns, but our page is more explicit about accessibility, state preservation, and non-boolean traps."
+        ],
+        "actionableExamples": [
+          "Its examples are broad enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that && returns the left operand, which is why 0 can render visibly."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one explicit && bug example visible so the answer stays more incident-driven than a general patterns tutorial."
+        ]
+      },
+      "winReason": "This tutorial is broad on syntax patterns, but our page is stronger because it names the exact gotchas candidates often miss: non-boolean && results and mount-reset behavior."
+    },
+    {
+      "label": "React showing 0 instead of nothing with short-circuit (&&) conditional component",
+      "url": "https://stackoverflow.com/questions/53048037/react-showing-0-instead-of-nothing-with-short-circuit-conditional-component",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for the most common conditional-rendering footgun in React.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is highly practical on the classic 0-with-&& rendering bug."
+      ],
+      "theirGaps": [
+        "It is narrower than the full question of conditional patterns, trade-offs, and state-reset implications."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "patterns, trade-offs, and gotchas"
+        ],
+        "actionableExamples": [
+          "Most bugs come from (1) non-boolean values with &&"
+        ],
+        "followUpConfusion": [
+          "Conditional rendering often means mount/unmount. Unmounting resets local state."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on one common bug, but our page is stronger because it connects that bug to the wider conditional-rendering toolkit and lifecycle consequences."
+        ],
+        "actionableExamples": [
+          "Community explanations can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that conditional branches also change whether subtrees stay mounted."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one explicit ternary-versus-&& example later if we want a sharper recommendation for ambiguous non-boolean inputs."
+        ]
+      },
+      "winReason": "The community thread is useful on the 0 bug, but our page is stronger because it covers the broader decision space around conditional patterns and lifecycle effects."
+    }
+  ]
+}

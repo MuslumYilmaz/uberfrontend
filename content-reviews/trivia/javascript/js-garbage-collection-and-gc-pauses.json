@@ -1,0 +1,147 @@
+{
+  "contentId": "js-garbage-collection-and-gc-pauses",
+  "tech": "javascript",
+  "query": "javascript garbage collection and gc pauses interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Memory management",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Memory_management",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for reachability, garbage collection, and why retained references keep memory alive.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on garbage collection fundamentals and reachability."
+      ],
+      "theirGaps": [
+        "It is less explicit on GC pauses, allocation churn, jank, and the concrete Chrome DevTools workflow for investigating them."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If your app creates lots of short-lived objects or accidentally retains references, the GC has more work to do, and that shows up as jank."
+        ],
+        "actionableExamples": [
+          "Performance panel: record a trace while reproducing jank."
+        ],
+        "followUpConfusion": [
+          "Allocating aggressively in hot paths (scroll, animation frames)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers the fundamentals correctly, but our page is more explicit about the production consequence engineers actually feel: jank from allocation churn and memory pressure."
+        ],
+        "actionableExamples": [
+          "The canonical guide still provides strong conceptual examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up confusion: GC is automatic, but pause spikes and retention bugs still have to be debugged intentionally."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one short trace-reading example later if we need more example distance over MDN."
+        ]
+      },
+      "winReason": "MDN is the canonical GC reference, but our page is stronger for this prompt because it connects reachability to jank, DevTools workflow, and hot-path allocation behavior."
+    },
+    {
+      "label": "GreatFrontEnd JavaScript garbage collection",
+      "url": "https://www.greatfrontend.com/questions/quiz/how-does-javascript-garbage-collection-work",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview page for JavaScript garbage collection.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the interview wording and likely strong on the core GC explanation."
+      ],
+      "theirGaps": [
+        "It is less explicit on allocation churn, pause spikes, and the DevTools workflow for investigating jank."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The useful interview angle is not just \"the engine frees memory for me\"; it is how you would debug allocation churn, memory pressure, and pause spikes."
+        ],
+        "actionableExamples": [
+          "Take heap snapshots before/after repeating an interaction."
+        ],
+        "followUpConfusion": [
+          "WeakMap keys are weakly held: if the key object becomes unreachable, the entry can be collected."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is exact-topic interview prep, but our page is more explicit about the performance symptoms and debugging workflow that make GC relevant in production."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and interview-shaped, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up set: allocation churn, DevTools panels, retention leaks, and when WeakMap helps without being a silver bullet."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the DevTools workflow block visible so the answer stays more operational than a pure conceptual GC page."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it carries the answer into memory-pressure symptoms, DevTools workflow, and allocation-churn debugging."
+    },
+    {
+      "label": "V8 trash talk: the Orinoco garbage collector",
+      "url": "https://v8.dev/blog/trash-talk",
+      "category": "tutorial_reference",
+      "selectionReason": "The V8 team article is a strong implementation-oriented reference for how modern JavaScript garbage collection works and why pauses happen.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is deeper on GC internals and on how the engine reduces pause time."
+      ],
+      "theirGaps": [
+        "It is less focused on the frontend debugging workflow and on the practical retention bugs interviewers usually care about."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "You render a feed and create new objects on every scroll."
+        ],
+        "followUpConfusion": [
+          "They are not a silver bullet: you still need to remove event listeners, bound caches, and avoid retaining large graphs in closures."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The V8 article is strong on engine behavior, but our page is more directly tied to the user-facing symptom engineers actually debug: stuttery UI from allocation churn and retention."
+        ],
+        "actionableExamples": [
+          "The V8 post is deeper on collector internals and pause-reduction mechanics, so it wins on engine-level explanatory detail."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the practical follow-ups: when WeakMap helps, why GC does not fix retained references, and how to investigate with Performance and Memory panels."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one compact young-generation versus old-generation note later if we want to compete more directly with V8 internals coverage."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The V8 article is deeper on engine internals, but our page is stronger for this prompt because it turns GC into a practical performance and debugging answer instead of a collector-architecture lecture."
+    }
+  ]
+}

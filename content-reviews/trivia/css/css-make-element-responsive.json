@@ -1,0 +1,145 @@
+{
+  "contentId": "css-make-element-responsive",
+  "tech": "css",
+  "query": "How do you make an element responsive with CSS?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Responsive design",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN learning page is the canonical official guide for responsive design concepts, including flexible layouts, media queries, and responsive CSS techniques.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on responsive design concepts, media queries, and flexible layout fundamentals."
+      ],
+      "theirGaps": [
+        "The guide is broader than this exact interview prompt and less compact about the decision stack for one responsive element: fluid sizing, max constraints, flexible media, and container-aware layout."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>A responsive element <em>resizes and reflows</em> gracefully across devices. CSS enables this with fluid units (%, vw, rem), max-width constraints, flexible media (&lt;img&gt;, &lt;video&gt;), layout primitives (flexbox, grid), and conditional rules (media or container queries). The goal is to avoid fixed dimensions and let the element <em>adapt</em> to its environment."
+        ],
+        "followUpConfusion": [
+          "<strong>Summary</strong><br><ul><li>Make elements fluid with <code>width: 100%</code> + sensible <code>max-width</code>.</li><li>Keep media flexible (<code>max-width: 100%</code>; <code>aspect-ratio</code>).</li><li>Use flexbox/grid for natural reflow; <code>minmax()</code> and <code>auto-fit/auto-fill</code> shine.</li><li>Apply media <em>and</em> container queries to adapt to environment.</li><li>Adopt fluid typography and spacing with <code>clamp()</code>.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers responsive design comprehensively, but our page is more direct about the practical recipe developers need when one component is overflowing or refusing to adapt."
+        ],
+        "actionableExamples": [
+          "Its responsive examples are strong, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up: responsiveness is not just breakpoints, but a combination of fluid constraints, flexible media, and container-aware reflow."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the fluid-card and grid examples visible so the answer stays faster to scan than a broad learning guide."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical responsive-design guide, but our page is stronger as an interview answer because it turns responsiveness into one practical checklist for a single element: fluid size, flexible media, reflowing layout, and conditional adaptation."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because responsive sizing, layout reflow, and media-query trade-offs are core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage of layout, sizing, and responsive behavior."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to responsive elements, so it is less focused on the exact fluid-sizing and constraint-based answer this question needs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Overview</strong><br><br>A responsive element <em>resizes and reflows</em> gracefully across devices. CSS enables this with fluid units (%, vw, rem), max-width constraints, flexible media (&lt;img&gt;, &lt;video&gt;), layout primitives (flexbox, grid), and conditional rules (media or container queries). The goal is to avoid fixed dimensions and let the element <em>adapt</em> to its environment."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of responsiveness as giving your element <em>elastic edges</em>: it stretches within sensible limits, reflows content when it needs more room, and never breaks its shape."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the exact component-level recipe of fluid sizing, max-width limits, flexible media, and natural reflow."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the next confusion point: responsive components should start fluid, not fixed, and only then add media or container-driven refinements."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the mobile-first framing visible so the answer stays interview-ready and implementation-oriented."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact responsive-design rules that make a component adapt instead of merely survive on smaller screens."
+    },
+    {
+      "label": "Responsive web design basics",
+      "url": "https://web.dev/articles/responsive-web-design-basics",
+      "category": "tutorial_reference",
+      "selectionReason": "This is the strongest topic-direct tutorial comparator for responsive CSS because it focuses on flexible grids, media queries, and modern layout adaptation patterns.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "web.dev is strong on responsive layout strategy, flexible grids, and breakpoint reasoning."
+      ],
+      "theirGaps": [
+        "It is broader than one element-level interview answer and less compact about combining fluid width, max-width, flexible media, aspect-ratio, and container queries into one response."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Example 1: Fluid Card Component</strong>"
+        ],
+        "followUpConfusion": [
+          "<strong>Performance & Accessibility Tips</strong><br><ul><li>Prefer mobile-first CSS; add features as space allows.</li><li>Avoid fixed widths/heights; use fluid constraints (<code>max-width</code>, <code>min()</code>, <code>max()</code>, <code>clamp()</code>).</li><li>Use <code>box-sizing: border-box;</code> to make sizing more predictable.</li><li>Respect user preferences: <code>@media (prefers-reduced-motion)</code>, <code>(prefers-color-scheme)</code>.</li><li>Test component responsiveness within various container widths, not just the viewport.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is strong on responsive design strategy, but our page is more focused on the exact element-level decision stack developers need in practice."
+        ],
+        "actionableExamples": [
+          "Its layout examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next implementation question: when to use flexible constraints alone, when to add media queries, and when container queries are the better abstraction."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the no-breakpoint grid and container-query examples visible so the answer stays more concrete than a general responsive-design article."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is a strong responsive-design explainer, but our page is more useful as an interview answer because it compresses the topic into one element-level toolkit instead of a broader site-layout tutorial."
+    }
+  ]
+}

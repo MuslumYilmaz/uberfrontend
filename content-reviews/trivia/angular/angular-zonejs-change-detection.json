@@ -1,0 +1,146 @@
+{
+  "contentId": "angular-zonejs-change-detection",
+  "tech": "angular",
+  "query": "Angular Zone.js under the hood: async patching, stale-view debug, and zoneless trade-offs",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Angular Zone Pollution",
+      "url": "https://angular.dev/best-practices/zone-pollution",
+      "category": "canonical_docs",
+      "selectionReason": "This Angular best-practices page is the most direct official source explaining that Zone.js signals Angular after async work and why that affects change detection.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It directly explains Zone.js as the signaling mechanism Angular uses to schedule change detection and shows runOutsideAngular patterns."
+      ],
+      "theirGaps": [
+        "It is optimization-focused and less shaped as a compact interview answer about why the view updated after async work."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Async trigger model</strong><br><br>Zone.js is Angular's classic answer to \"why did the view update after that async work?\" It patches timers, promises, DOM events, and similar browser APIs, then gives Angular a hook to run change detection after the task completes. That model matters when you debug a <strong>stale view</strong>, wire third-party callbacks, or move part of the app to zoneless change detection."
+        ],
+        "followUpConfusion": [
+          "<strong>Boundary rule</strong><br><ul><li>Use <code>runOutsideAngular</code> for noisy work like scroll listeners or animations that should not trigger every check.</li><li>Zoneless apps remove the automatic async hook, so you must understand where updates are scheduled.</li><li>Most Zone.js bugs are really ownership bugs: which async boundary told Angular to check?</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular Change Detection - How Does It Really Work?",
+      "url": "https://blog.angular-university.io/how-does-angular-2-change-detection-really-work/",
+      "category": "tutorial_reference",
+      "selectionReason": "This Angular University guide is a strong tutorial competitor because it directly explains how patched async APIs lead into Angular change detection.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It goes deeper into how Angular change detection works and what Zone.js patches."
+      ],
+      "theirGaps": [
+        "It is broader on change detection overall than on the narrower Zone.js plus zoneless contrast interview prompt."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Async trigger model</strong><br><br>Zone.js is Angular's classic answer to \"why did the view update after that async work?\" It patches timers, promises, DOM events, and similar browser APIs, then gives Angular a hook to run change detection after the task completes. That model matters when you debug a <strong>stale view</strong>, wire third-party callbacks, or move part of the app to zoneless change detection."
+        ],
+        "followUpConfusion": [
+          "<strong>Boundary rule</strong><br><ul><li>Use <code>runOutsideAngular</code> for noisy work like scroll listeners or animations that should not trigger every check.</li><li>Zoneless apps remove the automatic async hook, so you must understand where updates are scheduled.</li><li>Most Zone.js bugs are really ownership bugs: which async boundary told Angular to check?</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: What is the use of Zone.js in Angular 2",
+      "url": "https://stackoverflow.com/questions/40902572/what-is-the-use-of-zone-js-in-angular-2",
+      "category": "community_qna",
+      "selectionReason": "This is a directly relevant community comparator for the basic mental model: patched async APIs, notifications, and change detection. ",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is concise and directly answers the \"what does Zone.js do\" question."
+      ],
+      "theirGaps": [
+        "It is older and lighter on zoneless trade-offs and modern Angular debugging language."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Async trigger model</strong><br><br>Zone.js is Angular's classic answer to \"why did the view update after that async work?\" It patches timers, promises, DOM events, and similar browser APIs, then gives Angular a hook to run change detection after the task completes. That model matters when you debug a <strong>stale view</strong>, wire third-party callbacks, or move part of the app to zoneless change detection."
+        ],
+        "followUpConfusion": [
+          "<strong>Boundary rule</strong><br><ul><li>Use <code>runOutsideAngular</code> for noisy work like scroll listeners or animations that should not trigger every check.</li><li>Zoneless apps remove the automatic async hook, so you must understand where updates are scheduled.</li><li>Most Zone.js bugs are really ownership bugs: which async boundary told Angular to check?</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

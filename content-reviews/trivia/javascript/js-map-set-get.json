@@ -1,0 +1,149 @@
+{
+  "contentId": "js-map-set-get",
+  "tech": "javascript",
+  "query": "javascript map and set interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN Keyed collections",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Keyed_collections",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical guide for Map and Set, including key semantics, uniqueness, and the get/has distinction.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on Map and Set semantics, uniqueness rules, and SameValueZero behavior."
+      ],
+      "theirGaps": [
+        "It is less compact on the interview follow-up around get() returning undefined for both missing keys and explicitly undefined values."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "use Map for lookup tables and Set for fast membership checks and deduplication."
+        ],
+        "actionableExamples": [
+          "get() returns undefined for a missing key, but it also returns undefined if the key exists and its value is explicitly undefined. So in critical code, pair get() with has()."
+        ],
+        "followUpConfusion": [
+          "So in critical code, pair get() with has()."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN is the canonical keyed-collections guide, but our page is more compact on the practical choice between lookup tables, deduplication, and membership checks."
+        ],
+        "actionableExamples": [
+          "The docs still provide strong API examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up confusion that actually causes bugs: get(undefined) does not tell you whether the key exists, so you need has()."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one short Map key-exists versus undefined-value example later if we need more example distance over MDN."
+        ]
+      },
+      "winReason": "MDN is the canonical keyed-collections reference, but our page is stronger for this prompt because it leads with practical use cases and the get-versus-has bug pattern."
+    },
+    {
+      "label": "javascript.info Map and Set",
+      "url": "https://javascript.info/map-set",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is the strongest topic-direct tutorial for Map and Set in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on collection behavior, key identity, and common operations."
+      ],
+      "theirGaps": [
+        "It is less explicit on the exact interview trap around Map.get(undefined) versus Map.has(key)."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If your interview answer is one sentence: use Map for lookup tables and Set for fast membership checks and deduplication."
+        ],
+        "actionableExamples": [
+          "get() returns undefined for a missing key, but it also returns undefined if the key exists and its value is explicitly undefined. So in critical code, pair get() with has()."
+        ],
+        "followUpConfusion": [
+          "Object keys are compared by reference identity, not by deep value."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on the collection model, but our page is more explicit about the real-world patterns interviewers want to hear: deduplication, lookup tables, and visited-state tracking."
+        ],
+        "actionableExamples": [
+          "Its examples are topic-direct and strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the two big follow-ups: get() versus has(), and reference identity for object keys."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one compact SameValueZero example with NaN to create more example distance over the tutorial baseline."
+        ]
+      },
+      "winReason": "javascript.info is a strong Map/Set tutorial, but our page is better for this prompt because it packages the collection model into practical patterns and bug-prevention advice."
+    },
+    {
+      "label": "Stack Overflow Map.get vs Map.has",
+      "url": "https://stackoverflow.com/questions/32210761/in-map-in-javascript-does-map-getundefined-mean-the-key-doesnt-exist",
+      "category": "community_qna",
+      "selectionReason": "This is a focused community Q&A source for the exact follow-up confusion around Map.get(undefined) versus missing keys.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is narrowly focused on the exact bug pattern the prompt calls out."
+      ],
+      "theirGaps": [
+        "It is narrower than the full Map-and-Set interview answer and lighter on broader use-case framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "use Map for lookup tables and Set for fast membership checks and deduplication."
+        ],
+        "actionableExamples": [
+          "get() returns undefined for a missing key, but it also returns undefined if the key exists and its value is explicitly undefined. So in critical code, pair get() with has()."
+        ],
+        "followUpConfusion": [
+          "get() returns undefined for a missing key, but it also returns undefined if the key exists and its value is explicitly undefined."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "This Q&A is useful for one sharp trap, but our page is stronger overall because it still explains when to use Map, when to use Set, and how get/has fits into that decision."
+        ],
+        "actionableExamples": [
+          "Its focused examples are helpful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page wins the follow-up criterion because it turns the get(undefined) trap into a broader set of collection rules: has(), SameValueZero, and reference identity."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the get-versus-has note near the first Map explanation so the answer stays more structured than a single-trap Q&A."
+        ]
+      },
+      "winReason": "This community source is sharp on one trap, but our page is stronger because it places that trap inside the larger Map-versus-Set mental model."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "batchId": "importance-4-angular-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    {
+      "tech": "angular",
+      "id": "angular-component-metadata"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-ngmodules-vs-standalone"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-appmodule-standalone-changes"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-template-compilation-and-binding"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-interpolation-vs-property-binding"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-event-binding-dom-vs-output-change-detection"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-structural-vs-attribute-directives"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-ngif-dom-lifecycle"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-pipes"
+    },
+    {
+      "tech": "angular",
+      "id": "angular-custom-two-way-binding"
+    }
+  ]
+}

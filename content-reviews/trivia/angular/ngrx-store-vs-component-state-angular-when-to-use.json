@@ -1,0 +1,146 @@
+{
+  "contentId": "ngrx-store-vs-component-state-angular-when-to-use",
+  "tech": "angular",
+  "query": "NgRx store vs component state in Angular: when to use?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "NgRx Store Guide",
+      "url": "https://ngrx.io/guide/store",
+      "category": "canonical_docs",
+      "selectionReason": "The NgRx Store guide is the canonical source for the global store model, actions, selectors, and the shape of Store-based state management.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the official reference for Store architecture and the global state model."
+      ],
+      "theirGaps": [
+        "It is documentation-first and less shaped as a compact decision rule for store versus local component state."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>State-boundary question</strong><br><br>Do not ask \"Is NgRx good or bad?\" Ask: <strong>who needs this state, how long should it live, and does it need traceable transitions?</strong> If state is screen-local and short-lived, keep it in the component. If it is shared, persistent, or business-critical across features, move it to Store."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision matrix</strong><br><ul><li><strong>Ephemeral UI</strong>: component state.</li><li><strong>Shared cross-feature state</strong>: Store.</li><li><strong>Business-critical or traceable transitions</strong>: Store is usually worth the boilerplate.</li><li>If the cost of actions, reducers, and selectors is higher than the sharing problem, keep it local.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular Service Layers: Redux, RxJs and Ngrx Store - When to Use a Store And Why?",
+      "url": "https://blog.angular-university.io/angular-2-redux-ngrx-rxjs/",
+      "category": "tutorial_reference",
+      "selectionReason": "This Angular University article is a strong topic-direct competitor because it explicitly discusses when a store shines and the cost of adopting it in Angular.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It directly asks when a store is useful and what cost it adds in Angular applications."
+      ],
+      "theirGaps": [
+        "It is broader on store architecture and component interaction, rather than the tight store-versus-local-state decision matrix."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>State-boundary question</strong><br><br>Do not ask \"Is NgRx good or bad?\" Ask: <strong>who needs this state, how long should it live, and does it need traceable transitions?</strong> If state is screen-local and short-lived, keep it in the component. If it is shared, persistent, or business-critical across features, move it to Store."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision matrix</strong><br><ul><li><strong>Ephemeral UI</strong>: component state.</li><li><strong>Shared cross-feature state</strong>: Store.</li><li><strong>Business-critical or traceable transitions</strong>: Store is usually worth the boilerplate.</li><li>If the cost of actions, reducers, and selectors is higher than the sharing problem, keep it local.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: What are benefits of using store (ngrx) in angular 2",
+      "url": "https://stackoverflow.com/questions/37540225/what-are-benefits-of-using-store-ngrx-in-angular-2",
+      "category": "community_qna",
+      "selectionReason": "This community thread is a practical comparator because it captures the common “why use a store at all?” question teams ask before adopting NgRx.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly about the benefits and costs of Store adoption in Angular."
+      ],
+      "theirGaps": [
+        "It is broader and less systematic about local component state as the correct alternative."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>State-boundary question</strong><br><br>Do not ask \"Is NgRx good or bad?\" Ask: <strong>who needs this state, how long should it live, and does it need traceable transitions?</strong> If state is screen-local and short-lived, keep it in the component. If it is shared, persistent, or business-critical across features, move it to Store."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision matrix</strong><br><ul><li><strong>Ephemeral UI</strong>: component state.</li><li><strong>Shared cross-feature state</strong>: Store.</li><li><strong>Business-critical or traceable transitions</strong>: Store is usually worth the boilerplate.</li><li>If the cost of actions, reducers, and selectors is higher than the sharing problem, keep it local.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

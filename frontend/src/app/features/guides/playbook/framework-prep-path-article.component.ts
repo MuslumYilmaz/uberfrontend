@@ -7695,6 +7695,11 @@ export class FrameworkPrepPathArticle {
           q: 'How do I practice efficiently without wasting time?',
           a: 'Use a fixed loop: explain one concept out loud, implement one small pattern, add two edge cases, then write a short review note. Time-box each step so your session stays tight. You improve faster from steady repetition than from constantly changing formats. <strong>Practical rule:</strong> end every session with one “tomorrow focus” sentence and start there the next day.',
         },
+        {
+          id: 'faq-js-problem-solving',
+          q: 'How do I get better at JavaScript interview problem-solving?',
+          a: 'Treat it as a repeatable interview loop, not raw puzzle talent. First predict the behavior or restate the contract, then write the state transitions or input/output rules before coding. Build the smallest correct version, add two or three edge cases, and finish by logging the mistake that slowed you down plus one prevention rule for next time. <strong>Practical rule:</strong> if you cannot explain the runtime model first, do not start typing yet.',
+        },
       ],
     },
     {

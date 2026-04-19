@@ -1,0 +1,34 @@
+{
+  "batchId": "importance-4-javascript-batch-04",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    {
+      "tech": "javascript",
+      "id": "js-testing-edge-cases-strategy"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-performance-profiling-workflow"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-memory-leaks-common-sources"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-esm-vs-cjs"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-tree-shaking"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-mock-vs-stub-vs-spy"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-garbage-collection-and-gc-pauses"
+    }
+  ]
+}

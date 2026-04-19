@@ -1,0 +1,148 @@
+{
+  "contentId": "js-map-vs-object",
+  "tech": "javascript",
+  "query": "map vs object javascript interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Map",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for Map semantics, key types, iteration, and lookup behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on Map behavior, insertion order, and the API surface."
+      ],
+      "theirGaps": [
+        "It is less direct on the interview decision boundary of when an Object is still the better modeling tool."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use Map when you need a true key-value collection with non-string keys and predictable iteration. Use a plain Object when modeling a fixed record with known string keys."
+        ],
+        "actionableExamples": [
+          "Map is purpose-built for dynamic key-value data with any key type and stable iteration."
+        ],
+        "followUpConfusion": [
+          "Objects are best for structured records and JSON-shaped data."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains Map correctly, but our page is more explicit about the architecture choice between dynamic collections and record-shaped objects."
+        ],
+        "actionableExamples": [
+          "The canonical docs still provide strong examples of Map usage, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely follow-up confusion more directly: Map is not automatically better, because Objects still fit records, JSON payloads, and fixed shapes better."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one short object-key coercion example later if we need more example distance over the docs."
+        ]
+      },
+      "winReason": "MDN is the canonical Map reference, but our page is stronger for this prompt because it turns the API difference into a clearer modeling decision."
+    },
+    {
+      "label": "GreatFrontEnd Map object vs plain object",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-the-difference-between-a-map-object-and-a-plain-object-in-javascript",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview page for Map versus plain Object.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It matches the exact interview wording and likely covers the key comparison points directly."
+      ],
+      "theirGaps": [
+        "It is less explicit on the modeling rule of thumb that Objects are still better for fixed records and JSON-shaped data."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use Map when you need a true key-value collection with non-string keys and predictable iteration."
+        ],
+        "actionableExamples": [
+          "Map is purpose-built for dynamic key-value data with any key type and stable iteration."
+        ],
+        "followUpConfusion": [
+          "Use a plain Object when modeling a fixed record with known string keys."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is direct interview prep, but our page is more explicit about the product-facing modeling choice instead of stopping at feature differences."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and directly relevant, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next confusion interviewers ask about: when Object is still the right answer even though Map is more flexible."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the summary block near the core idea so the answer stays more decision-oriented than a pure feature checklist."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it adds the missing modeling rule: Map for dynamic collections, Object for fixed records."
+    },
+    {
+      "label": "javascript.info Map and Set",
+      "url": "https://javascript.info/map-set",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct tutorial for Map and Set behavior, iteration, and key semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on Map behavior and iteration semantics."
+      ],
+      "theirGaps": [
+        "It is less focused on the interview-sized choice between Map as a collection and Object as a record."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Use Map when you need a true key-value collection with non-string keys and predictable iteration."
+        ],
+        "actionableExamples": [
+          "Map is purpose-built for dynamic key-value data with any key type and stable iteration."
+        ],
+        "followUpConfusion": [
+          "Objects are best for structured records and JSON-shaped data."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on Map mechanics, but our page is more explicit about how to choose between Map and Object in application code."
+        ],
+        "actionableExamples": [
+          "Its examples are strong and topic-direct, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up about prototype pitfalls and why Object is still the simpler fit for fixed string-key records."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one tiny non-string key example to create more example distance over the tutorial baseline."
+        ]
+      },
+      "winReason": "javascript.info is a strong Map tutorial, but our page is better for this prompt because it turns the comparison into a clearer design choice between collection and record."
+    }
+  ]
+}

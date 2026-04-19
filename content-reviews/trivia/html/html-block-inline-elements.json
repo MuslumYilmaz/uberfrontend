@@ -1,0 +1,145 @@
+{
+  "contentId": "html-block-inline-elements",
+  "tech": "html",
+  "query": "html block vs inline elements interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Block-level content",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Block-level_content",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN glossary entry for block-level content and the official starting point for how block boxes participate in document flow.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the browser-level distinction between block and inline participation in layout and document flow."
+      ],
+      "theirGaps": [
+        "The glossary format is less interview-shaped and less explicit about the practical production consequences around wrapping, layout misuse, and nested-content testing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Choosing the right display affects layout, accessibility semantics, and performance; test with nested content."
+        ],
+        "followUpConfusion": [
+          "Each block-level element starts on a new line and stretches horizontally as far as it can."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines block content precisely, but it is lighter on the practical layout and debugging consequences teams hit when they choose the wrong display behavior."
+        ],
+        "actionableExamples": [
+          "It remains the canonical conceptual reference, so the example criterion stays competitive rather than flipping cleanly to us."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the follow-up confusion between structure-level blocks, text-level inline elements, and when CSS layout systems should replace ad hoc inline tricks."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the practical card-layout scenario visible so the page stays grounded in a real UI decision."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical block-content reference, but our page is stronger as an interview answer because it turns block-versus-inline into a concrete layout, wrapping, and nested-content debugging decision."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because block and inline behavior is a foundational HTML interview concept.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of element behavior, structure, and markup fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to block-versus-inline behavior, so it is less focused on the exact layout-flow answer behind this question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Choosing the right display affects layout, accessibility semantics, and performance; test with nested content."
+        ],
+        "followUpConfusion": [
+          "Each block-level element starts on a new line and stretches horizontally as far as it can."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the wrapping, nested-content, and layout misuse consequences of block versus inline choices."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the likely follow-up: block is for structural flow, inline is for text-level participation, and flex or grid should handle layout where appropriate."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the common-pitfalls list close to the definition so the answer stays operational under interview pressure."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the exact layout and wrapping consequences that make block-versus-inline distinctions matter in practice."
+    },
+    {
+      "label": "HTML Block and Inline Elements",
+      "url": "https://www.geeksforgeeks.org/html/difference-between-block-elements-and-inline-elements/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct topic-specific tutorial comparator for the block-versus-inline distinction and gives a broad worked-example baseline outside MDN and GreatFrontEnd.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on block and inline differences and includes direct examples of line breaking and flow behavior."
+      ],
+      "theirGaps": [
+        "It is weaker on the broader semantics and production-level layout trade-offs that show up in real frontend debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Choosing the right display affects layout, accessibility semantics, and performance; test with nested content."
+        ],
+        "followUpConfusion": [
+          "Each block-level element starts on a new line and stretches horizontally as far as it can."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is direct about baseline behavior, but our answer is more compact about why the wrong choice affects layout, semantics, and testing with nested content."
+        ],
+        "actionableExamples": [
+          "It includes straightforward examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the next question developers hit in practice: when block/inline behavior should give way to explicit flex or grid layout decisions."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the trade-off note short so the answer preserves one practical debugging rule without turning into a full CSS-display article."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The tutorial is solid on the basics, but our page is more useful as an interview answer because it connects block-versus-inline behavior to layout, semantics, and real UI testing decisions."
+    }
+  ]
+}

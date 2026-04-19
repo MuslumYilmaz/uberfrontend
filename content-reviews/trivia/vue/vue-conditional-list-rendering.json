@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-conditional-list-rendering",
+  "tech": "vue",
+  "query": "How does Vue handle conditional rendering and list rendering efficiently?",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "List Rendering",
+      "url": "https://vuejs.org/guide/essentials/list",
+      "category": "canonical_docs",
+      "selectionReason": "The official list rendering guide is the best single Vue page for keyed identity, v-for behavior, and the v-for with v-if priority pitfall behind this prompt.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The docs are authoritative on v-for semantics, keys, and directive priority rules."
+      ],
+      "theirGaps": [
+        "They are less compressed around the interview-ready decision rule across v-if, v-show, and v-for in one answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "v-if creates and destroys branches, v-show keeps DOM mounted and toggles visibility, and v-for depends on stable keys so Vue can patch identity correctly during list updates.",
+          "v-if adds or removes elements from the DOM completely based on the condition."
+        ],
+        "followUpConfusion": [
+          "The :key attribute helps Vue track each item’s identity when updating the DOM.",
+          "This makes updates more efficient, as Vue can determine what has changed, added, or removed using its virtual DOM diffing algorithm."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The official docs cover the directives accurately, but our page is stronger on the production framing that they solve different problems and should not be treated as interchangeable."
+        ],
+        "actionableExamples": [
+          "The docs remain competitive on directive examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the combined follow-up around mount/unmount, CSS-only toggling, and keyed identity in one place."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one explicit wrapper-level v-if versus item-level v-if example to make the priority pitfall even faster to spot."
+        ]
+      },
+      "winReason": "The official docs are stronger as a reference, but our page is stronger as a compact interview answer because it unifies v-if, v-show, and keyed v-for into one concrete decision rule."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because rendering directives, list identity, and DOM-update behavior are common Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong broad interview-prep hub for Vue fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact v-if, v-show, and keyed list-rendering trade-off."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "the production pitfall is treating them as interchangeable.",
+          "Think of v-if as removing or inserting items from a shelf and v-show as simply covering or uncovering them — both are efficient, but suited for different situations."
+        ],
+        "followUpConfusion": [
+          "Each list item is tracked using a key , allowing Vue to reuse and reorder DOM elements instead of re-creating them from scratch.",
+          "The :key attribute helps Vue track each item’s identity when updating the DOM."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The hub is clearly relevant for Vue rendering questions, but it is less explicit about this exact efficiency trade-off."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on example-driven interview practice, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less specific about v-for plus v-if priority and why stable keys matter for identity rather than only performance."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the answer focused on one conditional/list decision rule instead of expanding into a general directives survey."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue fundamentals bank, but our page is stronger because it answers the exact efficiency question directly and ties it to the highest-risk list and conditional pitfalls."
+    },
+    {
+      "label": "Vue for Loop Tips",
+      "url": "https://learnvue.co/articles/vue-for-loop-tips",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue has a topic-direct article on v-for efficiency, keys, and why v-if inside loops is a performance and correctness smell.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct tutorial on list rendering, keys, and the v-if with v-for anti-pattern."
+      ],
+      "theirGaps": [
+        "It is narrower on v-for and less balanced on when v-show is the better choice for frequent toggles."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It’s useful when the condition changes infrequently.",
+          "which is more efficient for frequent toggling."
+        ],
+        "followUpConfusion": [
+          "Vue uses a virtual DOM to compare the current and previous states of the UI.",
+          "v-for efficiently renders dynamic lists using keys."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is strong on list rendering and key usage, so the list-side use-case framing is good."
+        ],
+        "actionableExamples": [
+          "It provides direct examples for keys and loop filtering, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on combining list identity with the v-if versus v-show toggle decision in one short explanation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one tiny v-show example so the frequent-toggle guidance is backed by an explicit code contrast."
+        ]
+      },
+      "winReason": "LearnVue is strong on v-for behavior, but our page is stronger overall because it combines list identity, v-if/v-show trade-offs, and rendering-efficiency follow-ups in one interview-sized answer."
+    }
+  ]
+}

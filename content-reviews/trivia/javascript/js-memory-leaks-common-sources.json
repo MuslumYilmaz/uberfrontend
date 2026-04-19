@@ -1,0 +1,148 @@
+{
+  "contentId": "js-memory-leaks-common-sources",
+  "tech": "javascript",
+  "query": "javascript memory leaks devtools workflow interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN Memory management",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Memory_management",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for reachability, garbage collection basics, and what keeps JavaScript objects alive.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on memory-management fundamentals and object reachability."
+      ],
+      "theirGaps": [
+        "It is less explicit on browser-specific leak sources like detached DOM nodes, forgotten listeners, timers, and heap-snapshot workflow."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "In long-lived frontend apps, leaks show up as rising memory, slower interactions, and eventual tab crashes."
+        ],
+        "actionableExamples": [
+          "A deterministic dispose() path is one of the most reliable anti-leak patterns for UI components and utilities."
+        ],
+        "followUpConfusion": [
+          "The garbage collector only frees unreachable objects, so leaks are usually retention bugs, not GC bugs."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers the fundamentals correctly, but our page is stronger on the browser-app incidents engineers actually debug: listeners, timers, detached DOM, and cache growth."
+        ],
+        "actionableExamples": [
+          "The canonical guide still explains the memory model clearly, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is sharper on the likely follow-up confusion: GC is not failing, the object is still reachable through some retention path."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one short retainers-path example later if we need more example distance over MDN."
+        ]
+      },
+      "winReason": "MDN is the canonical memory-management reference, but our page is stronger for this prompt because it turns reachability into a concrete browser leak-debugging workflow."
+    },
+    {
+      "label": "Chrome DevTools memory problems",
+      "url": "https://developer.chrome.com/docs/devtools/memory-problems",
+      "category": "tutorial_reference",
+      "selectionReason": "Chrome DevTools documentation is the strongest practical reference for heap snapshots, allocation tools, and investigating memory growth in browser apps.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is deeper on heap snapshots, allocation tools, and DevTools workflow than a compact interview answer can be."
+      ],
+      "theirGaps": [
+        "It is more tool-focused and less compact on the conceptual rule that leaks are retention bugs caused by live reference paths."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "event listeners, timers, detached DOM nodes, unbounded caches"
+        ],
+        "followUpConfusion": [
+          "Think in terms of graph reachability: roots -> references -> objects."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The DevTools docs are practical, but our page is more explicit about the common leak sources teams should suspect before opening tooling."
+        ],
+        "actionableExamples": [
+          "The official DevTools guide is deeper on the mechanics of heap snapshots, allocation instrumentation, and memory debugging workflow, so it wins on example depth."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely interview follow-up: leaks are usually retention paths, not a broken garbage collector."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one explicit retained detached-node example if we later want to compete more directly with the DevTools guide."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The DevTools guide is deeper on tooling, but our page is stronger for the interview prompt because it combines leak sources, mental model, and workflow into one concise answer."
+    },
+    {
+      "label": "DevTools Tips find memory leaks",
+      "url": "https://devtoolstips.org/tips/en/find-memory-leaks/",
+      "category": "tutorial_reference",
+      "selectionReason": "DevTools Tips is a topic-direct practical reference for finding leaks with browser tooling.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical and focused on finding leaks with browser tools."
+      ],
+      "theirGaps": [
+        "It is lighter on the higher-level explanation of retention paths and on the most common frontend leak sources."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "In long-lived frontend apps, leaks show up as rising memory, slower interactions, and eventual tab crashes."
+        ],
+        "actionableExamples": [
+          "A deterministic dispose() path is one of the most reliable anti-leak patterns for UI components and utilities."
+        ],
+        "followUpConfusion": [
+          "Fixes remove those retention paths."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "This guide is practical on tooling, but our page is more explicit about the product impact and the leak sources that usually create the problem."
+        ],
+        "actionableExamples": [
+          "Its tool workflow is useful and topic-direct, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is better on the conceptual follow-up: leaks persist because a root path still points at the object."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the memory mental-model block close to the DevTools steps so the page stays more complete than tool-only references."
+        ]
+      },
+      "winReason": "This competitor is practical on tooling, but our page is stronger because it connects the tools to retention-path reasoning and the most common browser leak sources."
+    }
+  ]
+}

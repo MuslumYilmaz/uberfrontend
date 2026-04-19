@@ -4029,7 +4029,7 @@
   {
     "id": "js-bigint-data-type",
     "title": "What is the BigInt data type in JavaScript?",
-    "description": "BigInt is a JavaScript primitive for integers larger than Number.MAX_SAFE_INTEGER. It prevents precision loss for large whole numbers, but has special rules: you cannot mix BigInt with Number in arithmetic, division truncates, and JSON serialization requires explicit conversion.",
+    "description": "BigInt is a JavaScript primitive for integers larger than Number.MAX_SAFE_INTEGER. It prevents precision loss for large whole numbers, but has special rules: you cannot mix BigInt with Number in arithmetic, division truncates, and JSON/API boundaries usually need explicit string conversion.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -4112,6 +4112,37 @@
           "code": "const payload = { id: 9007199254740993n };\n\n// JSON.stringify(payload);\n// TypeError: Do not know how to serialize a BigInt\n\nconst safePayload = { id: payload.id.toString() };\nconsole.log(JSON.stringify(safePayload)); // {\"id\":\"9007199254740993\"}"
         },
         {
+          "type": "code",
+          "language": "javascript",
+          "code": "// A practical boundary workflow: JSON/API stays string, app logic uses BigInt\nconst apiRecord = {\n  transactionId: '90071992547409931234',\n  cents: '1250'\n};\n\nconst transactionId = BigInt(apiRecord.transactionId);\nconst cents = BigInt(apiRecord.cents);\nconst refunded = 50n;\nconst nextBalance = cents - refunded;\n\nconst response = {\n  transactionId: transactionId.toString(),\n  cents: nextBalance.toString()\n};\n\nconsole.log(response); // { transactionId: '90071992547409931234', cents: '1200' }"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common BigInt trap",
+            "Why it breaks",
+            "Safer move"
+          ],
+          "rows": [
+            [
+              "Parsing a 64-bit ID with <code>Number()</code>",
+              "Values beyond <code>MAX_SAFE_INTEGER</code> can collide silently.",
+              "Keep the boundary value as a string or convert to <code>bigint</code> immediately."
+            ],
+            [
+              "Using <code>Math.max</code> / <code>Math.min</code> on BigInt values",
+              "Most <code>Math</code> APIs are number-based, not BigInt-aware.",
+              "Compare manually with <code>&lt;</code> / <code>&gt;</code> or convert only when the range is proven safe."
+            ],
+            [
+              "Sorting mixed <code>number</code> + <code>bigint</code> values with subtraction",
+              "Subtraction triggers mixed arithmetic and throws.",
+              "Use a comparator based on <code>&lt;</code> and <code>&gt;</code>, or normalize both sides first."
+            ]
+          ],
+          "caption": "The practical bugs are usually boundary and interop bugs, not BigInt syntax bugs."
+        },
+        {
           "type": "list",
           "columns": [
             "Use case",
@@ -4139,7 +4170,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Practical rules</strong>\n\n1. Stay with <code>number</code> unless you truly need > 53-bit integer precision.\n2. Do not mix Number and BigInt in arithmetic without explicit conversion.\n3. Convert BigInt to string at API/JSON boundaries.\n4. Document type contracts clearly in shared modules."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Practical rules</strong>\n\n1. Stay with <code>number</code> unless you truly need > 53-bit integer precision.\n2. Do not mix Number and BigInt in arithmetic without explicit conversion.\n3. JSON contracts usually keep large integers as strings at the boundary, then parse to <code>bigint</code> inside the app and convert back to string when serializing.\n4. Document type contracts clearly in shared modules."
         },
         {
           "type": "text",
@@ -4156,7 +4187,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-04-12",
     "seo": {
       "title": "BigInt Data Type in JavaScript: Precision, Rules, and Pitfalls",
       "description": "Learn BigInt in JavaScript, when to use it beyond MAX_SAFE_INTEGER, and key rules for arithmetic, comparisons, and JSON APIs."

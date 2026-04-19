@@ -1,0 +1,143 @@
+{
+  "contentId": "react-usestate-purpose",
+  "tech": "react",
+  "query": "react useState purpose and guarantees interview question",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "State as a Snapshot",
+      "url": "https://react.dev/learn/state-as-a-snapshot",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of state snapshots, queued renders, and why state updates are observed on the next render.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative source on state snapshots and render-time mental models."
+      ],
+      "theirGaps": [
+        "It is less compact around the interview framing of what useState guarantees and what it explicitly does not."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "why didn’t the UI update?"
+        ],
+        "followUpConfusion": [
+          "It gives React a state snapshot for the current render plus a setter that schedules the next render."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain snapshots accurately, but our page is more explicit about the production bug cluster: stale reads, direct mutation, and choosing the wrong state tool."
+        ],
+        "actionableExamples": [
+          "The official examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that useState does not provide immediate mutation or globally shared state."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny stale-log example later if we want more concrete queued-render evidence than the current snapshot summary."
+        ]
+      },
+      "winReason": "The official docs are authoritative on snapshots, but our page is stronger for interview use because it turns snapshot semantics into concrete guarantees and common debugging failures."
+    },
+    {
+      "label": "React State Management in 2025: What You Actually Need",
+      "url": "https://www.developerway.com/posts/react-state-management-2025",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is a practical reference for where local component state fits versus reducers, lifted state, context, and stores.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on when local component state is the right state-management boundary."
+      ],
+      "theirGaps": [
+        "It is broader than the exact useState guarantee question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "useState is for local UI state"
+        ],
+        "followUpConfusion": [
+          "When useState is the wrong tool"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article is practical on local versus shared state, but our page is more explicit about what useState actually gives you at render time."
+        ],
+        "actionableExamples": [
+          "Its state-boundary examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that the setter schedules a future render instead of mutating the current snapshot."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one functional-updater example visible so the snapshot guarantee stays more concrete than a state-boundary article."
+        ]
+      },
+      "winReason": "This tutorial is practical on state boundaries, but our page is stronger because it explains the exact render-time guarantee of useState and when that mental model breaks expectations."
+    },
+    {
+      "label": "The useState set method is not reflecting a change immediately",
+      "url": "https://stackoverflow.com/questions/54069253/the-usestate-set-method-is-not-reflecting-a-change-immediately",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for the most common useState misunderstanding: expecting immediate synchronous mutation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on the immediate-update misconception developers hit constantly."
+      ],
+      "theirGaps": [
+        "It is narrower than the full question of why useState exists and where it is the wrong tool."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That mental-model gap causes production bugs around stale reads, direct mutation, and the classic debug question: <em>why didn’t the UI update?</em>"
+        ],
+        "actionableExamples": [
+          "If the next state depends on the previous state, use <code>setX(prev =&gt; next)</code>."
+        ],
+        "followUpConfusion": [
+          "is not a mutable variable that changes immediately."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on stale reads, but our page is stronger because it also explains tool choice and immutable update expectations."
+        ],
+        "actionableExamples": [
+          "Community answers can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that the setter updates the next render snapshot rather than the current one."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one batched double-increment example later if we want a more explicit functional-updater use case."
+        ]
+      },
+      "winReason": "The community thread is useful on the immediate-update misconception, but our page is stronger because it explains the deeper snapshot model and when useState stops being the right abstraction."
+    }
+  ]
+}

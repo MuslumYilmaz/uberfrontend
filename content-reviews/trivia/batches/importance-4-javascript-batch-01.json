@@ -1,0 +1,46 @@
+{
+  "batchId": "importance-4-javascript-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    {
+      "tech": "javascript",
+      "id": "js-null-undefined-undeclared"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-equality-vs-strict-equality"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-data-types"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-higher-order-function"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-call-apply-bind"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-foreach-vs-map"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-prototypal-inheritance"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-arrow-functions"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-object-destructuring"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-classes"
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "html-head-tag",
+  "tech": "html",
+  "query": "html head tag interview question",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<head>: The Document Metadata (Header) element",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the head element, metadata content, and the browser-facing setup that belongs before visible page content.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is the authoritative reference for what belongs in the head and how browsers interpret metadata, scripts, and styles."
+      ],
+      "theirGaps": [
+        "The reference format is less interview-shaped and less explicit about broken viewport, duplicate-title, social-preview, or render-blocking production failures."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Production bugs often come from bad head config: wrong viewport, duplicate titles, broken previews, or render-blocking resources."
+        ],
+        "followUpConfusion": [
+          "It configures metadata, resource loading, SEO signals, and social preview behavior before users ever see the UI."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines the head element precisely, but it stays closer to structure and permitted metadata than to one concrete production-debugging story."
+        ],
+        "actionableExamples": [
+          "It includes canonical head examples and the required children, so the example criterion stays competitive rather than flipping fully to us."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusions teams actually hit: viewport bugs, social cards, and render-blocking setup mistakes."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the essential-head example near the top so the page stays faster to scan than a full reference page."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical reference, but our page is stronger as an interview answer because it packages head metadata around the exact production failures developers usually debug first."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because document setup, metadata, linking, and forms all sit inside core HTML interview fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage across foundational document and markup questions."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to head configuration, so it is less focused on one exact metadata-debugging answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Production bugs often come from bad head config: wrong viewport, duplicate titles, broken previews, or render-blocking resources."
+        ],
+        "followUpConfusion": [
+          "It configures metadata, resource loading, SEO signals, and social preview behavior before users ever see the UI."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML interview prep, but the category page is less anchored to broken-head production failures and concrete debug symptoms."
+        ],
+        "actionableExamples": [
+          "It remains a strong worked-answer bank, so the example bar stays tied rather than becoming an automatic win for us."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely follow-up more directly by separating visible body content from document-level metadata and loading concerns."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the control-room framing and one compact head example together so the answer stays interview-ready."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the exact metadata and loading failures that make head-tag answers useful in practice."
+    },
+    {
+      "label": "Document structure",
+      "url": "https://web.dev/learn/html/document-structure/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct document-structure article that explains the head-body split, required head components, and why metadata setup matters for browser behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on the overall HTML document skeleton and on the practical need for charset, title, and viewport metadata."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question because it covers the whole document shell, not only the purpose of the head tag."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Production bugs often come from bad head config: wrong viewport, duplicate titles, broken previews, or render-blocking resources."
+        ],
+        "followUpConfusion": [
+          "It configures metadata, resource loading, SEO signals, and social preview behavior before users ever see the UI."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds the head in real document setup, but our answer packages the topic more directly around broken previews, mobile viewport bugs, and render blocking."
+        ],
+        "actionableExamples": [
+          "The tutorial includes concrete document examples and required-head guidance, so example quality remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more compact on the next questions interviewers ask, especially SEO and social-preview behavior versus visible page content."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the broken-head mistakes section visible so the page keeps one production-debugging angle, not only structural explanation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on document structure, but our page is better as a short interview answer because it translates the head tag into concrete SEO, preview, and render-debug consequences."
+    }
+  ]
+}

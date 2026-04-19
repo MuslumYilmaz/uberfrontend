@@ -1,5 +1,7 @@
 # Test Quality Audit
 
+_Historical audit. Do not load by default; route into context only for test-signal and brittle-assertion investigations._
+
 ## Summary
 - Repo shape is mixed, not weak. The backend suite is mostly high-signal and intent-driven.
 - The frontend suite has many strong behavior and contract tests, but also a thin layer of low-signal smoke and copy-coupled assertions.

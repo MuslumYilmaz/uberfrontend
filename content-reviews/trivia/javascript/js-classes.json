@@ -1,0 +1,155 @@
+{
+  "contentId": "js-classes",
+  "tech": "javascript",
+  "query": "javascript classes interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN Classes",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for class syntax, constructors, fields, and inheritance behavior in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for class syntax, fields, methods, and inheritance."
+      ],
+      "theirGaps": [
+        "It is less compact on the practical interview point that classes are syntax over prototypes and that method sharing is the real under-the-hood behavior to understand."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "JavaScript classes are cleaner syntax over prototypes, but the practical questions are under-the-hood method sharing, field initialization, and when class-heavy modeling adds more ceremony than value."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Behind the Scenes</strong>  Even though classes look new, they’re still built on top of JavaScript’s **prototype chain**: - Every class has a hidden <code>[[Prototype]]</code> link. - The class body methods are added to <code>ClassName.prototype</code>. - When you call a method on an instance, JavaScript looks it up through this prototype chain.  This means the following two approaches are equivalent in behavior:  ```javascript function Person(name) {   this.name = name; } Person.prototype.greet = function() {   console.log('Hello, ' + this.name); }; ```  ```javascript class Person {   constructor(name) {     this.name = name;   }   greet() {     console.log('Hello, ' + this.name);   } } ```"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-layer-group'></i> <strong>How Classes Work Internally</strong>  - The <code>class</code> syntax is **syntactic sugar** over constructor functions and the prototype chain. - Each class has a special <code>constructor()</code> method that initializes new objects. - Methods defined inside a class are automatically added to the prototype, not the instance. - This keeps memory usage efficient since all instances share the same methods."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers classes comprehensively, but our page is more explicit about the practical interview question developers actually get: what classes add and what they do not change under the hood."
+        ],
+        "actionableExamples": [
+          "The canonical docs still have strong syntax and inheritance examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up confusion that classes are syntax sugar and that methods still live on the prototype rather than on each instance."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter field-initialization example later if we need more example distance over the docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical class reference, but our page is stronger for the interview prompt because it keeps the answer focused on classes as prototype-based syntax sugar and on shared-method behavior."
+    },
+    {
+      "label": "javascript.info Class basic syntax",
+      "url": "https://javascript.info/class",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct tutorial for class syntax, methods, and the prototype-based model beneath classes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on class syntax and on explaining how classes work in practice."
+      ],
+      "theirGaps": [
+        "It is less compact as an interview answer and less explicit on when class-heavy modeling adds ceremony without enough value."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "JavaScript classes are cleaner syntax over prototypes, but the practical questions are under-the-hood method sharing, field initialization, and when class-heavy modeling adds more ceremony than value."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Behind the Scenes</strong>  Even though classes look new, they’re still built on top of JavaScript’s **prototype chain**: - Every class has a hidden <code>[[Prototype]]</code> link. - The class body methods are added to <code>ClassName.prototype</code>. - When you call a method on an instance, JavaScript looks it up through this prototype chain.  This means the following two approaches are equivalent in behavior:  ```javascript function Person(name) {   this.name = name; } Person.prototype.greet = function() {   console.log('Hello, ' + this.name); }; ```  ```javascript class Person {   constructor(name) {     this.name = name;   }   greet() {     console.log('Hello, ' + this.name);   } } ```"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-layer-group'></i> <strong>How Classes Work Internally</strong>  - The <code>class</code> syntax is **syntactic sugar** over constructor functions and the prototype chain. - Each class has a special <code>constructor()</code> method that initializes new objects. - Methods defined inside a class are automatically added to the prototype, not the instance. - This keeps memory usage efficient since all instances share the same methods."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is a strong class tutorial, but our page is more explicit about the trade-off question interviewers often ask next: when classes help readability and when they add ceremony."
+        ],
+        "actionableExamples": [
+          "Its examples are strong and topic-direct, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the key follow-up: class methods are still shared on the prototype, so class syntax does not replace the underlying object model."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If needed later, add one short public-field or static-method example to create more example distance over tutorial coverage."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is a strong classes tutorial, but our page is better calibrated for this prompt because it keeps the answer anchored to prototype-based method sharing and the cost-benefit question of class-heavy design."
+    },
+    {
+      "label": "Stack Overflow class methods vs prototype methods",
+      "url": "https://stackoverflow.com/questions/1635116/javascript-class-method-vs-class-prototype-method",
+      "category": "community_qna",
+      "selectionReason": "This is a focused community Q&A source for the exact under-the-hood distinction between per-instance methods and prototype-shared methods that sits behind class syntax.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on shared prototype methods versus per-instance methods, which is a key class follow-up."
+      ],
+      "theirGaps": [
+        "It is narrower than the full interview question and does not cover class syntax, constructors, and readability trade-offs in one answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "JavaScript classes are cleaner syntax over prototypes, but the practical questions are under-the-hood method sharing, field initialization, and when class-heavy modeling adds more ceremony than value."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Behind the Scenes</strong>  Even though classes look new, they’re still built on top of JavaScript’s **prototype chain**: - Every class has a hidden <code>[[Prototype]]</code> link. - The class body methods are added to <code>ClassName.prototype</code>. - When you call a method on an instance, JavaScript looks it up through this prototype chain.  This means the following two approaches are equivalent in behavior:  ```javascript function Person(name) {   this.name = name; } Person.prototype.greet = function() {   console.log('Hello, ' + this.name); }; ```  ```javascript class Person {   constructor(name) {     this.name = name;   }   greet() {     console.log('Hello, ' + this.name);   } } ```"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-layer-group'></i> <strong>How Classes Work Internally</strong>  - The <code>class</code> syntax is **syntactic sugar** over constructor functions and the prototype chain. - Each class has a special <code>constructor()</code> method that initializes new objects. - Methods defined inside a class are automatically added to the prototype, not the instance. - This keeps memory usage efficient since all instances share the same methods."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is useful on one under-the-hood detail, but our page covers the full interview answer: syntax, prototypes, constructors, and when classes help readability."
+        ],
+        "actionableExamples": [
+          "A focused Q&A still provides concrete shared-method examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page resolves more of the likely follow-up set in one place instead of centering only on method placement."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the behind-the-scenes equivalence example near the opening so the answer stays more complete than a narrow prototype-method thread."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The Stack Overflow thread is strong on shared methods, but our page is a better interview answer because it connects that detail to the wider class-as-syntax-sugar model."
+    }
+  ]
+}

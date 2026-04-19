@@ -1,0 +1,143 @@
+{
+  "contentId": "vue-directives",
+  "tech": "vue",
+  "query": "What are Vue directives and how do they work?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Custom Directives",
+      "url": "https://vuejs.org/guide/reusability/custom-directives.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for custom directives, low-level DOM access, directive hooks, and when directives are the wrong abstraction compared with components or composables.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on custom directive hooks, low-level DOM access, and when custom directives are appropriate."
+      ],
+      "theirGaps": [
+        "It is narrower on the full built-in-directive mental model of structure, visibility, binding, and event flow."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "they are compiled instructions that change how Vue renders, patches, and listens for events.",
+          "whether they alter structure (<code>v-if</code>), visibility (<code>v-show</code>), binding (<code>v-bind</code>), or event flow (<code>v-on</code>)."
+        ],
+        "followUpConfusion": [
+          "when not to reach for a custom directive.",
+          "Custom directives are registered using <code>app.directive()</code> in Vue 3."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs are authoritative on custom directives, but our page is broader on the overall directive mental model and what built-ins actually change in rendering."
+        ],
+        "actionableExamples": [
+          "The official custom-directive examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that directives are compiled template instructions first, and that custom directives are only one specialized subset."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny 'use a component/composable instead' example later so the custom-directive boundary stays visible."
+        ]
+      },
+      "winReason": "The official guide is authoritative on custom directives, but our page is stronger because it situates custom directives inside the wider directive system instead of treating them in isolation."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because directives, template compilation, and DOM update behavior are core Vue interview fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue template syntax and directive fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact directive mental model and custom-directive boundary question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production mistake is using them without understanding"
+        ],
+        "followUpConfusion": [
+          "what they change in rendering, patching, or event flow"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is clearly relevant at the topic level, but it is less focused on the exact directive taxonomy and abstraction choice this question is probing."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on interview examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The landing page is less explicit about when a custom directive is the wrong abstraction compared with a component or composable."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the built-in directive list short so the answer stays focused on behavior, not memorization."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue fundamentals hub, but our page is stronger because it explains the specific directive behaviors and abstraction boundary this interview question is actually asking about."
+    },
+    {
+      "label": "Creating Your First Vue Custom Directive",
+      "url": "https://learnvue.co/articles/vue-custom-directives",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue has a direct tutorial on custom directives, directive hooks, and reusable DOM-focused behavior in Vue.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly focused on what custom directives are and how to register and use them."
+      ],
+      "theirGaps": [
+        "It is lighter on the full built-in-directive picture and on when directives are the wrong tool compared with other Vue abstractions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Vue directives are not decorative attributes",
+          "they tell Vue what to do with elements when your data changes"
+        ],
+        "followUpConfusion": [
+          "Vue directives are compiled template instructions",
+          "when not to reach for a custom directive."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial explains custom directives well, but our page is stronger because it covers the broader directive system instead of only the custom subset."
+        ],
+        "actionableExamples": [
+          "Its directive examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that directives alter structure, visibility, binding, or event flow and that not every DOM behavior deserves a custom directive."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one explicit 'focus directive vs reusable input component' contrast to sharpen the abstraction boundary."
+        ]
+      },
+      "winReason": "LearnVue is a good custom-directive tutorial, but our page is stronger because it connects custom directives back to the whole directive model and explains when not to reach for them."
+    }
+  ]
+}

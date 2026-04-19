@@ -1,0 +1,146 @@
+{
+  "contentId": "angular-template-driven-vs-reactive-forms-which-scales",
+  "tech": "angular",
+  "query": "Angular template-driven vs reactive forms scale interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Angular Forms Overview",
+      "url": "https://angular.dev/guide/forms",
+      "category": "canonical_docs",
+      "selectionReason": "The Angular Forms overview is the canonical source for the official template-driven versus reactive comparison, including scalability and testability guidance.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the official Angular comparison and directly states that reactive forms are more scalable, reusable, and testable."
+      ],
+      "theirGaps": [
+        "It is overview-shaped and less interview-compressed on where template-driven forms stop scaling in real teams."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Same form tree, different source of truth</strong><br><br>Both approaches end up as a <code>FormGroup</code> tree. The real difference is <strong>where the form model lives</strong>: template-driven forms infer it from the template, while reactive forms declare it explicitly in TypeScript. The more dynamic, validated, or team-maintained the form becomes, the more valuable that explicit model becomes."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small, mostly static forms.</li><li>Use reactive forms when validation is complex, fields are dynamic, or testability matters.</li><li>The scaling question is about explicit state and composition, not about which API is more \"Angular\".</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular Forms Guide: Template Driven and Reactive Forms",
+      "url": "https://blog.angular-university.io/introduction-to-angular-2-forms-template-driven-vs-model-driven/",
+      "category": "tutorial_reference",
+      "selectionReason": "This Angular University guide is a strong tutorial competitor because it directly compares both approaches and why reactive forms become the better default at scale.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct comparison guide and stays close to the interview framing of choosing one approach."
+      ],
+      "theirGaps": [
+        "It is more tutorial-structured and less compressed around the “which one scales and why” answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Same form tree, different source of truth</strong><br><br>Both approaches end up as a <code>FormGroup</code> tree. The real difference is <strong>where the form model lives</strong>: template-driven forms infer it from the template, while reactive forms declare it explicitly in TypeScript. The more dynamic, validated, or team-maintained the form becomes, the more valuable that explicit model becomes."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small, mostly static forms.</li><li>Use reactive forms when validation is complex, fields are dynamic, or testability matters.</li><li>The scaling question is about explicit state and composition, not about which API is more \"Angular\".</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Telerik Angular Forms Support",
+      "url": "https://www.telerik.com/kendo-angular-ui/components/inputs/form/forms",
+      "category": "tutorial_reference",
+      "selectionReason": "This Telerik forms-support article is a practical competitor because it summarizes when reactive versus template-driven forms fit simple versus complex Angular forms.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It gives a practical decision table for simple versus complex forms and mentions scale, validation, and dynamic form needs."
+      ],
+      "theirGaps": [
+        "It is product-oriented and less focused on the underlying Angular form-model trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Same form tree, different source of truth</strong><br><br>Both approaches end up as a <code>FormGroup</code> tree. The real difference is <strong>where the form model lives</strong>: template-driven forms infer it from the template, while reactive forms declare it explicitly in TypeScript. The more dynamic, validated, or team-maintained the form becomes, the more valuable that explicit model becomes."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small, mostly static forms.</li><li>Use reactive forms when validation is complex, fields are dynamic, or testability matters.</li><li>The scaling question is about explicit state and composition, not about which API is more \"Angular\".</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

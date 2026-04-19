@@ -1,0 +1,155 @@
+{
+  "contentId": "js-foreach-vs-map",
+  "tech": "javascript",
+  "query": "javascript foreach vs map interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN Array.prototype.forEach()",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach",
+      "category": "canonical_docs",
+      "selectionReason": "MDN's forEach reference is the closest canonical source for the side-effect iteration case and directly contrasts forEach with return-producing methods like map.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on forEach behavior and on the fact that the method is built for side effects rather than returned arrays."
+      ],
+      "theirGaps": [
+        "It is less centered on the interview-sized decision rule of transform versus side effect and on immutability trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Both forEach() and map() loop through array elements, but map() creates and returns a new array, while forEach() simply executes a function for each element without returning anything. Map is for transforms while forEach is for side effects; test immutability and return values."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>  Using <code>map()</code> just for its side effects. Since it expects you to return something, doing so wastes performance and memory.  If you’re not using the returned array, you probably meant <code>forEach()</code>."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>  Both <code>forEach()</code> and <code>map()</code> are used to iterate over arrays, but they serve **different purposes**:  - <strong>forEach()</strong> is for performing side effects (like logging or updating variables). It doesn’t return anything useful. - <strong>map()</strong> transforms data — it creates a **new array** based on what you return in each iteration."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains forEach precisely, but our page answers the choice developers actually make: side-effect iteration versus returned transformed data."
+        ],
+        "actionableExamples": [
+          "The docs still provide strong API examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the likely follow-up confusion: returned arrays, immutability, and when map is the wrong tool."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If needed later, add one shorter immutable update example that shows why map fits state transformations better."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical API reference, but our page is stronger for the interview prompt because it turns the two methods into a clear transform-versus-side-effect decision rule."
+    },
+    {
+      "label": "javascript.info Array methods",
+      "url": "https://javascript.info/array-methods",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info covers the array-method family directly and is the strongest tutorial competitor for comparing map with side-effect-oriented iteration methods.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is topic-direct and strong on practical array-method semantics."
+      ],
+      "theirGaps": [
+        "It is less compact on the interview decision rule of transform versus side effect and on the wasted-array pitfall."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Both forEach() and map() loop through array elements, but map() creates and returns a new array, while forEach() simply executes a function for each element without returning anything. Map is for transforms while forEach is for side effects; test immutability and return values."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>  Using <code>map()</code> just for its side effects. Since it expects you to return something, doing so wastes performance and memory.  If you’re not using the returned array, you probably meant <code>forEach()</code>."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>  Both <code>forEach()</code> and <code>map()</code> are used to iterate over arrays, but they serve **different purposes**:  - <strong>forEach()</strong> is for performing side effects (like logging or updating variables). It doesn’t return anything useful. - <strong>map()</strong> transforms data — it creates a **new array** based on what you return in each iteration."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on method semantics, but our page is more explicit about why the choice matters to immutable transforms and unused returned arrays."
+        ],
+        "actionableExamples": [
+          "Its array-method examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the common interview trap: using map for side effects and forgetting that map's return value is the point."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the common-mistake block visible near the top so the answer stays more decision-oriented than a longer methods survey."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is a strong methods tutorial, but our page is better for this question because it compresses the behavioral difference into the exact choice interviewers care about."
+    },
+    {
+      "label": "Stack Overflow forEach vs map",
+      "url": "https://stackoverflow.com/questions/36657880/what-is-the-big-difference-between-foreach-and-map",
+      "category": "community_qna",
+      "selectionReason": "This is a focused community Q&A source for the exact difference between forEach and map.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is narrowly focused on the exact map-versus-forEach distinction and includes direct returned-array explanations."
+      ],
+      "theirGaps": [
+        "It is less structured as a compact interview answer and lighter on immutability and state-update framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Both forEach() and map() loop through array elements, but map() creates and returns a new array, while forEach() simply executes a function for each element without returning anything. Map is for transforms while forEach is for side effects; test immutability and return values."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>  Using <code>map()</code> just for its side effects. Since it expects you to return something, doing so wastes performance and memory.  If you’re not using the returned array, you probably meant <code>forEach()</code>."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>  Both <code>forEach()</code> and <code>map()</code> are used to iterate over arrays, but they serve **different purposes**:  - <strong>forEach()</strong> is for performing side effects (like logging or updating variables). It doesn’t return anything useful. - <strong>map()</strong> transforms data — it creates a **new array** based on what you return in each iteration."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is direct and useful, but our page is more explicit about why the choice matters in immutable update workflows instead of only API behavior."
+        ],
+        "actionableExamples": [
+          "A focused Q&A still gives concrete examples, so the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page is better on the likely follow-up: when using map is actually wasteful and how the return value changes intent."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If needed later, add one tiny state-update example that contrasts map returning new objects with forEach mutating external state."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The Stack Overflow thread is topic-direct, but our page is a better interview answer because it frames the choice around intent, immutability, and wasted work."
+    }
+  ]
+}

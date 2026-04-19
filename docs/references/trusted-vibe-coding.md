@@ -1,5 +1,7 @@
 # Trusted Vibe Coding
 
+_Reference note: use `docs/ai-context/testing.md` for default testing context. Load this file only when you need the deeper trust-boundary policy._
+
 ## Summary
 - Local hooks are fast filters, not the source of truth.
 - The real trust boundary is: local verification passes, a PR is opened, required remote checks pass, and only then is `main` considered trustworthy.

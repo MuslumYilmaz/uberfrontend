@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-provide-inject-vs-prop-drilling-tradeoffs",
+  "tech": "vue",
+  "query": "Provide / Inject in Vue: when should you use it instead of prop drilling, and what are the hidden trade-offs?",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Provide / Inject",
+      "url": "https://vuejs.org/guide/components/provide-inject",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for provide/inject mechanics, prop-drilling avoidance, reactive injections, and ancestor-descendant dependency flow.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on how provide and inject work, including app-level provides and reactive values."
+      ],
+      "theirGaps": [
+        "It is less tightly framed around the architectural trade-offs and code-smell heuristics that interviewers usually want."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It solves prop drilling , but it also introduces implicit dependencies that can make your component tree harder to understand, refactor, and test.",
+          "It is best for cross-cutting, infrastructural concerns that are not really part of your app’s business data flow:"
+        ],
+        "followUpConfusion": [
+          "With props, a component’s dependencies are explicit in its API. With inject , dependencies become invisible",
+          "provide / inject does not automatically make things reactive . You must provide a ref , reactive object, or computed value if you want updates to propagate."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain prop drilling and dependency injection clearly, but our page is stronger on the architectural decision rule for when provide/inject is a smell."
+        ],
+        "actionableExamples": [
+          "The official guide remains competitive on usage examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is more direct on the hidden-coupling and reactivity gotchas that come up immediately after the basic API explanation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one smaller provider-ref versus plain-value example to make the reactivity gotcha visible without extra prose."
+        ]
+      },
+      "winReason": "The official docs are stronger as a reference, but our page is stronger as a compact interview answer because it gives a concrete decision rule for when provide/inject solves prop drilling and when it quietly becomes hidden state management."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because dependency passing, shared state, and component communication are common Vue interview themes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong Vue interview-prep hub for component communication topics."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact prop-drilling-versus-provide/inject trade-off."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If this is business data → use props / emits or a store.",
+          "If this is app infrastructure or component-internal wiring → provide/inject is OK."
+        ],
+        "followUpConfusion": [
+          "dependency injection, not state management.",
+          "you effectively create a hidden global-ish state system"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is clearly relevant for Vue architecture questions, but it is less explicit about this exact state-boundary heuristic."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on interview-style examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less direct on why provide/inject can become invisible coupling and hidden business-state plumbing."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the state-boundary heuristic prominent so the answer does not drift into a generic DI explanation."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it gives a sharper architectural rule: use provide/inject for subtree wiring, not as a stealth store."
+    },
+    {
+      "label": "Composables vs. Provide/Inject vs. Pinia — When to Use What",
+      "url": "https://vueschool.io/articles/vuejs-tutorials/composables-vs-provide-inject-vs-pinia-when-to-use-what/",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a topic-direct trade-off article that compares provide/inject against other state-sharing patterns and explains when it is the right abstraction.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned on state-sharing trade-offs and where provide/inject fits."
+      ],
+      "theirGaps": [
+        "It is less focused on the specific hidden-coupling and reactivity gotchas this interview prompt usually surfaces."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "provide / inject lets an ancestor component make values available to all descendants without passing them through every intermediate component as props.",
+          "It solves prop drilling"
+        ],
+        "followUpConfusion": [
+          "dependencies become invisible",
+          "You must provide a ref , reactive object, or computed value if you want updates to propagate."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article is topic-direct on state-sharing choices, so the baseline trade-off discussion is strong."
+        ],
+        "actionableExamples": [
+          "Vue School remains competitive on practical examples and pattern comparisons, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the exact next-level interview pitfalls: implicit coupling, hidden business state, and false assumptions about automatic reactivity."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one tiny theme-provider example to complement the existing business-state anti-pattern rule."
+        ]
+      },
+      "winReason": "Vue School is a strong trade-off article, but our page is stronger because it compresses the best-fit use cases and the highest-risk provide/inject gotchas into one short decision framework."
+    }
+  ]
+}

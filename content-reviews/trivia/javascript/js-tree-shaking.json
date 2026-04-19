@@ -1,0 +1,147 @@
+{
+  "contentId": "js-tree-shaking",
+  "tech": "javascript",
+  "query": "tree shaking module bundling interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "webpack Tree Shaking",
+      "url": "https://webpack.js.org/guides/tree-shaking/",
+      "category": "canonical_docs",
+      "selectionReason": "webpack's official guide is the canonical bundler reference for tree-shaking, sideEffects metadata, and dead-code elimination behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on how tree-shaking actually works in a real bundler and on sideEffects configuration."
+      ],
+      "theirGaps": [
+        "It is bundler-specific and less compact around the broader interview framing of why unused code sometimes stays in the bundle."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When bundles stay fat, the debug question is usually where hidden side effects, barrel exports, or import shape prevented elimination."
+        ],
+        "followUpConfusion": [
+          "If bundles stay large, check for CJS dependencies and unmarked side effects."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The webpack guide is authoritative on configuration, but our page is more explicit about the real production debugging question when tree-shaking does not work."
+        ],
+        "actionableExamples": [
+          "The official guide is deeper on sideEffects metadata and bundler behavior, so it wins on example and configuration depth."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up confusion: tree-shaking depends on ESM, trustworthy side-effect signals, and import shape, not a magic compiler flag."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one short sideEffects package.json example later if we want to compete more directly with webpack's documentation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The webpack docs are deeper on bundler mechanics, but our page is stronger for the interview prompt because it frames tree-shaking as a debugging and architecture question."
+    },
+    {
+      "label": "GreatFrontEnd tree shaking in module bundling",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-concept-of-tree-shaking-in-module-bundling",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview-prep page for tree-shaking in module bundling.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the interview wording and likely strong on the core concept."
+      ],
+      "theirGaps": [
+        "It is less explicit on the production failure modes around barrel files, hidden side effects, and CJS dependencies."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Tree-shaking is not a magic \"remove everything unused\" switch."
+        ],
+        "actionableExamples": [
+          "Use a bundle analyzer to compare sizes before/after."
+        ],
+        "followUpConfusion": [
+          "Bundlers need static ESM structure and trustworthy side-effect signals."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is direct interview prep, but our page is more explicit about the real production reasons tree-shaking fails."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and interview-ready, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the follow-up set interviewers usually ask next: ESM requirement, sideEffects declarations, import shape, and CJS blockers."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the verification block visible so the answer stays more operational than a pure definition page."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it turns the concept into a real debugging checklist for why bundles stay large."
+    },
+    {
+      "label": "web.dev reduce JavaScript payloads with tree shaking",
+      "url": "https://web.dev/articles/reduce-javascript-payloads-with-tree-shaking",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a strong practical reference for how tree-shaking affects shipped JavaScript payload size.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on bundle-size outcomes and the performance value of dead-code elimination."
+      ],
+      "theirGaps": [
+        "It is less explicit on the exact interview follow-up around hidden side effects and import shape blocking elimination."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "When bundles stay fat, the debug question is usually where hidden side effects, barrel exports, or import shape prevented elimination."
+        ],
+        "actionableExamples": [
+          "inspect the output bundle to ensure unused exports are removed."
+        ],
+        "followUpConfusion": [
+          "If bundles stay large, check for CJS dependencies and unmarked side effects."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is strong on payload size impact, but our page is more explicit about the architectural and packaging reasons tree-shaking fails."
+        ],
+        "actionableExamples": [
+          "Its bundle-size examples are useful, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely interview confusion: dead-code elimination depends on code shape and side-effect signals, not only on using a bundler."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one compact barrel-export example to create more example distance over general payload articles."
+        ]
+      },
+      "winReason": "web.dev is practical on payload reduction, but our page is stronger because it explains the root causes that make tree-shaking succeed or fail."
+    }
+  ]
+}

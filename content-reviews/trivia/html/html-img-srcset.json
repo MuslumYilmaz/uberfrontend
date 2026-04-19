@@ -1,0 +1,145 @@
+{
+  "contentId": "html-img-srcset",
+  "tech": "html",
+  "query": "html img srcset interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "HTMLImageElement: srcset property",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the srcset property and the browser-level responsive-image candidate selection behavior behind it.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on srcset syntax, candidate descriptors, and the browser API surface for responsive image selection."
+      ],
+      "theirGaps": [
+        "The API-style reference is less interview-shaped and less explicit about the production debugging failures caused by bad sizes values or mismatched asset widths."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The `srcset` attribute gives the browser multiple image candidates so it can pick the right file for DPR and layout width. The production pitfall is shipping large images or mismatched `sizes`, which wastes bandwidth and makes responsive image debugging harder."
+        ],
+        "followUpConfusion": [
+          "The common pitfall is providing <code>srcset</code> without accurate <code>sizes</code> or asset widths, which causes blurry images, oversized downloads, or confusing network debugging."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines srcset accurately, but it is lighter on the concrete performance and debugging failures teams hit when sizes and asset widths drift out of sync."
+        ],
+        "actionableExamples": [
+          "It includes direct syntax guidance and descriptor examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion developers usually hit next: why the browser picked a given candidate and why wrong sizes causes over-downloads or blur."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the practical scenario and DevTools note visible so the answer stays grounded in a real responsive-image debugging workflow."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical srcset reference, but our page is stronger as an interview answer because it turns responsive-image syntax into a concrete bandwidth, blur, and network-debugging decision."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because responsive images and performance-sensitive markup are core HTML interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of media, semantics, and markup fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to responsive-image selection, so it is less focused on one exact answer about srcset, sizes, and bandwidth trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The `srcset` attribute gives the browser multiple image candidates so it can pick the right file for DPR and layout width. The production pitfall is shipping large images or mismatched `sizes`, which wastes bandwidth and makes responsive image debugging harder."
+        ],
+        "followUpConfusion": [
+          "The common pitfall is providing <code>srcset</code> without accurate <code>sizes</code> or asset widths, which causes blurry images, oversized downloads, or confusing network debugging."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the responsive-image performance and debugging consequences behind srcset."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: why sizes matters, when x versus w descriptors matter, and how to verify the chosen candidate in DevTools."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the descriptor pitfall note visible so the answer stays operational under interview pressure."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the performance and debugging trade-offs that make srcset worth understanding deeply."
+    },
+    {
+      "label": "Responsive images",
+      "url": "https://web.dev/learn/images/responsive-images/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct responsive-images module that covers srcset, sizes, browser candidate choice, and real performance consequences for modern image delivery.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on responsive-image theory and on practical candidate-selection behavior across viewport widths and pixel densities."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question because it covers the wider responsive-images toolbox beyond srcset alone."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The `srcset` attribute gives the browser multiple image candidates so it can pick the right file for DPR and layout width. The production pitfall is shipping large images or mismatched `sizes`, which wastes bandwidth and makes responsive image debugging harder."
+        ],
+        "followUpConfusion": [
+          "The common pitfall is providing <code>srcset</code> without accurate <code>sizes</code> or asset widths, which causes blurry images, oversized downloads, or confusing network debugging."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds srcset in real responsive-image behavior, but our answer is more compact about the exact production failures developers usually debug first."
+        ],
+        "actionableExamples": [
+          "The tutorial includes strong responsive-image examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next question teams hit in practice: why the chosen candidate looks wrong in DevTools and which sizes or descriptor mismatch caused it."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the bandwidth-versus-quality trade-off visible so the page preserves one practical performance rule."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on responsive images generally, but our page is better as a short interview answer because it packages srcset around exact DPR, sizes, and over-download debugging pitfalls."
+    }
+  ]
+}

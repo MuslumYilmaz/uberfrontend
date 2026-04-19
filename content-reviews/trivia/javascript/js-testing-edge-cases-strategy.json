@@ -1,0 +1,149 @@
+{
+  "contentId": "js-testing-edge-cases-strategy",
+  "tech": "javascript",
+  "query": "testing edge cases and boundaries strategy interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Boundary Value Analysis",
+      "url": "https://www.browserstack.com/guide/what-is-boundary-value-analysis",
+      "category": "tutorial_reference",
+      "selectionReason": "BrowserStack is a direct testing-strategy reference for boundary value analysis, which is one of the central techniques this prompt asks about.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is focused on boundary testing technique and should be strong on concrete edge-value examples."
+      ],
+      "theirGaps": [
+        "It is narrower on the broader strategy of choosing a small high-signal test set across boundaries, invalid inputs, invariants, and regressions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A good edge-case strategy is not about more tests. It is about choosing the smallest set that still finds boundary bugs, invalid-input bugs, and failure modes before production does."
+        ],
+        "actionableExamples": [
+          "1) List inputs and outputs. 2) Identify constraints (min/max, allowed chars, allowed states). 3) Pick boundaries and one representative per equivalence class. 4) Add invalid and unexpected types. 5) Add a real-world case and a worst-case case. 6) Add regression tests for any previous bugs."
+        ],
+        "followUpConfusion": [
+          "The common mistake is maximizing test count instead of bug-finding power."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "BrowserStack is strong on one core technique, but our page is more explicit about how a real testing strategy balances boundaries, invalid inputs, worst cases, and regressions."
+        ],
+        "actionableExamples": [
+          "Its boundary examples are likely strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is better on the follow-up confusion interviewers usually probe: more tests is not the goal, and tests should map to constraints and invariants rather than implementation detail."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one compact equivalence-class table later if we need more example distance over dedicated BVA articles."
+        ]
+      },
+      "winReason": "This competitor is strong on one testing technique, but our page is stronger because it turns edge-case testing into a broader, interview-ready strategy instead of only a boundary-value definition."
+    },
+    {
+      "label": "Testing Implementation Details",
+      "url": "https://kentcdodds.com/blog/testing-implementation-details",
+      "category": "tutorial_reference",
+      "selectionReason": "Kent C. Dodds is a strong reference for behavior-first testing and for avoiding tests that mirror implementation details.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on the anti-pattern of writing tests against implementation details instead of requirements."
+      ],
+      "theirGaps": [
+        "It is less explicit on boundary values, invalid input selection, and constructing a minimal high-signal case set."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Design tests around boundaries, invariants, and failure modes."
+        ],
+        "actionableExamples": [
+          "5) Add a real-world case and a worst-case case. 6) Add regression tests for any previous bugs."
+        ],
+        "followUpConfusion": [
+          "Tests that mirror the implementation instead of the requirements."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Kent's article is strong on behavior-first testing, but our page is broader on how to choose edge cases and boundaries systematically."
+        ],
+        "actionableExamples": [
+          "Its examples around implementation-detail mistakes are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more complete on the likely follow-up set: boundaries, invariants, invalid types, worst cases, and regression capture."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one before/after example contrasting an implementation-detail test with a boundary-focused behavior test."
+        ]
+      },
+      "winReason": "Kent C. Dodds is strong on one major testing anti-pattern, but our page is stronger overall because it combines that advice with a fuller edge-case selection workflow."
+    },
+    {
+      "label": "Stack Overflow edge case unit tests",
+      "url": "https://stackoverflow.com/questions/4718862/unit-testing-edge-cases",
+      "category": "community_qna",
+      "selectionReason": "This is a focused community Q&A source for how engineers think about edge cases and what to include in unit tests.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical and grounded in the real question teams ask when deciding how many edge cases to cover."
+      ],
+      "theirGaps": [
+        "It is narrower and less structured than a full strategy for boundaries, invariants, invalid inputs, and regression selection."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A good edge-case strategy is not about more tests."
+        ],
+        "actionableExamples": [
+          "Pick boundaries and one representative per equivalence class."
+        ],
+        "followUpConfusion": [
+          "Use a small, deliberate set of cases that make bugs obvious and keep the suite fast and reliable."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Q&A is useful for real engineering trade-offs, but our page is more explicit about bug-finding power, not just test count."
+        ],
+        "actionableExamples": [
+          "Community examples are helpful enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger because it turns loose advice into a clearer strategy: boundaries, invariants, invalid input, worst case, and regression tests."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the checklist block near the top so the page stays more structured than community discussion threads."
+        ]
+      },
+      "winReason": "This community source is practical, but our page is stronger because it distills the same concerns into a clearer high-signal testing strategy."
+    }
+  ]
+}

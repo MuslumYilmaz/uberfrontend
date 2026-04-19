@@ -1,0 +1,146 @@
+{
+  "contentId": "ngrx-reducer-pure-function-immutability-side-effects",
+  "tech": "angular",
+  "query": "NgRx reducer pure function interview question: immutability and side effects",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "NgRx Reducer Guide",
+      "url": "https://ngrx.io/guide/store/reducers",
+      "category": "canonical_docs",
+      "selectionReason": "This is the official NgRx reference for reducer structure, pure state transitions, and immutable update expectations.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the canonical source for reducer mechanics, immutable updates, and official NgRx reducer patterns."
+      ],
+      "theirGaps": [
+        "It is docs-shaped and less compressed around the interview trap of forbidden side effects inside reducers."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Deterministic reducer rule</strong><br><br>An NgRx reducer is a synchronous, deterministic state transition function. The same input <code>(state, action)</code> must always produce the same next state, and it must do so without mutation or side effects. If it reaches outside to the network, router, services, random values, or timestamps, it is no longer a pure reducer."
+        ],
+        "followUpConfusion": [
+          "<strong>Boundary rule</strong><br><ul><li>Reducers compute the next immutable state.</li><li>Effects handle HTTP, router work, timers, and other side effects.</li><li>Pure reducers keep state serializable, predictable, and testable.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular University NgRx Crash Course",
+      "url": "https://blog.angular-university.io/angular-ngrx-store-and-effects-crash-course/",
+      "category": "tutorial_reference",
+      "selectionReason": "Angular University is the strongest topic-direct tutorial competitor because it covers reducers, effects, and the pure-function boundary in one NgRx workflow.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong long-form NgRx tutorial with reducer and effect context in the same article."
+      ],
+      "theirGaps": [
+        "It is broader on the NgRx loop and less tightly scoped to the reducer purity interview trap list."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Deterministic reducer rule</strong><br><br>An NgRx reducer is a synchronous, deterministic state transition function. The same input <code>(state, action)</code> must always produce the same next state, and it must do so without mutation or side effects. If it reaches outside to the network, router, services, random values, or timestamps, it is no longer a pure reducer."
+        ],
+        "followUpConfusion": [
+          "<strong>Boundary rule</strong><br><ul><li>Reducers compute the next immutable state.</li><li>Effects handle HTTP, router work, timers, and other side effects.</li><li>Pure reducers keep state serializable, predictable, and testable.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: How to use other Angular2 service inside an ngrx/Store reducer?",
+      "url": "https://stackoverflow.com/questions/41796291/how-to-use-other-angular2-service-inside-an-ngrx-store-reducer",
+      "category": "community_qna",
+      "selectionReason": "This is a directly relevant community comparator because it centers on the exact reducer mistake of trying to inject services and run side effects inside the reducer.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is anchored in a real reducer-side-effects bug and explicitly redirects that work into effects."
+      ],
+      "theirGaps": [
+        "It is one bug thread rather than a compact interview answer that groups all forbidden reducer side effects together."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Deterministic reducer rule</strong><br><br>An NgRx reducer is a synchronous, deterministic state transition function. The same input <code>(state, action)</code> must always produce the same next state, and it must do so without mutation or side effects. If it reaches outside to the network, router, services, random values, or timestamps, it is no longer a pure reducer."
+        ],
+        "followUpConfusion": [
+          "<strong>Boundary rule</strong><br><ul><li>Reducers compute the next immutable state.</li><li>Effects handle HTTP, router work, timers, and other side effects.</li><li>Pure reducers keep state serializable, predictable, and testable.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

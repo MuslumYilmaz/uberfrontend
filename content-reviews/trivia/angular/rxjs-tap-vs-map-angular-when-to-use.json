@@ -1,0 +1,146 @@
+{
+  "contentId": "rxjs-tap-vs-map-angular-when-to-use",
+  "tech": "angular",
+  "query": "RxJS tap vs map in Angular: side effects vs transformation",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "RxJS map Operator",
+      "url": "https://rxjs.dev/api/operators/map",
+      "category": "canonical_docs",
+      "selectionReason": "The official RxJS map operator docs are the canonical baseline for transformation semantics, which is the starting point for the tap versus map comparison.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the official operator reference for synchronous projection and when map is the right fit."
+      ],
+      "theirGaps": [
+        "It does not itself explain the full tap-versus-map comparison in Angular pipeline debugging terms."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Transformation vs side effect</strong><br><br>If you are unsure which one to use, ask one question: <strong>should the next operator receive a different value?</strong> If yes, use <code>map</code>. If no, and you only need a side effect like logging, analytics, or a loading flag, use <code>tap</code>. The difference is stream intent: <code>map</code> changes data; <code>tap</code> observes it."
+        ],
+        "followUpConfusion": [
+          "<strong>Angular-flavored rule</strong><br><ul><li>Use <code>tap</code> for logging, metrics, or toggling loading state.</li><li>Use <code>map</code> when the output type or shape must change.</li><li>If the downstream stream must be different, <code>tap</code> is the wrong tool.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Learn RxJS tap / do",
+      "url": "https://www.learnrxjs.io/learn-rxjs/operators/utility/do",
+      "category": "tutorial_reference",
+      "selectionReason": "Learn RxJS is a strong practical competitor for tap because it explains side effects, debugging, and the fact that values pass through unchanged.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It explains tap as side effects without affecting the emitted value, which is the core confusion point."
+      ],
+      "theirGaps": [
+        "It is operator-focused and does not compare tap against map through Angular-specific production bugs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Transformation vs side effect</strong><br><br>If you are unsure which one to use, ask one question: <strong>should the next operator receive a different value?</strong> If yes, use <code>map</code>. If no, and you only need a side effect like logging, analytics, or a loading flag, use <code>tap</code>. The difference is stream intent: <code>map</code> changes data; <code>tap</code> observes it."
+        ],
+        "followUpConfusion": [
+          "<strong>Angular-flavored rule</strong><br><ul><li>Use <code>tap</code> for logging, metrics, or toggling loading state.</li><li>Use <code>map</code> when the output type or shape must change.</li><li>If the downstream stream must be different, <code>tap</code> is the wrong tool.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: What is the difference between tap and map in RxJS?",
+      "url": "https://stackoverflow.com/questions/61295224/what-is-the-difference-between-tap-and-map-in-rxjs",
+      "category": "community_qna",
+      "selectionReason": "This community thread is directly on the exact operator comparison and is a strong benchmark for interview-ready clarity.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly on the comparison and explains the “peek versus transform” distinction well."
+      ],
+      "theirGaps": [
+        "It is a thread rather than a compact Angular-oriented decision rule with production traps."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Transformation vs side effect</strong><br><br>If you are unsure which one to use, ask one question: <strong>should the next operator receive a different value?</strong> If yes, use <code>map</code>. If no, and you only need a side effect like logging, analytics, or a loading flag, use <code>tap</code>. The difference is stream intent: <code>map</code> changes data; <code>tap</code> observes it."
+        ],
+        "followUpConfusion": [
+          "<strong>Angular-flavored rule</strong><br><ul><li>Use <code>tap</code> for logging, metrics, or toggling loading state.</li><li>Use <code>map</code> when the output type or shape must change.</li><li>If the downstream stream must be different, <code>tap</code> is the wrong tool.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

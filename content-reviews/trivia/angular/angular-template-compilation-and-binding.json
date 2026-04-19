@@ -1,0 +1,142 @@
+{
+  "contentId": "angular-template-compilation-and-binding",
+  "tech": "angular",
+  "query": "Angular template compilation and binding Ivy create update AOT",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular AOT Compiler Guide",
+      "url": "https://angular.dev/tools/cli/aot-compiler",
+      "category": "canonical_docs",
+      "selectionReason": "The AOT compiler guide is the canonical source for Angular template compilation, metadata extraction, and generated code behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It explains AOT compilation, generated factories, and the benefits of catching template issues earlier."
+      ],
+      "theirGaps": [
+        "It is compiler-focused and less interview-shaped around the create/update mental model used to debug bindings."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "many template bugs are really binding or change-detection debug problems, not “Angular magic.”"
+        ],
+        "followUpConfusion": [
+          "AOT answers when Angular compiles the template. Ivy create/update instructions answer what runtime code executes after compilation."
+        ]
+      },
+      "winReason": "The AOT guide remains the canonical compiler reference, but our page now wins on the narrower interview follow-up: how compiled create/update work explains stale UI and why AOT timing is not the same thing as runtime update behavior.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs connect compilation to runtime performance and earlier error detection, so the practical framing stays close."
+        ],
+        "actionableExamples": [
+          "The AOT guide provides stronger compiler-specific examples and terminology than our compact trivia page."
+        ],
+        "followUpConfusion": [
+          "It explains compilation phases well, but it is less compact than our answer on how update instructions re-read component state."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the stale-UI worked example next to the create/update pseudocode so the page stays more debug-oriented even if the compiler guide remains deeper on internals."
+        ]
+      }
+    },
+    {
+      "label": "Telerik Angular Templates Overview",
+      "url": "https://www.telerik.com/blogs/angular-basics-angular-templates-overview",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a strong broad competitor because it explains templates, bindings, and directives as the bridge between component state and the rendered view.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It gives a broad explanation of templates, data binding, and how template syntax shapes the rendered UI."
+      ],
+      "theirGaps": [
+        "It is more introductory and less explicit about the Ivy create/update compilation model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "many template bugs are really binding or change-detection debug problems, not “Angular magic.”"
+        ],
+        "actionableExamples": [
+          "Simplified update work Angular reruns on each check",
+          "The usual bug is that the state change or update trigger did not reach this update phase."
+        ]
+      },
+      "winReason": "Telerik is a solid templates overview, but our page now wins on the worked binding-debug example that maps `ctx` reads directly to DOM patches instead of stopping at template syntax basics.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Telerik explains templates as the bridge between data and view, so the practical comparison is close."
+        ],
+        "actionableExamples": [
+          "Its examples cover template syntax and binding basics clearly enough that the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "Because it stays broad across templates, directives, and bindings, it gives more surrounding context to readers who are still shaky on template syntax itself."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "Keep the line that separates compilation time from runtime update passes so the page does not slide back into a general templates overview."
+        ]
+      }
+    },
+    {
+      "label": "Swiftorial Angular Templates",
+      "url": "https://www.swiftorial.com/tutorials/web_development/angular/components_and_templates/angular_templates",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial competitor focused on Angular templates, bindings, and directives in one page.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It directly explains templates, interpolation, property binding, event binding, and directives with small examples."
+      ],
+      "theirGaps": [
+        "It stays at the template-syntax level and does not explain the create/update runtime model or why that matters in debugging."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "many template bugs are really binding or change-detection debug problems, not “Angular magic.”"
+        ],
+        "actionableExamples": [
+          "If the UI stays stale, Angular usually isn't \"re-reading the template string\" incorrectly.",
+          "Debug shortcut"
+        ]
+      },
+      "winReason": "Swiftorial explains template syntax well, but our page now wins on the under-the-hood debugging model and the concrete stale-UI example that ties create/update behavior back to real troubleshooting.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Swiftorial explains what templates and bindings are, but our page is stronger on why the compile-plus-update model matters when debugging real apps."
+        ],
+        "actionableExamples": [
+          "Its binding examples are concrete enough that the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It covers template syntax clearly, but it does not go as far into the ctx/update mental model behind Angular bindings."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "If this still feels close, add one more short note on how scope errors and missing imports fail before the update phase logic even matters."
+        ]
+      }
+    }
+  ]
+}

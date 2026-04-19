@@ -1,0 +1,142 @@
+{
+  "contentId": "vue-methods-in-templates",
+  "tech": "vue",
+  "query": "What happens when you call methods inside Vue templates?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Computed Properties",
+      "url": "https://vuejs.org/guide/essentials/computed.html#computed-caching-vs-methods",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue explanation of computed caching versus methods and the key difference that methods are re-invoked on every render.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on computed caching versus method execution semantics."
+      ],
+      "theirGaps": [
+        "It is lighter on the production pitfalls of side effects, unstable references, and per-item template method calls inside lists."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A component can re-render for many reasons",
+          "a method used inside <code>v-for</code> can run <em>per item</em> per render."
+        ],
+        "followUpConfusion": [
+          "the <em>result is not cached</em> like a computed property.",
+          "if you’d be annoyed seeing it run on every render in a profiler, make it a computed"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain the caching distinction well, but our page is more explicit about the production costs that show up when template methods are expensive or side-effectful."
+        ],
+        "actionableExamples": [
+          "The official examples remain strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that reactive reads inside the method are tracked but the returned result itself is still recomputed every render."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny list example later that makes the per-item rerun cost visible at a glance."
+        ]
+      },
+      "winReason": "The official guide is authoritative on computed versus methods, but our page is stronger because it names the exact profiler and correctness problems caused by template method calls."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because computed properties, template expressions, and performance trade-offs are common Vue interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue rendering and computed-versus-method trade-offs."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact rerun-on-every-render question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "performance/correctness pitfalls (expensive work, unstable references, side effects)"
+        ],
+        "followUpConfusion": [
+          "Anything you reference in a Vue template is evaluated during the component’s <em>render</em>.",
+          "When it’s OK to use a method in the template"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is relevant for Vue fundamentals, but it is less focused on this exact render-time rerun behavior."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on example-driven interview material, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The landing page is less explicit about the non-cached result, list-multiplied cost, and side-effect hazards of template method calls."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the computed-versus-method rule of thumb visible so the answer stays practical rather than purely theoretical."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it answers the exact runtime and performance consequences of calling methods during render."
+    },
+    {
+      "label": "Vue Methods",
+      "url": "https://vueschool.io/lessons/vue-methods",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a topic-direct lesson on template methods and when template expressions should be extracted into methods instead of kept inline.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly about methods in templates and the role they play in Vue component templates."
+      ],
+      "theirGaps": [
+        "It is lighter on rerender cost, list amplification, and the explicit computed-versus-method performance trade-off."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If you call a method in the template, it’s executed again even when the method’s “inputs” didn’t change."
+        ],
+        "followUpConfusion": [
+          "The method runs again on <em>every</em> subsequent re-render of that component."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The lesson covers methods well, but our page is stronger because it connects template methods directly to rerender cost and correctness pitfalls."
+        ],
+        "actionableExamples": [
+          "Its direct lesson format keeps the example criterion competitive, so it stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that computed values cache by dependency while methods are re-run every render."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one unstable-reference example where a template method returns a fresh object each render."
+        ]
+      },
+      "winReason": "Vue School is directly on topic, but our page is stronger because it explains not just what methods are, but what breaks when they are used carelessly in render paths."
+    }
+  ]
+}

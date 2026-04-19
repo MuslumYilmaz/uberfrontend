@@ -1,0 +1,145 @@
+{
+  "contentId": "vue-nexttick-dom-update-queue",
+  "tech": "vue",
+  "query": "What does nextTick() do in Vue, and why are DOM measurements wrong immediately after a state change?",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Global API: General",
+      "url": "https://vuejs.org/api/general.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue API reference for nextTick, DOM update flushing, and the async batching behavior behind it.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official API page is authoritative on nextTick behavior and the async DOM flush contract."
+      ],
+      "theirGaps": [
+        "It is less compressed around the practical measurement-too-early bug and the render-queue mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If you measure the DOM immediately after changing state, you often read the old layout .",
+          "When you change reactive state, Vue does not patch the DOM immediately. It queues the component for re-render and processes all changes together in the next microtask tick."
+        ],
+        "followUpConfusion": [
+          "nextTick() returns a Promise that resolves after Vue has finished flushing the DOM updates for the current batch.",
+          "nextTick() waits for Vue’s render flush , not for a timer or the next frame."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The API docs explain nextTick accurately, but our page is stronger on the concrete measurement and layout bug that makes developers reach for it."
+        ],
+        "actionableExamples": [
+          "The official example is strong on immediate DOM reads versus awaited flushes, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is more direct on batching, queue flushing, and why nextTick is not the same thing as a timer or frame delay."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one shorter measure-scrollHeight example so the DOM-read timing bug is visible even faster."
+        ]
+      },
+      "winReason": "The official API page is canonical on nextTick semantics, but our page is stronger as an interview answer because it turns the API contract into a clear render-queue and wrong-layout mental model."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because async rendering, batching, and DOM timing are common Vue interview fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong Vue interview-prep hub for rendering and reactivity questions."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact nextTick and DOM-update-queue explanation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This is why DOM measurements right after a state change are often wrong:",
+          "Common real-world cases where you need nextTick()"
+        ],
+        "followUpConfusion": [
+          "It does not mean “wait one frame” or “wait some time”.",
+          "Mental model: state changes schedule a render, nextTick waits for that render to finish ."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is relevant for Vue rendering questions, but it is less explicit about the measurement-too-early bug and queued DOM flush semantics."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on interview-style examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less direct about why nextTick differs from setTimeout or requestAnimationFrame and what exactly it waits for."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the async-queue explanation tight so the practical measurement bug remains the first thing the reader sees."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it directly answers the concrete bug developers hit and then explains the queue-flush timing behind it."
+    },
+    {
+      "label": "What is Vue nextTick? Accessing the DOM after Data Updates",
+      "url": "https://vueschool.io/articles/vuejs-tutorials/what-is-vue-nexttick-accessing-the-dom-after-data-updates/",
+      "category": "tutorial_reference",
+      "selectionReason": "Vue School has a direct topic article on DOM update batching, nextTick timing, and reading layout after state changes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly on-topic for nextTick, DOM updates, and timing-sensitive UI work."
+      ],
+      "theirGaps": [
+        "It is less tightly compressed around the one mental model interviewers usually want: queued render now, DOM later."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The template has not been re-rendered yet, so the element is still in its previous state.",
+          "Use it whenever you need to read layout, measure elements, or interact with DOM that depends on the new state."
+        ],
+        "followUpConfusion": [
+          "Vue batches DOM updates and applies them asynchronously.",
+          "Even if you change state multiple times synchronously, Vue will still only update the DOM once, and nextTick() waits for that single final result."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is directly aligned on DOM updates and nextTick use cases, so the practical baseline is strong."
+        ],
+        "actionableExamples": [
+          "Vue School remains competitive on direct examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is stronger on the exact follow-up distinction between queued render flushes versus timers or animation frames."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one explicit compare-before-await and after-await measurement snippet to make the timing difference even more obvious."
+        ]
+      },
+      "winReason": "Vue School is a strong direct tutorial, but our page is stronger because it compresses the async queue, wrong-measurement bug, batching rationale, and timer distinction into one short answer."
+    }
+  ]
+}

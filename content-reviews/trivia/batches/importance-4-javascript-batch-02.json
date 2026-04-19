@@ -1,0 +1,38 @@
+{
+  "batchId": "importance-4-javascript-batch-02",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    {
+      "tech": "javascript",
+      "id": "js-cookie-sessionstorage-localstorage"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-deferred-scripts"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-secure-cors-handling"
+    },
+    {
+      "tech": "javascript",
+      "id": "http-caching-basics"
+    },
+    {
+      "tech": "javascript",
+      "id": "sse-vs-websocket-real-time"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-intl-datetime-timezone"
+    },
+    {
+      "tech": "javascript",
+      "id": "js-escape-vs-sanitize"
+    },
+    {
+      "tech": "javascript",
+      "id": "chat-conversation-state-management"
+    }
+  ]
+}

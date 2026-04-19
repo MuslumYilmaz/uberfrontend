@@ -1,0 +1,142 @@
+{
+  "contentId": "vue-reactivity-vs-react-concepts",
+  "tech": "vue",
+  "query": "Vue reactivity vs React concepts interview question",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Reactivity in Depth",
+      "url": "https://vuejs.org/guide/extras/reactivity-in-depth.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for dependency tracking, effect triggering, batching, and the runtime model behind Vue's reactive updates.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on how Vue tracks reads, triggers effects, and schedules updates through its reactive system."
+      ],
+      "theirGaps": [
+        "It is deeper and more implementation-heavy than the interview-style conceptual contrast with React."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "keeping DOM in sync with state, updating derived values efficiently, and avoiding “update everything” work.",
+          "Vue’s reactivity system solves these by automatically tracking what your UI depends on and updating only what’s affected when state changes."
+        ],
+        "followUpConfusion": [
+          "The biggest difference is the update model:",
+          "Vue leans on a reactive graph + compiler; React leans on a render cycle + reconciliation"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain reactivity precisely, but our page is more explicit about the concrete UI problems Vue is trying to remove."
+        ],
+        "actionableExamples": [
+          "The official guide has stronger under-the-hood detail and examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that Vue and React differ more in update model and dependency tracking than in raw DOM-patching goals."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny before-and-after example later that contrasts Vue's tracked dependency update with React rerunning a component function."
+        ]
+      },
+      "winReason": "The official guide is deeper on internals, but our page is stronger for interview use because it ties reactivity directly to the practical UI problems Vue solves and contrasts it cleanly with React."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because reactivity, rendering, and framework mental models are core Vue interview territory.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue fundamentals, reactivity, and rendering topics."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact Vue-versus-React conceptual comparison."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "remove manual DOM sync and to make updates precise via dependency tracking + batching"
+        ],
+        "followUpConfusion": [
+          "React’s core idea is re-running component functions to describe the next UI and reconciling the result."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is clearly relevant at the topic level, but the landing page is less specific about the exact DOM-sync and dependency-graph problem statement."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on example-driven interview practice, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about Vue's push-style dependency graph versus React's render-cycle model."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the under-the-hood bullets short so the answer stays trivia-sized while still explaining tracked reads and triggered effects."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it answers this exact conceptual contrast instead of relying on broad category coverage."
+    },
+    {
+      "label": "Understanding Vue's Reactive Data",
+      "url": "https://www.thisdot.co/blog/understanding-vues-reactive-data",
+      "category": "tutorial_reference",
+      "selectionReason": "ThisDot has a topic-direct explanation of Vue reactive data, Proxy-based tracking, and how UI updates follow state changes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly focused on Proxy-based reactivity and gives a practical explanation of track and trigger behavior."
+      ],
+      "theirGaps": [
+        "It is lighter on the interview framing that contrasts Vue's reactive graph with React's rerender-and-reconcile model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "updating only what’s affected when state changes."
+        ],
+        "followUpConfusion": [
+          "Vue: “push” model. Dependency graph decides what to update",
+          "React: “render-as-a-function” model."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article explains reactive UI updates well, but our page is stronger on the exact production-level comparison to React's explicit update model."
+        ],
+        "actionableExamples": [
+          "Its Proxy and track/trigger walkthrough is useful enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that Vue is not 'skipping React-style rerenders by magic' but using a different dependency-driven update model."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny list/filter example later if we want a more visible 'only affected bindings update' scenario."
+        ]
+      },
+      "winReason": "ThisDot is solid on Vue's reactivity internals, but our page is stronger because it turns those internals into a clearer Vue-versus-React mental model."
+    }
+  ]
+}

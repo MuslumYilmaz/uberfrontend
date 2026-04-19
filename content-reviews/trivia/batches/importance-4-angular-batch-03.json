@@ -1,0 +1,14 @@
+{
+  "batchId": "importance-4-angular-batch-03",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    {
+      "tech": "angular",
+      "id": "ngrx-reducer-pure-function-immutability-side-effects"
+    },
+    {
+      "tech": "angular",
+      "id": "ngrx-selectors-memoization-derived-state-performance"
+    }
+  ]
+}

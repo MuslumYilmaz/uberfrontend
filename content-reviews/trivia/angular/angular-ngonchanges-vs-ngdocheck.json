@@ -1,0 +1,146 @@
+{
+  "contentId": "angular-ngonchanges-vs-ngdocheck",
+  "tech": "angular",
+  "query": "Angular ngOnChanges vs ngDoCheck interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Angular Lifecycle Guide",
+      "url": "https://angular.dev/guide/components/lifecycle",
+      "category": "canonical_docs",
+      "selectionReason": "The Angular lifecycle guide is the canonical source for when ngOnChanges and ngDoCheck run and how often Angular checks the template.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the official lifecycle reference and clearly states when each hook runs."
+      ],
+      "theirGaps": [
+        "It is reference-first and less narrowly framed around the interview trade-off of automatic input diffs versus custom checks."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Change-detection boundary</strong><br><br><code>ngOnChanges()</code> is the automatic hook for <code>@Input()</code> reference changes, while <code>ngDoCheck()</code> is the escape hatch for <strong>custom change detection</strong> when Angular's default checks are not enough. The production difference is cost and precision: <code>ngOnChanges</code> tells you which inputs changed, but <code>ngDoCheck</code> runs frequently and should stay rare."
+        ],
+        "followUpConfusion": [
+          "<strong>Rule of thumb</strong><br><ul><li>Prefer <code>ngOnChanges</code> for normal input-driven logic.</li><li>Reach for <code>ngDoCheck</code> only when you can explain the mutation or diff Angular will not catch.</li><li>Treat <code>ngDoCheck</code> as a cost center because it runs on every detection cycle.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Telerik: 7 Things To Know Before Your Angular Interview",
+      "url": "https://www.telerik.com/blogs/7-things-to-know-before-your-angular-interview",
+      "category": "tutorial_reference",
+      "selectionReason": "This Telerik interview-prep article is relevant because it summarizes Angular lifecycle hooks, including ngDoCheck as custom change detection.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is interview-oriented and already frames lifecycle hooks as something candidates should distinguish quickly."
+      ],
+      "theirGaps": [
+        "It is broad across many hooks, so it is less focused on the specific ngOnChanges versus ngDoCheck boundary."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Change-detection boundary</strong><br><br><code>ngOnChanges()</code> is the automatic hook for <code>@Input()</code> reference changes, while <code>ngDoCheck()</code> is the escape hatch for <strong>custom change detection</strong> when Angular's default checks are not enough. The production difference is cost and precision: <code>ngOnChanges</code> tells you which inputs changed, but <code>ngDoCheck</code> runs frequently and should stay rare."
+        ],
+        "followUpConfusion": [
+          "<strong>Rule of thumb</strong><br><ul><li>Prefer <code>ngOnChanges</code> for normal input-driven logic.</li><li>Reach for <code>ngDoCheck</code> only when you can explain the mutation or diff Angular will not catch.</li><li>Treat <code>ngDoCheck</code> as a cost center because it runs on every detection cycle.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: What is the difference between OnChanges and DoCheck in Angular 2?",
+      "url": "https://stackoverflow.com/questions/38629828/what-is-the-difference-between-onchanges-and-docheck-in-angular-2",
+      "category": "community_qna",
+      "selectionReason": "This is the most direct community comparator for the exact hook-difference question and its reference-versus-mutation follow-up.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It directly answers the exact comparison and includes the common reference-change caveat."
+      ],
+      "theirGaps": [
+        "It is a community thread rather than a compact interview answer with one consistent decision rule."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Change-detection boundary</strong><br><br><code>ngOnChanges()</code> is the automatic hook for <code>@Input()</code> reference changes, while <code>ngDoCheck()</code> is the escape hatch for <strong>custom change detection</strong> when Angular's default checks are not enough. The production difference is cost and precision: <code>ngOnChanges</code> tells you which inputs changed, but <code>ngDoCheck</code> runs frequently and should stay rare."
+        ],
+        "followUpConfusion": [
+          "<strong>Rule of thumb</strong><br><ul><li>Prefer <code>ngOnChanges</code> for normal input-driven logic.</li><li>Reach for <code>ngDoCheck</code> only when you can explain the mutation or diff Angular will not catch.</li><li>Treat <code>ngDoCheck</code> as a cost center because it runs on every detection cycle.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

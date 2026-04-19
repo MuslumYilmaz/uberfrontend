@@ -1,0 +1,150 @@
+{
+  "contentId": "angular-event-binding-dom-vs-output-change-detection",
+  "tech": "angular",
+  "query": "Angular event binding DOM vs @Output change detection",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular Event Listeners Guide",
+      "url": "https://angular.dev/guide/templates/event-listeners",
+      "category": "canonical_docs",
+      "selectionReason": "The official event-listeners guide is the canonical reference for DOM event syntax, key modifiers, and event binding behavior.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official guide is authoritative on event syntax, but our page is stronger for this interview prompt because it now contrasts DOM input, keyboard or submit, and child output handling in one template and explains non-bubbling outputs directly.",
+      "theirStrengths": [
+        "It is authoritative on DOM event binding syntax, key modifiers, and listener behavior in Angular templates."
+      ],
+      "theirGaps": [
+        "It is less explicitly framed around the combined DOM-event versus @Output comparison and the change-detection performance follow-up."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "onSubmit(e: SubmitEvent): void {",
+          "@Output() saved = new EventEmitter<{ id: string }>();"
+        ],
+        "followUpConfusion": [
+          "A child <code>@Output()</code> does <strong>not</strong> bubble through the DOM; Angular calls the parent handler because the parent bound to that output explicitly.",
+          "Under rapid input, every handler still runs inside Angular's event flow, so expensive parsing or filtering logic can turn into a change-detection hotspot quickly."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular.dev gives solid event-binding guidance, so the practical framing stays close."
+        ],
+        "actionableExamples": [
+          "The docs show strong event syntax, but our page now puts DOM input, keyboard or submit, and child output handling side by side in one parent template."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct about the likely follow-up: native DOM events and custom outputs share syntax but not payload shape, bubbling behavior, or performance implications."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep at least one example that mixes a native DOM event and a child output in the same parent template."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Angular University @Output Guide",
+      "url": "https://blog.angular-university.io/angular-output/",
+      "category": "tutorial_reference",
+      "selectionReason": "This guide is a direct tutorial competitor because it goes deep on EventEmitter semantics, event naming, and output design mistakes.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Angular University is strong on output design, but our page now wins this combined DOM-versus-output prompt by pairing typed output examples with browser-default and change-detection follow-ups.",
+      "theirStrengths": [
+        "It is strong on @Output naming, emitted events versus commands, and EventEmitter design."
+      ],
+      "theirGaps": [
+        "It is output-centric and less balanced on the combined DOM-event plus output-event comparison from the template side."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "onSubmit(e: SubmitEvent): void {",
+          "@Output() saved = new EventEmitter<{ id: string }>();"
+        ],
+        "followUpConfusion": [
+          "A child <code>@Output()</code> does <strong>not</strong> bubble through the DOM; Angular calls the parent handler because the parent bound to that output explicitly.",
+          "Under rapid input, every handler still runs inside Angular's event flow, so expensive parsing or filtering logic can turn into a change-detection hotspot quickly."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University frames outputs through practical component-communication design choices, so the use-case comparison stays close."
+        ],
+        "actionableExamples": [
+          "Angular University is strong on output design, but our page now pairs DOM input, keyboard or submit, and typed child output handling in one compact example."
+        ],
+        "followUpConfusion": [
+          "It explains output-event semantics well, but our page is now more explicit about DOM defaults, non-bubbling outputs, and rapid-input change-detection cost."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one example that contrasts native DOM input or submit events with a typed child output payload."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Swiftorial Event Binding",
+      "url": "https://www.swiftorial.com/tutorials/web_development/angular/components_and_templates/event_binding",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial competitor covering event binding syntax, DOM events, and custom emitted events.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Swiftorial covers the basics, but our page is stronger on the actual comparison this question asks for: native DOM events versus output payloads, non-bubbling outputs, and rapid-input change-detection cost.",
+      "theirStrengths": [
+        "It directly covers DOM events, $event, and custom component events in one tutorial."
+      ],
+      "theirGaps": [
+        "It is lighter on change-detection cost and on how senior answers separate DOM event objects from output payloads."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The event can be a native DOM event or a custom event emitted by a child component"
+        ],
+        "followUpConfusion": [
+          "A child <code>@Output()</code> does <strong>not</strong> bubble through the DOM; Angular calls the parent handler because the parent bound to that output explicitly."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Swiftorial covers both DOM events and custom events, but our page is more explicit about the real interview comparison between the two."
+        ],
+        "actionableExamples": [
+          "Swiftorial still gives a concrete basics-level example set, so the pure worked-example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "It introduces custom events, but it does not spend as much time on non-bubbling outputs and rapid-input change-detection implications."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the parent-template comparison explicit so a DOM event and a child output can be scanned side by side."
+        ],
+        "followUpConfusion": []
+      }
+    }
+  ]
+}

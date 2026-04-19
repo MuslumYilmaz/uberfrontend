@@ -1,0 +1,187 @@
+version: 1
+source_of_truth: docs/ai-context/router.yaml
+description: >
+  Load only AGENTS.md by default. Add topic docs conservatively from task
+  classification. Historical audits are conditional references, not default
+  context.
+
+defaults:
+  always_load:
+    - AGENTS.md
+  max_primary_docs: 1
+  max_secondary_docs: 1
+  max_reference_docs: 1
+  classifier_inputs:
+    - user_prompt
+    - open_file_paths
+    - changed_file_paths
+  fallback_behavior:
+    - backend-only or ordinary code-fix tasks stay AGENTS-only
+    - never bulk-load every Markdown file
+
+selection:
+  primary: highest-priority matching topic rule
+  secondary: optional support rule that sharpens scope without duplicating the primary
+  reference: load only when the task explicitly needs audit/history detail
+
+topic_rules:
+  - id: frontend_ui
+    priority: 100
+    role: primary
+    keywords:
+      - angular
+      - component
+      - template
+      - scss
+      - css
+      - style
+      - styling
+      - ui
+      - shared-ui
+      - primeng
+      - design-system
+      - tokens
+    paths:
+      - frontend/src/app/shared/ui/**
+      - frontend/src/app/shared/components/**
+      - frontend/src/app/features/**/*.html
+      - frontend/src/app/features/**/*.scss
+      - frontend/src/styles/**
+    load:
+      - docs/ai-context/frontend-ui.md
+    avoid:
+      - docs/ai-context/content-authoring.md
+      - docs/ai-context/trivia-review.md
+    max_docs: 1
+
+  - id: question_content
+    priority: 95
+    role: primary
+    keywords:
+      - question
+      - questions
+      - cdn
+      - gamification
+      - draft
+      - contentversion
+      - question-id
+      - manifest
+      - xp
+      - streak
+      - progress
+    paths:
+      - cdn/questions/**
+      - frontend/scripts/question-id-manifest.json
+      - frontend/src/app/core/utils/content-version.util.ts
+      - frontend/src/app/core/utils/versioned-drafts.util.ts
+      - frontend/src/app/core/services/code-storage.service.ts
+      - frontend/src/app/shared/components/draft-update-banner/**
+      - backend/services/gamification/question-catalog.js
+    load:
+      - docs/ai-context/question-content.md
+    avoid:
+      - docs/ai-context/frontend-ui.md
+    max_docs: 1
+
+  - id: content_authoring
+    priority: 90
+    role: primary
+    keywords:
+      - content-drafts
+      - frontmatter
+      - authoring
+      - outline
+      - editor pass
+      - fact-check
+      - manual conversion
+    paths:
+      - content-drafts/**
+    load:
+      - docs/ai-context/content-authoring.md
+    avoid:
+      - docs/ai-context/frontend-ui.md
+      - docs/ai-context/testing.md
+    max_docs: 1
+
+  - id: trivia_review
+    priority: 85
+    role: secondary
+    keywords:
+      - trivia review
+      - competitor review
+      - greatfrontend
+      - ours
+      - theirs
+      - tie
+      - nextactions
+    paths:
+      - content-reviews/**
+    load:
+      - docs/ai-context/trivia-review.md
+    avoid:
+      - docs/ai-context/frontend-ui.md
+    max_docs: 1
+
+  - id: testing_verification
+    priority: 80
+    role: primary
+    keywords:
+      - test
+      - tests
+      - testing
+      - verification
+      - ci
+      - github actions
+      - regression
+      - coverage
+      - playwright
+      - jest
+      - karma
+    paths:
+      - backend/tests/**
+      - frontend/e2e/**
+      - frontend/**/*.spec.ts
+      - .github/workflows/**
+    load:
+      - docs/ai-context/testing.md
+    avoid: []
+    max_docs: 1
+
+reference_rules:
+  - id: seo_audit
+    priority: 110
+    keywords:
+      - seo
+      - prerender
+      - canonical
+      - robots
+      - sitemap
+      - metadata
+      - 404
+    paths:
+      - frontend/src/app/app.routes.ts
+      - frontend/src/robots.txt
+      - frontend/e2e/seo*.ts
+      - .github/workflows/seo-guard.yml
+    requires:
+      - docs/ai-context/testing.md
+    load:
+      - docs/audits/seo-audit.md
+    max_docs: 1
+
+  - id: test_quality_audit
+    priority: 70
+    keywords:
+      - test quality
+      - smoke test
+      - brittle assertions
+      - copy-coupled
+      - signal quality
+    paths:
+      - backend/tests/**
+      - frontend/**/*.spec.ts
+    requires:
+      - docs/ai-context/testing.md
+    load:
+      - docs/audits/test-quality-audit.md
+    max_docs: 1

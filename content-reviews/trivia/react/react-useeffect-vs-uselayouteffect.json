@@ -1,0 +1,148 @@
+{
+  "contentId": "react-useeffect-vs-uselayouteffect",
+  "tech": "react",
+  "query": "useeffect vs uselayouteffect react interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "useLayoutEffect",
+      "url": "https://react.dev/reference/react/useLayoutEffect",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React reference for pre-paint layout work, paint blocking, and when useLayoutEffect is appropriate.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative source on timing and paint-blocking behavior."
+      ],
+      "theirGaps": [
+        "It is less compressed around the interview framing of flicker prevention versus normal side-effect work."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "avoid visual flicker."
+        ],
+        "actionableExamples": [
+          "useLayoutEffect runs synchronously after DOM mutations but before the browser paints"
+        ],
+        "followUpConfusion": [
+          "useEffect runs after the browser paints."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs are authoritative on timing, but our page is more explicit about the real bug pattern: reading or writing layout after paint and causing visible jump."
+        ],
+        "actionableExamples": [
+          "The official examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that useLayoutEffect should stay rare because it blocks paint."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tooltip-measurement example later if we want more concrete layout code than the current pipeline explanation."
+        ]
+      },
+      "winReason": "The official docs are authoritative, but our page is stronger for interview use because it translates the timing model directly into flicker prevention and 'use it rarely' guidance."
+    },
+    {
+      "label": "What is the difference between useEffect and useLayoutEffect in React?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-the-difference-between-useeffect-and-uselayouteffect-in-react",
+      "category": "interview_prep",
+      "selectionReason": "This is the direct GreatFrontEnd interview-prep comparator for the effect timing contrast.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It matches the interview wording directly."
+      ],
+      "theirGaps": [
+        "It is less explicit about the paint-blocking trade-off and why layout work is the exception rather than the default."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The difference matters when you need to read or write layout and avoid visual flicker."
+        ],
+        "actionableExamples": [
+          "The browser will: • Paint the UI once • Then your effect runs • Then you update layout/state • Then it paints again"
+        ],
+        "followUpConfusion": [
+          "useEffect is for everything else"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is direct interview prep, but our answer is more explicit about the actual user-visible failure mode: flicker and jump."
+        ],
+        "actionableExamples": [
+          "Its interview framing is strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the follow-up that useLayoutEffect is exceptional because it runs before paint and can block it."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the render-pipeline list visible so the timing difference stays more concrete than a definition-only interview page."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it ties the hook choice directly to flicker, layout reads, and paint blocking."
+    },
+    {
+      "label": "Is useLayoutEffect preferable to useEffect when reading layout?",
+      "url": "https://stackoverflow.com/questions/66148855",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a practical reference for the exact layout-read timing confusion that usually motivates useLayoutEffect.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on the exact measurement-versus-paint timing confusion."
+      ],
+      "theirGaps": [
+        "It is narrower than a full explanation of the effect pipeline."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "prevent visual flicker"
+        ],
+        "actionableExamples": [
+          "useLayoutEffect runs here (before paint)"
+        ],
+        "followUpConfusion": [
+          "useLayoutEffect exists for code that must synchronously read or modify the DOM before the user sees anything"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on one timing confusion, but our page is stronger because it explains the whole render, commit, and paint pipeline around it."
+        ],
+        "actionableExamples": [
+          "Community answers can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that useEffect remains the default for subscriptions, timers, and data fetching."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny DOM-measurement snippet later if we want more literal code than the current timing pipeline."
+        ]
+      },
+      "winReason": "The community thread is useful on the layout-read case, but our page is stronger because it explains the whole pipeline and where each hook belongs."
+    }
+  ]
+}

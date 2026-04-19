@@ -1,0 +1,151 @@
+{
+  "contentId": "angular-structural-vs-attribute-directives",
+  "tech": "angular",
+  "query": "Angular structural vs attribute directives interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular Structural Directives Guide",
+      "url": "https://angular.dev/guide/directives/structural-directives",
+      "category": "canonical_docs",
+      "selectionReason": "The official structural-directives guide is the canonical source for embedded views, microsyntax, and shorthand expansion into ng-template.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "The official guide is authoritative on structural directives, but our page is more interview-ready because it now pairs the tree-versus-host distinction with a same-UI before-and-after example and the ng-container follow-up.",
+      "theirStrengths": [
+        "It is authoritative on microsyntax, ng-template expansion, and how structural directives operate on embedded views."
+      ],
+      "theirGaps": [
+        "It is less directly organized around the side-by-side structural-versus-attribute comparison that interviewers usually want."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "<app-filter-panel *ngIf=\"open\"></app-filter-panel>",
+          "<ng-container *ngIf=\"open\">"
+        ],
+        "followUpConfusion": [
+          "Choose an attribute directive when the requirement is <strong>keep the same host element, but change styling, attributes, or listeners</strong>.",
+          "Only one structural shorthand can own a host element; reach for <code>ng-container</code> when you need multiple structural layers."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular.dev explains structural directives well, so the practical framing stays close."
+        ],
+        "actionableExamples": [
+          "The official guide is strong on microsyntax, but our page now gives the more interview-ready side-by-side example for destroyed subtree versus same-instance host changes."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the likely follow-up: structural directives change the tree, attribute directives keep the tree and change the host."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep one bug example where a team expected visibility toggling but accidentally destroyed child state."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Telerik Practical Guide to Angular Data Binding and Directives",
+      "url": "https://www.telerik.com/blogs/a-practical-guide-to-angular-data-binding-directive",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a practical competitor because it covers directives together with the data-binding context that makes attribute directives useful.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "winReason": "Telerik is broad on directives, but our page now answers this exact comparison more directly with a stronger tree-destruction-versus-host-change example and the one-star-per-host rule.",
+      "theirStrengths": [
+        "It gives practical binding and directive examples that are easy to map to real templates."
+      ],
+      "theirGaps": [
+        "It is broader than our prompt and spends less time on the embedded-view mental model behind structural directives."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "<app-filter-panel *ngIf=\"open\"></app-filter-panel>",
+          "<ng-container *ngIf=\"open\">"
+        ],
+        "followUpConfusion": [
+          "Choose an attribute directive when the requirement is <strong>keep the same host element, but change styling, attributes, or listeners</strong>.",
+          "Only one structural shorthand can own a host element; reach for <code>ng-container</code> when you need multiple structural layers."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Telerik keeps directives tied to practical template usage, so the use-case comparison stays close."
+        ],
+        "actionableExamples": [
+          "Telerik offers broader directive examples, but our page now gives the tighter same-UI before/after example for tree destruction versus host-only changes."
+        ],
+        "followUpConfusion": [
+          "Our page is now more explicit on the exact follow-up: what the star changes, when the same host should stay alive, and why ng-container is the fix for multiple structural layers."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the tree-versus-host distinction explicit so the answer does not drift into a generic directive overview."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      }
+    },
+    {
+      "label": "Swiftorial Structural Directives",
+      "url": "https://www.swiftorial.com/tutorials/web_development/angular/components_and_templates/structural_directives",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a direct tutorial competitor for structural directives and their DOM-changing behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "winReason": "Swiftorial explains structural directives clearly, but our page is stronger on the practical consequences interviewers care about: destroyed child state, preserved host instances, and when ng-container becomes necessary.",
+      "theirStrengths": [
+        "It stays directly on structural directives with simple ngIf/ngFor examples."
+      ],
+      "theirGaps": [
+        "It does not contrast structural directives against attribute directives through lifecycle and state-reset consequences."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Structural directives decide whether a block of template exists at all"
+        ],
+        "actionableExamples": [
+          "<app-filter-panel *ngIf=\"open\"></app-filter-panel>",
+          "<ng-container *ngIf=\"open\">"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Swiftorial explains that structural directives add or remove elements, but our page is stronger on the practical consequences of tree changes versus host-only changes."
+        ],
+        "actionableExamples": [
+          "Its examples are concrete, but our page now gives the stronger same-UI before/after example for destroyed subtree versus preserved host instance."
+        ],
+        "followUpConfusion": [
+          "It is lighter on the senior follow-up about ng-template sugar and attribute-directive boundaries."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep the one-structural-shorthand-per-host rule visible so the ng-container follow-up stays easy to recall."
+        ]
+      }
+    }
+  ]
+}

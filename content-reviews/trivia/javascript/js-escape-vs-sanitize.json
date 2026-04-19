@@ -1,0 +1,149 @@
+{
+  "contentId": "js-escape-vs-sanitize",
+  "tech": "javascript",
+  "query": "escaping vs sanitizing xss interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this browser, network, security, or state-management prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "OWASP Cross Site Scripting Prevention Cheat Sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+      "category": "canonical_docs",
+      "selectionReason": "OWASP is the strongest canonical security source for XSS prevention, output encoding, and defense-in-depth guidance.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative security reference for context-specific encoding and XSS prevention rules."
+      ],
+      "theirGaps": [
+        "It is broader and more defensive than the narrow interview contrast between escaping and sanitizing as two different tools."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>  A profile bio can be plain text (escape and render safely), but a blog editor might allow limited rich text (sanitize with an allowlist). Decide based on the product requirement, not convenience."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>  - Stripping tags with regex (easy to bypass). - Sanitizing once and reusing the result in a different context. - Double-escaping by encoding the same value twice. - Storing only sanitized HTML and losing the original data."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "OWASP is stronger on the full defense-in-depth model, but our page is more direct for the interview prompt because it contrasts escaping and sanitizing through one product decision."
+        ],
+        "actionableExamples": [
+          "The cheat sheet still has strong rule-based examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up traps: regex stripping, double-escaping, context reuse, and losing original raw content."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny attribute-context escaping example later if we need more example distance over OWASP."
+        ]
+      },
+      "winReason": "OWASP is the canonical XSS defense reference, but our page is stronger for this interview question because it isolates the escape-versus-sanitize decision in a simpler, product-facing answer."
+    },
+    {
+      "label": "MDN XSS",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS",
+      "category": "tutorial_reference",
+      "selectionReason": "MDN has a direct XSS guide and is a strong practical comparator for escaping, sanitization, and trusted rendering behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on how XSS happens and how browser rendering contexts change safety rules."
+      ],
+      "theirGaps": [
+        "It is less compressed into the interview-sized distinction between escaping text and sanitizing allowed markup."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>  A profile bio can be plain text (escape and render safely), but a blog editor might allow limited rich text (sanitize with an allowlist). Decide based on the product requirement, not convenience."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>  - Stripping tags with regex (easy to bypass). - Sanitizing once and reusing the result in a different context. - Double-escaping by encoding the same value twice. - Storing only sanitized HTML and losing the original data."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN is practical on XSS defense, but our page is more explicit about the product-level decision between plain text and limited rich text."
+        ],
+        "actionableExamples": [
+          "Its guidance is still practical and example-driven, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the next confusion interviewers ask about: why sanitizing HTML does not replace context-specific output encoding."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the real-world scenario and pitfalls adjacent so the answer stays more decision-oriented than a broader XSS overview."
+        ]
+      },
+      "winReason": "MDN is practical on XSS defense, but our page is stronger because it frames escaping and sanitizing as two different tools chosen by content requirements."
+    },
+    {
+      "label": "DOMPurify",
+      "url": "https://dompurify.com/",
+      "category": "tutorial_reference",
+      "selectionReason": "DOMPurify is a direct sanitization reference and a strong comparator for the allowlist-markup side of this interview question.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is topic-direct on safe HTML sanitization and practical allowlist-based markup cleaning."
+      ],
+      "theirGaps": [
+        "It only covers one side of the interview prompt and does not replace context-specific escaping."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>  A profile bio can be plain text (escape and render safely), but a blog editor might allow limited rich text (sanitize with an allowlist). Decide based on the product requirement, not convenience."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>  - Stripping tags with regex (easy to bypass). - Sanitizing once and reusing the result in a different context. - Double-escaping by encoding the same value twice. - Storing only sanitized HTML and losing the original data."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DOMPurify is strong on sanitization itself, but our page is more complete for the actual prompt because it contrasts sanitization with escaping instead of treating sanitization as the whole answer."
+        ],
+        "actionableExamples": [
+          "It is still practical and relevant on the allowlist side of the problem, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up confusion that sanitization and escaping solve different threats and must not be swapped blindly."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one short attribute-encoding example to make the escaping side even more concrete next to the sanitization scenario."
+        ]
+      },
+      "winReason": "DOMPurify is strong on sanitization, but our page is stronger for this prompt because it explains when sanitization is appropriate and when escaping is still required."
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "contentId": "vue-native-vs-component-events",
+  "tech": "vue",
+  "query": "What is the difference between native and component events in Vue?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Component Events",
+      "url": "https://vuejs.org/guide/components/events.html",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue guide for emitted component events, listener casing, non-bubbling behavior, and emits declarations.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official guide is authoritative on $emit, listener casing, payloads, emits declarations, and the fact that component events do not bubble."
+      ],
+      "theirGaps": [
+        "It is less explicit about the confusing @click-on-a-component case and the Vue 2 .native versus Vue 3 fallthrough mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "how propagation differs (DOM bubbling vs parent-only emits)",
+          "Explicit emits improve clarity"
+        ],
+        "followUpConfusion": [
+          "it does <em>not</em> automatically mean “listen to the internal DOM click”.",
+          "Vue 2 .native vs Vue 3 fallthrough/emits behavior."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs define component events accurately, but our page is more explicit about the real production confusion between DOM bubbling and child-emitted events."
+        ],
+        "actionableExamples": [
+          "The official examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that @click on a component can mean different things depending on emits declarations and fallthrough behavior."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny BaseButton example later that contrasts a root DOM click with an explicit emitted click event."
+        ]
+      },
+      "winReason": "The official guide is authoritative on emitted events, but our page is stronger because it addresses the exact confusion interviewers use to test whether someone understands component tags versus real elements."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because event handling, emits, and component communication are core Vue interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong interview-prep hub for Vue component communication and event patterns."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact native-versus-component event distinction."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Custom <code>BaseButton</code> should emit <code>click</code> to parent components while still handling native DOM events internally."
+        ],
+        "followUpConfusion": [
+          "<strong>Native event</strong> = browser event on a real element (bubbles in DOM).<br><strong>Component event</strong> = explicit <code>emit</code> from child to parent (no DOM bubbling)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is clearly relevant, but it is less focused on the exact propagation and fallthrough edge cases behind this question."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive on example-driven practice, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The landing page is less explicit about Vue 2 .native history, Vue 3 fallthrough listeners, and why undeclared emits can blur the event contract."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the BaseButton scenario short and centered on propagation differences, not generic event syntax."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue interview hub, but our page is stronger because it explains the exact event-model mismatch that causes real bugs."
+    },
+    {
+      "label": "Vue Emit Guide",
+      "url": "https://learnvue.co/articles/vue-emit-guide",
+      "category": "tutorial_reference",
+      "selectionReason": "LearnVue has a topic-direct guide on $emit, parent listeners, emits declarations, and the distinction between custom component events and DOM interaction.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly focused on emitting custom events, payloads, and declaring emits."
+      ],
+      "theirGaps": [
+        "It is lighter on DOM bubbling versus component events and on the Vue 2-to-3 transition around .native and fallthrough."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "native DOM events (click/input/submit...) and component events emitted with $emit/emit"
+        ],
+        "followUpConfusion": [
+          "On a component tag, <code>@event</code> primarily means “listen for an emitted event”"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article explains emitted events well, but our page is stronger because it also contrasts them directly with native DOM events and their propagation model."
+        ],
+        "actionableExamples": [
+          "Its emit examples are good enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that emitted component events do not bubble through the DOM and that component listeners can be shadowed by explicit emits declarations."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one tiny example where a parent listens for both a DOM event on an element and a custom emitted event from a child component."
+        ]
+      },
+      "winReason": "LearnVue is strong on emits, but our page is stronger because it answers the broader event-model comparison instead of only the child-to-parent half."
+    }
+  ]
+}

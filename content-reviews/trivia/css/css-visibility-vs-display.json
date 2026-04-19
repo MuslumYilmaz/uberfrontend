@@ -1,0 +1,145 @@
+{
+  "contentId": "css-visibility-vs-display",
+  "tech": "css",
+  "query": "What is the difference between visibility hidden and display none?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "visibility",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/visibility",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for visibility and is the strongest official baseline for comparing hidden-but-laid-out elements against display-driven removal.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on visibility semantics, layout participation, and accessibility-tree effects."
+      ],
+      "theirGaps": [
+        "The property reference is less interview-shaped and less explicit about the practical choose-between-two-tools decision developers make when hiding UI."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Both visibility and display control element rendering in CSS, but they behave differently. visibility: hidden hides the element visually while preserving its layout space, whereas display: none removes the element completely from the document flow."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>visibility</code> and <code>display</code> properties determine whether elements appear and how they affect layout. They differ in whether the element continues to occupy space or not."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains visibility accurately, but it is lighter on the concrete UI decision of whether you want hidden space preserved or layout removed entirely."
+        ],
+        "actionableExamples": [
+          "It includes solid property examples and notes on visibility behavior, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion teams hit first: layout space, accessibility-tree consequences, and animation or toggle trade-offs."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one side-by-side comparison example visible so the answer stays faster to scan than a property reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical visibility reference, but our page is stronger as an interview answer because it turns visibility-versus-display into a concrete layout-space and hiding-strategy decision."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because rendering, layout, and selector behavior are core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage of rendering, layout, and visibility-adjacent questions."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to visibility versus display, so it is less focused on one exact hide-with-space versus remove-from-flow answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Both visibility and display control element rendering in CSS, but they behave differently. visibility: hidden hides the element visually while preserving its layout space, whereas display: none removes the element completely from the document flow."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>visibility</code> and <code>display</code> properties determine whether elements appear and how they affect layout. They differ in whether the element continues to occupy space or not."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the exact UI and layout consequences of choosing visibility versus display."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: preserving layout space is not the same as removing an element from flow or accessibility."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the compare framing high in the page so the answer stays interview-ready."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact layout and hiding trade-offs that make visibility-versus-display a useful production question."
+    },
+    {
+      "label": "visibility",
+      "url": "https://css-tricks.com/almanac/properties/v/visibility/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks has a direct visibility almanac entry and is the strongest tutorial comparator for hidden-versus-removed layout behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on visibility behavior and directly contrasts hidden elements with display-based removal."
+      ],
+      "theirGaps": [
+        "It is less compact as a single interview answer and less explicit about accessibility and animation trade-offs as a choose-between-tools decision."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Both visibility and display control element rendering in CSS, but they behave differently. visibility: hidden hides the element visually while preserving its layout space, whereas display: none removes the element completely from the document flow."
+        ],
+        "followUpConfusion": [
+          "<strong>Overview</strong><br><br>The <code>visibility</code> and <code>display</code> properties determine whether elements appear and how they affect layout. They differ in whether the element continues to occupy space or not."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks is direct about hidden-versus-removed layout behavior, but our answer is more compact about the concrete UI decision between preserving space and collapsing layout."
+        ],
+        "actionableExamples": [
+          "Its property examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the next debugging question developers hit in practice: when hiding is visual only, when layout disappears, and how that affects accessibility or motion."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one concise comparison example visible so the answer preserves a fast scan path."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong visibility explainer, but our page is more useful as an interview answer because it packages visibility-versus-display around layout-space, accessibility, and hiding-strategy trade-offs."
+    }
+  ]
+}

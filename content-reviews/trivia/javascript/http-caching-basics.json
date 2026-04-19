@@ -1,0 +1,149 @@
+{
+  "contentId": "http-caching-basics",
+  "tech": "javascript",
+  "query": "http caching cache-control etag 304 interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this browser, network, security, or state-management prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN HTTP caching",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for Cache-Control, validators, freshness, revalidation, and browser caching behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on freshness, validators, and 304 semantics."
+      ],
+      "theirGaps": [
+        "It is broader than the interview prompt and less compressed into the deployment-safe strategy teams need for HTML, APIs, and immutable assets."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical HTTP caching interview answer for frontend engineers: cache directives, validators, conditional requests, and deployment-safe caching strategy for HTML, APIs, and immutable static assets."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: cache headers by response class</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Use this sequence: (1) Is cached response fresh? If yes, serve locally. (2) If stale, send conditional request with validators. (3) Server returns 304 (reuse cached body) or 200 (replace cache entry)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers caching thoroughly, but our page is more explicit about how to split strategy between HTML, APIs, and immutable static assets in production."
+        ],
+        "actionableExamples": [
+          "The canonical docs still have strong examples and directive coverage, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is faster on the likely follow-up confusion: freshness versus validation, and why HTML and versioned assets should not share the same cache policy."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one shorter HTML versus hashed-asset header example later if we need more example distance over MDN."
+        ]
+      },
+      "winReason": "MDN is the canonical caching reference, but our page is stronger for this interview question because it turns the spec into a deployment-safe policy split across HTML, APIs, and static assets."
+    },
+    {
+      "label": "web.dev HTTP cache",
+      "url": "https://web.dev/http-cache/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a strong browser-platform tutorial source for practical caching strategy and validation behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on browser caching strategy and repeat-visit performance."
+      ],
+      "theirGaps": [
+        "It is less explicit on the interview-sized framework of freshness, validators, and per-response-class policy in one compact answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical HTTP caching interview answer for frontend engineers: cache directives, validators, conditional requests, and deployment-safe caching strategy for HTML, APIs, and immutable static assets."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: cache headers by response class</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Use this sequence: (1) Is cached response fresh? If yes, serve locally. (2) If stale, send conditional request with validators. (3) Server returns 304 (reuse cached body) or 200 (replace cache entry)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is practical, but our page is more explicit about the production-safe split between short-lived HTML, validated APIs, and immutable hashed assets."
+        ],
+        "actionableExamples": [
+          "Its examples are still practical and relevant, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page clarifies the likely follow-up better by reducing caching to freshness, validation, and revalidation results instead of a looser performance discussion."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the core mental model directly above the runnable examples so the answer stays faster to reuse than a longer tutorial."
+        ]
+      },
+      "winReason": "web.dev is a strong caching tutorial, but our page is better calibrated for the interview prompt because it compresses policy, validators, and response-class strategy into one reusable answer."
+    },
+    {
+      "label": "KeyCDN HTTP cache headers",
+      "url": "https://www.keycdn.com/blog/http-cache-headers",
+      "category": "tutorial_reference",
+      "selectionReason": "KeyCDN has a direct practical explainer for HTTP cache headers and validation strategy.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is topic-direct and practical on headers developers configure in real deployments."
+      ],
+      "theirGaps": [
+        "It is less explicit on the 304 lifecycle and on separating HTML, API, and immutable-asset policy in a frontend interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical HTTP caching interview answer for frontend engineers: cache directives, validators, conditional requests, and deployment-safe caching strategy for HTML, APIs, and immutable static assets."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: cache headers by response class</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>  Use this sequence: (1) Is cached response fresh? If yes, serve locally. (2) If stale, send conditional request with validators. (3) Server returns 304 (reuse cached body) or 200 (replace cache entry)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "KeyCDN is practical on cache headers, but our page is more explicit about the frontend deployment trade-offs that make caching strategy safe rather than just fast."
+        ],
+        "actionableExamples": [
+          "Its header-level examples are strong enough that the example criterion remains close."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up confusion around validation and 304, not just on directive names."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one tiny ETag versus immutable asset contrast to make the example advantage clearer."
+        ]
+      },
+      "winReason": "KeyCDN is practical on cache headers, but our page is stronger because it ties the headers to response-class policy and the full revalidation lifecycle."
+    }
+  ]
+}

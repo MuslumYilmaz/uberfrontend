@@ -1,0 +1,145 @@
+{
+  "contentId": "html-title-tag",
+  "tech": "html",
+  "query": "html title tag interview question",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<title>: The Document Title element",
+      "url": "https://developer.mozilla.org/docs/Web/HTML/Reference/Elements/title",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the title element, including browser-tab behavior, accessibility expectations, and search-facing usage notes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on where title belongs, how it is exposed in browser UI, and why unique concise titles matter."
+      ],
+      "theirGaps": [
+        "The reference is less interview-shaped and less explicit about duplicate-title debugging or production scanning failures across many tabs and pages."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It becomes a search-facing headline, a bookmark label, and a debugging clue when many pages look similar."
+        ],
+        "followUpConfusion": [
+          "duplicate or vague titles are a common discoverability pitfall."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains title behavior and accessibility well, but it stays closer to the reference semantics than to one concrete production workflow for title quality."
+        ],
+        "actionableExamples": [
+          "It includes title examples and accessibility guidance, so the example criterion stays competitive rather than flipping cleanly to us."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the follow-up confusion teams hit in practice: duplicate, generic, or brand-first titles that make tabs and results hard to scan."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the distinct-title practical scenario visible so the page stays faster to use than a longer reference page."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical title reference, but our page is more useful as an interview answer because it turns the title tag into a concrete tab-scanning, search-click, and duplicate-title debugging problem."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because title behavior is a core HTML metadata and discoverability topic in interview prep.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep hub with broad coverage across document structure and metadata fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to title quality, so it is less focused on one exact answer about tabs, bookmarks, and discoverability failures."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It becomes a search-facing headline, a bookmark label, and a debugging clue when many pages look similar."
+        ],
+        "followUpConfusion": [
+          "duplicate or vague titles are a common discoverability pitfall."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less anchored to title-specific production outcomes like tab scanning and duplicate-result confusion."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied rather than flipping automatically to us."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely follow-up more directly by showing why generic titles like Home break both tab clarity and search discoverability."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the folder-tab mental model and the distinct-title scenario close together so the page stays interview-friendly."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the title-quality failures and user-facing consequences that make this question matter."
+    },
+    {
+      "label": "Document structure",
+      "url": "https://web.dev/learn/html/document-structure/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev's document-structure article directly covers the document title as a required head component and explains where titles surface in tabs, history, and search results.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on why every page needs a title and on the broader document-shell context around metadata."
+      ],
+      "theirGaps": [
+        "It is broader than the exact question because it covers the whole document structure rather than staying tightly focused on title strategy."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It becomes a search-facing headline, a bookmark label, and a debugging clue when many pages look similar."
+        ],
+        "followUpConfusion": [
+          "duplicate or vague titles are a common discoverability pitfall."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds titles in real browser and search surfaces, but our answer is more compact about the duplicate-title failures developers actually ship."
+        ],
+        "actionableExamples": [
+          "It includes a concrete document skeleton with title placement, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next interview question: why vague or repeated titles actively hurt scanning, debugging, and click-through."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the common-mistakes list compact so the page preserves one fast production checklist."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on document structure, but our page is stronger as a short interview answer because it turns the title tag into a concrete discoverability and debugging decision."
+    }
+  ]
+}

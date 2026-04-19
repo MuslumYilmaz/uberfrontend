@@ -662,6 +662,15 @@ app-coding-tech-kind-tabs {
   line-height: 1.25;
 }
 
+.list-row.fa-question-card--compact .fa-question-card__title-row {
+  gap: 8px;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__solved-mark {
+  width: 24px;
+  height: 24px;
+}
+
 .list-row.fa-question-card--compact .fa-question-card__description {
   margin-top: 0;
   font-size: 12px;
@@ -690,12 +699,6 @@ app-coding-tech-kind-tabs {
   min-height: 32px;
   padding: 6px 12px;
   font-size: 12px;
-}
-
-.list-row.fa-question-card--compact .solved-pill {
-  margin-top: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
 }
 
 @media (max-width: 640px) {
@@ -840,35 +843,30 @@ app-coding-tech-kind-tabs {
   background: color-mix(in srgb, var(--fa-surface) 88%, var(--fa-accent) 12%);
 }
 
-.solved-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  padding: 6px 10px;
-  border-radius: var(--fa-radius-pill);
-  background: var(--fa-accent-soft);
-  color: var(--ink);
-  font-weight: 700;
-  font-size: 12px;
-  border: 1px solid color-mix(in srgb, var(--fa-accent) 70%, var(--fa-border-subtle) 30%);
+.fa-question-card__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.solved-pill .pi,
-.fa-chip--status .pi {
-  font-size: 12px;
+.fa-question-card__title-row .fa-question-card__title {
+  flex: 1;
+  min-width: 0;
 }
 
-.fa-chip--status {
+.fa-question-card__solved-mark {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: var(--fa-radius-pill);
-  background: var(--fa-accent-soft);
-  color: var(--ink);
-  font-weight: 700;
-  border: 1px solid color-mix(in srgb, var(--fa-accent) 70%, var(--fa-border-subtle) 30%);
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--fa-accent) 82%, white 18%);
+  background: color-mix(in srgb, var(--fa-accent) 18%, var(--fa-surface));
+  border: 1px solid color-mix(in srgb, var(--fa-accent) 52%, var(--fa-border-subtle) 48%);
+  box-shadow: inset 0 1px 0 rgba(var(--fa-text-rgb), 0.06);
+  flex-shrink: 0;
 }
 
 :host ::ng-deep .p-tooltip.desc-tip {

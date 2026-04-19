@@ -1,0 +1,146 @@
+{
+  "contentId": "react-derived-state-anti-pattern",
+  "tech": "react",
+  "query": "derived state anti pattern react interview question",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Choosing the State Structure",
+      "url": "https://react.dev/learn/choosing-the-state-structure",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React page for avoiding redundant and duplicated state, including the official warning against mirroring props into state unnecessarily.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative React explanation of redundant state, duplicate state, and the official 'don't mirror props in state' guidance."
+      ],
+      "theirGaps": [
+        "It is broader than this single interview topic and less compressed around the exact derived-state anti-pattern framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Derived state usually means you copied something React could already compute from props or other state. That creates two sources of truth",
+          "Your UI becomes inconsistent: it shows old computed values from a previous render."
+        ],
+        "followUpConfusion": [
+          "If a value can be computed from existing inputs, storing it as state means you must keep it manually synced.",
+          "Most of the time: compute/memoize is simpler and safer."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain redundant state well, but our page is more direct on the production symptom pattern: refetches, websocket updates, and stale computed values."
+        ],
+        "actionableExamples": [
+          "The official examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the narrow exceptions where derived state is still justified, such as drafts and snapshots with explicit resync rules."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one tiny before-and-after example showing useEffect(setDerived) versus compute-in-render so the anti-pattern stays concrete."
+        ]
+      },
+      "winReason": "The official docs are authoritative, but our page is stronger for interview use because it turns redundant state guidance into a sharper derive-versus-store decision."
+    },
+    {
+      "label": "State Derivation",
+      "url": "https://reactstyleguide.com/rules/state-derivation/",
+      "category": "tutorial_reference",
+      "selectionReason": "This tutorial is a strong topic-direct competitor because it focuses exactly on not storing values that can be derived from props or other state.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly scoped to derived-state drift and the compute-or-memoize alternative."
+      ],
+      "theirGaps": [
+        "It is more rule-oriented and less explicit about the interview-grade edge case where a local draft is intentionally allowed not to track the source."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If <code>items</code> changes (refetch, filtering, WebSocket update), <code>count</code> won’t automatically update",
+          "The bug is rarely obvious at first: one path updates, the other drifts, and the UI becomes stale."
+        ],
+        "followUpConfusion": [
+          "It’s acceptable when you intentionally want a <strong>snapshot</strong> or a <strong>locally editable copy</strong> that should not always follow the source automatically.",
+          "If you want to <em>reset</em> draft on user change → set draft when the identity changes (not every render)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The style guide is strong on stale derived totals and drift, but our page is stronger because it also handles the justified exceptions and their resync rules."
+        ],
+        "actionableExamples": [
+          "Its correct-versus-incorrect examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that 'editable draft' is not the same as 'mirror every prop change into state'."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one explicit profile-switching draft example later if we want the reset-versus-preserve decision to be even more concrete."
+        ]
+      },
+      "winReason": "This tutorial is directly on topic, but our page is stronger because it pairs the anti-pattern warning with the narrow cases where derived state is actually acceptable."
+    },
+    {
+      "label": "Is using two states in React an anti-pattern when one state can entirely determine the other state?",
+      "url": "https://stackoverflow.com/questions/73882646/is-using-two-states-in-react-an-anti-pattern-when-one-state-can-entirely-determi",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for redundant derived state and the extra rerenders and synchronization problems it creates.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It states the derived-state anti-pattern plainly and connects it to redundant rerenders and unnecessary synchronization."
+      ],
+      "theirGaps": [
+        "It is narrower than our page on copied props, stale computed values, memoization as the safer alternative, and justified draft exceptions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Storing computed values",
+          "Stale values when inputs change"
+        ],
+        "followUpConfusion": [
+          "If you ever write <code>useEffect(() => setX(deriveFromY), [y])</code>, pause and ask:",
+          "Prefer computing derived values during render or with useMemo."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread explains why redundant state causes extra work, but our page is stronger because it covers the broader failure modes and how they show up in real screens."
+        ],
+        "actionableExamples": [
+          "Its simplified state example is still useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on when derived state is still valid and how to decide reset-versus-preserve behavior for local drafts."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one explicit useEffect(setDerived) anti-pattern example visible so the community-style shortcut remains easy to spot."
+        ]
+      },
+      "winReason": "The community thread correctly flags redundant state, but our page is stronger because it explains both the anti-pattern and the narrow legitimate uses."
+    }
+  ]
+}

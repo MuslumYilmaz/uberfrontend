@@ -1,0 +1,145 @@
+{
+  "contentId": "html-a-tag",
+  "tech": "html",
+  "query": "html anchor tag interview question",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<a>: The Anchor element",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the anchor element, hyperlink semantics, navigation behavior, accessibility, and security notes around target and rel.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on what the anchor element does, how href creates navigation, and what target, rel, and accessibility expectations apply."
+      ],
+      "theirGaps": [
+        "The reference is broader and less explicit about the interview-grade distinction between links for navigation and buttons for in-page actions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The <a> (anchor) tag is the browser's real navigation primitive: it gives links semantics, accessibility, and SEO behavior, and it avoids common button-vs-link pitfalls in production UIs."
+        ],
+        "followUpConfusion": [
+          "In production, the common mistake is treating anchors and buttons as interchangeable: <code>&lt;a&gt;</code> preserves link semantics, open-in-new-tab behavior, browser history, and SEO, while <code>&lt;button&gt;</code> is for in-page actions."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines links comprehensively, but it stays closer to the element reference than to one concrete production decision about navigation semantics versus button semantics."
+        ],
+        "actionableExamples": [
+          "It includes direct anchor examples and security notes, so the example criterion stays competitive rather than flipping fully to us."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion interviewers usually want: when a UI should be an anchor, when it should be a button, and how target or rel changes the decision."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the navigation-versus-button contrast near the opening so the page stays faster to scan than the full reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical anchor reference, but our page is more useful as an interview answer because it frames the anchor tag around the exact production mistake teams make most: using links and buttons interchangeably."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because link semantics, navigation behavior, and anchor usage are core HTML interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of common markup and accessibility questions."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to anchor semantics, so it is less focused on one exact navigation-versus-button answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The <a> (anchor) tag is the browser's real navigation primitive: it gives links semantics, accessibility, and SEO behavior, and it avoids common button-vs-link pitfalls in production UIs."
+        ],
+        "followUpConfusion": [
+          "In production, the common mistake is treating anchors and buttons as interchangeable: <code>&lt;a&gt;</code> preserves link semantics, open-in-new-tab behavior, browser history, and SEO, while <code>&lt;button&gt;</code> is for in-page actions."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the navigation semantics and production trade-offs that make anchors different from buttons."
+        ],
+        "actionableExamples": [
+          "It remains a strong worked-answer bank, so the example criterion stays tied rather than becoming an automatic win for us."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: fake links, target blank security, and why descriptive link text matters."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the security and accessibility essentials visible so the answer stays operational, not only conceptual."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the semantic and production distinctions that make a strong anchor-tag answer."
+    },
+    {
+      "label": "Links",
+      "url": "https://web.dev/learn/html/links/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct links module that covers the anchor element, href, navigation targets, and real browser behavior around hyperlinking.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on link fundamentals, href usage, and the broader HTML navigation model."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question because it covers more of the link ecosystem than only the purpose of the anchor tag."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The <a> (anchor) tag is the browser's real navigation primitive: it gives links semantics, accessibility, and SEO behavior, and it avoids common button-vs-link pitfalls in production UIs."
+        ],
+        "followUpConfusion": [
+          "In production, the common mistake is treating anchors and buttons as interchangeable: <code>&lt;a&gt;</code> preserves link semantics, open-in-new-tab behavior, browser history, and SEO, while <code>&lt;button&gt;</code> is for in-page actions."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is grounded in practical hyperlink behavior, but our page packages the anchor question more directly around the production decision between navigation and in-page action."
+        ],
+        "actionableExamples": [
+          "The tutorial contains solid link examples and href cases, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next debugging questions around fake links, security attributes, and accessible link text."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the practical scenario in the dashboard sidebar so the page retains one concrete UI decision point."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on links generally, but our page is better as a compact interview answer because it turns the anchor tag into a concrete navigation-semantics and production-debugging choice."
+    }
+  ]
+}

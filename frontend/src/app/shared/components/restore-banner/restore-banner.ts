@@ -13,7 +13,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 	    <div class="actions">
 	      <button class="reset" data-testid="restore-banner-reset" (click)="reset.emit()">
-	        {{ isSolution ? 'Revert to your code' : 'Reset to default' }}
+	        {{ actionLabel || (isSolution ? 'Revert to your code' : 'Reset to default') }}
 	      </button>
 	      <button class="close" data-testid="restore-banner-dismiss" (click)="dismiss.emit()">✕</button>
 	    </div>
@@ -97,6 +97,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class RestoreBannerComponent {
   @Input() isVisible = false;
   @Input() isSolution = false;
+  @Input() actionLabel: string | null = null;
 
   @Output() reset = new EventEmitter<void>();
   @Output() dismiss = new EventEmitter<void>();

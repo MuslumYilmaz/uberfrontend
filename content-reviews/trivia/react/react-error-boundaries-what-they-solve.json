@@ -1,0 +1,149 @@
+{
+  "contentId": "react-error-boundaries-what-they-solve",
+  "tech": "react",
+  "query": "react error boundaries what they solve interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Catching rendering errors with an error boundary",
+      "url": "https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of what error boundaries catch and how fallback UI works.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative explanation of render-time error capture and fallback UI."
+      ],
+      "theirGaps": [
+        "It is less compressed around the production misconception that error boundaries catch event-handler, async, or SSR failures."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "stop one crashing subtree from taking down the entire visible UI."
+        ],
+        "actionableExamples": [
+          "React catches the error and renders a fallback for that subtree."
+        ],
+        "followUpConfusion": [
+          "They isolate the render tree, not every possible runtime exception."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain fallback capture accurately, but our page is more explicit about the real production goal: crash isolation rather than magical global error handling."
+        ],
+        "actionableExamples": [
+          "The official examples are strong enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that async, event-handler, and SSR failures are out of scope."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny route-shell fallback example later if we want more placement guidance than the current subtree explanation."
+        ]
+      },
+      "winReason": "The official docs are authoritative, but our page is stronger for interview use because it sharply separates render-tree crash isolation from all the errors boundaries do not catch."
+    },
+    {
+      "label": "How to handle errors in React",
+      "url": "https://www.developerway.com/posts/how-to-handle-errors-in-react",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is a practical long-form explainer for React error handling strategies and where error boundaries fit.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on where boundary-based handling sits among wider error-handling techniques."
+      ],
+      "theirGaps": [
+        "It is less concise on the exact interview prompt of what boundaries solve and what they miss."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "fallback UI, monitoring"
+        ],
+        "actionableExamples": [
+          "With it: React catches the error and renders a fallback for that subtree."
+        ],
+        "followUpConfusion": [
+          "They are not a general-purpose try/catch for everything in your app."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DeveloperWay is practical, but our page is more direct about the exact scope boundary that interviewers usually probe."
+        ],
+        "actionableExamples": [
+          "Its examples are strong, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that boundaries only catch descendant render and commit failures."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one monitoring-or-route-shell note visible so the fallback discussion stays operational, not just conceptual."
+        ]
+      },
+      "winReason": "This tutorial is practical, but our page is stronger because it answers the interview question directly: what boundaries isolate, what they miss, and why that scope matters."
+    },
+    {
+      "label": "React ErrorBoundary doesn't catch errors",
+      "url": "https://stackoverflow.com/questions/72576214",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for the common misconception that error boundaries catch every runtime failure.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on the exact failure mode people misunderstand."
+      ],
+      "theirGaps": [
+        "It is narrower than a full explanation of what boundaries are for."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "render-crash isolation"
+        ],
+        "actionableExamples": [
+          "one render error can crash the whole render path."
+        ],
+        "followUpConfusion": [
+          "not a general-purpose try/catch for everything in your app."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on one misconception, but our page is stronger because it explains the full boundary scope around that misconception."
+        ],
+        "actionableExamples": [
+          "Community answers can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that boundaries are for descendant render-tree failures, not event handlers or async work."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one explicit event-handler contrast later if we want a sharper before-and-after failure boundary example."
+        ]
+      },
+      "winReason": "The community thread is useful on one common misconception, but our page is stronger because it turns that misconception into a precise boundary-scope explanation."
+    }
+  ]
+}

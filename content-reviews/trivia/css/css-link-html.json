@@ -1,0 +1,145 @@
+{
+  "contentId": "css-link-html",
+  "tech": "css",
+  "query": "How do you link a CSS file to HTML in production?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "<link>: The External Resource Link element",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for linking external stylesheets from HTML and for the browser behavior behind rel=stylesheet.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the link element, stylesheet relationships, and the required HTML syntax for external CSS."
+      ],
+      "theirGaps": [
+        "The reference is less interview-shaped and less explicit about FOUC, broken paths, or the trade-off between early CSS loading and render blocking."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content, and most real bugs come from wrong paths, wrong placement, or render-blocking trade-offs you should debug in DevTools."
+        ],
+        "followUpConfusion": [
+          "<strong>Direct answer</strong><br><br>Use a <code>&lt;link&gt;</code> tag in the <code>&lt;head&gt;</code> of your HTML file:"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines the link element accurately, but it stays closer to syntax and relationships than to one concrete broken-stylesheet debugging workflow."
+        ],
+        "actionableExamples": [
+          "It includes the canonical stylesheet example and related attributes, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the next mistakes developers usually hit: wrong paths, putting the link in the wrong place, and FOUC or blocking trade-offs."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the path examples visible so the page stays faster to scan than a broader reference page."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical reference, but our page is stronger as an interview answer because it packages the link-tag syntax around the exact production bugs developers actually debug: broken paths, wrong placement, and unstyled first paint."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because CSS loading and stylesheet wiring are core CSS setup fundamentals in interview prep.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage of core stylesheet, selector, and layout questions."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to stylesheet linking, so it is less focused on one exact answer about head placement, wrong paths, and FOUC."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content, and most real bugs come from wrong paths, wrong placement, or render-blocking trade-offs you should debug in DevTools."
+        ],
+        "followUpConfusion": [
+          "<strong>Direct answer</strong><br><br>Use a <code>&lt;link&gt;</code> tag in the <code>&lt;head&gt;</code> of your HTML file:"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the concrete stylesheet-loading failures behind this question."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: why stylesheets belong in head and how placement changes perceived render quality."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact correct-link example near the opening so the answer stays interview-ready."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact stylesheet-loading and debugging consequences that make this question useful in practice."
+    },
+    {
+      "label": "Adding CSS to HTML - 3 Approaches",
+      "url": "https://www.geeksforgeeks.org/css/how-to-add-css/",
+      "category": "tutorial_reference",
+      "selectionReason": "This is a topic-direct tutorial comparator that covers linking external CSS, inline styles, and internal styles from the same beginner-to-production workflow angle.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is tightly focused on how CSS is added to HTML and includes practical examples for the main approaches."
+      ],
+      "theirGaps": [
+        "It is weaker on production debugging and less explicit about unstyled first paint and stylesheet placement trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content, and most real bugs come from wrong paths, wrong placement, or render-blocking trade-offs you should debug in DevTools."
+        ],
+        "followUpConfusion": [
+          "<strong>Direct answer</strong><br><br>Use a <code>&lt;link&gt;</code> tag in the <code>&lt;head&gt;</code> of your HTML file:"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The tutorial is direct about how to add CSS, but our answer is more compact about the exact path and FOUC failures teams hit first in production."
+        ],
+        "actionableExamples": [
+          "It includes direct linking examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next debugging question: correct syntax is not enough if the path, placement, or loading behavior is wrong."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the DevTools debugging angle visible so the answer stays operational instead of only procedural."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The tutorial is solid on the basics, but our page is more useful as an interview answer because it turns stylesheet linking into a concrete path, placement, and first-paint debugging decision."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "contentId": "css-margin-property",
+  "tech": "css",
+  "query": "What does the CSS margin property do in production?",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "margin",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the margin property, including shorthand behavior, auto margins, negative margins, and margin collapsing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on margin syntax, longhand versus shorthand behavior, auto margins, and collapse rules."
+      ],
+      "theirGaps": [
+        "The reference is less interview-shaped and less explicit about when margin is the wrong spacing primitive compared with padding or gap."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Margin controls the space outside an element’s border, separating it from neighbors. It does not affect the element’s internal content (use padding for that). Margins can collapse in edge cases and affect layout flow; test nested elements and breakpoints."
+        ],
+        "followUpConfusion": [
+          "Margins can collapse in edge cases and affect layout flow; test nested elements and breakpoints."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines margin thoroughly, but it is lighter on the practical spacing decision developers usually need to make between outer separation and safer layout primitives."
+        ],
+        "actionableExamples": [
+          "It includes canonical syntax examples and collapse coverage, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion teams hit first: collapsing margins, nested layout surprises, and when gap or padding is the better tool."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one shorter outer-spacing example so the page stays faster to scan than a full property reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical margin reference, but our page is stronger as an interview answer because it turns margin into a concrete outside-spacing, collapse, and layout-flow debugging decision."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/quiz/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's CSS interview bank is directly relevant because spacing, box model, and selector fundamentals are core CSS interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong CSS interview-prep hub with broad coverage of spacing, layout, and box-model fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to margin behavior, so it is less focused on collapse and layout-flow edge cases."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Margin controls the space outside an element’s border, separating it from neighbors. It does not affect the element’s internal content (use padding for that). Margins can collapse in edge cases and affect layout flow; test nested elements and breakpoints."
+        ],
+        "followUpConfusion": [
+          "Margins can collapse in edge cases and affect layout flow; test nested elements and breakpoints."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for CSS prep, but the hub page is less explicit about the exact collapse and spacing-tool trade-offs behind this property."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: outer spacing is not internal spacing, and collapse makes vertical rhythm trickier than it first looks."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the padding contrast visible so the answer stays compare-and-decide rather than purely definitional."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad CSS prep, but our page is more specific about the exact collapse and spacing-tool pitfalls that make margin questions matter in practice."
+    },
+    {
+      "label": "margin",
+      "url": "https://css-tricks.com/almanac/properties/m/margin/",
+      "category": "tutorial_reference",
+      "selectionReason": "CSS-Tricks has a direct margin almanac entry and is the strongest tutorial comparator for collapsing margins and practical spacing behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on margin collapse, negative margins, and practical property behavior beyond the raw syntax."
+      ],
+      "theirGaps": [
+        "It is less compact as a single interview answer and less explicit about when margin should give way to gap or padding."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Margin controls the space outside an element’s border, separating it from neighbors. It does not affect the element’s internal content (use padding for that). Margins can collapse in edge cases and affect layout flow; test nested elements and breakpoints."
+        ],
+        "followUpConfusion": [
+          "Margins can collapse in edge cases and affect layout flow; test nested elements and breakpoints."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "CSS-Tricks is strong on margin behavior, but our answer is more compact about the production decision between outer spacing, collapse risk, and alternate layout primitives."
+        ],
+        "actionableExamples": [
+          "Its margin examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next debugging question developers hit in practice: when collapse or negative margins make spacing look broken."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one nested-spacing warning visible so the answer stays grounded in real layout debugging."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "CSS-Tricks is a strong margin explainer, but our page is more useful as an interview answer because it turns margin into a concrete spacing, collapse, and layout-debugging rule set."
+    }
+  ]
+}

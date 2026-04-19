@@ -1,0 +1,149 @@
+{
+  "contentId": "react-reconciliation",
+  "tech": "react",
+  "query": "react reconciliation preserve remount identity interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Preserving and Resetting State",
+      "url": "https://react.dev/learn/preserving-and-resetting-state",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of identity, state preservation, and when React resets subtrees because type or position changed.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative source on when React preserves state and when it resets it."
+      ],
+      "theirGaps": [
+        "It is less compressed around the interview framing of reconciliation as preserve-versus-replace identity logic."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "changing an element type or unstable key can reset local state even when the UI looks almost the same."
+        ],
+        "actionableExamples": [
+          "If an element type changes (e.g., <code>&lt;div&gt;</code> → <code>&lt;span&gt;</code>), React destroys and rebuilds that node."
+        ],
+        "followUpConfusion": [
+          "Diffing is one implementation detail inside that bigger preserve-vs-replace decision."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain identity accurately, but our page is more explicit about the real bug pattern: the UI looks similar while local state silently resets."
+        ],
+        "actionableExamples": [
+          "The official examples around preserved and reset state are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up that reconciliation is broader than list diffing and includes remount decisions."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one small key-change form-reset example if we want more example distance over the canonical docs."
+        ]
+      },
+      "winReason": "The React docs are authoritative on state preservation, but our page is stronger for interview use because it names reconciliation as the identity decision behind preserve, update, or remount behavior."
+    },
+    {
+      "label": "Reconciliation in React",
+      "url": "https://www.developerway.com/posts/reconciliation-in-react",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is a direct practical explainer for React identity, key behavior, and subtree replacement.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on how keys and identity affect remounting behavior."
+      ],
+      "theirGaps": [
+        "It is less compressed than a trivia answer around the exact preserve-versus-replace mental model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "should this subtree be preserved, updated in place, or remounted?"
+        ],
+        "actionableExamples": [
+          "Keys help React identify elements across renders, especially in lists, ensuring stable updates instead of re-creating entire subtrees."
+        ],
+        "followUpConfusion": [
+          "That distinction matters in interview and production bugs"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DeveloperWay is practical, but our page is more direct about the production consequence of identity changes: state reset in a visually similar UI."
+        ],
+        "actionableExamples": [
+          "Its examples are strong, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up that reconciliation is an identity model, not just a list-updating optimization."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one wrapper-swap example if we want an extra non-list reconciliation case later."
+        ]
+      },
+      "winReason": "This tutorial is strong on keys and identity, but our page is more direct about the exact interview takeaway: reconciliation is the preserve-or-remount decision model."
+    },
+    {
+      "label": "React using index as key for items in the list",
+      "url": "https://stackoverflow.com/questions/59517962/react-using-index-as-key-for-items-in-the-list",
+      "category": "community_qna",
+      "selectionReason": "This community discussion is a direct practical reference for key stability, identity mismatches, and the bugs they create during reconciliation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on the key-stability bug that interviewers often use to probe reconciliation knowledge."
+      ],
+      "theirGaps": [
+        "It is narrower and less complete on the broader preserve-versus-remount model."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "unstable key can reset local state even when the UI looks almost the same."
+        ],
+        "actionableExamples": [
+          "Elements of the same type are compared recursively."
+        ],
+        "followUpConfusion": [
+          "Diffing is one implementation detail inside that bigger preserve-vs-replace decision."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread is practical on index-key bugs, but our page is stronger because it explains the whole identity model behind those bugs."
+        ],
+        "actionableExamples": [
+          "Community explanations can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that bad keys are one manifestation of reconciliation identity rules, not the whole concept."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one explicit list-reorder example visible so the key pitfall stays concrete."
+        ]
+      },
+      "winReason": "The thread is useful on one common key bug, but our page is stronger because it connects that bug back to the full preserve-versus-remount model."
+    }
+  ]
+}

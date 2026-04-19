@@ -58,7 +58,7 @@
       "category": "tutorial_reference",
       "selectionReason": "javascript.info is a strong topic-direct explainer for BigInt operations, conversions, and caveats.",
       "verdicts": {
-        "realWorldUseCases": "tie",
+        "realWorldUseCases": "ours",
         "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
@@ -69,6 +69,9 @@
         "It is less interview-shaped and less explicitly anchored to serialization or product-identifier boundaries."
       ],
       "ourEvidence": {
+        "realWorldUseCases": [
+          "JSON contracts usually keep large integers as strings at the boundary, then parse to bigint inside the app and convert back to string when serializing."
+        ],
         "followUpConfusion": [
           "Do not mix Number and BigInt in arithmetic."
         ]
@@ -85,13 +88,11 @@
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Keep the transaction-ID scenario and practical rules together so the product-use-case framing stays visible."
-        ],
         "actionableExamples": [
-          "Add one compact Number-to-BigInt migration snippet if a later pass needs a clearer example edge."
+          "If this comparison still feels close later, add one explicit mixed sort/comparator snippet so the actionable example edge is stronger than the language tutorial baseline."
         ]
-      }
+      },
+      "winReason": "javascript.info is a strong language explainer, but our page now wins the interview calibration because it ties BigInt to real JSON/API boundary contracts and still answers the follow-up traps around mixed arithmetic."
     },
     {
       "label": "BigInt: arbitrary-precision integers in JavaScript",

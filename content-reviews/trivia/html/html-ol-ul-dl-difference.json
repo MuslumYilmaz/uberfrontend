@@ -1,0 +1,145 @@
+{
+  "contentId": "html-ol-ul-dl-difference",
+  "tech": "html",
+  "query": "html ol vs ul vs dl interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Lists",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Lists",
+      "category": "canonical_docs",
+      "selectionReason": "This MDN lists guide is the strongest canonical source that covers ordered, unordered, and description lists together rather than only one element in isolation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on how ol, ul, and dl express different list relationships and on the required child structure for each list type."
+      ],
+      "theirGaps": [
+        "The guide format is less interview-shaped and less explicit about the production pitfall of choosing list type based only on bullet styling."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Choose &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; based on the relationship between items, not just the visual bullet style. The semantic pitfall is using the wrong list type and making steps, grouped items, or term-definition pairs harder for screen readers to interpret."
+        ],
+        "followUpConfusion": [
+          "Screen readers and search engines read these structures differently: <code>&lt;ol&gt;</code> implies sequence, <code>&lt;ul&gt;</code> implies grouping, and <code>&lt;dl&gt;</code> implies term-value meaning."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers list semantics comprehensively, but it is lighter on the concrete production mistake this question usually targets: picking a list type for appearance instead of meaning."
+        ],
+        "actionableExamples": [
+          "It includes direct list examples and structural rules, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the follow-up confusion interviewers usually ask next: how screen readers interpret sequence, grouping, and term-definition relationships differently."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the one-line relationship framing near the top so the page stays faster to use than a longer lists guide."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical lists guide, but our page is stronger as an interview answer because it turns ol-versus-ul-versus-dl into a concrete semantic choice instead of a styling choice."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because list semantics and basic structural elements are core HTML interview topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of list, structure, and accessibility fundamentals."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to list-type semantics, so it is less focused on one exact answer about sequence, grouping, and description pairs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Choose &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; based on the relationship between items, not just the visual bullet style. The semantic pitfall is using the wrong list type and making steps, grouped items, or term-definition pairs harder for screen readers to interpret."
+        ],
+        "followUpConfusion": [
+          "Screen readers and search engines read these structures differently: <code>&lt;ol&gt;</code> implies sequence, <code>&lt;ul&gt;</code> implies grouping, and <code>&lt;dl&gt;</code> implies term-value meaning."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the semantic and accessibility consequences of picking the wrong list type."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the worked-example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the likely follow-up: why steps, grouped items, and glossary pairs should not be collapsed into one generic bullet pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the ol-ul-dl analogy short and visible so the answer retains one memorable semantic rule."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the semantic relationships and accessibility consequences that make list-type questions matter in practice."
+    },
+    {
+      "label": "Lists",
+      "url": "https://web.dev/learn/html/lists/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev has a direct lists module that covers ordered, unordered, and description lists with practical structural examples and semantic guidance.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on list semantics and on concrete examples for ordered, unordered, and description-list markup."
+      ],
+      "theirGaps": [
+        "It is broader than the exact trivia question and less centered on the quick interview distinction between list relationships."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Choose &lt;ol&gt;, &lt;ul&gt;, and &lt;dl&gt; based on the relationship between items, not just the visual bullet style. The semantic pitfall is using the wrong list type and making steps, grouped items, or term-definition pairs harder for screen readers to interpret."
+        ],
+        "followUpConfusion": [
+          "Screen readers and search engines read these structures differently: <code>&lt;ol&gt;</code> implies sequence, <code>&lt;ul&gt;</code> implies grouping, and <code>&lt;dl&gt;</code> implies term-value meaning."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds the topic in practical list markup, but our answer is more compact about the production mistake of using visual bullets or numbering instead of semantic relationships."
+        ],
+        "actionableExamples": [
+          "The tutorial includes strong list examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next question developers hit in practice: which list type communicates sequence, grouping, or term-definition meaning to assistive tech."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the accessibility note close to the overview so the answer stays semantic, not only syntactic."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on lists generally, but our page is better as a short interview answer because it packages ol, ul, and dl around relationship meaning and accessibility interpretation."
+    }
+  ]
+}

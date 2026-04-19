@@ -1,0 +1,148 @@
+{
+  "contentId": "js-cookie-sessionstorage-localstorage",
+  "tech": "javascript",
+  "query": "cookie vs sessionStorage vs localStorage browser interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Storage API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Storage",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for the Web Storage API, including localStorage and sessionStorage behavior, limits, and lifecycle semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on Storage API semantics, browser behavior, and tab-session scope."
+      ],
+      "theirGaps": [
+        "It is less direct on the full interview comparison against cookies and on the security trade-off between client-only storage and server round-trips."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Cookies, sessionStorage, and localStorage all store data in the browser, but they differ in size limits, expiration, and how they are sent to the server. Security and expiration differ, so choose carefully; test storage limits and cross-tab behavior."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Cookies</strong>  - Can be read by both the browser and the server. - Often used for authentication tokens or session IDs. - Sent automatically with requests to matching domains."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Security Notes</strong>  - Never store sensitive data (like passwords or tokens) in localStorage or sessionStorage — they are easily accessible by JavaScript. - For secure cookies, use the <code>HttpOnly</code> and <code>Secure</code> flags so they can’t be accessed via JavaScript and are only sent over HTTPS."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains storage behavior accurately, but our page is more explicit about the actual frontend choice between cookie round-trips and client-only persistence."
+        ],
+        "actionableExamples": [
+          "The docs still have strong API examples for localStorage and sessionStorage, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more complete on the likely follow-ups: security flags for cookies, token-storage risk, and tab scope versus persistent browser storage."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one compact cross-tab versus same-tab example if we later need more example separation over MDN."
+        ]
+      },
+      "winReason": "MDN is the canonical Storage API reference, but our page is stronger for this interview question because it compares cookies, sessionStorage, and localStorage as architecture choices rather than isolated APIs."
+    },
+    {
+      "label": "GreatFrontEnd cookie vs sessionStorage vs localStorage",
+      "url": "https://www.greatfrontend.com/questions/quiz/describe-the-difference-between-a-cookie-sessionstorage-and-localstorage",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview-prep page for the storage comparison this prompt asks about.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It matches the exact interview wording and is likely strong on basic comparison tables."
+      ],
+      "theirGaps": [
+        "It is less explicit on the security boundary between HttpOnly cookies and script-readable storage."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Cookies, sessionStorage, and localStorage all store data in the browser, but they differ in size limits, expiration, and how they are sent to the server. Security and expiration differ, so choose carefully; test storage limits and cross-tab behavior."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Cookies</strong>  - Can be read by both the browser and the server. - Often used for authentication tokens or session IDs. - Sent automatically with requests to matching domains."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Security Notes</strong>  - Never store sensitive data (like passwords or tokens) in localStorage or sessionStorage — they are easily accessible by JavaScript. - For secure cookies, use the <code>HttpOnly</code> and <code>Secure</code> flags so they can’t be accessed via JavaScript and are only sent over HTTPS."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is exact-topic interview prep, but our page is more explicit about when each storage option is operationally safe or unsafe."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and directly relevant, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page does more to answer the next security questions interviewers usually ask: when cookies beat localStorage, and why tab scope matters."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the security-notes block close to the storage comparison so the answer stays more operational than a pure interview table."
+        ]
+      },
+      "winReason": "GreatFrontEnd is direct interview prep, but our page is stronger because it pushes past the simple comparison into security flags, tab scope, and server round-trip trade-offs."
+    },
+    {
+      "label": "javascript.info LocalStorage, sessionStorage",
+      "url": "https://javascript.info/localstorage",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct tutorial for localStorage and sessionStorage and is a strong practical comparator for browser storage behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on storage lifecycle, events, and browser persistence behavior."
+      ],
+      "theirGaps": [
+        "It is less focused on comparing those APIs with cookies in one compact interview answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Cookies, sessionStorage, and localStorage all store data in the browser, but they differ in size limits, expiration, and how they are sent to the server. Security and expiration differ, so choose carefully; test storage limits and cross-tab behavior."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>localStorage</strong>  - Stores data **persistently** — it remains even after closing the browser. - Only accessible through JavaScript (never sent to the server)."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-bug'></i> <strong>Security Notes</strong>  - Never store sensitive data (like passwords or tokens) in localStorage or sessionStorage — they are easily accessible by JavaScript. - For secure cookies, use the <code>HttpOnly</code> and <code>Secure</code> flags so they can’t be accessed via JavaScript and are only sent over HTTPS."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on storage APIs themselves, but our page is more explicit about the cookie-versus-storage architecture choice teams actually face."
+        ],
+        "actionableExamples": [
+          "Its storage examples are strong and topic-direct, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely follow-up set more completely by adding server visibility, secure cookie flags, and tab isolation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one shorter cross-tab persistence example later if we need to create more example distance over javascript.info."
+        ]
+      },
+      "winReason": "javascript.info is strong on Web Storage behavior, but our page is better for this prompt because it integrates cookies into the comparison and makes the security boundary explicit."
+    }
+  ]
+}

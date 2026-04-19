@@ -1,0 +1,144 @@
+{
+  "contentId": "vue-data-must-be-function",
+  "tech": "vue",
+  "query": "Why must data be a function in Vue components?",
+  "reviewedAt": "2026-04-14",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Options: State",
+      "url": "https://vuejs.org/api/options-state.html#data",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical Vue API reference for the data option, including the official rule that component data must be provided by a function returning reactive instance state.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The official API page is authoritative on what data() returns and how Vue turns the returned object into reactive instance state."
+      ],
+      "theirGaps": [
+        "It is less bug-first about shared-reference leaks across component instances and SSR-style cross-request contamination."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "each instance gets its own state object.",
+          "multiple instances would mutate the same reference and leak state between components."
+        ],
+        "followUpConfusion": [
+          "If you want <em>instance state</em> (almost always): use <code>data()</code>.",
+          "If you want <em>intentionally shared state</em>: don’t “accidentally” share via <code>data: {}</code>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs define the API correctly, but our page is more explicit about the concrete leak pattern that appears when sibling instances share the same object."
+        ],
+        "actionableExamples": [
+          "The official examples are still solid for the API shape, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up distinction between intentional shared state via a store and accidental sharing through a plain object in data."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny two-card example later that shows one instance's counter affecting another."
+        ]
+      },
+      "winReason": "The official API reference is authoritative, but our page is stronger for interview use because it frames the rule around instance isolation and the exact bugs shared references create."
+    },
+    {
+      "label": "Vue Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/vue",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because component instance state, props, and shared-state pitfalls are core Vue interview fundamentals.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a broad interview-prep resource for Vue component-instance behavior and state ownership topics."
+      ],
+      "theirGaps": [
+        "The category page is broader than this exact data-per-instance rule and shared-reference failure mode."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "state leaking between instances."
+        ],
+        "followUpConfusion": [
+          "components are instantiated multiple times.",
+          "A function returns a fresh object per instance."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The bank is relevant at the topic level, but it does not make this exact shared-state bug pattern as explicit on the landing page."
+        ],
+        "actionableExamples": [
+          "GreatFrontEnd remains competitive as an interview-prep source, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "The category page is less explicit about why root app state can be shared intentionally while reusable component instances cannot."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the multi-instance state-leak example short and visible so the rule does not collapse into a memorized framework quirk."
+        ]
+      },
+      "winReason": "GreatFrontEnd is useful as a Vue fundamentals hub, but our page is stronger because it explains the per-instance rule through the exact shared-object bug it prevents."
+    },
+    {
+      "label": "Props Versus Data in Vue",
+      "url": "https://michaelnthiessen.com/vue-props-vs-data",
+      "category": "tutorial_reference",
+      "selectionReason": "Michael Thiessen's article is a strong tutorial reference on component-private data versus parent-owned props, which is directly relevant to instance-local state ownership.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on the difference between component-local data and parent-provided props."
+      ],
+      "theirGaps": [
+        "It is broader on props versus data and less focused on why reusable component data must be produced by a function."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "cross-instance bugs",
+          "cross-user data leaks."
+        ],
+        "followUpConfusion": [
+          "component data must be a function so each instance gets its own state object.",
+          "Returning a function is slightly more boilerplate but safer."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The article explains local data ownership well, but our page is stronger on the specific bug class that appears when the same data object is shared across instances."
+        ],
+        "actionableExamples": [
+          "Its props-versus-data examples are still useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the likely follow-up that shared state should be made explicit through a store or module instead of sneaking in through data."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one SSR-specific note explaining why shared component data can leak between requests."
+        ]
+      },
+      "winReason": "This tutorial is helpful on data ownership, but our page is stronger because it turns the rule into a precise per-instance safety argument rather than a broad props-versus-data explanation."
+    }
+  ]
+}

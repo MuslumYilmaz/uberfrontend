@@ -1,0 +1,149 @@
+{
+  "contentId": "js-big-o-notation",
+  "tech": "javascript",
+  "query": "big o notation javascript interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Big O Cheat Sheet",
+      "url": "https://www.bigocheatsheet.com/",
+      "category": "tutorial_reference",
+      "selectionReason": "The Big O Cheat Sheet is a widely used direct reference for time and space complexity comparisons.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is fast and direct for common complexity classes and data-structure trade-offs."
+      ],
+      "theirGaps": [
+        "It is less explicit on the real interview lesson that complexity is one signal among hidden constants, memory cost, and actual bottleneck location."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The common mistake is treating it as the only performance signal and ignoring hidden constants, memory cost, or whether the real bottleneck is somewhere else."
+        ],
+        "actionableExamples": [
+          "Always say which complexity you mean."
+        ],
+        "followUpConfusion": [
+          "A hash map is O(1) average but can degrade to O(n) worst-case. State which case you are discussing."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The cheat sheet is useful for memorization, but our page is stronger because it explains how to use complexity in real engineering decisions instead of as a lookup table."
+        ],
+        "actionableExamples": [
+          "Its tabular examples are strong and quick, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit on the likely interview follow-ups: time versus space, average versus worst case, and why Big O does not replace profiling."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one tiny two-loop versus two-sequential-pass example to create more example distance over the cheat-sheet format."
+        ]
+      },
+      "winReason": "The cheat sheet is great for memorization, but our page is stronger because it teaches how to reason with complexity instead of only listing symbols."
+    },
+    {
+      "label": "GeeksforGeeks Time Complexity with Simple Examples",
+      "url": "https://www.geeksforgeeks.org/dsa/understanding-time-complexity-simple-examples/",
+      "category": "tutorial_reference",
+      "selectionReason": "GeeksforGeeks is a topic-direct explainer for time complexity intuition and interview examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is direct on common complexity classes and beginner-friendly examples."
+      ],
+      "theirGaps": [
+        "It is less explicit on the production lesson that hidden constants, memory usage, and real bottlenecks still matter."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Big-O is not a badge for memorizing O(n log n)."
+        ],
+        "actionableExamples": [
+          "Sequential steps add: O(n) + O(n) -> O(n). - Nested loops multiply: O(n) * O(n) -> O(n^2)."
+        ],
+        "followUpConfusion": [
+          "Always say which complexity you mean. Example: mergesort is O(n log n) time but O(n) extra space."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks is good on fundamentals, but our page is more explicit about how to apply Big O to actual performance discussions instead of reciting classes."
+        ],
+        "actionableExamples": [
+          "Its examples are useful and topic-direct, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-ups interviewers probe: time versus space, best/average/worst case, and why Big O is not the whole performance story."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the rules-of-thumb block visible so the page stays as concrete as the example-heavy tutorial references."
+        ]
+      },
+      "winReason": "This tutorial explains complexity well, but our page is stronger because it keeps the answer tied to real performance trade-offs and interview framing."
+    },
+    {
+      "label": "Stack Overflow plain-English Big O explanation",
+      "url": "https://stackoverflow.com/questions/487258/what-is-a-plain-english-explanation-of-big-o-notation",
+      "category": "community_qna",
+      "selectionReason": "This is a classic community Q&A source for the intuition behind Big O notation and why it confuses candidates.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on intuition and plain-language explanations."
+      ],
+      "theirGaps": [
+        "It is less structured as an interview answer and less explicit about frontend-specific performance trade-offs."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The common mistake is treating it as the only performance signal and ignoring hidden constants, memory cost, or whether the real bottleneck is somewhere else."
+        ],
+        "actionableExamples": [
+          "Drop constants/lower-order terms: O(3n + 10) -> O(n)."
+        ],
+        "followUpConfusion": [
+          "A hash map is O(1) average but can degrade to O(n) worst-case. State which case you are discussing."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Q&A is good for intuition, but our page is more complete because it ties complexity intuition to real performance decisions and debugging priorities."
+        ],
+        "actionableExamples": [
+          "Its examples are helpful enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up confusion because it explicitly separates time versus space and best/average/worst-case claims."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one compact real frontend bottleneck example later if we need more example distance over the intuition-focused Q&A."
+        ]
+      },
+      "winReason": "This Q&A is strong on plain-English intuition, but our page is stronger overall because it turns that intuition into a more complete interview-ready performance framework."
+    }
+  ]
+}

@@ -66,8 +66,12 @@
     </div>
 
     <!-- Restore banner -->
-    <app-restore-banner *ngIf="!hideRestoreBanner" [isVisible]="restoredFromStorage() && !restoreDismissed()" [isSolution]="viewingSolution()"
-        (reset)="resetToDefault()" (dismiss)="dismissRestoreBanner()">
+    <app-restore-banner *ngIf="!hideRestoreBanner"
+        [isVisible]="restoredFromStorage() && !restoreDismissed()"
+        [isSolution]="restoreBannerIsSolutionContext()"
+        [actionLabel]="restoreBannerActionLabel()"
+        (reset)="canRevertToUserCode() ? revertToUserCodeFromBanner() : resetToDefault()"
+        (dismiss)="dismissRestoreBanner()">
     </app-restore-banner>
 
     <!-- Draft update banner (versioned drafts) -->

@@ -24,6 +24,27 @@ class EmptyRunnerStub {
   } as { entries: ConsoleEntry[]; results: TestResult[] });
 }
 
+class TimedOutRunnerStub {
+  runWithTests = jasmine.createSpy('runWithTests').and.resolveTo({
+    entries: [{
+      level: 'error',
+      message: 'Sandbox was force-stopped after 2000ms because execution blocked the worker.',
+      timestamp: 1,
+    }],
+    results: [],
+    timedOut: true,
+    error: 'Sandbox was force-stopped after 2000ms because execution blocked the worker.',
+  } as { entries: ConsoleEntry[]; results: TestResult[]; timedOut: boolean; error: string });
+}
+
+class CrashedRunnerStub {
+  runWithTests = jasmine.createSpy('runWithTests').and.resolveTo({
+    entries: [{ level: 'error', message: 'Worker crashed', timestamp: 1 }],
+    results: [],
+    error: 'Worker crashed',
+  } as { entries: ConsoleEntry[]; results: TestResult[]; error: string });
+}
+
 describe('CodingJsPanelComponent', () => {
   let decisionGraphService: jasmine.SpyObj<DecisionGraphService>;
 
@@ -257,6 +278,69 @@ describe('CodingJsPanelComponent', () => {
     expect(component.decisionGraphDoc()?.key).toBe('approach2');
   });
 
+  it('reverts to the exact pre-solution draft instead of starter boilerplate', async () => {
+    const codeStoreStub = {
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+    };
+
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+    component.disablePersistence = false;
+    component.question = {
+      id: 'js-revert',
+      starterCode: 'export default function noop() {}',
+      starterCodeTs: 'export default function noop(): void {}',
+      tests: '',
+      testsTs: '',
+    } as any;
+
+    const draftCode = 'export default function noop() { return 42; }';
+    const solutionCode = 'export default function noop() { return 99; }';
+    component.jsLang.set('js');
+    component.editorContent.set(draftCode);
+
+    await component.applySolution(solutionCode);
+    await component.revertToUserCodeFromBanner();
+
+    expect(component.editorContent()).toBe(draftCode);
+    expect(component.editorContent()).not.toBe('export default function noop() {}');
+    expect(component.viewingSolution()).toBeFalse();
+    expect(component.canRevertToUserCode()).toBeFalse();
+    expect(component.restoreDismissed()).toBeTrue();
+    expect(codeStoreStub.saveJsAsync.calls.mostRecent().args[1]).toBe(draftCode);
+    expect(codeStoreStub.saveJsAsync.calls.mostRecent().args[2]).toBe('js');
+    expect(codeStoreStub.saveJsAsync.calls.mostRecent().args[3]).toEqual({ force: true });
+    expect(codeStoreStub.setLastLangAsync).toHaveBeenCalled();
+  });
+
+  it('keeps the original revert snapshot across repeated applySolution calls', async () => {
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    component.disablePersistence = true;
+    component.question = {
+      id: 'js-reapply',
+      starterCode: 'export default function example() {}',
+      starterCodeTs: 'export default function example(): void {}',
+      tests: '',
+      testsTs: '',
+    } as any;
+
+    const draftCode = 'export default function example() { return "draft"; }';
+    component.jsLang.set('js');
+    component.editorContent.set(draftCode);
+
+    await component.applySolution('export default function example() { return "solution-1"; }');
+    await component.applySolution('export default function example() { return "solution-2"; }');
+    await component.revertToUserCodeFromBanner();
+
+    expect(component.editorContent()).toBe(draftCode);
+    expect(component.viewingSolution()).toBeFalse();
+    expect(component.canRevertToUserCode()).toBeFalse();
+  });
+
   it('restores code rationale visibility after refresh when stored code matches canonical rationale code', async () => {
     const graphCode = [
       'export default function debounce(fn, delay, { leading = false } = {}) {',
@@ -337,6 +421,69 @@ describe('CodingJsPanelComponent', () => {
 
     expect(component.viewingSolution()).toBeTrue();
     expect(component.decisionGraphVisible()).toBeTrue();
+  });
+
+  it('falls back to reset-to-default copy when solution code is restored without a session snapshot', async () => {
+    const graphCode = 'export default function debounce(fn, delay) { return fn; }';
+
+    decisionGraphService.load.and.returnValue(of({
+      questionId: 'js-debounce',
+      version: 1,
+      language: 'javascript',
+      code: graphCode,
+      nodes: [
+        {
+          id: 'd1',
+          title: 'Return original fn',
+          anchor: { lineStart: 1, lineEnd: 1, snippet: 'return fn;' },
+          why: 'why',
+          alternative: 'alt',
+          tradeoff: 'tradeoff',
+        },
+      ],
+    } as any));
+
+    const codeStoreStub = {
+      getJsAsync: jasmine.createSpy('getJsAsync').and.resolveTo(null),
+      cloneJsBundleAsync: jasmine.createSpy('cloneJsBundleAsync').and.resolveTo(true),
+      setJsBaselineAsync: jasmine.createSpy('setJsBaselineAsync').and.resolveTo(undefined),
+      getJsLangStateAsync: jasmine.createSpy('getJsLangStateAsync').and.callFake(async (_key: string, lang: 'js' | 'ts') => ({
+        code: lang === 'js' ? graphCode : '',
+        baseline: lang === 'js' ? graphCode : '',
+        dirty: lang === 'js',
+        hasUserCode: lang === 'js',
+      })),
+      getJsForLangAsync: jasmine.createSpy('getJsForLangAsync').and.callFake(async (_key: string, lang: 'js' | 'ts') => (
+        lang === 'js' ? graphCode : ''
+      )),
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+      initJsAsync: jasmine.createSpy('initJsAsync').and.resolveTo({
+        initial: graphCode,
+        restored: true,
+      }),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+    };
+
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+    component.disablePersistence = false;
+    component.question = {
+      id: 'js-debounce',
+      starterCode: 'export default function debounce(fn, delay) {}',
+      starterCodeTs: 'export default function debounce(fn: (...args: any[]) => void, delay: number): (...args: any[]) => void { return fn; }',
+      tests: '',
+      testsTs: '',
+      decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-debounce.v1.json',
+    } as any;
+
+    await component.initFromQuestion();
+    await Promise.resolve();
+
+    expect(component.viewingSolution()).toBeTrue();
+    expect(component.canRevertToUserCode()).toBeFalse();
+    expect(component.restoreBannerIsSolutionContext()).toBeTrue();
+    expect(component.restoreBannerActionLabel()).toBe('Reset to default');
   });
 
   it('restores the matching approach rationale after refresh based on persisted solution code', async () => {
@@ -465,7 +612,41 @@ describe('CodingJsPanelComponent', () => {
     expect(component.decisionGraphVisible()).toBeTrue();
   });
 
-  it('exits solution mode and closes rationale popup when resetting from solution banner', async () => {
+  it('restores the original language draft after switching languages post-solution', async () => {
+    const codeStoreStub = {
+      getJsForLangAsync: jasmine.createSpy('getJsForLangAsync').and.resolveTo(''),
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+    };
+
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+    component.disablePersistence = false;
+    component.question = {
+      id: 'js-lang-switch',
+      starterCode: 'export default function greet() { return "starter-js"; }',
+      starterCodeTs: 'export default function greet(): string { return "starter-ts"; }',
+      tests: '',
+      testsTs: '',
+    } as any;
+
+    const draftCode = 'export default function greet() { return "draft-js"; }';
+    const solutionCode = 'export default function greet() { return "solution-js"; }';
+    component.jsLang.set('js');
+    component.editorContent.set(draftCode);
+
+    await component.applySolution(solutionCode);
+    await component.setLanguage('ts');
+    await component.revertToUserCodeFromBanner();
+
+    expect(component.jsLang()).toBe('js');
+    expect(component.editorContent()).toBe(draftCode);
+    expect(component.viewingSolution()).toBeFalse();
+    expect(component.canRevertToUserCode()).toBeFalse();
+  });
+
+  it('resets to starter state when no solution draft snapshot exists', async () => {
     const codeStoreStub = {
       resetJsBothAsync: jasmine.createSpy('resetJsBothAsync').and.resolveTo(undefined),
       saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
@@ -492,6 +673,7 @@ describe('CodingJsPanelComponent', () => {
 
     expect(component.viewingSolution()).toBeFalse();
     expect(component.decisionGraphPopupOpen()).toBeFalse();
+    expect(component.canRevertToUserCode()).toBeFalse();
     expect(component.restoredFromStorage()).toBeFalse();
     expect(component.restoreDismissed()).toBeTrue();
     expect(codeStoreStub.resetJsBothAsync).toHaveBeenCalled();
@@ -994,5 +1176,61 @@ describe('CodingJsPanelComponent', () => {
     expect(component.testResults()[0].name).toBe('supports rejects.toThrow');
     expect(component.testResults()[0].passed).toBeTrue();
     expect(component.testResults().some((r) => r.name === 'Local runner error')).toBeFalse();
+  });
+
+  it('surfaces sandbox timeouts as a failed result without local fallback', async () => {
+    const runner = new TimedOutRunnerStub();
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    (component as any).loadRunner = async () => runner;
+    component.question = { id: 'timeout-case' } as any;
+    component.disablePersistence = true;
+
+    component.editorContent.set('export default function addTwoPromises(p1, p2) { return Promise.all([p1, p2]).then(([a, b]) => a + b); }');
+    component.testCode.set(`test('would run locally', async () => {
+  await expect(addTwoPromises(Promise.resolve(1), Promise.resolve(2))).resolves.toBe(3);
+});
+`);
+
+    await component.runTests();
+
+    expect(component.isRunningTests()).toBeFalse();
+    expect(component.hasRunTests()).toBeTrue();
+    expect(component.testResults().length).toBe(1);
+    expect(component.testResults()[0]).toEqual(jasmine.objectContaining({
+      name: 'Test execution timed out',
+      passed: false,
+    }));
+    expect(component.testResults()[0].error).toContain('force-stopped');
+    expect(component.testResults()[0].name).not.toBe('would run locally');
+  });
+
+  it('surfaces sandbox worker crashes as a failed result without local fallback', async () => {
+    const runner = new CrashedRunnerStub();
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    (component as any).loadRunner = async () => runner;
+    component.question = { id: 'crash-case' } as any;
+    component.disablePersistence = true;
+
+    component.editorContent.set('export default function addTwoPromises(p1, p2) { return Promise.all([p1, p2]).then(([a, b]) => a + b); }');
+    component.testCode.set(`test('would run locally', async () => {
+  await expect(addTwoPromises(Promise.resolve(1), Promise.resolve(2))).resolves.toBe(3);
+});
+`);
+
+    await component.runTests();
+
+    expect(component.isRunningTests()).toBeFalse();
+    expect(component.hasRunTests()).toBeTrue();
+    expect(component.testResults().length).toBe(1);
+    expect(component.testResults()[0]).toEqual(jasmine.objectContaining({
+      name: 'Test runner failed',
+      passed: false,
+    }));
+    expect(component.testResults()[0].error).toContain('Worker crashed');
+    expect(component.testResults()[0].name).not.toBe('would run locally');
   });
 });

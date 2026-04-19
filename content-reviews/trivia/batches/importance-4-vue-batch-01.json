@@ -1,0 +1,14 @@
+{
+  "batchId": "importance-4-vue-batch-01",
+  "scope": "trivia competitor review backfill",
+  "items": [
+    { "tech": "vue", "id": "vue-reactivity-vs-react-concepts" },
+    { "tech": "vue", "id": "vue-data-must-be-function" },
+    { "tech": "vue", "id": "vue-v-bind-reactive-attributes" },
+    { "tech": "vue", "id": "vue-v-if-component-creation-destruction" },
+    { "tech": "vue", "id": "vue-v-model-syntax-sugar-expansion" },
+    { "tech": "vue", "id": "vue-methods-in-templates" },
+    { "tech": "vue", "id": "vue-native-vs-component-events" },
+    { "tech": "vue", "id": "vue-directives" }
+  ]
+}

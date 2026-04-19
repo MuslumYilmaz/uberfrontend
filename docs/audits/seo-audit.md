@@ -1,5 +1,7 @@
 # SEO Audit Report: `frontend` (FrontendAtlas)
 
+_Historical audit. Do not load by default; route into context only for SEO, prerender, canonical, robots, or 404 investigations._
+
 Date: 2026-02-16
 
 Scope:

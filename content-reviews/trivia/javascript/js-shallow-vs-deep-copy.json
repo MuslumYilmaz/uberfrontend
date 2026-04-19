@@ -1,0 +1,148 @@
+{
+  "contentId": "js-shallow-vs-deep-copy",
+  "tech": "javascript",
+  "query": "shallow copy vs deep copy javascript interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Shallow copy",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for shallow-copy semantics and points directly at the nested-reference behavior this prompt is about.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on what a shallow copy is and why nested references remain shared."
+      ],
+      "theirGaps": [
+        "It is less explicit on state-management bugs, JSON-clone pitfalls, and when structuredClone is the safer production choice."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most bugs around state mutation come from thinking you made a deep copy but actually making a shallow one."
+        ],
+        "actionableExamples": [
+          "Common ways to make shallow copies:"
+        ],
+        "followUpConfusion": [
+          "It silently breaks or loses: - undefined, Symbol, functions - Date, Map, Set, RegExp - Circular references (throws)"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines the concept correctly, but our page is more explicit about the real bug pattern developers hit when nested state is still shared after a copy."
+        ],
+        "actionableExamples": [
+          "The canonical docs still provide strong reference examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page goes further on the follow-ups interviewers usually ask next: JSON stringify clone limits, structuredClone, and why a shallow copy is often mistaken for full immutability."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny nested React or Angular state example later if we need more example separation over the docs."
+        ]
+      },
+      "winReason": "MDN is the canonical definition source, but our page is stronger for interview use because it turns copy semantics into concrete mutation and cloning failures."
+    },
+    {
+      "label": "GreatFrontEnd shallow copy vs deep copy",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-the-difference-between-shallow-copy-and-deep-copy",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview page for shallow copy versus deep copy.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It matches the exact interview wording and is likely strong on concise definitions and examples."
+      ],
+      "theirGaps": [
+        "It is less explicit on JSON stringify losses and on when structuredClone is a better production answer."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most bugs around state mutation come from thinking you made a deep copy but actually making a shallow one."
+        ],
+        "actionableExamples": [
+          "Common ways to make shallow copies:"
+        ],
+        "followUpConfusion": [
+          "Deep copy: copy everything recursively, so no nested references are shared."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is direct interview prep, but our page is more explicit about where this distinction actually breaks UI state and shared object graphs."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and directly relevant, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more useful on the next follow-up set: nested shared references, JSON clone limits, and when structuredClone beats manual assumptions."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the shallow-versus-deep example block close to the JSON pitfalls so the answer stays more operational than a pure definition page."
+        ]
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page wins because it connects the copy distinction to real state-mutation bugs and safe cloning decisions."
+    },
+    {
+      "label": "web.dev Deep-copying in JavaScript using structuredClone",
+      "url": "https://web.dev/articles/structured-clone",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev is a topic-direct practical reference for structuredClone and the modern production answer to many deep-copy questions.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on structuredClone and modern deep-copy behavior."
+      ],
+      "theirGaps": [
+        "It is less centered on the interview comparison itself and on the shallow-copy bug pattern that usually motivates the question."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Most bugs around state mutation come from thinking you made a deep copy but actually making a shallow one."
+        ],
+        "actionableExamples": [
+          "Deep copy: copy everything recursively, so no nested references are shared."
+        ],
+        "followUpConfusion": [
+          "It silently breaks or loses: - undefined, Symbol, functions - Date, Map, Set, RegExp - Circular references (throws)"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev is strong on the modern deep-copy tool, but our page is more explicit about why developers get into trouble in the first place: a shallow copy that still shares nested references."
+        ],
+        "actionableExamples": [
+          "Its structuredClone examples are useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page covers the likely follow-up confusion more broadly by contrasting shallow copy, deep copy, and JSON stringify failures in one place."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this page needs another pass later, add one explicit structuredClone example next to the JSON-clone warning."
+        ]
+      },
+      "winReason": "web.dev is practical on structuredClone, but our page is stronger overall because it explains the interview contrast, the state bug, and the cloning pitfalls together."
+    }
+  ]
+}

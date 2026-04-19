@@ -1,0 +1,154 @@
+{
+  "contentId": "js-prototypal-inheritance",
+  "tech": "javascript",
+  "query": "prototypal inheritance javascript interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Inheritance and the prototype chain",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for JavaScript's prototype chain, method lookup, and inheritance model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative reference for prototype links, property lookup, and inheritance behavior."
+      ],
+      "theirGaps": [
+        "It is broader than the interview prompt and less compact on why shadowing and linked lookup are the debugging takeaways."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Prototypal inheritance is about linked lookup, not copied members. The debug value is understanding method sharing, property shadowing, and prototype-chain behavior under the hood."
+        ],
+        "actionableExamples": [
+          "Here’s what happens when you call <code>dog.walk()</code>: 1. JS looks for <code>walk</code> on <code>dog</code>. 2. It doesn’t find it, so it looks at <code>dog.__proto__</code> (which points to <code>animal</code>). 3. Finds <code>walk</code> there and executes it."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>  In JavaScript, objects do not copy behavior from classes. They resolve missing properties through a <strong>prototype chain</strong>. That matters in real debugging because shared methods, shadowed properties, or unexpected lookup order all come from linked prototypes, not from duplicated members.  Every object has an internal link to another object called its <strong>prototype</strong>. If a property is missing locally, JavaScript keeps walking that chain until it finds a match or reaches <code>null</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN covers the model thoroughly, but our page is more explicit about the real debugging value: linked lookup, method sharing, and property shadowing."
+        ],
+        "actionableExamples": [
+          "The canonical docs still include strong inheritance examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the follow-up interview confusion that classes can hide: prototype lookup is linked delegation, not copied members."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Add one shorter shadowing example later if we need more example distance over the docs."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical prototype-chain reference, but our page is stronger for the interview prompt because it emphasizes the debugging consequences of linked lookup instead of only the inheritance mechanics."
+    },
+    {
+      "label": "GreatFrontEnd prototypal inheritance",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-how-prototypal-inheritance-works",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview-prep page for how prototypal inheritance works in JavaScript.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It matches the interview wording directly and is likely strong on explaining the prototype chain."
+      ],
+      "theirGaps": [
+        "It is less explicit on property shadowing and method sharing as the concrete debugging payoffs of understanding prototypes."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Prototypal inheritance is about linked lookup, not copied members. The debug value is understanding method sharing, property shadowing, and prototype-chain behavior under the hood."
+        ],
+        "actionableExamples": [
+          "Here’s what happens when you call <code>dog.walk()</code>: 1. JS looks for <code>walk</code> on <code>dog</code>. 2. It doesn’t find it, so it looks at <code>dog.__proto__</code> (which points to <code>animal</code>). 3. Finds <code>walk</code> there and executes it."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>  In JavaScript, objects do not copy behavior from classes. They resolve missing properties through a <strong>prototype chain</strong>. That matters in real debugging because shared methods, shadowed properties, or unexpected lookup order all come from linked prototypes, not from duplicated members.  Every object has an internal link to another object called its <strong>prototype</strong>. If a property is missing locally, JavaScript keeps walking that chain until it finds a match or reaches <code>null</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is exact-topic interview prep, but our page is more explicit about why the model matters when debugging shadowed properties and shared methods."
+        ],
+        "actionableExamples": [
+          "Its examples are likely strong and topic-direct, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page pushes the follow-up further by turning the chain into a linked-lookup mental model instead of stopping at a generic inheritance explanation."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the lookup-order example near the top so the answer stays more concrete than a generic inheritance description."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is stronger because it makes the prototype-chain mental model immediately useful for debugging real object behavior."
+    },
+    {
+      "label": "javascript.info Prototype inheritance",
+      "url": "https://javascript.info/prototype-inheritance",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a strong topic-direct tutorial for prototype inheritance, lookup, and delegation behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is very good on prototype links, delegation, and inheritance behavior through examples."
+      ],
+      "theirGaps": [
+        "It is less compact as an interview answer and less explicit on the shadowing-focused debugging framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Prototypal inheritance is about linked lookup, not copied members. The debug value is understanding method sharing, property shadowing, and prototype-chain behavior under the hood."
+        ],
+        "actionableExamples": [
+          "Here’s what happens when you call <code>dog.walk()</code>: 1. JS looks for <code>walk</code> on <code>dog</code>. 2. It doesn’t find it, so it looks at <code>dog.__proto__</code> (which points to <code>animal</code>). 3. Finds <code>walk</code> there and executes it."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>  In JavaScript, objects do not copy behavior from classes. They resolve missing properties through a <strong>prototype chain</strong>. That matters in real debugging because shared methods, shadowed properties, or unexpected lookup order all come from linked prototypes, not from duplicated members.  Every object has an internal link to another object called its <strong>prototype</strong>. If a property is missing locally, JavaScript keeps walking that chain until it finds a match or reaches <code>null</code>."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on the mechanism, but our page is more explicit about why prototype inheritance matters when object behavior looks surprising in debugging."
+        ],
+        "actionableExamples": [
+          "Its examples are topic-direct and solid, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the next interview confusion: methods are shared through delegation, not copied onto each instance."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If needed later, add one small example showing a local property shadowing a prototype method or value."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is a strong tutorial, but our page is better calibrated for this prompt because it translates prototype inheritance into the specific lookup and shadowing issues developers debug."
+    }
+  ]
+}

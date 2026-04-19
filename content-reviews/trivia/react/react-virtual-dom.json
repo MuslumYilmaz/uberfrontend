@@ -1,0 +1,149 @@
+{
+  "contentId": "react-virtual-dom",
+  "tech": "react",
+  "query": "react virtual dom reconciliation interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this React prompt, so broader React question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Render and Commit",
+      "url": "https://react.dev/learn/render-and-commit",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical React explanation of render work, comparison work, and commit work, which is the official baseline for the Virtual DOM mental model.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative explanation of render and commit phases."
+      ],
+      "theirGaps": [
+        "It is less compressed around the interview confusion between rerendering, diffing, and real DOM mutation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "some “performance issues” are really JS/render work or key/identity mistakes, not raw DOM mutation cost."
+        ],
+        "actionableExamples": [
+          "If it detects differences, it commits DOM mutations for only those differences."
+        ],
+        "followUpConfusion": [
+          "React can re-run components, compare trees, and still commit zero DOM changes."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The docs explain the pipeline well, but our page is more explicit about the debugging mistake of blaming DOM mutations for work that is really render or identity churn."
+        ],
+        "actionableExamples": [
+          "The official page still has strong step-by-step examples for render and commit, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up: Virtual DOM is a tree model, not a promise that every rerender mutates the DOM."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny before-and-after tree example if we want more visual example depth than the canonical pipeline page."
+        ]
+      },
+      "winReason": "The React docs are authoritative on the pipeline, but our page is stronger for this interview prompt because it turns the Virtual DOM into a concrete debugging model instead of just a phase description."
+    },
+    {
+      "label": "Reconciliation in React",
+      "url": "https://www.developerway.com/posts/reconciliation-in-react",
+      "category": "tutorial_reference",
+      "selectionReason": "DeveloperWay is a strong practical explainer for tree matching, identity, and why React can preserve or replace UI without mutating everything.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical about identity, keys, and why React sometimes preserves state and sometimes remounts."
+      ],
+      "theirGaps": [
+        "It is less directly framed around the interview misunderstanding of Virtual DOM versus reconciliation versus DOM mutation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The production debugging value is not the buzzword itself, but the mental model"
+        ],
+        "actionableExamples": [
+          "When state/props/context change, React schedules work, re-runs the affected components, builds a new tree, then reconciles it against the previous one."
+        ],
+        "followUpConfusion": [
+          "The Virtual DOM is React’s in-memory description of what the UI should look like after a render."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "DeveloperWay is practical, but our answer is more explicit about how the Virtual DOM mental model helps explain false performance diagnoses."
+        ],
+        "actionableExamples": [
+          "Its worked examples are strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct about the likely follow-up confusion: rerendering does not imply a DOM write."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a one-line key-change remount example if we want more concrete tree-matching depth later."
+        ]
+      },
+      "winReason": "This tutorial is practical, but our page is stronger because it keeps the answer anchored on the exact interview trap: Virtual DOM is a mental model for comparison work, not a synonym for DOM mutations."
+    },
+    {
+      "label": "What is Virtual DOM?",
+      "url": "https://stackoverflow.com/questions/21965738/what-is-virtual-dom",
+      "category": "community_qna",
+      "selectionReason": "This Stack Overflow thread is a direct community explanation of what the Virtual DOM is and why people connect it to performance.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It addresses the direct definition question in plain language."
+      ],
+      "theirGaps": [
+        "It is less consistent about separating the Virtual DOM concept from reconciliation and actual commit work."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "That distinction explains why some “performance issues” are really JS/render work or key/identity mistakes, not raw DOM mutation cost."
+        ],
+        "actionableExamples": [
+          "Keys are a big part of “VDOM performance”"
+        ],
+        "followUpConfusion": [
+          "compare trees, and still commit zero DOM changes"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The thread explains the concept, but our page is stronger on how to use that concept in real debugging."
+        ],
+        "actionableExamples": [
+          "Community explanations can still be concrete, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our answer is clearer on the follow-up distinction between a React rerender, a diff, and a real DOM mutation."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep one small example that contrasts render work with zero DOM writes so the distinction stays concrete."
+        ]
+      },
+      "winReason": "The community thread defines the concept well, but our page is stronger because it turns that definition into a reliable debugging model for render work versus commit work."
+    }
+  ]
+}

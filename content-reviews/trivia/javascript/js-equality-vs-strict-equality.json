@@ -1,0 +1,154 @@
+{
+  "contentId": "js-equality-vs-strict-equality",
+  "tech": "javascript",
+  "query": "difference between == and === in javascript",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN Equality comparisons and sameness",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for loose equality, strict equality, and the broader comparison model including Object.is.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the authoritative comparison reference and explains equality variants precisely."
+      ],
+      "theirGaps": [
+        "It is broader than the interview prompt and less compact on frontend coercion bugs from forms, query params, and API payloads."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Loose equality and strict equality differ because coercion can silently change operands. The common mistake is letting form strings, nullish values, or `NaN` produce bugs that explicit conversion and tests should catch."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>  - Using `==` can lead to hidden bugs when JavaScript tries to 'help' by converting types. - Example: `[] == false` → `true`, but `[] === false` → `false`. - Always use `===` unless you specifically need type coercion (which is rare)."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Strict Equality (===)</strong>  - Compares **both type and value** exactly as they are. - Does not perform type coercion. - This is the recommended operator for most cases."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains comparison semantics accurately, but our page ties the choice to the product bugs developers actually see when strings, booleans, or nullish values get coerced."
+        ],
+        "actionableExamples": [
+          "The canonical docs still have strong comparison examples, so the example criterion remains competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is faster on the next interview follow-up: when coercion is dangerous, when === is the default, and why NaN or array comparisons surprise people."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If we need more example distance later, add one short Object.is note to cover -0 and NaN explicitly."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical reference, but our page is stronger for this interview question because it turns equality rules into concrete coercion bugs and default comparison guidance."
+    },
+    {
+      "label": "GreatFrontEnd equality vs strict equality",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-the-difference-between-double-equal-and-triple-equal?format=quiz",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview-prep page for the difference between == and ===.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the interview wording and covers common coercion examples."
+      ],
+      "theirGaps": [
+        "It is less explicit on the production-facing framing around form strings, API payloads, and NaN checks."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Loose equality and strict equality differ because coercion can silently change operands. The common mistake is letting form strings, nullish values, or `NaN` produce bugs that explicit conversion and tests should catch."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>  - Using `==` can lead to hidden bugs when JavaScript tries to 'help' by converting types. - Example: `[] == false` → `true`, but `[] === false` → `false`. - Always use `===` unless you specifically need type coercion (which is rare)."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Strict Equality (===)</strong>  - Compares **both type and value** exactly as they are. - Does not perform type coercion. - This is the recommended operator for most cases."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd matches the exact question well, but our page is more explicit about where coercion bugs show up in real frontend code."
+        ],
+        "actionableExamples": [
+          "Its examples are directly relevant and interview-friendly, so the example criterion stays close."
+        ],
+        "followUpConfusion": [
+          "Our page pushes the follow-up further by highlighting NaN, nullish values, and production default rules instead of stopping at coercion definitions."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the common-pitfalls block visible near the top so the answer stays more practical than a pure quiz explanation."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is exact-topic interview prep, but our page is more useful because it connects equality choice to the bugs developers actually ship when values arrive as strings or nullish data."
+    },
+    {
+      "label": "javascript.info Comparisons",
+      "url": "https://javascript.info/comparison",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct language tutorial for equality, coercion, and comparison edge cases.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is very good on the mechanics of equality and type coercion."
+      ],
+      "theirGaps": [
+        "It is less compact as an interview answer and lighter on product-debugging framing."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Loose equality and strict equality differ because coercion can silently change operands. The common mistake is letting form strings, nullish values, or `NaN` produce bugs that explicit conversion and tests should catch."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>  - Using `==` can lead to hidden bugs when JavaScript tries to 'help' by converting types. - Example: `[] == false` → `true`, but `[] === false` → `false`. - Always use `===` unless you specifically need type coercion (which is rare)."
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-circle-info'></i> <strong>Strict Equality (===)</strong>  - Compares **both type and value** exactly as they are. - Does not perform type coercion. - This is the recommended operator for most cases."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on coercion mechanics, but our page is more explicit about where those mechanics turn into UI and payload bugs."
+        ],
+        "actionableExamples": [
+          "Its examples are topic-direct and strong enough that the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more interview-shaped on the practical default: use ===, reserve == for deliberate nullish checks, and be wary of NaN or array coercion traps."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "If needed later, add one tiny form-input normalization example to push the example criterion above tutorial-level parity."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "javascript.info is strong on the language rules, but our page is better calibrated for interview follow-ups because it translates coercion into frontend debugging decisions."
+    }
+  ]
+}

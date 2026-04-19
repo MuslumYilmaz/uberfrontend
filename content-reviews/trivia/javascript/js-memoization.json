@@ -1,0 +1,148 @@
+{
+  "contentId": "js-memoization",
+  "tech": "javascript",
+  "query": "JavaScript memoization interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "GreatFrontEnd Memoize",
+      "url": "https://www.greatfrontend.com/questions/javascript/memoize",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview problem for implementing memoization and reasoning about cache behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is exact-topic interview prep and likely strong on implementation mechanics for a memoize helper."
+      ],
+      "theirGaps": [
+        "It is less centered on when memoization should not be used because the cache grows, the function is impure, or the cache key is unstable."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The important production question is not just \"can I cache this?\" but \"should I?\""
+        ],
+        "actionableExamples": [
+          "When the function is called, the wrapper checks if the input has been seen before."
+        ],
+        "followUpConfusion": [
+          "Avoid memoization when: - The input range is very large (cache will grow uncontrollably). - The function relies on external state or randomness. - The computation is cheap (the overhead of caching may outweigh benefits)."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is a direct memoization interview problem, but our page is more explicit about the production trade-off between faster repeated calls and uncontrolled cache growth."
+        ],
+        "actionableExamples": [
+          "Its implementation-oriented examples are likely strong, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page answers the likely follow-ups more directly: pure-function requirement, stale assumptions, and why a technically correct cache can still be the wrong optimization."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one short Map-key versus object-key example later if we need more example separation over the interview-implementation baseline."
+        ]
+      },
+      "winReason": "GreatFrontEnd is strong exact-topic interview prep, but our page wins because it frames memoization as an optimization trade-off instead of only an implementation exercise."
+    },
+    {
+      "label": "javascript.info Caching decorator",
+      "url": "https://javascript.info/caching-decorator",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is the strongest topic-direct tutorial for memoization, caching decorators, and argument-key design.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on wrapper design, argument handling, and memoization mechanics."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped on when memoization backfires in frontend apps because of memory growth or bad cache-key assumptions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "This technique is especially useful in recursive computations (like Fibonacci sequences) or functions that are called repeatedly with identical inputs."
+        ],
+        "actionableExamples": [
+          "The key concept: trade space for time — use memory to store results and avoid unnecessary computation."
+        ],
+        "followUpConfusion": [
+          "Avoid memoization when: - The input range is very large (cache will grow uncontrollably). - The function relies on external state or randomness."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info explains the decorator pattern well, but our page is more explicit about the product-facing decision of when caching is worth the memory cost."
+        ],
+        "actionableExamples": [
+          "Its examples are topic-direct and strong, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the interview follow-up set: pure functions only, cache-key correctness, and why cheap computations should not be memoized."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If we need another pass later, add one compact unstable-argument example to create more example distance over the tutorial baseline."
+        ]
+      },
+      "winReason": "javascript.info is a strong memoization tutorial, but our page is better for this prompt because it anchors memoization to real production trade-offs and failure modes."
+    },
+    {
+      "label": "GeeksforGeeks Memoization in JavaScript",
+      "url": "https://www.geeksforgeeks.org/javascript/javascript-memoization/",
+      "category": "tutorial_reference",
+      "selectionReason": "GeeksforGeeks is a topic-direct engineering explainer for JavaScript memoization with interview-friendly examples.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is focused on the exact concept and likely gives approachable code examples."
+      ],
+      "theirGaps": [
+        "It is usually lighter on the boundary conditions that make memoization unsafe or not worth the overhead."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The important production question is not just \"can I cache this?\" but \"should I?\""
+        ],
+        "actionableExamples": [
+          "If not found, the function runs normally, stores its result in the cache, and then returns it."
+        ],
+        "followUpConfusion": [
+          "Avoid memoization when: - The input range is very large (cache will grow uncontrollably). - The function relies on external state or randomness."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GeeksforGeeks is likely solid on the concept, but our page is more explicit about the real-world decision boundary between useful caching and harmful cache growth."
+        ],
+        "actionableExamples": [
+          "Its code examples are probably good enough that the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up confusion around impurity, stale assumptions, and when the cache is more expensive than the work."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the use-versus-avoid block close to the how-it-works steps so the answer stays more decision-oriented than a pure code example."
+        ]
+      },
+      "winReason": "This competitor covers memoization directly, but our page is stronger because it turns the concept into a decision framework instead of stopping at cache mechanics."
+    }
+  ]
+}

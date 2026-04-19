@@ -1,0 +1,149 @@
+{
+  "contentId": "sse-vs-websocket-real-time",
+  "tech": "javascript",
+  "query": "sse vs websocket interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this browser, network, security, or state-management prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN WebSocket API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for WebSocket behavior and is the strongest official baseline for one half of the SSE versus WebSocket transport choice.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on WebSocket lifecycle, duplex communication, and browser API behavior."
+      ],
+      "theirGaps": [
+        "It is not a direct SSE-versus-WebSocket trade-off page and therefore answers only one half of the architectural comparison."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical SSE vs WebSocket comparison for frontend interviews: protocol behavior, reconnect strategy, infrastructure trade-offs, and architecture decisions for AI streaming, notifications, chat, and collaboration."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: SSE client with typed events</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Decision heuristic</strong>  Ask two questions first: (1) Does the client need to push frequent live events upstream? (2) Do you need strict duplex semantics like collaborative cursors or multiplayer state sync? If both answers are no, SSE is often cheaper and simpler to operate."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains WebSocket accurately, but our page is more useful for the actual interview prompt because it compares WebSocket with SSE as an architecture decision."
+        ],
+        "actionableExamples": [
+          "The canonical docs still have strong API examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit on reconnect strategy, one-way versus duplex messaging, and which transport fits AI streaming versus collaboration."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one smaller WebSocket reconnect snippet later if we need more example distance over the canonical API page."
+        ]
+      },
+      "winReason": "MDN is the canonical WebSocket reference, but our page is stronger for this question because it compares transports directly and ties the choice to product interaction shape."
+    },
+    {
+      "label": "Ably WebSockets vs SSE",
+      "url": "https://ably.com/blog/websockets-vs-sse",
+      "category": "tutorial_reference",
+      "selectionReason": "Ably has a direct topic-comparison article for SSE versus WebSocket and is a strong infra-oriented competitor for this transport decision.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly focused on the same transport trade-off and is strong on infrastructure implications."
+      ],
+      "theirGaps": [
+        "It is less interview-shaped on AI streaming, notifications, chat, and collaboration as separate fit decisions."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical SSE vs WebSocket comparison for frontend interviews: protocol behavior, reconnect strategy, infrastructure trade-offs, and architecture decisions for AI streaming, notifications, chat, and collaboration."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: WebSocket with heartbeat + reconnect</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Decision heuristic</strong>  Ask two questions first: (1) Does the client need to push frequent live events upstream? (2) Do you need strict duplex semantics like collaborative cursors or multiplayer state sync? If both answers are no, SSE is often cheaper and simpler to operate."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Ably is topic-direct and practical, but our page is more explicit about how transport choice changes across AI streaming, notifications, chat, and collaboration."
+        ],
+        "actionableExamples": [
+          "Its comparison examples are likely strong enough that the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is faster on the likely follow-up: reconnect behavior, duplex need, and why SSE is usually enough for server-to-client streaming."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the decision heuristic above the examples so the answer stays more reusable than a longer infra comparison article."
+        ]
+      },
+      "winReason": "Ably is a strong transport comparison source, but our page is stronger because it maps the trade-off directly to common frontend product shapes instead of staying infrastructure-first."
+    },
+    {
+      "label": "Pusher WebSockets vs Server-Sent Events",
+      "url": "https://www.pusher.com/blog/websockets-vs-sse/",
+      "category": "tutorial_reference",
+      "selectionReason": "Pusher has a direct comparison page for WebSockets and SSE and is a practical second tutorial comparator for transport trade-offs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is topic-direct and practical on real-time transport trade-offs."
+      ],
+      "theirGaps": [
+        "It is less explicit on the frontend-specific decision rule around one-way AI streams versus true collaborative duplex state."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Practical SSE vs WebSocket comparison for frontend interviews: protocol behavior, reconnect strategy, infrastructure trade-offs, and architecture decisions for AI streaming, notifications, chat, and collaboration."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: WebSocket with heartbeat + reconnect</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-brain'></i> <strong>Decision heuristic</strong>  Ask two questions first: (1) Does the client need to push frequent live events upstream? (2) Do you need strict duplex semantics like collaborative cursors or multiplayer state sync? If both answers are no, SSE is often cheaper and simpler to operate."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Pusher is practical on transport trade-offs, but our page is more explicit about which real-time product patterns actually require WebSocket instead of SSE."
+        ],
+        "actionableExamples": [
+          "Its examples are still practical and topic-direct, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up confusion around reconnect, duplex semantics, and when infra complexity is unnecessary."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one tiny notification-feed versus collaborative-editor contrast to create more example distance."
+        ]
+      },
+      "winReason": "Pusher is a direct comparison source, but our page is better calibrated for frontend interviews because it ties transport choice to concrete interaction models instead of only protocol differences."
+    }
+  ]
+}

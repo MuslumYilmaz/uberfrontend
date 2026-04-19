@@ -1,0 +1,148 @@
+{
+  "contentId": "js-deferred-scripts",
+  "tech": "javascript",
+  "query": "deferred scripts javascript interview question",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "MDN script element",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for script loading behavior, including defer, async, parser blocking, and execution timing.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on script loading semantics and browser timing behavior."
+      ],
+      "theirGaps": [
+        "It is broader than the interview prompt and less compact on the exact production bug teams hit when they confuse defer with async."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Deferred scripts improve load performance by removing parser blocking while preserving execution order. The real pitfall is assuming defer behaves like async or running DOM-dependent code without understanding script timing."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>How Deferred Scripts Work Internally</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Key Considerations</strong>  - The <code>defer</code> attribute only works for **external scripts** (those with <code>src</code> attributes). - Inline scripts cannot use <code>defer</code>. - In old browsers (pre-HTML5), support for <code>defer</code> was inconsistent, but it’s now standard in all major browsers. - Combining <code>defer</code> and <code>async</code> on the same script is invalid — only one behavior applies."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains defer precisely, but our page makes the real production decision clearer: parser blocking, DOM readiness, and why defer is not just async with a different name."
+        ],
+        "actionableExamples": [
+          "The canonical docs still have strong timing examples, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on the next confusion interviewers ask about: external-only support, order guarantees, and defer versus async semantics."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one tiny normal-script versus defer versus async timing snippet later if we need more example distance over MDN."
+        ]
+      },
+      "winReason": "MDN is the canonical script-loading reference, but our page is stronger for this prompt because it keeps the answer centered on parser blocking, execution order, and DOM-timing bugs."
+    },
+    {
+      "label": "GreatFrontEnd script async vs defer",
+      "url": "https://www.greatfrontend.com/questions/quiz/describe-the-difference-between-script-async-and-script-defer",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd has an exact-topic interview-prep page for async versus defer, which is the nearest direct competitor for this question.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is directly aligned with the interview wording and likely strong on async-versus-defer comparison."
+      ],
+      "theirGaps": [
+        "It is less explicit on the DOM-dependent timing pitfalls and on defer's external-script-only restriction."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Deferred scripts improve load performance by removing parser blocking while preserving execution order. The real pitfall is assuming defer behaves like async or running DOM-dependent code without understanding script timing."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>How Deferred Scripts Work Internally</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Key Considerations</strong>  - The <code>defer</code> attribute only works for **external scripts** (those with <code>src</code> attributes). - Inline scripts cannot use <code>defer</code>. - In old browsers (pre-HTML5), support for <code>defer</code> was inconsistent, but it’s now standard in all major browsers. - Combining <code>defer</code> and <code>async</code> on the same script is invalid — only one behavior applies."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is strong interview prep, but our page is more explicit about the production failure mode: DOM-dependent code running under the wrong mental model."
+        ],
+        "actionableExamples": [
+          "Its comparison examples are likely strong and directly relevant, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page goes further on the likely follow-up set: external-only defer, invalid async+defer pairing, and execution-order guarantees."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the internal workflow and key-considerations blocks close together so the answer stays more operational than a simple comparison table."
+        ]
+      },
+      "winReason": "GreatFrontEnd is direct interview prep, but our page is stronger because it ties defer to parser behavior, execution order, and the exact DOM-timing bugs teams ship."
+    },
+    {
+      "label": "javascript.info Scripts: async, defer",
+      "url": "https://javascript.info/script-async-defer",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is a topic-direct tutorial for script loading order, defer, and async semantics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is practical on execution order and parser-blocking behavior."
+      ],
+      "theirGaps": [
+        "It is less compressed as an interview answer and lighter on the production framing around DOM-dependent code."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Deferred scripts improve load performance by removing parser blocking while preserving execution order. The real pitfall is assuming defer behaves like async or running DOM-dependent code without understanding script timing."
+        ],
+        "actionableExamples": [
+          "<i class='fa-solid fa-gears'></i> <strong>How Deferred Scripts Work Internally</strong>"
+        ],
+        "followUpConfusion": [
+          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Key Considerations</strong>  - The <code>defer</code> attribute only works for **external scripts** (those with <code>src</code> attributes). - Inline scripts cannot use <code>defer</code>. - In old browsers (pre-HTML5), support for <code>defer</code> was inconsistent, but it’s now standard in all major browsers. - Combining <code>defer</code> and <code>async</code> on the same script is invalid — only one behavior applies."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is strong on the timing model, but our page is more explicit about when defer is the right production default for DOM-dependent application scripts."
+        ],
+        "actionableExamples": [
+          "Its timing examples are strong and topic-direct, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more direct on external-only behavior, invalid attribute combinations, and the defer-versus-async confusion that breaks real apps."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one small HTML example with two deferred scripts to make the order guarantee even more concrete."
+        ]
+      },
+      "winReason": "javascript.info is a strong defer tutorial, but our page is better for this prompt because it compresses the timing model into the exact production decision and follow-up traps interviewers probe."
+    }
+  ]
+}

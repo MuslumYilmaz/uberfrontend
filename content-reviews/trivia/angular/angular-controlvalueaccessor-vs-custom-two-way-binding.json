@@ -1,0 +1,146 @@
+{
+  "contentId": "angular-controlvalueaccessor-vs-custom-two-way-binding",
+  "tech": "angular",
+  "query": "Angular ControlValueAccessor vs custom two-way binding interview question",
+  "reviewedAt": "2026-04-19",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this Angular, RxJS, or NgRx prompt, so broader Angular question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "Angular ControlValueAccessor API",
+      "url": "https://angular.dev/api/forms/ControlValueAccessor",
+      "category": "canonical_docs",
+      "selectionReason": "The ControlValueAccessor API is the official contract for custom Angular form controls, including touched and disabled propagation.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is the canonical definition of the CVA contract and the individual methods Angular Forms calls."
+      ],
+      "theirGaps": [
+        "It is API-shaped and less explicit about why plain two-way binding fails in production forms."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Forms contract</strong><br><br><code>ControlValueAccessor</code> is not just another way to sync a value. It is the contract that makes a custom Angular component behave like a <strong>real form control</strong> inside Angular Forms. That is the production difference: validation, touched/dirty state, reset behavior, and disabled handling keep working instead of being rebuilt with fragile custom two-way bindings."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision rule</strong><br><ul><li>Use simple input/output binding for isolated value sync outside Angular Forms.</li><li>Use CVA the moment the component must act like a real form control.</li><li>If disabled, touched, validation, or reset behavior matters, custom two-way binding stops being enough.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Angular Custom Form Controls - Complete Guide",
+      "url": "https://blog.angular-university.io/angular-custom-form-controls/",
+      "category": "tutorial_reference",
+      "selectionReason": "This Angular University guide is the strongest tutorial competitor for turning a custom component into a real Angular form control via CVA.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a direct long-form CVA tutorial with validation and forms integration examples."
+      ],
+      "theirGaps": [
+        "It is broader and more implementation-heavy than the narrower interview prompt of CVA versus custom two-way binding."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Forms contract</strong><br><br><code>ControlValueAccessor</code> is not just another way to sync a value. It is the contract that makes a custom Angular component behave like a <strong>real form control</strong> inside Angular Forms. That is the production difference: validation, touched/dirty state, reset behavior, and disabled handling keep working instead of being rebuilt with fragile custom two-way bindings."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision rule</strong><br><ul><li>Use simple input/output binding for isolated value sync outside Angular Forms.</li><li>Use CVA the moment the component must act like a real form control.</li><li>If disabled, touched, validation, or reset behavior matters, custom two-way binding stops being enough.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    },
+    {
+      "label": "Stack Overflow: Using ControlValueAccessor - value is out of sync with two value sources",
+      "url": "https://stackoverflow.com/questions/49336484/using-controlvalueaccessor-value-is-out-of-sync-with-two-value-sources",
+      "category": "community_qna",
+      "selectionReason": "This is a directly relevant community comparator because it exposes the exact production problem of custom value syncing drifting out of sync.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is focused on the real sync bug that happens when custom binding and CVA responsibilities blur together."
+      ],
+      "theirGaps": [
+        "It is one bug thread rather than a compact framework-level comparison."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Forms contract</strong><br><br><code>ControlValueAccessor</code> is not just another way to sync a value. It is the contract that makes a custom Angular component behave like a <strong>real form control</strong> inside Angular Forms. That is the production difference: validation, touched/dirty state, reset behavior, and disabled handling keep working instead of being rebuilt with fragile custom two-way bindings."
+        ],
+        "followUpConfusion": [
+          "<strong>Decision rule</strong><br><ul><li>Use simple input/output binding for isolated value sync outside Angular Forms.</li><li>Use CVA the moment the component must act like a real form control.</li><li>If disabled, touched, validation, or reset behavior matters, custom two-way binding stops being enough.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The competitor covers the core concept, but our page is now more explicit about the production decision or failure mode behind this topic."
+        ],
+        "actionableExamples": [
+          "The competitor still provides competitive examples, so the example bar remains tied instead of a clean sweep."
+        ],
+        "followUpConfusion": [
+          "Our updated page now answers the likely follow-up confusion more directly with a sharper rule, boundary, or failure pattern."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep one compact worked example near the top so the answer stays faster to scan than a broader reference."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+    }
+  ]
+}

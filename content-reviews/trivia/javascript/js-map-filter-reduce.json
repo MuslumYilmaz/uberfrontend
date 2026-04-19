@@ -1,0 +1,149 @@
+{
+  "contentId": "js-map-filter-reduce",
+  "tech": "javascript",
+  "query": "map vs filter vs reduce javascript interview question",
+  "reviewedAt": "2026-04-13",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No exact-topic GreatFrontEnd page was confirmed for this JavaScript prompt, so broader JavaScript question-bank pages would be weaker competitors than topic-direct sources."
+  },
+  "competitors": [
+    {
+      "label": "MDN Array",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference for array instance methods, including map, filter, and reduce.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on method signatures, callback behavior, and the full Array API surface."
+      ],
+      "theirGaps": [
+        "It is less compact on the interview decision boundary of when each method improves clarity and when reduce is overkill."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "These three methods are about transforming arrays without mutating them:"
+        ],
+        "actionableExamples": [
+          "map: transform each element"
+        ],
+        "followUpConfusion": [
+          "map transforms each item, filter keeps some items, and reduce can build any result by accumulating values."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN documents the methods thoroughly, but our page is more explicit about the real interview choice between transform, selection, and accumulation."
+        ],
+        "actionableExamples": [
+          "The canonical docs still offer strong method examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up confusion: reduce is more powerful but often less readable when map or filter already expresses the intent."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add one short chained map/filter example later if we need more example separation over the docs."
+        ]
+      },
+      "winReason": "MDN is the canonical array-method reference, but our page is better for this prompt because it centers the decision rule between transform, selection, and accumulation."
+    },
+    {
+      "label": "javascript.info Array methods",
+      "url": "https://javascript.info/array-methods",
+      "category": "tutorial_reference",
+      "selectionReason": "javascript.info is the strongest topic-direct tutorial for array transformation methods and callback behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on method mechanics and broad examples across the array API."
+      ],
+      "theirGaps": [
+        "It is less focused on the interview framing of which method best communicates intent in production code."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "They are the foundation of functional-style programming in JavaScript."
+        ],
+        "actionableExamples": [
+          "filter: keep some elements"
+        ],
+        "followUpConfusion": [
+          "Combine all items into a single result."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "javascript.info is broad and practical, but our page is more direct about how these methods map to real code-review decisions around readability and intent."
+        ],
+        "actionableExamples": [
+          "Its examples are topic-direct and strong, so the example criterion remains tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the likely follow-up: reduce can do everything, but that does not mean it is the most maintainable answer."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If needed later, add one example that contrasts a clear map/filter chain with an overly clever reduce."
+        ]
+      },
+      "winReason": "javascript.info is a strong tutorial, but our page is better calibrated for interview use because it turns the three methods into an intent-first decision framework."
+    },
+    {
+      "label": "freeCodeCamp Forum map/filter/reduce in real projects",
+      "url": "https://forum.freecodecamp.org/t/how-are-map-reduce-filter-and-other-es6-features-used-in-real-life-projects/389727",
+      "category": "community_qna",
+      "selectionReason": "This freeCodeCamp community discussion is a topic-direct source for how map, filter, and reduce get framed in practical code rather than only in reference docs.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is grounded in practical usage discussions instead of only method definitions."
+      ],
+      "theirGaps": [
+        "It is less structured than a focused interview answer and less explicit about the decision boundary between map/filter and reduce."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "These three methods are about transforming arrays without mutating them:"
+        ],
+        "actionableExamples": [
+          "reduce: build anything"
+        ],
+        "followUpConfusion": [
+          "map transforms each item, filter keeps some items, and reduce can build any result by accumulating values."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The forum discussion is practical, but our page is more compact and explicit about when each method is the clearest tool."
+        ],
+        "actionableExamples": [
+          "Community examples can be useful, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit on the key follow-up confusion: reduce is the most general method, but not automatically the best or most readable one."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the mental-model block near the per-method examples so the page stays more structured than community discussion threads."
+        ]
+      },
+      "winReason": "This community source is practical, but our page is stronger because it distills the same real-world concerns into a clearer interview answer with sharper method boundaries."
+    }
+  ]
+}

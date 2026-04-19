@@ -1,0 +1,145 @@
+{
+  "contentId": "html-anchor-target",
+  "tech": "html",
+  "query": "html anchor target attribute interview question",
+  "reviewedAt": "2026-04-18",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "HTMLAnchorElement: target property",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/target",
+      "category": "canonical_docs",
+      "selectionReason": "This is the canonical MDN reference for the anchor target property and the supported browsing-context values such as _self, _blank, _parent, and _top.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the actual target values and on how the browser interprets browsing contexts for linked resources."
+      ],
+      "theirGaps": [
+        "The API-style reference is less interview-shaped and less explicit about UX trade-offs, new-tab overuse, or the security follow-up teams usually miss."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "New tabs are a UX and security trade-off, so test keyboard flow and rel attributes."
+        ],
+        "followUpConfusion": [
+          "For _blank, add rel=\"noopener noreferrer\" for security."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN defines the target values precisely, but it is lighter on when a new tab is actually justified and how that affects user flow."
+        ],
+        "actionableExamples": [
+          "It includes direct target examples and value lists, so the example criterion stays competitive."
+        ],
+        "followUpConfusion": [
+          "Our page is more explicit about the real follow-up confusion: _blank security, overusing new tabs, and user-expectation trade-offs."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the practical scenario and the rel reminder together so the page stays operational, not only definitional."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "MDN is the canonical target reference, but our page is stronger as an interview answer because it turns target into a UX and security trade-off rather than stopping at the reserved keywords."
+    },
+    {
+      "label": "HTML Interview Questions and Answers",
+      "url": "https://www.greatfrontend.com/questions/quiz/html-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's HTML interview bank is directly relevant because link attributes, browsing behavior, and security follow-ups belong to core HTML interview prep.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is a strong HTML interview-prep source with broad coverage of anchors, attributes, and practical markup questions."
+      ],
+      "theirGaps": [
+        "The category page is not dedicated to target behavior, so it is less focused on one exact answer about browsing contexts and new-tab safety."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "New tabs are a UX and security trade-off, so test keyboard flow and rel attributes."
+        ],
+        "followUpConfusion": [
+          "For _blank, add rel=\"noopener noreferrer\" for security."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the browsing-context trade-offs and security checks that make target answers strong."
+        ],
+        "actionableExamples": [
+          "It remains a strong interview bank, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is clearer on the likely follow-up: when a new tab helps, when it hurts, and why rel still matters."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the practical scenario visible so the answer stays anchored to a real navigation decision."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the exact UX and security trade-offs that matter when target comes up."
+    },
+    {
+      "label": "Links",
+      "url": "https://web.dev/learn/html/links/",
+      "category": "tutorial_reference",
+      "selectionReason": "web.dev's links module is the strongest third-source comparator for hyperlink behavior, destination handling, and the broader navigation context around anchor attributes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is strong on practical hyperlink behavior and destination handling inside HTML navigation."
+      ],
+      "theirGaps": [
+        "It is broader than the exact target question and less centered on the reserved keywords and security follow-ups around _blank."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "New tabs are a UX and security trade-off, so test keyboard flow and rel attributes."
+        ],
+        "followUpConfusion": [
+          "For _blank, add rel=\"noopener noreferrer\" for security."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "web.dev grounds links in practical navigation, but our answer is more compact about the specific user-flow and security consequences of target choices."
+        ],
+        "actionableExamples": [
+          "The tutorial contains strong practical link examples, so the example criterion stays tied."
+        ],
+        "followUpConfusion": [
+          "Our page is stronger on the next debugging and accessibility question: why _blank needs rel and why new tabs are not a default win."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep the common-pitfalls list short and visible so the page retains one concrete checklist for target usage."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "web.dev is strong on links broadly, but our page is better as a short interview answer because it packages target around browsing-context choice, user expectation, and security hygiene."
+    }
+  ]
+}

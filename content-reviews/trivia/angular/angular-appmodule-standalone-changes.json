@@ -1,0 +1,142 @@
+{
+  "contentId": "angular-appmodule-standalone-changes",
+  "tech": "angular",
+  "query": "Angular standalone migration AppModule bootstrapApplication route providers",
+  "reviewedAt": "2026-04-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "No single-topic GreatFrontEnd page was confirmed for this exact Angular prompt; the available Angular basics coverage is broader than the question-specific comparison needed here."
+  },
+  "competitors": [
+    {
+      "label": "Angular Standalone Migration Guide",
+      "url": "https://angular.dev/reference/migrations/standalone",
+      "category": "canonical_docs",
+      "selectionReason": "The official standalone migration guide is the canonical source for converting declarations, bootstrapping, and module imports during migration.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It gives the official migration sequence, code transformations, and safety steps for moving from AppModule-era wiring."
+      ],
+      "theirGaps": [
+        "It is migration-instruction heavy and less concise about the interview-style mapping of each AppModule responsibility to its new standalone home."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The main pitfall is accidentally changing DI scope while you migrate.",
+          "Now checkout gets a new CartStore instance. The navbar outside that route still sees the root instance."
+        ],
+        "followUpConfusion": [
+          "Global bootstrapping config belongs in bootstrapApplication / app.config.ts. Per-component template scope belongs in each standalone component’s imports. Route-level providers are for intentionally scoped feature services."
+        ]
+      },
+      "winReason": "The migration guide is still the canonical runbook, but our page now wins on the exact interview-friendly mapping: what moved where, which DI scope bugs show up, and how to keep bootstrap, template scope, and route providers separate.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The Angular migration guide is operationally grounded, so the use-case framing stays close."
+        ],
+        "actionableExamples": [
+          "It provides the strongest concrete migration steps and code transforms in this set."
+        ],
+        "followUpConfusion": [
+          "It explains standalone conversion mechanics well, but it is less compact than our page on the exact “what moved where” decision tree."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Keep the before-and-after bootstrap example plus the moved-from / moved-to map together so the page stays easier to execute than the full migration guide."
+        ]
+      }
+    },
+    {
+      "label": "Angular University Standalone Components Complete Guide",
+      "url": "https://blog.angular-university.io/angular-standalone-components/",
+      "category": "tutorial_reference",
+      "selectionReason": "This guide is a strong migration-oriented tutorial competitor because it covers standalone bootstrapping, interoperability, and lazy-loading changes.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It explains the standalone shift, bootstrapping, imports, and interoperability in a detailed migration narrative."
+      ],
+      "theirGaps": [
+        "It is broader than our AppModule-specific prompt and spends more time on why standalone matters overall."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The main pitfall is accidentally changing DI scope while you migrate."
+        ],
+        "followUpConfusion": [
+          "If a service should stay app-wide, do not move it to a route just because the old AppModule is disappearing."
+        ]
+      },
+      "winReason": "Angular University gives a broader standalone narrative, but our page is now tighter on the exact migration follow-ups interviewers ask: what moved out of AppModule, where provider scope changes, and which responsibilities stay global.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Angular University stays practical about migration and interoperability, so the use-case comparison is close."
+        ],
+        "actionableExamples": [
+          "It includes enough standalone code examples that the example comparison remains close."
+        ],
+        "followUpConfusion": [
+          "Its broader migration walkthrough gives more surrounding context on interoperability, lazy loading, and bootstrap changes than our shorter trivia page."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "If this stays close, add one more concrete example of importing a leftover module-shaped library through importProvidersFrom during migration."
+        ]
+      }
+    },
+    {
+      "label": "Telerik Standalone and Modules Combined",
+      "url": "https://www.telerik.com/blogs/best-both-angular-worlds-standalone-modules-combined",
+      "category": "tutorial_reference",
+      "selectionReason": "This article is a practical competitor because it explains app.config.ts, provideRouter, component imports, and coexistence with module-based packages.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "It directly discusses what replaced app.module.ts and how standalone apps wire routing and imports."
+      ],
+      "theirGaps": [
+        "It is more about coexistence than about the sharper migration-map answer our page gives for each AppModule responsibility."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The main pitfall is accidentally changing DI scope while you migrate."
+        ],
+        "actionableExamples": [
+          "Moved-from / moved-to map for the AppModule era",
+          "Before: one app-wide store via AppModule"
+        ]
+      },
+      "winReason": "Telerik explains the new standalone structure well, but our page now wins on the concrete migration artifacts interviewers probe for: a moved-from / moved-to map and a provider-scope regression example.",
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Telerik shows the new structure well, but our page is more directly organized around the DI-scope mistakes teams hit during migration."
+        ],
+        "actionableExamples": [
+          "Its app.config.ts and component-import examples make the example criterion close."
+        ],
+        "followUpConfusion": [
+          "It explains provideRouter and imports clearly, but it is less explicit about keeping the NgModules-vs-standalone question separate from the AppModule migration question."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "Keep the explicit note that AppModule replacement, NgModule compatibility, and route-level provider scope are three separate decisions."
+        ]
+      }
+    }
+  ]
+}
