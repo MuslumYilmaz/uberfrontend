@@ -237,6 +237,7 @@ type FrameworkPrepConfig = {
   subtitle: string;
   minutes: number;
   tags: string[];
+  firstFoldSignals?: string[];
   outcomes: string[];
   mistakes: string[];
   sequence: SequenceStep[];
@@ -284,11 +285,16 @@ const BLUEPRINT_BASE: SequenceStep[] = [
 const PREP_CONFIG: Record<string, FrameworkPrepConfig> = {
   'javascript-prep-path': {
     pathLabel: 'JavaScript prep path',
-    title: 'JavaScript Prep Path: Async, Closures, State',
+    title: 'JavaScript Interview Prep Path: Async, Closures, State',
     subtitle:
-      'This is interview prep, not generic docs review. Build async control, stale-state awareness, state transition discipline, and cleanup habits that show up repeatedly in frontend interviews.',
+      'A 7/14/30-day JavaScript interview prep path for frontend engineers who need tighter async reasoning, stale-state control, and safer utility implementations.',
     minutes: 9,
     tags: ['javascript', 'interview-prep', 'async', 'state', 'patterns'],
+    firstFoldSignals: [
+      'Best fit: frontend interview loops that mix JavaScript screening questions, browser reasoning, and small implementation prompts.',
+      'Cadence: 7 days to stabilize the highest-frequency misses, 14 days to make explanation flow repeatable, 30 days to make coding plus edge-case handling mock-ready.',
+      'Editorial stance: this is an interview training path, not a generic language tutorial or docs replacement.',
+    ],
     outcomes: [
       'Explain async flow, event-loop ordering, closures, and stale state using real UI examples instead of theory-only answers.',
       'Implement latest-wins request handling, double-submit prevention, and cancellation/cleanup with predictable behavior.',
@@ -590,11 +596,16 @@ function onInput(value) {
   },
   'react-prep-path': {
     pathLabel: 'React prep path',
-    title: 'React Prep Path: State, Effects, Performance',
+    title: 'React Interview Prep Path: State, Effects, Performance',
     subtitle:
-      'Prepare for React interview rounds with a clear sequence covering component design, rendering behavior, and state management decisions.',
+      'A 7/14/30-day React interview prep path for frontend engineers who need cleaner state design, effect reasoning, and performance trade-off communication.',
     minutes: 9,
     tags: ['react', 'interview-prep', 'hooks', 'state', 'performance'],
+    firstFoldSignals: [
+      'Best fit: React interviews that mix hooks, rerender reasoning, machine coding, and performance follow-ups in the same loop.',
+      'Cadence: 7 days to stabilize hook and effect answers, 14 days to make state-design choices repeatable, 30 days to make UI coding and trade-off narration mock-ready.',
+      'Editorial stance: this page assumes you already ship React and need interview-grade reasoning, not beginner framework onboarding.',
+    ],
     outcomes: [
       'Design React components that are testable, accessible, and easy to reason about.',
       'Diagnose rerender issues, stale state, and effect-related bugs quickly.',
@@ -2031,11 +2042,16 @@ function onInput(value) {
   },
   'angular-prep-path': {
     pathLabel: 'Angular prep path',
-    title: 'Angular Prep Path: RxJS, Architecture, Tests',
+    title: 'Angular Interview Prep Path: RxJS, Architecture, Tests',
     subtitle:
-      'A practical Angular prep path for RxJS decisions, architecture boundaries, and testable component design.',
+      'A 7/14/30-day Angular interview prep path for RxJS decisions, change-detection debugging, DI boundaries, and testable component design.',
     minutes: 9,
     tags: ['angular', 'interview-prep', 'rxjs', 'testing', 'architecture'],
+    firstFoldSignals: [
+      'Best fit: Angular interviews that combine RxJS, change detection, DI, routing, forms, and testing in one evaluation arc.',
+      'Cadence: 7 days to stop the most frequent RxJS and change-detection misses, 14 days to make architecture answers repeatable, 30 days to make coding and testing choices resilient.',
+      'Editorial stance: this path is tuned for interview compression, not for relearning Angular from scratch.',
+    ],
     intro: {
       paragraphs: [
         'If you can ship Angular features at work but interviews still feel unstable, that is usually a compression issue, not a fundamentals issue.',
@@ -3866,11 +3882,16 @@ function onInput(value) {
   },
   'vue-prep-path': {
     pathLabel: 'Vue prep path',
-    title: 'Vue Prep Path: Reactivity, Rendering, State',
+    title: 'Vue Interview Prep Path: Reactivity, Rendering, State',
     subtitle:
-      'Prep for Vue interviews with a practical sequence that covers reactivity pitfalls, rendering timing, and component communication decisions you will be asked to justify.',
+      'A 7/14/30-day Vue interview prep path for reactivity debugging, nextTick timing, component contracts, and state trade-off decisions.',
     minutes: 9,
     tags: ['vue', 'interview-prep', 'reactivity', 'rendering', 'patterns'],
+    firstFoldSignals: [
+      'Best fit: Vue interviews that mix reactivity questions with component-communication and runtime-debugging prompts.',
+      'Cadence: 7 days to stabilize reactivity and timing answers, 14 days to make component data-flow choices repeatable, 30 days to make coding and debugging stories mock-ready.',
+      'Editorial stance: this page optimizes for defendable Vue reasoning under follow-ups, not generic framework exploration.',
+    ],
     intro: {
       paragraphs: [
         'If Vue prep feels split across framework details, trivia bursts, and “build this in 30 minutes” prompts, you are not alone. This guide is for engineers who already ship Vue and want a cleaner interview rhythm.',
@@ -5633,11 +5654,21 @@ function onInput(value) {
       [leftNav]="leftNav"
       [readerPromise]="readerPromise || undefined"
     >
-      <p *ngIf="!isJavascriptPath">
-        This <a [routerLink]="['/guides/framework-prep']">{{ config.pathLabel }}</a> is built for interview preparation,
-        not generic docs reading. Start with the quick path below, then use the full sequence to close weak spots
-        before final interview rounds.
+      <p *ngIf="isJavascriptPath" class="fp-first-fold-lead">
+        Use this page if your loop is JavaScript-heavy, mixes browser-debugging follow-ups with one or two utility prompts, or keeps exposing the same misses: async ordering mistakes, stale-response races, closure-in-loop bugs, <code>this</code> call-site confusion, debounce/throttle misuse, and deep-clone contract traps.
       </p>
+      <p *ngIf="isReactPath" class="fp-first-fold-lead">
+        Use this page if your React loop mixes concept screens with UI-building rounds and the same follow-ups keep hurting you: stale closures in effects, derived-state drift, context fan-out, memoization cargo cults, or performance guesses without a clear render model.
+      </p>
+      <p *ngIf="isAngularPath" class="fp-first-fold-lead">
+        Use this page if your Angular loop mixes operator-choice questions, architecture and debugging follow-ups, and component or forms tasks, but the same misses keep repeating: wrong RxJS operator semantics, OnPush patching without trigger reasoning, provider-scope confusion, CVA boundaries, and tests that ignore async or DOM timing.
+      </p>
+      <p *ngIf="isVuePath" class="fp-first-fold-lead">
+        Use this page if your Vue loop tests reactivity mental models, component communication, and small feature-building prompts, but your current misses keep clustering around ref vs reactive confusion, watcher vs computed misuse, nextTick timing mistakes, emits contract drift, and provide/inject versus store overreach.
+      </p>
+      <ul *ngIf="config.firstFoldSignals?.length" class="fp-list fp-list--boxed fp-first-fold-signals">
+        <li *ngFor="let signal of config.firstFoldSignals">{{ signal }}</li>
+      </ul>
 
       <ng-container *ngIf="isJavascriptPath; else defaultFrameworkContent">
         <section class="jp-mastery-callout">
@@ -7190,6 +7221,17 @@ function onInput(value) {
       text-decoration-color: color-mix(in srgb, var(--uf-accent) 92%, transparent);
     }
 
+    :host ::ng-deep fa-guide-shell .content .fp-first-fold-lead {
+      margin: 2px 0 10px;
+      font-size: 1.02rem;
+      color: color-mix(in srgb, var(--uf-text-primary) 94%, white 6%);
+    }
+
+    :host ::ng-deep fa-guide-shell .content .fp-first-fold-signals {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
     :host ::ng-deep fa-guide-shell .content .fp-card {
       position: relative;
       border: 1px solid rgba(255, 255, 255, .10);
@@ -7530,6 +7572,9 @@ export class FrameworkPrepPathArticle {
   private readonly route = inject(ActivatedRoute);
   private readonly slug = this.route.snapshot.paramMap.get('slug') || '';
   readonly isJavascriptPath = this.slug === 'javascript-prep-path';
+  readonly isReactPath = this.slug === 'react-prep-path';
+  readonly isAngularPath = this.slug === 'angular-prep-path';
+  readonly isVuePath = this.slug === 'vue-prep-path';
 
   readonly config: FrameworkPrepConfig = (() => {
     return PREP_CONFIG[this.slug] ?? PREP_CONFIG['javascript-prep-path'];
