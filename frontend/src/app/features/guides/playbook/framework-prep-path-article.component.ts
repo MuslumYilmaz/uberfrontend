@@ -7221,13 +7221,13 @@ function onInput(value) {
       text-decoration-color: color-mix(in srgb, var(--uf-accent) 92%, transparent);
     }
 
-    :host ::ng-deep fa-guide-shell .content .fp-first-fold-lead {
+    :host p.fp-first-fold-lead {
       margin: 2px 0 10px;
       font-size: 1.02rem;
       color: color-mix(in srgb, var(--uf-text-primary) 94%, white 6%);
     }
 
-    :host ::ng-deep fa-guide-shell .content .fp-first-fold-signals {
+    :host ul.fp-list.fp-list--boxed.fp-first-fold-signals {
       margin-top: 0;
       margin-bottom: 12px;
     }
