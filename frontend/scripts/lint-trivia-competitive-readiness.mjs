@@ -67,7 +67,7 @@ function shouldExpectReview(entry) {
     || String(entry?.editorial?.competitorReview || '').trim(),
   );
   if (isDraftBacked) return true;
-  return Number(entry?.importance || 0) === 5;
+  return Number(entry?.importance || 0) >= 4;
 }
 
 function validateEntry(entry, tech) {
