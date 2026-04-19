@@ -179,7 +179,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'javascript prep path',
             keywords: ['javascript prep path', 'javascript interview study plan', 'javascript async closures state'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-04-19',
         },
         load: () =>
             import('../../features/guides/playbook/javascript-prep-path-article.component')
@@ -196,7 +196,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'react prep path',
             keywords: ['react prep path', 'react interview study plan', 'react state effects performance'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-04-19',
         },
         load: () =>
             import('../../features/guides/playbook/react-prep-path-article.component')
@@ -213,7 +213,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'angular prep path',
             keywords: ['angular prep path', 'angular interview study plan', 'angular rxjs architecture tests'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-04-19',
         },
         load: () =>
             import('../../features/guides/playbook/angular-prep-path-article.component')
@@ -230,7 +230,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'vue prep path',
             keywords: ['vue prep path', 'vue interview study plan', 'vue reactivity rendering state'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-04-19',
         },
         load: () =>
             import('../../features/guides/playbook/vue-prep-path-article.component')
