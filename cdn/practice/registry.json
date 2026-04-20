@@ -8233,7 +8233,7 @@
     "route": "/react/trivia/react-hooks-youve-used",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Interviewers want to see that you can choose Hooks intentionally: state, effects, refs, memoization, context, reducers, and concurrent features. Explain what each Hook is for, when you reach for it, and the trade-offs.",
+    "summary": "A strong hooks answer is a decision matrix, not a hook inventory. Explain useState vs useReducer, useRef vs state, useEffect vs derived logic, and when memoization or concurrent hooks actually earn their complexity.",
     "tags": [
       "react",
       "hooks",
@@ -8244,7 +8244,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-19",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-hooks-youve-used"
   },
@@ -9946,7 +9946,7 @@
     "route": "/vue/trivia/vuex-state-management",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Explain Vuex as centralized shared-state infrastructure, including predictable writes, devtools tracing, boilerplate cost, and when global store usage becomes a performance or architecture pitfall.",
+    "summary": "Explain Vuex as centralized shared-state infrastructure for business data that crosses component or route boundaries. The valuable answer is deciding what belongs in the store, why predictable writes help debugging, and…",
     "tags": [
       "vue",
       "vuex",
@@ -9957,7 +9957,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-04-19",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vuex-state-management"
   },

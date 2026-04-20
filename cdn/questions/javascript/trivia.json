@@ -4889,8 +4889,8 @@
     "access": "free",
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "What is currying in JavaScript?",
-      "description": "Currying turns f(a, b, c) into f(a)(b)(c). Use it for reusable partially configured helpers, not for one-off JavaScript code that becomes harder to read."
+      "title": "JavaScript currying vs partial application: reusable helpers and when not to use it",
+      "description": "Explain currying through the real interview trade-off: reusable partially configured helpers, clearer composition, and the point where extra indirection becomes harder to justify."
     },
     "incidentCard": {
       "title": "Currying Use-Case Check",

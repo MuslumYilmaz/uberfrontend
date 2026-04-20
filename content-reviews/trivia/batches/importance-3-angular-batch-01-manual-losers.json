@@ -1,0 +1,20 @@
+{
+  "batchId": "importance-3-angular-batch-01-manual-losers",
+  "scope": "manual competitive rewrite candidates from angular importance-3 batch 01",
+  "items": [
+    {
+      "contentId": "angular-forroot-forchild",
+      "severity": "watchlist",
+      "hardestCompetitors": [
+        "angular.dev",
+        "v18.angular.dev"
+      ],
+      "reasons": [
+        "the answer explains the legacy NgModule pattern well but underplays how much less central it is in standalone-first Angular",
+        "follow-up coverage on providedIn versus forRoot is weaker than the official singleton-services guidance",
+        "the answer needs a sharper modern-context note so it feels current instead of only historically correct"
+      ],
+      "recommendedAction": "if revisited later, add one early block that frames forRoot and forChild as a mostly legacy NgModule pattern, then contrast router setup with the modern providedIn and provideRouter defaults"
+    }
+  ]
+}
