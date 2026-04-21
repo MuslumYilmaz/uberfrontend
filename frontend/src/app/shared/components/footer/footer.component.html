@@ -9,6 +9,7 @@
         <div class="left">
             <a *ngIf="isPractice && practiceLeftLabel && practiceLeftRoute" class="left-trigger left-trigger--link"
                 [routerLink]="practiceLeftRoute"
+                [queryParams]="practiceLeftQueryParams || null"
                 [attr.aria-label]="practiceLeftLabel"
                 [attr.title]="practiceLeftLabel"
                 data-testid="footer-left">

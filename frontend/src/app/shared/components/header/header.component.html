@@ -1,0 +1,216 @@
+<div class="fah-topbar" role="banner" (click)="$event.stopPropagation()">
+  <div class="fah-inner">
+    <div class="fah-left">
+      <a
+        class="fah-brand"
+        data-testid="header-brand"
+        routerLink="/dashboard"
+        (click)="trackBrandClick()"
+      >
+        FrontendAtlas
+      </a>
+      <button
+        type="button"
+        #mobileStudyTrigger
+        class="fah-mobile-study"
+        data-testid="header-mobile-study-button"
+        (click)="toggleMega($event)"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="megaOpen()"
+        aria-controls="prepare-mega"
+        [class.fah-mobile-study--active]="megaOpen() || isStudyActive()"
+        aria-label="Open interview prep menu"
+      >
+        <i class="pi pi-book" aria-hidden="true"></i>
+        <span>Interview Prep</span>
+        <span class="caret" aria-hidden="true">▾</span>
+      </button>
+    </div>
+
+    <div class="fah-center">
+      <button
+        #desktopStudyTrigger
+        class="fah-navlink"
+        [class.fah-navlink--active]="megaOpen() || isStudyActive()"
+        (click)="toggleMega($event)"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="megaOpen()"
+        aria-controls="prepare-mega"
+      >
+        Interview Prep <span class="caret" aria-hidden="true">▾</span>
+      </button>
+    </div>
+
+    <div class="fah-right" (click)="$event.stopPropagation()">
+      <div class="fah-desktop-actions">
+        <div class="fah-profile fah-profile-right">
+          <button
+            type="button"
+            class="fah-avatar"
+            data-testid="header-profile-button"
+            (click)="toggleProfileMenu($event)"
+            aria-haspopup="menu"
+            [attr.aria-label]="profileOpen() ? 'Close account menu' : 'Open account menu'"
+            [attr.aria-expanded]="profileOpen()"
+          >
+            <i class="pi pi-user"></i>
+          </button>
+          <div *ngIf="profileOpen()" class="fah-menu" role="menu" data-testid="header-profile-menu" (click)="$event.stopPropagation()">
+            <div class="fah-menu-section">Account</div>
+
+            <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
+              <a class="fah-menu-item" routerLink="/profile" (click)="closeAll()" data-testid="header-menu-profile">
+                <i class="pi pi-user"></i> My profile
+              </a>
+              <a *ngIf="isAdmin()" class="fah-menu-item" routerLink="/admin/users" (click)="closeAll()" data-testid="header-menu-admin-users">
+                <i class="pi pi-shield"></i> Admin: Users
+              </a>
+              <div class="fah-divider"></div>
+              <button class="fah-menu-item" (click)="logout()" data-testid="header-menu-logout"><i class="pi pi-sign-out"></i> Log out</button>
+            </ng-container>
+
+            <ng-template #profileDisabled>
+              <button class="fah-menu-item" routerLink="/auth/signup" (click)="closeAll()" data-testid="header-menu-signup">
+                <i class="pi pi-user-plus"></i> Sign up
+              </button>
+              <button class="fah-menu-item" routerLink="/auth/login" (click)="closeAll()" data-testid="header-menu-login">
+                <i class="pi pi-sign-in"></i> Log in
+              </button>
+            </ng-template>
+          </div>
+        </div>
+
+        <a
+          *ngIf="!isPro()"
+          class="fah-cta fah-cta-solid"
+          [routerLink]="ctaLink()"
+          (click)="trackUtilityClick(isPro() ? '/profile' : '/pricing')"
+        >
+          {{ ctaLabel() }}
+        </a>
+      </div>
+
+      <div class="fah-mobile-actions">
+        <a
+          *ngIf="auth.isLoggedIn()"
+          class="fah-avatar fah-profile--mobile-link"
+          data-testid="header-mobile-profile-button"
+          routerLink="/profile"
+          (click)="trackUtilityClick('/profile')"
+          aria-label="Open profile"
+        >
+          <i class="pi pi-user"></i>
+        </a>
+        <button
+          type="button"
+          class="fah-iconbtn"
+          data-testid="header-mobile-menu-button"
+          (click)="toggleSidebarDrawer($event)"
+          [attr.aria-expanded]="sidebarDrawerOpen()"
+          aria-controls="app-sidebar-drawer"
+          [attr.aria-label]="sidebarDrawerOpen() ? 'Close sidebar' : 'Open sidebar'"
+        >
+          <i class="pi" [ngClass]="sidebarDrawerOpen() ? 'pi-times' : 'pi-bars'"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="megaOpen()">
+    <div class="fah-backdrop" (click)="closeAll()"></div>
+    <div
+      id="prepare-mega"
+      class="study-panel study-panel--compact"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="closeAll()"
+      (keydown.arrowdown)="moveActive(1)"
+      (keydown.arrowup)="moveActive(-1)"
+      (keydown.enter)="activateActive()"
+      [style.left.px]="megaAnchorX()"
+      tabindex="-1"
+      role="menu"
+      aria-label="Interview prep menu"
+    >
+      <div class="study-search">
+        <i class="pi pi-search"></i>
+        <input type="text" [value]="searchTerm" (input)="onSearchInput($event)" placeholder="Search guides, companies, or practice" />
+        <span class="shortcut" aria-hidden="true">/</span>
+      </div>
+
+      <div class="study-scroll">
+        <ng-container *ngIf="!isSearching(); else searchMode">
+          <div class="study-section">
+            <div class="study-section__title">Start here</div>
+            <div class="study-list study-list--primary">
+              <a
+                *ngFor="let action of studyPrimaryActions()"
+                class="study-row study-row--primary"
+                [routerLink]="action.route"
+                [queryParams]="action.queryParams || null"
+                [attr.data-testid]="'header-study-' + action.key"
+                (click)="onStudyPrimaryAction(action)"
+              >
+                <div class="row-icon"><i class="pi" [ngClass]="action.icon"></i></div>
+                <div class="row-body">
+                  <div class="row-title">
+                    {{ action.title }}
+                    <span *ngIf="action.badge" class="badge">{{ action.badge }}</span>
+                  </div>
+                  <div class="row-sub">{{ action.subtitle }}</div>
+                </div>
+                <div class="row-meta"><i class="pi pi-arrow-right"></i></div>
+              </a>
+            </div>
+          </div>
+
+          <p class="study-panel__hint">
+            Use search when you want to jump directly to a guide, company pack, or practice surface.
+          </p>
+        </ng-container>
+
+        <ng-template #searchMode>
+          <div class="study-section">
+            <div class="study-section__title">Results</div>
+            <div class="study-list">
+              <ng-container *ngFor="let item of searchResults(); let idx = index">
+                <div *ngIf="item.disabled || !intentToLink(item); else searchRow" class="study-row disabled" role="button" aria-disabled="true">
+                  <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                  <div class="row-body">
+                    <div class="row-title">
+                      {{ item.title }}
+                      <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                    </div>
+                    <div class="row-sub">{{ item.subtitle }}</div>
+                  </div>
+                  <div class="row-meta"><span class="badge">{{ item._group }}</span></div>
+                </div>
+                <ng-template #searchRow>
+                  <a
+                    class="study-row"
+                    [class.active]="activeIndex() === rowIndex('search-' + idx)"
+                    [routerLink]="intentToLink(item)!"
+                    (click)="onItemNavigate(item)"
+                  >
+                    <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                    <div class="row-body">
+                      <div class="row-title">
+                        {{ item.title }}
+                        <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                      </div>
+                      <div class="row-sub">{{ item.subtitle }}</div>
+                    </div>
+                    <div class="row-meta">
+                      <span class="badge">{{ item._group }}</span>
+                      <i class="pi pi-arrow-right"></i>
+                    </div>
+                  </a>
+                </ng-template>
+              </ng-container>
+              <div *ngIf="!searchResults().length" class="empty-state">No matches</div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+</div>

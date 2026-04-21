@@ -80,6 +80,37 @@
                 </div>
             </section>
 
+            <section class="practice-frame" data-testid="trivia-practice-frame" aria-label="Interview practice context">
+                <div class="practice-frame__copy">
+                    <div class="practice-frame__kicker">Interview concept practice</div>
+                    <p class="practice-frame__text">Use this answer, then continue with related practice.</p>
+                </div>
+                <div class="practice-frame__actions">
+                    <a
+                        class="practice-frame__cta practice-frame__cta--primary"
+                        data-testid="trivia-practice-frame-primary"
+                        data-trivia-link-zone="prep_bridge"
+                        [routerLink]="['/coding']"
+                        [queryParams]="{ kind: 'trivia', reset: 1 }">
+                        Practice from Question Library
+                    </a>
+                    <a
+                        class="practice-frame__cta"
+                        data-testid="trivia-practice-frame-plan"
+                        data-trivia-link-zone="prep_bridge"
+                        [routerLink]="studyPlanRoute()">
+                        Follow {{ studyPlanLabel() }}
+                    </a>
+                    <a
+                        class="practice-frame__link"
+                        data-testid="trivia-practice-frame-hub"
+                        data-trivia-link-zone="prep_bridge"
+                        [routerLink]="interviewQuestionsHubRoute()">
+                        Browse related concept questions
+                    </a>
+                </div>
+            </section>
+
             <!-- Title + chips -->
             <header class="title-block">
                 <div class="title-row">
@@ -246,10 +277,10 @@
                 <div class="card-head">Preparing for interviews?</div>
                 <div class="card-body prep-bridge__body">
                     <p class="prep-bridge__text">
-                        Use the relevant interview-question hub first, then move into a concrete study plan before targeted company sets.
+                        Use the Question Library first, then move into a concrete study plan before targeted company sets.
                     </p>
                     <div class="prep-bridge__links">
-                        <a data-trivia-link-zone="prep_bridge" [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/coding']" [queryParams]="{ kind: 'trivia', reset: 1 }">Browse concept questions in Question Library</a>
                         <a data-trivia-link-zone="prep_bridge" [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
                         <a data-trivia-link-zone="prep_bridge" [routerLink]="['/companies']">Browse company questions</a>
                         <a *ngIf="hasFrameworkPrepPath()" data-trivia-link-zone="prep_bridge" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
@@ -405,7 +436,7 @@
 
 <!-- Footer -->
 <app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
-    [practiceLeftLabel]="'Incidents hub'" [practiceLeftRoute]="['/incidents']"
+    [practiceLeftLabel]="'Question Library'" [practiceLeftRoute]="['/coding']" [practiceLeftQueryParams]="{ kind: 'trivia', reset: 1 }"
     [showSubmit]="true" [submitLabel]="submitLabel()" [submitDisabled]="isCompletionPending()"
     (submit)="markComplete()" (prev)="prev()" (next)="next()" (back)="backToReturn()">
 </app-footer>

@@ -2,119 +2,59 @@
   <header class="fa-page-header iq-header">
     <p class="fa-page-kicker">{{ isMasterHub() ? 'Interview questions hub' : 'Technology interview hub' }}</p>
     <h1 class="fa-page-title">{{ config.title }}</h1>
-    <p class="fa-page-subtitle">
-      {{ introLead() }}
-    </p>
+    <p class="fa-page-subtitle">{{ introLead() }}</p>
   </header>
 
-  <section class="iq-start">
+  <section class="iq-start iq-start--decision">
     <div class="iq-start__content">
-      <p class="iq-start__eyebrow">Start here</p>
-      <h2 class="iq-start__title">Start interview prep in 30 seconds</h2>
+      <p class="iq-start__eyebrow">Choose your route</p>
+      <h2 class="iq-start__title">Start with one clear path</h2>
       <p class="iq-start__text">
-        Start with one crucial question first, then move into study plans and deeper prep routes once momentum is established.
+        Pick one route now. Open broader hubs, deeper plans, and full libraries only after you need more surface area.
       </p>
-      <div class="iq-start__actions">
-        <a class="iq-cta iq-cta--primary" [routerLink]="['/coding']" [queryParams]="{ kind: 'coding' }">
-          Start one crucial coding question
-        </a>
-        <a class="iq-cta iq-cta--secondary" [routerLink]="['/tracks']">
-          Open study plans
-        </a>
-      </div>
       <div class="iq-tech-pills">
         <span class="iq-tech-pill" *ngFor="let tech of config.techs">{{ techLabel(tech) }}</span>
       </div>
     </div>
-
-    <div class="iq-start__stats" aria-label="Question snapshot">
-      <p class="iq-start__stats-title">Current essentials</p>
-      <dl class="iq-inline-stats">
-        <div class="iq-inline-stat">
-          <dt>Coding</dt>
-          <dd>{{ loading ? '—' : codingQuestions.length }}</dd>
-        </div>
-        <div class="iq-inline-stat">
-          <dt>Concepts</dt>
-          <dd>{{ loading ? '—' : triviaQuestions.length }}</dd>
-        </div>
-        <div class="iq-inline-stat">
-          <dt>Must know</dt>
-          <dd>{{ loading ? '—' : mustKnowCount() }}</dd>
-        </div>
-      </dl>
-    </div>
   </section>
 
-  <section class="iq-intro">
-    <div class="iq-intro__layout">
-      <div class="iq-intro__plan">
-        <p class="iq-intro__title">Prep plan at a glance</p>
-        <p class="iq-intro__lead">Use this page as a planning surface for interview prep, not just a random question feed.</p>
-        <ul class="iq-intent-list">
-          <li *ngFor="let item of listIntentItems()">{{ item }}</li>
-        </ul>
+  <section class="iq-route-grid" aria-label="Primary interview prep routes">
+    <a
+      *ngFor="let card of routeCards()"
+      class="iq-route-card"
+      [attr.data-route-key]="card.key"
+      [routerLink]="card.route"
+      [queryParams]="card.queryParams || null"
+      (click)="trackRouteCardSelection(card)"
+    >
+      <div class="iq-route-card__kicker">
+        {{ card.key === 'study_plan' ? 'Structured path' : 'Quick start' }}
       </div>
-
-      <div class="iq-intro__links">
-        <details class="iq-hub-details">
-          <summary>More routes and deep-dive links</summary>
-          <div class="iq-link-group">
-            <p class="iq-link-group__label">Primary prep routes</p>
-            <div class="iq-links iq-links--primary">
-              <a *ngFor="let link of practiceRouteLinks()" [routerLink]="link.route" [queryParams]="link.query || null">
-                Open {{ link.label | lowercase }}
-                <span class="iq-link-badge" *ngIf="link.badge">{{ link.badge }}</span>
-              </a>
-              <a [routerLink]="['/tracks']">Open study plans and tracks</a>
-              <a [routerLink]="['/guides']">Open guides hub</a>
-              <a [routerLink]="['/focus-areas']">Open focus areas</a>
-              <a *ngIf="!isMasterHub()" [routerLink]="['/interview-questions']">Open frontend interview questions hub</a>
-            </div>
-          </div>
-
-          <details class="iq-hub-details">
-            <summary>Explore public study plans</summary>
-            <div class="iq-links iq-links--hubs">
-              <a *ngFor="let plan of prepPlanLinks()" [routerLink]="plan.route">
-                {{ plan.label }}: {{ plan.summary }}
-              </a>
-            </div>
-          </details>
-
-          <details class="iq-hub-details" *ngIf="!isMasterHub() && featuredLinks.length">
-            <summary>Explore recommended deep-dive leaves</summary>
-            <div class="iq-links iq-links--hubs">
-              <a *ngFor="let link of featuredLinks" [routerLink]="link.route">{{ link.label }}</a>
-            </div>
-          </details>
-
-          <details class="iq-hub-details" *ngIf="isMasterHub()">
-            <summary>Explore technology interview-question hubs</summary>
-            <div class="iq-links iq-links--hubs">
-              <a *ngFor="let hub of masterTechHubLinks()" [routerLink]="hub.route">{{ hub.label }}</a>
-            </div>
-          </details>
-
-          <details class="iq-hub-details" *ngIf="!isMasterHub()">
-            <summary>Explore related interview-question hubs</summary>
-            <div class="iq-links iq-links--hubs">
-              <a *ngFor="let hub of relatedHubLinks" [routerLink]="hub.route">{{ hub.label }}</a>
-            </div>
-          </details>
-        </details>
-      </div>
-    </div>
+      <h2 class="iq-route-card__title">{{ card.title }}</h2>
+      <p class="iq-route-card__copy">{{ card.subtitle }}</p>
+      <span class="iq-route-card__cta">Open route →</span>
+    </a>
   </section>
 
   <section class="iq-section iq-section--surface">
-    <div class="iq-section__head">
-      <h2 class="fa-section-title iq-section__title">{{ codingSectionTitle() }}</h2>
-      <p class="fa-meta-text">{{ codingSectionSubtitle() }}</p>
+    <div class="iq-section__head iq-section__head--split">
+      <div>
+        <h2 class="fa-section-title iq-section__title">{{ codingSectionTitle() }}</h2>
+        <p class="fa-meta-text">{{ codingSectionSubtitle() }}</p>
+      </div>
+      <a
+        class="iq-inline-link"
+        [routerLink]="viewAllTarget('coding').route"
+        [queryParams]="viewAllTarget('coding').queryParams || null"
+        (click)="trackViewAll('coding')"
+      >
+        View full coding list
+      </a>
     </div>
+
     <ng-container *ngIf="!loading; else loadingState">
-      <ul class="iq-list" *ngIf="codingQuestions.length; else emptyCoding">
-        <li *ngFor="let q of codingQuestions">
+      <ul class="iq-list" *ngIf="previewRows('coding').length; else emptyCoding">
+        <li *ngFor="let q of previewRows('coding')">
           <a class="iq-item" [routerLink]="q.link">
             <div class="iq-item__title">{{ q.title }}</div>
             <div class="iq-item__meta">
@@ -128,17 +68,40 @@
           </a>
         </li>
       </ul>
+      <p class="iq-section__helper">
+        Need more implementation reps?
+        <a
+          [routerLink]="viewAllTarget('coding').route"
+          [queryParams]="viewAllTarget('coding').queryParams || null"
+          (click)="trackViewAll('coding')"
+        >
+          Open the full coding list
+        </a>
+        or
+        <a [routerLink]="['/tracks']">follow a study plan</a>.
+      </p>
     </ng-container>
   </section>
 
   <section class="iq-section iq-section--surface">
-    <div class="iq-section__head">
-      <h2 class="fa-section-title iq-section__title">{{ triviaSectionTitle() }}</h2>
-      <p class="fa-meta-text">{{ triviaSectionSubtitle() }}</p>
+    <div class="iq-section__head iq-section__head--split">
+      <div>
+        <h2 class="fa-section-title iq-section__title">{{ triviaSectionTitle() }}</h2>
+        <p class="fa-meta-text">{{ triviaSectionSubtitle() }}</p>
+      </div>
+      <a
+        class="iq-inline-link"
+        [routerLink]="viewAllTarget('trivia').route"
+        [queryParams]="viewAllTarget('trivia').queryParams || null"
+        (click)="trackViewAll('trivia')"
+      >
+        View full concepts list
+      </a>
     </div>
+
     <ng-container *ngIf="!loading; else loadingState">
-      <ul class="iq-list" *ngIf="triviaQuestions.length; else emptyTrivia">
-        <li *ngFor="let q of triviaQuestions">
+      <ul class="iq-list" *ngIf="previewRows('trivia').length; else emptyTrivia">
+        <li *ngFor="let q of previewRows('trivia')">
           <a class="iq-item" [routerLink]="q.link">
             <div class="iq-item__title">{{ q.title }}</div>
             <div class="iq-item__meta">
@@ -152,19 +115,30 @@
           </a>
         </li>
       </ul>
+      <p class="iq-section__helper">
+        Need more concept coverage?
+        <a
+          [routerLink]="viewAllTarget('trivia').route"
+          [queryParams]="viewAllTarget('trivia').queryParams || null"
+          (click)="trackViewAll('trivia')"
+        >
+          Open the full concepts list
+        </a>
+        or
+        <a [routerLink]="['/companies']">browse company packs</a>.
+      </p>
     </ng-container>
   </section>
 
   <section class="iq-next">
-    <h2 class="fa-section-title">Complete the prep loop</h2>
+    <h2 class="fa-section-title">Keep the scope tight</h2>
     <p>
-      After these {{ config.title }} drills, continue with
-      <a [routerLink]="['/interview-questions']">frontend interview questions hub</a>,
-      then
-      <a [routerLink]="['/guides']">frontend interview preparation guides</a>
+      Start with one route first. Then expand into
+      <a [routerLink]="['/interview-questions']">all interview hubs</a>,
+      <a [routerLink]="['/tracks']">study plans</a>,
       and
-      <a [routerLink]="['/tracks']">frontend interview study plans</a>
-      to keep your weekly plan structured.
+      <a [routerLink]="['/companies']">company target packs</a>
+      only when you need them.
     </p>
   </section>
 

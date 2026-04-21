@@ -1,15 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { signal } from '@angular/core';
 import { of } from 'rxjs';
-import { InterviewQuestionsLandingComponent } from './interview-questions-landing.component';
-import { PracticeRegistryService } from '../../core/services/practice-registry.service';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { QuestionService } from '../../core/services/question.service';
 import { SeoService } from '../../core/services/seo.service';
+import { InterviewQuestionsLandingComponent } from './interview-questions-landing.component';
 
 describe('InterviewQuestionsLandingComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
+  let analytics: jasmine.SpyObj<AnalyticsService>;
   let routeStub: any;
 
   beforeEach(async () => {
@@ -23,6 +23,8 @@ describe('InterviewQuestionsLandingComponent', () => {
         : `https://frontendatlas.com/${raw}`;
     });
 
+    analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
+
     routeStub = {
       snapshot: {
         data: {
@@ -30,45 +32,20 @@ describe('InterviewQuestionsLandingComponent', () => {
             keyword: 'react interview questions',
             title: 'React Interview Questions',
             techs: ['react'],
-            featuredLinks: [
-              {
-                label: 'React hooks deep dive',
-                route: ['/react/trivia/react-hooks-rules'],
-                path: '/react/trivia/react-hooks-rules',
-              },
-            ],
           },
           interviewQuestionsList: {
             techs: ['react'],
             coding: [
-              {
-                id: 'react-counter',
-                title: 'React Counter (Guarded Decrement)',
-                type: 'coding',
-                technology: 'react',
-                difficulty: 'easy',
-                access: 'free',
-                tags: [],
-                importance: 5,
-                companies: [],
-                description: 'Build a counter component with guarded decrement.',
-                tech: 'react',
-              },
+              { id: 'react-counter', title: 'React Counter', type: 'coding', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Build a counter.', tech: 'react' },
+              { id: 'react-tabs', title: 'React Tabs', type: 'coding', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 4, companies: [], description: 'Build tabs.', tech: 'react' },
+              { id: 'react-modal', title: 'React Modal', type: 'coding', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 3, companies: [], description: 'Build a modal.', tech: 'react' },
+              { id: 'react-grid', title: 'React Grid', type: 'coding', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 2, companies: [], description: 'Build a grid.', tech: 'react' },
             ],
             trivia: [
-              {
-                id: 'react-useeffect-purpose',
-                title: 'useEffect in React',
-                type: 'trivia',
-                technology: 'react',
-                difficulty: 'easy',
-                access: 'free',
-                tags: [],
-                importance: 4,
-                companies: [],
-                description: 'Explain when and why to use useEffect.',
-                tech: 'react',
-              },
+              { id: 'react-useeffect-purpose', title: 'useEffect in React', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain useEffect.', tech: 'react' },
+              { id: 'react-context', title: 'React Context', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 4, companies: [], description: 'Explain context.', tech: 'react' },
+              { id: 'react-memo', title: 'React memo', type: 'trivia', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 3, companies: [], description: 'Explain memo.', tech: 'react' },
+              { id: 'react-suspense', title: 'React Suspense', type: 'trivia', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 2, companies: [], description: 'Explain suspense.', tech: 'react' },
             ],
           },
           seo: {
@@ -89,58 +66,46 @@ describe('InterviewQuestionsLandingComponent', () => {
       providers: [
         { provide: ActivatedRoute, useValue: routeStub },
         { provide: SeoService, useValue: seo },
+        { provide: AnalyticsService, useValue: analytics },
         {
           provide: QuestionService,
           useValue: {
             loadQuestionSummaries: () => of([]),
           },
         },
-        {
-          provide: PracticeRegistryService,
-          useValue: {
-            primaryHubEntries: signal([
-              { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
-              { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident', badge: 'New' },
-              {
-                key: 'system-design',
-                label: 'System design',
-                icon: 'pi pi-sitemap',
-                route: '/coding',
-                query: { view: 'formats', category: 'system' },
-                family: 'question',
-              },
-              { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle', badge: 'New' },
-            ]),
-          },
-        },
       ],
     }).compileComponents();
   });
 
-  it('renders resolved coding and trivia links as crawlable anchors', async () => {
+  it('renders three primary route cards and limits each preview list to three items', async () => {
     const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.loading).toBeFalse();
+    expect(fixture.nativeElement.querySelectorAll('.iq-route-card').length).toBe(3);
+    expect(fixture.componentInstance.previewRows('coding').length).toBe(3);
+    expect(fixture.componentInstance.previewRows('trivia').length).toBe(3);
+    expect(fixture.nativeElement.textContent || '').toContain('View full coding list');
+    expect(fixture.nativeElement.textContent || '').toContain('View full concepts list');
+  });
 
-    const codingLink = fixture.nativeElement.querySelector('a[href="/react/coding/react-counter"]') as HTMLAnchorElement | null;
-    const triviaLink = fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-purpose"]') as HTMLAnchorElement | null;
-    const featuredLink = fixture.nativeElement.querySelector('a[href="/react/trivia/react-hooks-rules"]') as HTMLAnchorElement | null;
-    const incidentsLink = fixture.nativeElement.querySelector('a[href="/incidents"]') as HTMLAnchorElement | null;
-    const mustKnowChips = fixture.nativeElement.querySelectorAll('.iq-item__chip--priority[data-priority="must_know"]');
-    expect(codingLink).toBeTruthy();
-    expect(triviaLink).toBeTruthy();
-    expect(featuredLink).toBeTruthy();
-    expect(incidentsLink).toBeTruthy();
-    expect(fixture.componentInstance.mustKnowCount()).toBe(mustKnowChips.length);
+  it('tracks explicit view-all clicks from preview sections', async () => {
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
 
-    const priorityChip = fixture.nativeElement.querySelector('.iq-item__chip--priority[data-priority="must_know"]') as HTMLElement | null;
-    expect(priorityChip?.textContent || '').toContain('Must know');
+    const viewAll = fixture.nativeElement.querySelector('.iq-inline-link') as HTMLAnchorElement;
+    viewAll.click();
 
-    const loadingState = fixture.nativeElement.querySelector('.iq-loading');
-    expect(loadingState).toBeNull();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'interview_hub_view_all_clicked',
+      jasmine.objectContaining({
+        kind: 'coding',
+      }),
+    );
   });
 
   it('publishes CollectionPage schema through seo tags', async () => {
@@ -162,7 +127,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(breadcrumb).toBeTruthy();
   });
 
-  it('uses javascript-only crucial lists on master hub', async () => {
+  it('uses javascript-only preview lists on the master hub', async () => {
     routeStub.snapshot.data.interviewQuestions = {
       keyword: 'frontend interview questions',
       title: 'Frontend Interview Questions for Quick Prep',
@@ -172,60 +137,12 @@ describe('InterviewQuestionsLandingComponent', () => {
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
       coding: [
-        {
-          id: 'js-array-flatten',
-          title: 'Flatten nested arrays',
-          type: 'coding',
-          technology: 'javascript',
-          difficulty: 'easy',
-          access: 'free',
-          tags: [],
-          importance: 5,
-          companies: [],
-          description: 'Flatten nested arrays without libraries.',
-          tech: 'javascript',
-        },
-        {
-          id: 'react-context-selector',
-          title: 'Context selector optimization',
-          type: 'coding',
-          technology: 'react',
-          difficulty: 'hard',
-          access: 'free',
-          tags: [],
-          importance: 5,
-          companies: [],
-          description: 'Optimize context updates in React.',
-          tech: 'react',
-        },
+        { id: 'js-array-flatten', title: 'Flatten nested arrays', type: 'coding', technology: 'javascript', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Flatten arrays.', tech: 'javascript' },
+        { id: 'react-context-selector', title: 'Context selector optimization', type: 'coding', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 5, companies: [], description: 'Optimize context.', tech: 'react' },
       ],
       trivia: [
-        {
-          id: 'js-event-loop',
-          title: 'Event loop ordering',
-          type: 'trivia',
-          technology: 'javascript',
-          difficulty: 'easy',
-          access: 'free',
-          tags: [],
-          importance: 5,
-          companies: [],
-          description: 'Explain microtask vs macrotask order.',
-          tech: 'javascript',
-        },
-        {
-          id: 'react-usememo',
-          title: 'useMemo trade-offs',
-          type: 'trivia',
-          technology: 'react',
-          difficulty: 'intermediate',
-          access: 'free',
-          tags: [],
-          importance: 5,
-          companies: [],
-          description: 'Explain useMemo trade-offs.',
-          tech: 'react',
-        },
+        { id: 'js-event-loop', title: 'Event loop ordering', type: 'trivia', technology: 'javascript', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain microtasks.', tech: 'javascript' },
+        { id: 'react-usememo', title: 'useMemo trade-offs', type: 'trivia', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain useMemo.', tech: 'react' },
       ],
     };
     routeStub.snapshot.url = [{ path: 'interview-questions' }];

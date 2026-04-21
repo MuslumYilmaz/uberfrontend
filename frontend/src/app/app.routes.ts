@@ -973,7 +973,7 @@ export const routes: Routes = [
     data: NOT_FOUND_ROUTE_DATA,
   },
 
-  // NEW: Global Coding page — lists all coding questions; pills filter client-side
+  // Global question library — lists all practice questions; pills filter client-side
   {
     path: 'coding',
     loadComponent: () =>
@@ -987,8 +987,8 @@ export const routes: Routes = [
       source: 'global-coding',
       kind: 'coding',
       seo: {
-        title: 'Frontend Coding Challenges',
-        description: 'Practice frontend coding challenges by framework, difficulty, and focus area, then follow a clear interview prep roadmap from drills to review.',
+        title: 'Frontend Question Library',
+        description: 'Practice frontend interview questions by technology, format, difficulty, and focus area, then open coding, concept, and system design prompts from one library.',
       },
     },
   },

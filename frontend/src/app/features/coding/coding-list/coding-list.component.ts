@@ -17,8 +17,6 @@ import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { QuestionListResolved } from '../../../core/resolvers/question-list.resolver';
-import { PracticeCatalogEntry } from '../../../core/models/practice.model';
-import { PracticeRegistryService } from '../../../core/services/practice-registry.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
@@ -29,7 +27,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util';
 import { SeoMeta, SeoService } from '../../../core/services/seo.service';
 import { buildCodingListSeoMeta } from './coding-list-seo.util';
-import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
@@ -77,9 +74,13 @@ type FrameworkPrepLink = {
   sequenceLabel: string;
 };
 
-type InterviewHubLink = {
-  label: string;
+type ContextualSupportLink = {
+  eyebrow: string;
+  title: string;
+  body: string;
   route: any[];
+  cta: string;
+  testId: string;
 };
 
 type FocusSlug =
@@ -233,7 +234,6 @@ function inferCategory(q: any): CategoryKey {
     CodingFilterPanelComponent,
     OfflineBannerComponent,
     FaChipComponent,
-    PrepSignalGridComponent,
     FaButtonComponent,
     FaCardComponent,
     FaGlyphComponent,
@@ -244,16 +244,12 @@ function inferCategory(q: any): CategoryKey {
 })
 export class CodingListComponent implements OnInit, OnDestroy {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private readonly practiceRegistry = inject(PracticeRegistryService);
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
   mobileFiltersOpen = false;
   solvedIds = this.progress.solvedIds;
   solvedSet = computed(() => new Set(this.progress.solvedIds()));
   solvedIds$ = toObservable(this.progress.solvedIds);
-  readonly practiceRouteLinks = computed<PracticeCatalogEntry[]>(() =>
-    this.practiceRegistry.primaryHubEntries().filter((entry) => entry.key !== 'question-library'),
-  );
 
   // ----- filter UI state -----
   searchTerm = '';
@@ -614,17 +610,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { key: 'css' as Tech, label: 'CSS', badge: 'C3', cls: 'bg-blue-600 text-white' },
   ];
 
-  interviewHubLinks: InterviewHubLink[] = [
-    { label: 'Frontend interview warm-up hub', route: ['/interview-questions'] },
-    { label: 'JavaScript interview questions', route: ['/javascript/interview-questions'] },
-    { label: 'React interview questions', route: ['/react/interview-questions'] },
-    { label: 'Angular interview questions', route: ['/angular/interview-questions'] },
-    { label: 'Vue interview questions', route: ['/vue/interview-questions'] },
-    { label: 'HTML interview questions', route: ['/html/interview-questions'] },
-    { label: 'CSS interview questions', route: ['/css/interview-questions'] },
-    { label: 'HTML CSS interview questions', route: ['/html-css/interview-questions'] },
-  ];
-
   categoryTabs: Array<{ key: CategoryKey; label: string }> = [
     { key: 'ui', label: 'User interface' },
     { key: 'js-fn', label: 'JavaScript functions' },
@@ -647,31 +632,95 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return FRAMEWORK_PREP_LINKS.find((entry) => entry.tech === selectedTech) ?? null;
   }
 
+  contextualSupportLinks(): ContextualSupportLink[] {
+    if (this.source !== 'global-coding') return [];
+
+    const links: ContextualSupportLink[] = [];
+    if (!this.isFormatsMode()) {
+      links.push({
+        eyebrow: 'Warm-up hub',
+        title: 'Prefer a guided interview question route?',
+        body: 'Use the interview hub when you want a lighter starting point before filtering the full library.',
+        route: ['/interview-questions'],
+        cta: 'Open interview hub',
+        testId: 'interview-hub-support-link',
+      });
+    }
+
+    if (this.showFrameworkPrepSupport()) {
+      const prep = this.currentFrameworkPrep();
+      links.push({
+        eyebrow: 'Framework roadmap',
+        title: 'Need a framework prep path?',
+        body: prep
+          ? `${prep.label} sequences the concepts, drills, and review steps before you go deep on prompts.`
+          : 'Use the framework prep guide to sequence JavaScript, React, Angular, and Vue before UI drills.',
+        route: prep ? ['/guides/framework-prep', prep.slug] : ['/guides/framework-prep'],
+        cta: prep ? `Open ${prep.label}` : 'Open framework prep',
+        testId: 'framework-prep-support-link',
+      });
+    }
+
+    return links;
+  }
+
+  showFrameworkPrepSupport(): boolean {
+    if (this.source !== 'global-coding') return false;
+    if (this.isFormatsMode()) {
+      const category = this.selectedCategory$.value;
+      return !category || category === 'ui';
+    }
+    return !!this.currentFrameworkPrep();
+  }
+
+  pageKicker(): string {
+    if (this.source === 'global-coding') {
+      if (this.isSystemCategoryActive()) return 'System design route';
+      if (this.isFormatsMode()) return 'Practice formats';
+      return 'Question library';
+    }
+
+    if (this.source === 'company') return 'Company practice';
+    if (this.kind === 'trivia') return 'Concept route';
+    if (this.kind === 'all') return 'Question route';
+    return 'Coding route';
+  }
+
+  pageTitle(): string {
+    if (this.source === 'global-coding') {
+      if (this.isSystemCategoryActive()) return 'System Design Practice';
+      if (this.isFormatsMode()) return 'Practice Formats';
+      return 'Question Library';
+    }
+
+    return this.heading();
+  }
+
+  pageSubtitle(): string {
+    if (this.source === 'global-coding') {
+      if (this.isSystemCategoryActive()) {
+        return 'Practice frontend system design prompts from the unified question library, then open each scenario in the dedicated design workspace.';
+      }
+
+      if (this.isFormatsMode()) {
+        return 'Choose the format you want to rehearse, then filter the focused list without leaving the practice surface.';
+      }
+
+      return 'Search and filter frontend interview questions by technology, concept, difficulty, and focus area, then start one prompt immediately.';
+    }
+
+    if (this.source === 'company') {
+      return 'Filter company-tagged practice prompts and open the next question with your current list preserved.';
+    }
+
+    return 'Filter by difficulty and focus area, then start one prompt immediately.';
+  }
+
   get hasAppliedFilters(): boolean {
     return this.diffs$.value.length > 0
       || this.impTiers$.value.length > 0
       || this.selectedTags$.value.length > 0
       || (this.source === 'global-coding' && !this.isFormatsMode() && !!this.selectedTech$.value);
-  }
-
-  isUnsupportedPrepTechSelected(): boolean {
-    const selectedTech = this.selectedTech$.value;
-    return selectedTech === 'html' || selectedTech === 'css';
-  }
-
-  selectedPrepTechLabel(): string {
-    const selectedTech = this.selectedTech$.value;
-    if (!selectedTech) return '';
-    const selectedTab = this.techTabs.find((tab) => tab.key === selectedTech);
-    return selectedTab?.label ?? selectedTech;
-  }
-
-  prepSequenceItems(prep: FrameworkPrepLink): PrepSignalItem[] {
-    return [
-      { text: prep.sequenceLabel, route: ['/guides/framework-prep', prep.slug] },
-      { text: 'UI execution drills', route: ['/guides/interview-blueprint/ui-interviews'] },
-      { text: 'System design + communication', route: ['/guides/interview-blueprint/system-design'] },
-    ];
   }
 
   // --- UI handlers for sorting ---

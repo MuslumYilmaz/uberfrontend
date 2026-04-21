@@ -1,8 +1,9 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Params, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
@@ -26,294 +27,29 @@ type VisibleEntry = {
   isViewAll?: boolean;
 };
 
+type StudyPrimaryActionKey =
+  | 'continue'
+  | 'start_one_question'
+  | 'follow_plan'
+  | 'browse_full_library';
+
+type StudyPrimaryAction = {
+  key: StudyPrimaryActionKey;
+  title: string;
+  subtitle: string;
+  icon: string;
+  route: any[];
+  queryParams?: Params;
+  badge?: string | null;
+  item?: PrepareItem | null;
+};
+
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule, RouterModule],
   styleUrls: ['./header.component.css'],
-  template: `
-  <div class="fah-topbar" role="banner" (click)="$event.stopPropagation()">
-    <div class="fah-inner">
-      <!-- LEFT (brand) -->
-      <div class="fah-left">
-        <a class="fah-brand" routerLink="/">FrontendAtlas</a>
-        <button
-          type="button"
-          #mobileStudyTrigger
-          class="fah-iconbtn fah-mobile-study"
-          data-testid="header-mobile-study-button"
-          (click)="toggleMega($event)"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="megaOpen()"
-          aria-controls="prepare-mega"
-          aria-label="Open study menu">
-          <i class="pi pi-book"></i>
-        </button>
-      </div>
-
-      <!-- CENTER (Prepare trigger) -->
-      <div class="fah-center">
-        <button
-          #desktopStudyTrigger
-          class="fah-navlink"
-          (click)="toggleMega($event)"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="megaOpen()"
-          aria-controls="prepare-mega">
-          Study <span class="caret" aria-hidden="true">▾</span>
-        </button>
-      </div>
-
-      <!-- RIGHT (Desktop actions + compact mobile menu) -->
-      <div class="fah-right" (click)="$event.stopPropagation()">
-        <div class="fah-desktop-actions">
-          <a class="fah-btn" routerLink="/dashboard">Dashboard</a>
-          <a class="fah-btn fah-btn--hub" routerLink="/interview-questions" data-testid="header-interview-hub">
-            Interview Questions
-          </a>
-          <a *ngIf="!isPro()" class="fah-btn" routerLink="/pricing">Pricing</a>
-
-          <div class="fah-profile fah-profile-right">
-            <button type="button"
-                    class="fah-avatar" data-testid="header-profile-button"
-                    (click)="toggleProfileMenu($event)"
-                    aria-haspopup="menu"
-                    [attr.aria-label]="profileOpen() ? 'Close account menu' : 'Open account menu'"
-                    [attr.aria-expanded]="profileOpen()">
-              <i class="pi pi-user"></i>
-            </button>
-            <div *ngIf="profileOpen()" class="fah-menu" role="menu" data-testid="header-profile-menu" (click)="$event.stopPropagation()">
-              <div class="fah-menu-section">Account</div>
-
-              <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
-                <a class="fah-menu-item" routerLink="/profile" (click)="closeAll()" data-testid="header-menu-profile">
-                  <i class="pi pi-user"></i> My profile
-                </a>
-                <a *ngIf="isAdmin()" class="fah-menu-item" routerLink="/admin/users" (click)="closeAll()" data-testid="header-menu-admin-users">
-                  <i class="pi pi-shield"></i> Admin: Users
-                </a>
-                <div class="fah-divider"></div>
-                <button class="fah-menu-item" (click)="logout()" data-testid="header-menu-logout"><i class="pi pi-sign-out"></i> Log out</button>
-              </ng-container>
-
-              <ng-template #profileDisabled>
-                <button class="fah-menu-item" routerLink="/auth/signup" (click)="closeAll()" data-testid="header-menu-signup">
-                  <i class="pi pi-user-plus"></i> Sign up
-                </button>
-                <button class="fah-menu-item" routerLink="/auth/login" (click)="closeAll()" data-testid="header-menu-login">
-                  <i class="pi pi-sign-in"></i> Log in
-                </button>
-              </ng-template>
-            </div>
-          </div>
-
-          <!-- Luminous CTA -->
-          <a *ngIf="!isPro()" class="fah-cta fah-cta-solid" [routerLink]="ctaLink()">
-            {{ ctaLabel() }}
-          </a>
-        </div>
-
-        <div class="fah-mobile-actions">
-          <a
-            *ngIf="!auth.isLoggedIn() && !isPro()"
-            class="fah-btn fah-mobile-quicklink"
-            routerLink="/pricing"
-            data-testid="header-mobile-pricing-button">
-            Pricing
-          </a>
-          <a *ngIf="auth.isLoggedIn()"
-             class="fah-avatar fah-profile--mobile-link"
-             data-testid="header-mobile-profile-button"
-             routerLink="/profile"
-             aria-label="Open profile">
-              <i class="pi pi-user"></i>
-          </a>
-          <button
-            type="button"
-            class="fah-iconbtn"
-            data-testid="header-mobile-menu-button"
-            (click)="toggleSidebarDrawer($event)"
-            [attr.aria-expanded]="sidebarDrawerOpen()"
-            aria-controls="app-sidebar-drawer"
-            [attr.aria-label]="sidebarDrawerOpen() ? 'Close sidebar' : 'Open sidebar'">
-            <i class="pi" [ngClass]="sidebarDrawerOpen() ? 'pi-times' : 'pi-bars'"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- STUDY PANEL -->
-    <ng-container *ngIf="megaOpen()">
-      <div class="fah-backdrop" (click)="closeAll()"></div>
-      <div id="prepare-mega" class="study-panel" (click)="$event.stopPropagation()" (keydown.escape)="closeAll()"
-           (keydown.arrowdown)="moveActive(1)" (keydown.arrowup)="moveActive(-1)" (keydown.enter)="activateActive()"
-           [style.left.px]="megaAnchorX()"
-           tabindex="-1" role="menu" aria-label="Study menu">
-        <div class="study-search">
-          <i class="pi pi-search"></i>
-          <input type="text" [value]="searchTerm" (input)="onSearchInput($event)" placeholder="Search study resources" />
-          <span class="shortcut" aria-hidden="true">/</span>
-        </div>
-        <div class="study-scroll">
-          <ng-container *ngIf="!isSearching(); else searchMode">
-            <ng-container *ngIf="recentItems().length">
-              <div class="study-section">
-                <div class="study-section__title">Recent</div>
-                <div class="study-list">
-                  <a *ngFor="let r of recentItems(); let idx = index"
-                     class="study-row"
-                     [class.active]="activeIndex() === rowIndex('recent-' + idx)"
-                     [routerLink]="intentToLink(r)!"
-                     (click)="onItemNavigate(r)">
-                    <div class="row-icon"><i class="pi" [ngClass]="r.pi"></i></div>
-                    <div class="row-body">
-                      <div class="row-title">{{ r.title }}</div>
-                      <div class="row-sub">{{ r.subtitle }}</div>
-                    </div>
-                    <div class="row-meta"><span class="badge">Recent</span><i class="pi pi-arrow-right"></i></div>
-                  </a>
-                </div>
-              </div>
-            </ng-container>
-
-            <ng-container *ngIf="topPicks().length">
-              <div class="study-section">
-                <div class="study-section__title">Top picks</div>
-                <div class="study-list">
-                  <ng-container *ngFor="let item of topPicks(); let idx = index">
-                    <div *ngIf="item.disabled || !intentToLink(item); else topPickRow" class="study-row disabled" role="button" aria-disabled="true">
-                      <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                      <div class="row-body">
-                        <div class="row-title">
-                          {{ item.title }}
-                          <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
-                        </div>
-                        <div class="row-sub">{{ item.subtitle }}</div>
-                      </div>
-                      <div class="row-meta"><i class="pi pi-lock"></i></div>
-                    </div>
-                    <ng-template #topPickRow>
-                      <a class="study-row"
-                         [class.active]="activeIndex() === rowIndex('top-' + idx)"
-                         [routerLink]="intentToLink(item)!"
-                         (click)="onItemNavigate(item)">
-                        <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                        <div class="row-body">
-                          <div class="row-title">
-                            {{ item.title }}
-                            <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
-                          </div>
-                          <div class="row-sub">{{ item.subtitle }}</div>
-                        </div>
-                        <div class="row-meta"><i class="pi pi-arrow-right"></i></div>
-                      </a>
-                    </ng-template>
-                  </ng-container>
-                </div>
-              </div>
-            </ng-container>
-
-            <button type="button" class="browse-row" (click)="toggleBrowseAll()">
-              <span>Browse all study resources</span>
-              <i class="pi" [ngClass]="browseAllOpen() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-            </button>
-
-            <ng-container *ngIf="browseAllOpen()">
-              <div *ngFor="let g of limitedGroups()" class="study-section">
-                <button type="button" class="group-header" (click)="toggleGroup(g.key)">
-                  <span>{{ g.title }}</span>
-                  <i class="pi" [ngClass]="isGroupExpanded(g.key) ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-                </button>
-                <div class="study-list" *ngIf="isGroupExpanded(g.key)">
-                  <ng-container *ngFor="let item of g.items; let ii = index">
-                    <div *ngIf="item.disabled || !intentToLink(item); else groupRow" class="study-row disabled" role="button" aria-disabled="true">
-                      <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                      <div class="row-body">
-                        <div class="row-title">
-                          {{ item.title }}
-                          <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
-                        </div>
-                        <div class="row-sub">{{ item.subtitle }}</div>
-                      </div>
-                      <div class="row-meta"><i class="pi pi-lock"></i></div>
-                    </div>
-                    <ng-template #groupRow>
-                      <a class="study-row"
-                         [class.active]="activeIndex() === rowIndex('grp-' + g.key + '-' + ii)"
-                         [routerLink]="intentToLink(item)!"
-                         (click)="onItemNavigate(item)">
-                        <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                        <div class="row-body">
-                          <div class="row-title">
-                            {{ item.title }}
-                            <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
-                          </div>
-                          <div class="row-sub">{{ item.subtitle }}</div>
-                        </div>
-                        <div class="row-meta"><i class="pi pi-arrow-right"></i></div>
-                      </a>
-                    </ng-template>
-                  </ng-container>
-                  <a *ngIf="viewAllLink(g)" class="study-row viewall-row"
-                     [class.active]="activeIndex() === rowIndex('grp-' + g.key + '-viewall')"
-                     [routerLink]="viewAllLink(g)!"
-                     (click)="onViewAll()">
-                    <div class="row-icon"><i class="pi pi-compass"></i></div>
-                    <div class="row-body">
-                      <div class="row-title">View all {{ g.title }}</div>
-                    </div>
-                    <div class="row-meta"><i class="pi pi-arrow-right"></i></div>
-                  </a>
-                </div>
-              </div>
-            </ng-container>
-          </ng-container>
-
-          <ng-template #searchMode>
-            <div class="study-section">
-              <div class="study-section__title">Results</div>
-              <div class="study-list">
-                <ng-container *ngFor="let item of searchResults(); let idx = index">
-                  <div *ngIf="item.disabled || !intentToLink(item); else searchRow" class="study-row disabled" role="button" aria-disabled="true">
-                    <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                    <div class="row-body">
-                      <div class="row-title">
-                        {{ item.title }}
-                        <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
-                      </div>
-                      <div class="row-sub">{{ item.subtitle }}</div>
-                    </div>
-                    <div class="row-meta"><span class="badge">{{ item._group }}</span></div>
-                  </div>
-                  <ng-template #searchRow>
-                    <a class="study-row"
-                       [class.active]="activeIndex() === rowIndex('search-' + idx)"
-                       [routerLink]="intentToLink(item)!"
-                       (click)="onItemNavigate(item)">
-                      <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                      <div class="row-body">
-                        <div class="row-title">
-                          {{ item.title }}
-                          <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
-                        </div>
-                        <div class="row-sub">{{ item.subtitle }}</div>
-                      </div>
-                      <div class="row-meta">
-                        <span class="badge">{{ item._group }}</span>
-                        <i class="pi pi-arrow-right"></i>
-                      </div>
-                    </a>
-                  </ng-template>
-                </ng-container>
-                <div *ngIf="!searchResults().length" class="empty-state">No matches</div>
-              </div>
-            </div>
-          </ng-template>
-        </div>
-      </div>
-    </ng-container>
-  </div>
-  `
+  templateUrl: './header.component.html',
 })
 export class HeaderComponent implements OnInit {
   @ViewChild('desktopStudyTrigger') desktopStudyTrigger?: ElementRef<HTMLButtonElement>;
@@ -323,9 +59,11 @@ export class HeaderComponent implements OnInit {
   private router = inject(Router);
   private hostEl = inject(ElementRef<HTMLElement>);
   private drawerState = inject(AppSidebarDrawerService);
+  private analytics = inject(AnalyticsService);
 
   // route state
   mode = signal<Mode>('dashboard');
+  currentPath = signal('/');
   currentTech = signal<'javascript' | 'angular' | 'react' | 'vue' | 'html' | 'css' | null>(null);
   section = signal<'coding' | 'trivia' | 'debug' | null>(null);
 
@@ -367,6 +105,85 @@ export class HeaderComponent implements OnInit {
     return this.auth.isLoggedIn() ? 'Upgrade' : 'Get full access';
   });
   ctaLink = computed(() => (this.isPro() ? ['/profile'] : ['/pricing']));
+  isStudyActive = computed(() => {
+    const path = this.currentPath();
+    if (
+      path === '/'
+      || path === '/dashboard'
+      || path.startsWith('/profile')
+      || path.startsWith('/admin')
+      || path.startsWith('/pricing')
+      || path.startsWith('/billing')
+      || path.startsWith('/auth')
+      || path.startsWith('/legal')
+      || path.startsWith('/404')
+      || path.startsWith('/changelog')
+    ) {
+      return false;
+    }
+
+    if (
+      path.startsWith('/interview-questions')
+      || path.startsWith('/coding')
+      || path.startsWith('/incidents')
+      || path.startsWith('/tradeoffs')
+      || path.startsWith('/tracks')
+      || path.startsWith('/companies')
+      || path.startsWith('/focus-areas')
+      || path.startsWith('/guides')
+      || path.startsWith('/system-design')
+    ) {
+      return true;
+    }
+
+    return /^\/(javascript|angular|react|vue|html|css)(\/|$)/.test(path);
+  });
+
+  studyPrimaryActions(): StudyPrimaryAction[] {
+    const recent = this.recentItems()[0] ?? null;
+    const recentLink = recent ? this.intentToLink(recent) : null;
+    const continueFallbackIsDashboard = this.auth.isLoggedIn();
+
+    return [
+      {
+        key: 'continue',
+        title: 'Continue where I left off',
+        subtitle: recent
+          ? recent.subtitle
+          : (this.auth.isLoggedIn()
+            ? 'Return to your dashboard or your last interview prep path.'
+            : 'Open the fastest route back into interview prep.'),
+        icon: 'pi-history',
+        route: recentLink ?? (continueFallbackIsDashboard ? ['/dashboard'] : ['/coding']),
+        queryParams: recent || continueFallbackIsDashboard ? undefined : { reset: 1 },
+        badge: recent ? 'Recent' : null,
+        item: recent,
+      },
+      {
+        key: 'start_one_question',
+        title: 'Start interview questions',
+        subtitle: 'Open the question library and jump into coding or concept practice fast.',
+        icon: 'pi-bolt',
+        route: ['/coding'],
+        queryParams: { reset: 1 },
+      },
+      {
+        key: 'follow_plan',
+        title: 'Follow a plan',
+        subtitle: 'Open guided tracks when you want a clearer sequence and less choice load.',
+        icon: 'pi-directions-alt',
+        route: ['/tracks'],
+      },
+      {
+        key: 'browse_full_library',
+        title: 'Browse full library',
+        subtitle: 'Open the full question library and filter by tech or format only when needed.',
+        icon: 'pi-database',
+        route: ['/coding'],
+        queryParams: { reset: 1 },
+      },
+    ];
+  }
 
   constructor() {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
@@ -421,46 +238,22 @@ export class HeaderComponent implements OnInit {
       return out;
     }
 
-    this.recentItems().forEach((it, idx) => {
-      const link = this.intentToLink(it);
-      if (!link || it.disabled) return;
-      out.push({ origin: `recent-${idx}`, item: it, link });
-    });
-
-    this.topPicks().forEach((it, idx) => {
-      const link = this.intentToLink(it);
-      if (!link || it.disabled) return;
-      out.push({ origin: `top-${idx}`, item: it, link });
-    });
-
-    if (this.browseAllOpen()) {
-      this.limitedGroups().forEach(g => {
-        if (!this.isGroupExpanded(g.key)) return;
-        g.items.forEach((it, ii) => {
-          const link = this.intentToLink(it);
-          if (!link || it.disabled) return;
-          out.push({ origin: `grp-${g.key}-${ii}`, item: it, link, group: g.title });
-        });
-        const viewAll = this.viewAllLink(g);
-        if (viewAll) {
-          const placeholder: PrepareItem = {
-            key: `viewall-${g.key}`,
-            title: `View all ${g.title}`,
-            subtitle: '',
-            pi: 'pi pi-compass',
-            intent: 'route',
-            target: { name: 'guides' } as any
-          };
-          out.push({
-            origin: `grp-${g.key}-viewall`,
-            item: placeholder,
-            link: viewAll,
-            isViewAll: true,
-            group: g.title
-          });
-        }
+    this.studyPrimaryActions().forEach((action, idx) => {
+      out.push({
+        origin: `primary-${idx}`,
+        item: action.item ?? {
+          key: `study-${action.key}`,
+          title: action.title,
+          subtitle: action.subtitle,
+          pi: action.icon,
+          intent: 'route',
+          target: { name: 'guides' } as any,
+          badge: action.badge ?? null,
+        },
+        link: action.route,
       });
-    }
+    });
+
     return out;
   }
 
@@ -469,7 +262,9 @@ export class HeaderComponent implements OnInit {
   }
 
   private parseUrl(url: string) {
-    const segs = url.split('?')[0].split('#')[0].split('/').filter(Boolean);
+    const cleanPath = url.split('?')[0].split('#')[0] || '/';
+    this.currentPath.set(cleanPath === '' ? '/' : cleanPath);
+    const segs = cleanPath.split('/').filter(Boolean);
 
     this.mode.set('dashboard');
     this.currentTech.set(null);
@@ -615,6 +410,7 @@ export class HeaderComponent implements OnInit {
     if (!inInput && key === '/') {
       ev.preventDefault();
       this.openOnly('mega');
+      this.analytics.track('header_study_opened', { trigger: 'shortcut' });
       this.activeIndex.set(0);
     }
   }
@@ -624,11 +420,13 @@ export class HeaderComponent implements OnInit {
     this.profileOpen.set(which === 'profile');
     if (which === 'mega') {
       this.syncMegaAnchor();
+      this.searchTerm = '';
       this.activeIndex.set(-1);
       this.browseAllOpen.set(false);
       this.loadRecents();
     } else {
       this.megaAnchorX.set(null);
+      this.searchTerm = '';
     }
   }
 
@@ -640,15 +438,23 @@ export class HeaderComponent implements OnInit {
     }
     this.syncMegaAnchor(ev);
     this.openOnly('mega');
+    this.trackTopNavClick('primary', 'study');
+    this.analytics.track('header_study_opened', { trigger: ev ? 'button' : 'shortcut' });
   }
   toggleProfileMenu(event?: Event) {
     event?.stopPropagation();
     this.drawerState.close();
+    if (!this.profileOpen()) {
+      this.trackTopNavClick('utility', 'account_menu');
+    }
     this.openOnly(this.profileOpen() ? null : 'profile');
   }
   toggleSidebarDrawer(event?: Event) {
     event?.stopPropagation();
     this.openOnly(null);
+    if (!this.sidebarDrawerOpen()) {
+      this.trackTopNavClick('mobile_menu', 'sidebar');
+    }
     this.drawerState.toggle();
   }
 
@@ -663,6 +469,35 @@ export class HeaderComponent implements OnInit {
     this.auth.logout().subscribe();
     this.closeAll();
     this.router.navigate(['/']);
+  }
+
+  onStudyPrimaryAction(action: StudyPrimaryAction) {
+    if (action.item) this.pushRecent(action.item);
+
+    if (action.key === 'browse_full_library') {
+      this.analytics.track('header_study_browse_full_library_clicked', {
+        route: this.serializeLink(action.route, action.queryParams),
+      });
+    } else {
+      this.analytics.track('header_study_primary_cta_clicked', {
+        action: action.key,
+        route: this.serializeLink(action.route, action.queryParams),
+      });
+    }
+
+    this.closeAll();
+  }
+
+  trackBrandClick() {
+    this.analytics.track('header_brand_clicked', {
+      surface: 'app',
+      destination: '/dashboard',
+      auth_state: this.authState(),
+    });
+  }
+
+  trackUtilityClick(destination: string) {
+    this.trackTopNavClick('utility', destination);
   }
 
   onItemNavigate(it: PrepareItem) {
@@ -685,6 +520,13 @@ export class HeaderComponent implements OnInit {
     const list = this.visibleItems();
     const idx = this.activeIndex();
     if (idx < 0 || idx >= list.length) return;
+    if (!this.isSearching()) {
+      const action = this.studyPrimaryActions()[idx];
+      if (!action) return;
+      this.onStudyPrimaryAction(action);
+      this.router.navigate(action.route, { queryParams: action.queryParams });
+      return;
+    }
     const entry = list[idx];
     if (!entry.link) return;
     this.onItemNavigate(entry.item);
@@ -764,5 +606,31 @@ export class HeaderComponent implements OnInit {
     const style = this.doc.defaultView?.getComputedStyle(el);
     if (!style) return true;
     return style.display !== 'none' && style.visibility !== 'hidden';
+  }
+
+  private serializeLink(route: any[], queryParams?: Params): string {
+    const path = route.map((segment) => String(segment || '')).join('/') || '/';
+    if (!queryParams || !Object.keys(queryParams).length) return path;
+    const query = new URLSearchParams(
+      Object.entries(queryParams).reduce<Record<string, string>>((acc, [key, value]) => {
+        if (value !== null && value !== undefined) acc[key] = String(value);
+        return acc;
+      }, {})
+    ).toString();
+    return query ? `${path}?${query}` : path;
+  }
+
+  private trackTopNavClick(area: 'primary' | 'utility' | 'mobile_menu', destination: string) {
+    this.analytics.track('header_top_nav_clicked', {
+      surface: 'app',
+      area,
+      destination,
+      auth_state: this.authState(),
+    });
+  }
+
+  private authState(): 'guest' | 'logged_in_free' | 'logged_in_pro' {
+    if (!this.auth.isLoggedIn()) return 'guest';
+    return this.isPro() ? 'logged_in_pro' : 'logged_in_free';
   }
 }

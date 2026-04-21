@@ -1,8 +1,8 @@
 <div class="coding-shell mx-auto max-w-7xl px-4 py-6" data-testid="coding-list-page">
   <header class="fa-page-header">
-    <p class="fa-page-kicker">Coding route</p>
-    <h1 class="fa-page-title">Frontend coding challenges</h1>
-    <p class="fa-page-subtitle fa-body">Solve individual interview questions now: filter by framework, difficulty, and focus area, then start one prompt immediately.</p>
+    <p class="fa-page-kicker">{{ pageKicker() }}</p>
+    <h1 class="fa-page-title">{{ pageTitle() }}</h1>
+    <p class="fa-page-subtitle fa-body">{{ pageSubtitle() }}</p>
   </header>
 
   <section class="fa-access-note" *ngIf="source === 'global-coding'" aria-label="Access and pricing">
@@ -19,87 +19,21 @@
     (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
 
-  <details class="fa-more-routes" *ngIf="source === 'global-coding'">
-    <summary>More routes and prep hubs</summary>
-
-    <section class="fa-hub-cluster" aria-label="Interview question hubs">
-      <h2 class="fa-section-title">Interview question hubs</h2>
-      <p class="fa-meta-text">
-        Use these hubs when you want focused framework lists before moving into drills and tracks.
-      </p>
-      <div class="fa-hub-cluster__links">
-        <a *ngFor="let hub of interviewHubLinks" [routerLink]="hub.route">{{ hub.label }}</a>
-      </div>
+  <ng-container *ngIf="contextualSupportLinks() as supportLinks">
+    <section class="fa-context-strip" *ngIf="supportLinks.length" aria-label="Helpful prep links">
+      <a
+        *ngFor="let support of supportLinks"
+        class="fa-context-card"
+        [attr.data-testid]="support.testId"
+        [routerLink]="support.route"
+      >
+        <span class="fa-context-card__eyebrow">{{ support.eyebrow }}</span>
+        <span class="fa-context-card__title">{{ support.title }}</span>
+        <span class="fa-context-card__body">{{ support.body }}</span>
+        <span class="fa-context-card__cta">{{ support.cta }} <span aria-hidden="true">→</span></span>
+      </a>
     </section>
-
-    <section class="fa-hub-cluster" aria-label="Adjacent practice routes">
-      <h2 class="fa-section-title">Adjacent practice routes</h2>
-      <p class="fa-meta-text">
-        Switch into adjacent practice modes when you want incidents, system design, or future review-style simulations.
-      </p>
-      <div class="fa-hub-cluster__links">
-        <a *ngFor="let link of practiceRouteLinks()" [routerLink]="link.route" [queryParams]="link.query || null">
-          Open {{ link.label | lowercase }}
-          <span class="fa-route-badge" *ngIf="link.badge">{{ link.badge }}</span>
-        </a>
-      </div>
-    </section>
-
-    <section faCard class="fa-prep-cluster" aria-label="Framework prep path guidance">
-      <div class="fa-prep-cluster__header">
-        <div class="fa-prep-cluster__heading">
-          <h2 class="fa-section-title">Framework prep path</h2>
-          <p class="fa-prep-cluster__intro fa-meta-text">
-            Not sure where to start? Use the prep hub for the full roadmap, or jump directly into the guide for your selected framework tab.
-          </p>
-        </div>
-        <div class="fa-prep-cluster__actions">
-          <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep']">
-            Not sure where to start?
-          </a>
-          <ng-container *ngIf="currentFrameworkPrep() as prep; else defaultFrameworkPrepCta">
-            <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep', prep.slug]">
-              Open {{ prep.label }} interview prep guide
-            </a>
-          </ng-container>
-          <ng-template #defaultFrameworkPrepCta>
-            <a faButton variant="ghost" class="fa-link-btn" [routerLink]="['/guides/framework-prep/javascript-prep-path']">
-              Start with JavaScript prep guide
-            </a>
-          </ng-template>
-        </div>
-      </div>
-
-      <ng-container *ngIf="currentFrameworkPrep() as prep; else prepSelectState">
-        <div class="fa-prep-cluster__active">
-          <div class="fa-prep-cluster__active-copy">
-            <span class="fa-chip fa-chip--label">{{ prep.label }}</span>
-            <p class="fa-meta-text">{{ prep.summary }}</p>
-          </div>
-        </div>
-
-        <app-prep-signal-grid
-          [outcomes]="prep.outcomes"
-          [mistakes]="prep.mistakes"
-          [sequence]="prepSequenceItems(prep)">
-        </app-prep-signal-grid>
-      </ng-container>
-
-      <ng-template #prepSelectState>
-        <div class="fa-prep-cluster__empty">
-          <p class="fa-meta-text" *ngIf="isUnsupportedPrepTechSelected(); else selectTechHint">
-            {{ selectedPrepTechLabel() }} prep path is not published yet. Use a framework path first, then come back to
-            {{ selectedPrepTechLabel() }} implementation drills.
-          </p>
-          <ng-template #selectTechHint>
-            <p class="fa-meta-text">
-              Select JavaScript, React, Angular, or Vue from the tech tabs to load the related prep path.
-            </p>
-          </ng-template>
-        </div>
-      </ng-template>
-    </section>
-  </details>
+  </ng-container>
 
   <ng-template #filterPanelTpl let-drawer="drawer">
       <div faCard elevated class="fa-filter-panel__surface" [class.fa-filter-panel__surface--drawer]="drawer">
@@ -273,7 +207,7 @@
               <div class="fa-question-card__main">
                 <div class="fa-question-card__eyebrow">
                   <span class="eyebrow-dot"></span>
-                  <span>{{ q.__kind === 'trivia' ? 'Concept' : 'Coding' }} prompt</span>
+                  <span>{{ q.__sd ? 'System design' : q.__kind === 'trivia' ? 'Concept' : 'Coding' }} prompt</span>
                   <span class="premium-pill" *ngIf="isLocked(q)">Locked</span>
                 </div>
                 <div class="fa-question-card__title-row">
