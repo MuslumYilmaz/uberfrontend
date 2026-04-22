@@ -21,6 +21,14 @@ describe('coding-list-seo.util', () => {
     expect(hasIndexingSensitiveQueryParams(['q'])).toBeTrue();
   });
 
+  it('marks first-party practice query variants as noindex', () => {
+    const queryKeys = ['reset', 'kind', 'view', 'category'];
+    const seo = buildCodingListSeoMeta(baseSeo, queryKeys);
+    expect(seo.canonical).toBe('/coding');
+    expect(seo.robots).toBe('noindex,follow');
+    expect(hasIndexingSensitiveQueryParams(queryKeys)).toBeTrue();
+  });
+
   it('marks unknown query variants as noindex to avoid duplicate indexing', () => {
     const seo = buildCodingListSeoMeta(baseSeo, ['utm_source']);
     expect(seo.canonical).toBe('/coding');

@@ -1,5 +1,57 @@
 {
   "version": 2,
+  "headers": [
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "reset" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "kind" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "view" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "category" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "tech" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "q" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "diff" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "imp" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "topic" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/coding",
+      "has": [{ "type": "query", "key": "focus" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    }
+  ],
   "redirects": [
     {
       "source": "/guides/interview-blueprint/javascript-prep-path",

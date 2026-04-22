@@ -85,6 +85,7 @@ test('seo: robots.txt and sitemaps are served', async ({ page }) => {
   expect(robotsRes.status()).toBe(200);
   const robotsText = await robotsRes.text();
   expect(robotsText).toContain('Sitemap: https://frontendatlas.com/sitemap-index.xml');
+  expect(robotsText).not.toContain('Disallow: /coding?');
 
   const indexRes = await page.request.get('/sitemap-index.xml');
   expect(indexRes.status()).toBe(200);

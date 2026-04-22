@@ -8,6 +8,9 @@ const FALLBACK_PATH = path.join(SRC_DIR, 'sitemap.xml');
 const MAX_URLS = 50000;
 const GUIDE_REGISTRY_PATH = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
 const APP_ROUTES_PATH = path.join(SRC_DIR, 'app', 'app.routes.ts');
+const ROBOTS_PATH = path.join(SRC_DIR, 'robots.txt');
+const VERCEL_CONFIG_PATH = path.resolve('vercel.json');
+const CODING_QUERY_KEYS = ['reset', 'kind', 'view', 'category', 'tech', 'q', 'diff', 'imp', 'topic', 'focus'];
 
 function readXml(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -38,8 +41,17 @@ function toLocalFile(loc) {
 function normalizePath(rawPath) {
   const raw = String(rawPath || '').trim();
   if (!raw) return '/';
-  const withSlash = raw.startsWith('/') ? raw : `/${raw}`;
-  const clean = withSlash.replace(/\/+$/, '');
+  let pathname = raw;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      pathname = new URL(raw).pathname || '/';
+    } catch {
+      pathname = raw;
+    }
+  }
+  const withSlash = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  const stripped = withSlash.split('?')[0].split('#')[0];
+  const clean = stripped.replace(/\/+$/, '');
   return clean || '/';
 }
 
@@ -79,19 +91,52 @@ function getSitemapFileNames() {
   return locs.map((loc) => toLocalFile(loc));
 }
 
+function getAllSitemapLocs(fileNames) {
+  return fileNames.flatMap((fileName) => {
+    const xml = readXml(path.join(SRC_DIR, fileName));
+    return extractLocs(xml);
+  });
+}
+
 function getAllSitemapPaths(fileNames) {
   const paths = new Set();
-  fileNames.forEach((fileName) => {
-    const xml = readXml(path.join(SRC_DIR, fileName));
-    extractLocs(xml).forEach((loc) => {
-      try {
-        paths.add(normalizePath(new URL(loc).pathname));
-      } catch {
-        paths.add(normalizePath(loc));
-      }
-    });
+  getAllSitemapLocs(fileNames).forEach((loc) => {
+    paths.add(normalizePath(loc));
   });
   return paths;
+}
+
+function assertNoQueryOrHashInSitemapLocs(locs) {
+  const offenders = locs.filter((loc) => {
+    try {
+      const url = new URL(loc);
+      return Boolean(url.search || url.hash);
+    } catch {
+      const raw = String(loc || '');
+      return raw.includes('?') || raw.includes('#');
+    }
+  });
+
+  if (offenders.length) {
+    throw new Error(
+      `Sitemap locs must not contain query or hash fragments. Examples: ${offenders.slice(0, 5).join(', ')}`
+    );
+  }
+}
+
+function assertPracticeCanonicalCoverage(paths, locs) {
+  const required = ['/coding', '/interview-questions', '/system-design'];
+  const missing = required.filter((route) => !paths.has(normalizePath(route)));
+  if (missing.length) {
+    throw new Error(`Sitemap missing practice canonical routes: ${missing.join(', ')}`);
+  }
+
+  const codingQueryLocs = locs.filter((loc) => /\/coding[?#]/.test(String(loc || '')));
+  if (codingQueryLocs.length) {
+    throw new Error(
+      `Sitemap must only include clean /coding, not query variants. Examples: ${codingQueryLocs.slice(0, 5).join(', ')}`
+    );
+  }
 }
 
 function assertGuideDetailCoverage(paths) {
@@ -315,11 +360,59 @@ function assertIndexableRouteTitlesUnique() {
   }
 }
 
+function assertRobotsAllowsCodingQueryNoindex() {
+  if (!fs.existsSync(ROBOTS_PATH)) {
+    throw new Error(`Missing ${ROBOTS_PATH}.`);
+  }
+
+  const robots = fs.readFileSync(ROBOTS_PATH, 'utf8');
+  if (/^\s*Disallow:\s*\/coding\?/im.test(robots)) {
+    throw new Error('robots.txt must not disallow /coding?; query variants need to be crawlable for noindex.');
+  }
+}
+
+function assertVercelCodingQueryNoindexHeaders() {
+  if (!fs.existsSync(VERCEL_CONFIG_PATH)) {
+    throw new Error(`Missing ${VERCEL_CONFIG_PATH}.`);
+  }
+
+  const config = JSON.parse(fs.readFileSync(VERCEL_CONFIG_PATH, 'utf8'));
+  const covered = new Set();
+
+  (Array.isArray(config.headers) ? config.headers : []).forEach((rule) => {
+    if (rule?.source !== '/coding') return;
+
+    const hasQueryKeys = (Array.isArray(rule.has) ? rule.has : [])
+      .filter((entry) => entry?.type === 'query' && entry?.key)
+      .map((entry) => String(entry.key));
+
+    const hasNoindexHeader = (Array.isArray(rule.headers) ? rule.headers : []).some((header) => {
+      const key = String(header?.key || '').toLowerCase();
+      const value = String(header?.value || '').toLowerCase().replace(/\s+/g, '');
+      return key === 'x-robots-tag' && value === 'noindex,follow';
+    });
+
+    if (hasNoindexHeader) {
+      hasQueryKeys.forEach((key) => covered.add(key));
+    }
+  });
+
+  const missing = CODING_QUERY_KEYS.filter((key) => !covered.has(key));
+  if (missing.length) {
+    throw new Error(`vercel.json missing X-Robots-Tag noindex headers for /coding query keys: ${missing.join(', ')}`);
+  }
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
+const locs = getAllSitemapLocs(sitemapFiles);
 const paths = getAllSitemapPaths(sitemapFiles);
+assertNoQueryOrHashInSitemapLocs(locs);
+assertPracticeCanonicalCoverage(paths, locs);
 assertGuideDetailCoverage(paths);
 assertCoreIndexableCoverage(paths);
 assertIndexableRouteTitlesUnique();
+assertRobotsAllowsCodingQueryNoindex();
+assertVercelCodingQueryNoindexHeaders();
 
 console.log('Sitemap size check passed.');
