@@ -272,14 +272,14 @@
 
             <section class="detail-prep-bridge" data-testid="coding-prep-entry">
               <p class="detail-prep-bridge__text">
-                Preparing for interviews? Use the relevant interview-question hub, then move into a concrete study plan before targeted company sets.
+                Preparing for interviews? Use the Question Library first, then move into a concrete Study Plan before targeted Company Prep.
               </p>
               <div class="detail-prep-bridge__links">
                 <a [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
-                <a [routerLink]="['/interview-questions']">Open frontend interview questions hub</a>
+                <a [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Open Question Library</a>
                 <a [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
-                <a [routerLink]="['/companies']">Browse company questions</a>
-                <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
+                <a [routerLink]="['/companies']">Open Company Prep</a>
+                <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} Framework Prep Guide</a>
               </div>
             </section>
 
@@ -602,7 +602,7 @@
           Go back
         </button>
         <a faButton variant="ghost" [routerLink]="['/coding']">
-          Practice catalog
+          Question Library
         </a>
       </div>
     </article>

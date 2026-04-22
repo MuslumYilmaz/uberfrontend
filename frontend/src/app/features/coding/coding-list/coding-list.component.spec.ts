@@ -129,20 +129,28 @@ describe('CodingListComponent', () => {
     });
     const host = fixture.nativeElement as HTMLElement;
 
-    expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('Question library');
+    expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('Question Library');
     expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Question Library');
+    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start first question');
+    expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
+      pill.textContent?.trim()
+    )).toEqual(['Start here', 'All levels']);
     expect(host.textContent || '').not.toContain('Frontend coding challenges');
     expect(host.querySelector('[data-testid="interview-hub-support-link"]')).not.toBeNull();
   });
 
-  it('opens formats UI as practice formats with compact framework prep support', async () => {
+  it('opens formats UI as practice types with compact framework prep support', async () => {
     const fixture = await createComponent({
       queryParams: { view: 'formats', category: 'ui', reset: '1' },
     });
     const host = fixture.nativeElement as HTMLElement;
     const supportLink = host.querySelector('[data-testid="framework-prep-support-link"]') as HTMLAnchorElement | null;
 
-    expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Practice Formats');
+    expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Practice Types');
+    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start format practice');
+    expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
+      pill.textContent?.trim()
+    )).toEqual(['Format-first', 'Good after basics']);
     expect(host.textContent || '').not.toContain('Coding route');
     expect(supportLink).not.toBeNull();
     expect(supportLink?.getAttribute('href')).toBe('/guides/framework-prep');
@@ -164,10 +172,15 @@ describe('CodingListComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     const systemCard = host.querySelector('[data-testid="question-card-design-news-feed"]') as HTMLAnchorElement | null;
 
-    expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('System design route');
+    expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('System Design Practice');
     expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('System Design Practice');
+    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start system design prompt');
+    expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
+      pill.textContent?.trim()
+    )).toEqual(['Senior signal', 'Architecture + tradeoffs']);
     expect(host.textContent || '').not.toContain('Frontend coding challenges');
     expect(systemCard?.textContent || '').toContain('System design prompt');
+    expect(systemCard?.querySelector('[data-testid="coding-list-fit-pill"]')).toBeNull();
     expect(systemCard?.getAttribute('href')).toBe('/system-design/design-news-feed');
   });
 });

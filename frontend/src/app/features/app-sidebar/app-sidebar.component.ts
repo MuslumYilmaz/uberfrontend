@@ -217,7 +217,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       { key: 'dashboard', type: 'link', label: 'Dashboard', icon: 'pi pi-th-large', to: '/dashboard' },
       {
         type: 'group',
-        label: 'Practice questions',
+        label: 'Practice Library',
         icon: 'pi pi-code',
         open: false,
         children: practiceEntries.map((entry) => ({
@@ -232,14 +232,14 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       },
       {
         type: 'group',
-        label: 'Study paths',
+        label: 'Study Plans',
         icon: 'pi pi-directions-alt',
         open: false,
         children: [
           { key: 'track-crash', type: 'link', label: 'Crash Track (7 days)', to: '/tracks/crash-7d', icon: 'pi pi-bolt' },
           { key: 'track-foundations', type: 'link', label: 'Foundations Track (30 days)', to: '/tracks/foundations-30d', icon: 'pi pi-calendar' },
-          { key: 'focus-areas', type: 'link', label: 'All focus areas', to: '/focus-areas', icon: 'pi pi-compass' },
-          { key: 'companies', type: 'link', label: 'Company interview questions', to: '/companies', icon: 'pi pi-building' },
+          { key: 'focus-areas', type: 'link', label: 'Focus Areas', to: '/focus-areas', icon: 'pi pi-compass' },
+          { key: 'companies', type: 'link', label: 'Company Prep', to: '/companies', icon: 'pi pi-building' },
         ],
       },
       {
@@ -249,7 +249,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         open: false,
         children: [
           { key: 'guide-interview-blueprint', type: 'link', label: 'Interview Blueprint', to: '/guides/interview-blueprint', icon: 'pi pi-book' },
-          { key: 'guide-behavioral', type: 'link', label: 'Behavioral Interview Blueprint', to: '/guides/behavioral', icon: 'pi pi-users' },
+          { key: 'guide-behavioral', type: 'link', label: 'Behavioral Prep', to: '/guides/behavioral', icon: 'pi pi-users' },
           { key: 'guide-system-design-blueprint', type: 'link', label: 'System Design Blueprint', to: '/guides/system-design-blueprint', icon: 'pi pi-sitemap' },
         ],
       },

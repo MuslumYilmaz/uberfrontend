@@ -1,8 +1,32 @@
 <div class="coding-shell mx-auto max-w-7xl px-4 py-6" data-testid="coding-list-page">
   <header class="fa-page-header">
-    <p class="fa-page-kicker">{{ pageKicker() }}</p>
-    <h1 class="fa-page-title">{{ pageTitle() }}</h1>
-    <p class="fa-page-subtitle fa-body">{{ pageSubtitle() }}</p>
+    <div class="fa-page-header__copy">
+      <p class="fa-page-kicker">{{ pageKicker() }}</p>
+      <h1 class="fa-page-title">{{ pageTitle() }}</h1>
+      <p class="fa-page-subtitle fa-body">{{ pageSubtitle() }}</p>
+      <div class="fa-page-fit-pills" *ngIf="pageFitPills().length" aria-label="Practice fit">
+        <span
+          *ngFor="let pill of pageFitPills()"
+          class="fa-page-fit-pill"
+          data-testid="coding-list-fit-pill"
+        >
+          {{ pill }}
+        </span>
+      </div>
+    </div>
+    <div class="fa-page-action" aria-label="Primary practice action">
+      <button
+        type="button"
+        faButton
+        variant="primary"
+        data-testid="coding-list-primary-action"
+        [disabled]="((filteredCount$ | async) || 0) === 0"
+        (click)="openFirstVisible()"
+      >
+        {{ primaryActionLabel() }}
+      </button>
+      <span class="fa-page-action__hint">{{ primaryActionHint() }}</span>
+    </div>
   </header>
 
   <section class="fa-access-note" *ngIf="source === 'global-coding'" aria-label="Access and pricing">

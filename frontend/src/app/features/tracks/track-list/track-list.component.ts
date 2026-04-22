@@ -8,7 +8,7 @@ import { SeoService } from '../../../core/services/seo.service';
 
 const TRACKS_PLATFORM_TITLE = 'Frontend Interview Prep Platform and Tracks';
 const TRACKS_PLATFORM_DESCRIPTION =
-  'Use the frontend interview prep platform to run structured study plans, then connect each track with frontend interview question hubs by technology.';
+  'Use the frontend interview prep platform to run structured Study Plans, then connect each track with the Question Library by technology.';
 
 type MasteryTrackCard = {
   slug: string;
@@ -25,6 +25,7 @@ type MasteryTrackCard = {
 type HubQuickLink = {
   label: string;
   route: any[];
+  queryParams?: Record<string, string | number | boolean>;
   toneClass: string;
 };
 
@@ -87,14 +88,15 @@ export class TrackListComponent implements OnInit {
     queryParams: { entry: 'tracks_role_contract' } as Record<string, string>,
   };
   routeRoleSecondary = {
-    label: 'Open interview questions hub',
-    route: ['/interview-questions'] as any[],
-    queryParams: { entry: 'tracks_role_contract' } as Record<string, string>,
+    label: 'Open Question Library',
+    route: ['/coding'] as any[],
+    queryParams: { reset: 1, entry: 'tracks_role_contract' } as Record<string, string | number>,
   };
   interviewHubQuickLinks: HubQuickLink[] = [
     {
-      label: 'Frontend interview questions hub',
-      route: ['/interview-questions'],
+      label: 'Question Library',
+      route: ['/coding'],
+      queryParams: { reset: 1 },
       toneClass: 'hero-link--iq-master',
     },
     {
@@ -146,19 +148,19 @@ export class TrackListComponent implements OnInit {
 
   trackPrepSequence: PrepSignalItem[] = [
     { text: 'Interview blueprint', route: ['/guides/interview-blueprint'] },
-    { text: 'Interview questions hub', route: ['/interview-questions'] },
-    { text: 'Framework prep path', route: ['/guides/framework-prep'] },
-    { text: 'Guided tracks', route: ['/tracks'] },
-    { text: 'Company question sets', route: ['/companies'] },
+    { text: 'Question Library', route: ['/coding'], queryParams: { reset: 1 } },
+    { text: 'Framework Prep Guide', route: ['/guides/framework-prep'] },
+    { text: 'Study Plans', route: ['/tracks'] },
+    { text: 'Company Prep', route: ['/companies'] },
   ];
   platformSteps: PlatformStep[] = [
     {
       kicker: 'Step 1',
-      title: 'Choose your interview questions hub',
+      title: 'Start in the Question Library',
       description:
-        'Start from the frontend interview questions hub, then narrow to the stack you are interviewing for this month.',
-      route: ['/interview-questions'],
-      ctaLabel: 'Open interview questions hub',
+        'Start from the Question Library, then narrow to the stack you are interviewing for this month.',
+      route: ['/coding'],
+      ctaLabel: 'Open Question Library',
     },
     {
       kicker: 'Step 2',
@@ -178,11 +180,11 @@ export class TrackListComponent implements OnInit {
     },
     {
       kicker: 'Step 4',
-      title: 'Stress-test with company sets',
+      title: 'Stress-test with Company Prep',
       description:
-        'Close each prep cycle with company question sets so your final week reflects the interview style you are targeting.',
+        'Close each prep cycle with Company Prep so your final week reflects the interview style you are targeting.',
       route: ['/companies'],
-      ctaLabel: 'Open company sets',
+      ctaLabel: 'Open Company Prep',
     },
   ];
   playbookColumns: PlaybookColumn[] = [
@@ -213,9 +215,9 @@ export class TrackListComponent implements OnInit {
   ];
   faqEntries: TrackFaqEntry[] = [
     {
-      question: 'Should I use tracks before or after the interview questions hub?',
+      question: 'Should I use Study Plans before or after the Question Library?',
       answer:
-        'Start with the interview questions hub to identify your weak areas, then use tracks to execute a fixed sequence that removes random practice. Most candidates get better outcomes when tracks are used as the weekly execution layer.',
+        'Start with the Question Library to identify your weak areas, then use Study Plans to execute a fixed sequence that removes random practice. Most candidates get better outcomes when tracks are used as the weekly execution layer.',
     },
     {
       question: 'How many tracks should I run at the same time?',
@@ -230,7 +232,7 @@ export class TrackListComponent implements OnInit {
     {
       question: 'When should I move from tracks to company question sets?',
       answer:
-        'Move to company sets after you complete at least one guided track cycle and can consistently explain your coding decisions. This timing gives you enough baseline skill to benefit from company-specific patterns.',
+        'Move to Company Prep after you complete at least one guided track cycle and can consistently explain your coding decisions. This timing gives you enough baseline skill to benefit from company-specific patterns.',
     },
   ];
 

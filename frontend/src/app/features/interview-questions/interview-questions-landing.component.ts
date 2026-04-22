@@ -185,10 +185,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   introLead(): string {
     if (this.isMasterHub()) {
-      return 'Interview-questions hub for fast frontend interview prep: start with the most crucial JavaScript coding and concept prompts, then branch into full technology hubs for broader coverage.';
+      return 'Guided warm-up for fast frontend interview prep: start with the most crucial JavaScript coding and concept prompts, then branch into the Question Library for broader coverage.';
     }
 
-    return `Technology interview-questions hub for ${this.keywordSentenceCase()}: tackle the most crucial coding and concept questions first, then expand into study plans, guides, and company-specific prep flows.`;
+    return `Technology warm-up for ${this.keywordSentenceCase()}: tackle the most crucial coding and concept questions first, then expand into Study Plans, guides, and Company Prep.`;
   }
 
   listIntentItems(): string[] {

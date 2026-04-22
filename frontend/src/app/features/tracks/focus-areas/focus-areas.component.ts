@@ -13,7 +13,7 @@ import { TOPIC_REGISTRY } from '../../../generated/content-metadata';
 
 const FOCUS_AREAS_TITLE = 'Frontend Interview Focus Areas';
 const FOCUS_AREAS_DESCRIPTION =
-  'Use focus areas to diagnose weak spots, then move into the interview questions hub, study plans, and company-specific practice with the right topic context.';
+  'Use Focus Areas to diagnose weak spots, then move into the Question Library, Study Plans, and Company Prep with the right topic context.';
 
 type FocusAreaRow = {
   id: string;
@@ -96,12 +96,12 @@ export class FocusAreasComponent {
       inLanguage: 'en',
       about: [
         { '@type': 'Thing', name: 'Frontend interview focus areas' },
-        { '@type': 'Thing', name: 'Frontend interview study plans' },
+        { '@type': 'Thing', name: 'Frontend interview Study Plans' },
       ],
       mentions: [
-        { '@type': 'WebPage', name: 'Frontend interview questions hub', url: this.seo.buildCanonicalUrl('/interview-questions') },
+        { '@type': 'WebPage', name: 'Question Library', url: this.seo.buildCanonicalUrl('/coding') },
         { '@type': 'WebPage', name: 'Foundations Track (30 days)', url: this.seo.buildCanonicalUrl('/tracks/foundations-30d/preview') },
-        { '@type': 'WebPage', name: 'Company frontend interview sets', url: this.seo.buildCanonicalUrl('/companies') },
+        { '@type': 'WebPage', name: 'Company Prep', url: this.seo.buildCanonicalUrl('/companies') },
       ],
     };
 

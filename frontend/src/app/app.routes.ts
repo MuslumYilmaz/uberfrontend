@@ -973,7 +973,7 @@ export const routes: Routes = [
     data: NOT_FOUND_ROUTE_DATA,
   },
 
-  // Global question library — lists all practice questions; pills filter client-side
+  // Global Question Library — lists all practice questions; pills filter client-side
   {
     path: 'coding',
     loadComponent: () =>
@@ -1095,7 +1095,7 @@ export const routes: Routes = [
       seo: {
         title: 'JavaScript Interview Questions for Frontend Interviews',
         description:
-          'JavaScript interview questions hub with coding and concept practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
+          'JavaScript interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
       },
     },
   },
@@ -1117,7 +1117,7 @@ export const routes: Routes = [
       seo: {
         title: 'React Interview Questions for Frontend Interviews',
         description:
-          'React interview questions hub with coding and concept practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
+          'React interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
       },
     },
   },
@@ -1156,7 +1156,7 @@ export const routes: Routes = [
       seo: {
         title: 'Angular Interview Questions for Frontend Interviews',
         description:
-          'Angular interview questions hub with coding and concept practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
+          'Angular interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
       },
     },
   },
@@ -1190,7 +1190,7 @@ export const routes: Routes = [
       seo: {
         title: 'Vue Interview Questions for Frontend Interviews',
         description:
-          'Vue interview questions hub with coding and concept practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
+          'Vue interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
       },
     },
   },
@@ -1233,7 +1233,7 @@ export const routes: Routes = [
       seo: {
         title: 'HTML Interview Questions for Frontend Interviews',
         description:
-          'HTML interview questions hub with coding and concept practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
+          'HTML interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
       },
     },
   },
@@ -1267,7 +1267,7 @@ export const routes: Routes = [
       seo: {
         title: 'CSS Interview Questions for Frontend Interviews',
         description:
-          'CSS interview questions hub with coding and concept practice for frontend interviews, linked to the master interview questions library and interview practice platform.',
+          'CSS interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
       },
     },
   },

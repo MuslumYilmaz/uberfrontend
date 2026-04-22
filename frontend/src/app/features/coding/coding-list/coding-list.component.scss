@@ -35,6 +35,10 @@ app-coding-tech-kind-tabs {
 }
 
 .fa-page-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
   padding-bottom: 14px;
   margin-bottom: 16px;
   border-bottom: 1px solid var(--border-weak);
@@ -43,6 +47,57 @@ app-coding-tech-kind-tabs {
 .fa-page-subtitle {
   color: var(--ink-dim);
   max-width: 720px;
+}
+
+.fa-page-fit-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.fa-page-fit-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--border) 76%, var(--ink) 24%);
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: rgba(var(--fa-text-rgb), 0.045);
+  color: color-mix(in srgb, var(--ink-dim) 84%, var(--ink) 16%);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.fa-page-action {
+  display: grid;
+  gap: 7px;
+  justify-items: end;
+  max-width: 260px;
+}
+
+.fa-page-action__hint {
+  color: var(--ink-dim);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .fa-page-header {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .fa-page-action {
+    justify-items: start;
+    max-width: none;
+  }
+
+  .fa-page-action__hint {
+    text-align: left;
+  }
 }
 
 .fa-access-note {

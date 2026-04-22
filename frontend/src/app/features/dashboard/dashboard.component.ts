@@ -44,6 +44,7 @@ type DashboardLink = {
   route: any[];
   queryParams?: Params;
   destination: DashboardLinkDestination;
+  fitHint?: string;
 };
 
 @Component({
@@ -67,7 +68,7 @@ export class DashboardComponent {
 
   readonly auth = this.authService;
   readonly continueCta = {
-    label: 'Start one question',
+    label: 'Start first question',
     route: ['/coding'] as any[],
   };
   readonly guestFeaturedRoute: DashboardLink = {
@@ -76,25 +77,30 @@ export class DashboardComponent {
     route: ['/coding'],
     queryParams: { reset: 1 },
     destination: 'question_library',
+    fitHint: 'Start here',
   };
   readonly guestSecondaryRoutes: DashboardLink[] = [
     {
-      title: 'Follow a study plan',
+      title: 'Study Plans',
       subtitle: 'Open guided tracks when you want a clearer sequence and less choice load.',
       route: ['/tracks'],
       destination: 'sprints',
+      fitHint: 'Structured path',
     },
     {
-      title: 'Pick your framework path',
+      title: 'Framework Prep Guide',
       subtitle: 'Choose a framework-specific path when you want stack-focused prep instead of a general library.',
       route: ['/guides/framework-prep'],
       destination: 'framework_prep',
+      fitHint: 'Stack-focused',
     },
     {
-      title: 'Prepare system design',
+      title: 'System Design',
       subtitle: 'Move into architecture and trade-off thinking after your implementation baseline is stable.',
-      route: ['/system-design'],
+      route: ['/coding'],
+      queryParams: { view: 'formats', category: 'system', reset: 1 },
       destination: 'system_design',
+      fitHint: 'Senior signal',
     },
   ];
   readonly guestPracticeModes: DashboardLink[] = [
@@ -104,6 +110,7 @@ export class DashboardComponent {
       route: ['/coding'],
       queryParams: { kind: 'coding', reset: 1 },
       destination: 'coding_questions',
+      fitHint: 'Implementation drill',
     },
     {
       title: 'Concept questions',
@@ -111,62 +118,69 @@ export class DashboardComponent {
       route: ['/coding'],
       queryParams: { kind: 'trivia', reset: 1 },
       destination: 'concept_questions',
+      fitHint: 'Verbal practice',
     },
     {
       title: 'Debug scenarios',
       subtitle: 'Diagnose broken UI and failing tests under pressure.',
       route: ['/incidents'],
       destination: 'debug_scenarios',
+      fitHint: 'Debug signal',
     },
     {
       title: 'Architecture tradeoffs',
       subtitle: 'Compare solutions when there is no single perfect answer.',
       route: ['/tradeoffs'],
       destination: 'architecture_tradeoffs',
+      fitHint: 'Senior signal',
     },
   ];
   readonly guestRelatedPrepLinks: DashboardLink[] = [
     {
-      title: 'Behavioral interviews',
+      title: 'Behavioral Prep',
       route: ['/guides/behavioral'],
       destination: 'behavioral',
     },
     {
-      title: 'Company-specific prep',
+      title: 'Company Prep',
       route: ['/companies'],
       destination: 'companies',
     },
     {
-      title: 'Focus areas',
+      title: 'Focus Areas',
       route: ['/focus-areas'],
       destination: 'focus_areas',
     },
   ];
   readonly libraryLinks: DashboardLink[] = [
     {
-      title: 'Browse question library',
-      subtitle: 'Open the full question library and start from the must-know list.',
+      title: 'Question Library',
+      subtitle: 'Open the full Question Library and start from the must-know list.',
       route: ['/coding'],
       queryParams: { reset: 1 },
       destination: 'question_library',
+      fitHint: 'Start here',
     },
     {
-      title: 'Follow a sprint',
+      title: 'Study Plans',
       subtitle: 'Jump into a structured prep path when you want momentum.',
       route: ['/tracks'],
       destination: 'sprints',
+      fitHint: 'Structured path',
     },
     {
-      title: 'Target a company',
+      title: 'Company Prep',
       subtitle: 'Bias practice toward one hiring bar without reworking the whole loop.',
       route: ['/companies'],
       destination: 'companies',
+      fitHint: 'Targeted prep',
     },
     {
-      title: 'Pick a tech lane',
+      title: 'Focus Areas',
       subtitle: 'Branch into one stack when you want cleaner repetition.',
       route: ['/focus-areas'],
       destination: 'tech_lanes',
+      fitHint: 'Weak spot focus',
     },
   ];
 
@@ -227,7 +241,7 @@ export class DashboardComponent {
     if (this.dashboardMode() === 'guest') {
       return {
         actionId: 'guest_interview_questions',
-        label: this.guestFeaturedRoute.title,
+        label: 'Open Question Library',
         route: this.guestFeaturedRoute.route,
         queryParams: this.guestFeaturedRoute.queryParams,
       };

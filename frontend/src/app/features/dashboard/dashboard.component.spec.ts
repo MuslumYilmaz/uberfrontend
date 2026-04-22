@@ -192,9 +192,9 @@ describe('DashboardComponent', () => {
     expect(pageText).toContain('Browse prep library');
     expect(pageText).toContain('Start with one clear prep route');
     expect(pageText).toContain('Question Library');
-    expect(pageText).toContain('Follow a study plan');
-    expect(pageText).toContain('Pick your framework path');
-    expect(pageText).toContain('Prepare system design');
+    expect(pageText).toContain('Study Plans');
+    expect(pageText).toContain('Framework Prep Guide');
+    expect(pageText).toContain('System Design');
     expect(pageText).toContain('More ways to practice');
     expect(pageText).toContain('Also prepare for');
     expect(pageText).toContain('Sign in when you want progress to stick');
@@ -203,13 +203,29 @@ describe('DashboardComponent', () => {
     expect(pageText).not.toContain('Next action');
     expect(pageText).not.toContain('Explore more ways to prep');
     expect(pageText).not.toContain('Coverage map');
-    expect(primaryCta?.textContent?.trim()).toBe('Question Library');
+    expect(primaryCta?.textContent?.trim()).toBe('Open Question Library');
     expect(primaryCta?.getAttribute('href') || '').toContain('/coding?reset=1');
     expect(page.querySelector('[data-testid="dashboard-guest-progress-card"]')).toBeTruthy();
     expect(page.querySelector('[data-testid="dashboard-progress-snapshot"]')).toBeFalsy();
     expect(page.querySelectorAll('[data-testid="dashboard-guest-secondary-route"]').length).toBe(3);
     expect(page.querySelectorAll('[data-testid="dashboard-guest-practice-link"]').length).toBe(4);
     expect(page.querySelectorAll('[data-testid="dashboard-guest-related-link"]').length).toBe(3);
+
+    const fitPills = Array.from(page.querySelectorAll('[data-testid="dashboard-route-fit-pill"]')) as HTMLElement[];
+    expect(fitPills.map((pill) => pill.textContent?.trim())).toEqual([
+      'Start here',
+      'Structured path',
+      'Stack-focused',
+      'Senior signal',
+      'Implementation drill',
+      'Verbal practice',
+      'Debug signal',
+      'Senior signal',
+    ]);
+    expect(fitPills.every((pill) => pill.tagName.toLowerCase() === 'span')).toBeTrue();
+    expect(Array.from(page.querySelectorAll('[data-testid="dashboard-guest-related-link"]')).some((link) =>
+      Boolean(link.querySelector('[data-testid="dashboard-route-fit-pill"]')),
+    )).toBeFalse();
   });
 
   it('keeps novice logged-in users in the launch-first layout', () => {
@@ -231,7 +247,7 @@ describe('DashboardComponent', () => {
     const primaryCta = page.querySelector('[data-testid="dashboard-primary-cta"]') as HTMLAnchorElement | null;
     const pageText = page.textContent || '';
 
-    expect(primaryCta?.textContent?.trim()).toBe('Start one question');
+    expect(primaryCta?.textContent?.trim()).toBe('Start first question');
     expect(pageText).not.toContain('Progress snapshot');
     expect(page.querySelector('[data-testid="dashboard-progress-snapshot"]')).toBeFalsy();
   });
@@ -276,6 +292,16 @@ describe('DashboardComponent', () => {
     expect(hrefs[1]).toContain('/tracks');
     expect(hrefs[2]).toContain('/companies');
     expect(hrefs[3]).toContain('/focus-areas');
+
+    const fitPills = links.map((link) =>
+      link.querySelector('[data-testid="dashboard-route-fit-pill"]')?.textContent?.trim()
+    );
+    expect(fitPills).toEqual([
+      'Start here',
+      'Structured path',
+      'Targeted prep',
+      'Weak spot focus',
+    ]);
   });
 
   it('tracks guest secondary-route clicks with the shared dashboard link event', () => {

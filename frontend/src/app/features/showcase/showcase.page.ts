@@ -717,6 +717,14 @@ You can also reset any task back to the starter whenever you want to re-practice
     return [...this.demoTabsPrimary, ...this.demoTabsFramework];
   }
 
+  get demoChoiceTabs() {
+    const tabs = [
+      ...this.demoTabsFramework,
+      ...this.demoTabsPrimary.filter((tab) => tab.key !== 'ui'),
+    ];
+    return tabs.filter((tab) => tab.key !== this.activeDemoKey);
+  }
+
   get activeDemoKey(): DemoKey {
     return this.activePrimaryKey === 'ui' ? this.activeFrameworkKey : this.activePrimaryKey;
   }
@@ -732,6 +740,18 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   setActiveFramework(key: DemoKey) {
     this.activeFrameworkKey = key;
+    this.demoHidden = false;
+    this.activateDemo();
+  }
+
+  selectDemoChoice(key: DemoKey) {
+    if (key === 'react' || key === 'angular' || key === 'vue') {
+      this.activePrimaryKey = 'ui';
+      this.activeFrameworkKey = key;
+    } else {
+      this.activePrimaryKey = key;
+      this.activeFrameworkKey = 'react';
+    }
     this.demoHidden = false;
     this.activateDemo();
   }

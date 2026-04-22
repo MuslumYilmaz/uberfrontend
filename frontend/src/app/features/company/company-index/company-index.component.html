@@ -10,7 +10,7 @@
     <p class="company-intro__kicker">Route purpose</p>
     <h2 class="company-intro__title">Company sets are the final targeting layer in your prep stack</h2>
     <p class="company-intro__copy">
-        Use interview-question hubs and study plans for baseline coverage, then use company pages to rehearse hiring-pattern differences for the teams you are targeting.
+        Use the Question Library and Study Plans for baseline coverage, then use Company Prep to rehearse hiring-pattern differences for the teams you are targeting.
     </p>
     <div class="company-intro__actions company-intro__actions--role">
         <a class="company-intro__cta" [routerLink]="['/tracks', 'foundations-30d', 'preview']" [queryParams]="{ entry: 'companies_role_contract' }">
@@ -27,19 +27,19 @@
             Company pages focus on realistic coding, concept questions, and system design patterns used in interviews at top product teams.
         </p>
         <p>
-            Use them after the interview questions hub and one study plan so the final week of prep mirrors the companies you are targeting.
+            Use them after the Question Library and one study plan so the final week of prep mirrors the companies you are targeting.
         </p>
         <p>
-            Start broad in <a [routerLink]="['/interview-questions']">Interview Questions</a>, <a [routerLink]="['/tracks']">Study Plans</a>, and <a [routerLink]="['/focus-areas']">Focus Areas</a>, then narrow into company sets.
+            Start broad in <a [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Question Library</a>, <a [routerLink]="['/tracks']">Study Plans</a>, and <a [routerLink]="['/focus-areas']">Focus Areas</a>, then narrow into Company Prep.
         </p>
         <p>
-            For the full prep workflow, visit the <a [routerLink]="['/guides/interview-blueprint']">interview blueprint</a> and the <a [routerLink]="['/guides/framework-prep']">framework prep hub</a>.
+            For the full prep workflow, visit the <a [routerLink]="['/guides/interview-blueprint']">interview blueprint</a> and the <a [routerLink]="['/guides/framework-prep']">Framework Prep Guide</a>.
         </p>
         <div class="company-intro__links">
-            <a class="company-link company-link--hub" [routerLink]="['/interview-questions']">Interview questions hub</a>
-            <a class="company-link company-link--tracks" [routerLink]="['/tracks']">Study plans</a>
-            <a class="company-link company-link--focus" [routerLink]="['/focus-areas']">Focus areas</a>
-            <a class="company-link company-link--hub" [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
+            <a class="company-link company-link--hub" [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Question Library</a>
+            <a class="company-link company-link--tracks" [routerLink]="['/tracks']">Study Plans</a>
+            <a class="company-link company-link--focus" [routerLink]="['/focus-areas']">Focus Areas</a>
+            <a class="company-link company-link--hub" [routerLink]="['/guides/framework-prep']">Framework Prep Guide</a>
             <a class="company-link company-link--react" [routerLink]="['/guides/framework-prep/react-prep-path']">React prep path</a>
             <a class="company-link company-link--system" [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
         </div>

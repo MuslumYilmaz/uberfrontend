@@ -29,9 +29,9 @@ type VisibleEntry = {
 
 type StudyPrimaryActionKey =
   | 'continue'
-  | 'start_one_question'
-  | 'follow_plan'
-  | 'browse_full_library';
+  | 'question_library'
+  | 'study_plans'
+  | 'practice_types';
 
 type StudyPrimaryAction = {
   key: StudyPrimaryActionKey;
@@ -160,27 +160,27 @@ export class HeaderComponent implements OnInit {
         item: recent,
       },
       {
-        key: 'start_one_question',
-        title: 'Start interview questions',
-        subtitle: 'Open the question library and jump into coding or concept practice fast.',
+        key: 'question_library',
+        title: 'Question Library',
+        subtitle: 'Open the Question Library and jump into coding or concept practice fast.',
         icon: 'pi-bolt',
         route: ['/coding'],
         queryParams: { reset: 1 },
       },
       {
-        key: 'follow_plan',
-        title: 'Follow a plan',
+        key: 'study_plans',
+        title: 'Study Plans',
         subtitle: 'Open guided tracks when you want a clearer sequence and less choice load.',
         icon: 'pi-directions-alt',
         route: ['/tracks'],
       },
       {
-        key: 'browse_full_library',
-        title: 'Browse full library',
-        subtitle: 'Open the full question library and filter by tech or format only when needed.',
-        icon: 'pi-database',
+        key: 'practice_types',
+        title: 'Practice Types',
+        subtitle: 'Choose UI, JavaScript functions, HTML/CSS, algorithms, or system design practice.',
+        icon: 'pi-clone',
         route: ['/coding'],
-        queryParams: { reset: 1 },
+        queryParams: { view: 'formats', category: 'ui', reset: 1 },
       },
     ];
   }
@@ -474,8 +474,9 @@ export class HeaderComponent implements OnInit {
   onStudyPrimaryAction(action: StudyPrimaryAction) {
     if (action.item) this.pushRecent(action.item);
 
-    if (action.key === 'browse_full_library') {
+    if (action.key === 'question_library') {
       this.analytics.track('header_study_browse_full_library_clicked', {
+        destination: 'question_library',
         route: this.serializeLink(action.route, action.queryParams),
       });
     } else {

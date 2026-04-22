@@ -122,9 +122,9 @@ type FrameworkPathCard = {
         <div class="prep-links">
           <a [routerLink]="['/guides/framework-prep/javascript-prep-path/mastery']">JavaScript mastery crash track</a>
           <a [routerLink]="['/guides/interview-blueprint']">Interview blueprint hub</a>
-          <a [routerLink]="['/tracks']">Interview tracks</a>
-          <a [routerLink]="['/companies']">Company question sets</a>
-          <a [routerLink]="['/coding']">Coding question library</a>
+          <a [routerLink]="['/tracks']">Study Plans</a>
+          <a [routerLink]="['/companies']">Company Prep</a>
+          <a [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Question Library</a>
         </div>
       </section>
 

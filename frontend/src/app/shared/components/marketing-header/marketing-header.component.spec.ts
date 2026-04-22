@@ -58,7 +58,7 @@ describe('MarketingHeaderComponent', () => {
     expect(labels).toEqual([
       'Question Library',
       'Study Plans',
-      'Practice Formats',
+      'Practice Types',
       'System Design',
     ]);
     expect(labels).not.toContain('Guides');
@@ -110,7 +110,7 @@ describe('MarketingHeaderComponent', () => {
     expect(mobilePrimaryLabels).toEqual([
       'Question Library',
       'Study Plans',
-      'Practice Formats',
+      'Practice Types',
       'System Design',
     ]);
     expect(mobileUtilityLabels).toEqual(['Pricing', 'Log in']);

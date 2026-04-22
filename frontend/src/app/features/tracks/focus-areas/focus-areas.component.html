@@ -4,7 +4,7 @@
       <p class="eyebrow">Prep planning</p>
       <h1>Frontend Interview Focus Areas</h1>
       <p class="lede">
-        Use topic coverage to find weak areas fast, then jump into the interview questions hub or a study plan with the right context.
+        Use topic coverage to find weak areas fast, then jump into the Question Library or a Study Plan with the right context.
       </p>
       <ng-container *ngIf="stats$ | async as stats">
         <div class="hero-stats">
@@ -19,9 +19,9 @@
         </div>
       </ng-container>
       <div class="hero-actions">
-        <a class="hero-cta" [routerLink]="['/interview-questions']">Open interview questions hub</a>
+        <a class="hero-cta" [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Open Question Library</a>
         <a class="hero-cta hero-cta--secondary" [routerLink]="['/tracks', 'foundations-30d', 'preview']">Open 30-day study plan</a>
-        <a class="hero-cta hero-cta--secondary" [routerLink]="['/companies']">Target company sets</a>
+        <a class="hero-cta hero-cta--secondary" [routerLink]="['/companies']">Open Company Prep</a>
       </div>
     </div>
   </div>
@@ -33,12 +33,12 @@
         <h2>Turn topic counts into a prep sequence</h2>
         <ul class="prep-guide__steps">
           <li>Find the topics where your coverage is thin or inconsistent.</li>
-          <li>Open the matching interview questions hub or filtered question list for fast repetition.</li>
-          <li>Move into one study plan, then finish with company sets in your final week.</li>
+          <li>Open the matching Question Library filter for fast repetition.</li>
+          <li>Move into one Study Plan, then finish with Company Prep in your final week.</li>
         </ul>
         <div class="prep-guide__links">
-          <a [routerLink]="['/interview-questions']">Frontend interview questions hub</a>
-          <a [routerLink]="['/guides/framework-prep']">Framework prep paths</a>
+          <a [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Question Library</a>
+          <a [routerLink]="['/guides/framework-prep']">Framework Prep Guide</a>
           <a [routerLink]="['/tracks', 'crash-7d', 'preview']">7-day crash study plan</a>
         </div>
       </section>
