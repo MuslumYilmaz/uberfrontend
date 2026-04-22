@@ -15,8 +15,8 @@
       "category": "interview_prep",
       "selectionReason": "This is the direct GreatFrontEnd comparator for hook selection, common pitfalls, and interview framing.",
       "verdicts": {
-        "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
@@ -27,32 +27,35 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> A strong answer shows you pick Hooks based on the job: local state, side effects, stable references, global state, or performance. Group Hooks by purpose and give one concrete example for each."
+          "<i class='fa-solid fa-brain'></i> <strong>Decision-first answer</strong><br><br>A strong interview answer is not just “I used <code>useState</code>, <code>useEffect</code>, <code>useRef</code>...” It is “I choose hooks by job.” Use <code>useState</code> for simple local UI state, <code>useReducer</code> when many transitions belong to one state machine, <code>useRef</code> for mutable values that should not trigger renders, and <code>useEffect</code> only when syncing with something outside React."
         ],
         "actionableExamples": [
-          "<i class='fa-solid fa-circle-info'></i> <strong>Custom hooks</strong> Mention any custom hooks you have built (for data fetching, form logic, analytics, etc.). This shows you can extract reusable stateful logic and keep components clean."
+          "This component uses <code>useState</code> because the search text is simple local UI state, <code>useReducer</code> because filter changes are event-driven and related, <code>useDeferredValue</code> because typing should stay urgent while large-list filtering can lag slightly, <code>useMemo</code> because filtering is derived and potentially expensive, and <code>useRef</code> plus <code>useEffect</code> because focusing an input is a DOM side effect rather than render state."
         ],
         "followUpConfusion": [
-          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> A strong answer shows you pick Hooks based on the job: local state, side effects, stable references, global state, or performance. Group Hooks by purpose and give one concrete example for each."
+          "<i class='fa-solid fa-circle-info'></i> <strong>High-signal trade-offs interviewers expect</strong><br><ul><li><strong><code>useState</code> vs <code>useReducer</code>:</strong> use reducer when transitions belong together and event names make the flow easier to reason about.</li><li><strong><code>useRef</code> vs state:</strong> refs store mutable values without rerendering; state exists for values the UI should reflect.</li><li><strong><code>useEffect</code>:</strong> reach for it when syncing with the outside world, not for values you can derive during render.</li><li><strong><code>useMemo</code>/<code>useCallback</code>:</strong> optimize only when they protect measurable work or prop stability.</li></ul>"
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "React Hooks for Interviews covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+          "React Hooks for Interviews is also strong on hook selection framing, so this axis is competitive rather than a clean win."
         ],
         "actionableExamples": [
-          "React Hooks for Interviews includes a credible baseline explanation or example, so the example criterion stays tied."
+          "React Hooks for Interviews includes strong examples, but our rewritten page now includes a clearer component-level example tied directly to hook choice."
         ],
         "followUpConfusion": [
           "React Hooks for Interviews is less direct on the likely follow-up confusion than our shipped answer."
         ]
       },
       "nextActions": {
+        "realWorldUseCases": [
+          "Keep the decision-first first fold, but no immediate rewrite is needed because this axis is already competitive."
+        ],
         "actionableExamples": [
-          "Add one tighter worked example later if this page needs more separation on the example axis."
+          "No immediate rewrite follow-up is needed on the example axis after the component-level hook-choice example."
         ]
       },
-      "winReason": "React Hooks for Interviews is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+      "winReason": "React Hooks for Interviews remains a hard comparator, but our page now earns a real edge on example clarity and follow-up trade-off handling while staying competitive on the general use-case axis."
     },
     {
       "label": "React API Reference",
@@ -61,7 +64,7 @@
       "selectionReason": "react.dev API reference is the canonical baseline for the current built-in hooks and their intended use.",
       "verdicts": {
         "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "actionableExamples": "ours",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
@@ -72,13 +75,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> A strong answer shows you pick Hooks based on the job: local state, side effects, stable references, global state, or performance. Group Hooks by purpose and give one concrete example for each."
+          "<i class='fa-solid fa-brain'></i> <strong>Decision-first answer</strong><br><br>A strong interview answer is not just “I used <code>useState</code>, <code>useEffect</code>, <code>useRef</code>...” It is “I choose hooks by job.” Use <code>useState</code> for simple local UI state, <code>useReducer</code> when many transitions belong to one state machine, <code>useRef</code> for mutable values that should not trigger renders, and <code>useEffect</code> only when syncing with something outside React."
         ],
         "actionableExamples": [
-          "<i class='fa-solid fa-circle-info'></i> <strong>Custom hooks</strong> Mention any custom hooks you have built (for data fetching, form logic, analytics, etc.). This shows you can extract reusable stateful logic and keep components clean."
+          "This component uses <code>useState</code> because the search text is simple local UI state, <code>useReducer</code> because filter changes are event-driven and related, <code>useDeferredValue</code> because typing should stay urgent while large-list filtering can lag slightly, <code>useMemo</code> because filtering is derived and potentially expensive, and <code>useRef</code> plus <code>useEffect</code> because focusing an input is a DOM side effect rather than render state."
         ],
         "followUpConfusion": [
-          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> A strong answer shows you pick Hooks based on the job: local state, side effects, stable references, global state, or performance. Group Hooks by purpose and give one concrete example for each."
+          "<i class='fa-solid fa-circle-info'></i> <strong>High-signal trade-offs interviewers expect</strong><br><ul><li><strong><code>useState</code> vs <code>useReducer</code>:</strong> use reducer when transitions belong together and event names make the flow easier to reason about.</li><li><strong><code>useRef</code> vs state:</strong> refs store mutable values without rerendering; state exists for values the UI should reflect.</li><li><strong><code>useEffect</code>:</strong> reach for it when syncing with the outside world, not for values you can derive during render.</li><li><strong><code>useMemo</code>/<code>useCallback</code>:</strong> optimize only when they protect measurable work or prop stability.</li></ul>"
         ]
       },
       "theirEvidence": {
@@ -86,7 +89,7 @@
           "React API Reference covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
         ],
         "actionableExamples": [
-          "React API Reference includes a credible baseline explanation or example, so the example criterion stays tied."
+          "React API Reference documents the APIs well, but our rewritten page now demonstrates how several hooks cooperate inside one component."
         ],
         "followUpConfusion": [
           "React API Reference is less direct on the likely follow-up confusion than our shipped answer."
@@ -94,7 +97,7 @@
       },
       "nextActions": {
         "actionableExamples": [
-          "Add one tighter worked example later if this page needs more separation on the example axis."
+          "No immediate rewrite follow-up is needed on the example axis after the component-level hook-choice example."
         ]
       },
       "winReason": "React API Reference is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
@@ -106,7 +109,7 @@
       "selectionReason": "Epic React is a strong topic-direct comparator for how practitioners group and explain hook usage.",
       "verdicts": {
         "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "actionableExamples": "theirs",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
@@ -117,13 +120,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> A strong answer shows you pick Hooks based on the job: local state, side effects, stable references, global state, or performance. Group Hooks by purpose and give one concrete example for each."
+          "<i class='fa-solid fa-brain'></i> <strong>Decision-first answer</strong><br><br>A strong interview answer is not just “I used <code>useState</code>, <code>useEffect</code>, <code>useRef</code>...” It is “I choose hooks by job.” Use <code>useState</code> for simple local UI state, <code>useReducer</code> when many transitions belong to one state machine, <code>useRef</code> for mutable values that should not trigger renders, and <code>useEffect</code> only when syncing with something outside React."
         ],
         "actionableExamples": [
-          "<i class='fa-solid fa-circle-info'></i> <strong>Custom hooks</strong> Mention any custom hooks you have built (for data fetching, form logic, analytics, etc.). This shows you can extract reusable stateful logic and keep components clean."
+          "This component uses <code>useState</code> because the search text is simple local UI state, <code>useReducer</code> because filter changes are event-driven and related, <code>useDeferredValue</code> because typing should stay urgent while large-list filtering can lag slightly, <code>useMemo</code> because filtering is derived and potentially expensive, and <code>useRef</code> plus <code>useEffect</code> because focusing an input is a DOM side effect rather than render state."
         ],
         "followUpConfusion": [
-          "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong> A strong answer shows you pick Hooks based on the job: local state, side effects, stable references, global state, or performance. Group Hooks by purpose and give one concrete example for each."
+          "<i class='fa-solid fa-circle-info'></i> <strong>High-signal trade-offs interviewers expect</strong><br><ul><li><strong><code>useState</code> vs <code>useReducer</code>:</strong> use reducer when transitions belong together and event names make the flow easier to reason about.</li><li><strong><code>useRef</code> vs state:</strong> refs store mutable values without rerendering; state exists for values the UI should reflect.</li><li><strong><code>useEffect</code>:</strong> reach for it when syncing with the outside world, not for values you can derive during render.</li><li><strong><code>useMemo</code>/<code>useCallback</code>:</strong> optimize only when they protect measurable work or prop stability.</li></ul>"
         ]
       },
       "theirEvidence": {
@@ -131,7 +134,7 @@
           "React Hooks Workshop covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
         ],
         "actionableExamples": [
-          "React Hooks Workshop includes a credible baseline explanation or example, so the example criterion stays tied."
+          "React Hooks Workshop goes deeper on worked example depth than our intentionally compressed single-component example."
         ],
         "followUpConfusion": [
           "React Hooks Workshop is less direct on the likely follow-up confusion than our shipped answer."
@@ -139,7 +142,7 @@
       },
       "nextActions": {
         "actionableExamples": [
-          "Add one tighter worked example later if this page needs more separation on the example axis."
+          "No immediate rewrite follow-up is needed on the example axis after the component-level hook-choice example."
         ]
       },
       "winReason": "React Hooks Workshop is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."

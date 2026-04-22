@@ -29,7 +29,7 @@
 | `react-functional-vs-class-components` | `no-action` | `greatfrontend.com`, `telerik.com` | Strong lifecycle mapping, modern migration guidance, and realistic trade-offs keep it competitive. |
 | `react-why-event-delegation` | `no-action` | `react.dev` | Strong event-system mental model, root-listener explanation, and React-specific trade-offs make it interview-ready. |
 | `react-fragments-dom-and-reconciliation` | `no-action` | `react.dev` | Specific DOM-vs-React-tree framing and reconciliation consequences make it stronger than generic fragment explainers. |
-| `react-hooks-youve-used` | `watchlist` | `greatfrontend.com` | The page is useful but still reads like a hook inventory more than a harder decision matrix with production trade-offs. |
+| `react-hooks-youve-used` | `no-action` | `greatfrontend.com` | The rewrite turned the page into a hook-choice decision matrix with component-level trade-offs, so it now clears the manual bar. |
 | `react-18-whats-new` | `no-action` | `react.dev` | Strong migration-first framing and practical React 18 adoption notes keep it competitive despite the commodity query. |
 
 ### `react-core-problem-and-non-goals`
@@ -126,20 +126,16 @@
 
 | Criterion | Verdict | Notes |
 | --- | --- | --- |
-| `intentMatch` | `tie` | The page matches the prompt directly, but the first fold still feels more like a grouped inventory than a sharper interview answer. |
-| `decisionQuality` | `theirs` | It does not make the harder choice boundaries concrete enough, such as `useState` vs `useReducer` or `useRef` vs state. |
-| `actionableExamples` | `tie` | The list examples are useful, but they stay short and generic. |
-| `followUpCoverage` | `theirs` | The page mentions custom hooks and the Rules of Hooks, but misses stronger follow-ups like memoization overuse or hook-selection trade-offs inside one component. |
-| `edgeCaseCoverage` | `theirs` | It is lighter than the strongest competitors on misuse patterns and deeper decision traps. |
-| `differentiation` | `theirs` | Many React hook guides can list common hooks; this page still needs a sharper angle to feel distinct. |
+| `intentMatch` | `ours` | The first fold now answers the interview prompt as a choice problem instead of a hook inventory. |
+| `decisionQuality` | `ours` | `useState` vs `useReducer`, `useRef` vs state, and memoization restraint are now explicit decision boundaries. |
+| `actionableExamples` | `ours` | The `ProductSearch` example shows multiple hooks cooperating inside one realistic component instead of isolated toy snippets. |
+| `followUpCoverage` | `ours` | Custom hooks, Rules of Hooks, and memoization misuse are now tied back to selection logic rather than mentioned loosely. |
+| `edgeCaseCoverage` | `tie` | The page is still lighter than workshop-style material on a few niche traps, but it now covers the main interview mistakes well enough. |
+| `differentiation` | `ours` | The decision-matrix framing makes it meaningfully sharper than generic hook roundups. |
 
 - Hard gaps:
-  - The page reads like a competent hook inventory, but not yet like a strong decision matrix.
-  - It needs one richer worked example showing why a single component reaches for `useState`, `useEffect`, `useRef`, and maybe a custom hook for different jobs.
-  - It should surface a few higher-signal trade-offs: `useState` vs `useReducer`, `useRef` vs state, and when `useMemo/useCallback` are unnecessary.
-- Verdict: `watchlist`
-- Rewrite direction if prioritized later:
-  - Replace part of the inventory with a decision table and one component-level example that maps each hook choice to a concrete production need.
+  - A future polish pass could add one explicit note about `useLayoutEffect` staying niche, but that is incremental, not rewrite debt.
+- Verdict: `no-action`
 
 ### `react-18-whats-new`
 - Query: `What is new in React 18?`
@@ -163,10 +159,9 @@
 - Verdict: `no-action`
 
 ## Final Lane Recommendation
-- `Do not open a React rewrite lane; move to Vue audit next.`
-- Watchlist pages:
-  - `react-hooks-youve-used`
+- `Do not open a React rewrite lane.`
+- Watchlist pages: none.
 - Practical sequencing:
-  1. Keep React closed unless the hooks page becomes strategically important.
-  2. Move to Vue manual audit next.
-  3. Reopen React only if `react-hooks-youve-used` proves important enough to justify a single-page rewrite pass later.
+  1. Keep React closed.
+  2. Use the consolidated watchlist queue for any future rewrite prioritization.
+  3. Reopen React only if a new audit or production signal surfaces fresh weakness.

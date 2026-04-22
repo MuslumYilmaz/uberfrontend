@@ -15,20 +15,6 @@
         "global-registration exceptions are underdeveloped"
       ],
       "recommendedAction": "if revisited later, replace part of the descriptive overview with a stronger ownership and registration decision block plus a short list of acceptable global-component exceptions"
-    },
-    {
-      "contentId": "vuex-state-management",
-      "severity": "watchlist",
-      "hardestCompetitors": [
-        "vuex.vuejs.org",
-        "vuejs.org"
-      ],
-      "reasons": [
-        "the opening still reads too much like a Vuex concept inventory instead of a store-boundary decision answer",
-        "global-state vs local-state rules are not sharp enough",
-        "modern Vue architectural trade-offs are underdeveloped"
-      ],
-      "recommendedAction": "if revisited later, reframe the opening around when centralized shared state is worth the ceremony, then add a local-vs-global state matrix and one stronger warning against making Vuex the default home for all state"
     }
   ]
 }

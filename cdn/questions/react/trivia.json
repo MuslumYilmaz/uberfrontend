@@ -5824,80 +5824,93 @@
     ],
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "Interviewers want to see that you can choose Hooks intentionally: state, effects, refs, memoization, context, reducers, and concurrent features. Explain what each Hook is for, when you reach for it, and the trade-offs.",
+    "description": "A strong hooks answer is a decision matrix, not a hook inventory. Explain useState vs useReducer, useRef vs state, useEffect vs derived logic, and when memoization or concurrent hooks actually earn their complexity.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA strong answer shows you pick Hooks based on the job: local state, side effects, stable references, global state, or performance. Group Hooks by purpose and give one concrete example for each."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Decision-first answer</strong><br><br>A strong interview answer is not just “I used <code>useState</code>, <code>useEffect</code>, <code>useRef</code>...” It is “I choose hooks by job.” Use <code>useState</code> for simple local UI state, <code>useReducer</code> when many transitions belong to one state machine, <code>useRef</code> for mutable values that should not trigger renders, and <code>useEffect</code> only when syncing with something outside React."
         },
         {
           "type": "list",
           "columns": [
             "Hook",
-            "When I use it",
-            "Example"
+            "Choose it when",
+            "Do not default to it for"
           ],
           "rows": [
             [
               "useState",
-              "Local UI state",
-              "Form inputs, toggles, tabs"
-            ],
-            [
-              "useEffect",
-              "Sync with external systems after render",
-              "Fetch data, subscriptions, timers"
-            ],
-            [
-              "useRef",
-              "Hold mutable values or DOM refs without re-rendering",
-              "Focus an input, store interval id"
-            ],
-            [
-              "useMemo / useCallback",
-              "Avoid expensive recomputation or unstable handlers",
-              "Memoize filtered lists or event callbacks"
-            ],
-            [
-              "useContext",
-              "Read global values shared across the tree",
-              "Theme, locale, auth user"
+              "Simple local UI state like inputs, toggles, and open/closed state",
+              "A multi-step state machine with many related transitions"
             ],
             [
               "useReducer",
-              "Complex state transitions",
-              "Multi-step forms, undo/redo"
+              "State transitions depend on event types or several fields must change together",
+              "A single boolean or one text input"
             ],
             [
-              "useLayoutEffect",
-              "Read or write layout before paint",
-              "Measure DOM, prevent flicker"
+              "useEffect",
+              "You must sync with an external system after render: fetches, subscriptions, timers, DOM APIs",
+              "Pure derived state or logic you can run directly in an event handler"
+            ],
+            [
+              "useRef",
+              "You need a DOM ref or a mutable value that should survive renders without rerendering the UI",
+              "Values the UI must render immediately"
+            ],
+            [
+              "useMemo",
+              "A derived value is expensive or you need a stable value for a memoized child",
+              "Wrapping every cheap calculation \"just in case\""
+            ],
+            [
+              "useCallback",
+              "Callback identity matters for a memoized child or another dependency-sensitive hook",
+              "Every click handler in the app"
+            ],
+            [
+              "useContext",
+              "A value is already owned higher in the tree and many descendants need to read it",
+              "Replacing all state management or all prop drilling automatically"
             ],
             [
               "useTransition / useDeferredValue",
-              "Keep UI responsive during heavy updates",
-              "Search filtering on large lists"
+              "Typing or navigation must stay responsive while expensive updates happen in the background",
+              "Papering over unnecessary rerenders you should fix directly"
             ],
             [
-              "useId",
-              "Stable ids for accessibility",
-              "label/input linking"
+              "useLayoutEffect / useId",
+              "You must measure layout before paint or generate stable accessibility IDs",
+              "General side effects or random IDs"
             ]
           ],
-          "caption": "Common Hooks and how to talk about them"
+          "caption": "React Hooks are easier to explain when you frame them as decisions, not as a checklist."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Custom hooks</strong>\n\nMention any custom hooks you have built (for data fetching, form logic, analytics, etc.). This shows you can extract reusable stateful logic and keep components clean."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>High-signal trade-offs interviewers expect</strong><br><ul><li><strong><code>useState</code> vs <code>useReducer</code>:</strong> use reducer when transitions belong together and event names make the flow easier to reason about.</li><li><strong><code>useRef</code> vs state:</strong> refs store mutable values without rerendering; state exists for values the UI should reflect.</li><li><strong><code>useEffect</code>:</strong> reach for it when syncing with the outside world, not for values you can derive during render.</li><li><strong><code>useMemo</code>/<code>useCallback</code>:</strong> optimize only when they protect measurable work or prop stability.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Rules of Hooks (must mention)</strong>\n\n- Call hooks at the top level (no loops or conditionals).\n- Only call hooks from components or other hooks.\n\nThese rules exist because React matches hook state by call order."
+          "text": "<i class='fa-solid fa-code'></i> <strong>One component, different hook jobs</strong>"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "function ProductSearch({ products }) {\n  const [query, setQuery] = useState('');\n  const [filters, dispatch] = useReducer(filtersReducer, initialFilters);\n  const deferredQuery = useDeferredValue(query);\n  const inputRef = useRef<HTMLInputElement | null>(null);\n\n  const visibleProducts = useMemo(() => {\n    return filterProducts(products, deferredQuery, filters);\n  }, [products, deferredQuery, filters]);\n\n  useEffect(() => {\n    inputRef.current?.focus();\n  }, []);\n\n  return (\n    <>\n      <input\n        ref={inputRef}\n        value={query}\n        onChange={(e) => setQuery(e.target.value)}\n      />\n      <FiltersPanel filters={filters} dispatch={dispatch} />\n      <ResultsList products={visibleProducts} />\n    </>\n  );\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nPick hooks based on intent: state, side effects, refs, memoization, or shared state. Explain trade-offs, and show you know the rules and when to use custom hooks."
+          "text": "This component uses <code>useState</code> because the search text is simple local UI state, <code>useReducer</code> because filter changes are event-driven and related, <code>useDeferredValue</code> because typing should stay urgent while large-list filtering can lag slightly, <code>useMemo</code> because filtering is derived and potentially expensive, and <code>useRef</code> plus <code>useEffect</code> because focusing an input is a DOM side effect rather than render state."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Custom hooks and Rules of Hooks</strong><br><br>If you have built hooks such as <code>useAuth</code>, <code>useDebouncedValue</code>, or <code>useProductSearch</code>, mention them. That shows you can extract reusable stateful logic instead of bloating components. Also mention the Rules of Hooks: call hooks at the top level, and only call them from React components or other hooks, because React matches hook state by call order."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong><br><br>The strongest answer is a hook-choice framework: simple state vs reducer, ref vs state, effect vs derived logic, shared context vs local ownership, and memoization only when it protects real work. If you explain hooks that way, you sound like someone who can design components instead of just reciting APIs."
         }
       ]
     },
@@ -5911,10 +5924,10 @@
       "context",
       "performance"
     ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-04-19",
     "seo": {
-      "title": "Which React Hooks should you use and when?",
-      "description": "Choose hooks by purpose: useState/useReducer for state, useEffect for side effects, useRef for mutable values, and useMemo/useCallback for memoization."
+      "title": "How to choose React Hooks: useState vs useReducer, useRef vs state, and effect trade-offs",
+      "description": "A strong React Hooks answer is a decision matrix, not a hook list. Learn when to use useState, useReducer, useEffect, useRef, memoization hooks, and transitions."
     },
     "incidentCard": {
       "title": "Hook Choice Under Pressure Check",

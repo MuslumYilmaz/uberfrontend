@@ -1,0 +1,145 @@
+<header class="famh-topbar" role="banner" (click)="$event.stopPropagation()">
+  <div class="famh-shell">
+    <a
+      class="famh-brand"
+      data-testid="marketing-header-brand"
+      routerLink="/"
+      (click)="trackBrandClick()"
+    >
+      FrontendAtlas
+    </a>
+
+    <nav class="famh-nav" aria-label="Primary">
+      <a
+        *ngFor="let link of primaryLinks"
+        class="famh-link"
+        data-testid="marketing-header-primary-link"
+        [class.famh-link--active]="isPrimaryLinkActive(link)"
+        [attr.aria-current]="isPrimaryLinkActive(link) ? 'page' : null"
+        [routerLink]="link.route"
+        [queryParams]="link.queryParams || null"
+        (click)="trackPrimaryClick(link)"
+      >
+        {{ link.label }}
+      </a>
+    </nav>
+
+    <div class="famh-actions">
+      <ng-container *ngIf="!auth.isLoggedIn(); else loggedInActions">
+        <a
+          *ngFor="let link of guestUtilityLinks"
+          class="famh-link"
+          data-testid="marketing-header-utility-link"
+          routerLinkActive="famh-link--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [routerLink]="link.route"
+          (click)="trackUtilityClick(link)"
+        >
+          {{ link.label }}
+        </a>
+      </ng-container>
+
+      <ng-template #loggedInActions>
+        <a
+          *ngFor="let link of loggedInUtilityLinks"
+          class="famh-link"
+          data-testid="marketing-header-utility-link"
+          routerLinkActive="famh-link--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [routerLink]="link.route"
+          (click)="trackUtilityClick(link)"
+        >
+          {{ link.label }}
+        </a>
+      </ng-template>
+
+      <a
+        class="famh-cta"
+        data-testid="marketing-header-cta"
+        [routerLink]="ctaLink()"
+        (click)="trackCtaClick()"
+      >
+        {{ ctaLabel() }}
+      </a>
+    </div>
+
+    <button
+      type="button"
+      class="famh-menu-toggle"
+      data-testid="marketing-header-mobile-menu-button"
+      [attr.aria-expanded]="mobileMenuOpen()"
+      aria-controls="marketing-header-mobile-menu"
+      aria-label="Open navigation menu"
+      (click)="toggleMobileMenu($event)"
+    >
+      <span>Menu</span>
+      <span class="famh-menu-toggle__icon" aria-hidden="true">{{ mobileMenuOpen() ? '×' : '☰' }}</span>
+    </button>
+  </div>
+
+  <ng-container *ngIf="mobileMenuOpen()">
+    <div class="famh-backdrop"></div>
+    <div
+      id="marketing-header-mobile-menu"
+      class="famh-mobile-panel"
+      data-testid="marketing-header-mobile-menu"
+      role="menu"
+    >
+      <div class="famh-mobile-section">
+        <div class="famh-mobile-section__title">Explore</div>
+        <a
+          *ngFor="let link of primaryLinks"
+          class="famh-mobile-link"
+          data-testid="marketing-header-mobile-link"
+          [class.famh-mobile-link--active]="isPrimaryLinkActive(link)"
+          [attr.aria-current]="isPrimaryLinkActive(link) ? 'page' : null"
+          [routerLink]="link.route"
+          [queryParams]="link.queryParams || null"
+          (click)="trackPrimaryClick(link, 'mobile_menu')"
+        >
+          {{ link.label }}
+        </a>
+      </div>
+
+      <div class="famh-mobile-section">
+        <div class="famh-mobile-section__title">Account</div>
+        <ng-container *ngIf="!auth.isLoggedIn(); else mobileLoggedInActions">
+          <a
+            *ngFor="let link of guestUtilityLinks"
+            class="famh-mobile-link"
+            data-testid="marketing-header-mobile-utility-link"
+            routerLinkActive="famh-mobile-link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [routerLink]="link.route"
+            (click)="trackUtilityClick(link, 'mobile_menu')"
+          >
+            {{ link.label }}
+          </a>
+        </ng-container>
+
+        <ng-template #mobileLoggedInActions>
+          <a
+            *ngFor="let link of loggedInUtilityLinks"
+            class="famh-mobile-link"
+            data-testid="marketing-header-mobile-utility-link"
+            routerLinkActive="famh-mobile-link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [routerLink]="link.route"
+            (click)="trackUtilityClick(link, 'mobile_menu')"
+          >
+            {{ link.label }}
+          </a>
+        </ng-template>
+
+        <a
+          class="famh-mobile-cta"
+          data-testid="marketing-header-mobile-cta"
+          [routerLink]="ctaLink()"
+          (click)="trackCtaClick('mobile_menu')"
+        >
+          {{ ctaLabel() }}
+        </a>
+      </div>
+    </div>
+  </ng-container>
+</header>

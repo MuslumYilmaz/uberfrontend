@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Params, RouterModule } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 
 type Mode = 'practice' | 'course';
@@ -36,6 +36,7 @@ export class FooterComponent {
   @Input() nextDisabledTooltip: string | null = null;
   @Input() practiceLeftLabel?: string | null;
   @Input() practiceLeftRoute?: string | any[] | null;
+  @Input() practiceLeftQueryParams?: Params | null;
 
   // Course (reading/coding with breadcrumb)
   @Input() backLabel?: string | null;                // (optional) not shown in center cluster, used for back()

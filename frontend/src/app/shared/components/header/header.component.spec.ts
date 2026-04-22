@@ -1,18 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AppSidebarDrawerService } from '../../../core/services/app-sidebar-drawer.service';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
+  let analytics: jasmine.SpyObj<AnalyticsService>;
+
   async function createComponent(options?: { isLoggedIn?: boolean; isPro?: boolean }): Promise<ComponentFixture<HeaderComponent>> {
     const isLoggedIn = options?.isLoggedIn ?? true;
     const isPro = options?.isPro ?? false;
+    analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
+
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
       providers: [
         provideRouter([]),
+        { provide: AnalyticsService, useValue: analytics },
         {
           provide: AuthService,
           useValue: {
@@ -68,28 +74,66 @@ describe('HeaderComponent', () => {
     expect(drawer.isOpen()).toBeFalse();
   });
 
-  it('shows pricing instead of the mobile profile button for guests', async () => {
+  it('removes the top-level interview hub link and mobile pricing quicklink', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
 
-    expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-pricing-button"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-profile-button"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-interview-hub"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-pricing-button"]')).toBeFalsy();
+  });
+
+  it('uses the brand as the dashboard home link and removes the duplicate dashboard button', async () => {
+    const fixture = await createComponent({ isLoggedIn: true });
+    const brandLink = fixture.nativeElement.querySelector('[data-testid="header-brand"]') as HTMLAnchorElement;
+    const desktopLinks = Array.from(fixture.nativeElement.querySelectorAll('.fah-desktop-actions a')) as HTMLAnchorElement[];
+
+    expect(brandLink.getAttribute('href') || '').toContain('/dashboard');
+    expect(desktopLinks.some((link) => (link.textContent || '').trim() === 'Dashboard')).toBeFalse();
   });
 
   it('shows the mobile profile button for signed-in users', async () => {
     const fixture = await createComponent({ isLoggedIn: true });
     const profileLink = fixture.nativeElement.querySelector('[data-testid="header-mobile-profile-button"]') as HTMLAnchorElement;
 
-    expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-pricing-button"]')).toBeFalsy();
     expect(profileLink).toBeTruthy();
     expect(profileLink.getAttribute('href') || '').toContain('/profile');
   });
 
-  it('hides pricing actions for premium users', async () => {
+  it('hides upgrade actions for premium users', async () => {
     const fixture = await createComponent({ isLoggedIn: true, isPro: true });
-    const pricingLink = fixture.nativeElement.querySelector('a[href="/pricing"]') as HTMLAnchorElement | null;
     const premiumUpsellCta = fixture.nativeElement.querySelector('.fah-cta') as HTMLAnchorElement | null;
 
-    expect(pricingLink).toBeNull();
     expect(premiumUpsellCta).toBeNull();
+  });
+
+  it('opens a compact study launcher with four primary actions and tracks the open event', async () => {
+    const fixture = await createComponent({ isLoggedIn: true });
+    const button = fixture.nativeElement.querySelector('.fah-navlink') as HTMLButtonElement;
+
+    expect(button.textContent || '').toContain('Interview Prep');
+    button.click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="header-study-continue"]')).toBeTruthy();
+    const startQuestion = fixture.nativeElement.querySelector('[data-testid="header-study-start_one_question"]') as HTMLAnchorElement;
+    const browseLibrary = fixture.nativeElement.querySelector('[data-testid="header-study-browse_full_library"]') as HTMLAnchorElement;
+
+    expect(startQuestion).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-study-follow_plan"]')).toBeTruthy();
+    expect(browseLibrary).toBeTruthy();
+    expect(startQuestion.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(browseLibrary.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(analytics.track).toHaveBeenCalledWith('header_study_opened', jasmine.any(Object));
+    expect(analytics.track).toHaveBeenCalledWith(
+      'header_top_nav_clicked',
+      jasmine.objectContaining({ surface: 'app', area: 'primary', destination: 'study' }),
+    );
+  });
+
+  it('renders a labeled mobile study trigger instead of an icon-only button', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const studyButton = fixture.nativeElement.querySelector('[data-testid="header-mobile-study-button"]') as HTMLButtonElement;
+
+    expect(studyButton.textContent || '').toContain('Interview Prep');
+    expect(studyButton.getAttribute('aria-label') || '').toContain('interview prep');
   });
 });

@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import type { InterviewQuestionsHubResolved } from '../../core/resolvers/interview-questions.resolver';
-import { PracticeCatalogEntry } from '../../core/models/practice.model';
-import { PracticeRegistryService } from '../../core/services/practice-registry.service';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { QuestionListItem, QuestionService } from '../../core/services/question.service';
 import { SeoService, type SeoMeta } from '../../core/services/seo.service';
 import { Tech } from '../../core/models/user.model';
@@ -37,6 +36,13 @@ type QuestionSummaryRow = {
 type RawQuestionSummaryRow = QuestionListItem & { tech: Tech };
 type SchemaQuestionLink = { title: string; path: string };
 type PrepPlanLink = { label: string; route: any[]; summary: string };
+type HubRouteCard = {
+  key: 'coding' | 'concepts' | 'study_plan';
+  title: string;
+  subtitle: string;
+  route: any[];
+  queryParams?: Record<string, string | number | boolean>;
+};
 
 const DEFAULT_CONFIG: InterviewQuestionsLandingConfig = {
   keyword: 'javascript interview questions',
@@ -133,7 +139,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly questionService = inject(QuestionService);
   private readonly seo = inject(SeoService);
-  private readonly practiceRegistry = inject(PracticeRegistryService);
+  private readonly analytics = inject(AnalyticsService);
 
   config: InterviewQuestionsLandingConfig = DEFAULT_CONFIG;
   loading = true;
@@ -141,7 +147,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   triviaQuestions: QuestionSummaryRow[] = [];
   relatedHubLinks: HubLink[] = [];
   featuredLinks: HubLink[] = [];
-  readonly practiceRouteLinks = computed<PracticeCatalogEntry[]>(() => this.practiceRegistry.primaryHubEntries());
+  readonly previewLimit = 3;
 
   ngOnInit(): void {
     const incoming = this.route.snapshot.data['interviewQuestions'] as Partial<InterviewQuestionsLandingConfig> | undefined;
@@ -242,6 +248,65 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return [...this.codingQuestions, ...this.triviaQuestions]
       .filter((row) => row.priority === 'must_know')
       .length;
+  }
+
+  routeCards(): HubRouteCard[] {
+    return [
+      {
+        key: 'coding',
+        title: 'Start one coding question',
+        subtitle: this.loading
+          ? 'Loading the highest-signal coding prompts.'
+          : `${this.previewRows('coding').length} crucial coding prompts are ready.`,
+        route: this.primaryRouteForKind('coding').route,
+        queryParams: this.primaryRouteForKind('coding').queryParams,
+      },
+      {
+        key: 'concepts',
+        title: 'Start one concepts question',
+        subtitle: this.loading
+          ? 'Loading the highest-signal concept prompts.'
+          : `${this.previewRows('trivia').length} concise concept prompts are ready.`,
+        route: this.primaryRouteForKind('trivia').route,
+        queryParams: this.primaryRouteForKind('trivia').queryParams,
+      },
+      {
+        key: 'study_plan',
+        title: 'Follow a study plan',
+        subtitle: 'Open guided tracks when you want a clearer sequence and less choice load.',
+        route: ['/tracks'],
+      },
+    ];
+  }
+
+  previewRows(kind: Kind): QuestionSummaryRow[] {
+    const rows = kind === 'coding' ? this.codingQuestions : this.triviaQuestions;
+    return rows.slice(0, this.previewLimit);
+  }
+
+  viewAllTarget(kind: Kind): { route: any[]; queryParams?: Record<string, string | number | boolean> } {
+    const queryParams: Record<string, string | number | boolean> = {
+      kind,
+      reset: 1,
+    };
+    const primaryTech = this.primaryTechForLibrary();
+    if (primaryTech) queryParams['tech'] = primaryTech;
+    return { route: ['/coding'], queryParams };
+  }
+
+  trackRouteCardSelection(card: HubRouteCard): void {
+    this.analytics.track('interview_hub_route_selected', {
+      hub_path: this.currentHubPath(),
+      route_key: card.key,
+      is_master_hub: this.isMasterHub(),
+    });
+  }
+
+  trackViewAll(kind: Kind): void {
+    this.analytics.track('interview_hub_view_all_clicked', {
+      hub_path: this.currentHubPath(),
+      kind,
+    });
   }
 
   priorityLabel(row: QuestionSummaryRow): string {
@@ -378,6 +443,19 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     if (aDifficulty !== bDifficulty) return aDifficulty - bDifficulty;
 
     return String(a.title || '').localeCompare(String(b.title || ''));
+  }
+
+  private primaryRouteForKind(kind: Kind): { route: any[]; queryParams?: Record<string, string | number | boolean> } {
+    const preview = this.previewRows(kind);
+    const first = preview[0];
+    if (first) return { route: first.link };
+    return this.viewAllTarget(kind);
+  }
+
+  private primaryTechForLibrary(): Tech | null {
+    if (this.isMasterHub()) return 'javascript';
+    if (this.config.techs.length === 1) return this.config.techs[0];
+    return null;
   }
 
   private toRow(row: RawQuestionSummaryRow, kind: Kind): QuestionSummaryRow {

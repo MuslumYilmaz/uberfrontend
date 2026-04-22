@@ -228,27 +228,35 @@ describe('TriviaDetailComponent', () => {
     expect(reportButton?.textContent || '').toContain('Report issue');
   });
 
-  it('renders crawlable sidebar and interview-hub links', async () => {
+  it('renders crawlable sidebar and practice entry links', async () => {
     const fixture = await createLoadedFixture();
 
     const sideLink = fixture.nativeElement.querySelector('.side-list a.side-item') as HTMLAnchorElement | null;
     expect(sideLink).toBeTruthy();
     expect(sideLink?.getAttribute('href') || '').toContain('/javascript/trivia/q1');
 
-    const prepLinks = Array.from(
-      fixture.nativeElement.querySelectorAll('.prep-bridge__links a')
-    ) as HTMLAnchorElement[];
-    const prepHrefs = prepLinks.map((link) => link.getAttribute('href') || '');
-    expect(prepHrefs.some((href) => href.includes('/javascript/interview-questions'))).toBeTrue();
+    const framePrimary = fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame-primary"]') as HTMLAnchorElement | null;
+    const framePlan = fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame-plan"]') as HTMLAnchorElement | null;
+    const frameHub = fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame-hub"]') as HTMLAnchorElement | null;
+
+    expect(framePrimary?.getAttribute('href') || '').toContain('/coding?kind=trivia&reset=1');
+    expect(framePlan?.getAttribute('href') || '').toContain('/tracks/javascript-prep-path/mastery');
+    expect(frameHub?.getAttribute('href') || '').toContain('/javascript/interview-questions');
   });
 
   it('renders unlocked trivia shell with sidebar, similar, guides, and prep bridge blocks', async () => {
     const fixture = await createLoadedFixture();
 
     expect(fixture.nativeElement.querySelector('.side-list')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame"]')).toBeTruthy();
+    expect(fixture.nativeElement.textContent || '').toContain('Interview concept practice');
     expect(fixture.nativeElement.querySelector('.similar-list')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.guide-links')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="trivia-prep-entry"]')).toBeTruthy();
+
+    const footerLeft = fixture.nativeElement.querySelector('[data-testid="footer-left"]') as HTMLAnchorElement | null;
+    expect(footerLeft?.textContent || '').toContain('Question Library');
+    expect(footerLeft?.getAttribute('href') || '').toContain('/coding?kind=trivia&reset=1');
   });
 
   it('maps trivia detail tech to interview hub routes', () => {

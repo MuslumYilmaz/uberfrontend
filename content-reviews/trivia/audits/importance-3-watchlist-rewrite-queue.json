@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-04-19",
+  "scope": "importance-3 surviving manual-audit watchlist rewrite queue",
+  "resolvedInCurrentPass": [
+    "react-hooks-youve-used",
+    "vuex-state-management"
+  ],
+  "queue": [
+    {
+      "rank": 1,
+      "contentId": "ai-streaming-data-handling",
+      "tech": "javascript",
+      "priority": "high",
+      "whyNow": "Strong primary-source competitors and clear missing production edge cases around request correlation, reconnect, and resume."
+    },
+    {
+      "rank": 2,
+      "contentId": "angular-forroot-forchild",
+      "tech": "angular",
+      "priority": "medium-high",
+      "whyNow": "Correct page, but it needs modern standalone-era framing so it does not read as if the legacy NgModule pattern is still equally central."
+    },
+    {
+      "rank": 3,
+      "contentId": "vue-sfc-vs-global-components",
+      "tech": "vue",
+      "priority": "medium",
+      "whyNow": "Useful answer, but it still needs a stronger ownership and dependency-visibility decision rule."
+    },
+    {
+      "rank": 4,
+      "contentId": "js-design-patterns",
+      "tech": "javascript",
+      "priority": "low",
+      "whyNow": "Broad and somewhat generic, but still competitive enough that the rewrite value is lower than the topics above."
+    }
+  ],
+  "recommendedWaves": {
+    "wave1": [
+      "ai-streaming-data-handling",
+      "angular-forroot-forchild"
+    ],
+    "wave2": [
+      "vue-sfc-vs-global-components"
+    ],
+    "wave3": [
+      "js-design-patterns"
+    ]
+  }
+}

@@ -125,7 +125,7 @@ test.describe('routing and access critical paths', () => {
     await page.getByTestId('dashboard-daily-complete').click();
     await expect(page.getByText(/Today’s rep completed\.|Already cleared for today\./)).toBeVisible();
 
-    await page.getByTestId('dashboard-focus-areas-link').click();
+    await page.locator('[data-testid="dashboard-library-link"][data-destination="tech_lanes"]').click();
     await expect(page).toHaveURL('/focus-areas');
     await expect(page.getByRole('heading', { name: 'Frontend Interview Focus Areas' })).toBeVisible();
   });

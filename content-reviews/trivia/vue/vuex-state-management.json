@@ -16,7 +16,7 @@
       "selectionReason": "Vuex docs are the canonical baseline for what Vuex does and when the trade-off is worth it.",
       "verdicts": {
         "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "actionableExamples": "ours",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
@@ -27,13 +27,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+          "<strong>Architecture decision</strong><br><br>Vuex is worth its ceremony when state is shared across distant parts of the app and you need predictable write flow, debugging traceability, and one source of truth for business data. The important production decision is not \"Should we have a store?\" but \"Which state actually belongs there?\" A common failure mode is dumping UI-local state into Vuex and turning the store into a noisy global junk drawer."
         ],
         "actionableExamples": [
-          "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
+          "This store is justified because <code>user</code> and <code>cartItems</code> are shared business data that multiple routes and components may read. The store is <strong>not</strong> the right home for a single modal flag, one uncontrolled input draft, or a tab that only one component cares about."
         ],
         "followUpConfusion": [
-          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+          "<strong>Modern Vue context</strong><br><br>In Vue 3, <strong>Pinia is the recommended default store library</strong>, and many teams now solve smaller sharing problems with composables plus reactive state. If an interviewer asks about Vuex, the strong answer is: Vuex exists to centralize shared business state and make writes predictable, but you should not treat a global store as the default home for every piece of state."
         ]
       },
       "theirEvidence": {
@@ -41,7 +41,7 @@
           "What is Vuex? covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
         ],
         "actionableExamples": [
-          "What is Vuex? includes a credible baseline explanation or example, so the example criterion stays tied."
+          "What is Vuex? includes solid examples, but our rewritten page now ties the example directly to state-boundary decisions."
         ],
         "followUpConfusion": [
           "What is Vuex? is less direct on the likely follow-up confusion than our shipped answer."
@@ -49,7 +49,7 @@
       },
       "nextActions": {
         "actionableExamples": [
-          "Add one tighter worked example later if this page needs more separation on the example axis."
+          "No immediate rewrite follow-up is needed on the example axis after the state-boundary example was added."
         ]
       },
       "winReason": "What is Vuex? is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
@@ -60,8 +60,8 @@
       "category": "interview_prep",
       "selectionReason": "GreatFrontEnd Vue category is the approved interview-prep fallback for Vue state-management topics.",
       "verdicts": {
-        "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
@@ -72,41 +72,44 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+          "<strong>Architecture decision</strong><br><br>Vuex is worth its ceremony when state is shared across distant parts of the app and you need predictable write flow, debugging traceability, and one source of truth for business data. The important production decision is not \"Should we have a store?\" but \"Which state actually belongs there?\" A common failure mode is dumping UI-local state into Vuex and turning the store into a noisy global junk drawer."
         ],
         "actionableExamples": [
-          "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
+          "This store is justified because <code>user</code> and <code>cartItems</code> are shared business data that multiple routes and components may read. The store is <strong>not</strong> the right home for a single modal flag, one uncontrolled input draft, or a tab that only one component cares about."
         ],
         "followUpConfusion": [
-          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+          "<strong>Modern Vue context</strong><br><br>In Vue 3, <strong>Pinia is the recommended default store library</strong>, and many teams now solve smaller sharing problems with composables plus reactive state. If an interviewer asks about Vuex, the strong answer is: Vuex exists to centralize shared business state and make writes predictable, but you should not treat a global store as the default home for every piece of state."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "Vue Interview Questions covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
+          "Vue Interview Questions is also strong on broad interview framing, so this axis is competitive rather than a clean win."
         ],
         "actionableExamples": [
-          "Vue Interview Questions includes a credible baseline explanation or example, so the example criterion stays tied."
+          "Vue Interview Questions includes solid examples, but our rewritten page now ties the example directly to state-boundary decisions."
         ],
         "followUpConfusion": [
           "Vue Interview Questions is less direct on the likely follow-up confusion than our shipped answer."
         ]
       },
       "nextActions": {
+        "realWorldUseCases": [
+          "Keep the store-boundary first fold, but no immediate rewrite is needed because this axis is already competitive."
+        ],
         "actionableExamples": [
-          "Add one tighter worked example later if this page needs more separation on the example axis."
+          "No immediate rewrite follow-up is needed on the example axis after the state-boundary example was added."
         ]
       },
-      "winReason": "Vue Interview Questions is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."
+      "winReason": "Vue Interview Questions remains a real comparator, but our page now earns a concrete edge on example framing and follow-up state-boundary guidance while staying competitive on the broader use-case axis."
     },
     {
       "label": "State Management",
-      "url": "https://cn.vuejs.org/guide/scaling-up/state-management",
+      "url": "https://vuejs.org/guide/scaling-up/state-management.html",
       "category": "canonical_docs",
-      "selectionReason": "Vue state-management guidance is a strong comparator for local state, shared state, and when a store becomes necessary.",
+      "selectionReason": "Official Vue state-management guidance is the strongest comparator for local state, shared state, and when a store becomes necessary in modern Vue.",
       "verdicts": {
         "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "actionableExamples": "theirs",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
@@ -117,13 +120,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+          "<strong>Architecture decision</strong><br><br>Vuex is worth its ceremony when state is shared across distant parts of the app and you need predictable write flow, debugging traceability, and one source of truth for business data. The important production decision is not \"Should we have a store?\" but \"Which state actually belongs there?\" A common failure mode is dumping UI-local state into Vuex and turning the store into a noisy global junk drawer."
         ],
         "actionableExamples": [
-          "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
+          "This store is justified because <code>user</code> and <code>cartItems</code> are shared business data that multiple routes and components may read. The store is <strong>not</strong> the right home for a single modal flag, one uncontrolled input draft, or a tab that only one component cares about."
         ],
         "followUpConfusion": [
-          "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
+          "<strong>Modern Vue context</strong><br><br>In Vue 3, <strong>Pinia is the recommended default store library</strong>, and many teams now solve smaller sharing problems with composables plus reactive state. If an interviewer asks about Vuex, the strong answer is: Vuex exists to centralize shared business state and make writes predictable, but you should not treat a global store as the default home for every piece of state."
         ]
       },
       "theirEvidence": {
@@ -131,7 +134,7 @@
           "State Management covers the same topic directly, but our shipped answer is more explicit about the production or interview decision boundary."
         ],
         "actionableExamples": [
-          "State Management includes a credible baseline explanation or example, so the example criterion stays tied."
+          "State Management offers broader official example depth than our intentionally compact state-boundary illustration."
         ],
         "followUpConfusion": [
           "State Management is less direct on the likely follow-up confusion than our shipped answer."
@@ -139,7 +142,7 @@
       },
       "nextActions": {
         "actionableExamples": [
-          "Add one tighter worked example later if this page needs more separation on the example axis."
+          "No immediate rewrite follow-up is needed on the example axis after the state-boundary example was added."
         ]
       },
       "winReason": "State Management is relevant coverage, but our page is stronger because it turns the concept into an interview-ready decision model while keeping the example coverage competitive."

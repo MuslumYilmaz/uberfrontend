@@ -3394,97 +3394,81 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 3,
-    "description": "Explain Vuex as centralized shared-state infrastructure, including predictable writes, devtools tracing, boilerplate cost, and when global store usage becomes a performance or architecture pitfall.",
+    "description": "Explain Vuex as centralized shared-state infrastructure for business data that crosses component or route boundaries. The valuable answer is deciding what belongs in the store, why predictable writes help debugging, and when Vuex becomes overkill in modern Vue.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Architecture trade-off</strong><br><br>Vuex helps when many parts of an app depend on the same state and you need predictable write flow. The beyond-basics part is not just single store; it is deciding which state truly belongs there. A common production mistake is pushing UI-local state into Vuex and paying extra boilerplate, testing friction, and unnecessary global updates."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Core Concepts of Vuex</strong><br>Vuex is built around four key elements: <strong>State</strong>, <strong>Getters</strong>, <strong>Mutations</strong>, and <strong>Actions</strong>."
+          "text": "<strong>Architecture decision</strong><br><br>Vuex is worth its ceremony when state is shared across distant parts of the app and you need predictable write flow, debugging traceability, and one source of truth for business data. The important production decision is not \"Should we have a store?\" but \"Which state actually belongs there?\" A common failure mode is dumping UI-local state into Vuex and turning the store into a noisy global junk drawer."
         },
         {
           "type": "list",
           "columns": [
-            "Concept",
-            "Purpose",
+            "State type",
+            "Keep it local",
+            "Put it in Vuex when",
             "Example"
           ],
           "rows": [
             [
-              "State",
-              "Holds the centralized data",
-              "user.name, cartItems, authToken"
+              "Ephemeral UI state",
+              "Usually yes",
+              "Almost never",
+              "Modal open state, active tab, one form field draft"
             ],
             [
-              "Getters",
-              "Computed properties for the store",
-              "getters.cartTotal"
+              "Shared business state",
+              "Usually no",
+              "Multiple pages or features depend on one source of truth",
+              "Authenticated user, cart, feature flags, permissions"
             ],
             [
-              "Mutations",
-              "Synchronous functions to modify state",
-              "commit('addToCart', item)"
+              "Remote data reused across routes",
+              "Sometimes",
+              "Several screens read and update the same fetched data",
+              "Current account, cached catalog data, onboarding progress"
             ],
             [
-              "Actions",
-              "Asynchronous operations that commit mutations",
-              "dispatch('fetchProducts')"
+              "Derived state",
+              "Do not duplicate raw copies",
+              "Use getters or computed derivation from canonical state",
+              "Cart total, visible permissions, filtered items"
             ]
           ],
-          "caption": "Core Elements of Vuex Store"
+          "caption": "Vuex earns its cost when state crosses feature boundaries. It is usually the wrong home for local UI state."
         },
         {
           "type": "text",
-          "text": "<strong>Vuex Store Example</strong>"
+          "text": "<strong>Why teams accept the extra ceremony</strong><br><ul><li><strong>Predictable writes:</strong> state changes follow an explicit flow instead of ad-hoc mutations scattered across components.</li><li><strong>Debugging:</strong> DevTools and action/mutation history make “who changed this?” easier to answer.</li><li><strong>Cross-feature consistency:</strong> auth, cart, permissions, and cached business data stop drifting across route boundaries.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Minimal mental model</strong><br><br>Vuex gives you a centralized <strong>state</strong> object, <strong>getters</strong> for derived views, <strong>mutations</strong> for synchronous writes, and <strong>actions</strong> for async work that eventually commits mutations. That structure matters because it keeps shared-state writes observable and easier to reason about in large teams."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Shared-state example</strong>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// store.js\nimport { createStore } from 'vuex';\n\nconst store = createStore({\n  state() {\n    return {\n      count: 0,\n      user: { name: 'Mina' }\n    };\n  },\n  getters: {\n    upperName: (state) => state.user.name.toUpperCase()\n  },\n  mutations: {\n    increment(state) {\n      state.count++;\n    }\n  },\n  actions: {\n    asyncIncrement({ commit }) {\n      setTimeout(() => commit('increment'), 500);\n    }\n  }\n});\n\nexport default store;"
+          "code": "// store.js\nimport { createStore } from 'vuex';\n\nexport default createStore({\n  state() {\n    return {\n      user: null,\n      cartItems: [],\n      loadingCart: false\n    };\n  },\n  getters: {\n    cartTotal: (state) => state.cartItems.reduce((sum, item) => sum + item.price, 0)\n  },\n  mutations: {\n    setUser(state, user) {\n      state.user = user;\n    },\n    setLoadingCart(state, value) {\n      state.loadingCart = value;\n    },\n    setCartItems(state, items) {\n      state.cartItems = items;\n    }\n  },\n  actions: {\n    async loadCart({ commit }) {\n      commit('setLoadingCart', true);\n      const items = await api.fetchCart();\n      commit('setCartItems', items);\n      commit('setLoadingCart', false);\n    }\n  }\n});"
         },
         {
           "type": "text",
-          "text": "<strong>Using the Store in Components</strong><br>Once created, the store is registered globally and accessed via the <code>useStore()</code> function in components."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "<template>\n  <div>\n    <p>Count: {{ store.state.count }}</p>\n    <button @click=\"store.commit('increment')\">Increment</button>\n  </div>\n</template>\n\n<script>\nimport { useStore } from 'vuex';\n\nexport default {\n  setup() {\n    const store = useStore();\n    return { store };\n  }\n};\n</script>"
+          "text": "This store is justified because <code>user</code> and <code>cartItems</code> are shared business data that multiple routes and components may read. The store is <strong>not</strong> the right home for a single modal flag, one uncontrolled input draft, or a tab that only one component cares about."
         },
         {
           "type": "text",
-          "text": "Here, the component accesses the store’s <code>state</code> and triggers updates using <code>commit()</code> and <code>dispatch()</code>."
+          "text": "<strong>When Vuex becomes the wrong default</strong><br><ul><li>You store every local toggle or form field globally.</li><li>You duplicate derived state instead of computing it from canonical state.</li><li>You accept store ceremony even when a composable or parent-owned state would be simpler.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Data Flow in Vuex</strong><br>Vuex enforces a one-way data flow:<br><br><ul><li><strong>State</strong>: The single source of truth.</li><li><strong>View</strong>: Displays state and triggers actions.</li><li><strong>Actions</strong>: Commit mutations asynchronously (e.g., API calls).</li><li><strong>Mutations</strong>: Synchronously change state.</li></ul>"
+          "text": "<strong>Modern Vue context</strong><br><br>In Vue 3, <strong>Pinia is the recommended default store library</strong>, and many teams now solve smaller sharing problems with composables plus reactive state. If an interviewer asks about Vuex, the strong answer is: Vuex exists to centralize shared business state and make writes predictable, but you should not treat a global store as the default home for every piece of state."
         },
         {
           "type": "text",
-          "text": "<strong>Advantages of Vuex</strong><ul><li>Centralized state management — a single source of truth.</li><li>Predictable state transitions through mutations.</li><li>Improved debugging and time-travel debugging via DevTools.</li><li>Easy synchronization between components sharing data.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Vuex vs. Pinia</strong><br>Pinia, introduced later, is the official replacement for Vuex in Vue 3. It simplifies syntax, supports the Composition API natively, and reduces boilerplate while maintaining similar concepts like <code>state</code>, <code>getters</code>, and <code>actions</code>."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vuex as a shared control center: instead of each component managing its own data independently, they all communicate with the same centralized store — ensuring consistency and predictability."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Vuex provides a centralized, predictable state management system.</li><li>Components share data through a single source of truth — the store.</li><li>Mutations update state synchronously; actions handle async operations.</li><li>Ideal for large-scale apps where multiple components depend on shared state.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A large app shares auth state, preferences, and cached API results across many pages, so you centralize them in Vuex.<br><br><strong>Common pitfalls</strong><br><ul><li>Storing UI-local state globally, bloating the store.</li><li>Overusing mutations/actions for trivial changes.</li><li>Hard-to-test modules due to side effects.</li></ul><strong>Trade-off or test tip</strong><br>Global state improves consistency but adds complexity. Test modules in isolation and watch performance on large updates.</strong>"
+          "text": "<strong>Summary</strong><br><ul><li>Vuex is for shared business state that crosses component or route boundaries.</li><li>Its value is predictable write flow, traceability, and a single source of truth.</li><li>Keep UI-local state local unless several distant parts of the app truly need it.</li><li>In modern Vue, also acknowledge that Pinia and composables reduce how often Vuex is the best default.</li></ul>"
         }
       ]
     },
@@ -3498,10 +3482,10 @@
       "mutations",
       "architecture"
     ],
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-04-19",
     "seo": {
-      "title": "Vuex in large apps: shared-state control, debugging flow, and global-store trade-offs",
-      "description": "Vuex centralizes shared state, but the real production discussion is predictable write flow, debugging, boilerplate, and when a global store becomes overkill."
+      "title": "When Vuex is worth it: global vs local state, debugging flow, and modern Vue trade-offs",
+      "description": "Explain Vuex through store-boundary decisions: what belongs in global state, why predictable writes help debugging, and when Vuex becomes overkill in modern Vue."
     },
     "incidentCard": {
       "title": "Shared State Check",

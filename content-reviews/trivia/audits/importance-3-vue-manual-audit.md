@@ -29,7 +29,7 @@
 | `vue-reactive-interpolation-into-dom` | `no-action` | `vuejs.org` | Strong rendering-pipeline framing, batching detail, and compiler/runtime explanation make it sharper than generic Vue reactivity summaries. |
 | `vue-architecture-decisions-scalability` | `no-action` | `vuejs.org` | Good architecture-first framing, explicit baseline stack, and practical route/code-splitting guidance keep it competitive. |
 | `vue-sfc-vs-global-components` | `watchlist` | `vuejs.org` | Correct and useful, but still somewhat generic and less differentiated on ownership, dependency visibility, and registration strategy. |
-| `vuex-state-management` | `watchlist` | `vuex.vuejs.org`, `vuejs.org` | The page is solid on centralized state, but still too Vuex-inventory-shaped and not sharp enough on when Vuex is the wrong abstraction in modern Vue. |
+| `vuex-state-management` | `no-action` | `vuex.vuejs.org`, `vuejs.org` | The rewrite now frames Vuex as a state-boundary decision with modern Vue context, so it clears the manual bar. |
 
 ### `vue-reactive-interpolation-into-dom`
 - Query: `How does Vue interpolate reactive state into the DOM?`
@@ -108,28 +108,22 @@
 
 | Criterion | Verdict | Notes |
 | --- | --- | --- |
-| `intentMatch` | `tie` | The page matches the prompt directly, but the first fold still feels partly like a centralized-state intro instead of a sharper “when Vuex is justified” answer. |
-| `decisionQuality` | `theirs` | It explains Vuex concepts, but it does not push hard enough on when Vuex becomes overkill in modern Vue apps. |
-| `actionableExamples` | `tie` | The concept table is useful, but it stays more inventory-like than the best architecture comparisons. |
-| `followUpCoverage` | `theirs` | It is lighter than it should be on store boundaries, local-state leakage, and the modern Pinia / shared-state trade-off discussion. |
-| `edgeCaseCoverage` | `theirs` | It does not go far enough on when centralized state hurts performance or architecture by becoming the dumping ground for UI state. |
-| `differentiation` | `theirs` | Official Vuex and Vue state-management docs already explain centralized state well; the shipped answer needs a stronger architectural stance to stand out. |
+| `intentMatch` | `ours` | The first fold now answers the prompt through store-boundary decisions instead of a generic centralized-state intro. |
+| `decisionQuality` | `ours` | The page now says clearly what belongs in Vuex, what should stay local, and when the ceremony stops being worth it. |
+| `actionableExamples` | `ours` | The shared-business-state example now maps the storage choice back to concrete architecture decisions. |
+| `followUpCoverage` | `ours` | Local-state leakage, store-boundary rules, and modern Pinia context are now all surfaced directly. |
+| `edgeCaseCoverage` | `tie` | The page could still go deeper on performance pitfalls in oversized stores, but it now covers the main architectural trap well enough. |
+| `differentiation` | `ours` | The stronger stance on predictability, boundaries, and modern Vue context makes it sharper than generic Vuex explainers. |
 
 - Hard gaps:
-  - The answer is still too concept-table-heavy.
-  - It needs a clearer rule for what belongs in global store versus local/component state.
-  - It should explicitly frame Vuex as a predictability tool for shared business state, not a default home for all state in a large app.
-  - It should mention modern Vue expectations more directly so the answer does not feel stuck in a legacy-store mental model.
-- Verdict: `watchlist`
-- Rewrite direction if prioritized later:
-  - Reframe the opening around when centralized shared state is worth the ceremony, then add one global-state-vs-local-state matrix and one “why Vuex can become the wrong default” warning.
+  - A future refinement could add one compact oversized-store debugging example, but the current page no longer justifies a rewrite pass.
+- Verdict: `no-action`
 
 ## Final Lane Recommendation
-- `Do not open a Vue rewrite lane; move to CSS audit next.`
+- `Do not open a Vue rewrite lane.`
 - Watchlist pages:
   - `vue-sfc-vs-global-components`
-  - `vuex-state-management`
 - Practical sequencing:
-  1. Keep Vue closed unless one of the two watchlist pages becomes strategically important.
-  2. Move to CSS manual audit next.
-  3. Reopen Vue only if one of the watchlist pages later justifies a focused single-page or two-page rewrite pass.
+  1. Keep Vue closed unless `vue-sfc-vs-global-components` becomes strategically important.
+  2. Use the consolidated watchlist queue for any future rewrite prioritization.
+  3. Reopen Vue only if `vue-sfc-vs-global-components` later justifies a focused single-page rewrite pass.
