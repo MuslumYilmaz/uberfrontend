@@ -16,9 +16,19 @@ const BASE_URL = (process.env.SITEMAP_BASE_URL || 'https://frontendatlas.com').r
 const MAX_URLS = 50000;
 
 function normalizePath(p) {
-  if (!p) return '/';
-  const withSlash = p.startsWith('/') ? p : `/${p}`;
-  const clean = withSlash.replace(/\/+$/, '');
+  const raw = String(p || '').trim();
+  if (!raw) return '/';
+  let pathname = raw;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      pathname = new URL(raw).pathname || '/';
+    } catch {
+      pathname = raw;
+    }
+  }
+  const withSlash = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  const stripped = withSlash.split('?')[0].split('#')[0];
+  const clean = stripped.replace(/\/+$/, '');
   return clean === '' ? '/' : clean;
 }
 
