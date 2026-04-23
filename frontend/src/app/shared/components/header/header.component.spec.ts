@@ -105,7 +105,7 @@ describe('HeaderComponent', () => {
     expect(premiumUpsellCta).toBeNull();
   });
 
-  it('opens a compact study launcher with four primary actions and tracks the open event', async () => {
+  it('opens a compact study launcher with four primary actions and visually promotes Essential 60', async () => {
     const fixture = await createComponent({ isLoggedIn: true });
     const button = fixture.nativeElement.querySelector('.fah-navlink') as HTMLButtonElement;
 
@@ -114,24 +114,52 @@ describe('HeaderComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-continue"]')).toBeTruthy();
+    const essential = fixture.nativeElement.querySelector('[data-testid="header-study-essential_60"]') as HTMLAnchorElement;
     const questionLibrary = fixture.nativeElement.querySelector('[data-testid="header-study-question_library"]') as HTMLAnchorElement;
     const studyPlans = fixture.nativeElement.querySelector('[data-testid="header-study-study_plans"]') as HTMLAnchorElement;
-    const practiceTypes = fixture.nativeElement.querySelector('[data-testid="header-study-practice_types"]') as HTMLAnchorElement;
     const rows = Array.from(fixture.nativeElement.querySelectorAll('.study-row--primary')) as HTMLElement[];
+    const titles = rows.map((row) => row.querySelector('.row-title')?.textContent?.replace(/\s+/g, ' ').trim());
 
     expect(rows.length).toBe(4);
+    expect(titles[0]).toContain('Continue where I left off');
+    expect(titles[1]).toContain('FrontendAtlas Essential 60');
+    expect(titles[2]).toContain('Question Library');
     expect(rows.filter((row) => (row.textContent || '').includes('Question Library')).length).toBe(1);
+    expect(essential).toBeTruthy();
+    expect(essential.classList.contains('study-row--featured')).toBeTrue();
+    expect(essential.textContent || '').toContain('FrontendAtlas Essential 60');
+    expect(essential.textContent || '').toContain('Start here');
     expect(questionLibrary).toBeTruthy();
     expect(questionLibrary.textContent || '').toContain('Question Library');
     expect(studyPlans.textContent || '').toContain('Study Plans');
-    expect(practiceTypes.textContent || '').toContain('Practice Types');
+    expect(fixture.nativeElement.querySelector('[data-testid="header-study-practice_types"]')).toBeFalsy();
+    expect(essential.getAttribute('href') || '').toContain('/interview-questions/essential');
     expect(questionLibrary.getAttribute('href') || '').toContain('/coding?reset=1');
     expect(studyPlans.getAttribute('href') || '').toContain('/tracks');
-    expect(practiceTypes.getAttribute('href') || '').toContain('/coding?view=formats&category=ui&reset=1');
     expect(analytics.track).toHaveBeenCalledWith('header_study_opened', jasmine.any(Object));
     expect(analytics.track).toHaveBeenCalledWith(
       'header_top_nav_clicked',
       jasmine.objectContaining({ surface: 'app', area: 'primary', destination: 'study' }),
+    );
+  });
+
+  it('tracks Essential 60 as a primary study action and keeps Question Library as the full-library action', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const button = fixture.nativeElement.querySelector('.fah-navlink') as HTMLButtonElement;
+
+    button.click();
+    fixture.detectChanges();
+
+    (fixture.nativeElement.querySelector('[data-testid="header-study-essential_60"]') as HTMLAnchorElement).click();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'header_study_primary_cta_clicked',
+      jasmine.objectContaining({ action: 'essential_60', route: '/interview-questions/essential' }),
+    );
+
+    (fixture.nativeElement.querySelector('[data-testid="header-study-question_library"]') as HTMLAnchorElement).click();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'header_study_browse_full_library_clicked',
+      jasmine.objectContaining({ destination: 'question_library', route: '/coding?reset=1' }),
     );
   });
 

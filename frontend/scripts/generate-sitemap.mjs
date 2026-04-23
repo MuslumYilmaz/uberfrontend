@@ -46,7 +46,7 @@ function listTechDirs() {
     .readdirSync(QUESTIONS_DIR)
     .filter((name) => {
       const full = path.join(QUESTIONS_DIR, name);
-      return fs.statSync(full).isDirectory() && name !== 'system-design';
+      return fs.statSync(full).isDirectory() && name !== 'system-design' && name !== 'collections';
     });
 }
 
@@ -129,6 +129,7 @@ function buildUrls() {
     '/incidents',
     '/tradeoffs',
     '/interview-questions',
+    '/interview-questions/essential',
     '/javascript/interview-questions',
     '/react/interview-questions',
     '/angular/interview-questions',

@@ -25,6 +25,7 @@ type HeroCta = {
 };
 
 type DashboardLinkDestination =
+  | 'essential_60'
   | 'question_library'
   | 'sprints'
   | 'companies'
@@ -72,11 +73,10 @@ export class DashboardComponent {
     route: ['/coding'] as any[],
   };
   readonly guestFeaturedRoute: DashboardLink = {
-    title: 'Question Library',
-    subtitle: 'Open the full practice library, then filter by coding, concepts, format, or technology.',
-    route: ['/coding'],
-    queryParams: { reset: 1 },
-    destination: 'question_library',
+    title: 'FrontendAtlas Essential 60',
+    subtitle: 'Start with the curated 60-question path across JavaScript, UI coding, system design, and concepts.',
+    route: ['/interview-questions', 'essential'],
+    destination: 'essential_60',
     fitHint: 'Start here',
   };
   readonly guestSecondaryRoutes: DashboardLink[] = [
@@ -154,12 +154,19 @@ export class DashboardComponent {
   ];
   readonly libraryLinks: DashboardLink[] = [
     {
+      title: 'FrontendAtlas Essential 60',
+      subtitle: 'Open the curated shortlist first when you want the strongest default interview prep route.',
+      route: ['/interview-questions', 'essential'],
+      destination: 'essential_60',
+      fitHint: 'Start here',
+    },
+    {
       title: 'Question Library',
-      subtitle: 'Open the full Question Library and start from the must-know list.',
+      subtitle: 'Open the full Question Library when you want broader coverage, more filters, and every format.',
       route: ['/coding'],
       queryParams: { reset: 1 },
       destination: 'question_library',
-      fitHint: 'Start here',
+      fitHint: 'Full library',
     },
     {
       title: 'Study Plans',
@@ -240,8 +247,8 @@ export class DashboardComponent {
 
     if (this.dashboardMode() === 'guest') {
       return {
-        actionId: 'guest_interview_questions',
-        label: 'Open Question Library',
+        actionId: 'guest_essential_60',
+        label: 'Start Essential 60',
         route: this.guestFeaturedRoute.route,
         queryParams: this.guestFeaturedRoute.queryParams,
       };

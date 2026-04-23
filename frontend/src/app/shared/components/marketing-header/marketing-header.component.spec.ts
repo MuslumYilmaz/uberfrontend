@@ -44,7 +44,7 @@ describe('MarketingHeaderComponent', () => {
     return fixture;
   }
 
-  it('shows the four primary discovery routes in the agreed order for guests', async () => {
+  it('shows the three primary discovery routes in the agreed order for guests', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
     const primaryLinks = Array.from(
       fixture.nativeElement.querySelectorAll('[data-testid="marketing-header-primary-link"]'),
@@ -56,21 +56,20 @@ describe('MarketingHeaderComponent', () => {
     const utilityLabels = utilityLinks.map((link) => (link.textContent || '').trim());
 
     expect(labels).toEqual([
+      'Essential 60',
       'Question Library',
       'Study Plans',
-      'Practice Types',
-      'System Design',
     ]);
     expect(labels).not.toContain('Guides');
     expect(labels).not.toContain('Framework Prep');
     expect(labels).not.toContain('Interview Questions');
     expect(labels).not.toContain('Companies');
     expect(labels).not.toContain('Behavioral');
+    expect(labels).not.toContain('System Design');
     expect(primaryLinks.map((link) => link.getAttribute('href'))).toEqual([
+      '/interview-questions/essential',
       '/coding?reset=1',
       '/tracks',
-      '/coding?view=formats&category=ui&reset=1',
-      '/coding?view=formats&category=system&reset=1',
     ]);
     expect(utilityLabels).toEqual(['Pricing', 'Log in']);
     expect((fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement).textContent || '')
@@ -108,11 +107,11 @@ describe('MarketingHeaderComponent', () => {
 
     expect(fixture.nativeElement.querySelector('[data-testid="marketing-header-mobile-menu"]')).toBeTruthy();
     expect(mobilePrimaryLabels).toEqual([
+      'Essential 60',
       'Question Library',
       'Study Plans',
-      'Practice Types',
-      'System Design',
     ]);
+    expect(mobilePrimaryLabels).not.toContain('System Design');
     expect(mobileUtilityLabels).toEqual(['Pricing', 'Log in']);
     expect(analytics.track).toHaveBeenCalledWith(
       'header_top_nav_clicked',
@@ -120,24 +119,35 @@ describe('MarketingHeaderComponent', () => {
     );
   });
 
-  it('keeps coding header active states separated by view and category', async () => {
+  it('treats all coding views as Question Library while keeping Essential 60 isolated', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
     const component = fixture.componentInstance;
-    const [questionLibrary, , practiceFormats, systemDesign] = component.primaryLinks;
+    const [essential60, questionLibrary] = component.primaryLinks;
+
+    component.currentUrl.set('/interview-questions/essential');
+    expect(component.isPrimaryLinkActive(essential60)).toBeTrue();
+    expect(component.isPrimaryLinkActive(questionLibrary)).toBeFalse();
 
     component.currentUrl.set('/coding?view=formats&category=system');
-    expect(component.isPrimaryLinkActive(systemDesign)).toBeTrue();
-    expect(component.isPrimaryLinkActive(questionLibrary)).toBeFalse();
-    expect(component.isPrimaryLinkActive(practiceFormats)).toBeFalse();
-
-    component.currentUrl.set('/coding?view=formats&category=ui');
-    expect(component.isPrimaryLinkActive(practiceFormats)).toBeTrue();
-    expect(component.isPrimaryLinkActive(questionLibrary)).toBeFalse();
-    expect(component.isPrimaryLinkActive(systemDesign)).toBeFalse();
+    expect(component.isPrimaryLinkActive(questionLibrary)).toBeTrue();
+    expect(component.isPrimaryLinkActive(essential60)).toBeFalse();
 
     component.currentUrl.set('/coding?tech=react');
     expect(component.isPrimaryLinkActive(questionLibrary)).toBeTrue();
-    expect(component.isPrimaryLinkActive(practiceFormats)).toBeFalse();
-    expect(component.isPrimaryLinkActive(systemDesign)).toBeFalse();
+    expect(component.isPrimaryLinkActive(essential60)).toBeFalse();
+  });
+
+  it('demotes the top-right CTA on the showcase landing route', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const component = fixture.componentInstance;
+    const cta = fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement;
+
+    component.currentUrl.set('/');
+    fixture.detectChanges();
+    expect(cta.classList.contains('famh-cta--muted')).toBeTrue();
+
+    component.currentUrl.set('/pricing');
+    fixture.detectChanges();
+    expect(cta.classList.contains('famh-cta--muted')).toBeFalse();
   });
 });

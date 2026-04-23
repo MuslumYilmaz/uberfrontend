@@ -55,6 +55,7 @@
 
       <a
         class="famh-cta"
+        [class.famh-cta--muted]="isShowcaseLanding()"
         data-testid="marketing-header-cta"
         [routerLink]="ctaLink()"
         (click)="trackCtaClick()"
@@ -133,6 +134,7 @@
 
         <a
           class="famh-mobile-cta"
+          [class.famh-mobile-cta--muted]="isShowcaseLanding()"
           data-testid="marketing-header-mobile-cta"
           [routerLink]="ctaLink()"
           (click)="trackCtaClick('mobile_menu')"

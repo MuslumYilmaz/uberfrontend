@@ -37,7 +37,7 @@ type RawQuestionSummaryRow = QuestionListItem & { tech: Tech };
 type SchemaQuestionLink = { title: string; path: string };
 type PrepPlanLink = { label: string; route: any[]; summary: string };
 type HubRouteCard = {
-  key: 'coding' | 'concepts' | 'study_plan';
+  key: 'coding' | 'concepts' | 'essential' | 'study_plan';
   title: string;
   subtitle: string;
   route: any[];
@@ -269,6 +269,12 @@ export class InterviewQuestionsLandingComponent implements OnInit {
           : `${this.previewRows('trivia').length} concise concept prompts are ready.`,
         route: this.primaryRouteForKind('trivia').route,
         queryParams: this.primaryRouteForKind('trivia').queryParams,
+      },
+      {
+        key: 'essential',
+        title: 'Open Essential 60',
+        subtitle: 'Use the curated shortlist when you want less browse time and stronger prioritization.',
+        route: ['/interview-questions/essential'],
       },
       {
         key: 'study_plan',

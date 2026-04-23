@@ -145,6 +145,7 @@
               <a
                 *ngFor="let action of studyPrimaryActions()"
                 class="study-row study-row--primary"
+                [class.study-row--featured]="action.emphasis === 'promoted'"
                 [routerLink]="action.route"
                 [queryParams]="action.queryParams || null"
                 [attr.data-testid]="'header-study-' + action.key"

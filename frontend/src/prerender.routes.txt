@@ -225,6 +225,7 @@
 /incidents/vue-pinia-destructure-stale-filter
 /incidents/websocket-memory-leak
 /interview-questions
+/interview-questions/essential
 /javascript/coding/js-abortable-helpers
 /javascript/coding/js-add-strings
 /javascript/coding/js-add-two-promises

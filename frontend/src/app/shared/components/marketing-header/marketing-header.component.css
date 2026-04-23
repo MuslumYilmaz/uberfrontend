@@ -94,6 +94,20 @@
   filter: brightness(0.97);
 }
 
+.famh-cta--muted,
+.famh-mobile-cta--muted {
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 72%, var(--uf-accent) 28%);
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));
+  color: var(--uf-text-primary);
+  box-shadow: none;
+}
+
+.famh-cta--muted:hover,
+.famh-mobile-cta--muted:hover {
+  background: color-mix(in srgb, var(--uf-text-primary) 9%, var(--uf-surface));
+  filter: none;
+}
+
 .famh-menu-toggle {
   display: none;
   align-items: center;
