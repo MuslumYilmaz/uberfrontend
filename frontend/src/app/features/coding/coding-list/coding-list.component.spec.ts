@@ -206,6 +206,7 @@ describe('CodingListComponent', () => {
     )).toEqual(['Start here', 'All levels']);
     expect(host.textContent || '').not.toContain('Frontend coding challenges');
     expect(host.querySelector('[data-testid="interview-hub-support-link"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="essential-questions-support-link"]')).not.toBeNull();
   });
 
   it('opens formats UI as practice types with compact framework prep support', async () => {

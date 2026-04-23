@@ -297,6 +297,45 @@
   padding: 12px;
   background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
 }
+.study-row--featured{
+  border-color: color-mix(in srgb, var(--uf-accent) 34%, var(--fah-border));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface)) 0%,
+      color-mix(in srgb, var(--uf-accent) 8%, var(--uf-surface-alt)) 100%
+    );
+  box-shadow:
+    0 10px 24px color-mix(in srgb, var(--uf-accent) 12%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 14%, transparent);
+}
+.study-row--featured:hover{
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface)) 0%,
+      color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface-alt)) 100%
+    );
+}
+.study-row--featured .row-icon{
+  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+  color: var(--uf-text-primary);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 22%, var(--fah-border));
+}
+.study-row--featured .row-title{
+  color: var(--uf-text-primary);
+}
+.study-row--featured .row-sub{
+  color: color-mix(in srgb, var(--uf-text-primary) 76%, var(--uf-text-secondary));
+}
+.study-row--featured .row-meta{
+  color: color-mix(in srgb, var(--uf-accent) 62%, var(--uf-text-secondary));
+}
+.study-row--featured .badge{
+  background: color-mix(in srgb, var(--uf-accent) 20%, var(--uf-surface));
+  border-color: color-mix(in srgb, var(--uf-accent) 30%, var(--fah-border));
+  color: var(--uf-text-primary);
+}
 .row-icon{
   width:32px; height:32px; border-radius:9px; display:grid; place-items:center;
   background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));

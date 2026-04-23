@@ -21,6 +21,7 @@ import {
 } from './core/resolvers/question-detail.resolver';
 import { incidentExistsGuard } from './core/guards/incident-exists.guard';
 import { tradeoffBattleExistsGuard } from './core/guards/tradeoff-battle-exists.guard';
+import { essentialQuestionsResolver } from './core/resolvers/essential-questions.resolver';
 import { interviewQuestionsHubResolver } from './core/resolvers/interview-questions.resolver';
 import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
 import { incidentDetailResolver, incidentListResolver, incidentSeoResolver } from './core/resolvers/incident.resolver';
@@ -1054,6 +1055,23 @@ export const routes: Routes = [
   },
 
   // Framework interview-question landing pages
+  {
+    path: 'interview-questions/essential',
+    loadComponent: () =>
+      import('./features/interview-questions/essential-questions.component').then(
+        (m) => m.EssentialQuestionsComponent,
+      ),
+    resolve: {
+      essentialQuestions: essentialQuestionsResolver,
+    },
+    data: {
+      seo: {
+        title: 'FrontendAtlas Essential 60 Interview Questions',
+        description:
+          'A curated shortlist of the most important frontend interview questions across JavaScript functions, UI coding, system design, and core concepts.',
+      },
+    },
+  },
   {
     path: 'interview-questions',
     loadComponent: () =>

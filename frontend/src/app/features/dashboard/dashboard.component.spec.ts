@@ -189,9 +189,9 @@ describe('DashboardComponent', () => {
     const primaryCta = page.querySelector('[data-testid="dashboard-primary-cta"]') as HTMLAnchorElement | null;
     const pageText = page.textContent || '';
 
-    expect(pageText).toContain('Browse prep library');
-    expect(pageText).toContain('Start with one clear prep route');
-    expect(pageText).toContain('Question Library');
+    expect(pageText).toContain('Curated interview path');
+    expect(pageText).toContain('Start with the highest-signal route first');
+    expect(pageText).toContain('FrontendAtlas Essential 60');
     expect(pageText).toContain('Study Plans');
     expect(pageText).toContain('Framework Prep Guide');
     expect(pageText).toContain('System Design');
@@ -203,8 +203,8 @@ describe('DashboardComponent', () => {
     expect(pageText).not.toContain('Next action');
     expect(pageText).not.toContain('Explore more ways to prep');
     expect(pageText).not.toContain('Coverage map');
-    expect(primaryCta?.textContent?.trim()).toBe('Open Question Library');
-    expect(primaryCta?.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(primaryCta?.textContent?.trim()).toBe('Start Essential 60');
+    expect(primaryCta?.getAttribute('href') || '').toContain('/interview-questions/essential');
     expect(page.querySelector('[data-testid="dashboard-guest-progress-card"]')).toBeTruthy();
     expect(page.querySelector('[data-testid="dashboard-progress-snapshot"]')).toBeFalsy();
     expect(page.querySelectorAll('[data-testid="dashboard-guest-secondary-route"]').length).toBe(3);
@@ -273,7 +273,7 @@ describe('DashboardComponent', () => {
     expect(historyLink?.getAttribute('href') || '').toContain('/profile');
   });
 
-  it('renders exactly four compact library links with the expected destinations', () => {
+  it('renders exactly five compact library links with the expected destinations', () => {
     fixture = createComponent();
 
     const page: HTMLElement = fixture.nativeElement;
@@ -281,23 +281,26 @@ describe('DashboardComponent', () => {
     const destinations = links.map((link) => link.getAttribute('data-destination'));
     const hrefs = links.map((link) => link.getAttribute('href') || '');
 
-    expect(links.length).toBe(4);
+    expect(links.length).toBe(5);
     expect(destinations).toEqual([
+      'essential_60',
       'question_library',
       'sprints',
       'companies',
       'tech_lanes',
     ]);
-    expect(hrefs[0]).toContain('/coding?reset=1');
-    expect(hrefs[1]).toContain('/tracks');
-    expect(hrefs[2]).toContain('/companies');
-    expect(hrefs[3]).toContain('/focus-areas');
+    expect(hrefs[0]).toContain('/interview-questions/essential');
+    expect(hrefs[1]).toContain('/coding?reset=1');
+    expect(hrefs[2]).toContain('/tracks');
+    expect(hrefs[3]).toContain('/companies');
+    expect(hrefs[4]).toContain('/focus-areas');
 
     const fitPills = links.map((link) =>
       link.querySelector('[data-testid="dashboard-route-fit-pill"]')?.textContent?.trim()
     );
     expect(fitPills).toEqual([
       'Start here',
+      'Full library',
       'Structured path',
       'Targeted prep',
       'Weak spot focus',
@@ -329,7 +332,7 @@ describe('DashboardComponent', () => {
     const page: HTMLElement = fixture.nativeElement;
     (page.querySelector('[data-testid="dashboard-primary-cta"]') as HTMLAnchorElement).click();
     (page.querySelector('[data-testid="dashboard-progress-history"]') as HTMLAnchorElement).click();
-    (page.querySelector('[data-testid="dashboard-library-link"]') as HTMLAnchorElement).click();
+    (page.querySelectorAll('[data-testid="dashboard-library-link"]')[1] as HTMLAnchorElement).click();
 
     expect(analytics.track).toHaveBeenCalledWith(
       'dashboard_primary_cta_clicked',
@@ -342,6 +345,21 @@ describe('DashboardComponent', () => {
     expect(analytics.track).toHaveBeenCalledWith(
       'dashboard_library_link_clicked',
       jasmine.objectContaining({ destination: 'question_library' }),
+    );
+  });
+
+  it('tracks the guest featured CTA as the Essential 60 entry lane', () => {
+    loggedIn = false;
+    user = null;
+    solvedIds = [];
+
+    fixture = createComponent();
+
+    (fixture.nativeElement.querySelector('[data-testid="dashboard-primary-cta"]') as HTMLAnchorElement).click();
+
+    expect(analytics.track).toHaveBeenCalledWith(
+      'dashboard_primary_cta_clicked',
+      jasmine.objectContaining({ mode: 'guest', action_id: 'guest_essential_60', route: '/interview-questions/essential' }),
     );
   });
 

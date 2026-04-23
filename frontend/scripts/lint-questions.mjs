@@ -19,6 +19,8 @@ const knownTechs = new Set(["javascript", "angular", "react", "vue", "html", "cs
 const allowedTypes = new Set(["trivia", "coding", "system-design"]);
 const allowedAccess = new Set(["free", "premium"]);
 const allowedDifficulties = new Set(["easy", "intermediate", "hard"]);
+const allowedCollectionSections = new Set(["javascript-functions", "ui-coding", "system-design", "concepts"]);
+const allowedCollectionTiers = new Set(["must-know", "high-leverage"]);
 
 const MAX_TAGS = 12;
 
@@ -90,6 +92,10 @@ function classifyQuestionAsset(file) {
 
   if (relPath === "system-design/index.json") {
     return { kind: "system-design-index" };
+  }
+
+  if (relPath.match(/^collections\/[a-z0-9-]+\.json$/)) {
+    return { kind: "collection" };
   }
 
   const techMatch = relPath.match(/^([a-z0-9-]+)\/(coding|trivia|debug)\.json$/);
@@ -255,6 +261,38 @@ function isNonEmptyString(value) {
 function validateRegistryDate({ file, id, updatedAt, createdAt, severity }) {
   if (isNonEmptyString(updatedAt) || isNonEmptyString(createdAt)) return;
   severity.addError(file, id, "Missing updatedAt or createdAt for registry-backed content.");
+}
+
+function validateCollectionReferenceShape({ file, itemId, ref, label, severity }) {
+  if (!ref || typeof ref !== "object" || Array.isArray(ref)) {
+    severity.addError(file, itemId, `${label} must be an object.`);
+    return null;
+  }
+
+  const kind = typeof ref.kind === "string" ? ref.kind.trim() : "";
+  const id = typeof ref.id === "string" ? ref.id.trim() : "";
+  const tech = typeof ref.tech === "string" ? ref.tech.trim() : "";
+
+  if (!allowedTypes.has(kind)) {
+    severity.addError(file, itemId, `${label}.kind must be one of ${[...allowedTypes].join(", ")}.`);
+    return null;
+  }
+
+  if (!id || !kebabCaseRegex.test(id)) {
+    severity.addError(file, itemId, `${label}.id must be a kebab-case question id.`);
+    return null;
+  }
+
+  if (kind === "system-design") {
+    return { kind, id, tech: "" };
+  }
+
+  if (!knownTechs.has(tech)) {
+    severity.addError(file, itemId, `${label}.tech must be a known technology for ${kind} references.`);
+    return null;
+  }
+
+  return { kind, tech, id };
 }
 
 // ---------- minimal JSON token parsing helpers (for safe tag patches) ----------
@@ -471,6 +509,8 @@ const changedFiles = new Set();
 
 // Track global uniqueness (question ids only — system-design meta is validated separately).
 const idIndex = new Map(); // id -> { file, kind }
+const questionIdentityIndex = new Map(); // tech:kind:id -> { file, kind }
+const collectionRefs = [];
 
 function registerId(file, id, kindLabel) {
   const prev = idIndex.get(id);
@@ -483,6 +523,10 @@ function registerId(file, id, kindLabel) {
     return;
   }
   idIndex.set(id, { file, kind: kindLabel });
+}
+
+function registerQuestionIdentity(file, tech, kind, id) {
+  questionIdentityIndex.set(`${tech}:${kind}:${id}`, { file, kind: `${tech}/${kind}` });
 }
 
 const systemDesignIndexById = new Map(); // id -> { file, entry }
@@ -536,6 +580,9 @@ for (const file of questionFiles) {
         severity.addError(file, id, `id must be kebab-case: ${id}`);
       }
       registerId(file, id, `${info.tech}/${info.kind}`);
+      if (info.kind === "coding" || info.kind === "trivia") {
+        registerQuestionIdentity(file, info.tech, info.kind, id);
+      }
 
       const title = q.title;
       if (typeof title !== "string" || !title.trim()) {
@@ -661,6 +708,150 @@ for (const file of questionFiles) {
         tagPatches.set(id, normalized);
       }
     }
+  } else if (info.kind === "collection") {
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      severity.addError(file, "<file>", "Collection JSON must be an object.");
+      continue;
+    }
+
+    const collectionId = typeof data.id === "string" ? data.id.trim() : "";
+    if (!collectionId || !kebabCaseRegex.test(collectionId)) {
+      severity.addError(file, "<file>", "Collection id must be a kebab-case string.");
+      continue;
+    }
+
+    if (!isNonEmptyString(data.title)) {
+      severity.addError(file, collectionId, "Missing or invalid collection title.");
+    }
+    validateRegistryDate({
+      file,
+      id: collectionId,
+      updatedAt: data.updatedAt,
+      createdAt: data.createdAt,
+      severity,
+    });
+
+    if (!Array.isArray(data.items)) {
+      severity.addError(file, collectionId, "Collection items must be an array.");
+      continue;
+    }
+
+    const seenItemIds = new Set();
+    const seenRanks = new Set();
+    const primaryRefs = new Set();
+    const sectionCounts = new Map();
+
+    for (let i = 0; i < data.items.length; i += 1) {
+      const item = data.items[i];
+      const itemLabel = typeof item?.id === "string" ? item.id : `<index ${i}>`;
+      if (!item || typeof item !== "object" || Array.isArray(item)) {
+        severity.addError(file, itemLabel, "Collection item must be an object.");
+        continue;
+      }
+
+      const itemId = typeof item.id === "string" ? item.id.trim() : "";
+      if (!itemId || !kebabCaseRegex.test(itemId)) {
+        severity.addError(file, itemLabel, "Collection item id must be kebab-case.");
+        continue;
+      }
+      if (seenItemIds.has(itemId)) {
+        severity.addError(file, itemId, "Duplicate collection item id.");
+      }
+      seenItemIds.add(itemId);
+
+      const rank = item.rank;
+      if (!Number.isInteger(rank) || rank <= 0) {
+        severity.addError(file, itemId, "Collection item rank must be a positive integer.");
+      } else if (seenRanks.has(rank)) {
+        severity.addError(file, itemId, `Duplicate collection rank: ${rank}`);
+      } else {
+        seenRanks.add(rank);
+      }
+
+      const section = typeof item.section === "string" ? item.section.trim() : "";
+      if (!allowedCollectionSections.has(section)) {
+        severity.addError(file, itemId, `Unknown collection section: ${JSON.stringify(item.section)}`);
+      } else {
+        sectionCounts.set(section, (sectionCounts.get(section) || 0) + 1);
+      }
+
+      const tier = typeof item.tier === "string" ? item.tier.trim() : "";
+      if (!allowedCollectionTiers.has(tier)) {
+        severity.addError(file, itemId, `Unknown collection tier: ${JSON.stringify(item.tier)}`);
+      }
+
+      const score = item.score;
+      if (typeof score !== "number" || !Number.isFinite(score) || score < 0 || score > 100) {
+        severity.addError(file, itemId, `Collection score must be a number between 0 and 100 (got ${JSON.stringify(score)}).`);
+      }
+
+      if (!isNonEmptyString(item.rationale)) {
+        severity.addError(file, itemId, "Collection item rationale must be a non-empty string.");
+      }
+
+      if (!Array.isArray(item.benchmarkTopics) || item.benchmarkTopics.some((topic) => !isNonEmptyString(topic))) {
+        severity.addError(file, itemId, "Collection benchmarkTopics must be a string array.");
+      }
+
+      const primaryRef = validateCollectionReferenceShape({
+        file,
+        itemId,
+        ref: item.primary,
+        label: "primary",
+        severity,
+      });
+      if (primaryRef) {
+        const key = `${primaryRef.kind}:${primaryRef.tech}:${primaryRef.id}`;
+        if (primaryRefs.has(key)) {
+          severity.addError(file, itemId, `Duplicate primary reference in collection: ${key}`);
+        }
+        primaryRefs.add(key);
+        collectionRefs.push({ file, itemId, ref: primaryRef, label: "primary" });
+      }
+
+      if (item.alternates !== undefined) {
+        if (!Array.isArray(item.alternates)) {
+          severity.addError(file, itemId, "alternates must be an array when provided.");
+        } else {
+          const seenAlternateKeys = new Set();
+          for (let altIndex = 0; altIndex < item.alternates.length; altIndex += 1) {
+            const altRef = validateCollectionReferenceShape({
+              file,
+              itemId,
+              ref: item.alternates[altIndex],
+              label: `alternates[${altIndex}]`,
+              severity,
+            });
+            if (!altRef) continue;
+            const altKey = `${altRef.kind}:${altRef.tech}:${altRef.id}`;
+            if (seenAlternateKeys.has(altKey)) {
+              severity.addError(file, itemId, `Duplicate alternate reference: ${altKey}`);
+              continue;
+            }
+            seenAlternateKeys.add(altKey);
+            collectionRefs.push({ file, itemId, ref: altRef, label: `alternates[${altIndex}]` });
+          }
+        }
+      }
+    }
+
+    if (collectionId === "frontend-essential-60") {
+      if (data.items.length !== 60) {
+        severity.addError(file, collectionId, `frontend-essential-60 must contain exactly 60 items (found ${data.items.length}).`);
+      }
+      const expectedCounts = new Map([
+        ["javascript-functions", 22],
+        ["ui-coding", 16],
+        ["system-design", 8],
+        ["concepts", 14],
+      ]);
+      for (const [section, expected] of expectedCounts) {
+        const actual = sectionCounts.get(section) || 0;
+        if (actual !== expected) {
+          severity.addError(file, collectionId, `frontend-essential-60 must contain ${expected} ${section} items (found ${actual}).`);
+        }
+      }
+    }
   }
 
   if (FIX && tagPatches.size) {
@@ -694,6 +885,21 @@ for (const [id, { file: indexFile }] of systemDesignIndexById) {
 for (const [id, meta] of systemDesignMetaById) {
   if (!systemDesignIndexById.has(id)) {
     severity.addError(meta.file, id, "system-design meta.json has no matching entry in system-design/index.json");
+  }
+}
+
+for (const entry of collectionRefs) {
+  const { file, itemId, ref, label } = entry;
+  if (ref.kind === "system-design") {
+    if (!systemDesignIndexById.has(ref.id)) {
+      severity.addError(file, itemId, `${label} reference does not exist in system-design/index.json: ${ref.id}`);
+    }
+    continue;
+  }
+
+  const identityKey = `${ref.tech}:${ref.kind}:${ref.id}`;
+  if (!questionIdentityIndex.has(identityKey)) {
+    severity.addError(file, itemId, `${label} reference does not exist in the shipped question bank: ${identityKey}`);
   }
 }
 

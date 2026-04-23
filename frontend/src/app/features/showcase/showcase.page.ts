@@ -180,18 +180,10 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   activeFrameworkKey: DemoKey = 'react';
 
   private observer?: IntersectionObserver;
-  private flowTimer?: number;
-
-  heroBadges = [
-    { label: 'Real editors, not videos', tone: 'accent' },
-    { label: 'UI-first problems', tone: 'muted' },
-    { label: 'Frontend system design', tone: 'outline' },
-    { label: 'High-signal feedback', tone: 'muted' },
-  ];
 
   heroHeadline = 'Practice frontend interviews in a real coding workflow';
   heroLede = 'FrontendAtlas turns prep into repeatable loops: solve real prompts, run deterministic checks, inspect live UI behavior, and explain tradeoffs like a senior engineer.';
-  heroPrimaryCtaLabel = 'Start free challenge';
+  heroPrimaryCtaLabel = 'Start Essential 60';
   private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
   heroFlowSteps = [
@@ -538,9 +530,6 @@ You can also reset any task back to the starter whenever you want to re-practice
     } else {
       this.markAllVisible();
     }
-    if (!this.reduceMotion) {
-      this.startFlowTicker();
-    }
   }
 
   ngOnDestroy(): void {
@@ -548,7 +537,6 @@ You can also reset any task back to the starter whenever you want to re-practice
     if (this.isBrowser) {
       window.removeEventListener('resize', this.onViewportResize);
     }
-    if (typeof window !== 'undefined' && this.flowTimer) window.clearInterval(this.flowTimer);
   }
 
   private async loadCheckoutConfig(): Promise<void> {
@@ -686,14 +674,6 @@ You can also reset any task back to the starter whenever you want to re-practice
     }
   }
 
-  private startFlowTicker() {
-    if (typeof window === 'undefined' || this.reduceMotion) return;
-    if (this.flowTimer) window.clearInterval(this.flowTimer);
-    this.flowTimer = window.setInterval(() => {
-      this.activeFlowIndex = (this.activeFlowIndex + 1) % this.heroFlowSteps.length;
-    }, 1600);
-  }
-
   private onViewportResize = () => {
     this.syncViewportState();
   };
@@ -769,8 +749,21 @@ You can also reset any task back to the starter whenever you want to re-practice
   onHeroPrimaryClick() {
     this.analytics.track('lp_primary_cta_clicked', {
       src: 'lp_hero',
+      destination: 'essential_60',
+      route: '/interview-questions/essential',
+      start_path_variant: 'essential_60_first',
+      hero_variant: this.heroExperimentVariant,
+    });
+  }
+
+  onHeroSecondaryClick() {
+    this.analytics.track('lp_secondary_cta_clicked', {
+      src: 'lp_hero',
+      destination: 'free_challenge',
+      route: '/react/coding/react-counter',
       question_id: 'react-counter',
       tech: 'react',
+      start_path_variant: 'essential_60_first',
       hero_variant: this.heroExperimentVariant,
     });
   }
@@ -858,12 +851,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   private applyHeroExperimentCopy() {
-    if (this.heroExperimentVariant === 'outcome') {
-      this.heroPrimaryCtaLabel = 'Try 2-minute challenge';
-      return;
-    }
-
-    this.heroPrimaryCtaLabel = 'Start free challenge';
+    this.heroPrimaryCtaLabel = 'Start Essential 60';
   }
 
   private buildSystemInjector() {

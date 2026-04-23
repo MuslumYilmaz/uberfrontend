@@ -11,7 +11,7 @@ type MarketingLink = {
   route: any[];
   destination: string;
   queryParams?: Record<string, string>;
-  activeMatch?: 'question-library' | 'practice-formats' | 'system-design' | 'path';
+  activeMatch?: 'question-library' | 'essential-60' | 'path';
 };
 
 @Component({
@@ -34,6 +34,12 @@ export class MarketingHeaderComponent {
 
   readonly primaryLinks: MarketingLink[] = [
     {
+      label: 'Essential 60',
+      route: ['/interview-questions', 'essential'],
+      destination: '/interview-questions/essential',
+      activeMatch: 'essential-60',
+    },
+    {
       label: 'Question Library',
       route: ['/coding'],
       queryParams: { reset: '1' },
@@ -45,20 +51,6 @@ export class MarketingHeaderComponent {
       route: ['/tracks'],
       destination: '/tracks',
       activeMatch: 'path',
-    },
-    {
-      label: 'Practice Types',
-      route: ['/coding'],
-      queryParams: { view: 'formats', category: 'ui', reset: '1' },
-      destination: '/coding?view=formats&category=ui&reset=1',
-      activeMatch: 'practice-formats',
-    },
-    {
-      label: 'System Design',
-      route: ['/coding'],
-      queryParams: { view: 'formats', category: 'system', reset: '1' },
-      destination: '/coding?view=formats&category=system&reset=1',
-      activeMatch: 'system-design',
     },
   ];
 
@@ -149,21 +141,23 @@ export class MarketingHeaderComponent {
     this.trackTopNavClick(area, this.ctaDestination());
   }
 
+  isShowcaseLanding(): boolean {
+    const urlTree = this.router.parseUrl(this.currentUrl());
+    const primary = urlTree.root.children['primary'];
+    const path = primary ? `/${primary.segments.map((segment) => segment.path).join('/')}` : '/';
+    return path === '/';
+  }
+
   isPrimaryLinkActive(link: MarketingLink): boolean {
     const urlTree = this.router.parseUrl(this.currentUrl());
     const primary = urlTree.root.children['primary'];
     const path = primary ? `/${primary.segments.map((segment) => segment.path).join('/')}` : '/';
-    const queryParams = urlTree.queryParams;
-    const view = String(queryParams['view'] || '');
-    const category = String(queryParams['category'] || '');
 
     switch (link.activeMatch) {
       case 'question-library':
-        return path === '/coding' && view !== 'formats';
-      case 'practice-formats':
-        return path === '/coding' && view === 'formats' && category !== 'system';
-      case 'system-design':
-        return path === '/coding' && view === 'formats' && category === 'system';
+        return path === '/coding';
+      case 'essential-60':
+        return path === '/interview-questions/essential';
       case 'path': {
         const targetPath = link.destination.split('?')[0];
         return path === targetPath || path.startsWith(`${targetPath}/`);

@@ -29,9 +29,9 @@ type VisibleEntry = {
 
 type StudyPrimaryActionKey =
   | 'continue'
+  | 'essential_60'
   | 'question_library'
-  | 'study_plans'
-  | 'practice_types';
+  | 'study_plans';
 
 type StudyPrimaryAction = {
   key: StudyPrimaryActionKey;
@@ -41,6 +41,7 @@ type StudyPrimaryAction = {
   route: any[];
   queryParams?: Params;
   badge?: string | null;
+  emphasis?: 'default' | 'promoted';
   item?: PrepareItem | null;
 };
 
@@ -154,15 +155,24 @@ export class HeaderComponent implements OnInit {
             ? 'Return to your dashboard or your last interview prep path.'
             : 'Open the fastest route back into interview prep.'),
         icon: 'pi-history',
-        route: recentLink ?? (continueFallbackIsDashboard ? ['/dashboard'] : ['/coding']),
-        queryParams: recent || continueFallbackIsDashboard ? undefined : { reset: 1 },
+        route: recentLink ?? (continueFallbackIsDashboard ? ['/dashboard'] : ['/interview-questions', 'essential']),
+        queryParams: undefined,
         badge: recent ? 'Recent' : null,
         item: recent,
       },
       {
+        key: 'essential_60',
+        title: 'FrontendAtlas Essential 60',
+        subtitle: 'Open the curated shortlist first across JavaScript, UI coding, system design, and concepts.',
+        icon: 'pi-compass',
+        route: ['/interview-questions', 'essential'],
+        badge: 'Start here',
+        emphasis: 'promoted',
+      },
+      {
         key: 'question_library',
         title: 'Question Library',
-        subtitle: 'Open the Question Library and jump into coding or concept practice fast.',
+        subtitle: 'Open the full Question Library when you want broader coverage, filters, and every practice format.',
         icon: 'pi-bolt',
         route: ['/coding'],
         queryParams: { reset: 1 },
@@ -173,14 +183,6 @@ export class HeaderComponent implements OnInit {
         subtitle: 'Open guided tracks when you want a clearer sequence and less choice load.',
         icon: 'pi-directions-alt',
         route: ['/tracks'],
-      },
-      {
-        key: 'practice_types',
-        title: 'Practice Types',
-        subtitle: 'Choose UI, JavaScript functions, HTML/CSS, algorithms, or system design practice.',
-        icon: 'pi-clone',
-        route: ['/coding'],
-        queryParams: { view: 'formats', category: 'ui', reset: 1 },
       },
     ];
   }

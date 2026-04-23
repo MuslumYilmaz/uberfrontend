@@ -1,0 +1,694 @@
+{
+  "id": "frontend-essential-60",
+  "title": "FrontendAtlas Essential 60",
+  "description": "A curated shortlist of high-signal frontend interview prompts selected from the shipped FrontendAtlas question bank.",
+  "updatedAt": "2026-04-23",
+  "benchmarkSources": [
+    {
+      "label": "GreatFrontEnd GFE 75",
+      "url": "https://www.greatfrontend.com/interviews/gfe75"
+    },
+    {
+      "label": "Front End Interview Handbook: JavaScript coding",
+      "url": "https://www.frontendinterviewhandbook.com/coding/javascript-utility-function"
+    },
+    {
+      "label": "Front End Interview Handbook: UI machine coding",
+      "url": "https://www.frontendinterviewhandbook.com/coding/build-front-end-user-interfaces"
+    },
+    {
+      "label": "Front End Interview Handbook: frontend system design",
+      "url": "https://www.frontendinterviewhandbook.com/front-end-system-design"
+    },
+    {
+      "label": "BFE JavaScript questions",
+      "url": "https://bigfrontend.dev/problem?sort=oldest&tags=JavaScript"
+    }
+  ],
+  "items": [
+    {
+      "id": "js-debounce",
+      "rank": 1,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 93,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-debounce" },
+      "rationale": "Debounce appears across search, resize, validation, and async UI interview loops.",
+      "benchmarkTopics": ["debounce", "timing", "async-ui"]
+    },
+    {
+      "id": "js-promise-all",
+      "rank": 2,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 92,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-promise-all" },
+      "rationale": "Promise aggregation tests async ordering, rejection behavior, and result preservation.",
+      "benchmarkTopics": ["promise-combinators", "async", "concurrency"]
+    },
+    {
+      "id": "js-throttle",
+      "rank": 3,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 91,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-throttle" },
+      "rationale": "Throttle is the companion timing primitive for scroll, pointer, and high-frequency UI events.",
+      "benchmarkTopics": ["throttle", "timing", "performance"]
+    },
+    {
+      "id": "js-deep-clone",
+      "rank": 4,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 90,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-deep-clone" },
+      "rationale": "Deep clone reveals object traversal, reference semantics, and edge-case discipline.",
+      "benchmarkTopics": ["objects", "recursion", "copying"]
+    },
+    {
+      "id": "js-concurrency-map-limit",
+      "rank": 5,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 88,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-concurrency-map-limit" },
+      "rationale": "Concurrency limits connect promises to realistic frontend API and resource control.",
+      "benchmarkTopics": ["concurrency", "promise-control", "async"]
+    },
+    {
+      "id": "js-deep-equal",
+      "rank": 6,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 86,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-deep-equal" },
+      "rationale": "Deep equality tests recursion, structural comparison, and JavaScript value edge cases.",
+      "benchmarkTopics": ["objects", "equality", "recursion"]
+    },
+    {
+      "id": "js-memoize-function",
+      "rank": 7,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 86,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-memoize-function" },
+      "rationale": "Memoization combines closures, cache keys, and performance trade-offs.",
+      "benchmarkTopics": ["memoization", "closures", "performance"]
+    },
+    {
+      "id": "js-fetch-json-timeout",
+      "rank": 8,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 86,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-fetch-json-timeout" },
+      "rationale": "Fetch timeout work reflects practical browser API, abort, and error-handling interviews.",
+      "benchmarkTopics": ["fetch", "abort-controller", "error-handling"]
+    },
+    {
+      "id": "js-take-latest",
+      "rank": 9,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 84,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-take-latest" },
+      "rationale": "Take-latest behavior is a core stale-response pattern in typeahead and route transitions.",
+      "benchmarkTopics": ["cancellation", "stale-ui", "async"]
+    },
+    {
+      "id": "js-array-prototype-map",
+      "rank": 10,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 84,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-array-prototype-map" },
+      "rationale": "Array map polyfills test callbacks, holes, thisArg, and iteration contracts.",
+      "benchmarkTopics": ["array-polyfills", "callbacks", "iteration"]
+    },
+    {
+      "id": "js-array-prototype-reduce",
+      "rank": 11,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 84,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-array-prototype-reduce" },
+      "rationale": "Reduce is a compact way to test accumulator design and native API semantics.",
+      "benchmarkTopics": ["array-polyfills", "accumulators", "iteration"]
+    },
+    {
+      "id": "js-lodash-get",
+      "rank": 12,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 83,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-lodash-get" },
+      "rationale": "Path lookup utilities are common in frontend data shaping and edge-case interviews.",
+      "benchmarkTopics": ["path-parsing", "objects", "utilities"]
+    },
+    {
+      "id": "js-implement-bind",
+      "rank": 13,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 83,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-implement-bind" },
+      "rationale": "Bind checks this semantics, prototypes, partial arguments, and constructor behavior.",
+      "benchmarkTopics": ["this", "prototypes", "polyfills"]
+    },
+    {
+      "id": "js-group-by",
+      "rank": 14,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 82,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-group-by" },
+      "rationale": "Group-by tasks represent practical array reduction and object construction.",
+      "benchmarkTopics": ["arrays", "grouping", "reduction"]
+    },
+    {
+      "id": "js-implement-new",
+      "rank": 15,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 82,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-implement-new" },
+      "rationale": "Implementing new directly tests constructor calls and prototype linkage.",
+      "benchmarkTopics": ["prototypes", "object-creation", "runtime"]
+    },
+    {
+      "id": "js-event-emitter-mini",
+      "rank": 16,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 81,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-event-emitter-mini" },
+      "rationale": "Event emitters reveal API design, callback storage, and cleanup behavior.",
+      "benchmarkTopics": ["events", "callbacks", "api-design"]
+    },
+    {
+      "id": "js-get-by-path-1",
+      "rank": 17,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 81,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-get-by-path-1" },
+      "rationale": "Get-by-path is a smaller data-helper version of object traversal and fallback handling.",
+      "benchmarkTopics": ["objects", "path-lookup", "edge-cases"]
+    },
+    {
+      "id": "js-set-by-path-2",
+      "rank": 18,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 80,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-set-by-path-2" },
+      "rationale": "Set-by-path adds mutation and immutability decisions to nested object traversal.",
+      "benchmarkTopics": ["objects", "immutability", "path-update"]
+    },
+    {
+      "id": "js-array-prototype-filter",
+      "rank": 19,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 80,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-array-prototype-filter" },
+      "rationale": "Filter completes the core array-polyfill trio and exercises callback truthiness.",
+      "benchmarkTopics": ["array-polyfills", "callbacks", "iteration"]
+    },
+    {
+      "id": "js-sanitize-href-url",
+      "rank": 20,
+      "section": "javascript-functions",
+      "tier": "must-know",
+      "score": 80,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-sanitize-href-url" },
+      "rationale": "URL sanitization brings security judgment into a small coding prompt.",
+      "benchmarkTopics": ["security", "browser", "validation"]
+    },
+    {
+      "id": "js-promise-any",
+      "rank": 21,
+      "section": "javascript-functions",
+      "tier": "high-leverage",
+      "score": 78,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-promise-any" },
+      "rationale": "Promise.any extends combinator reasoning beyond the most common all implementation.",
+      "benchmarkTopics": ["promise-combinators", "error-handling", "async"]
+    },
+    {
+      "id": "js-curry-function",
+      "rank": 22,
+      "section": "javascript-functions",
+      "tier": "high-leverage",
+      "score": 74,
+      "primary": { "tech": "javascript", "kind": "coding", "id": "js-curry-function" },
+      "rationale": "Currying is less universal than async tasks but still a frequent closure and arity signal.",
+      "benchmarkTopics": ["closures", "functional-programming", "arguments"]
+    },
+    {
+      "id": "ui-debounced-search",
+      "rank": 23,
+      "section": "ui-coding",
+      "tier": "must-know",
+      "score": 92,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-debounced-search" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-debounced-search" },
+        { "tech": "vue", "kind": "coding", "id": "vue-debounced-search" }
+      ],
+      "rationale": "Debounced search combines controlled input, async state, cancellation, and loading feedback.",
+      "benchmarkTopics": ["search", "debounce", "async-ui"]
+    },
+    {
+      "id": "ui-contact-form",
+      "rank": 24,
+      "section": "ui-coding",
+      "tier": "must-know",
+      "score": 88,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-contact-form-starter" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-contact-form-starter" },
+        { "tech": "vue", "kind": "coding", "id": "vue-contact-form-starter" }
+      ],
+      "rationale": "Forms are a core interview surface for validation, submit state, and API feedback.",
+      "benchmarkTopics": ["forms", "validation", "http"]
+    },
+    {
+      "id": "ui-autocomplete-search",
+      "rank": 25,
+      "section": "ui-coding",
+      "tier": "must-know",
+      "score": 86,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-autocomplete-search-starter" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-autocomplete-search-starter" },
+        { "tech": "vue", "kind": "coding", "id": "vue-autocomplete-search" }
+      ],
+      "rationale": "Autocomplete adds keyboard, async, focus, and accessibility constraints to search.",
+      "benchmarkTopics": ["autocomplete", "keyboard", "accessibility"]
+    },
+    {
+      "id": "ui-multi-step",
+      "rank": 26,
+      "section": "ui-coding",
+      "tier": "must-know",
+      "score": 84,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-multi-step-signup" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-multi-step-form-starter" },
+        { "tech": "vue", "kind": "coding", "id": "vue-multi-step-form" }
+      ],
+      "rationale": "Multi-step forms test state ownership, validation flow, and recovery from partial progress.",
+      "benchmarkTopics": ["forms", "wizard", "state"]
+    },
+    {
+      "id": "ui-nested-checkboxes",
+      "rank": 27,
+      "section": "ui-coding",
+      "tier": "must-know",
+      "score": 82,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-nested-checkboxes" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-nested-checkboxes" },
+        { "tech": "vue", "kind": "coding", "id": "vue-nested-checkboxes" }
+      ],
+      "rationale": "Nested checkboxes force tree state, parent-child sync, and edge-case handling.",
+      "benchmarkTopics": ["tree-state", "forms", "events"]
+    },
+    {
+      "id": "ui-pagination-table",
+      "rank": 28,
+      "section": "ui-coding",
+      "tier": "must-know",
+      "score": 80,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-pagination-table" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-pagination-table" },
+        { "tech": "vue", "kind": "coding", "id": "vue-pagination-table" }
+      ],
+      "rationale": "Paginated tables test derived data, empty states, list rendering, and controls.",
+      "benchmarkTopics": ["tables", "pagination", "derived-state"]
+    },
+    {
+      "id": "ui-shopping-cart",
+      "rank": 29,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 79,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-shopping-cart" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-shopping-cart-mini" },
+        { "tech": "vue", "kind": "coding", "id": "vue-shopping-cart" }
+      ],
+      "rationale": "Shopping carts combine collection updates, derived totals, and immutable state changes.",
+      "benchmarkTopics": ["state", "arrays", "derived-state"]
+    },
+    {
+      "id": "ui-nested-comments",
+      "rank": 30,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 78,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-nested-comments" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-nested-comments" },
+        { "tech": "vue", "kind": "coding", "id": "vue-nested-comments" }
+      ],
+      "rationale": "Nested comments add recursion, local editing state, and tree rendering.",
+      "benchmarkTopics": ["recursion", "tree-ui", "forms"]
+    },
+    {
+      "id": "ui-chips-input-autocomplete",
+      "rank": 31,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 77,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-chips-input-autocomplete" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-chips-input-autocomplete" },
+        { "tech": "vue", "kind": "coding", "id": "vue-chips-input-autocomplete" }
+      ],
+      "rationale": "Chips input is a dense event, keyboard, form, and accessibility exercise.",
+      "benchmarkTopics": ["chips-input", "autocomplete", "keyboard"]
+    },
+    {
+      "id": "ui-todo-list",
+      "rank": 32,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 75,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-todo-list" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-todo-list-starter" },
+        { "tech": "vue", "kind": "coding", "id": "vue-todo-list" }
+      ],
+      "rationale": "Todo lists remain useful for checking basic local state and list updates quickly.",
+      "benchmarkTopics": ["lists", "state", "forms"]
+    },
+    {
+      "id": "ui-filterable-list",
+      "rank": 33,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 74,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-filterable-user-list" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-filterable-user-list" },
+        { "tech": "vue", "kind": "coding", "id": "vue-filterable-user-list" }
+      ],
+      "rationale": "Filterable lists test search state, derived collections, and empty results.",
+      "benchmarkTopics": ["filtering", "lists", "derived-state"]
+    },
+    {
+      "id": "ui-transfer-list",
+      "rank": 34,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 74,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-transfer-list" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-transfer-list" },
+        { "tech": "vue", "kind": "coding", "id": "vue-transfer-list" }
+      ],
+      "rationale": "Transfer lists combine selection state, bulk actions, and list movement.",
+      "benchmarkTopics": ["selection", "lists", "state"]
+    },
+    {
+      "id": "ui-accordion",
+      "rank": 35,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 72,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-accordion-faq" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-faq-accordion" },
+        { "tech": "vue", "kind": "coding", "id": "vue-accordion-faq" }
+      ],
+      "rationale": "Accordions are compact state and accessibility prompts for UI interviews.",
+      "benchmarkTopics": ["accordion", "disclosure", "accessibility"]
+    },
+    {
+      "id": "ui-tabs-switcher",
+      "rank": 36,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 71,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-tabs-switcher" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-tabs-switcher" },
+        { "tech": "vue", "kind": "coding", "id": "vue-tabs-switcher" }
+      ],
+      "rationale": "Tabs check state transitions, keyboard expectations, and component boundaries.",
+      "benchmarkTopics": ["tabs", "state", "accessibility"]
+    },
+    {
+      "id": "ui-theme-toggle",
+      "rank": 37,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 70,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-theme-toggle" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-theme-toggle" },
+        { "tech": "vue", "kind": "coding", "id": "vue-theme-toggle" }
+      ],
+      "rationale": "Theme toggles connect UI state to persistence and OS preference defaults.",
+      "benchmarkTopics": ["theme", "local-storage", "preferences"]
+    },
+    {
+      "id": "ui-progress-bar-thresholds",
+      "rank": 38,
+      "section": "ui-coding",
+      "tier": "high-leverage",
+      "score": 68,
+      "primary": { "tech": "react", "kind": "coding", "id": "react-progress-bar-thresholds" },
+      "alternates": [
+        { "tech": "angular", "kind": "coding", "id": "angular-progress-bar-thresholds" },
+        { "tech": "vue", "kind": "coding", "id": "vue-progress-bar-thresholds" }
+      ],
+      "rationale": "Progress bars are a small but useful prompt for constrained props and visual states.",
+      "benchmarkTopics": ["progress", "props", "visual-state"]
+    },
+    {
+      "id": "sys-notification-toast-system",
+      "rank": 39,
+      "section": "system-design",
+      "tier": "must-know",
+      "score": 88,
+      "primary": { "kind": "system-design", "id": "notification-toast-system" },
+      "rationale": "A global toast system tests API design, stacking, timers, portals, and accessibility.",
+      "benchmarkTopics": ["global-state", "notifications", "accessibility"]
+    },
+    {
+      "id": "sys-infinite-scroll-list",
+      "rank": 40,
+      "section": "system-design",
+      "tier": "must-know",
+      "score": 86,
+      "primary": { "kind": "system-design", "id": "infinite-scroll-list" },
+      "rationale": "Infinite scroll is a classic frontend design prompt for pagination, virtualization, and recovery.",
+      "benchmarkTopics": ["infinite-scroll", "virtualization", "pagination"]
+    },
+    {
+      "id": "sys-realtime-search-debounce-cache",
+      "rank": 41,
+      "section": "system-design",
+      "tier": "must-know",
+      "score": 84,
+      "primary": { "kind": "system-design", "id": "realtime-search-debounce-cache" },
+      "rationale": "Real-time search connects input handling, request policy, caching, and stale-result control.",
+      "benchmarkTopics": ["search", "debounce", "caching"]
+    },
+    {
+      "id": "sys-news-feed-timeline",
+      "rank": 42,
+      "section": "system-design",
+      "tier": "must-know",
+      "score": 82,
+      "primary": { "kind": "system-design", "id": "news-feed-timeline" },
+      "rationale": "Feed design is a high-signal prompt for ranking, caching, virtualization, and updates.",
+      "benchmarkTopics": ["feed", "timeline", "caching"]
+    },
+    {
+      "id": "sys-multi-step-form-autosave",
+      "rank": 43,
+      "section": "system-design",
+      "tier": "must-know",
+      "score": 80,
+      "primary": { "kind": "system-design", "id": "multi-step-form-autosave" },
+      "rationale": "Autosave forms test data modeling, validation, persistence, and conflict handling.",
+      "benchmarkTopics": ["forms", "autosave", "local-storage"]
+    },
+    {
+      "id": "sys-component-design-system-architecture",
+      "rank": 44,
+      "section": "system-design",
+      "tier": "high-leverage",
+      "score": 79,
+      "primary": { "kind": "system-design", "id": "component-design-system-architecture" },
+      "rationale": "Design systems expose component APIs, tokens, theming, accessibility, and governance.",
+      "benchmarkTopics": ["design-system", "component-api", "theming"]
+    },
+    {
+      "id": "sys-ai-chat-textarea-design",
+      "rank": 45,
+      "section": "system-design",
+      "tier": "high-leverage",
+      "score": 78,
+      "primary": { "kind": "system-design", "id": "ai-chat-textarea-design" },
+      "rationale": "Chat input design covers streaming, drafts, attachments, submission state, and resilience.",
+      "benchmarkTopics": ["chat", "streaming", "state-management"]
+    },
+    {
+      "id": "sys-ui-component-state-from-mock",
+      "rank": 46,
+      "section": "system-design",
+      "tier": "high-leverage",
+      "score": 76,
+      "primary": { "kind": "system-design", "id": "ui-component-state-from-mock" },
+      "rationale": "State-from-mock prompts are common senior frontend screens for scope and data ownership.",
+      "benchmarkTopics": ["component-state", "data-model", "ux"]
+    },
+    {
+      "id": "concept-js-event-loop",
+      "rank": 47,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 94,
+      "primary": { "tech": "javascript", "kind": "trivia", "id": "js-event-loop" },
+      "rationale": "Event loop reasoning underpins async output, rendering, timers, and promise order.",
+      "benchmarkTopics": ["event-loop", "microtasks", "timers"]
+    },
+    {
+      "id": "concept-js-closures",
+      "rank": 48,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 92,
+      "primary": { "tech": "javascript", "kind": "trivia", "id": "js-closures" },
+      "rationale": "Closures explain stateful functions, module privacy, hooks, and many utility prompts.",
+      "benchmarkTopics": ["closures", "scope", "functions"]
+    },
+    {
+      "id": "concept-js-promises-async-await",
+      "rank": 49,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 91,
+      "primary": { "tech": "javascript", "kind": "trivia", "id": "js-promises-async-await" },
+      "rationale": "Promises and async-await are the foundation for async coding and UI race-condition prompts.",
+      "benchmarkTopics": ["promises", "async-await", "error-handling"]
+    },
+    {
+      "id": "concept-js-event-delegation",
+      "rank": 50,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 88,
+      "primary": { "tech": "javascript", "kind": "trivia", "id": "js-event-delegation" },
+      "rationale": "Event delegation connects DOM events, bubbling, dynamic lists, and performance.",
+      "benchmarkTopics": ["dom", "events", "delegation"]
+    },
+    {
+      "id": "concept-js-prototype-vs-proto",
+      "rank": 51,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 86,
+      "primary": { "tech": "javascript", "kind": "trivia", "id": "js-prototype-vs-proto" },
+      "rationale": "Prototype-chain knowledge supports bind, new, instanceof, and inheritance discussions.",
+      "benchmarkTopics": ["prototypes", "inheritance", "runtime"]
+    },
+    {
+      "id": "concept-js-mutability-vs-immutability",
+      "rank": 52,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 85,
+      "primary": { "tech": "javascript", "kind": "trivia", "id": "js-mutability-vs-immutability" },
+      "rationale": "Mutability reasoning is central to frontend state updates and bug explanation.",
+      "benchmarkTopics": ["immutability", "state", "references"]
+    },
+    {
+      "id": "concept-web-performance-optimize-load-time",
+      "rank": 53,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 84,
+      "primary": { "tech": "javascript", "kind": "trivia", "id": "web-performance-optimize-load-time" },
+      "rationale": "Load-time optimization is a cross-cutting frontend interview topic for every stack.",
+      "benchmarkTopics": ["performance", "caching", "loading"]
+    },
+    {
+      "id": "concept-js-xss-dom-sinks",
+      "rank": 54,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 83,
+      "primary": { "tech": "javascript", "kind": "trivia", "id": "js-xss-dom-sinks" },
+      "rationale": "DOM XSS prevention is a high-signal security topic for production frontend work.",
+      "benchmarkTopics": ["security", "xss", "dom"]
+    },
+    {
+      "id": "concept-react-useeffect-purpose",
+      "rank": 55,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 82,
+      "primary": { "tech": "react", "kind": "trivia", "id": "react-useeffect-purpose" },
+      "rationale": "useEffect reveals side-effect boundaries, dependency reasoning, and cleanup discipline.",
+      "benchmarkTopics": ["react", "effects", "cleanup"]
+    },
+    {
+      "id": "concept-react-keys-in-lists",
+      "rank": 56,
+      "section": "concepts",
+      "tier": "must-know",
+      "score": 80,
+      "primary": { "tech": "react", "kind": "trivia", "id": "react-keys-in-lists" },
+      "rationale": "Keys are a common list-rendering failure mode and reconciliation discussion point.",
+      "benchmarkTopics": ["react", "lists", "reconciliation"]
+    },
+    {
+      "id": "concept-angular-change-detection-strategies",
+      "rank": 57,
+      "section": "concepts",
+      "tier": "high-leverage",
+      "score": 79,
+      "primary": { "tech": "angular", "kind": "trivia", "id": "angular-change-detection-strategies" },
+      "rationale": "Change detection is the highest-leverage Angular runtime and performance concept.",
+      "benchmarkTopics": ["angular", "change-detection", "performance"]
+    },
+    {
+      "id": "concept-vue-ref-vs-reactive-difference-traps",
+      "rank": 58,
+      "section": "concepts",
+      "tier": "high-leverage",
+      "score": 78,
+      "primary": { "tech": "vue", "kind": "trivia", "id": "vue-ref-vs-reactive-difference-traps" },
+      "rationale": "Vue ref versus reactive reasoning exposes core reactivity and state-shape traps.",
+      "benchmarkTopics": ["vue", "reactivity", "state"]
+    },
+    {
+      "id": "concept-web-accessibility-make-page-accessible",
+      "rank": 59,
+      "section": "concepts",
+      "tier": "high-leverage",
+      "score": 77,
+      "primary": { "tech": "html", "kind": "trivia", "id": "web-accessibility-make-page-accessible" },
+      "rationale": "Accessibility is expected in modern UI interviews and validates inclusive implementation judgment.",
+      "benchmarkTopics": ["accessibility", "semantic-html", "aria"]
+    },
+    {
+      "id": "concept-css-grid-vs-flexbox",
+      "rank": 60,
+      "section": "concepts",
+      "tier": "high-leverage",
+      "score": 76,
+      "primary": { "tech": "css", "kind": "trivia", "id": "css-grid-vs-flexbox" },
+      "rationale": "Grid versus Flexbox is a durable layout trade-off question for frontend interviews.",
+      "benchmarkTopics": ["css", "layout", "grid-flexbox"]
+    }
+  ]
+}

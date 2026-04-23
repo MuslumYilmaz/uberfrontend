@@ -650,6 +650,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
         cta: 'Open guided warm-up',
         testId: 'interview-hub-support-link',
       });
+      links.push({
+        eyebrow: 'Curated shortlist',
+        title: 'Want the highest-signal questions only?',
+        body: 'Open the Essential 60 when you want a tighter list across JavaScript, UI, system design, and concepts.',
+        route: ['/interview-questions/essential'],
+        cta: 'Open Essential 60',
+        testId: 'essential-questions-support-link',
+      });
     }
 
     if (this.showFrameworkPrepSupport()) {

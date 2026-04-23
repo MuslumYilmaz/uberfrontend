@@ -77,18 +77,19 @@ describe('InterviewQuestionsLandingComponent', () => {
     }).compileComponents();
   });
 
-  it('renders three primary route cards and limits each preview list to three items', async () => {
+  it('renders four primary route cards and limits each preview list to three items', async () => {
     const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.loading).toBeFalse();
-    expect(fixture.nativeElement.querySelectorAll('.iq-route-card').length).toBe(3);
+    expect(fixture.nativeElement.querySelectorAll('.iq-route-card').length).toBe(4);
     expect(fixture.componentInstance.previewRows('coding').length).toBe(3);
     expect(fixture.componentInstance.previewRows('trivia').length).toBe(3);
     expect(fixture.nativeElement.textContent || '').toContain('View full coding list');
     expect(fixture.nativeElement.textContent || '').toContain('View full concepts list');
+    expect(fixture.nativeElement.textContent || '').toContain('Open Essential 60');
   });
 
   it('tracks explicit view-all clicks from preview sections', async () => {
