@@ -1,6 +1,6 @@
 <div class="iq-wrap">
   <header class="fa-page-header iq-header">
-    <p class="fa-page-kicker">{{ isMasterHub() ? 'Interview questions hub' : 'Technology interview hub' }}</p>
+    <p class="fa-page-kicker">{{ isMasterHub() ? 'Guided interview warm-up' : 'Technology interview warm-up' }}</p>
     <h1 class="fa-page-title">{{ config.title }}</h1>
     <p class="fa-page-subtitle">{{ introLead() }}</p>
   </header>
@@ -134,10 +134,10 @@
     <h2 class="fa-section-title">Keep the scope tight</h2>
     <p>
       Start with one route first. Then expand into
-      <a [routerLink]="['/interview-questions']">all interview hubs</a>,
-      <a [routerLink]="['/tracks']">study plans</a>,
+      <a [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Question Library</a>,
+      <a [routerLink]="['/tracks']">Study Plans</a>,
       and
-      <a [routerLink]="['/companies']">company target packs</a>
+      <a [routerLink]="['/companies']">Company Prep</a>
       only when you need them.
     </p>
   </section>

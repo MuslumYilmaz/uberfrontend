@@ -15,6 +15,13 @@
           <div class="guest-launch__grid">
             <article faCard elevated class="guest-featured" data-testid="dashboard-guest-featured-route">
               <div class="guest-featured__eyebrow">Best starting point</div>
+              <span
+                *ngIf="guestFeaturedRoute.fitHint"
+                class="fit-pill"
+                data-testid="dashboard-route-fit-pill"
+              >
+                {{ guestFeaturedRoute.fitHint }}
+              </span>
               <h2 class="guest-featured__title">{{ guestFeaturedRoute.title }}</h2>
               <p class="guest-featured__copy fa-body">{{ guestFeaturedRoute.subtitle }}</p>
               <div class="hero-actions">
@@ -44,7 +51,10 @@
                 (click)="trackDashboardLinkClick(link, 'guest_secondary')"
               >
                 <div class="guest-route-row__body">
-                  <div class="guest-route-row__title">{{ link.title }}</div>
+                  <div class="route-title-row">
+                    <div class="guest-route-row__title">{{ link.title }}</div>
+                    <span *ngIf="link.fitHint" class="fit-pill" data-testid="dashboard-route-fit-pill">{{ link.fitHint }}</span>
+                  </div>
                   <div class="guest-route-row__subtitle fa-meta-text">{{ link.subtitle }}</div>
                 </div>
                 <span class="guest-route-row__cta" aria-hidden="true">→</span>
@@ -207,7 +217,10 @@
           (click)="trackDashboardLinkClick(link, 'practice_modes')"
         >
           <div class="guest-route-row__body">
-            <div class="guest-route-row__title">{{ link.title }}</div>
+            <div class="route-title-row">
+              <div class="guest-route-row__title">{{ link.title }}</div>
+              <span *ngIf="link.fitHint" class="fit-pill" data-testid="dashboard-route-fit-pill">{{ link.fitHint }}</span>
+            </div>
             <div class="guest-route-row__subtitle fa-meta-text">{{ link.subtitle }}</div>
           </div>
           <span class="guest-route-row__cta" aria-hidden="true">→</span>
@@ -358,7 +371,10 @@
           (click)="trackDashboardLinkClick(link, 'library')"
         >
           <div class="library-link__body">
-            <div class="library-link__title">{{ link.title }}</div>
+            <div class="route-title-row">
+              <div class="library-link__title">{{ link.title }}</div>
+              <span *ngIf="link.fitHint" class="fit-pill" data-testid="dashboard-route-fit-pill">{{ link.fitHint }}</span>
+            </div>
             <div class="library-link__subtitle fa-meta-text">{{ link.subtitle }}</div>
           </div>
           <span class="library-link__cta">Open →</span>

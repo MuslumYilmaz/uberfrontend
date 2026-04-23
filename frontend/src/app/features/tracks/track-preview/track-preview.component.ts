@@ -23,6 +23,7 @@ type PreviewLink = {
   label: string;
   route: any[];
   path: string;
+  queryParams?: Record<string, string | number | boolean>;
 };
 
 type PreviewNarrative = {
@@ -39,14 +40,14 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
     audience: 'Built for short timelines when you need one high-yield week instead of a long curriculum.',
     purpose: 'This study plan compresses the highest-signal JavaScript, UI, and frontend system design drills into a repeatable 7-day sprint.',
     sequence: [
-      'Start with the JavaScript and frontend interview questions hubs to identify the concepts you still miss under time pressure.',
+      'Start with the Question Library to identify the concepts you still miss under time pressure.',
       'Run this 7-day plan in order so implementation drills, concept checks, and system design prompts reinforce each other.',
-      'Finish with company sets once your timing and explanation quality are stable.',
+      'Finish with Company Prep once your timing and explanation quality are stable.',
     ],
     supportLinks: [
       { label: 'JavaScript interview questions', route: ['/javascript/interview-questions'], path: '/javascript/interview-questions' },
-      { label: 'Frontend interview questions hub', route: ['/interview-questions'], path: '/interview-questions' },
-      { label: 'Company interview sets', route: ['/companies'], path: '/companies' },
+      { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+      { label: 'Company Prep', route: ['/companies'], path: '/companies' },
     ],
     faq: [
       {
@@ -55,23 +56,23 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
       },
       {
         question: 'What should I do after the crash track?',
-        answer: 'Move into company sets and targeted guides so your final practice mirrors the teams you are interviewing with.',
+        answer: 'Move into Company Prep and targeted guides so your final practice mirrors the teams you are interviewing with.',
       },
     ],
-    primaryCta: { label: 'Open JavaScript interview questions', route: ['/javascript/interview-questions'], path: '/javascript/interview-questions' },
+    primaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
   },
   'foundations-30d': {
     audience: 'Built for candidates who want a full-month sequence across fundamentals, frameworks, and architecture communication.',
     purpose: 'This study plan gives you a 30-day foundations runway so you can improve implementation speed, concept clarity, and system design coverage together.',
     sequence: [
-      'Use the frontend interview questions hub to identify weak spots before you start the month.',
+      'Use the Question Library to identify weak spots before you start the month.',
       'Work through the 30-day plan in order so fundamentals, framework drills, and architecture prompts build on each other.',
-      'Add company sets in the final week to rehearse target-specific patterns without losing structure.',
+      'Add Company Prep in the final week to rehearse target-specific patterns without losing structure.',
     ],
     supportLinks: [
-      { label: 'Frontend interview questions hub', route: ['/interview-questions'], path: '/interview-questions' },
-      { label: 'Framework prep hub', route: ['/guides/framework-prep'], path: '/guides/framework-prep' },
-      { label: 'Company interview sets', route: ['/companies'], path: '/companies' },
+      { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+      { label: 'Framework Prep Guide', route: ['/guides/framework-prep'], path: '/guides/framework-prep' },
+      { label: 'Company Prep', route: ['/companies'], path: '/companies' },
     ],
     faq: [
       {
@@ -79,11 +80,11 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
         answer: 'Use it when you have enough runway to rebuild fundamentals before layering on framework depth and system design.',
       },
       {
-        question: 'Does this plan replace the interview questions hubs?',
-        answer: 'No. The hub helps you diagnose what to practice, and the 30-day plan gives you the execution order.',
+        question: 'Does this plan replace the Question Library?',
+        answer: 'No. The Question Library helps you diagnose what to practice, and the 30-day plan gives you the execution order.',
       },
     ],
-    primaryCta: { label: 'Open frontend interview questions hub', route: ['/interview-questions'], path: '/interview-questions' },
+    primaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
   },
 };
 
@@ -146,6 +147,13 @@ export class TrackPreviewComponent implements OnInit {
     if (item.kind === 'system-design') return ['/system-design', item.id];
     const tech = item.tech || 'javascript';
     return ['/', tech, item.kind === 'trivia' ? 'trivia' : 'coding', item.id];
+  }
+
+  primaryCtaQueryParams(trackSlug: string): Record<string, string | number | boolean> {
+    return {
+      ...(this.narrative?.primaryCta?.queryParams ?? {}),
+      src: `track_preview_${trackSlug}`,
+    };
   }
 
   private buildPreviewQuestions(
@@ -219,14 +227,14 @@ export class TrackPreviewComponent implements OnInit {
       audience: 'Built for candidates who want a structured route instead of random frontend interview practice.',
       purpose: 'This preview shows how the study plan connects coding drills, concept questions, and system design prompts in one sequence.',
       sequence: [
-        'Start from the interview questions hub to identify your weak areas.',
+        'Start from the Question Library to identify your weak areas.',
         'Run the study plan in order so implementation and explanation practice stay connected.',
-        'Use guides and company sets after the plan to sharpen the final rounds you care about.',
+        'Use guides and Company Prep after the plan to sharpen the final rounds you care about.',
       ],
       supportLinks: [
-        { label: 'Frontend interview questions hub', route: ['/interview-questions'], path: '/interview-questions' },
-        { label: 'Framework prep hub', route: ['/guides/framework-prep'], path: '/guides/framework-prep' },
-        { label: 'Company interview sets', route: ['/companies'], path: '/companies' },
+        { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+        { label: 'Framework Prep Guide', route: ['/guides/framework-prep'], path: '/guides/framework-prep' },
+        { label: 'Company Prep', route: ['/companies'], path: '/companies' },
       ],
       faq: [
         {
@@ -234,7 +242,7 @@ export class TrackPreviewComponent implements OnInit {
           answer: 'It lets you evaluate the plan scope, sequence, and sample questions before you unlock the full route.',
         },
       ],
-      primaryCta: { label: 'Open frontend interview questions hub', route: ['/interview-questions'], path: '/interview-questions' },
+      primaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
     };
   }
 

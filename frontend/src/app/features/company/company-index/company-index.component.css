@@ -212,16 +212,10 @@
   min-width: 0;
 }
 
-.company-card__avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
-  border: 1px solid color-mix(in srgb, var(--uf-accent) 34%, var(--uf-border-subtle));
-  display: grid;
-  place-items: center;
-  color: var(--uf-text-primary);
-  font-weight: 700;
+.company-card__logo {
+  --fa-company-logo-size: 44px;
+  --fa-company-logo-radius: 12px;
+  --fa-company-logo-image-size: 22px;
 }
 
 .company-card__title {

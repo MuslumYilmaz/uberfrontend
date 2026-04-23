@@ -114,14 +114,20 @@ describe('HeaderComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-continue"]')).toBeTruthy();
-    const startQuestion = fixture.nativeElement.querySelector('[data-testid="header-study-start_one_question"]') as HTMLAnchorElement;
-    const browseLibrary = fixture.nativeElement.querySelector('[data-testid="header-study-browse_full_library"]') as HTMLAnchorElement;
+    const questionLibrary = fixture.nativeElement.querySelector('[data-testid="header-study-question_library"]') as HTMLAnchorElement;
+    const studyPlans = fixture.nativeElement.querySelector('[data-testid="header-study-study_plans"]') as HTMLAnchorElement;
+    const practiceTypes = fixture.nativeElement.querySelector('[data-testid="header-study-practice_types"]') as HTMLAnchorElement;
+    const rows = Array.from(fixture.nativeElement.querySelectorAll('.study-row--primary')) as HTMLElement[];
 
-    expect(startQuestion).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('[data-testid="header-study-follow_plan"]')).toBeTruthy();
-    expect(browseLibrary).toBeTruthy();
-    expect(startQuestion.getAttribute('href') || '').toContain('/coding?reset=1');
-    expect(browseLibrary.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(rows.length).toBe(4);
+    expect(rows.filter((row) => (row.textContent || '').includes('Question Library')).length).toBe(1);
+    expect(questionLibrary).toBeTruthy();
+    expect(questionLibrary.textContent || '').toContain('Question Library');
+    expect(studyPlans.textContent || '').toContain('Study Plans');
+    expect(practiceTypes.textContent || '').toContain('Practice Types');
+    expect(questionLibrary.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(studyPlans.getAttribute('href') || '').toContain('/tracks');
+    expect(practiceTypes.getAttribute('href') || '').toContain('/coding?view=formats&category=ui&reset=1');
     expect(analytics.track).toHaveBeenCalledWith('header_study_opened', jasmine.any(Object));
     expect(analytics.track).toHaveBeenCalledWith(
       'header_top_nav_clicked',

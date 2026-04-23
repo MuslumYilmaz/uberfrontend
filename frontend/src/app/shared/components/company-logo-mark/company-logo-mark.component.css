@@ -1,0 +1,33 @@
+:host {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.fa-company-logo-mark {
+  width: var(--fa-company-logo-size, 44px);
+  height: var(--fa-company-logo-size, 44px);
+  border-radius: var(--fa-company-logo-radius, 14px);
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-primary) 30%);
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--uf-text-primary) 14%, transparent), transparent 34%),
+    color-mix(in srgb, var(--uf-surface-alt) 84%, var(--uf-text-primary) 16%);
+  box-shadow: var(--uf-shadow-sm);
+  overflow: hidden;
+}
+
+.fa-company-logo-mark__image {
+  width: var(--fa-company-logo-image-size, 22px);
+  height: var(--fa-company-logo-image-size, 22px);
+  object-fit: contain;
+  filter: invert(1) brightness(1.16);
+  opacity: 0.94;
+}
+
+.fa-company-logo-mark__fallback {
+  color: var(--uf-text-primary);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}

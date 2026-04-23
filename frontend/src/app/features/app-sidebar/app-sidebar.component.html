@@ -20,7 +20,7 @@
                     <button class="group-header" type="button" (click)="toggleGroup(1)"
                         [attr.aria-expanded]="$any(nav[1]).open" [attr.aria-controls]="'group-1'">
                         <i class="pi nav-ic pi-box"></i>
-                        <span class="label">Practice catalog</span>
+                        <span class="label">Practice Library</span>
                         <i class="pi caret" [ngClass]="$any(nav[1]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                     </button>
 
@@ -43,14 +43,14 @@
         </div>
 
         <div class="nav-section">
-            <p class="section-heading">Study</p>
+            <p class="section-heading">Plans</p>
 
             <ng-container *ngIf="isGroup(nav[2])">
                 <div class="nav-group nav-block">
                     <button class="group-header" type="button" (click)="toggleGroup(2)"
                         [attr.aria-expanded]="$any(nav[2]).open" [attr.aria-controls]="'group-2'">
                         <i class="pi nav-ic pi-directions-alt"></i>
-                        <span class="label">Study paths</span>
+                        <span class="label">Study Plans</span>
                         <i class="pi caret" [ngClass]="$any(nav[2]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                     </button>
 

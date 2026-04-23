@@ -31,6 +31,7 @@ import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
+import { CompanySignalComponent } from '../../../shared/components/company-signal/company-signal.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -136,6 +137,9 @@ const SYSTEM_TITLE_HINTS = [
 ];
 
 const ALLOWED_CATEGORIES: CategoryKey[] = ['ui', 'js-fn', 'html-css', 'algo', 'system'];
+const QUESTION_LIBRARY_FIT_PILLS = ['Start here', 'All levels'] as const;
+const PRACTICE_TYPES_FIT_PILLS = ['Format-first', 'Good after basics'] as const;
+const SYSTEM_DESIGN_FIT_PILLS = ['Senior signal', 'Architecture + tradeoffs'] as const;
 const FRAMEWORK_PREP_LINKS: FrameworkPrepLink[] = [
   {
     tech: 'javascript',
@@ -238,6 +242,7 @@ function inferCategory(q: any): CategoryKey {
     FaCardComponent,
     FaGlyphComponent,
     FaSpinnerComponent,
+    CompanySignalComponent,
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
@@ -615,7 +620,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { key: 'js-fn', label: 'JavaScript functions' },
     { key: 'html-css', label: 'HTML & CSS' },
     { key: 'algo', label: 'Algorithmic coding' },
-    { key: 'system', label: 'System design' },
+    { key: 'system', label: 'System design practice' },
   ];
 
   filteredCount$ = this.filtered$.pipe(map(list => list?.length ?? 0), startWith(0));
@@ -638,11 +643,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const links: ContextualSupportLink[] = [];
     if (!this.isFormatsMode()) {
       links.push({
-        eyebrow: 'Warm-up hub',
-        title: 'Prefer a guided interview question route?',
-        body: 'Use the interview hub when you want a lighter starting point before filtering the full library.',
+        eyebrow: 'Guided warm-up',
+        title: 'Need a lighter start before filtering?',
+        body: 'Use the guided warm-up page when you want a small decision surface before the full Question Library.',
         route: ['/interview-questions'],
-        cta: 'Open interview hub',
+        cta: 'Open guided warm-up',
         testId: 'interview-hub-support-link',
       });
     }
@@ -650,13 +655,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.showFrameworkPrepSupport()) {
       const prep = this.currentFrameworkPrep();
       links.push({
-        eyebrow: 'Framework roadmap',
-        title: 'Need a framework prep path?',
+        eyebrow: 'Framework Prep Guide',
+        title: 'Need the framework guide first?',
         body: prep
           ? `${prep.label} sequences the concepts, drills, and review steps before you go deep on prompts.`
-          : 'Use the framework prep guide to sequence JavaScript, React, Angular, and Vue before UI drills.',
+          : 'Use the Framework Prep Guide to sequence JavaScript, React, Angular, and Vue before UI drills.',
         route: prep ? ['/guides/framework-prep', prep.slug] : ['/guides/framework-prep'],
-        cta: prep ? `Open ${prep.label}` : 'Open framework prep',
+        cta: prep ? `Open ${prep.label}` : 'Open Framework Prep Guide',
         testId: 'framework-prep-support-link',
       });
     }
@@ -675,9 +680,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   pageKicker(): string {
     if (this.source === 'global-coding') {
-      if (this.isSystemCategoryActive()) return 'System design route';
-      if (this.isFormatsMode()) return 'Practice formats';
-      return 'Question library';
+      if (this.isSystemCategoryActive()) return 'System Design Practice';
+      if (this.isFormatsMode()) return 'Practice Types';
+      return 'Question Library';
     }
 
     if (this.source === 'company') return 'Company practice';
@@ -689,7 +694,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   pageTitle(): string {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'System Design Practice';
-      if (this.isFormatsMode()) return 'Practice Formats';
+      if (this.isFormatsMode()) return 'Practice Types';
       return 'Question Library';
     }
 
@@ -699,7 +704,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   pageSubtitle(): string {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) {
-        return 'Practice frontend system design prompts from the unified question library, then open each scenario in the dedicated design workspace.';
+        return 'Practice frontend system design prompts from the unified Question Library, then open each scenario in the dedicated design workspace.';
       }
 
       if (this.isFormatsMode()) {
@@ -713,7 +718,35 @@ export class CodingListComponent implements OnInit, OnDestroy {
       return 'Filter company-tagged practice prompts and open the next question with your current list preserved.';
     }
 
-    return 'Filter by difficulty and focus area, then start one prompt immediately.';
+      return 'Filter by difficulty and focus area, then start one prompt immediately.';
+  }
+
+  pageFitPills(): readonly string[] {
+    if (this.source !== 'global-coding') return [];
+    if (this.isSystemCategoryActive()) return SYSTEM_DESIGN_FIT_PILLS;
+    if (this.isFormatsMode()) return PRACTICE_TYPES_FIT_PILLS;
+    return QUESTION_LIBRARY_FIT_PILLS;
+  }
+
+  primaryActionLabel(): string {
+    if (this.source === 'global-coding') {
+      if (this.isSystemCategoryActive()) return 'Start system design prompt';
+      if (this.isFormatsMode()) return 'Start format practice';
+      return 'Start first question';
+    }
+
+    if (this.source === 'company') return 'Start company prompt';
+    return this.kind === 'trivia' ? 'Start concept question' : 'Start coding question';
+  }
+
+  primaryActionHint(): string {
+    if (this.source === 'global-coding') {
+      if (this.isSystemCategoryActive()) return 'Opens the first matching system design scenario.';
+      if (this.isFormatsMode()) return 'Opens the first matching prompt in this format.';
+      return 'Opens the first matching prompt from the current library view.';
+    }
+
+    return 'Opens the first matching prompt from this filtered list.';
   }
 
   get hasAppliedFilters(): boolean {
@@ -763,6 +796,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
   handleCardClick(ev: Event, q: Row) {
     if (!this.isLocked(q)) return;
     // Allow navigation to detail so SSR can render the premium preview.
+  }
+
+  openFirstVisible(): void {
+    this.visible$
+      .pipe(take(1))
+      .subscribe((list) => {
+        const rows = list ?? [];
+        const target = rows.find((row) => !this.isLocked(row)) ?? rows[0];
+        if (!target) return;
+        this.go(target, rows);
+      });
   }
 
   constructor(

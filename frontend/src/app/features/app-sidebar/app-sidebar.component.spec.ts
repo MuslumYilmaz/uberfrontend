@@ -21,11 +21,11 @@ describe('AppSidebarComponent', () => {
     const bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     const practiceRegistry = {
       catalogEntries: signal([
-        { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
+        { key: 'question-library', label: 'Question Library', icon: 'pi pi-database', route: '/coding', family: 'question' },
         { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident', badge: 'New' },
         {
           key: 'system-design',
-          label: 'System design',
+          label: 'System Design',
           icon: 'pi pi-sitemap',
           route: '/coding',
           query: { view: 'formats', category: 'system' },
@@ -35,7 +35,7 @@ describe('AppSidebarComponent', () => {
         { key: 'tracks', label: 'Interview prep tracks', icon: 'pi pi-directions', route: '/tracks', isSupplemental: true },
         {
           key: 'question-formats',
-          label: 'Question formats',
+          label: 'Practice Types',
           icon: 'pi pi-clone',
           route: '/coding',
           query: { view: 'formats' },
@@ -179,8 +179,8 @@ describe('AppSidebarComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const systemDesignLink = fixture.nativeElement.querySelector('a[aria-label="System design"]') as HTMLAnchorElement;
-    const questionLibraryLink = fixture.nativeElement.querySelector('a[aria-label="Question library"]') as HTMLAnchorElement;
+    const systemDesignLink = fixture.nativeElement.querySelector('a[aria-label="System Design"]') as HTMLAnchorElement;
+    const questionLibraryLink = fixture.nativeElement.querySelector('a[aria-label="Question Library"]') as HTMLAnchorElement;
 
     expect(systemDesignLink.classList.contains('is-active')).toBeTrue();
     expect(questionLibraryLink.classList.contains('is-active')).toBeFalse();
@@ -194,7 +194,7 @@ describe('AppSidebarComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const questionLibraryLink = fixture.nativeElement.querySelector('a[aria-label="Question library"]') as HTMLAnchorElement;
+    const questionLibraryLink = fixture.nativeElement.querySelector('a[aria-label="Question Library"]') as HTMLAnchorElement;
     const practiceCatalog = fixture.nativeElement.querySelector('#group-1') as HTMLElement;
 
     expect(questionLibraryLink.classList.contains('is-active')).toBeTrue();

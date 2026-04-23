@@ -47,7 +47,7 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
             },
             {
                 key: 'framework-prep',
-                title: 'Framework Prep Paths',
+                title: 'Framework Prep Guide',
                 subtitle: 'JavaScript, React, Angular, Vue, HTML, CSS',
                 pi: 'pi pi-compass',
                 intent: 'route',
@@ -56,7 +56,7 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
             // NEW
             {
                 key: 'behavioral',
-                title: 'Behavioral Interview Blueprint',
+                title: 'Behavioral Prep',
                 subtitle: 'STAR stories, signals, examples',
                 pi: 'pi pi-comments',
                 intent: 'route',
@@ -78,15 +78,15 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
         items: [
             {
                 key: 'practice-coding',
-                title: 'Coding drills now',
-                subtitle: 'Solve individual interview questions',
+                title: 'Question Library',
+                subtitle: 'Solve individual coding and concept questions',
                 pi: 'pi pi-bolt',
                 intent: 'route',
                 target: { name: 'practice' },
             },
             {
                 key: 'practice-tracks',
-                title: 'Guided prep tracks',
+                title: 'Study Plans',
                 subtitle: 'Run a structured multi-day sequence',
                 pi: 'pi pi-directions',
                 intent: 'route',
@@ -94,7 +94,7 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
             },
             {
                 key: 'practice-warmup',
-                title: 'Interview warm-up hub',
+                title: 'Guided interview warm-up',
                 subtitle: 'Warm-up index and discovery surface',
                 pi: 'pi pi-list',
                 intent: 'route',
@@ -142,11 +142,11 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
     },
     {
         key: 'companies',
-        title: 'Companies',
+        title: 'Company Prep',
         items: [
             {
                 key: 'companies-home',
-                title: 'Companies',
+                title: 'Company Prep',
                 subtitle: 'Practice by company: coding & trivia',
                 pi: 'pi-briefcase',
                 intent: 'route',

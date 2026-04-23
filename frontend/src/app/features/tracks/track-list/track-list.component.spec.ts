@@ -23,14 +23,14 @@ describe('TrackListComponent', () => {
     }).compileComponents();
   });
 
-  it('renders crawlable interview hub links in the hero section', async () => {
+  it('renders the Question Library and crawlable warm-up links in the hero section', async () => {
     const fixture = TestBed.createComponent(TrackListComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
     const native = fixture.nativeElement as HTMLElement;
-    const masterHub = native.querySelector('a[href="/interview-questions"]');
+    const masterHub = native.querySelector('a[href="/coding?reset=1"]');
     const reactHub = native.querySelector('a[href="/react/interview-questions"]');
     const angularHub = native.querySelector('a[href="/angular/interview-questions"]');
     const vueHub = native.querySelector('a[href="/vue/interview-questions"]');
@@ -47,17 +47,17 @@ describe('TrackListComponent', () => {
     expect(htmlCssHub).toBeTruthy();
   });
 
-  it('keeps interview questions hub in prep sequence ordering', () => {
+  it('keeps Question Library in prep sequence ordering', () => {
     const fixture = TestBed.createComponent(TrackListComponent);
     fixture.detectChanges();
 
     const component = fixture.componentInstance;
     const hubStep = component.trackPrepSequence.find(
-      (entry) => typeof entry === 'object' && entry?.route?.[0] === '/interview-questions',
+      (entry) => typeof entry === 'object' && entry?.route?.[0] === '/coding',
     ) as { text?: string } | undefined;
 
     expect(hubStep).toBeTruthy();
-    expect(hubStep?.text).toContain('Interview questions hub');
+    expect(hubStep?.text).toContain('Question Library');
   });
 
   it('publishes tracks CollectionPage schema with breadcrumb', () => {

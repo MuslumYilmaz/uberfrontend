@@ -46,7 +46,7 @@ export class CodingTechKindTabsComponent {
     { key: 'js-fn', label: 'JavaScript functions' },
     { key: 'html-css', label: 'HTML & CSS' },
     { key: 'algo', label: 'Algorithmic coding' },
-    { key: 'system', label: 'System design' },
+    { key: 'system', label: 'System design practice' },
   ];
 
   get showKindTabs(): boolean {

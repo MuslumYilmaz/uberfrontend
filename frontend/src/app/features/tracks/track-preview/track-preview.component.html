@@ -39,7 +39,7 @@
           <ul>
             <li>Full guided flow at <code>/tracks/{{ t.slug }}</code> with all question links.</li>
             <li>Coding drills, concept questions, and system design prompts in one route.</li>
-            <li>Guides and company sets that extend the plan into final-round prep.</li>
+            <li>Guides and Company Prep that extend the plan into final-round prep.</li>
           </ul>
         </article>
       </section>
@@ -53,7 +53,12 @@
           <li *ngFor="let step of narrative?.sequence">{{ step }}</li>
         </ol>
         <div class="roadmap-links">
-          <a *ngFor="let link of narrative?.supportLinks" [routerLink]="link.route">{{ link.label }}</a>
+          <a
+            *ngFor="let link of narrative?.supportLinks"
+            [routerLink]="link.route"
+            [queryParams]="link.queryParams || null">
+            {{ link.label }}
+          </a>
         </div>
       </section>
 
@@ -87,15 +92,15 @@
       <section class="cta-stack">
         <a
           class="preview-btn preview-btn--primary"
-          [routerLink]="narrative?.primaryCta?.route || ['/interview-questions']"
-          [queryParams]="{ src: 'track_preview_' + t.slug }">
-          {{ narrative?.primaryCta?.label || 'Open interview questions hub' }}
+          [routerLink]="narrative?.primaryCta?.route || ['/coding']"
+          [queryParams]="primaryCtaQueryParams(t.slug)">
+          {{ narrative?.primaryCta?.label || 'Open Question Library' }}
         </a>
         <a
           class="preview-btn"
           [routerLink]="['/companies']"
           [queryParams]="{ src: 'track_preview_' + t.slug }">
-          Browse company sets
+          Open Company Prep
         </a>
         <a
           class="preview-btn"

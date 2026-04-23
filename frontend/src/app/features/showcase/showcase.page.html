@@ -48,7 +48,7 @@
           aria-label="Start with a free React challenge">
           {{ heroPrimaryCtaLabel }}
         </a>
-        <a class="sk-btn sk-btn-ghost" routerLink="/interview-questions" aria-label="Browse frontend interview questions">Browse interview questions</a>
+        <a class="sk-btn sk-btn-ghost" routerLink="/coding" [queryParams]="{ reset: 1 }" aria-label="Browse the Question Library">Browse Question Library</a>
       </div>
       <div class="chip-cloud" aria-hidden="true">
         <span class="floating-chip" *ngFor="let chip of heroBadges; let i = index" [attr.data-tone]="chip.tone"
@@ -90,31 +90,30 @@
 </section>
 
 <section class="section reveal" #observeSection aria-labelledby="demo-title" data-load="demo">
-  <div class="shell section-head">
-    <div>
+  <div class="shell section-head demo-section-head">
+    <div class="demo-section-copy">
       <p class="eyebrow">Interactive demo</p>
       <h2 id="demo-title">Run the actual coding workspace.</h2>
       <p class="muted">Live editor, real tests, and the same UI you get in the product.</p>
-      <div class="demo-tabs" role="tablist" aria-label="Pick a live demo question">
-        <button type="button" class="demo-tab" *ngFor="let tab of demoTabsPrimary" role="tab"
-          [attr.id]="'demo-tab-' + tab.key" [class.active]="tab.key === activePrimaryKey"
-          [attr.data-testid]="'showcase-demo-tab-' + tab.key"
-          (click)="setActivePrimary(tab.key)" [attr.aria-selected]="tab.key === activePrimaryKey"
-          [attr.aria-controls]="'demo-pane'">
-          <span class="tab-label">{{ tab.label }}</span>
-          <span class="tab-sub">{{ tab.caption }}</span>
-        </button>
-      </div>
-      <div class="demo-tabs demo-tabs-secondary" role="tablist" aria-label="Pick a framework demo"
-        *ngIf="activePrimaryKey === 'ui'">
-        <button type="button" class="demo-tab" *ngFor="let tab of demoTabsFramework" role="tab"
-          [attr.id]="'demo-tab-' + tab.key" [class.active]="tab.key === activeFrameworkKey"
-          [attr.data-testid]="'showcase-demo-tab-' + tab.key"
-          (click)="setActiveFramework(tab.key)" [attr.aria-selected]="tab.key === activeFrameworkKey"
-          [attr.aria-controls]="'demo-pane'">
-          <span class="tab-label">{{ tab.label }}</span>
-          <span class="tab-sub">{{ tab.caption }}</span>
-        </button>
+      <div class="demo-picker" aria-label="Pick a live demo question">
+        <article class="demo-picker__featured" id="demo-choice-active">
+          <span class="demo-picker__kicker">Selected workspace</span>
+          <div class="demo-picker__active-title">
+            <strong>{{ activeDemo.label }}</strong>
+            <span class="demo-picker__active-pill">{{ activeDemo.pill }}</span>
+          </div>
+          <span>{{ activeDemo.caption }}</span>
+        </article>
+        <div class="demo-choice-list" role="list" aria-label="Other demo workspaces">
+          <button type="button" class="demo-tab" *ngFor="let tab of demoChoiceTabs"
+            [attr.id]="'demo-choice-' + tab.key" [class.active]="tab.key === activeDemoKey"
+            [attr.data-testid]="'showcase-demo-tab-' + tab.key"
+            (click)="selectDemoChoice(tab.key)" [attr.aria-pressed]="tab.key === activeDemoKey"
+            [attr.aria-controls]="'demo-pane'">
+            <span class="tab-label">{{ tab.label }}</span>
+            <span class="tab-sub">{{ tab.caption }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -130,8 +129,8 @@
     </div>
     <div class="demo-frame-wrap" [class.hidden]="demoHidden">
       <ng-container *ngIf="!showMobileCodingGuard; else demoMobileGuard">
-        <div class="demo-frame glass" role="tabpanel" id="demo-pane"
-          [attr.aria-labelledby]="'demo-tab-' + activeDemo.key">
+        <div class="demo-frame glass" role="region" id="demo-pane"
+          aria-labelledby="demo-choice-active">
           <ng-container *ngIf="isBrowser; else demoPlaceholder">
             <ng-container *ngIf="demoComponent; else demoPlaceholder">
               <ng-container *ngFor="let tab of allDemoTabs">
@@ -354,15 +353,15 @@
   <div class="shell">
     <div class="section-head">
       <div>
-        <p class="eyebrow">Interview question hub</p>
+        <p class="eyebrow">Question Library</p>
         <h2 id="library-title">Start from the prep graph, not a random library.</h2>
         <p class="muted">
-          Browse must-know questions first, then move into study plans, guides, and company sets.
+          Browse must-know questions first, then move into Study Plans, guides, and Company Prep.
         </p>
       </div>
 
-      <a class="sk-btn sk-btn-ghost" routerLink="/interview-questions" aria-label="Open the interview question hub">
-        Open interview hub <span class="inline-arrow" aria-hidden="true">→</span>
+      <a class="sk-btn sk-btn-ghost" routerLink="/coding" [queryParams]="{ reset: 1 }" aria-label="Open the Question Library">
+        Open Question Library <span class="inline-arrow" aria-hidden="true">→</span>
       </a>
     </div>
 
@@ -383,9 +382,9 @@
         </a>
       </div>
 
-      <a class="demo-banner library-cta" routerLink="/tracks" role="button" aria-label="Open study plans">
+      <a class="demo-banner library-cta" routerLink="/tracks" role="button" aria-label="Open Study Plans">
         <span class="dot" aria-hidden="true"></span>
-        <span class="text">Open study plans and tracks →</span>
+        <span class="text">Open Study Plans →</span>
         <span class="demo-banner__arrow" aria-hidden="true">→</span>
       </a>
     </div>
@@ -402,20 +401,17 @@
         <p class="eyebrow">Company practice</p>
         <h2 id="company-title">Prep with company-flavored prompts.</h2>
         <p class="muted">
-          A few examples from company sets. UI, JS, and system slices shaped for each team’s flavor.
+          A few examples from Company Prep. UI, JS, and system slices shaped for each team’s flavor.
         </p>
       </div>
-      <a class="sk-btn sk-btn-ghost" routerLink="/companies" aria-label="Browse company sets">
+      <a class="sk-btn sk-btn-ghost" routerLink="/companies" aria-label="Open Company Prep">
         Browse companies <span class="inline-arrow" aria-hidden="true">→</span>
       </a>
     </div>
 
     <div class="company-grid" *ngIf="sectionVisible.company; else companyPlaceholder">
       <article class="company-card glass" *ngFor="let c of companyQuestions">
-        <div class="company-logo" [style.background]="c.color" [attr.data-slug]="c.slug">
-          <span class="company-logo__glyph" aria-hidden="true">{{ c.icon }}</span>
-          <span class="sr-only">{{ c.name }}</span>
-        </div>
+        <app-company-logo-mark class="company-logo" [company]="c.slug" [decorative]="true"></app-company-logo-mark>
         <div class="company-meta">
           <div class="company-name">{{ c.name }}</div>
           <div class="company-note">{{ c.note }}</div>
@@ -431,7 +427,7 @@
       </article>
     </div>
     <ng-template #companyPlaceholder>
-      <div class="preview-placeholder">Loading company sets…</div>
+      <div class="preview-placeholder">Loading Company Prep…</div>
     </ng-template>
   </div>
 </section>

@@ -47,7 +47,7 @@ export class MarketingHeaderComponent {
       activeMatch: 'path',
     },
     {
-      label: 'Practice Formats',
+      label: 'Practice Types',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'ui', reset: '1' },
       destination: '/coding?view=formats&category=ui&reset=1',

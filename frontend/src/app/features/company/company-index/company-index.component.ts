@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { collectCompanyCounts } from '../../../shared/company-counts.util';
+import { CompanyLogoMarkComponent } from '../../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
 type CompanyCard = { slug: string; label: string; count: number };
@@ -31,7 +32,7 @@ const COMPANY_INDEX_DESCRIPTION =
 @Component({
   standalone: true,
   selector: 'app-company-index',
-  imports: [CommonModule, RouterModule, ProgressSpinnerModule, PrepSignalGridComponent],
+  imports: [CommonModule, RouterModule, ProgressSpinnerModule, PrepSignalGridComponent, CompanyLogoMarkComponent],
   templateUrl: './company-index.component.html',
   styleUrls: ['./company-index.component.css']
 })
@@ -43,19 +44,19 @@ export class CompanyIndexComponent implements OnInit {
 
   companyPrepOutcomes: PrepSignalItem[] = [
     'Compare interview style differences after your baseline prep is stable.',
-    'Use company sets to rehearse the final week, not to discover fundamentals.',
+    'Use Company Prep to rehearse the final week, not to discover fundamentals.',
   ];
 
   companyPrepMistakes: PrepSignalItem[] = [
-    'Starting with company sets before identifying your weak topics.',
+    'Starting with Company Prep before identifying your weak topics.',
     'Treating company prompts as a full prep system instead of a targeting layer.',
   ];
 
   companyPrepSequence: PrepSignalItem[] = [
-    { text: 'Interview questions hub', route: ['/interview-questions'] },
-    { text: 'Focus areas', route: ['/focus-areas'] },
-    { text: 'Guided study plans', route: ['/tracks'] },
-    { text: 'Company-specific practice', route: ['/companies'] },
+    { text: 'Question Library', route: ['/coding'], queryParams: { reset: 1 } },
+    { text: 'Focus Areas', route: ['/focus-areas'] },
+    { text: 'Study Plans', route: ['/tracks'] },
+    { text: 'Company Prep', route: ['/companies'] },
   ];
 
   ngOnInit() {
@@ -113,9 +114,9 @@ export class CompanyIndexComponent implements OnInit {
         { '@type': 'Thing', name: 'Frontend interview preparation' },
       ],
       mentions: [
-        { '@type': 'WebPage', name: 'Frontend interview questions hub', url: this.seo.buildCanonicalUrl('/interview-questions') },
-        { '@type': 'WebPage', name: 'Frontend interview study plans', url: this.seo.buildCanonicalUrl('/tracks') },
-        { '@type': 'WebPage', name: 'Framework prep hub', url: this.seo.buildCanonicalUrl('/guides/framework-prep') },
+        { '@type': 'WebPage', name: 'Question Library', url: this.seo.buildCanonicalUrl('/coding') },
+        { '@type': 'WebPage', name: 'Study Plans', url: this.seo.buildCanonicalUrl('/tracks') },
+        { '@type': 'WebPage', name: 'Framework Prep Guide', url: this.seo.buildCanonicalUrl('/guides/framework-prep') },
       ],
     };
 

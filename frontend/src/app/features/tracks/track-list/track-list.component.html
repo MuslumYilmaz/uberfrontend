@@ -23,13 +23,14 @@
         </div>
         <details class="hero-more-routes">
           <summary>More routes and prep links</summary>
-          <p class="chip-group-title chip-group-title--links">Interview questions hub</p>
-          <div class="hero-links" aria-label="Interview question hubs">
+          <p class="chip-group-title chip-group-title--links">Question Library</p>
+          <div class="hero-links" aria-label="Question Library and warm-up routes">
             <a
               *ngFor="let hub of interviewHubQuickLinks"
               class="hero-link"
               [ngClass]="hub.toneClass"
-              [routerLink]="hub.route">
+              [routerLink]="hub.route"
+              [queryParams]="hub.queryParams || null">
               {{ hub.label }}
             </a>
           </div>
@@ -42,14 +43,14 @@
           <p class="chip-group-title chip-group-title--links">Quick links</p>
           <div class="hero-links" aria-label="Quick links">
             <a class="hero-link hero-link--hub" [routerLink]="['/']">Prep roadmap homepage</a>
-            <a class="hero-link hero-link--hub" [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
+            <a class="hero-link hero-link--hub" [routerLink]="['/guides/framework-prep']">Framework Prep Guide</a>
             <a class="hero-link hero-link--js" [routerLink]="['/guides/framework-prep/javascript-prep-path']">JavaScript path</a>
             <a class="hero-link hero-link--mastery" [routerLink]="['/tracks/javascript-prep-path/mastery']">JavaScript mastery</a>
             <a class="hero-link hero-link--react" [routerLink]="['/guides/framework-prep/react-prep-path']">React path</a>
             <a class="hero-link hero-link--angular" [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular path</a>
             <a class="hero-link hero-link--vue" [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue path</a>
             <a class="hero-link hero-link--system" [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
-            <a class="hero-link hero-link--focus" [routerLink]="['/focus-areas']">All focus areas</a>
+            <a class="hero-link hero-link--focus" [routerLink]="['/focus-areas']">Focus Areas</a>
           </div>
           <app-prep-signal-grid
             class="prep-path-panel"
@@ -74,10 +75,10 @@
         <h2 id="tracks-platform-h2">How this interview prep platform avoids thin practice loops</h2>
         <p>
           Many prep plans fail because candidates collect random questions without running a repeatable execution system.
-          This platform is designed to convert interview-question hubs into weekly practice cycles with clear scope, sequence, and outcome checks.
+          This platform is designed to convert the Question Library into weekly practice cycles with clear scope, sequence, and outcome checks.
         </p>
         <p>
-          Use the flow below to connect the frontend interview questions hub, guided tracks, and company-specific drills in one pipeline.
+          Use the flow below to connect the Question Library, Study Plans, and Company Prep in one pipeline.
         </p>
       </div>
 
@@ -159,10 +160,10 @@
       <p class="tracks-playbook__lead">
         This format keeps your preparation deep enough for search-engine quality content and practical enough for interview deadlines.
         Pair it with
-        <a [routerLink]="['/interview-questions']">frontend interview questions hub</a>,
-        <a [routerLink]="['/guides/framework-prep']">framework prep paths</a>,
+        <a [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Question Library</a>,
+        <a [routerLink]="['/guides/framework-prep']">Framework Prep Guide</a>,
         and
-        <a [routerLink]="['/companies']">company interview sets</a>
+        <a [routerLink]="['/companies']">Company Prep</a>
         to maintain coverage without fragmentation.
       </p>
       <div class="tracks-playbook__grid">

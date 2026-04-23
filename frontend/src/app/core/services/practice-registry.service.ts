@@ -15,11 +15,11 @@ import { normalizeAssetPath } from '../utils/asset-url.util';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
 
 const DEFAULT_CATALOG: PracticeCatalogEntry[] = [
-  { key: 'question-library', label: 'Question library', icon: 'pi pi-database', route: '/coding', family: 'question' },
+  { key: 'question-library', label: 'Question Library', icon: 'pi pi-database', route: '/coding', family: 'question' },
   { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
   {
     key: 'system-design',
-    label: 'System design',
+    label: 'System Design',
     icon: 'pi pi-sitemap',
     route: '/coding',
     query: { view: 'formats', category: 'system' },
@@ -29,7 +29,7 @@ const DEFAULT_CATALOG: PracticeCatalogEntry[] = [
   { key: 'tracks', label: 'Interview prep tracks', icon: 'pi pi-directions', route: '/tracks', isSupplemental: true },
   {
     key: 'question-formats',
-    label: 'Question formats',
+    label: 'Practice Types',
     icon: 'pi pi-clone',
     route: '/coding',
     query: { view: 'formats' },
