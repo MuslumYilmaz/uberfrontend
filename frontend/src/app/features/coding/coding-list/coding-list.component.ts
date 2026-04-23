@@ -31,6 +31,7 @@ import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
+import { CompanySignalComponent } from '../../../shared/components/company-signal/company-signal.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -241,6 +242,7 @@ function inferCategory(q: any): CategoryKey {
     FaCardComponent,
     FaGlyphComponent,
     FaSpinnerComponent,
+    CompanySignalComponent,
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']

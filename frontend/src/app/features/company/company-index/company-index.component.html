@@ -67,7 +67,7 @@
         <a *ngFor="let c of companies" class="company-card fa-card" [routerLink]="['/companies', c.slug, 'preview']">
             <div class="company-card__content">
                 <div class="company-card__left">
-                    <div class="company-card__avatar">{{ c.label[0] }}</div>
+                    <app-company-logo-mark class="company-card__logo" [company]="c.slug" [decorative]="true"></app-company-logo-mark>
                     <div>
                         <div class="company-card__title">{{ c.label }}</div>
                         <div class="company-card__meta">{{ c.count }} questions</div>

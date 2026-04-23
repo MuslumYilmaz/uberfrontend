@@ -232,6 +232,12 @@
                 <div class="fa-question-card__eyebrow">
                   <span class="eyebrow-dot"></span>
                   <span>{{ q.__sd ? 'System design' : q.__kind === 'trivia' ? 'Concept' : 'Coding' }} prompt</span>
+                  <app-company-signal
+                    *ngIf="q.companies?.length"
+                    class="fa-question-card__company-signal"
+                    [companies]="q.companies"
+                    [preferredSlug]="currentCompanySlug"
+                  ></app-company-signal>
                   <span class="premium-pill" *ngIf="isLocked(q)">Locked</span>
                 </div>
                 <div class="fa-question-card__title-row">

@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { collectCompanyCounts } from '../../../shared/company-counts.util';
+import { CompanyLogoMarkComponent } from '../../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
 type CompanyCard = { slug: string; label: string; count: number };
@@ -31,7 +32,7 @@ const COMPANY_INDEX_DESCRIPTION =
 @Component({
   standalone: true,
   selector: 'app-company-index',
-  imports: [CommonModule, RouterModule, ProgressSpinnerModule, PrepSignalGridComponent],
+  imports: [CommonModule, RouterModule, ProgressSpinnerModule, PrepSignalGridComponent, CompanyLogoMarkComponent],
   templateUrl: './company-index.component.html',
   styleUrls: ['./company-index.component.css']
 })

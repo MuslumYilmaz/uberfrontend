@@ -552,9 +552,17 @@ app-coding-tech-kind-tabs {
 }
 
 .list-row.fa-question-card--compact .fa-question-card__eyebrow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
   padding: 4px 8px;
   font-size: 10.5px;
   letter-spacing: 0.14em;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__company-signal {
+  letter-spacing: 0;
 }
 
 .list-row.fa-question-card--compact .fa-question-card__title {

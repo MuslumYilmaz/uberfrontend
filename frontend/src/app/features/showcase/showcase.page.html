@@ -411,10 +411,7 @@
 
     <div class="company-grid" *ngIf="sectionVisible.company; else companyPlaceholder">
       <article class="company-card glass" *ngFor="let c of companyQuestions">
-        <div class="company-logo" [style.background]="c.color" [attr.data-slug]="c.slug">
-          <span class="company-logo__glyph" aria-hidden="true">{{ c.icon }}</span>
-          <span class="sr-only">{{ c.name }}</span>
-        </div>
+        <app-company-logo-mark class="company-logo" [company]="c.slug" [decorative]="true"></app-company-logo-mark>
         <div class="company-meta">
           <div class="company-name">{{ c.name }}</div>
           <div class="company-note">{{ c.note }}</div>

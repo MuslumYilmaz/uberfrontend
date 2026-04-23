@@ -30,6 +30,7 @@ import { PricingPlansSectionComponent } from '../pricing/components/pricing-plan
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { apiUrl } from '../../core/utils/api-base';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
+import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
@@ -40,8 +41,6 @@ type ContactStatus = { tone: 'success' | 'error'; text: string };
 type CompanyQuestionCard = {
   name: string;
   slug: string;
-  icon: string;
-  color: string;
   note: string;
   link: any[];
 };
@@ -61,7 +60,7 @@ const SHOWCASE_STATIC_STATS = SHOWCASE_STATS as ShowcaseStatsPayload;
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent],
   selector: 'app-showcase-page',
   templateUrl: './showcase.page.html',
   styleUrls: ['./showcase.page.css'],
@@ -446,10 +445,10 @@ You can also reset any task back to the starter whenever you want to re-practice
   ];
 
   companyQuestions: CompanyQuestionCard[] = [
-    { name: 'Google', slug: 'google', icon: 'G', color: '#4285F4', note: 'UI, JS, systems', link: ['/companies', 'google', 'preview'] },
-    { name: 'Amazon', slug: 'amazon', icon: 'A', color: '#232F3E', note: 'Scaling lists, auth, UX', link: ['/companies', 'amazon', 'preview'] },
-    { name: 'Netflix', slug: 'netflix', icon: 'N', color: '#E50914', note: 'UI architecture, state', link: ['/companies', 'netflix', 'preview'] },
-    { name: 'Apple', slug: 'apple', icon: 'A', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
+    { name: 'Google', slug: 'google', note: 'UI, JS, systems', link: ['/companies', 'google', 'preview'] },
+    { name: 'Amazon', slug: 'amazon', note: 'Scaling lists, auth, UX', link: ['/companies', 'amazon', 'preview'] },
+    { name: 'Netflix', slug: 'netflix', note: 'UI architecture, state', link: ['/companies', 'netflix', 'preview'] },
+    { name: 'Apple', slug: 'apple', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
   ];
 
   companyCounts: ShowcaseStatsPayload['companyCounts'] = SHOWCASE_STATIC_STATS.companyCounts || {};
