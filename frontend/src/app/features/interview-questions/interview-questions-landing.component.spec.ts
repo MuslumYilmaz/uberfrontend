@@ -77,19 +77,43 @@ describe('InterviewQuestionsLandingComponent', () => {
     }).compileComponents();
   });
 
-  it('renders four primary route cards and limits each preview list to three items', async () => {
+  it('renders the prep roadmap instead of route cards and limits each preview list to three items', async () => {
     const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.loading).toBeFalse();
-    expect(fixture.nativeElement.querySelectorAll('.iq-route-card').length).toBe(4);
+    expect(fixture.nativeElement.querySelectorAll('.iq-route-card').length).toBe(0);
+    expect(fixture.nativeElement.querySelectorAll('[data-testid^="prep-roadmap-item-"]').length).toBe(5);
     expect(fixture.componentInstance.previewRows('coding').length).toBe(3);
     expect(fixture.componentInstance.previewRows('trivia').length).toBe(3);
     expect(fixture.nativeElement.textContent || '').toContain('View full coding list');
     expect(fixture.nativeElement.textContent || '').toContain('View full concepts list');
-    expect(fixture.nativeElement.textContent || '').toContain('Open Essential 60');
+    expect(fixture.nativeElement.textContent || '').toContain('Frontend interview preparation guide');
+    expect(fixture.nativeElement.textContent || '').toContain('FrontendAtlas Essential 60');
+    expect(fixture.nativeElement.textContent || '').toContain('React coding + concept questions');
+    expect(fixture.nativeElement.textContent || '').toContain('React interview prep path');
+  });
+
+  it('tracks roadmap selection from the interview hub decision surface', async () => {
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const firstRoadmapItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-1"]') as HTMLAnchorElement;
+    firstRoadmapItem.click();
+
+    expect(analytics.track).toHaveBeenCalledWith(
+      'interview_hub_route_selected',
+      jasmine.objectContaining({
+        route_key: 'roadmap_1',
+        roadmap_step: 1,
+        roadmap_title: 'Frontend interview preparation guide',
+        is_master_hub: false,
+      }),
+    );
   });
 
   it('tracks explicit view-all clicks from preview sections', async () => {
@@ -163,5 +187,52 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(jsTrivia).toBeTruthy();
     expect(reactCoding).toBeNull();
     expect(reactTrivia).toBeNull();
+    expect(fixture.nativeElement.textContent || '').toContain('Frontend interview preparation guide');
+    expect(fixture.nativeElement.textContent || '').toContain('FrontendAtlas Essential 60');
+    expect(fixture.nativeElement.textContent || '').toContain('Question Library');
+    expect(fixture.nativeElement.textContent || '').toContain('Framework interview hubs');
+    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]')?.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-4"]')?.getAttribute('href') || '').toContain('/react/interview-questions');
+  });
+
+  it('uses framework-specific roadmap copy and prep path on Angular hubs', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'angular interview questions',
+      title: 'Angular Interview Questions for Frontend Interviews',
+      techs: ['angular'],
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['angular'],
+      coding: [
+        { id: 'angular-counter-starter', title: 'Angular Counter', type: 'coding', technology: 'angular', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Build a counter.', tech: 'angular' },
+      ],
+      trivia: [
+        { id: 'angular-http-what-actually-cancels-request', title: 'Angular HttpClient Cancellation', type: 'trivia', technology: 'angular', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain cancellation.', tech: 'angular' },
+      ],
+    };
+    routeStub.snapshot.url = [{ path: 'angular' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'angular' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+    const firstItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-1"]') as HTMLAnchorElement;
+    const secondItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-2"]') as HTMLAnchorElement;
+    const thirdItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]') as HTMLAnchorElement;
+    const fourthItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-4"]') as HTMLAnchorElement;
+    const fifthItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-5"]') as HTMLAnchorElement;
+
+    expect(text).toContain('Frontend interview preparation guide');
+    expect(text).toContain('Angular coding + concept questions');
+    expect(text).toContain('Angular interview prep path');
+    expect(firstItem.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+    expect(secondItem.getAttribute('href') || '').toContain('/interview-questions/essential');
+    expect(thirdItem.getAttribute('href') || '').toContain('/coding?tech=angular&reset=1');
+    expect(fourthItem.getAttribute('href') || '').toContain('/guides/framework-prep/angular-prep-path');
+    expect(fifthItem.textContent || '').toContain('Final-round coverage');
+    expect(fifthItem.getAttribute('href') || '').toContain('/system-design');
   });
 });

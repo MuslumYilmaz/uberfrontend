@@ -5,36 +5,14 @@
     <p class="fa-page-subtitle">{{ introLead() }}</p>
   </header>
 
-  <section class="iq-start iq-start--decision">
-    <div class="iq-start__content">
-      <p class="iq-start__eyebrow">Choose your route</p>
-      <h2 class="iq-start__title">Start with one clear path</h2>
-      <p class="iq-start__text">
-        Pick one route now. Open broader hubs, deeper plans, and full libraries only after you need more surface area.
-      </p>
-      <div class="iq-tech-pills">
-        <span class="iq-tech-pill" *ngFor="let tech of config.techs">{{ techLabel(tech) }}</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="iq-route-grid" aria-label="Primary interview prep routes">
-    <a
-      *ngFor="let card of routeCards()"
-      class="iq-route-card"
-      [attr.data-route-key]="card.key"
-      [routerLink]="card.route"
-      [queryParams]="card.queryParams || null"
-      (click)="trackRouteCardSelection(card)"
-    >
-      <div class="iq-route-card__kicker">
-        {{ card.key === 'study_plan' ? 'Structured path' : 'Quick start' }}
-      </div>
-      <h2 class="iq-route-card__title">{{ card.title }}</h2>
-      <p class="iq-route-card__copy">{{ card.subtitle }}</p>
-      <span class="iq-route-card__cta">Open route →</span>
-    </a>
-  </section>
+  <app-prep-roadmap
+    class="iq-roadmap"
+    [title]="prepRoadmapTitle()"
+    [subtitle]="prepRoadmapSubtitle()"
+    [items]="prepRoadmapItems()"
+    variant="compact"
+    (itemSelected)="trackPrepRoadmapSelection($event)"
+  ></app-prep-roadmap>
 
   <section class="iq-section iq-section--surface">
     <div class="iq-section__head iq-section__head--split">
@@ -55,7 +33,7 @@
     <ng-container *ngIf="!loading; else loadingState">
       <ul class="iq-list" *ngIf="previewRows('coding').length; else emptyCoding">
         <li *ngFor="let q of previewRows('coding')">
-          <a class="iq-item" [routerLink]="q.link">
+          <a class="iq-item" [routerLink]="q.link" [attr.aria-label]="questionAriaLabel(q)">
             <div class="iq-item__title">{{ q.title }}</div>
             <div class="iq-item__meta">
               <span class="iq-item__chip iq-item__chip--priority" [attr.data-priority]="q.priority">{{ priorityLabel(q) }}</span>
@@ -64,7 +42,7 @@
             </div>
             <p class="iq-item__reason">{{ priorityReason(q) }}</p>
             <p class="iq-item__desc">{{ q.description || 'Open the prompt to review requirements and expected output.' }}</p>
-            <span class="iq-item__cta">Open challenge →</span>
+            <span class="iq-item__cta">{{ questionCtaLabel(q) }} →</span>
           </a>
         </li>
       </ul>
@@ -102,7 +80,7 @@
     <ng-container *ngIf="!loading; else loadingState">
       <ul class="iq-list" *ngIf="previewRows('trivia').length; else emptyTrivia">
         <li *ngFor="let q of previewRows('trivia')">
-          <a class="iq-item" [routerLink]="q.link">
+          <a class="iq-item" [routerLink]="q.link" [attr.aria-label]="questionAriaLabel(q)">
             <div class="iq-item__title">{{ q.title }}</div>
             <div class="iq-item__meta">
               <span class="iq-item__chip iq-item__chip--priority" [attr.data-priority]="q.priority">{{ priorityLabel(q) }}</span>
@@ -111,7 +89,7 @@
             </div>
             <p class="iq-item__reason">{{ priorityReason(q) }}</p>
             <p class="iq-item__desc">{{ q.description || 'Open the question to practice concise interview-ready explanations.' }}</p>
-            <span class="iq-item__cta">Open question →</span>
+            <span class="iq-item__cta">{{ questionCtaLabel(q) }} →</span>
           </a>
         </li>
       </ul>
@@ -128,6 +106,54 @@
         <a [routerLink]="['/companies']">browse company packs</a>.
       </p>
     </ng-container>
+  </section>
+
+  <section class="iq-section iq-section--surface iq-section--intent" aria-labelledby="iq-intent-title">
+    <div class="iq-section__head iq-section__head--split">
+      <div>
+        <p class="iq-context-kicker">Interview prep context</p>
+        <h2 class="fa-section-title iq-section__title" id="iq-intent-title">{{ hubIntentProfile().heading }}</h2>
+        <p class="fa-meta-text">{{ hubIntentProfile().lead }}</p>
+      </div>
+      <a class="iq-inline-link" routerLink="/legal/editorial-policy">Editorial policy</a>
+    </div>
+
+    <div class="iq-context-grid">
+      <article class="iq-context-card">
+        <h3>What this round tests</h3>
+        <ul>
+          <li *ngFor="let item of hubIntentProfile().tests">{{ item }}</li>
+        </ul>
+      </article>
+
+      <article class="iq-context-card">
+        <h3>How to use these questions</h3>
+        <ul>
+          <li *ngFor="let item of hubIntentProfile().usage">{{ item }}</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="iq-related-row">
+      <div class="iq-related-block" *ngIf="topConceptLinks().length">
+        <h3>Top concept questions</h3>
+        <div class="iq-related-links">
+          <a *ngFor="let link of topConceptLinks()" [routerLink]="link.route" [attr.aria-label]="link.ariaLabel">
+            {{ link.label }}
+          </a>
+        </div>
+      </div>
+
+      <div class="iq-related-block">
+        <h3>Related prep path</h3>
+        <a class="iq-prep-path-link" [routerLink]="hubIntentProfile().relatedPrep.route">
+          <span>{{ hubIntentProfile().relatedPrep.label }}</span>
+          <small>{{ hubIntentProfile().relatedPrep.summary }}</small>
+        </a>
+      </div>
+    </div>
+
+    <p class="iq-context-note">{{ hubIntentProfile().credibility }}</p>
   </section>
 
   <section class="iq-next">

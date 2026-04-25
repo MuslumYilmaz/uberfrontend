@@ -37,6 +37,11 @@ export type QuestionSeo = {
   description?: string;
 };
 
+export type QuestionInterviewFocus = {
+  summary?: string;
+  tests?: string[];
+};
+
 export type TriviaIncidentOption = {
   id: string;
   label: string;
@@ -61,6 +66,7 @@ export interface Question {
   solutionTs?: string;
   solutionBlock?: StructuredSolution;
   seo?: QuestionSeo;
+  interviewFocus?: QuestionInterviewFocus;
   type: QuestionType;
   technology: Technology;
   access: AccessLevel;

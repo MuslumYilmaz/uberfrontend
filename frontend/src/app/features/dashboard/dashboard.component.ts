@@ -25,6 +25,7 @@ type HeroCta = {
 };
 
 type DashboardLinkDestination =
+  | 'interview_blueprint'
   | 'essential_60'
   | 'question_library'
   | 'sprints'
@@ -73,34 +74,33 @@ export class DashboardComponent {
     route: ['/coding'] as any[],
   };
   readonly guestFeaturedRoute: DashboardLink = {
-    title: 'FrontendAtlas Essential 60',
-    subtitle: 'Start with the curated 60-question path across JavaScript, UI coding, system design, and concepts.',
-    route: ['/interview-questions', 'essential'],
-    destination: 'essential_60',
+    title: 'Frontend interview preparation guide',
+    subtitle: 'Start with the process, round types, scoring signals, and how to sequence your practice.',
+    route: ['/guides', 'interview-blueprint', 'intro'],
+    destination: 'interview_blueprint',
     fitHint: 'Start here',
   };
   readonly guestSecondaryRoutes: DashboardLink[] = [
     {
-      title: 'Study Plans',
-      subtitle: 'Open guided tracks when you want a clearer sequence and less choice load.',
+      title: 'FrontendAtlas Essential 60',
+      subtitle: 'Use the core shortlist across JavaScript, UI coding, system design, and concepts.',
+      route: ['/interview-questions', 'essential'],
+      destination: 'essential_60',
+      fitHint: 'Core practice',
+    },
+    {
+      title: 'Study Plans / Framework Prep',
+      subtitle: 'Open guided tracks for sequence, then use framework paths when one stack needs depth.',
       route: ['/tracks'],
       destination: 'sprints',
       fitHint: 'Structured path',
     },
     {
-      title: 'Framework Prep Guide',
-      subtitle: 'Choose a framework-specific path when you want stack-focused prep instead of a general library.',
-      route: ['/guides/framework-prep'],
-      destination: 'framework_prep',
-      fitHint: 'Stack-focused',
-    },
-    {
-      title: 'System Design',
-      subtitle: 'Move into architecture and trade-off thinking after your implementation baseline is stable.',
-      route: ['/coding'],
-      queryParams: { view: 'formats', category: 'system', reset: 1 },
+      title: 'Final-round coverage',
+      subtitle: 'Add system design, behavioral, and company-style follow-ups after core practice.',
+      route: ['/system-design'],
       destination: 'system_design',
-      fitHint: 'Senior signal',
+      fitHint: 'Final rounds',
     },
   ];
   readonly guestPracticeModes: DashboardLink[] = [
@@ -247,8 +247,8 @@ export class DashboardComponent {
 
     if (this.dashboardMode() === 'guest') {
       return {
-        actionId: 'guest_essential_60',
-        label: 'Start Essential 60',
+        actionId: 'guest_interview_blueprint',
+        label: 'Start with guide',
         route: this.guestFeaturedRoute.route,
         queryParams: this.guestFeaturedRoute.queryParams,
       };

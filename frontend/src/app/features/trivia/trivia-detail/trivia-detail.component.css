@@ -352,6 +352,73 @@ html, body { height: 100%; background: var(--uf-bg); }
 }
 .card-head-toggle__icon { font-size: 12px; }
 
+.interview-focus {
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-accent) 30%);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--uf-accent) 8%, transparent), transparent 52%),
+    var(--uf-surface);
+}
+
+.interview-focus__body {
+  display: grid;
+  gap: 12px;
+}
+
+.interview-focus__summary {
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.interview-focus__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.interview-focus__list li {
+  position: relative;
+  padding-left: 17px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.interview-focus__list li::before {
+  content: '';
+  position: absolute;
+  top: 0.6em;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-accent) 78%, var(--uf-text-primary) 22%);
+}
+
+.interview-focus__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 10%, transparent);
+  color: var(--uf-text-primary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.interview-focus__link:hover {
+  border-color: color-mix(in srgb, var(--uf-accent) 70%, var(--uf-border-subtle));
+}
+
 .prep-bridge__body {
   display: grid;
   gap: 10px;
@@ -904,6 +971,9 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   .practice-frame__link {
     width: 100%;
     white-space: normal;
+  }
+  .interview-focus__link {
+    width: 100%;
   }
   .report-issue-btn {
     width: 34px;

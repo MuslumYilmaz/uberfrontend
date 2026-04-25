@@ -47,7 +47,154 @@ const TRIVIA_DISTINCT_MARKERS = [
   /\bsenior\b/i,
   /\bdebug\b/i,
 ];
+const SITE_TITLE_SUFFIX = ' | FrontendAtlas';
+const DETAIL_TITLE_WARN_MAX = 70;
+const DETAIL_TITLE_CORE_WARN_MAX = DETAIL_TITLE_WARN_MAX - SITE_TITLE_SUFFIX.length;
+const TRIVIA_INTERVIEW_INTENT_MARKERS = [
+  /\binterview(?:s)?\b/i,
+  /\bprep(?:aration)?\b/i,
+  /\bpractice\b/i,
+  /\bcandidate(?:s)?\b/i,
+  /\bround(?:s)?\b/i,
+  /\bfollow[\s-]?ups?\b/i,
+  /\bdrill(?:s)?\b/i,
+  /\bquestion(?:s)?\b/i,
+];
+const TRIVIA_DOCS_INTENT_MARKERS = [
+  /\bwhat\s+is\b/i,
+  /\bhow\s+(?:does|do|to)\b/i,
+  /\blearn\b/i,
+  /\bguide\b/i,
+  /\btutorial\b/i,
+  /\bdocs?\b/i,
+  /\bdocumentation\b/i,
+  /\breference\b/i,
+  /\bapi\s+reference\b/i,
+  /\bdefinition\b/i,
+];
 const BROAD_TRIVIA_PREFIXES = ['what is', 'how does', 'how do', 'how to', 'why is', 'what does'];
+const TRIVIA_DETAIL_TEMPLATE_PATH = path.resolve(
+  process.env.TRIVIA_DETAIL_TEMPLATE_PATH
+    || path.join(repoRoot, 'frontend/src/app/features/trivia/trivia-detail/trivia-detail.component.html'),
+);
+const INTERVIEW_HUB_COMPONENT_PATH = path.resolve(
+  process.env.INTERVIEW_HUB_COMPONENT_PATH
+    || path.join(repoRoot, 'frontend/src/app/features/interview-questions/interview-questions-landing.component.ts'),
+);
+const HUB_PROFILE_MIN_TECH_TERMS = 4;
+const HUB_PROFILE_MASTER_MIN_TECH_TERMS = 3;
+const HUB_PROFILE_MAX_GENERIC_SENTENCE_RATIO = 0.35;
+const HUB_PROFILE_MAX_DUPLICATE_SENTENCE_RATIO = 0.2;
+const HUB_PROFILE_GENERIC_PATTERNS = [
+  /\bstart\s+with\b/i,
+  /\bopen\s+(?:the|a|one)?\b/i,
+  /\bfollow\s+(?:the|a|one)?\b/i,
+  /\buse\s+(?:this|these|the)\s+(?:hub|questions|concept questions|prep path|fundamentals guide)\b/i,
+  /\bmove\s+into\b/i,
+  /\breturn\s+to\s+(?:this|the)\s+hub\b/i,
+  /\bbroader\s+coverage\b/i,
+  /\bfull\s+librar(?:y|ies)\b/i,
+  /\bguided\s+sequencing\b/i,
+  /\bless\s+choice\s+load\b/i,
+];
+const HUB_PROFILE_TECH_TERMS = {
+  master: [
+    'frontend',
+    'front end',
+    'javascript',
+    'ui',
+    'browser',
+    'framework',
+    'state management',
+    'system design',
+    'coding',
+    'concept recall',
+  ],
+  javascript: [
+    'javascript',
+    'execution order',
+    'async',
+    'closures',
+    'prototypes',
+    'arrays',
+    'maps',
+    'utility',
+    'stale state',
+    'race conditions',
+    'equality',
+    'coercion',
+    'edge cases',
+  ],
+  react: [
+    'react',
+    'component state',
+    'effects',
+    'hooks',
+    'stale closures',
+    'refs',
+    'context',
+    'rendering',
+    'memoization',
+    'batching',
+    'component splitting',
+  ],
+  angular: [
+    'angular',
+    'rxjs',
+    'httpclient',
+    'cancellation',
+    'change detection',
+    'dependency',
+    'di scope',
+    'standalone',
+    'template binding',
+    'forms',
+    'testing',
+  ],
+  vue: [
+    'vue',
+    'reactivity',
+    'refs',
+    'computed',
+    'watchers',
+    'nexttick',
+    'render timing',
+    'props',
+    'emits',
+    'v-model',
+    'provide',
+    'inject',
+    'keys',
+  ],
+  html: [
+    'html',
+    'semantic',
+    'forms',
+    'labels',
+    'landmarks',
+    'metadata',
+    'responsive images',
+    'accessibility',
+    'browser defaults',
+    'validation',
+    'seo',
+    'progressive enhancement',
+  ],
+  css: [
+    'css',
+    'layout',
+    'selectors',
+    'cascade',
+    'specificity',
+    'custom properties',
+    'flexbox',
+    'grid',
+    'responsive',
+    'overflow',
+    'alignment',
+    'stacking',
+  ],
+};
 
 const errors = [];
 const warnings = [];
@@ -112,6 +259,21 @@ function readStringProperty(objectLiteral, propName) {
     return init.text;
   }
   return '';
+}
+
+function readStringArrayProperty(objectLiteral, propName) {
+  const prop = getObjectProperty(objectLiteral, propName);
+  if (!prop || !ts.isArrayLiteralExpression(prop.initializer)) return [];
+
+  return prop.initializer.elements
+    .map((element) => {
+      if (ts.isStringLiteral(element) || ts.isNoSubstitutionTemplateLiteral(element)) {
+        return element.text;
+      }
+      return '';
+    })
+    .map((value) => String(value || '').trim())
+    .filter(Boolean);
 }
 
 function readImportPath(entryObject) {
@@ -317,15 +479,37 @@ function validateTrivia(entriesByTech) {
     entries.forEach((entry) => {
       const id = `${tech}:${String(entry?.id || '').trim() || '<missing-id>'}`;
       const title = String(entry?.seo?.title || entry?.title || '').trim();
+      const description = String(entry?.seo?.description || entry?.description || '').trim();
       const broadTitle = normalizeText(title);
       const metadataText = [entry?.title, entry?.description, entry?.seo?.title, entry?.seo?.description].join(' ');
       const combinedText = collectTextFromTriviaEntry(entry);
       const metadataHasDistinct = hasDistinctMarker(metadataText, TRIVIA_DISTINCT_MARKERS);
       const combinedHasDistinct = hasDistinctMarker(combinedText, TRIVIA_DISTINCT_MARKERS);
+      const metadataHasInterviewIntent = hasDistinctMarker(metadataText, TRIVIA_INTERVIEW_INTENT_MARKERS);
+      const titleHasDocsIntent = hasDistinctMarker(title, TRIVIA_DOCS_INTENT_MARKERS);
+      const titleWithBrandLength = `${title}${SITE_TITLE_SUFFIX}`.length;
       const titleTokens = meaningfulTokens(title);
       const genericCandidate = BROAD_TRIVIA_PREFIXES.some((prefix) => broadTitle.startsWith(prefix))
         || (titleTokens.length > 0 && titleTokens.length <= 4);
 
+      if (title && titleWithBrandLength > DETAIL_TITLE_WARN_MAX) {
+        addWarning(
+          'detail-serp-title-too-long',
+          `${id} seo title is ${titleWithBrandLength} chars with brand suffix; keep the core title near ${DETAIL_TITLE_CORE_WARN_MAX} chars or expect Google rewrites (${title})`,
+        );
+      }
+      if (!metadataHasInterviewIntent) {
+        addWarning(
+          'missing-interview-intent',
+          `${id} metadata does not clearly surface interview/practice intent; title="${title || '<missing-title>'}" description="${description || '<missing-description>'}"`,
+        );
+      }
+      if (titleHasDocsIntent && !metadataHasInterviewIntent) {
+        addWarning(
+          'docs-intent-collision',
+          `${id} title looks docs/reference-oriented without an interview intent counterweight (${title || '<missing-title>'})`,
+        );
+      }
       if (genericCandidate && !metadataHasDistinct) {
         addWarning('generic-query-risk', `${id} looks like a broad commodity query (${title || entry?.title || '<missing-title>'}) without a stronger beyond-basics signal`);
       }
@@ -372,13 +556,190 @@ function readTriviaEntries() {
   return entriesByTech;
 }
 
+function validateTriviaTemplateAnchors() {
+  if (!fs.existsSync(TRIVIA_DETAIL_TEMPLATE_PATH)) return;
+  const source = fs.readFileSync(TRIVIA_DETAIL_TEMPLATE_PATH, 'utf8');
+  const genericAnchors = [
+    /Browse related concept questions/i,
+    /Browse concept questions in Question Library/i,
+    /Practice from Question Library/i,
+  ];
+
+  genericAnchors.forEach((pattern) => {
+    if (!pattern.test(source)) return;
+    addWarning(
+      'generic-trivia-bridge-anchor',
+      `${relFromRepo(TRIVIA_DETAIL_TEMPLATE_PATH)} still contains generic detail-to-hub anchor text matching ${pattern}`,
+    );
+  });
+}
+
+function readHubIntentProfiles() {
+  if (!fs.existsSync(INTERVIEW_HUB_COMPONENT_PATH)) {
+    addWarning('hub-profile-source-missing', `interview hub component not found: ${relFromRepo(INTERVIEW_HUB_COMPONENT_PATH)}`);
+    return [];
+  }
+
+  const source = fs.readFileSync(INTERVIEW_HUB_COMPONENT_PATH, 'utf8');
+  const sourceFile = ts.createSourceFile(
+    INTERVIEW_HUB_COMPONENT_PATH,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+  let profileObject = null;
+
+  sourceFile.forEachChild((node) => {
+    if (!ts.isVariableStatement(node)) return;
+    node.declarationList.declarations.forEach((decl) => {
+      if (!ts.isIdentifier(decl.name) || decl.name.text !== 'HUB_INTENT_PROFILES') return;
+      if (decl.initializer && ts.isObjectLiteralExpression(decl.initializer)) {
+        profileObject = decl.initializer;
+      }
+    });
+  });
+
+  if (!profileObject) {
+    addWarning('hub-profile-source-missing', `${relFromRepo(INTERVIEW_HUB_COMPONENT_PATH)} does not expose a parseable HUB_INTENT_PROFILES object`);
+    return [];
+  }
+
+  const profiles = [];
+  profileObject.properties.forEach((prop) => {
+    if (!ts.isPropertyAssignment(prop) || !ts.isObjectLiteralExpression(prop.initializer)) return;
+    const key = propertyNameToString(prop.name);
+    if (!key) return;
+    const relatedPrep = readObjectProperty(prop.initializer, 'relatedPrep') || { properties: [] };
+    profiles.push({
+      key,
+      heading: readStringProperty(prop.initializer, 'heading'),
+      lead: readStringProperty(prop.initializer, 'lead'),
+      tests: readStringArrayProperty(prop.initializer, 'tests'),
+      usage: readStringArrayProperty(prop.initializer, 'usage'),
+      credibility: readStringProperty(prop.initializer, 'credibility'),
+      relatedPrep: {
+        label: readStringProperty(relatedPrep, 'label'),
+        summary: readStringProperty(relatedPrep, 'summary'),
+      },
+    });
+  });
+
+  return profiles;
+}
+
+function profileTextParts(profile) {
+  return [
+    profile.heading,
+    profile.lead,
+    ...profile.tests,
+    ...profile.usage,
+    profile.credibility,
+    profile.relatedPrep?.label,
+    profile.relatedPrep?.summary,
+  ].map((part) => String(part || '').trim()).filter(Boolean);
+}
+
+function splitHubSentences(parts) {
+  return parts
+    .flatMap((part) => String(part || '').split(/(?<=[.!?])\s+/))
+    .map((part) => part.replace(/\s+/g, ' ').trim())
+    .filter((part) => meaningfulTokens(part).length >= 4);
+}
+
+function hubTermsForProfile(key) {
+  return HUB_PROFILE_TECH_TERMS[key] || [];
+}
+
+function matchedHubTerms(key, value) {
+  const normalized = normalizeText(value);
+  if (!normalized) return [];
+  return hubTermsForProfile(key)
+    .map((term) => normalizeText(term))
+    .filter(Boolean)
+    .filter((term) => normalized.includes(term));
+}
+
+function hasHubSpecificTerm(key, value) {
+  return matchedHubTerms(key, value).length > 0;
+}
+
+function isGenericHubSentence(sentence) {
+  return HUB_PROFILE_GENERIC_PATTERNS.some((pattern) => pattern.test(sentence));
+}
+
+function normalizeHubSentenceForDupes(sentence) {
+  return normalizeText(sentence)
+    .replace(/\b(frontend|front end|javascript|typescript|react|angular|vue|html|css)\b/g, '<tech>')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function validateHubIntentProfiles(profiles) {
+  if (!profiles.length) return;
+
+  const profileSentences = profiles.map((profile) => ({
+    profile,
+    sentences: splitHubSentences(profileTextParts(profile)),
+  }));
+  const sentenceCounts = new Map();
+
+  profileSentences.forEach(({ sentences }) => {
+    sentences.forEach((sentence) => {
+      const normalized = normalizeHubSentenceForDupes(sentence);
+      if (!normalized || meaningfulTokens(normalized).length < 5) return;
+      sentenceCounts.set(normalized, (sentenceCounts.get(normalized) || 0) + 1);
+    });
+  });
+
+  profileSentences.forEach(({ profile, sentences }) => {
+    const id = `hub:${profile.key}`;
+    const combinedText = profileTextParts(profile).join(' ');
+    const specificTerms = new Set(matchedHubTerms(profile.key, combinedText));
+    const requiredTermCount = profile.key === 'master'
+      ? HUB_PROFILE_MASTER_MIN_TECH_TERMS
+      : HUB_PROFILE_MIN_TECH_TERMS;
+    const genericSentences = sentences.filter((sentence) =>
+      isGenericHubSentence(sentence) && !hasHubSpecificTerm(profile.key, sentence)
+    );
+    const duplicateSentences = sentences.filter((sentence) => {
+      const normalized = normalizeHubSentenceForDupes(sentence);
+      return normalized && (sentenceCounts.get(normalized) || 0) > 1;
+    });
+    const genericRatio = sentences.length ? genericSentences.length / sentences.length : 0;
+    const duplicateRatio = sentences.length ? duplicateSentences.length / sentences.length : 0;
+
+    if (specificTerms.size < requiredTermCount) {
+      addWarning(
+        'hub-profile-low-specificity',
+        `${id} has ${specificTerms.size} tech-specific term(s); expected at least ${requiredTermCount}. Add concrete interview surface terms instead of generic prep copy.`,
+      );
+    }
+    if (genericSentences.length >= 2 && genericRatio > HUB_PROFILE_MAX_GENERIC_SENTENCE_RATIO) {
+      addWarning(
+        'hub-profile-generic-phrase-ratio',
+        `${id} has ${(genericRatio * 100).toFixed(0)}% generic guidance sentences without profile-specific terms: ${genericSentences.slice(0, 2).join(' | ')}`,
+      );
+    }
+    if (duplicateSentences.length >= 2 && duplicateRatio > HUB_PROFILE_MAX_DUPLICATE_SENTENCE_RATIO) {
+      addWarning(
+        'hub-profile-duplicate-sentence-ratio',
+        `${id} has ${(duplicateRatio * 100).toFixed(0)}% duplicate/template-like sentences across hub profiles: ${duplicateSentences.slice(0, 2).join(' | ')}`,
+      );
+    }
+  });
+}
+
 function main() {
   const guides = readGuideEntries();
   const trivia = readTriviaEntries();
+  const hubProfiles = readHubIntentProfiles();
 
   if (!errors.length) {
     validateGuides(guides);
     validateTrivia(trivia);
+    validateTriviaTemplateAnchors();
+    validateHubIntentProfiles(hubProfiles);
   }
 
   warnings.forEach(({ code, message }) => console.warn(`[lint-indexability-readiness] WARN [${code}] ${message}`));
@@ -390,7 +751,7 @@ function main() {
   }
 
   const triviaCount = trivia.reduce((sum, item) => sum + item.entries.length, 0);
-  console.log(`[lint-indexability-readiness] indexability readiness scan completed (${guides.length} guide(s), ${triviaCount} trivia entries, ${warnings.length} warning(s)).`);
+  console.log(`[lint-indexability-readiness] indexability readiness scan completed (${guides.length} guide(s), ${triviaCount} trivia entries, ${hubProfiles.length} hub profile(s), ${warnings.length} warning(s)).`);
 }
 
 main();

@@ -1,0 +1,49 @@
+<div class="prep-switcher" *ngIf="currentItem() as current" data-testid="prep-roadmap-switcher">
+  <div class="prep-switcher__inner">
+    <span class="prep-switcher__pill">Recommended preparation</span>
+
+    <button
+      type="button"
+      class="prep-switcher__trigger"
+      data-testid="prep-roadmap-switcher-trigger"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="open()"
+      (click)="toggle()"
+    >
+      <span class="prep-switcher__current">{{ current.title }}</span>
+      <span class="prep-switcher__count">{{ otherStepsLabel() }}</span>
+      <span class="prep-switcher__chevron" aria-hidden="true">⌄</span>
+    </button>
+
+    <div
+      class="prep-switcher__panel"
+      *ngIf="open()"
+      data-testid="prep-roadmap-switcher-panel"
+      role="menu"
+    >
+      <p class="prep-switcher__panel-title">Recommended prep strategy</p>
+      <ol class="prep-switcher__list">
+        <li
+          class="prep-switcher__item"
+          *ngFor="let item of items; trackBy: trackByStep"
+          [class.prep-switcher__item--active]="isActive(item)"
+          [attr.data-tone]="item.tone || 'recommended'"
+        >
+          <a
+            class="prep-switcher__link"
+            role="menuitem"
+            [routerLink]="item.route"
+            [queryParams]="item.queryParams || null"
+            [attr.aria-current]="isActive(item) ? 'page' : null"
+            [attr.data-testid]="'prep-roadmap-switcher-item-' + item.step"
+            (click)="close()"
+          >
+            <span class="prep-switcher__step" aria-hidden="true">{{ item.step }}</span>
+            <span class="prep-switcher__label">{{ item.title }}</span>
+            <span class="prep-switcher__arrow" aria-hidden="true" *ngIf="!isActive(item)">→</span>
+          </a>
+        </li>
+      </ol>
+    </div>
+  </div>
+</div>

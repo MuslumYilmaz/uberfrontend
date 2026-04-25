@@ -114,9 +114,58 @@ function triviaEntry(overrides = {}) {
   };
 }
 
-function setupFixture({ guideEntries = [], guideFiles = {}, triviaByTech = {}, invalidTriviaJson = false } = {}) {
+function goodHubIntentProfiles() {
+  return `const HUB_INTENT_PROFILES = {
+  master: {
+    heading: 'What frontend interview rounds test',
+    lead: 'Frontend interview rounds combine JavaScript, UI, browser, framework, and system design reasoning.',
+    tests: [
+      'JavaScript coding and UI prompt execution under time pressure.',
+      'Browser and framework explanations with state management trade-offs.',
+      'System design follow-up judgment for frontend constraints.',
+    ],
+    usage: [
+      'Start with JavaScript coding prompts before system design drills.',
+    ],
+    credibility: 'FrontendAtlas practice routes are reviewed for frontend interview coverage.',
+    relatedPrep: {
+      label: 'Frontend interview preparation guide',
+      summary: 'A frontend guide for JavaScript, UI, browser, and system design rounds.',
+    },
+  },
+  angular: {
+    heading: 'What Angular interview rounds test',
+    lead: 'Angular interviews test RxJS flow control, HttpClient cancellation, change detection, dependency injection, forms, and testing judgment.',
+    tests: [
+      'RxJS operators, HttpClient cancellation, and request race prevention.',
+      'Change detection, DI scope, standalone boundaries, and template binding.',
+      'Reactive forms, async cleanup, and production Angular bug explanation.',
+    ],
+    usage: [
+      'Open the Angular prep path when RxJS or change detection misses repeat.',
+    ],
+    credibility: 'Angular prompts are reviewed for framework-specific production pitfalls.',
+    relatedPrep: {
+      label: 'Angular interview prep path',
+      summary: 'A focused path for RxJS, change detection, DI boundaries, forms, and tests.',
+    },
+  },
+};\n`;
+}
+
+function setupFixture({ guideEntries = [], guideFiles = {}, triviaByTech = {}, invalidTriviaJson = false, hubProfileSource = goodHubIntentProfiles() } = {}) {
   const tempRoot = makeTempRoot();
   writeFile(tempRoot, 'src/app/shared/guides/guide.registry.ts', guideRegistry(guideEntries.join('\n')));
+  writeFile(
+    tempRoot,
+    'src/app/features/interview-questions/interview-questions-landing.component.ts',
+    hubProfileSource,
+  );
+  writeFile(
+    tempRoot,
+    'src/app/features/trivia/trivia-detail/trivia-detail.component.html',
+    '<a>Continue with Angular Interview Questions</a>',
+  );
   fs.mkdirSync(path.join(tempRoot, 'cdn', 'questions'), { recursive: true });
   Object.entries(guideFiles).forEach(([relativePath, source]) => {
     writeFile(tempRoot, relativePath, source);
@@ -138,6 +187,8 @@ function runLinter(tempRoot) {
       ...process.env,
       GUIDE_REGISTRY_PATH: path.join(tempRoot, 'src/app/shared/guides/guide.registry.ts'),
       CDN_QUESTIONS_DIR: path.join(tempRoot, 'cdn', 'questions'),
+      TRIVIA_DETAIL_TEMPLATE_PATH: path.join(tempRoot, 'src/app/features/trivia/trivia-detail/trivia-detail.component.html'),
+      INTERVIEW_HUB_COMPONENT_PATH: path.join(tempRoot, 'src/app/features/interview-questions/interview-questions-landing.component.ts'),
     },
   });
 }
@@ -165,6 +216,55 @@ function expectFailure(tempRoot) {
   const output = expectSuccess(tempRoot);
   assert.match(output, /\[generic-query-risk\]/);
   assert.match(output, /indexability readiness scan completed/);
+}
+
+{
+  const tempRoot = setupFixture({
+    hubProfileSource: `const HUB_INTENT_PROFILES = {
+  react: {
+    heading: 'What React interview rounds test',
+    lead: 'Use this hub to prepare for interview questions.',
+    tests: [
+      'Use these questions to prepare faster.',
+      'Use these questions to prepare faster.',
+      'Open the prep path when ready.',
+    ],
+    usage: [
+      'Use these questions to prepare faster.',
+      'Open the prep path when ready.',
+    ],
+    credibility: 'Questions are curated.',
+    relatedPrep: {
+      label: 'React prep path',
+      summary: 'Open the prep path when ready.',
+    },
+  },
+};\n`,
+    triviaByTech: {
+      javascript: [
+        triviaEntry({
+          id: 'distinct-question',
+          description: 'Explain memoization with interview tradeoffs, wrong assumptions, and production debugging constraints.',
+          answer: {
+            blocks: [
+              {
+                type: 'text',
+                text: 'Interview answer with pitfall, debug, and production constraint framing.',
+              },
+            ],
+          },
+          seo: {
+            title: 'JavaScript Memoization Interview Question',
+            description: 'Practice a JavaScript memoization interview answer with pitfalls and production debugging constraints.',
+          },
+        }),
+      ],
+    },
+  });
+  const output = expectSuccess(tempRoot);
+  assert.match(output, /\[hub-profile-low-specificity\].*hub:react/);
+  assert.match(output, /\[hub-profile-generic-phrase-ratio\].*hub:react/);
+  assert.match(output, /\[hub-profile-duplicate-sentence-ratio\].*hub:react/);
 }
 
 {

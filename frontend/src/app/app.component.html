@@ -5,6 +5,7 @@
   <!-- Full-bleed layout for auth or guide detail -->
   <ng-container *ngIf="isAuthRoute() || hideSidebar(); else regularLayout">
     <main class="main main--full">
+      <app-prep-roadmap-switcher></app-prep-roadmap-switcher>
       <router-outlet></router-outlet>
     </main>
     <app-sidebar *ngIf="showAppHeader() && sidebarDrawerOpen()" [drawerOnly]="true"></app-sidebar>
@@ -17,6 +18,7 @@
         <app-sidebar></app-sidebar>
       }
       <main class="main">
+        <app-prep-roadmap-switcher></app-prep-roadmap-switcher>
         <router-outlet></router-outlet>
       </main>
     </div>

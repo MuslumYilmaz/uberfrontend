@@ -1113,7 +1113,7 @@ export const routes: Routes = [
       seo: {
         title: 'JavaScript Interview Questions for Frontend Interviews',
         description:
-          'JavaScript interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
+          'Practice JavaScript interview questions on async behavior, closures, arrays, state, edge cases, and UI-linked coding prompts with guided frontend prep paths.',
       },
     },
   },
@@ -1135,7 +1135,7 @@ export const routes: Routes = [
       seo: {
         title: 'React Interview Questions for Frontend Interviews',
         description:
-          'React interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
+          'Practice React interview questions on hooks, state, effects, rendering behavior, async UI, and performance trade-offs with coding and concept prompts.',
       },
     },
   },
@@ -1155,26 +1155,26 @@ export const routes: Routes = [
         techs: ['angular'],
         featuredLinks: [
           {
-            label: 'AppModule migration map (standalone)',
+            label: 'Angular HttpClient cancellation interview question',
+            route: ['/angular/trivia/angular-http-what-actually-cancels-request'],
+            path: '/angular/trivia/angular-http-what-actually-cancels-request',
+          },
+          {
+            label: 'Angular standalone migration interview question',
             route: ['/angular/trivia/angular-appmodule-standalone-changes'],
             path: '/angular/trivia/angular-appmodule-standalone-changes',
           },
           {
-            label: 'NgModules vs standalone boundaries',
+            label: 'Angular NgModules vs standalone interview question',
             route: ['/angular/trivia/angular-ngmodules-vs-standalone'],
             path: '/angular/trivia/angular-ngmodules-vs-standalone',
-          },
-          {
-            label: 'Service boundaries and DI scope',
-            route: ['/angular/trivia/angular-services'],
-            path: '/angular/trivia/angular-services',
           },
         ],
       },
       seo: {
         title: 'Angular Interview Questions for Frontend Interviews',
         description:
-          'Angular interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
+          'Practice Angular interview questions on RxJS, HttpClient cancellation, change detection, dependency injection, forms, testing, and framework trade-offs.',
       },
     },
   },
@@ -1208,7 +1208,7 @@ export const routes: Routes = [
       seo: {
         title: 'Vue Interview Questions for Frontend Interviews',
         description:
-          'Vue interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
+          'Practice Vue interview questions on reactivity, rendering, v-if vs v-show, nextTick, component contracts, router/state decisions, and debugging follow-ups.',
       },
     },
   },
@@ -1251,7 +1251,7 @@ export const routes: Routes = [
       seo: {
         title: 'HTML Interview Questions for Frontend Interviews',
         description:
-          'HTML interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
+          'Practice HTML interview questions on semantics, forms, accessibility, metadata, validation, browser defaults, and practical frontend fundamentals.',
       },
     },
   },
@@ -1285,7 +1285,7 @@ export const routes: Routes = [
       seo: {
         title: 'CSS Interview Questions for Frontend Interviews',
         description:
-          'CSS interview warm-up with coding and concept practice for frontend interviews, linked to the Question Library and interview practice platform.',
+          'Practice CSS interview questions on flexbox, grid, cascade, specificity, custom properties, responsive layout, accessibility, and visual debugging.',
       },
     },
   },

@@ -31,6 +31,8 @@ import { PlanId } from '../../core/utils/payments-provider.util';
 import { apiUrl } from '../../core/utils/api-base';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
 import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
+import { PrepRoadmapComponent } from '../../shared/components/prep-roadmap/prep-roadmap.component';
+import { INTERVIEW_PREP_ROADMAP_ITEMS } from '../../shared/components/prep-roadmap/prep-roadmap-sequence';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
@@ -60,7 +62,7 @@ const SHOWCASE_STATIC_STATS = SHOWCASE_STATS as ShowcaseStatsPayload;
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent],
   selector: 'app-showcase-page',
   templateUrl: './showcase.page.html',
   styleUrls: ['./showcase.page.css'],
@@ -183,7 +185,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   heroHeadline = 'Practice frontend interviews in a real coding workflow';
   heroLede = 'FrontendAtlas turns prep into repeatable loops: solve real prompts, run deterministic checks, inspect live UI behavior, and explain tradeoffs like a senior engineer.';
-  heroPrimaryCtaLabel = 'Start Essential 60';
+  heroPrimaryCtaLabel = 'Start with the guide';
   private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
   heroFlowSteps = [
@@ -192,6 +194,8 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     { key: 'preview', title: 'Preview', subtitle: 'Validate real UI output and interaction behavior instantly', icon: 'preview' as ShowcaseIconName, status: 'idle' },
     { key: 'review', title: 'Review', subtitle: 'Strengthen edge cases, tradeoffs, and interview explanations', icon: 'review' as ShowcaseIconName, status: 'idle' },
   ];
+
+  readonly homepagePrepRoadmapItems = INTERVIEW_PREP_ROADMAP_ITEMS;
 
   activeFlowIndex = 0;
   triviaTabs: Array<{
@@ -749,9 +753,9 @@ You can also reset any task back to the starter whenever you want to re-practice
   onHeroPrimaryClick() {
     this.analytics.track('lp_primary_cta_clicked', {
       src: 'lp_hero',
-      destination: 'essential_60',
-      route: '/interview-questions/essential',
-      start_path_variant: 'essential_60_first',
+      destination: 'interview_blueprint',
+      route: '/guides/interview-blueprint/intro',
+      start_path_variant: 'guide_first',
       hero_variant: this.heroExperimentVariant,
     });
   }
@@ -759,11 +763,9 @@ You can also reset any task back to the starter whenever you want to re-practice
   onHeroSecondaryClick() {
     this.analytics.track('lp_secondary_cta_clicked', {
       src: 'lp_hero',
-      destination: 'free_challenge',
-      route: '/react/coding/react-counter',
-      question_id: 'react-counter',
-      tech: 'react',
-      start_path_variant: 'essential_60_first',
+      destination: 'essential_60',
+      route: '/interview-questions/essential',
+      start_path_variant: 'guide_first',
       hero_variant: this.heroExperimentVariant,
     });
   }
@@ -851,7 +853,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   private applyHeroExperimentCopy() {
-    this.heroPrimaryCtaLabel = 'Start Essential 60';
+    this.heroPrimaryCtaLabel = 'Start with the guide';
   }
 
   private buildSystemInjector() {
