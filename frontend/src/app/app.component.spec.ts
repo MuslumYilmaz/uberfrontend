@@ -18,7 +18,10 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         AppComponent,
-        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DummyDashboardComponent }]),
+        RouterTestingModule.withRoutes([
+          { path: 'dashboard', component: DummyDashboardComponent },
+          { path: 'interview-questions/essential', component: DummyDashboardComponent },
+        ]),
         NoopAnimationsModule,
         HttpClientTestingModule,
       ],
@@ -45,10 +48,34 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('app-header')).toBeNull();
 
     const router = TestBed.inject(Router);
-    await router.navigateByUrl('/dashboard');
+    await fixture.ngZone!.run(() => router.navigateByUrl('/dashboard'));
     fixture.detectChanges();
     compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('app-marketing-header')).toBeNull();
     expect(compiled.querySelector('app-header')).not.toBeNull();
+  });
+
+  it('keeps the compact prep switcher hidden on the homepage', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('[data-testid="prep-roadmap-switcher"]')).toBeNull();
+  });
+
+  it('shows the compact prep switcher on prep destination routes', async () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const router = TestBed.inject(Router);
+    await fixture.ngZone!.run(() => router.navigateByUrl('/interview-questions/essential'));
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const switcher = compiled.querySelector('[data-testid="prep-roadmap-switcher"]') as HTMLElement;
+
+    expect(switcher).toBeTruthy();
+    expect(switcher.textContent || '').toContain('FrontendAtlas Essential 60');
+    expect(switcher.textContent || '').toContain('4 other steps');
   });
 });

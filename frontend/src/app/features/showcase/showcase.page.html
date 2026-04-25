@@ -31,23 +31,23 @@
       <div class="hero-actions">
         <a
           class="sk-btn sk-btn-primary"
-          routerLink="/interview-questions/essential"
+          routerLink="/guides/interview-blueprint/intro"
           data-testid="showcase-hero-primary-cta"
           (click)="onHeroPrimaryClick()"
-          aria-label="Start with the FrontendAtlas Essential 60">
+          aria-label="Start with the frontend interview preparation guide">
           {{ heroPrimaryCtaLabel }}
         </a>
         <a
           class="sk-btn sk-btn-ghost"
-          [routerLink]="['/react', 'coding', 'react-counter']"
+          routerLink="/interview-questions/essential"
           data-testid="showcase-hero-secondary-cta"
-          aria-label="Try a free React challenge"
+          aria-label="Open the FrontendAtlas Essential 60 shortlist"
           (click)="onHeroSecondaryClick()"
         >
-          Try 2-minute challenge
+          Open Essential 60
         </a>
       </div>
-      <p class="hero-helper" data-testid="showcase-hero-helper">New here? Start with Essential 60.</p>
+      <p class="hero-helper" data-testid="showcase-hero-helper">New here? Start with the interview preparation guide.</p>
     </div>
 
     <div class="hero-proof" aria-label="Product workflow overview">
@@ -86,7 +86,7 @@
     <div class="demo-section-copy">
       <p class="eyebrow">Interactive demo</p>
       <p class="section-pathway" data-testid="showcase-start-path">
-        Start path: FrontendAtlas Essential 60 → 2-minute challenge → Full Question Library / Study Plans
+        Start path: Preparation guide → Essential 60 → Question Library → Study Plans / Framework Prep → final-round coverage
       </p>
       <h2 id="demo-title">Run the actual coding workspace.</h2>
       <p class="muted">Live editor, real tests, and the same UI you get in the product.</p>
@@ -188,6 +188,17 @@
       <span class="text">Try the {{ activeDemo.label }} demo in the live editor</span>
       <span class="demo-banner__arrow" aria-hidden="true">→</span>
     </a>
+  </div>
+</section>
+
+<section class="section section--roadmap reveal" #observeSection>
+  <div class="shell">
+    <app-prep-roadmap
+      title="Recommended preparation"
+      subtitle="Not sure where to start? Follow this sequence first, then branch into broader libraries only when you need more coverage."
+      [items]="homepagePrepRoadmapItems"
+      variant="hero"
+    ></app-prep-roadmap>
   </div>
 </section>
 
@@ -351,8 +362,8 @@
         <p class="eyebrow">Question Library</p>
         <h2 id="library-title">Start from the prep graph, not a random library.</h2>
         <p class="muted">
-          Start with FrontendAtlas Essential 60, then branch into the full Question Library for broader coverage
-          or Study Plans for a more structured sequence.
+          Start with the interview preparation guide, use FrontendAtlas Essential 60 for the first compact pass,
+          then branch into the full Question Library or Study Plans for broader coverage.
         </p>
       </div>
 

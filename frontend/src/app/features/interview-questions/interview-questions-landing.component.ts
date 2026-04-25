@@ -8,6 +8,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
 import { QuestionListItem, QuestionService } from '../../core/services/question.service';
 import { SeoService, type SeoMeta } from '../../core/services/seo.service';
 import { Tech } from '../../core/models/user.model';
+import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
 
 type InterviewQuestionsLandingConfig = {
   keyword: string;
@@ -36,14 +37,15 @@ type QuestionSummaryRow = {
 type RawQuestionSummaryRow = QuestionListItem & { tech: Tech };
 type SchemaQuestionLink = { title: string; path: string };
 type PrepPlanLink = { label: string; route: any[]; summary: string };
-type HubRouteCard = {
-  key: 'coding' | 'concepts' | 'essential' | 'study_plan';
-  title: string;
-  subtitle: string;
-  route: any[];
-  queryParams?: Record<string, string | number | boolean>;
+type HubConceptLink = { label: string; route: any[]; ariaLabel: string };
+type HubIntentProfile = {
+  heading: string;
+  lead: string;
+  tests: string[];
+  usage: string[];
+  credibility: string;
+  relatedPrep: PrepPlanLink;
 };
-
 const DEFAULT_CONFIG: InterviewQuestionsLandingConfig = {
   keyword: 'javascript interview questions',
   title: 'JavaScript Interview Questions',
@@ -113,6 +115,149 @@ const PREP_PLAN_LINKS: PrepPlanLink[] = [
   },
 ];
 
+const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
+  master: {
+    heading: 'What frontend interview rounds test',
+    lead: 'Use this hub to build a compact prep loop across implementation, concept recall, and system-design reasoning before you branch into deeper paths.',
+    tests: [
+      'Whether you can implement small UI and JavaScript prompts under time pressure.',
+      'Whether your explanations connect browser, framework, and state-management behavior.',
+      'Whether you can choose the next practice surface without turning prep into random browsing.',
+    ],
+    usage: [
+      'Start with the preparation guide so you know which rounds you are optimizing for.',
+      'Use Essential 60 as the first compact practice route after the format is clear.',
+      'Move into a framework prep path after repeated misses show a clear weak area.',
+    ],
+    credibility: 'Questions are curated from FrontendAtlas metadata, editorial review checks, and shipped practice routes rather than scraped generic lists.',
+    relatedPrep: {
+      label: 'Frontend interview preparation guide',
+      route: ['/guides', 'interview-blueprint', 'intro'],
+      summary: 'A route-level guide for interview stages, scoring signals, and how to sequence practice.',
+    },
+  },
+  javascript: {
+    heading: 'What JavaScript interview rounds test',
+    lead: 'JavaScript interviews usually test execution order, data transformation, async safety, and whether you can explain trade-offs while coding.',
+    tests: [
+      'Async behavior, closures, prototypes, arrays, maps, and utility implementation details.',
+      'Debugging stale state, race conditions, equality, coercion, and edge cases.',
+      'Clear narration: what you chose, what can break, and how you would test it.',
+    ],
+    usage: [
+      'Start with one coding prompt, then answer one concept question out loud.',
+      'Use the prep path when misses repeat around async, closures, or utility design.',
+      'Return to this hub to pick the next small rep instead of browsing the full library.',
+    ],
+    credibility: 'This hub is assembled from high-priority FrontendAtlas JavaScript prompts and reviewed for interview-specific trade-off language.',
+    relatedPrep: {
+      label: 'JavaScript interview prep path',
+      route: ['/guides', 'framework-prep', 'javascript-prep-path'],
+      summary: 'A 7/14/30-day path for async, closures, state, and utility prompts.',
+    },
+  },
+  react: {
+    heading: 'What React interview rounds test',
+    lead: 'React interviews test component state, effects, rendering behavior, async UI, and whether your explanation survives follow-up questions.',
+    tests: [
+      'State ownership, effects, stale closures, refs, context, and rendering boundaries.',
+      'Practical UI prompts such as search, forms, transfer lists, tables, and nested components.',
+      'Performance judgment: when memoization, batching, or component splitting actually matters.',
+    ],
+    usage: [
+      'Run one implementation prompt before opening deeper concept questions.',
+      'Use concept questions to tighten explanations after you pass the basic UI behavior.',
+      'Follow the React prep path when hooks or rerender reasoning keeps repeating as the miss.',
+    ],
+    credibility: 'React prompts are prioritized by FrontendAtlas importance signals and reviewed for concrete interview follow-ups.',
+    relatedPrep: {
+      label: 'React interview prep path',
+      route: ['/guides', 'framework-prep', 'react-prep-path'],
+      summary: 'A focused path for state, effects, rerender reasoning, and performance trade-offs.',
+    },
+  },
+  angular: {
+    heading: 'What Angular interview rounds test',
+    lead: 'Angular interviews test RxJS flow control, change detection, dependency boundaries, forms, testing judgment, and how clearly you explain framework behavior.',
+    tests: [
+      'RxJS operators, HttpClient cancellation, async cleanup, and request race prevention.',
+      'Change detection, DI scope, standalone boundaries, template binding, and forms trade-offs.',
+      'Whether you can distinguish production bugs from memorized framework definitions.',
+    ],
+    usage: [
+      'Start with one Angular coding prompt, then answer one concept question out loud.',
+      'Use the top concept questions to rehearse explanations before deeper framework drills.',
+      'Open the prep path when RxJS, change detection, or architecture misses repeat.',
+    ],
+    credibility: 'Angular prompts are curated from shipped FrontendAtlas practice routes and reviewed for interview-specific production pitfalls.',
+    relatedPrep: {
+      label: 'Angular interview prep path',
+      route: ['/guides', 'framework-prep', 'angular-prep-path'],
+      summary: 'A focused path for RxJS, change detection, DI boundaries, forms, and tests.',
+    },
+  },
+  vue: {
+    heading: 'What Vue interview rounds test',
+    lead: 'Vue interviews test reactivity, rendering, component contracts, router/state decisions, and the ability to explain subtle lifecycle behavior.',
+    tests: [
+      'Reactivity, refs, computed values, watchers, nextTick, and render timing.',
+      'Component communication, props/emits, v-model, provide/inject, and store boundaries.',
+      'Practical debugging around key stability, state resets, and visibility toggles.',
+    ],
+    usage: [
+      'Start with one Vue coding prompt, then rehearse one concept explanation.',
+      'Use related concept questions to find weak reactivity or lifecycle assumptions.',
+      'Follow the Vue prep path when the same rendering or state miss repeats.',
+    ],
+    credibility: 'Vue prompts are grouped by FrontendAtlas importance signals and reviewed for framework-specific interview traps.',
+    relatedPrep: {
+      label: 'Vue interview prep path',
+      route: ['/guides', 'framework-prep', 'vue-prep-path'],
+      summary: 'A focused path for reactivity, rendering, state, and component contracts.',
+    },
+  },
+  html: {
+    heading: 'What HTML interview rounds test',
+    lead: 'HTML interview questions test semantic structure, forms, accessibility, metadata, and how browser defaults affect real UI behavior.',
+    tests: [
+      'Forms, labels, landmarks, document metadata, responsive images, and accessibility basics.',
+      'Whether you can explain defaults without turning the answer into documentation recitation.',
+      'Practical trade-offs around semantics, validation, SEO, and progressive enhancement.',
+    ],
+    usage: [
+      'Start with one short concept question and explain the browser behavior in plain language.',
+      'Use HTML questions as a quick fundamentals check before UI coding prompts.',
+      'Move into the frontend fundamentals guide when browser basics feel inconsistent.',
+    ],
+    credibility: 'HTML questions are reviewed for practical browser behavior and interview-ready explanation quality.',
+    relatedPrep: {
+      label: 'Frontend fundamentals quiz guide',
+      route: ['/guides', 'interview-blueprint', 'quiz'],
+      summary: 'A compact browser, CSS, JavaScript, and HTTP fundamentals check.',
+    },
+  },
+  css: {
+    heading: 'What CSS interview rounds test',
+    lead: 'CSS interviews test layout reasoning, selectors, cascade behavior, responsive constraints, accessibility, and whether you can debug visual bugs methodically.',
+    tests: [
+      'Flexbox, grid, cascade, specificity, custom properties, forms, and responsive layouts.',
+      'Whether you can choose layout tools based on constraints instead of memorized rules.',
+      'Practical debugging around overflow, alignment, stacking, and performance.',
+    ],
+    usage: [
+      'Start with one CSS concept question, then implement one small layout prompt.',
+      'Use the fundamentals guide when cascade or layout vocabulary is shaky.',
+      'Return to the Question Library for broader UI coding practice after the basics stabilize.',
+    ],
+    credibility: 'CSS questions are reviewed for practical UI debugging and interview-ready trade-off language.',
+    relatedPrep: {
+      label: 'Frontend UI interviews guide',
+      route: ['/guides', 'interview-blueprint', 'ui-interviews'],
+      summary: 'A practical guide for accessible UI prompts and layout-focused rounds.',
+    },
+  },
+};
+
 const PRIMARY_TECH_HUB_PATHS = new Set<string>([
   '/javascript/interview-questions',
   '/react/interview-questions',
@@ -131,7 +276,7 @@ const DIFFICULTY_RANK: Record<string, number> = {
 @Component({
   standalone: true,
   selector: 'app-interview-questions-landing',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PrepRoadmapComponent],
   templateUrl: './interview-questions-landing.component.html',
   styleUrls: ['./interview-questions-landing.component.css'],
 })
@@ -240,6 +385,118 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return PREP_PLAN_LINKS;
   }
 
+  prepRoadmapTitle(): string {
+    return this.isMasterHub()
+      ? 'Recommended frontend interview preparation'
+      : `Recommended ${this.currentRoadmapTechDisplay()} interview preparation`;
+  }
+
+  prepRoadmapSubtitle(): string {
+    if (this.isMasterHub()) {
+      return 'Start with the interview preparation guide, use Essential 60 as the core practice block, then broaden by format, stack, and final-round coverage.';
+    }
+
+    return `Start with the interview preparation guide and shared baseline, then tighten ${this.currentRoadmapTechDisplay()} coding, concepts, and follow-up depth.`;
+  }
+
+  prepRoadmapItems(): PrepRoadmapItem[] {
+    if (this.isMasterHub()) {
+      return [
+        {
+          step: 1,
+          title: 'Frontend interview preparation guide',
+          description: 'Learn the interview stages, scoring signals, and prep sequence before opening practice lists.',
+          route: ['/guides', 'interview-blueprint', 'intro'],
+          badge: 'Start here',
+          meta: 'Process, rounds, and plan',
+          tone: 'recommended',
+        },
+        {
+          step: 2,
+          title: 'FrontendAtlas Essential 60',
+          description: 'Work through the core shortlist across JavaScript utilities, UI coding, concepts, and system design.',
+          route: ['/interview-questions/essential'],
+          meta: 'Core practice block',
+          tone: 'practice',
+        },
+        {
+          step: 3,
+          title: 'Question Library',
+          description: 'Broaden into more coding and concept coverage by format, stack, difficulty, and weak area.',
+          route: ['/coding'],
+          queryParams: { reset: 1 },
+          meta: 'Broader coding + concepts',
+          tone: 'structured',
+        },
+        {
+          step: 4,
+          title: 'Framework interview hubs',
+          description: 'Branch into React, Angular, Vue, HTML, or CSS once the shared baseline shows which stack needs depth.',
+          route: ['/react/interview-questions'],
+          meta: 'React, Angular, Vue, HTML/CSS',
+          tone: 'structured',
+        },
+        {
+          step: 5,
+          title: 'Study Plans / System Design',
+          description: 'Move into longer tracks when you need weekly sequencing, architecture practice, or company-style prep.',
+          route: ['/tracks'],
+          meta: 'Structured weekly prep',
+          tone: 'advanced',
+        },
+      ];
+    }
+
+    const tech = this.currentRoadmapTechDisplay();
+    const primaryTech = this.primaryTechForLibrary() || this.config.techs[0] || 'javascript';
+
+    return [
+      {
+        step: 1,
+        title: 'Frontend interview preparation guide',
+        description: 'Learn the interview stages and scoring signals before narrowing into this technology.',
+        route: ['/guides', 'interview-blueprint', 'intro'],
+        badge: 'Start here',
+        meta: 'Process, rounds, and plan',
+        tone: 'recommended',
+      },
+      {
+        step: 2,
+        title: 'FrontendAtlas Essential 60',
+        description: 'Start with the shared shortlist to stabilize interview fundamentals before framework-specific depth.',
+        route: ['/interview-questions/essential'],
+        meta: 'Shared frontend baseline',
+        tone: 'practice',
+      },
+      {
+        step: 3,
+        title: `${tech} coding + concept questions`,
+        description: `Practice ${tech} implementation prompts and explanation follow-ups from one filtered library view.`,
+        route: ['/coding'],
+        queryParams: { tech: primaryTech, reset: 1 },
+        meta: 'Coding execution + concept recall',
+        tone: 'practice',
+      },
+      {
+        step: 4,
+        title: `${tech} interview prep path`,
+        description: this.hubIntentProfile().relatedPrep.summary,
+        route: this.hubIntentProfile().relatedPrep.route,
+        meta: 'Framework-specific sequencing',
+        tone: 'structured',
+      },
+      {
+        step: 5,
+        title: 'Final-round coverage',
+        description: 'Add system design, behavioral, and company-style follow-ups after the framework baseline is stable.',
+        route: ['/coding'],
+        queryParams: { view: 'formats', category: 'system' },
+        meta: 'System design, behavioral, company rounds',
+        tone: 'advanced',
+      },
+    ];
+  }
+
   supportsMultipleTechs(): boolean {
     return this.config.techs.length > 1;
   }
@@ -250,44 +507,47 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       .length;
   }
 
-  routeCards(): HubRouteCard[] {
-    return [
-      {
-        key: 'coding',
-        title: 'Start one coding question',
-        subtitle: this.loading
-          ? 'Loading the highest-signal coding prompts.'
-          : `${this.previewRows('coding').length} crucial coding prompts are ready.`,
-        route: this.primaryRouteForKind('coding').route,
-        queryParams: this.primaryRouteForKind('coding').queryParams,
-      },
-      {
-        key: 'concepts',
-        title: 'Start one concepts question',
-        subtitle: this.loading
-          ? 'Loading the highest-signal concept prompts.'
-          : `${this.previewRows('trivia').length} concise concept prompts are ready.`,
-        route: this.primaryRouteForKind('trivia').route,
-        queryParams: this.primaryRouteForKind('trivia').queryParams,
-      },
-      {
-        key: 'essential',
-        title: 'Open Essential 60',
-        subtitle: 'Use the curated shortlist when you want less browse time and stronger prioritization.',
-        route: ['/interview-questions/essential'],
-      },
-      {
-        key: 'study_plan',
-        title: 'Follow a study plan',
-        subtitle: 'Open guided tracks when you want a clearer sequence and less choice load.',
-        route: ['/tracks'],
-      },
-    ];
-  }
-
   previewRows(kind: Kind): QuestionSummaryRow[] {
     const rows = kind === 'coding' ? this.codingQuestions : this.triviaQuestions;
     return rows.slice(0, this.previewLimit);
+  }
+
+  topConceptRows(): QuestionSummaryRow[] {
+    return this.previewRows('trivia');
+  }
+
+  topConceptLinks(): HubConceptLink[] {
+    const primaryTech = this.primaryTechForLibrary();
+    const featured = primaryTech === 'angular' ? this.featuredLinks.slice(0, 3) : [];
+    if (featured.length) {
+      return featured.map((link) => ({
+        label: link.label,
+        route: link.route,
+        ariaLabel: `Open ${link.label}`,
+      }));
+    }
+
+    return this.topConceptRows().map((row) => ({
+      label: row.title,
+      route: row.link,
+      ariaLabel: this.questionAriaLabel(row),
+    }));
+  }
+
+  hubIntentProfile(): HubIntentProfile {
+    const key = this.isMasterHub() ? 'master' : this.primaryTechForLibrary();
+    return HUB_INTENT_PROFILES[key || 'master'] || HUB_INTENT_PROFILES['master'];
+  }
+
+  questionCtaLabel(row: QuestionSummaryRow): string {
+    const tech = this.techLabel(row.tech);
+    return row.kind === 'trivia'
+      ? `Open ${tech} interview question`
+      : `Open ${tech} coding interview challenge`;
+  }
+
+  questionAriaLabel(row: QuestionSummaryRow): string {
+    return `${this.questionCtaLabel(row)}: ${row.title}`;
   }
 
   viewAllTarget(kind: Kind): { route: any[]; queryParams?: Record<string, string | number | boolean> } {
@@ -300,10 +560,12 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return { route: ['/coding'], queryParams };
   }
 
-  trackRouteCardSelection(card: HubRouteCard): void {
+  trackPrepRoadmapSelection(item: PrepRoadmapItem): void {
     this.analytics.track('interview_hub_route_selected', {
       hub_path: this.currentHubPath(),
-      route_key: card.key,
+      route_key: `roadmap_${item.step}`,
+      roadmap_step: item.step,
+      roadmap_title: item.title,
       is_master_hub: this.isMasterHub(),
     });
   }
@@ -449,13 +711,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     if (aDifficulty !== bDifficulty) return aDifficulty - bDifficulty;
 
     return String(a.title || '').localeCompare(String(b.title || ''));
-  }
-
-  private primaryRouteForKind(kind: Kind): { route: any[]; queryParams?: Record<string, string | number | boolean> } {
-    const preview = this.previewRows(kind);
-    const first = preview[0];
-    if (first) return { route: first.link };
-    return this.viewAllTarget(kind);
   }
 
   private primaryTechForLibrary(): Tech | null {
@@ -706,5 +961,13 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   private currentHubTechDisplay(): string {
     if (!this.config.techs.length) return 'frontend';
     return this.techLabel(this.config.techs[0]);
+  }
+
+  private currentRoadmapTechDisplay(): string {
+    if (this.config.techs.includes('html') && this.config.techs.includes('css')) {
+      return 'HTML/CSS';
+    }
+
+    return this.currentHubTechDisplay();
   }
 }

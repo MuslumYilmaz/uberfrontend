@@ -624,9 +624,9 @@ const GUIDE_SCROLL_THRESHOLDS = [25, 50, 75, 100];
 
 .left-fixed, .toc-fixed{
   position: fixed;
-  top: calc(var(--app-safe-top, 64px) + 12px);
+  top: calc(var(--app-safe-top, 64px) + var(--prep-roadmap-switcher-offset, 0px) + 12px);
   z-index: 2;
-  max-height: calc(100vh - var(--app-safe-top, 64px) - 16px);
+  max-height: calc(100vh - var(--app-safe-top, 64px) - var(--prep-roadmap-switcher-offset, 0px) - 16px);
   overflow:auto;
   background:linear-gradient(180deg, color-mix(in srgb, var(--uf-surface-alt) 94%, var(--uf-surface)), color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt)));
   border:1px solid var(--uf-border-subtle);

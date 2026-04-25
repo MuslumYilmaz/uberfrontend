@@ -29,6 +29,7 @@ type VisibleEntry = {
 
 type StudyPrimaryActionKey =
   | 'continue'
+  | 'interview_blueprint'
   | 'essential_60'
   | 'question_library'
   | 'study_plans';
@@ -155,19 +156,25 @@ export class HeaderComponent implements OnInit {
             ? 'Return to your dashboard or your last interview prep path.'
             : 'Open the fastest route back into interview prep.'),
         icon: 'pi-history',
-        route: recentLink ?? (continueFallbackIsDashboard ? ['/dashboard'] : ['/interview-questions', 'essential']),
+        route: recentLink ?? (continueFallbackIsDashboard ? ['/dashboard'] : ['/guides', 'interview-blueprint', 'intro']),
         queryParams: undefined,
         badge: recent ? 'Recent' : null,
         item: recent,
       },
       {
+        key: 'interview_blueprint',
+        title: 'Frontend interview preparation guide',
+        subtitle: 'Start with the process, round types, scoring signals, and a practical prep sequence.',
+        icon: 'pi-map',
+        route: ['/guides', 'interview-blueprint', 'intro'],
+        emphasis: 'promoted',
+      },
+      {
         key: 'essential_60',
         title: 'FrontendAtlas Essential 60',
-        subtitle: 'Open the curated shortlist first across JavaScript, UI coding, system design, and concepts.',
+        subtitle: 'Open the curated shortlist across JavaScript, UI coding, system design, and concepts.',
         icon: 'pi-compass',
         route: ['/interview-questions', 'essential'],
-        badge: 'Start here',
-        emphasis: 'promoted',
       },
       {
         key: 'question_library',

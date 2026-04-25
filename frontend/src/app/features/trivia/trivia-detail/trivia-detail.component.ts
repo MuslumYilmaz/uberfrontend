@@ -9,6 +9,7 @@ import { Subscription, combineLatest, firstValueFrom, map, of, switchMap, tap } 
 import { PrismHighlightDirective } from '../../../core/directives/prism-highlight.directive';
 import {
   Question,
+  QuestionInterviewFocus,
   TriviaIncidentOption,
   isQuestionLockedForTier,
 } from '../../../core/models/question.model';
@@ -816,6 +817,52 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  interviewQuestionsHubCtaLabel(): string {
+    return `Continue with ${this.interviewQuestionsHubTitleLabel()}`;
+  }
+
+  interviewTopicUiLabel(): string {
+    return this.interviewTopicLabel();
+  }
+
+  frameworkPrepCtaLabel(): string {
+    return `Open ${this.frameworkPrepLabel()} interview prep path`;
+  }
+
+  interviewFocusSummary(q?: Question | null): string {
+    const configured = this.readInterviewFocus(q)?.summary;
+    if (configured) return configured;
+
+    const topic = this.interviewTopicLabel();
+    const concept = this.questionFocusConcept(q);
+    return `This ${topic} interview question tests whether you can explain ${concept}, connect it to production trade-offs, and handle common follow-up questions.`;
+  }
+
+  interviewFocusItems(q?: Question | null): string[] {
+    const configured = this.readInterviewFocus(q)?.tests ?? [];
+    const cleanConfigured = configured
+      .map((item) => String(item || '').trim())
+      .filter(Boolean)
+      .slice(0, 3);
+    if (cleanConfigured.length) return cleanConfigured;
+
+    const topic = this.interviewTopicLabel();
+    const concept = this.questionFocusConcept(q);
+    const tags = q
+      ? this.getQuestionTags(q)
+        .filter((tag) => tag !== String(this.tech || '').toLowerCase())
+        .map((tag) => this.tagToFocusLabel(tag))
+        .slice(0, 2)
+      : [];
+    const tagFocus = tags.length ? `${tags.join(' and ')} reasoning` : `${topic} fundamentals`;
+
+    return [
+      `${concept} explanation without falling back to memorized docs wording`,
+      `${tagFocus}, edge cases, and production failure modes`,
+      `How you would answer the most likely ${topic} interview follow-up`,
+    ];
+  }
+
   studyPlanLabel(): string {
     const tech = (this.tech || '').toLowerCase();
     if (tech === 'javascript') return 'JavaScript mastery study plan';
@@ -882,6 +929,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.seo.buildCanonicalUrl(this.interviewQuestionsHubPath());
   }
 
+  private interviewQuestionsHubTitleLabel(): string {
+    return this.interviewQuestionsHubLabel()
+      .replace(/\binterview\b/g, 'Interview')
+      .replace(/\bquestions\b/g, 'Questions');
+  }
+
   private interviewTopicLabel(): string {
     switch ((this.tech || '').toLowerCase()) {
       case 'javascript':
@@ -899,6 +952,42 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       default:
         return 'Frontend';
     }
+  }
+
+  private readInterviewFocus(q?: Question | null): QuestionInterviewFocus | null {
+    const focus = q?.interviewFocus;
+    if (!focus || typeof focus !== 'object') return null;
+    const summary = typeof focus.summary === 'string' ? focus.summary.trim() : '';
+    const tests = Array.isArray(focus.tests)
+      ? focus.tests.map((item) => String(item || '').trim()).filter(Boolean)
+      : [];
+    if (!summary && !tests.length) return null;
+    return { summary, tests };
+  }
+
+  private questionFocusConcept(q?: Question | null): string {
+    const raw = String(q?.seo?.title || q?.title || 'this concept').trim();
+    const cleaned = raw
+      .replace(/\binterview\s+question\b/ig, '')
+      .replace(/\b(frontend|front-end|javascript|react|angular|vue|html|css)\s+interview\b/ig, '$1')
+      .replace(/^(explain|understand|compare)\s+/i, '')
+      .replace(/^(what|why|how|when|where)\s+(does|is|are|to|can|do|actually)\s+/i, '')
+      .replace(/^(what|why|how|when|where)\s+/i, '')
+      .replace(/\?+$/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return cleaned || 'this concept';
+  }
+
+  private tagToFocusLabel(tag: string): string {
+    return String(tag || '')
+      .replace(/-/g, ' ')
+      .replace(/\bhttp\b/gi, 'HTTP')
+      .replace(/\brxjs\b/gi, 'RxJS')
+      .replace(/\bdom\b/gi, 'DOM')
+      .replace(/\bapi\b/gi, 'API')
+      .replace(/\bdi\b/gi, 'DI')
+      .replace(/\b\w/g, (ch) => ch.toUpperCase());
   }
 
   /** ============== UI: interactions ============== */

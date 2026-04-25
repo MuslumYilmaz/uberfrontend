@@ -105,7 +105,7 @@ describe('HeaderComponent', () => {
     expect(premiumUpsellCta).toBeNull();
   });
 
-  it('opens a compact study launcher with four primary actions and visually promotes Essential 60', async () => {
+  it('opens a compact study launcher with guide-first primary actions', async () => {
     const fixture = await createComponent({ isLoggedIn: true });
     const button = fixture.nativeElement.querySelector('.fah-navlink') as HTMLButtonElement;
 
@@ -114,25 +114,31 @@ describe('HeaderComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-continue"]')).toBeTruthy();
+    const guide = fixture.nativeElement.querySelector('[data-testid="header-study-interview_blueprint"]') as HTMLAnchorElement;
     const essential = fixture.nativeElement.querySelector('[data-testid="header-study-essential_60"]') as HTMLAnchorElement;
     const questionLibrary = fixture.nativeElement.querySelector('[data-testid="header-study-question_library"]') as HTMLAnchorElement;
     const studyPlans = fixture.nativeElement.querySelector('[data-testid="header-study-study_plans"]') as HTMLAnchorElement;
     const rows = Array.from(fixture.nativeElement.querySelectorAll('.study-row--primary')) as HTMLElement[];
     const titles = rows.map((row) => row.querySelector('.row-title')?.textContent?.replace(/\s+/g, ' ').trim());
 
-    expect(rows.length).toBe(4);
+    expect(rows.length).toBe(5);
     expect(titles[0]).toContain('Continue where I left off');
-    expect(titles[1]).toContain('FrontendAtlas Essential 60');
-    expect(titles[2]).toContain('Question Library');
+    expect(titles[1]).toContain('Frontend interview preparation guide');
+    expect(titles[2]).toContain('FrontendAtlas Essential 60');
+    expect(titles[3]).toContain('Question Library');
     expect(rows.filter((row) => (row.textContent || '').includes('Question Library')).length).toBe(1);
+    expect(guide).toBeTruthy();
+    expect(guide.classList.contains('study-row--featured')).toBeTrue();
+    expect(guide.textContent || '').toContain('Frontend interview preparation guide');
+    expect(guide.textContent || '').not.toContain('Start here');
     expect(essential).toBeTruthy();
-    expect(essential.classList.contains('study-row--featured')).toBeTrue();
+    expect(essential.classList.contains('study-row--featured')).toBeFalse();
     expect(essential.textContent || '').toContain('FrontendAtlas Essential 60');
-    expect(essential.textContent || '').toContain('Start here');
     expect(questionLibrary).toBeTruthy();
     expect(questionLibrary.textContent || '').toContain('Question Library');
     expect(studyPlans.textContent || '').toContain('Study Plans');
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-practice_types"]')).toBeFalsy();
+    expect(guide.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
     expect(essential.getAttribute('href') || '').toContain('/interview-questions/essential');
     expect(questionLibrary.getAttribute('href') || '').toContain('/coding?reset=1');
     expect(studyPlans.getAttribute('href') || '').toContain('/tracks');
@@ -143,17 +149,20 @@ describe('HeaderComponent', () => {
     );
   });
 
-  it('tracks Essential 60 as a primary study action and keeps Question Library as the full-library action', async () => {
+  it('tracks the guide as the primary start action and keeps Question Library as the full-library action', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
     const button = fixture.nativeElement.querySelector('.fah-navlink') as HTMLButtonElement;
 
     button.click();
     fixture.detectChanges();
 
-    (fixture.nativeElement.querySelector('[data-testid="header-study-essential_60"]') as HTMLAnchorElement).click();
+    const continueAction = fixture.nativeElement.querySelector('[data-testid="header-study-continue"]') as HTMLAnchorElement;
+    expect(continueAction.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+
+    (fixture.nativeElement.querySelector('[data-testid="header-study-interview_blueprint"]') as HTMLAnchorElement).click();
     expect(analytics.track).toHaveBeenCalledWith(
       'header_study_primary_cta_clicked',
-      jasmine.objectContaining({ action: 'essential_60', route: '/interview-questions/essential' }),
+      jasmine.objectContaining({ action: 'interview_blueprint', route: '/guides/interview-blueprint/intro' }),
     );
 
     (fixture.nativeElement.querySelector('[data-testid="header-study-question_library"]') as HTMLAnchorElement).click();

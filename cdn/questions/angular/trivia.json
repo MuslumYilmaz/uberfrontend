@@ -6571,9 +6571,17 @@
       "basics"
     ],
     "updatedAt": "2026-04-09",
+    "interviewFocus": {
+      "summary": "This Angular interview question tests whether you can distinguish true HttpClient cancellation from ignoring stale responses, explain unsubscribe ownership, and defend the RxJS operator choice.",
+      "tests": [
+        "True request cancellation vs stale response handling",
+        "unsubscribe, switchMap, takeUntil, and AsyncPipe cleanup ownership",
+        "why mergeMap and ignored callbacks do not cancel old network work"
+      ]
+    },
     "seo": {
-      "title": "Angular HttpClient cancellation in production: unsubscribe, switchMap, and false-cancel myths",
-      "description": "Explain Angular HTTP cancellation through real patterns: unsubscribe, switchMap, takeUntil, AsyncPipe cleanup, and why ignoring a result is not the same as aborting a request."
+      "title": "Angular HttpClient Cancellation Interview Question",
+      "description": "Practice explaining Angular HttpClient cancellation in interviews: unsubscribe, switchMap, takeUntil, AsyncPipe cleanup, and stale-response traps."
     },
     "incidentCard": {
       "title": "Request Cancellation Check",

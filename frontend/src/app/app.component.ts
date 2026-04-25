@@ -16,6 +16,7 @@ import { BugReportDialogComponent } from './shared/components/bug-report-dialog/
 import { PremiumRequiredDialogComponent } from './shared/components/premium-required-dialog/premium-required-dialog.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { MarketingHeaderComponent } from './shared/components/marketing-header/marketing-header.component';
+import { PrepRoadmapSwitcherComponent } from './shared/components/prep-roadmap/prep-roadmap-switcher.component';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +30,7 @@ import { MarketingHeaderComponent } from './shared/components/marketing-header/m
     AppSidebarComponent,
     BugReportDialogComponent,
     PremiumRequiredDialogComponent,
+    PrepRoadmapSwitcherComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],

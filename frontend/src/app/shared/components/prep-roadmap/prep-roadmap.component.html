@@ -1,0 +1,39 @@
+<section
+  class="prep-roadmap"
+  [class.prep-roadmap--hero]="variant === 'hero'"
+  [class.prep-roadmap--compact]="variant === 'compact'"
+  data-testid="prep-roadmap"
+>
+  <div class="prep-roadmap__head">
+    <p class="prep-roadmap__eyebrow">Recommended preparation</p>
+    <h2>{{ title }}</h2>
+    <p>{{ subtitle }}</p>
+  </div>
+
+  <ol class="prep-roadmap__list">
+    <li
+      *ngFor="let item of items; trackBy: trackByStep"
+      class="prep-roadmap__item"
+      [attr.data-tone]="item.tone || 'recommended'"
+    >
+      <a
+        class="prep-roadmap__card"
+        [routerLink]="item.route"
+        [queryParams]="item.queryParams || null"
+        [attr.data-testid]="'prep-roadmap-item-' + item.step"
+        (click)="selectItem(item)"
+      >
+        <span class="prep-roadmap__step" aria-hidden="true">{{ item.step }}</span>
+        <span class="prep-roadmap__body">
+          <span class="prep-roadmap__title-row">
+            <span class="prep-roadmap__title">{{ item.title }}</span>
+            <span class="prep-roadmap__badge" *ngIf="item.badge">{{ item.badge }}</span>
+          </span>
+          <span class="prep-roadmap__description">{{ item.description }}</span>
+          <span class="prep-roadmap__meta" *ngIf="item.meta">{{ item.meta }}</span>
+        </span>
+        <span class="prep-roadmap__arrow" aria-hidden="true">→</span>
+      </a>
+    </li>
+  </ol>
+</section>

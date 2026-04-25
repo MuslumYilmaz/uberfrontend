@@ -83,7 +83,7 @@
             <section class="practice-frame" data-testid="trivia-practice-frame" aria-label="Interview practice context">
                 <div class="practice-frame__copy">
                     <div class="practice-frame__kicker">Interview concept practice</div>
-                    <p class="practice-frame__text">Use this answer, then continue with related practice.</p>
+                    <p class="practice-frame__text">Use this answer to rehearse a concise {{ interviewTopicUiLabel() }} interview explanation.</p>
                 </div>
                 <div class="practice-frame__actions">
                     <a
@@ -92,7 +92,7 @@
                         data-trivia-link-zone="prep_bridge"
                         [routerLink]="['/coding']"
                         [queryParams]="{ kind: 'trivia', reset: 1 }">
-                        Practice from Question Library
+                        Practice interview questions
                     </a>
                     <a
                         class="practice-frame__cta"
@@ -106,7 +106,7 @@
                         data-testid="trivia-practice-frame-hub"
                         data-trivia-link-zone="prep_bridge"
                         [routerLink]="interviewQuestionsHubRoute()">
-                        Browse related concept questions
+                        {{ interviewQuestionsHubCtaLabel() }}
                     </a>
                 </div>
             </section>
@@ -136,6 +136,22 @@
                     <ng-container *ngIf="updatedLabel(q) as updated"> · Updated {{ updated }}</ng-container>
                 </div>
             </header>
+
+            <section class="card interview-focus" aria-labelledby="trivia-interview-focus-title">
+                <div class="card-head" id="trivia-interview-focus-title">Interview focus</div>
+                <div class="card-body interview-focus__body">
+                    <p class="interview-focus__summary">{{ interviewFocusSummary(q) }}</p>
+                    <ul class="interview-focus__list">
+                        <li *ngFor="let item of interviewFocusItems(q); trackBy: trackByStringValue">{{ item }}</li>
+                    </ul>
+                    <a
+                        class="interview-focus__link"
+                        data-trivia-link-zone="prep_bridge"
+                        [routerLink]="interviewQuestionsHubRoute()">
+                        {{ interviewQuestionsHubCtaLabel() }}
+                    </a>
+                </div>
+            </section>
 
             <!-- Quick Answer -->
             <section class="card">
@@ -277,13 +293,14 @@
                 <div class="card-head">Preparing for interviews?</div>
                 <div class="card-body prep-bridge__body">
                     <p class="prep-bridge__text">
-                        Use the Question Library first, then move into a concrete Study Plan before targeted Company Prep.
+                        Use this as one explanation rep, then continue with the {{ interviewQuestionsHubLabel() }} cluster or a guided prep path.
                     </p>
                     <div class="prep-bridge__links">
-                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/coding']" [queryParams]="{ kind: 'trivia', reset: 1 }">Browse concept questions in Question Library</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="interviewQuestionsHubRoute()">{{ interviewQuestionsHubCtaLabel() }}</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/coding']" [queryParams]="{ kind: 'trivia', reset: 1 }">Practice more interview concept questions</a>
                         <a data-trivia-link-zone="prep_bridge" [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
                         <a data-trivia-link-zone="prep_bridge" [routerLink]="['/companies']">Browse company questions</a>
-                        <a *ngIf="hasFrameworkPrepPath()" data-trivia-link-zone="prep_bridge" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
+                        <a *ngIf="hasFrameworkPrepPath()" data-trivia-link-zone="prep_bridge" [routerLink]="frameworkPrepRoute()">{{ frameworkPrepCtaLabel() }}</a>
                     </div>
                 </div>
             </section>
