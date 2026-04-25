@@ -350,6 +350,8 @@
   color: var(--uf-text-secondary);
   border-radius:999px;
   border:1px solid var(--fah-border);
+  line-height:1;
+  white-space:nowrap;
 }
 .browse-row{
   width:100%; border:1px solid var(--fah-border); border-radius:10px;

@@ -130,7 +130,7 @@ describe('HeaderComponent', () => {
     expect(guide).toBeTruthy();
     expect(guide.classList.contains('study-row--featured')).toBeTrue();
     expect(guide.textContent || '').toContain('Frontend interview preparation guide');
-    expect(guide.textContent || '').toContain('Start here');
+    expect(guide.textContent || '').not.toContain('Start here');
     expect(essential).toBeTruthy();
     expect(essential.classList.contains('study-row--featured')).toBeFalse();
     expect(essential.textContent || '').toContain('FrontendAtlas Essential 60');

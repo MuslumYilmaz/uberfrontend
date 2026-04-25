@@ -3,6 +3,7 @@ import type { PrepRoadmapItem } from './prep-roadmap.component';
 export type PrepRoadmapSwitcherItem = PrepRoadmapItem & {
   id: 'interview_blueprint' | 'essential_60' | 'question_library' | 'study_plans' | 'final_rounds';
   match: RegExp[];
+  matchesUrl?: (url: string) => boolean;
 };
 
 const TECH_SEGMENT = '(javascript|angular|react|vue|html|css)';
@@ -46,7 +47,8 @@ export const INTERVIEW_PREP_ROADMAP_ITEMS: PrepRoadmapItem[] = [
     step: 5,
     title: 'Add final-round coverage',
     description: 'Layer in system design, behavioral, and company-style follow-ups once core practice is stable.',
-    route: ['/system-design'],
+    route: ['/coding'],
+    queryParams: { view: 'formats', category: 'system' },
     meta: 'System design + behavioral + company prep',
     tone: 'advanced',
   },
@@ -86,6 +88,7 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
       return {
         ...item,
         id: 'final_rounds',
+        matchesUrl: isSystemFormatsCodingUrl,
         match: [
           /^\/system-design(?:\/.*)?$/,
           /^\/guides\/system-design(?:\/.*)?$/,
@@ -99,7 +102,9 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
 
 export function findPrepRoadmapSwitcherItem(url: string): PrepRoadmapSwitcherItem | null {
   const path = normalizePrepRoadmapPath(url);
-  return INTERVIEW_PREP_SWITCHER_ITEMS.find((item) => item.match.some((rx) => rx.test(path))) ?? null;
+  return INTERVIEW_PREP_SWITCHER_ITEMS.find((item) => item.matchesUrl?.(url))
+    ?? INTERVIEW_PREP_SWITCHER_ITEMS.find((item) => item.match.some((rx) => rx.test(path)))
+    ?? null;
 }
 
 export function normalizePrepRoadmapPath(url: string): string {
@@ -107,4 +112,13 @@ export function normalizePrepRoadmapPath(url: string): string {
   const path = raw.startsWith('/') ? raw : `/${raw}`;
   const normalized = path.length > 1 ? path.replace(/\/+$/, '') : path;
   return normalized.toLowerCase();
+}
+
+function isSystemFormatsCodingUrl(url: string): boolean {
+  const raw = String(url || '/').trim() || '/';
+  const [pathPart, queryPart = ''] = raw.split('#')[0].split('?');
+  if (normalizePrepRoadmapPath(pathPart) !== '/coding') return false;
+
+  const params = new URLSearchParams(queryPart);
+  return params.get('view') === 'formats' && params.get('category') === 'system';
 }

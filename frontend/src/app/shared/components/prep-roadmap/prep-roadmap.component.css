@@ -171,6 +171,8 @@
   color: color-mix(in srgb, var(--uf-text-primary) 90%, var(--prep-roadmap-tone) 10%);
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .prep-roadmap__description {

@@ -167,7 +167,6 @@ export class HeaderComponent implements OnInit {
         subtitle: 'Start with the process, round types, scoring signals, and a practical prep sequence.',
         icon: 'pi-map',
         route: ['/guides', 'interview-blueprint', 'intro'],
-        badge: 'Start here',
         emphasis: 'promoted',
       },
       {

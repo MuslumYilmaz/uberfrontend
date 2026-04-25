@@ -187,6 +187,6 @@ describe('ShowcasePageComponent', () => {
     expect(fourthItem.textContent).toContain('Move into Study Plans / Framework Prep');
     expect(fourthItem.getAttribute('href') || '').toContain('/tracks');
     expect(fifthItem.textContent).toContain('Add final-round coverage');
-    expect(fifthItem.getAttribute('href') || '').toContain('/system-design');
+    expect(fifthItem.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
   });
 });

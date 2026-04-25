@@ -61,6 +61,7 @@ describe('PrepRoadmapSwitcherComponent', () => {
     const active = host.querySelector('[aria-current="page"]') as HTMLAnchorElement;
     const guide = host.querySelector('[data-testid="prep-roadmap-switcher-item-1"]') as HTMLAnchorElement;
     const library = host.querySelector('[data-testid="prep-roadmap-switcher-item-3"]') as HTMLAnchorElement;
+    const finalRounds = host.querySelector('[data-testid="prep-roadmap-switcher-item-5"]') as HTMLAnchorElement;
 
     expect(panel).toBeTruthy();
     expect(items.length).toBe(5);
@@ -68,6 +69,15 @@ describe('PrepRoadmapSwitcherComponent', () => {
     expect(active.textContent || '').toContain('FrontendAtlas Essential 60');
     expect(guide.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
     expect(library.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(finalRounds.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
+  });
+
+  it('treats the system formats coding view as final-round coverage', async () => {
+    const fixture = await createAt('/coding?view=formats&category=system');
+    const host = fixture.nativeElement as HTMLElement;
+
+    expect(host.querySelector('[data-testid="prep-roadmap-switcher"]')).toBeTruthy();
+    expect(host.textContent || '').toContain('Add final-round coverage');
   });
 
   it('closes the dropdown on outside click, link click, and route change', async () => {

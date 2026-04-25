@@ -233,6 +233,6 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(thirdItem.getAttribute('href') || '').toContain('/coding?tech=angular&reset=1');
     expect(fourthItem.getAttribute('href') || '').toContain('/guides/framework-prep/angular-prep-path');
     expect(fifthItem.textContent || '').toContain('Final-round coverage');
-    expect(fifthItem.getAttribute('href') || '').toContain('/system-design');
+    expect(fifthItem.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
   });
 });
