@@ -204,6 +204,41 @@
   background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
 }
 
+.essential-badge--score {
+  cursor: help;
+}
+
+.essential-badge--premium {
+  color: color-mix(in srgb, var(--uf-accent) 86%, var(--uf-text-primary) 14%);
+}
+
+.essential-company-logos {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+}
+
+.essential-company-logo {
+  --fa-company-logo-size: 28px;
+  --fa-company-logo-radius: 999px;
+  --fa-company-logo-image-size: 17px;
+}
+
+.essential-company-overflow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 8px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, transparent);
+  background: color-mix(in srgb, var(--uf-surface) 96%, var(--uf-surface-alt));
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .essential-topic {
   color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
 }

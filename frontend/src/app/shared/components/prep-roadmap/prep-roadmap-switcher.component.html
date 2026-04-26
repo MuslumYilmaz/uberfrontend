@@ -12,7 +12,13 @@
     >
       <span class="prep-switcher__current">{{ current.title }}</span>
       <span class="prep-switcher__count">{{ otherStepsLabel() }}</span>
-      <span class="prep-switcher__chevron" aria-hidden="true">⌄</span>
+      <app-fa-glyph
+        class="prep-switcher__chevron"
+        icon="chevron-down"
+        size="18"
+        [strokeWidth]="2.2"
+        aria-hidden="true"
+      ></app-fa-glyph>
     </button>
 
     <div
@@ -40,7 +46,14 @@
           >
             <span class="prep-switcher__step" aria-hidden="true">{{ item.step }}</span>
             <span class="prep-switcher__label">{{ item.title }}</span>
-            <span class="prep-switcher__arrow" aria-hidden="true" *ngIf="!isActive(item)">→</span>
+            <app-fa-glyph
+              class="prep-switcher__arrow"
+              icon="arrow-right"
+              size="22"
+              [strokeWidth]="2"
+              aria-hidden="true"
+              *ngIf="!isActive(item)"
+            ></app-fa-glyph>
           </a>
         </li>
       </ol>

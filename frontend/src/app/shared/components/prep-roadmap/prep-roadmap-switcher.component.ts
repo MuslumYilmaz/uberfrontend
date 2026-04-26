@@ -8,11 +8,12 @@ import {
   PrepRoadmapSwitcherItem,
   findPrepRoadmapSwitcherItem,
 } from './prep-roadmap-sequence';
+import { FaGlyphComponent } from '../../ui/icon/fa-glyph.component';
 
 @Component({
   selector: 'app-prep-roadmap-switcher',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FaGlyphComponent],
   templateUrl: './prep-roadmap-switcher.component.html',
   styleUrls: ['./prep-roadmap-switcher.component.css'],
 })

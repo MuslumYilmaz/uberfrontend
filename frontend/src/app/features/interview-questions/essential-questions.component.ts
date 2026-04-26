@@ -1,11 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 import { EssentialQuestionsResolved, EssentialResolvedItem, EssentialSection, EssentialTier } from '../../core/models/essential-questions.model';
 import { isQuestionLockedForTier } from '../../core/models/question.model';
 import { AuthService } from '../../core/services/auth.service';
 import { SeoMeta, SeoService } from '../../core/services/seo.service';
 import { UserProgressService } from '../../core/services/user-progress.service';
+import { companyBrandFor } from '../../shared/company-branding';
+import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
 import { FaCardComponent } from '../../shared/ui/card/fa-card.component';
 import { FaGlyphComponent } from '../../shared/ui/icon/fa-glyph.component';
 
@@ -22,7 +25,7 @@ type TierOption = {
 @Component({
   standalone: true,
   selector: 'app-essential-questions',
-  imports: [CommonModule, RouterModule, FaCardComponent, FaGlyphComponent],
+  imports: [CommonModule, RouterModule, TooltipModule, CompanyLogoMarkComponent, FaCardComponent, FaGlyphComponent],
   templateUrl: './essential-questions.component.html',
   styleUrls: ['./essential-questions.component.scss'],
 })
@@ -140,6 +143,14 @@ export class EssentialQuestionsComponent implements OnInit {
     return `${item.score}/100`;
   }
 
+  importanceTooltip(_item: EssentialResolvedItem): string {
+    return 'Importance score: how strongly this question is prioritized in the Essential 60 list.';
+  }
+
+  importanceAriaLabel(item: EssentialResolvedItem): string {
+    return `Importance score ${item.score} out of 100`;
+  }
+
   techSummary(item: EssentialResolvedItem): string {
     if (item.isSystemDesign) return 'Frontend';
     if (item.technologies.length === 0) return 'Frontend';
@@ -147,9 +158,19 @@ export class EssentialQuestionsComponent implements OnInit {
     return item.variants.map((variant) => variant.techLabel).join(' / ');
   }
 
-  companySummary(item: EssentialResolvedItem): string {
-    if (!item.companies.length) return '';
-    return item.companies.slice(0, 2).join(', ');
+  companyLogoItems(item: EssentialResolvedItem): readonly string[] {
+    return item.companies.slice(0, 3);
+  }
+
+  companyLogoOverflow(item: EssentialResolvedItem): number {
+    return Math.max(0, item.companies.length - this.companyLogoItems(item).length);
+  }
+
+  companyLogoLabel(item: EssentialResolvedItem): string {
+    const labels = item.companies
+      .map((company) => companyBrandFor(company)?.label || String(company || '').trim())
+      .filter(Boolean);
+    return labels.length ? `Company signals: ${labels.join(', ')}` : 'Company signals';
   }
 
   openLabel(item: EssentialResolvedItem): string {

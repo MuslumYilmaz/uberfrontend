@@ -57,7 +57,7 @@ test('content: react-counter solution avoids React.useState', async () => {
   expect(raw).not.toContain('React.useState');
 });
 
-test('showcase: hero experiment changes CTA copy only', async ({ browser }) => {
+test('showcase: hero experiment keeps Essential 60 as the primary CTA', async ({ browser }) => {
   const controlContext = await browser.newContext();
   const controlPage = await controlContext.newPage();
   await seedHeroVariant(controlPage, 'control');
@@ -78,8 +78,8 @@ test('showcase: hero experiment changes CTA copy only', async ({ browser }) => {
 
   expect(outcomeH1).toBe(controlH1);
   expect(outcomeLede).toBe(controlLede);
-  expect(controlCta).toBe('Start free challenge');
-  expect(outcomeCta).toBe('Try 2-minute challenge');
+  expect(controlCta).toBe('Open Essential 60');
+  expect(outcomeCta).toBe('Open Essential 60');
 
   await controlContext.close();
   await outcomeContext.close();

@@ -186,35 +186,56 @@ describe('DashboardComponent', () => {
     fixture = createComponent();
 
     const page: HTMLElement = fixture.nativeElement;
+    const featured = page.querySelector('[data-testid="dashboard-guest-featured-route"]') as HTMLElement | null;
     const primaryCta = page.querySelector('[data-testid="dashboard-primary-cta"]') as HTMLAnchorElement | null;
+    const secondaryRoutes = Array.from(
+      page.querySelectorAll('[data-testid="dashboard-guest-secondary-route"]'),
+    ) as HTMLElement[];
     const pageText = page.textContent || '';
 
     expect(pageText).toContain('Curated interview path');
-    expect(pageText).toContain('Start with the highest-signal route first');
+    expect(pageText).toContain('Start with the curated shortlist first');
+    expect(pageText).toContain('Open 60 curated frontend interview questions first');
+    expect(pageText).toContain('The guide is there if you want scoring signals and round structure before practicing.');
     expect(pageText).toContain('Frontend interview preparation guide');
     expect(pageText).toContain('FrontendAtlas Essential 60');
     expect(pageText).toContain('Study Plans / Framework Prep');
     expect(pageText).toContain('Final-round coverage');
-    expect(pageText).toContain('More ways to practice');
-    expect(pageText).toContain('Also prepare for');
+    expect(pageText).toContain('Practice formats after the shortlist');
+    expect(pageText).toContain('Add later when relevant');
     expect(pageText).toContain('Sign in when you want progress to stick');
     expect(pageText).not.toContain('Today’s prep loop');
     expect(pageText).not.toContain('Progress snapshot');
     expect(pageText).not.toContain('Next action');
     expect(pageText).not.toContain('Explore more ways to prep');
     expect(pageText).not.toContain('Coverage map');
-    expect(primaryCta?.textContent?.trim()).toBe('Start with guide');
-    expect(primaryCta?.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+    expect(featured?.textContent || '').toContain('Core practice block');
+    expect(featured?.textContent || '').toContain('FrontendAtlas Essential 60');
+    expect(featured?.textContent || '').toContain('Start with 60 curated frontend interview questions');
+    expect(featured?.textContent || '').not.toContain('Frontend interview preparation guide');
+    expect(primaryCta?.textContent?.trim()).toBe('Open Essential 60');
+    expect(primaryCta?.getAttribute('href') || '').toContain('/interview-questions/essential');
     expect(page.querySelector('[data-testid="dashboard-guest-progress-card"]')).toBeTruthy();
     expect(page.querySelector('[data-testid="dashboard-progress-snapshot"]')).toBeFalsy();
-    expect(page.querySelectorAll('[data-testid="dashboard-guest-secondary-route"]').length).toBe(3);
+    expect(secondaryRoutes.length).toBe(3);
+    expect(secondaryRoutes[0].textContent || '').toContain('Frontend interview preparation guide');
+    expect(secondaryRoutes[0].textContent || '').toContain(
+      'Read first if you want the interview flow, scoring signals, and prep sequence before practicing.',
+    );
+    expect(secondaryRoutes[0].textContent || '').toContain('Read first if unsure');
+    expect(secondaryRoutes[1].textContent || '').toContain(
+      'Use when you want a weekly sequence instead of choosing question by question.',
+    );
+    expect(secondaryRoutes[2].textContent || '').toContain(
+      'Add after core practice when system design, behavioral, or company-style follow-ups matter.',
+    );
     expect(page.querySelectorAll('[data-testid="dashboard-guest-practice-link"]').length).toBe(4);
     expect(page.querySelectorAll('[data-testid="dashboard-guest-related-link"]').length).toBe(3);
 
     const fitPills = Array.from(page.querySelectorAll('[data-testid="dashboard-route-fit-pill"]')) as HTMLElement[];
     expect(fitPills.map((pill) => pill.textContent?.trim())).toEqual([
-      'Start here',
-      'Core practice',
+      'Recommended start',
+      'Read first if unsure',
       'Structured path',
       'Final rounds',
       'Implementation drill',
@@ -247,7 +268,17 @@ describe('DashboardComponent', () => {
     const primaryCta = page.querySelector('[data-testid="dashboard-primary-cta"]') as HTMLAnchorElement | null;
     const pageText = page.textContent || '';
 
-    expect(primaryCta?.textContent?.trim()).toBe('Start first question');
+    expect(pageText).toContain('Start your first focused rep');
+    expect(pageText).toContain(
+      'Start with one Essential 60 question. After a few completed reps, the dashboard will shift toward progress, streaks, and recommendations.',
+    );
+    expect(primaryCta?.textContent?.trim()).toBe('Open Essential 60');
+    expect(primaryCta?.getAttribute('href') || '').toContain('/interview-questions/essential');
+    primaryCta?.click();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'dashboard_primary_cta_clicked',
+      jasmine.objectContaining({ mode: 'novice', action_id: 'novice_essential_60', route: '/interview-questions/essential' }),
+    );
     expect(pageText).not.toContain('Progress snapshot');
     expect(page.querySelector('[data-testid="dashboard-progress-snapshot"]')).toBeFalsy();
   });
@@ -266,6 +297,10 @@ describe('DashboardComponent', () => {
     const pageText = page.textContent || '';
 
     expect(primaryCta?.textContent?.trim()).toBe('Open challenge');
+    expect(pageText).toContain('Recommended now');
+    expect(pageText).toContain(
+      'Your next rep is ready. Keep the loop moving, then branch into the library only when today’s practice needs a different format.',
+    );
     expect(pageText).toContain('Progress snapshot');
     expect(pageText).toContain('Complete today’s daily challenge');
     expect(pageText).not.toContain('Next action');
@@ -319,7 +354,7 @@ describe('DashboardComponent', () => {
 
     expect(analytics.track).toHaveBeenCalledWith(
       'dashboard_library_link_clicked',
-      jasmine.objectContaining({ destination: 'essential_60', section: 'guest_secondary', mode: 'guest' }),
+      jasmine.objectContaining({ destination: 'interview_blueprint', section: 'guest_secondary', mode: 'guest' }),
     );
   });
 
@@ -348,7 +383,7 @@ describe('DashboardComponent', () => {
     );
   });
 
-  it('tracks the guest featured CTA as the interview guide entry lane', () => {
+  it('tracks the guest featured CTA as the Essential 60 entry lane', () => {
     loggedIn = false;
     user = null;
     solvedIds = [];
@@ -359,7 +394,7 @@ describe('DashboardComponent', () => {
 
     expect(analytics.track).toHaveBeenCalledWith(
       'dashboard_primary_cta_clicked',
-      jasmine.objectContaining({ mode: 'guest', action_id: 'guest_interview_blueprint', route: '/guides/interview-blueprint/intro' }),
+      jasmine.objectContaining({ mode: 'guest', action_id: 'guest_essential_60', route: '/interview-questions/essential' }),
     );
   });
 

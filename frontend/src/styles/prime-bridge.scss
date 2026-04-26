@@ -46,6 +46,33 @@
   box-shadow: 0 0 0 1px var(--uf-border-subtle), 0 6px 14px rgba(0,0,0,.35);
 }
 
+.p-tooltip.essential-score-tip {
+  pointer-events: none;
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, black 50%, transparent));
+  z-index: 9999;
+}
+
+.p-tooltip.essential-score-tip .p-tooltip-text {
+  max-width: 260px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  border: 1px solid var(--uf-border-subtle);
+  background: var(--uf-surface-alt);
+  color: var(--uf-text-primary);
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: var(--uf-card-shadow);
+}
+
+.p-tooltip.essential-score-tip .p-tooltip-arrow {
+  width: 8px;
+  height: 8px;
+  border: none;
+  background: var(--uf-surface-alt);
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 1px var(--uf-border-subtle);
+}
+
 .fa-dialog.p-dialog {
   border-radius: var(--uf-radius-16);
   border: 1px solid var(--uf-border-subtle);

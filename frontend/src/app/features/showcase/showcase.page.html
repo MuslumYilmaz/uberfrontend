@@ -27,27 +27,33 @@
           </span>
           Fast feedback
         </span>
+        <span class="proof-chip">
+          <span class="proof-chip__mark" aria-hidden="true">
+            <app-showcase-icon name="review" [size]="12"></app-showcase-icon>
+          </span>
+          Interviewer-informed
+        </span>
       </div>
       <div class="hero-actions">
         <a
           class="sk-btn sk-btn-primary"
-          routerLink="/guides/interview-blueprint/intro"
+          routerLink="/interview-questions/essential"
           data-testid="showcase-hero-primary-cta"
           (click)="onHeroPrimaryClick()"
-          aria-label="Start with the frontend interview preparation guide">
+          aria-label="Open the FrontendAtlas Essential 60 shortlist">
           {{ heroPrimaryCtaLabel }}
         </a>
         <a
           class="sk-btn sk-btn-ghost"
-          routerLink="/interview-questions/essential"
+          routerLink="/guides/interview-blueprint/intro"
           data-testid="showcase-hero-secondary-cta"
-          aria-label="Open the FrontendAtlas Essential 60 shortlist"
+          aria-label="View the frontend interview preparation guide"
           (click)="onHeroSecondaryClick()"
         >
-          Open Essential 60
+          View prep guide
         </a>
       </div>
-      <p class="hero-helper" data-testid="showcase-hero-helper">New here? Start with the interview preparation guide.</p>
+      <p class="hero-helper" data-testid="showcase-hero-helper">Not sure how interviews are evaluated? Read the prep guide first.</p>
     </div>
 
     <div class="hero-proof" aria-label="Product workflow overview">
@@ -86,7 +92,7 @@
     <div class="demo-section-copy">
       <p class="eyebrow">Interactive demo</p>
       <p class="section-pathway" data-testid="showcase-start-path">
-        Start path: Preparation guide → Essential 60 → Question Library → Study Plans / Framework Prep → final-round coverage
+        Default path: Essential 60 → Question Library → Study Plans / Framework Prep → final-round coverage. New to interviews? Read the prep guide first.
       </p>
       <h2 id="demo-title">Run the actual coding workspace.</h2>
       <p class="muted">Live editor, real tests, and the same UI you get in the product.</p>
@@ -195,10 +201,45 @@
   <div class="shell">
     <app-prep-roadmap
       title="Recommended preparation"
-      subtitle="Not sure where to start? Follow this sequence first, then branch into broader libraries only when you need more coverage."
+      subtitle="Start with the curated shortlist, then branch into broader libraries only when you need more coverage."
       [items]="homepagePrepRoadmapItems"
       variant="hero"
     ></app-prep-roadmap>
+  </div>
+</section>
+
+<section class="section section--trust reveal" #observeSection aria-labelledby="trust-title" data-testid="showcase-trust-section">
+  <div class="shell trust-shell">
+    <div class="trust-copy">
+      <p class="eyebrow">Why trust the curation</p>
+      <h2 id="trust-title">Interview prep shaped around what interviewers can actually evaluate.</h2>
+      <p class="muted trust-lede">
+        FrontendAtlas is curated by a senior frontend engineer with 8+ years building production frontend and
+        interviewer-side experience. The goal is not maximum question volume. It is focused practice on the signals
+        that matter in real interviews: clear implementation, realistic UI behavior, edge cases, tradeoffs, and
+        explanation quality.
+      </p>
+    </div>
+
+    <div class="trust-grid" aria-label="Trust signals">
+      <article class="trust-card glass" *ngFor="let signal of trustSignals">
+        <div class="trust-card__icon" aria-hidden="true">
+          <app-showcase-icon [name]="signal.icon" [size]="20"></app-showcase-icon>
+        </div>
+        <h3>{{ signal.title }}</h3>
+        <p>{{ signal.copy }}</p>
+      </article>
+    </div>
+
+    <div class="trust-footer">
+      <p class="trust-note">
+        Early-stage and transparent: no inflated user counts, invented customer logos, or anonymous praise. Just a
+        focused practice system, a live product, and a direct feedback loop with the person building it.
+      </p>
+      <p class="trust-founder">
+        Independent, interviewer-informed frontend interview prep.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -360,10 +401,10 @@
     <div class="section-head">
       <div>
         <p class="eyebrow">Question Library</p>
-        <h2 id="library-title">Start from the prep graph, not a random library.</h2>
+        <h2 id="library-title">Start with the shortlist, then broaden with filters.</h2>
         <p class="muted">
-          Start with the interview preparation guide, use FrontendAtlas Essential 60 for the first compact pass,
-          then branch into the full Question Library or Study Plans for broader coverage.
+          Use FrontendAtlas Essential 60 for the first compact pass, then branch into the full Question Library
+          or Study Plans for broader coverage.
         </p>
       </div>
 
@@ -406,9 +447,10 @@
     <div class="section-head">
       <div>
         <p class="eyebrow">Company practice</p>
-        <h2 id="company-title">Prep with company-flavored prompts.</h2>
+        <h2 id="company-title">Practice company-style frontend prompts.</h2>
         <p class="muted">
-          A few examples from Company Prep. UI, JS, and system slices shaped for each team’s flavor.
+          A few examples from Company Prep. UI, JS, and system slices shaped around common hiring patterns.
+          These are practice paths, not official interview questions.
         </p>
       </div>
       <a class="sk-btn sk-btn-ghost" routerLink="/companies" aria-label="Open Company Prep">
@@ -444,7 +486,7 @@
     <div class="section-head">
       <div>
         <p class="eyebrow">What makes FrontendAtlas different</p>
-        <h2 id="capabilities-title">Crafted for front-end engineers.</h2>
+        <h2 id="capabilities-title">Built for frontend interview practice.</h2>
       </div>
       <p class="muted">High-signal depth, not filler. Each tile maps to a capability inside the FrontendAtlas
         workspace.</p>
@@ -471,7 +513,7 @@
     <div class="section-head">
       <div>
         <p class="eyebrow">Tracks</p>
-        <h2 id="tracks-title">Pick your lane.</h2>
+        <h2 id="tracks-title">Choose a sequence when you need structure.</h2>
       </div>
       <p class="muted">Built for progression: the brief stays premium while the scaffolding evolves.</p>
     </div>
@@ -621,7 +663,7 @@
         id="faq-title"
         eyebrow="FAQ"
         title="Common questions, answered."
-        subtitle="Short, direct answers. If you still have questions, you can link to /guides or /contact."
+        subtitle="Quick answers about setup, content, devices, and progress."
         [groups]="faqGroups"
         [flush]="true"
         [singleOpen]="true">
@@ -749,12 +791,12 @@
     <div class="cta-card glass">
       <div>
         <p class="eyebrow">Final step</p>
-        <h2 id="cta-title">Try the playground with your own prompts.</h2>
+        <h2 id="cta-title">Start with the curated shortlist.</h2>
         <p class="muted">Open the playground, ship code, and let the tests push back.</p>
       </div>
       <div class="cta-actions">
-        <a class="sk-btn sk-btn-primary" routerLink="/auth/signup">Start free preview</a>
-        <a class="sk-btn sk-btn-ghost" routerLink="/guides/interview-blueprint">View interview blueprint</a>
+        <a class="sk-btn sk-btn-primary" routerLink="/interview-questions/essential">Open Essential 60</a>
+        <a class="sk-btn sk-btn-ghost" routerLink="/guides/interview-blueprint/intro">View prep guide</a>
       </div>
     </div>
   </div>

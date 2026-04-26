@@ -78,7 +78,7 @@ describe('EssentialQuestionsComponent', () => {
                       access: 'premium',
                       difficulty: 'intermediate',
                       technologies: ['react', 'angular', 'vue'],
-                      companies: [],
+                      companies: ['google', 'netflix'],
                       tags: ['react'],
                       route: ['/', 'react', 'coding', 'react-debounced-search'],
                       path: '/react/coding/react-debounced-search',
@@ -188,7 +188,18 @@ describe('EssentialQuestionsComponent', () => {
     expect(host.querySelector('[title="Solved"]')).not.toBeNull();
     expect(host.querySelector('[data-testid="essential-variant-ui-debounced-search-react-debounced-search"]')?.textContent?.trim()).toBe('React');
     expect(host.querySelector('[data-testid="essential-variant-ui-debounced-search-angular-debounced-search"]')?.textContent?.trim()).toBe('Angular');
-    expect(host.querySelector('[data-testid="essential-card-ui-debounced-search"]')?.textContent || '').toContain('Locked');
+    const premiumCard = host.querySelector('[data-testid="essential-card-ui-debounced-search"]') as HTMLElement;
+    const scoreBadge = host.querySelector('[aria-label="Importance score 93 out of 100"]') as HTMLElement;
+    const companyLogos = premiumCard.querySelector('[data-testid="essential-company-logos-ui-debounced-search"]') as HTMLElement;
+
+    expect(scoreBadge?.textContent?.trim()).toBe('93/100');
+    expect(scoreBadge?.getAttribute('title')).toBeNull();
+    expect(scoreBadge?.getAttribute('ng-reflect-content')).toContain('Importance score');
+    expect(premiumCard.textContent || '').toContain('Premium');
+    expect(premiumCard.textContent || '').not.toContain('Locked');
+    expect(premiumCard.querySelector('.essential-badge--premium')?.getAttribute('aria-label')).toBe('Premium question');
+    expect(companyLogos?.getAttribute('aria-label')).toBe('Company signals: Google, Netflix');
+    expect(companyLogos?.querySelector('[data-testid="company-logo-mark-google"]')).not.toBeNull();
   });
 
   it('filters by section and tier', async () => {

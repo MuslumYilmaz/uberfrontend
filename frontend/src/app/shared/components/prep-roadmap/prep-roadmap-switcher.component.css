@@ -67,13 +67,19 @@
 }
 
 .prep-switcher__chevron {
+  width: 18px;
+  height: 18px;
   color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
-  font-size: 18px;
-  line-height: 1;
-  transform: translateY(-1px);
 }
 
 .prep-switcher__panel {
+  --prep-switcher-marker-column: 44px;
+  --prep-switcher-step-size: 34px;
+  --prep-switcher-link-inline-padding: 10px;
+  --prep-switcher-marker-center: calc(
+    var(--prep-switcher-link-inline-padding) + (var(--prep-switcher-marker-column) / 2)
+  );
+
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
@@ -106,10 +112,11 @@
   position: absolute;
   top: 22px;
   bottom: 22px;
-  left: 21px;
+  left: var(--prep-switcher-marker-center);
   width: 2px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--uf-border-subtle) 76%, var(--uf-text-primary) 24%);
+  transform: translateX(-50%);
 }
 
 .prep-switcher__item {
@@ -133,11 +140,11 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-columns: var(--prep-switcher-marker-column) minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
   min-height: 56px;
-  padding: 6px 10px;
+  padding: 6px var(--prep-switcher-link-inline-padding);
   border-radius: 12px;
   color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
   text-decoration: none;
@@ -159,8 +166,9 @@
 }
 
 .prep-switcher__step {
-  width: 34px;
-  height: 34px;
+  justify-self: center;
+  width: var(--prep-switcher-step-size);
+  height: var(--prep-switcher-step-size);
   display: grid;
   place-items: center;
   border-radius: 999px;
@@ -187,8 +195,9 @@
 }
 
 .prep-switcher__arrow {
+  width: 22px;
+  height: 22px;
   color: color-mix(in srgb, var(--uf-text-secondary) 72%, transparent);
-  font-size: 21px;
 }
 
 @media (max-width: 700px) {
@@ -211,6 +220,10 @@
   }
 
   .prep-switcher__panel {
+    --prep-switcher-marker-column: 40px;
+    --prep-switcher-step-size: 32px;
+    --prep-switcher-link-inline-padding: 10px;
+
     width: calc(100vw - 24px);
     padding: 16px;
   }
