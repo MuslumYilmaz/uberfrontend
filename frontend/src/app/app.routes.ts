@@ -66,9 +66,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'Frontend Interview Preparation Roadmap and Practice',
+        title: 'FrontendAtlas Essential 60 and Interview Practice',
         description:
-          'Follow a frontend interview preparation roadmap with coding challenges, guides, tracks, and system design practice to prepare with focus and confidence.',
+          'Start with FrontendAtlas Essential 60, then practice frontend coding, concepts, system design, and tradeoffs in a real editor with preview and checks.',
         keywords: [
           'front end interview questions',
           'javascript interview',
@@ -128,9 +128,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'Frontend Interview Preparation Roadmap and Practice',
+        title: 'FrontendAtlas Essential 60 and Interview Practice',
         description:
-          'Follow a frontend interview preparation roadmap with coding challenges, guides, tracks, and system design practice to prepare with focus and confidence.',
+          'Start with FrontendAtlas Essential 60, then practice frontend coding, concepts, system design, and tradeoffs in a real editor with preview and checks.',
         canonical: '/',
         keywords: [
           'front end interview questions',

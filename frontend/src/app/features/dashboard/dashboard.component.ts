@@ -70,34 +70,34 @@ export class DashboardComponent {
 
   readonly auth = this.authService;
   readonly continueCta = {
-    label: 'Start first question',
-    route: ['/coding'] as any[],
+    label: 'Open Essential 60',
+    route: ['/interview-questions', 'essential'] as any[],
   };
   readonly guestFeaturedRoute: DashboardLink = {
-    title: 'Frontend interview preparation guide',
-    subtitle: 'Start with the process, round types, scoring signals, and how to sequence your practice.',
-    route: ['/guides', 'interview-blueprint', 'intro'],
-    destination: 'interview_blueprint',
-    fitHint: 'Start here',
+    title: 'FrontendAtlas Essential 60',
+    subtitle: 'Start with 60 curated frontend interview questions across JavaScript, UI coding, system design, and concepts.',
+    route: ['/interview-questions', 'essential'],
+    destination: 'essential_60',
+    fitHint: 'Recommended start',
   };
   readonly guestSecondaryRoutes: DashboardLink[] = [
     {
-      title: 'FrontendAtlas Essential 60',
-      subtitle: 'Use the core shortlist across JavaScript, UI coding, system design, and concepts.',
-      route: ['/interview-questions', 'essential'],
-      destination: 'essential_60',
-      fitHint: 'Core practice',
+      title: 'Frontend interview preparation guide',
+      subtitle: 'Read first if you want the interview flow, scoring signals, and prep sequence before practicing.',
+      route: ['/guides', 'interview-blueprint', 'intro'],
+      destination: 'interview_blueprint',
+      fitHint: 'Read first if unsure',
     },
     {
       title: 'Study Plans / Framework Prep',
-      subtitle: 'Open guided tracks for sequence, then use framework paths when one stack needs depth.',
+      subtitle: 'Use when you want a weekly sequence instead of choosing question by question.',
       route: ['/tracks'],
       destination: 'sprints',
       fitHint: 'Structured path',
     },
     {
       title: 'Final-round coverage',
-      subtitle: 'Add system design, behavioral, and company-style follow-ups after core practice.',
+      subtitle: 'Add after core practice when system design, behavioral, or company-style follow-ups matter.',
       route: ['/system-design'],
       destination: 'system_design',
       fitHint: 'Final rounds',
@@ -247,25 +247,29 @@ export class DashboardComponent {
 
     if (this.dashboardMode() === 'guest') {
       return {
-        actionId: 'guest_interview_blueprint',
-        label: 'Start with guide',
+        actionId: 'guest_essential_60',
+        label: 'Open Essential 60',
         route: this.guestFeaturedRoute.route,
         queryParams: this.guestFeaturedRoute.queryParams,
       };
     }
 
     return {
-      actionId: 'start_one_question',
+      actionId: 'novice_essential_60',
       label: this.continueCta.label,
       route: this.continueCta.route,
     };
   });
+  readonly heroHeading = computed(() => {
+    if (this.dashboardMode() === 'novice') return 'Start your first focused rep';
+    return 'Choose one clear next move';
+  });
   readonly heroCopy = computed(() => {
     switch (this.dashboardMode()) {
       case 'established':
-        return 'Your next recommended rep is ready. Keep today’s loop visible and branch into the library only when you need a different route.';
+        return 'Your next rep is ready. Keep the loop moving, then branch into the library only when today’s practice needs a different format.';
       case 'novice':
-        return 'Start with one question, build a little activity, and let the dashboard stay focused until progress signals become genuinely useful.';
+        return 'Start with one Essential 60 question. After a few completed reps, the dashboard will shift toward progress, streaks, and recommendations.';
       default:
         return 'Start with one question, keep today’s loop visible, and sign in only when you want to save streaks, weekly goals, XP, and loop history.';
     }

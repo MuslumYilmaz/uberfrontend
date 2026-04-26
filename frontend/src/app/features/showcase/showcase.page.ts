@@ -31,8 +31,7 @@ import { PlanId } from '../../core/utils/payments-provider.util';
 import { apiUrl } from '../../core/utils/api-base';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
 import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
-import { PrepRoadmapComponent } from '../../shared/components/prep-roadmap/prep-roadmap.component';
-import { INTERVIEW_PREP_ROADMAP_ITEMS } from '../../shared/components/prep-roadmap/prep-roadmap-sequence';
+import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
@@ -184,8 +183,8 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer?: IntersectionObserver;
 
   heroHeadline = 'Practice frontend interviews in a real coding workflow';
-  heroLede = 'FrontendAtlas turns prep into repeatable loops: solve real prompts, run deterministic checks, inspect live UI behavior, and explain tradeoffs like a senior engineer.';
-  heroPrimaryCtaLabel = 'Start with the guide';
+  heroLede = 'Start with FrontendAtlas Essential 60, then practice in a real coding workspace. Build UI, run checks, inspect behavior, and explain edge cases and tradeoffs like you would in an interview.';
+  heroPrimaryCtaLabel = 'Open Essential 60';
   private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
   heroFlowSteps = [
@@ -195,7 +194,43 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     { key: 'review', title: 'Review', subtitle: 'Strengthen edge cases, tradeoffs, and interview explanations', icon: 'review' as ShowcaseIconName, status: 'idle' },
   ];
 
-  readonly homepagePrepRoadmapItems = INTERVIEW_PREP_ROADMAP_ITEMS;
+  readonly homepagePrepRoadmapItems: PrepRoadmapItem[] = [
+    {
+      step: 1,
+      title: 'FrontendAtlas Essential 60',
+      description: 'Start with the curated shortlist across JavaScript, UI coding, concepts, and system design.',
+      route: ['/interview-questions', 'essential'],
+      badge: 'Recommended start',
+      meta: 'Core practice block',
+      tone: 'practice',
+    },
+    {
+      step: 2,
+      title: 'Question Library',
+      description: 'Broaden into more coding, concepts, and stack-specific coverage when you need filters.',
+      route: ['/coding'],
+      queryParams: { reset: 1 },
+      meta: 'Broader coding + concepts',
+      tone: 'structured',
+    },
+    {
+      step: 3,
+      title: 'Study Plans / Framework Prep',
+      description: 'Use guided tracks or framework paths when you want a repeatable sequence.',
+      route: ['/tracks'],
+      meta: 'Structured sequence + stack depth',
+      tone: 'structured',
+    },
+    {
+      step: 4,
+      title: 'Final-round coverage',
+      description: 'Add system design, behavioral, and company-style follow-ups once core practice is stable.',
+      route: ['/coding'],
+      queryParams: { view: 'formats', category: 'system' },
+      meta: 'System design + behavioral + company prep',
+      tone: 'advanced',
+    },
+  ];
 
   activeFlowIndex = 0;
   triviaTabs: Array<{
@@ -245,6 +280,12 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   systemPreviewId = 'infinite-scroll-list';
   systemDesignDetailComponent?: Type<unknown>;
   systemInjector!: Injector;
+
+  trustSignals: Array<{ icon: ShowcaseIconName; title: string; copy: string }> = [
+    { icon: 'review', title: 'Interviewer-informed prompts', copy: 'Practice questions selected for observable interview signals, not trivia volume.' },
+    { icon: 'editor', title: 'Production-style workflow', copy: 'Code, preview, test, and review in the same loop you use when building real UI.' },
+    { icon: 'depth', title: 'Senior-level calibration', copy: 'Train edge cases, accessibility, performance, and tradeoffs so you can defend your choices clearly.' },
+  ];
 
   capabilities: Array<{ icon: ShowcaseIconName; title: string; copy: string }> = [
     { icon: 'stack', title: 'Framework-aware questions', copy: 'Angular, React, Vue, JS, HTML/CSS: prompts and starters tailored to each tech.' },
@@ -753,9 +794,9 @@ You can also reset any task back to the starter whenever you want to re-practice
   onHeroPrimaryClick() {
     this.analytics.track('lp_primary_cta_clicked', {
       src: 'lp_hero',
-      destination: 'interview_blueprint',
-      route: '/guides/interview-blueprint/intro',
-      start_path_variant: 'guide_first',
+      destination: 'essential_60',
+      route: '/interview-questions/essential',
+      start_path_variant: 'essential_first',
       hero_variant: this.heroExperimentVariant,
     });
   }
@@ -763,9 +804,9 @@ You can also reset any task back to the starter whenever you want to re-practice
   onHeroSecondaryClick() {
     this.analytics.track('lp_secondary_cta_clicked', {
       src: 'lp_hero',
-      destination: 'essential_60',
-      route: '/interview-questions/essential',
-      start_path_variant: 'guide_first',
+      destination: 'interview_blueprint',
+      route: '/guides/interview-blueprint/intro',
+      start_path_variant: 'essential_first',
       hero_variant: this.heroExperimentVariant,
     });
   }
@@ -853,7 +894,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   private applyHeroExperimentCopy() {
-    this.heroPrimaryCtaLabel = 'Start with the guide';
+    this.heroPrimaryCtaLabel = 'Open Essential 60';
   }
 
   private buildSystemInjector() {

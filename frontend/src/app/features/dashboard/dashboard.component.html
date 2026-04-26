@@ -5,16 +5,17 @@
         <div class="guest-launch">
           <div class="guest-launch__head">
             <p class="fa-page-kicker">Curated interview path</p>
-            <h1 class="fa-page-title">Start with the highest-signal route first</h1>
+            <h1 class="fa-page-title">Start with the curated shortlist first</h1>
             <p class="fa-page-subtitle">
-              Start with the interview preparation guide, use Essential 60 as the core practice block,
-              then branch into the full Question Library, guided plans, framework-specific prep, and final-round coverage.
+              Open 60 curated frontend interview questions first, then branch only when you need
+              more coverage. The guide is there if you want scoring signals and round structure
+              before practicing.
             </p>
           </div>
 
           <div class="guest-launch__grid">
             <article faCard elevated class="guest-featured" data-testid="dashboard-guest-featured-route">
-              <div class="guest-featured__eyebrow">Best starting point</div>
+              <div class="guest-featured__eyebrow">Core practice block</div>
               <span
                 *ngIf="guestFeaturedRoute.fitHint"
                 class="fit-pill"
@@ -68,7 +69,7 @@
         <div class="command-center__grid">
           <div class="command-center__intro">
             <p class="fa-page-kicker">Prep command center</p>
-            <h1 class="fa-page-title">Choose one clear next move</h1>
+            <h1 class="fa-page-title">{{ heroHeading() }}</h1>
             <p class="hero-copy fa-body">{{ heroCopy() }}</p>
 
             <div class="hero-recommendation" *ngIf="dashboardMode() === 'established'">
@@ -199,7 +200,7 @@
     <section *ngIf="dashboardMode() === 'guest'" class="block block--guest-practice">
       <div class="block-head">
         <div class="block-head__content">
-          <h2 class="block-title fa-section-title">More ways to practice</h2>
+          <h2 class="block-title fa-section-title">Practice formats after the shortlist</h2>
           <p class="block-subtitle fa-meta-text">Switch formats here after you know which prep route you are following.</p>
         </div>
       </div>
@@ -292,7 +293,7 @@
     <section *ngIf="dashboardMode() === 'guest'" class="block block--guest-related">
       <div class="block-head">
         <div class="block-head__content">
-          <h2 class="block-title fa-section-title">Also prepare for</h2>
+          <h2 class="block-title fa-section-title">Add later when relevant</h2>
           <p class="block-subtitle fa-meta-text">These are valuable surfaces, but they should not be your first decision on day one.</p>
         </div>
       </div>
