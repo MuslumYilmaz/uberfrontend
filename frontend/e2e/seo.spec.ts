@@ -26,7 +26,7 @@ test('seo: home has title/description/canonical and is indexable', async ({ page
   await page.goto('/');
   const base = new URL(page.url()).origin;
 
-  await expect(page).toHaveTitle(/FrontendAtlas Essential 60 and Interview Practice \| FrontendAtlas/i);
+  await expect(page).toHaveTitle(/Frontend Interview Prep Platform \| FrontendAtlas/i);
   await expect.poll(() => getMeta(page, 'description')).not.toBeNull();
   await expect.poll(() => getCanonical(page)).toBe(`${base}/`);
   await expect.poll(async () => (await getMeta(page, 'robots')) || '').not.toContain('noindex');
@@ -124,5 +124,18 @@ test('seo: robots.txt and sitemaps are served', async ({ page }) => {
         expect(path === prefix || path.startsWith(`${prefix}/`)).toBe(false);
       }
     });
+  });
+});
+
+test('seo: llms.txt is served with public discovery links only', async ({ page }) => {
+  const res = await page.request.get('/llms.txt');
+  expect(res.status()).toBe(200);
+
+  const text = await res.text();
+  expect(text).toContain('# FrontendAtlas');
+  expect(text).toContain('https://frontendatlas.com/sitemap-index.xml');
+
+  ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
+    expect(text).not.toContain(path);
   });
 });

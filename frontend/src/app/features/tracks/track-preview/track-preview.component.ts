@@ -293,7 +293,7 @@ export class TrackPreviewComponent implements OnInit {
         {
           '@type': 'ListItem',
           position: 2,
-          name: 'Frontend Interview Prep Platform and Tracks',
+          name: 'Frontend Interview Study Plans and Tracks',
           item: this.seo.buildCanonicalUrl('/tracks'),
         },
         {

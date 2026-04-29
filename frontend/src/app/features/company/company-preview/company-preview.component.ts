@@ -54,8 +54,8 @@ export class CompanyPreviewComponent implements OnInit {
 
     this.label = this.prettyCompany(this.slug);
     this.seo.updateTags({
-      title: `${this.label} Frontend Interview Preview`,
-      description: `Preview ${this.label} interview question coverage, sample prompts, and premium unlocks.`,
+      title: `${this.label} Frontend Interview Questions Preview`,
+      description: `Preview ${this.label} frontend interview question coverage across coding, concept prompts, and system design before unlocking premium.`,
       canonical: undefined,
     });
 

@@ -1,0 +1,95 @@
+# FrontendAtlas
+
+> FrontendAtlas is a frontend interview preparation platform with coding prompts, concept questions, system design scenarios, framework prep paths, company previews, and practical interview guides.
+
+## Core Pages
+
+- [FrontendAtlas](https://frontendatlas.com/): Start here for the frontend interview prep platform, Essential 60, study plans, and practice areas.
+- [Frontend interview focus areas](https://frontendatlas.com/focus-areas): Browse the skills covered across the practice library and tracks.
+- [CV Linter](https://frontendatlas.com/tools/cv): Review a frontend resume for ATS fit, signal strength, and interview readiness.
+
+## Practice Hubs
+
+- [Frontend interview questions bank](https://frontendatlas.com/coding): Filter frontend coding, trivia, debug, and system design practice by technology and focus area.
+- [Frontend interview questions](https://frontendatlas.com/interview-questions): Main interview question hub.
+- [Essential 60 interview questions](https://frontendatlas.com/interview-questions/essential): Curated shortlist of high-value frontend interview questions.
+- [JavaScript interview questions](https://frontendatlas.com/javascript/interview-questions): JavaScript coding and concept practice.
+- [React interview questions](https://frontendatlas.com/react/interview-questions): React hooks, state, effects, rendering, and performance practice.
+- [Angular interview questions](https://frontendatlas.com/angular/interview-questions): Angular RxJS, change detection, DI, forms, and testing practice.
+- [Vue interview questions](https://frontendatlas.com/vue/interview-questions): Vue reactivity, rendering, state, and component contract practice.
+- [HTML interview questions](https://frontendatlas.com/html/interview-questions): HTML semantics, forms, metadata, accessibility, and browser fundamentals.
+- [CSS interview questions](https://frontendatlas.com/css/interview-questions): CSS layout, cascade, specificity, responsive design, and visual debugging.
+- [HTML and CSS interview questions](https://frontendatlas.com/html-css/interview-questions): Combined markup and styling practice for frontend interviews.
+
+## Guides
+
+- [Frontend Interview Playbook](https://frontendatlas.com/guides/interview-blueprint): Coding, UI, JavaScript, system design, and behavioral interview guidance.
+- [Frontend Interview Preparation Guide](https://frontendatlas.com/guides/interview-blueprint/intro): Process, rounds, evaluation signals, and prep planning.
+- [Frontend Coding Interviews](https://frontendatlas.com/guides/interview-blueprint/coding-interviews): How to solve prompts under pressure.
+- [JavaScript Interview Patterns and Answers](https://frontendatlas.com/guides/interview-blueprint/javascript-interviews): Common JavaScript patterns and trade-offs.
+- [DSA for Frontend Interviews](https://frontendatlas.com/guides/interview-blueprint/dsa-for-fe): The minimum data structures and algorithms toolkit for frontend rounds.
+- [Frontend UI Interviews](https://frontendatlas.com/guides/interview-blueprint/ui-interviews): Building accessible UI components under time pressure.
+- [Component API Design for Frontend Interviews](https://frontendatlas.com/guides/interview-blueprint/api-design): Props, events, accessibility, and composition trade-offs.
+- [Frontend System Design Interviews](https://frontendatlas.com/guides/interview-blueprint/system-design): Fast answer framework for frontend system design rounds.
+- [Frontend Interview Fundamentals Quiz](https://frontendatlas.com/guides/interview-blueprint/quiz): Browser, CSS, JavaScript, and HTTP fundamentals.
+- [Frontend Resume for Interviews](https://frontendatlas.com/guides/interview-blueprint/resume): What gets calls and what gets rejected.
+- [Framework prep paths](https://frontendatlas.com/guides/framework-prep): JavaScript, React, Angular, and Vue prep paths.
+- [JavaScript Interview Prep Path](https://frontendatlas.com/guides/framework-prep/javascript-prep-path): Async, closures, state, and utility prompt preparation.
+- [React Interview Prep Path](https://frontendatlas.com/guides/framework-prep/react-prep-path): State, effects, performance, and hooks preparation.
+- [Angular Interview Prep Path](https://frontendatlas.com/guides/framework-prep/angular-prep-path): RxJS, architecture, change detection, and tests.
+- [Vue Interview Prep Path](https://frontendatlas.com/guides/framework-prep/vue-prep-path): Reactivity, rendering, state, and component contract preparation.
+- [Frontend system design interview blueprint](https://frontendatlas.com/guides/system-design-blueprint): Principles, patterns, and examples for frontend system design.
+- [Front-End System Design Intro](https://frontendatlas.com/guides/system-design-blueprint/intro): What frontend system design interviews test.
+- [Scope, Constraints, and Trade-offs](https://frontendatlas.com/guides/system-design-blueprint/foundations): Framing requirements and constraints.
+- [Reusable 5-Step Approach](https://frontendatlas.com/guides/system-design-blueprint/framework): A reusable method for frontend system design answers.
+- [RADIO Framework](https://frontendatlas.com/guides/system-design-blueprint/radio-framework): RADIO method for frontend system design.
+- [Requirements Deep Dive](https://frontendatlas.com/guides/system-design-blueprint/radio-requirements): Requirements discovery for frontend systems.
+- [Frontend System Design Architecture](https://frontendatlas.com/guides/system-design-blueprint/architecture): Architecture patterns and trade-offs.
+- [Data Model Deep Dive](https://frontendatlas.com/guides/system-design-blueprint/state-data): State, data model, caching, and synchronization choices.
+- [Interface Deep Dive](https://frontendatlas.com/guides/system-design-blueprint/ux): UX and interface decisions in system design.
+- [Optimizations Deep Dive](https://frontendatlas.com/guides/system-design-blueprint/performance): Performance and scalability optimizations.
+- [System Design Evaluation Signals](https://frontendatlas.com/guides/system-design-blueprint/evaluation): What interviewers score.
+- [System Design Pitfalls](https://frontendatlas.com/guides/system-design-blueprint/pitfalls): Traps and anti-patterns to avoid.
+- [System Design Checklist](https://frontendatlas.com/guides/system-design-blueprint/checklist): One-page final review.
+- [Behavioral interview blueprint](https://frontendatlas.com/guides/behavioral): Story frameworks and examples for behavioral rounds.
+- [Behavioral Interview Guide](https://frontendatlas.com/guides/behavioral/intro): Scoring signals and high-signal answers.
+- [Behavioral Interview Big Picture](https://frontendatlas.com/guides/behavioral/big-picture): How behavioral rounds affect screening and onsite loops.
+- [Behavioral Interview Evaluation Areas](https://frontendatlas.com/guides/behavioral/evaluation-areas): Areas hiring teams evaluate.
+- [Behavioral Interview Prep Plan](https://frontendatlas.com/guides/behavioral/prep): Fast, structured behavioral preparation.
+- [STAR Stories](https://frontendatlas.com/guides/behavioral/stories): Practical answer framework for behavioral prompts.
+- [Common Behavioral Interview Questions](https://frontendatlas.com/guides/behavioral/common-questions): How to answer common prompts.
+- [Frontend Behavioral Interview Scenarios](https://frontendatlas.com/guides/behavioral/fe-advanced): Technical behavioral prompts for frontend engineers.
+- [Behavioral Interview Tips](https://frontendatlas.com/guides/behavioral/practical-tips): Common mistakes and stronger answers.
+- [Behavioral Interview Checklist](https://frontendatlas.com/guides/behavioral/checklist): Last-minute prep before the call.
+
+## System Design
+
+- [Frontend system design interview questions](https://frontendatlas.com/system-design): Frontend architecture, state, API contracts, performance, accessibility, and UX system design scenarios.
+
+## Tracks and Company Previews
+
+- [Frontend interview study plans and tracks](https://frontendatlas.com/tracks): Curated prep tracks and mastery paths.
+- [Crash Track preview](https://frontendatlas.com/tracks/crash-7d/preview): Seven-day frontend interview prep preview.
+- [Foundations Track preview](https://frontendatlas.com/tracks/foundations-30d/preview): Thirty-day foundations prep preview.
+- [JavaScript mastery crash track](https://frontendatlas.com/tracks/javascript-prep-path/mastery): Guided JavaScript mastery path with checkpoints.
+- [Company frontend interview questions](https://frontendatlas.com/companies): Company-specific frontend interview prep.
+- [Airbnb interview preview](https://frontendatlas.com/companies/airbnb/preview): Airbnb frontend interview practice preview.
+- [Amazon interview preview](https://frontendatlas.com/companies/amazon/preview): Amazon frontend interview practice preview.
+- [Apple interview preview](https://frontendatlas.com/companies/apple/preview): Apple frontend interview practice preview.
+- [ByteDance interview preview](https://frontendatlas.com/companies/bytedance/preview): ByteDance frontend interview practice preview.
+- [Google interview preview](https://frontendatlas.com/companies/google/preview): Google frontend interview practice preview.
+- [Meta interview preview](https://frontendatlas.com/companies/meta/preview): Meta frontend interview practice preview.
+- [Microsoft interview preview](https://frontendatlas.com/companies/microsoft/preview): Microsoft frontend interview practice preview.
+- [Netflix interview preview](https://frontendatlas.com/companies/netflix/preview): Netflix frontend interview practice preview.
+- [OpenAI interview preview](https://frontendatlas.com/companies/openai/preview): OpenAI frontend interview practice preview.
+- [Stripe interview preview](https://frontendatlas.com/companies/stripe/preview): Stripe frontend interview practice preview.
+- [Uber interview preview](https://frontendatlas.com/companies/uber/preview): Uber frontend interview practice preview.
+
+## Policies and Discovery
+
+- [Editorial policy](https://frontendatlas.com/legal/editorial-policy): How FrontendAtlas creates, reviews, and updates learning content.
+- [Privacy policy](https://frontendatlas.com/legal/privacy): Data collection, usage, and protection details.
+- [Terms of service](https://frontendatlas.com/legal/terms): Terms and user responsibilities.
+- [Sitemap index](https://frontendatlas.com/sitemap-index.xml): Complete sitemap entry point.
+- [Sitemap](https://frontendatlas.com/sitemap.xml): Complete canonical URL list.
+- [Robots policy](https://frontendatlas.com/robots.txt): Crawl policy for public and private paths.

@@ -703,7 +703,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'System Design Practice';
       if (this.isFormatsMode()) return 'Practice Types';
-      return 'Question Library';
+      return 'Frontend Interview Questions Bank';
     }
 
     return this.heading();
@@ -719,7 +719,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
         return 'Choose the format you want to rehearse, then filter the focused list without leaving the practice surface.';
       }
 
-      return 'Search and filter frontend interview questions by technology, concept, difficulty, and focus area, then start one prompt immediately.';
+      return 'Search the frontend interview question bank across coding, system design, and concept prompts, then filter by technology, difficulty, and focus area before opening one prompt.';
     }
 
     if (this.source === 'company') {

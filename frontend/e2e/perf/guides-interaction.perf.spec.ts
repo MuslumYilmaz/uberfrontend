@@ -75,7 +75,7 @@ test.describe('guides interaction perf smoke', () => {
 
     try {
       await page.goto('/guides/interview-blueprint', { waitUntil: 'domcontentloaded', timeout: 60_000 });
-      await expect(page.getByRole('heading', { name: 'Frontend Interview Preparation Guides' })).toBeVisible({ timeout: 60_000 });
+      await expect(page.getByRole('heading', { name: 'Frontend Interview Playbook' })).toBeVisible({ timeout: 60_000 });
 
       const cards = page.locator('.section .card');
       const cardCount = await cards.count();
@@ -179,7 +179,7 @@ test.describe('guides interaction perf smoke', () => {
           page.waitForURL(/\/guides\/interview-blueprint\/?$/, { timeout: 60_000 }),
           target.click(),
         ]);
-        await expect(page.getByRole('heading', { name: 'Frontend Interview Preparation Guides' })).toBeVisible({
+        await expect(page.getByRole('heading', { name: 'Frontend Interview Playbook' })).toBeVisible({
           timeout: 60_000,
         });
         const endedAt = await page.evaluate(() => performance.now());
