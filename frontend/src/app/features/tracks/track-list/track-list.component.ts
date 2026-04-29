@@ -6,9 +6,9 @@ import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/compone
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 import { SeoService } from '../../../core/services/seo.service';
 
-const TRACKS_PLATFORM_TITLE = 'Frontend Interview Prep Platform and Tracks';
+const TRACKS_PLATFORM_TITLE = 'Frontend Interview Study Plans and Tracks';
 const TRACKS_PLATFORM_DESCRIPTION =
-  'Use the frontend interview prep platform to run structured Study Plans, then connect each track with the Question Library by technology.';
+  'Use frontend interview study plans to run structured coding, concept, and system design practice, then connect each plan with the Question Library by technology.';
 
 type MasteryTrackCard = {
   slug: string;
@@ -166,7 +166,7 @@ export class TrackListComponent implements OnInit {
       kicker: 'Step 2',
       title: 'Run one track end-to-end',
       description:
-        'Use a guided track to sequence coding, concept questions, and system design practice instead of switching context every day.',
+        'Use one guided study plan to sequence coding, concept questions, and system design practice instead of switching context every day.',
       route: ['/tracks'],
       ctaLabel: 'Browse tracks',
     },
@@ -333,7 +333,7 @@ export class TrackListComponent implements OnInit {
         {
           '@type': 'ListItem',
           position: 2,
-          name: 'Frontend Interview Prep Platform and Tracks',
+          name: 'Frontend Interview Study Plans and Tracks',
           item: canonicalUrl,
         },
       ],

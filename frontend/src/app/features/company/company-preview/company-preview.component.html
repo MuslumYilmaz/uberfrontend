@@ -2,14 +2,14 @@
   <nav class="preview-breadcrumb" aria-label="Company preview breadcrumb">
     <a [routerLink]="['/companies']">Companies</a>
     <span>/</span>
-    <span>{{ label }} preview</span>
+    <span>{{ label }} frontend interview questions preview</span>
   </nav>
 
   <header class="preview-hero fa-card fa-card--elevated">
     <p class="preview-kicker">Public preview</p>
-    <h1>{{ label }} Frontend Interview Preview</h1>
+    <h1>{{ label }} Frontend Interview Questions Preview</h1>
     <p class="preview-subtitle">
-      Review sample prompts and coverage before unlocking the full premium company guide.
+      Review sample frontend interview prompts and coverage across coding, concept questions, and system design before unlocking the full premium company guide.
     </p>
 
     <ng-container *ngIf="data$ | async as data">
@@ -26,9 +26,9 @@
       <article class="proof-card">
         <h2>What you can do now for free</h2>
         <ul>
-          <li>Inspect company coverage before paying.</li>
-          <li>Open free challenges from the public Question Library.</li>
-          <li>Evaluate whether this company set matches your target interviews.</li>
+          <li>Inspect company-specific frontend interview coverage before paying.</li>
+          <li>Open free coding and concept challenges from the public Question Library.</li>
+          <li>Evaluate whether this company set matches your target frontend interviews.</li>
         </ul>
       </article>
 
@@ -44,7 +44,7 @@
 
     <section class="sample-card fa-card" aria-label="Sample company questions">
       <div class="sample-head">
-        <h2>Sample included questions</h2>
+        <h2>Sample frontend interview questions</h2>
         <p class="sample-summary">
           Free in sample: <strong>{{ freeCount(data.samples) }}</strong> · Locked in full set:
           <strong>{{ premiumCount(data.samples) }}</strong>

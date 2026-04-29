@@ -115,14 +115,14 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
   `],
   template: `
     <div class="wrap fa-body">
-      <h1 class="hero-title fa-page-title">Frontend Interview Preparation Guides</h1>
-      <div class="hero-sub fa-meta-text">A practical set of frontend interview preparation guides covering coding, UI, JavaScript, system design, and behavioral prep.</div>
+      <h1 class="hero-title fa-page-title">Frontend Interview Playbook</h1>
+      <div class="hero-sub fa-meta-text">A practical frontend interview playbook covering coding, UI, JavaScript, system design, and behavioral prep.</div>
       <div class="hero-sub fa-meta-text">
         Want the platform overview first?
         <a [routerLink]="['/']">Start from the frontend interview preparation roadmap homepage</a>.
       </div>
       <div class="pill-row">
-        <span class="pill fa-chip fa-chip--label">End-to-end guide</span>
+        <span class="pill fa-chip fa-chip--label">End-to-end playbook</span>
         <span class="pill fa-chip fa-chip--label">Tips for all question types</span>
         <span class="pill fa-chip fa-chip--label">500+ practice questions</span>
       </div>

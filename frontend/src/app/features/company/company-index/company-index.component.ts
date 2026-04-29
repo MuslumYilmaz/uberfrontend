@@ -25,9 +25,9 @@ const SEED: ReadonlyArray<Pick<CompanyCard, 'slug' | 'label'>> = [
   { slug: 'netflix', label: 'Netflix' },
 ];
 
-const COMPANY_INDEX_TITLE = 'Company Frontend Interview Sets';
+const COMPANY_INDEX_TITLE = 'Company Frontend Interview Questions';
 const COMPANY_INDEX_DESCRIPTION =
-  'Use company-specific frontend interview sets after your baseline prep is stable, then compare prompt style and round emphasis before final interviews.';
+  'Use company-specific frontend interview questions after your baseline prep is stable, then compare coding, concept, and system design coverage before final interviews.';
 
 @Component({
   standalone: true,
@@ -110,7 +110,7 @@ export class CompanyIndexComponent implements OnInit {
       description: COMPANY_INDEX_DESCRIPTION,
       inLanguage: 'en',
       about: [
-        { '@type': 'Thing', name: 'Company frontend interview sets' },
+        { '@type': 'Thing', name: 'Company frontend interview questions' },
         { '@type': 'Thing', name: 'Frontend interview preparation' },
       ],
       mentions: [

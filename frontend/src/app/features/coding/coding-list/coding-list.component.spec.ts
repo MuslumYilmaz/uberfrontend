@@ -192,14 +192,15 @@ describe('CodingListComponent', () => {
     expect(host.querySelector('[data-testid^="company-signal-"]')).toBeNull();
   });
 
-  it('frames the default global coding route as the question library', async () => {
+  it('frames the default global coding route as a frontend interview question bank', async () => {
     const fixture = await createComponent({
       queryParams: { reset: '1' },
     });
     const host = fixture.nativeElement as HTMLElement;
 
     expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('Question Library');
-    expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Question Library');
+    expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Frontend Interview Questions Bank');
+    expect(host.textContent || '').toContain('frontend interview question bank across coding, system design, and concept prompts');
     expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start first question');
     expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
       pill.textContent?.trim()

@@ -29,6 +29,7 @@
             "assets": [
               "src/favicon.ico",
               "src/robots.txt",
+              "src/llms.txt",
               {
                 "glob": "sitemap*.xml",
                 "input": "src",
@@ -213,6 +214,7 @@
             "assets": [
               "src/favicon.ico",
               "src/robots.txt",
+              "src/llms.txt",
               {
                 "glob": "sitemap*.xml",
                 "input": "src",

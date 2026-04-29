@@ -330,17 +330,17 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   introLead(): string {
     if (this.isMasterHub()) {
-      return 'Guided warm-up for fast frontend interview prep: start with the most crucial JavaScript coding and concept prompts, then branch into the Question Library for broader coverage.';
+      return 'Guided warm-up for fast frontend interview prep: start with crucial JavaScript coding and concept prompts, review explanations and preview checks, then branch into the Question Library for broader coverage.';
     }
 
-    return `Technology warm-up for ${this.keywordSentenceCase()}: tackle the most crucial coding and concept questions first, then expand into Study Plans, guides, and Company Prep.`;
+    return `Technology warm-up for ${this.keywordSentenceCase()}: tackle crucial coding and concept prompts with explanations first, then expand into Study Plans, guides, and Company Prep.`;
   }
 
   listIntentItems(): string[] {
     if (this.isMasterHub()) {
       return [
         'Start with curated JavaScript essentials to warm up interview execution speed.',
-        'Mix coding implementation drills with concept explanation checks in one short loop.',
+        'Mix coding implementation drills, concept explanation checks, and preview links in one short loop.',
         'Expand to framework hubs, guides, and tracks once your baseline is stable.',
       ];
     }
@@ -348,7 +348,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const techName = this.currentHubTechLabel();
     return [
       `Prioritize high-impact ${techName} coding prompts first.`,
-      `Use ${techName} concept rounds to sharpen explanation speed.`,
+      `Use ${techName} concept rounds and explanations to sharpen answer speed.`,
       'Escalate into the frontend interview prep platform for guided sequencing.',
     ];
   }

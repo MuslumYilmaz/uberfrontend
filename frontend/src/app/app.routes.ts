@@ -66,9 +66,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'FrontendAtlas Essential 60 and Interview Practice',
+        title: 'Frontend Interview Prep Platform',
         description:
-          'Start with FrontendAtlas Essential 60, then practice frontend coding, concepts, system design, and tradeoffs in a real editor with preview and checks.',
+          'Prepare for frontend interviews with Essential 60, coding and concept prompts, system design practice, and a real editor with preview and checks.',
         keywords: [
           'front end interview questions',
           'javascript interview',
@@ -128,9 +128,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'FrontendAtlas Essential 60 and Interview Practice',
+        title: 'Frontend Interview Prep Platform',
         description:
-          'Start with FrontendAtlas Essential 60, then practice frontend coding, concepts, system design, and tradeoffs in a real editor with preview and checks.',
+          'Prepare for frontend interviews with Essential 60, coding and concept prompts, system design practice, and a real editor with preview and checks.',
         canonical: '/',
         keywords: [
           'front end interview questions',
@@ -257,9 +257,9 @@ export const routes: Routes = [
       ),
     data: {
       seo: {
-        title: 'Company interview prep hub',
+        title: 'Company Frontend Interview Questions Hub',
         description:
-          'Use company-specific frontend interview questions as part of your interview roadmap, compare hiring patterns, and focus prep where each team interviews.',
+          'Use company-specific frontend interview questions to compare coding, concept, and system design coverage before final interview prep.',
         robots: 'index,follow',
       },
     },
@@ -273,9 +273,9 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Company Frontend Interview Sets',
+            title: 'Company Frontend Interview Questions',
             description:
-              'Explore frontend interview questions grouped by company, then follow an interview roadmap across coding, concept questions, and system design coverage.',
+              'Explore frontend interview questions grouped by company, then compare coding, concept, and system design coverage for target teams.',
             robots: 'index,follow',
           },
         },
@@ -289,9 +289,9 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Company Interview Preview',
+            title: 'Company Frontend Interview Questions Preview',
             description:
-              'Preview company-specific frontend interview question coverage and sample prompts before unlocking premium.',
+              'Preview company-specific frontend interview question coverage, sample coding prompts, concept questions, and system design signals before unlocking premium.',
             robots: 'index,follow',
           },
         },
@@ -461,9 +461,9 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend Interview Prep Platform and Tracks',
+            title: 'Frontend Interview Study Plans and Tracks',
             description:
-              'Use the frontend interview prep platform to run guided practice tracks, then connect each track with frontend interview question hubs by technology.',
+              'Use frontend interview study plans to run guided coding, concept, and system design practice, then connect each plan with question hubs by technology.',
             robots: 'index,follow',
           },
         },
@@ -479,7 +479,7 @@ export const routes: Routes = [
           seo: {
             title: 'Interview Track Preview',
             description:
-              'Preview track outcomes, sample frontend interview questions, and premium unlock details.',
+              'Preview frontend interview study plan outcomes, sample questions, and premium unlock details.',
             robots: 'index,follow',
           },
         },
@@ -551,9 +551,9 @@ export const routes: Routes = [
       import('./features/tech-layout/tech-layout.component').then((m) => m.TechLayoutComponent),
     data: {
       seo: {
-        title: 'Front-end system design practice',
-        description: 'System design prompts, walkthroughs, and solutions for front-end interviews.',
-        keywords: ['frontend system design', 'ui architecture interview', 'system design practice'],
+        title: 'Frontend System Design Interview Practice',
+        description: 'Frontend system design interview questions for UI architecture, state, API contracts, performance, accessibility, and tradeoffs.',
+        keywords: ['frontend system design interview questions', 'ui architecture interview', 'system design practice'],
       },
     },
     children: [
@@ -565,8 +565,8 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Front-end system design questions',
-            description: 'Practice system design scenarios focused on front-end architecture and UX.',
+            title: 'Frontend System Design Interview Questions',
+            description: 'Practice frontend system design scenarios focused on UI architecture, state, API contracts, performance, accessibility, and tradeoffs.',
           },
         },
       },
@@ -622,8 +622,8 @@ export const routes: Routes = [
     path: 'guides',
     data: {
       seo: {
-        title: 'Frontend Interview Preparation Guides',
-        description: 'Frontend interview preparation guides for coding challenges, system design interviews, and behavioral rounds.',
+        title: 'Frontend Interview Playbook and Preparation Guides',
+        description: 'Frontend interview playbook for coding, UI, JavaScript, system design, and behavioral rounds.',
       },
     },
     children: [
@@ -697,8 +697,8 @@ export const routes: Routes = [
         component: PlaybookIndexComponent,
         data: {
           seo: {
-            title: 'Frontend Interview Preparation Guides',
-            description: 'Use these frontend interview preparation guides to plan coding, UI, system design, and behavioral rounds with a practical checklist.',
+            title: 'Frontend Interview Playbook',
+            description: 'Use this frontend interview playbook to plan coding, UI, JavaScript, system design, and behavioral rounds with a practical checklist.',
           },
         },
       },
@@ -988,8 +988,9 @@ export const routes: Routes = [
       source: 'global-coding',
       kind: 'coding',
       seo: {
-        title: 'Frontend Question Library',
-        description: 'Practice frontend interview questions by technology, format, difficulty, and focus area, then open coding, concept, and system design prompts from one library.',
+        title: 'Frontend Interview Questions Bank | Coding, System Design, Concepts',
+        description:
+          'Practice frontend interview questions across coding, system design, and concepts. Filter by technology, difficulty, and focus area, then open one prompt immediately.',
       },
     },
   },
@@ -1091,7 +1092,7 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend Interview Questions for Quick Prep',
         description:
-          'Quick frontend interview prep with most crucial JavaScript coding and concept questions first, plus interview question hubs for React, Angular, Vue, HTML, CSS, and full platform tracks.',
+          'Quick frontend interview prep with coding and concept prompts, explanations, preview links, and hubs for React, Angular, Vue, HTML, CSS, and study plans.',
       },
     },
   },
@@ -1113,7 +1114,7 @@ export const routes: Routes = [
       seo: {
         title: 'JavaScript Interview Questions for Frontend Interviews',
         description:
-          'Practice JavaScript interview questions on async behavior, closures, arrays, state, edge cases, and UI-linked coding prompts with guided frontend prep paths.',
+          'Practice JavaScript interview questions with coding and concept prompts, explanations, preview checks, async behavior, closures, arrays, state, and edge cases.',
       },
     },
   },
@@ -1135,7 +1136,7 @@ export const routes: Routes = [
       seo: {
         title: 'React Interview Questions for Frontend Interviews',
         description:
-          'Practice React interview questions on hooks, state, effects, rendering behavior, async UI, and performance trade-offs with coding and concept prompts.',
+          'Practice React interview questions with coding and concept prompts, explanations, preview checks, hooks, state, effects, rendering behavior, and performance tradeoffs.',
       },
     },
   },
@@ -1174,7 +1175,7 @@ export const routes: Routes = [
       seo: {
         title: 'Angular Interview Questions for Frontend Interviews',
         description:
-          'Practice Angular interview questions on RxJS, HttpClient cancellation, change detection, dependency injection, forms, testing, and framework trade-offs.',
+          'Practice Angular interview questions with coding and concept prompts, explanations, preview checks, RxJS, HttpClient cancellation, change detection, DI, forms, and testing.',
       },
     },
   },
@@ -1208,7 +1209,7 @@ export const routes: Routes = [
       seo: {
         title: 'Vue Interview Questions for Frontend Interviews',
         description:
-          'Practice Vue interview questions on reactivity, rendering, v-if vs v-show, nextTick, component contracts, router/state decisions, and debugging follow-ups.',
+          'Practice Vue interview questions with coding and concept prompts, explanations, preview checks, reactivity, rendering, nextTick, component contracts, and state decisions.',
       },
     },
   },
@@ -1229,7 +1230,7 @@ export const routes: Routes = [
       },
       seo: {
         title: 'HTML CSS Interview Questions',
-        description: 'HTML CSS interview questions for frontend interview preparation, with coding and concept practice plus links to guides and tracks.',
+        description: 'HTML CSS interview questions for frontend prep, with coding and concept prompts, explanations, preview checks, and links to guides and study plans.',
       },
     },
   },
@@ -1251,7 +1252,7 @@ export const routes: Routes = [
       seo: {
         title: 'HTML Interview Questions for Frontend Interviews',
         description:
-          'Practice HTML interview questions on semantics, forms, accessibility, metadata, validation, browser defaults, and practical frontend fundamentals.',
+          'Practice HTML interview questions with concept prompts, explanations, preview checks, semantics, forms, accessibility, metadata, validation, and browser defaults.',
       },
     },
   },
@@ -1285,7 +1286,7 @@ export const routes: Routes = [
       seo: {
         title: 'CSS Interview Questions for Frontend Interviews',
         description:
-          'Practice CSS interview questions on flexbox, grid, cascade, specificity, custom properties, responsive layout, accessibility, and visual debugging.',
+          'Practice CSS interview questions with coding and concept prompts, explanations, preview checks, flexbox, grid, cascade, specificity, responsive layout, and visual debugging.',
       },
     },
   },
