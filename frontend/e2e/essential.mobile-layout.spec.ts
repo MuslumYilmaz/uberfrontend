@@ -95,8 +95,8 @@ test.describe('Essential 60 mobile layout guardrail', () => {
     await expect(page.getByTestId('prep-roadmap-switcher')).toBeVisible();
 
     await assertNoHorizontalOverflow(page, 'Essential 60 page');
-    await assertFitsViewport(page, '.essential-card', 'first Essential 60 card');
-    await assertFitsViewport(page, '.essential-card__chips', 'card badges');
+    await assertFitsViewport(page, '[data-testid^="essential-row-"]', 'first Essential 60 row');
+    await assertFitsViewport(page, '.fa-question-row__meta', 'row metadata');
 
     await page.getByTestId('prep-roadmap-switcher-trigger').click();
     await expect(page.getByTestId('prep-roadmap-switcher-panel')).toBeVisible();

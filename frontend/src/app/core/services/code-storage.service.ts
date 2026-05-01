@@ -165,7 +165,7 @@ export class CodeStorageService {
     qidRaw: string | number,
     code: string,
     lang: JsLang = 'js',
-    opts?: { force?: boolean }
+    opts?: { force?: boolean; allowEmpty?: boolean }
   ): void {
     // Legacy wrapper: use async path (IDB-first).
     void this.saveJsAsync(qidRaw, code, lang, opts);
@@ -441,7 +441,7 @@ export class CodeStorageService {
     qidRaw: string | number,
     code: string,
     lang: JsLang = 'js',
-    opts?: { force?: boolean }
+    opts?: { force?: boolean; allowEmpty?: boolean }
   ): Promise<void> {
     this.ensureMigrated();
     const qid = String(qidRaw);
@@ -454,8 +454,8 @@ export class CodeStorageService {
       const existing = cur[lang]?.code ?? '';
       const baseline = cur[lang]?.baseline ?? null;
 
-      // Guard 1: don't overwrite non-empty user code with empty value (unless force)
-      if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
+      // Guard 1: don't overwrite non-empty user code with empty value (unless forced or user-allowed)
+      if (!opts?.force && !opts?.allowEmpty && (code ?? '').length === 0 && existing.trim().length > 0) {
         return;
       }
 
@@ -1094,7 +1094,7 @@ export class CodeStorageService {
     tech: FrameworkTech,
     pathRaw: string,
     code: string,
-    opts?: { force?: boolean }
+    opts?: { force?: boolean; allowEmpty?: boolean }
   ): Promise<void> {
     const qid = String(qidRaw);
     const path = pathRaw.replace(/^\/+/, '');
@@ -1112,8 +1112,8 @@ export class CodeStorageService {
       const existing = prev.code ?? '';
       const baseline = prev.baseline ?? null;
 
-      // Guard 1: don't wipe non-empty with empty (unless force)
-      if (!opts?.force && (!code || !code.trim()) && existing.trim()) {
+      // Guard 1: don't wipe non-empty with empty (unless forced or user-allowed)
+      if (!opts?.force && !opts?.allowEmpty && (!code || !code.trim()) && existing.trim()) {
         return;
       }
 

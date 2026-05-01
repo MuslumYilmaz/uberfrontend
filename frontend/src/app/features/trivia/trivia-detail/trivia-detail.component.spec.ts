@@ -206,8 +206,8 @@ describe('TriviaDetailComponent', () => {
     }
   });
 
-  async function createLoadedFixture(access: 'free' | 'premium' = 'free') {
-    routeData$.next({ questionDetail: makeResolved(access) });
+  async function createLoadedFixture(access: 'free' | 'premium' = 'free', extras: Record<string, any> = {}) {
+    routeData$.next({ questionDetail: makeResolved(access, extras) });
     const fixture = TestBed.createComponent(TriviaDetailComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -226,6 +226,32 @@ describe('TriviaDetailComponent', () => {
     const reportButton = fixture.nativeElement.querySelector('.report-issue-btn') as HTMLButtonElement | null;
     expect(reportButton).toBeTruthy();
     expect(reportButton?.textContent || '').toContain('Report issue');
+  });
+
+  it('renders a question-led H1 intent label without changing meta title or description', async () => {
+    const fixture = await createLoadedFixture('free', {
+      seo: {
+        title: 'JavaScript Closure Interview SEO Title',
+        description: 'Practice explaining JavaScript closures in interviews without losing the original question title.',
+      },
+    });
+
+    const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
+    expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe('What is closure?');
+    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Frontend interview Q&A');
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    expect(payload.title).toBe('JavaScript Closure Interview SEO Title');
+    expect(payload.description).toBe(
+      'Practice explaining JavaScript closures in interviews without losing the original question title.',
+    );
+
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faq = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.headline).toBe('What is closure? - Frontend interview Q&A');
+    expect(faq?.mainEntity?.[0]?.name).toBe('What is closure?');
   });
 
   it('renders crawlable sidebar and practice entry links', async () => {
@@ -286,6 +312,10 @@ describe('TriviaDetailComponent', () => {
     const lockedActions = fixture.nativeElement.querySelector('.locked-actions') as HTMLElement | null;
     expect(lockedActions).toBeTruthy();
     expect(lockedActions?.textContent || '').toContain('Report access issue');
+
+    const lockedHeading = fixture.nativeElement.querySelector('h1.locked-title') as HTMLElement | null;
+    expect(lockedHeading?.querySelector('.locked-title__question')?.textContent?.trim()).toBe('What is closure?');
+    expect(lockedHeading?.querySelector('.locked-title__intent')?.textContent?.trim()).toBe('Frontend interview Q&A');
   });
 
   it('fires trivia scroll depth exactly once per threshold from the main scroll container', fakeAsync(() => {
@@ -455,6 +485,7 @@ describe('TriviaDetailComponent', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
 
     expect(article).toBeTruthy();
+    expect(article?.headline).toBe('What is closure? - Frontend interview Q&A');
     expect(String(article?.isPartOf?.url || '')).toContain('/javascript/interview-questions');
     expect(Array.isArray(article?.about)).toBeTrue();
     expect(Array.isArray(article?.mentions)).toBeTrue();

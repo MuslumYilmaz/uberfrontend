@@ -53,10 +53,7 @@
   margin-bottom: 16px;
 }
 
-.essential-support__link,
-.essential-link,
-.essential-variant,
-.essential-source {
+.essential-support__link {
   text-decoration: none;
 }
 
@@ -122,173 +119,10 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 82%, transparent);
 }
 
-.essential-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.essential-card {
-  display: grid;
-  gap: 12px;
-  padding: 18px;
-}
-
-.essential-card__top,
-.essential-card__title-row,
-.essential-card__actions {
+.essential-list {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 10px;
-}
-
-.essential-card__eyebrow,
-.essential-card__chips,
-.essential-card__meta,
-.essential-card__topics,
-.essential-variant-row,
-.essential-sources__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.essential-card__eyebrow {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--uf-text-tertiary) 82%, transparent);
-}
-
-.essential-card__title {
-  margin: 0;
-  font-size: 20px;
-  line-height: 1.2;
-  color: var(--uf-text-primary);
-}
-
-.essential-card__desc,
-.essential-card__reason {
-  margin: 0;
-  line-height: 1.55;
-}
-
-.essential-card__desc {
-  color: var(--uf-text-primary);
-}
-
-.essential-card__reason {
-  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
-  font-size: 14px;
-}
-
-.essential-badge,
-.essential-meta-chip,
-.essential-topic,
-.essential-variant {
-  display: inline-flex;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 10px;
-  border-radius: var(--uf-radius-pill);
-  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, transparent);
-  background: color-mix(in srgb, var(--uf-surface) 96%, var(--uf-surface-alt));
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--uf-text-primary);
-}
-
-.essential-badge--tier[data-tier='must-know'] {
-  border-color: color-mix(in srgb, var(--uf-accent) 44%, var(--uf-border-subtle));
-  background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
-}
-
-.essential-badge--score {
-  cursor: help;
-}
-
-.essential-badge--premium {
-  color: color-mix(in srgb, var(--uf-accent) 86%, var(--uf-text-primary) 14%);
-}
-
-.essential-company-logos {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 26px;
-}
-
-.essential-company-logo {
-  --fa-company-logo-size: 28px;
-  --fa-company-logo-radius: 999px;
-  --fa-company-logo-image-size: 17px;
-}
-
-.essential-company-overflow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 26px;
-  padding: 0 8px;
-  border-radius: var(--uf-radius-pill);
-  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, transparent);
-  background: color-mix(in srgb, var(--uf-surface) 96%, var(--uf-surface-alt));
-  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.essential-topic {
-  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
-}
-
-.essential-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  padding: 0 14px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--uf-accent) 82%, var(--uf-text-primary) 18%);
-  color: var(--uf-surface);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.essential-card__variants {
-  display: grid;
-  gap: 8px;
-}
-
-.essential-card__variants-label,
-.essential-sources__title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--uf-text-primary);
-}
-
-.essential-variant {
-  color: var(--uf-text-primary);
-}
-
-.essential-sources {
-  margin-top: 24px;
-  display: grid;
-  gap: 10px;
-}
-
-.essential-source {
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  padding: 0 10px;
-  border-radius: var(--uf-radius-pill);
-  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, transparent);
-  background: color-mix(in srgb, var(--uf-surface) 95%, var(--uf-surface-alt));
-  color: var(--uf-text-primary);
-  font-size: 12px;
-  font-weight: 600;
 }
 
 @media (max-width: 900px) {
@@ -296,9 +130,6 @@
     grid-template-columns: 1fr;
   }
 
-  .essential-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 640px) {

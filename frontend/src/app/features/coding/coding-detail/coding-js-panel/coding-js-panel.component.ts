@@ -266,7 +266,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.pendingPersist = null;
       this.persistTimer = null;
       if (!p) return;
-      void this.codeStore.saveJsAsync(p.key, p.code, p.lang);
+      void this.codeStore.saveJsAsync(p.key, p.code, p.lang, { allowEmpty: true });
     }, 200);
   }
 
@@ -279,7 +279,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     const p = this.pendingPersist;
     this.pendingPersist = null;
     if (!this.disablePersistence) {
-      void this.codeStore.saveJsAsync(p.key, p.code, p.lang);
+      void this.codeStore.saveJsAsync(p.key, p.code, p.lang, { allowEmpty: true });
     }
   }
 
@@ -1431,7 +1431,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     // Persist current buffer before switching drafts.
     this.flushPendingPersist();
     const activeKey = makeDraftKey(baseKey, this.activeDraftVersion() || currentVersion);
-    await this.codeStore.saveJsAsync(activeKey, this.editorContent(), this.jsLang()).catch(() => { });
+    await this.codeStore.saveJsAsync(activeKey, this.editorContent(), this.jsLang(), { allowEmpty: true }).catch(() => { });
 
     this._hydrating = true;
     this.clearSolutionDraftSnapshot();
@@ -1564,7 +1564,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     // 1) Persist current code for the current lang (unless we're hydrating)
     if (!this._hydrating) {
       this.cancelPendingPersist();
-      await this.codeStore.saveJsAsync(storageKey, this.editorContent(), currentLang);
+      await this.codeStore.saveJsAsync(storageKey, this.editorContent(), currentLang, { allowEmpty: true });
     }
 
     // Snapshot UI flags so we don't lose the banner states
@@ -2430,7 +2430,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     if (this.disablePersistence) {
       this.volatileBuffers[this.jsLang()] = code;
     } else if (q && storageKey) {
-      await this.codeStore.saveJsAsync(storageKey, code, this.jsLang());
+      await this.codeStore.saveJsAsync(storageKey, code, this.jsLang(), { allowEmpty: true });
     }
     this.codeChange.emit({ lang: this.jsLang(), code });
   }

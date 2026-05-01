@@ -11,7 +11,6 @@ import { SliderModule } from 'primeng/slider';
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
-import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, QuestionKind, Technology, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
@@ -29,9 +28,12 @@ import { SeoMeta, SeoService } from '../../../core/services/seo.service';
 import { buildCodingListSeoMeta } from './coding-list-seo.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
-import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
+import {
+  FaQuestionRowComponent,
+  FaQuestionRowMetaChip,
+  FaQuestionRowVariant,
+} from '../../../shared/ui/question-row/fa-question-row.component';
 import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
-import { CompanySignalComponent } from '../../../shared/components/company-signal/company-signal.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -233,16 +235,14 @@ function inferCategory(q: any): CategoryKey {
     SliderModule,
     InputTextModule,
     FormsModule,
-    TooltipModule,
     CodingTechKindTabsComponent,
     CodingFilterPanelComponent,
     OfflineBannerComponent,
     FaChipComponent,
     FaButtonComponent,
     FaCardComponent,
-    FaGlyphComponent,
     FaSpinnerComponent,
-    CompanySignalComponent,
+    FaQuestionRowComponent,
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
@@ -303,6 +303,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private lastScopedFilter: { topic: string | null; focus: string | null } = { topic: null, focus: null };
   private resolvedList: QuestionListResolved | null = null;
   private systemDesignRowsCache$: Observable<Row[]> | null = null;
+  private readonly handleDocumentClick = (e: MouseEvent) => {
+    const target = e.target instanceof Element ? e.target : null;
+    if (!target?.closest('.sort-wrap')) this.closeSort();
+  };
 
   viewMode$ = this.route.queryParamMap.pipe(
     map(qp => (qp.get('view') === 'formats' ? 'formats' : 'tech') as ViewMode),
@@ -878,21 +882,21 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.isBrowser) {
       document.addEventListener(
         'click',
-        (e) => {
-          const target = e.target as HTMLElement;
-          if (!target.closest('.sort-wrap')) this.closeSort();
-        },
+        this.handleDocumentClick,
         { capture: true }
       );
     }
 
-    this.companySlug$.subscribe((slug) => {
-      this.currentCompanySlug = slug || null;
-    });
+    this.companySlug$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((slug) => {
+        this.currentCompanySlug = slug || null;
+      });
 
     // seed category filter from ?category= on global formats list
     this.route.queryParamMap
       .pipe(
+        takeUntil(this.destroy$),
         tap(qp => {
           if (this.source !== 'global-coding') return;
 
@@ -1310,6 +1314,55 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   // ---------- helpers used by template ----------
+  questionRowKindLabel(q: Row): string {
+    if (q.__sd) return 'System design';
+    return q.__kind === 'trivia' ? 'Concept' : 'Coding';
+  }
+
+  questionRowDescription(q: Row): string {
+    return this.preview(this.descriptionText(q), 120);
+  }
+
+  questionRowMetaChips(q: Row): FaQuestionRowMetaChip[] {
+    const chips: FaQuestionRowMetaChip[] = [
+      {
+        label: this.capitalize(q.difficulty),
+        ariaLabel: `Difficulty: ${this.capitalize(q.difficulty)}`,
+        tone: 'difficulty',
+      },
+      {
+        label: this.capitalize(this.impLabel(q)),
+        ariaLabel: `Importance: ${this.capitalize(this.impLabel(q))}`,
+        tone: 'importance',
+      },
+    ];
+
+    if (this.source !== 'tech') {
+      chips.push({
+        label: this.techName(q),
+        ariaLabel: `Technology: ${this.techName(q)}`,
+        tone: 'tech',
+      });
+    }
+
+    return chips;
+  }
+
+  questionRowVariants(q: Row): FaQuestionRowVariant[] {
+    return this.frameworkOptions(q).map((option) => ({
+      id: option.id,
+      label: this.frameworkLabel(option.tech),
+      active: option.id === q.id,
+      ariaLabel: `Open ${this.frameworkLabel(option.tech)} version`,
+    }));
+  }
+
+  handleQuestionVariantSelected(variant: FaQuestionRowVariant, q: Row): void {
+    const target = this.frameworkOptions(q).find((option) => option.id === variant.id);
+    if (!target) return;
+    this.goToFramework(new Event('click'), target, q);
+  }
+
   descriptionText(q: Question): string {
     const d: any = (q as any).description;
     if (typeof d === 'string') return this.decodeHtmlEntities(d);
@@ -1843,6 +1896,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     this.viewModeSub?.unsubscribe();
     this.navSub?.unsubscribe();
+    if (this.isBrowser) {
+      document.removeEventListener('click', this.handleDocumentClick, { capture: true });
+    }
   }
 
   private getViewKeyFromRoute(): ViewMode {

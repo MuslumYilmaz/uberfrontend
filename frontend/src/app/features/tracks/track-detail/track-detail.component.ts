@@ -23,6 +23,11 @@ import {
 import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
+import {
+  FaQuestionRowComponent,
+  FaQuestionRowMetaChip,
+  FaQuestionRowVariant,
+} from '../../../shared/ui/question-row/fa-question-row.component';
 import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
 
 type PracticeItem = { tech: Tech; kind: QuestionKind; id: string };
@@ -94,6 +99,7 @@ const SECTIONED_TRACK_LAYOUTS: Readonly<Record<string, SectionedTrackLayout>> = 
     FaChipComponent,
     CodingFilterPanelComponent,
     FaCardComponent,
+    FaQuestionRowComponent,
     FaSpinnerComponent,
   ],
   templateUrl: './track-detail.component.html',
@@ -546,6 +552,54 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     return 'crash-chip--intermediate';
   }
 
+  trackRowDescription(item: TrackItem): string {
+    return this.preview(item.description, 160) || this.trackActionLabel(item);
+  }
+
+  trackRowTooltip(item: TrackItem): string {
+    return [item.description || '', this.trackActionLabel(item)].filter(Boolean).join('\n\n');
+  }
+
+  trackRowMetaChips(item: TrackItem): FaQuestionRowMetaChip[] {
+    const chips: FaQuestionRowMetaChip[] = [
+      {
+        label: this.trackDifficultyLabel(item.difficulty),
+        ariaLabel: `Difficulty: ${this.trackDifficultyLabel(item.difficulty)}`,
+        tone: 'difficulty',
+      },
+      {
+        label: `${this.estimateMinutes(item)} min`,
+        ariaLabel: `Estimated time: ${this.estimateMinutes(item)} minutes`,
+        tone: 'time',
+      },
+    ];
+
+    if (item.tech) {
+      chips.push({
+        label: this.trackTechLabel(item.tech),
+        ariaLabel: `Technology: ${this.trackTechLabel(item.tech)}`,
+        tone: 'tech',
+      });
+    }
+
+    return chips;
+  }
+
+  trackRowVariants(item: TrackItem): FaQuestionRowVariant[] {
+    return this.frameworkOptions(item).map((option) => ({
+      id: option.id,
+      label: this.frameworkLabel(option.tech),
+      active: option.id === item.id,
+      ariaLabel: `Open ${this.frameworkLabel(option.tech)} version`,
+    }));
+  }
+
+  handleTrackVariantSelected(variant: FaQuestionRowVariant, item: TrackItem): void {
+    const target = this.frameworkOptions(item).find((option) => option.id === variant.id);
+    if (!target) return;
+    this.goToFramework(new Event('click'), target);
+  }
+
   estimateMinutes(item: TrackItem): number {
     if (item.kind === 'system-design') return 20;
 
@@ -592,6 +646,25 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
 
   frameworkLabel(tech: Tech): string {
     return frameworkLabel(tech);
+  }
+
+  trackTechLabel(tech: Tech): string {
+    switch (tech) {
+      case 'javascript':
+        return 'JavaScript';
+      case 'react':
+        return 'React';
+      case 'angular':
+        return 'Angular';
+      case 'vue':
+        return 'Vue';
+      case 'html':
+        return 'HTML';
+      case 'css':
+        return 'CSS';
+      default:
+        return 'Frontend';
+    }
   }
 
   goToFramework(ev: Event, opt: FrameworkVariant) {

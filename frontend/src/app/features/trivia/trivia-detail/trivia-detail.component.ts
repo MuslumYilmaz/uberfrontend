@@ -85,6 +85,8 @@ type LockedPath = {
 };
 type TriviaAnalyticsLocation = 'sidebar' | 'mobile_nav' | 'similar' | 'guides' | 'prep_bridge' | 'body';
 
+const TRIVIA_H1_INTENT_LABEL = 'Frontend interview Q&A';
+
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
   ...(Array.isArray((TAG_REGISTRY as any)?.tags) ? (TAG_REGISTRY as any).tags : []),
   ...((Array.isArray((TOPIC_REGISTRY as any)?.topics) ? (TOPIC_REGISTRY as any).topics : [])
@@ -136,6 +138,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('sideScroll') sideScroll?: ElementRef<HTMLElement>;
   @ViewChild('mainScroll') mainScroll?: ElementRef<HTMLElement>;
   tech!: Tech;
+  readonly h1IntentLabel = TRIVIA_H1_INTENT_LABEL;
 
   questionsList: Question[] = [];
   sidebarQuestions: Question[] = [];
@@ -615,6 +618,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return dateModified || '2025-01-01T00:00:00.000Z';
   }
 
+  visibleQuestionHeadline(q?: Question | null): string {
+    const title = String(q?.title || '').trim();
+    return title ? `${title} - ${TRIVIA_H1_INTENT_LABEL}` : TRIVIA_H1_INTENT_LABEL;
+  }
+
   private structuredDataImageUrl(): string {
     return this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
   }
@@ -682,7 +690,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const article = {
       '@type': 'TechArticle',
       '@id': canonical,
-      headline: q.title,
+      headline: this.visibleQuestionHeadline(q),
       description,
       url: canonical,
       image: [imageUrl],

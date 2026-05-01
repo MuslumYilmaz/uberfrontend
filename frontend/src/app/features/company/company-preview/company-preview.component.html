@@ -51,21 +51,16 @@
         </p>
       </div>
 
-      <ul class="sample-list" *ngIf="data.samples.length; else noSamples">
-        <li *ngFor="let item of data.samples">
-          <div class="sample-title-row">
-            <span class="sample-title">{{ item.title }}</span>
-            <span class="access-badge" [class.access-badge--free]="item.access === 'free'">
-              {{ item.access === 'free' ? 'Free now' : 'Premium in full set' }}
-            </span>
-          </div>
-          <div class="sample-meta">
-            <span>{{ displayKind(item.kind) }}</span>
-            <span *ngIf="item.tech">{{ item.tech | titlecase }}</span>
-            <span>{{ item.difficulty | titlecase }}</span>
-          </div>
-        </li>
-      </ul>
+      <div class="sample-list" *ngIf="data.samples.length; else noSamples">
+        <fa-question-row
+          *ngFor="let item of data.samples"
+          [testId]="'company-preview-question-' + item.id"
+          [kindLabel]="displayKind(item.kind)"
+          [title]="item.title"
+          [description]="sampleDescription(item)"
+          [metaChips]="sampleMetaChips(item)"
+        ></fa-question-row>
+      </div>
 
       <ng-template #noSamples>
         <p class="empty-state">No public samples yet for this company slug.</p>

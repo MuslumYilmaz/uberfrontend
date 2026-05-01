@@ -20,6 +20,12 @@ This folder defines app-level UI primitives. Feature pages should use these APIs
 - Inputs: `label`, `hint`, `error`, `required`, `disabled`
 - Purpose: consistent field label/hint/error structure around inputs/selects/textareas.
 
+`FaQuestionRowComponent` (`fa-question-row`)
+- Inputs: `testId`, `title`, `description`, `descriptionTooltip`, `kindLabel`, `routerLink`, `queryParams`, `state`, `disabled`, `solved`, `lockedLabel`, `companies`, `preferredCompanySlug`, `metaChips`, `variants`
+- Outputs: `rowClick`, `variantSelected`
+- Purpose: dense, reusable question-list row for coding, Essential 60, track detail, and preview question surfaces.
+- Metadata chips may set `priority: 'secondary'` to keep the value accessible without rendering another visible chip.
+
 `FaDialogComponent` (`fa-dialog`)
 - Wrapper over `p-dialog`.
 - Inputs: `visible`, `header`, `modal`, `closable`, `dismissableMask`, `draggable`, `resizable`, `blockScroll`, `closeOnEscape`, `showHeader`, `showFooter`, `width`, `maxWidth`, `styleClass`, `appendTo`, `contentStyle`, `actionsAlign`

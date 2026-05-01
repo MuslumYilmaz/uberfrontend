@@ -1379,8 +1379,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.sessionStart = Date.now();
       this.recorded = false;
 
-      // Let the dedicated panel bootstrap itself
-      setTimeout(() => this.frameworkPanel?.initFromQuestion(), 0);
+      // The dedicated panel bootstraps from its input changes.
       return;
     }
 

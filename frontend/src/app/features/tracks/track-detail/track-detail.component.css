@@ -300,6 +300,14 @@
   gap: 14px;
 }
 
+.track-question-row {
+  display: block;
+}
+
+.crash-day-section .track-question-row {
+  margin: 8px 10px;
+}
+
 .list-head {
   display: flex;
   align-items: center;

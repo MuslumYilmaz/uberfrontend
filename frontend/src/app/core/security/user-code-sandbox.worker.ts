@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 
 import { normalizeError } from '../utils/console-normalize';
+import { freezeHardenedPrototypes } from './user-code-sandbox-hardening';
 
 // ---------- message contracts ----------
 type RunMsg = {
@@ -209,9 +210,9 @@ const remove = (k: string) => { try { (self as any)[k] = undefined; } catch { } 
 ].forEach(remove);
 
 // best-effort hardening
-[
-    Object, Array, Map, Set, Date, RegExp, Error, Math, JSON, Promise, URL, URLSearchParams
-].forEach((ctor: any) => { try { Object.freeze(ctor.prototype); } catch { } });
+// Array.prototype stays extensible for catalog polyfill drills (myMap/myReduce/myFilter).
+// Each run gets a fresh worker, so those extensions do not leak between attempts.
+freezeHardenedPrototypes();
 
 // ---------- console shim & global error handlers ----------
 (self as any).console = {
