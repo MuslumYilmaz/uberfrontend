@@ -300,6 +300,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private viewModeSub?: Subscription;
   private navSub?: Subscription;
   private hydrated = false;
+  private latestVisibleRows: Row[] = [];
+  private navigatingToDetail = false;
   private lastScopedFilter: { topic: string | null; focus: string | null } = { topic: null, focus: null };
   private resolvedList: QuestionListResolved | null = null;
   private systemDesignRowsCache$: Observable<Row[]> | null = null;
@@ -592,7 +594,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   // Emit list again whenever solved ids change, so UI reacts immediately to auth/progress updates.
   visible$ = combineLatest([this.filtered$, this.solvedIds$]).pipe(
-    map(([qs]) => qs)
+    map(([qs]) => qs),
+    tap((qs) => {
+      this.latestVisibleRows = qs ?? [];
+    }),
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   // True when /coding?view=forms and the "System design" pill is selected
@@ -806,8 +812,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
     `${option.kind}:${option.tech}:${option.id}`;
 
   handleCardClick(ev: Event, q: Row) {
-    if (!this.isLocked(q)) return;
-    // Allow navigation to detail so SSR can render the premium preview.
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    this.go(q, this.latestVisibleRows.length ? this.latestVisibleRows : [q]);
   }
 
   openFirstVisible(): void {
@@ -1513,7 +1520,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   private replaceQueryParams(params: Record<string, any>) {
-    if (!this.isBrowser) return;
+    if (!this.isBrowser || this.navigatingToDetail) return;
     // NOTE: We intentionally use `Location.replaceState()` (no navigation / no history pollution),
     // so Angular Router's internal `ActivatedRoute` query state can be stale.
     // Merge against the *actual* current URL to avoid dropping previously-set params.
@@ -1815,7 +1822,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     const commands = this.linkTo(q);
     const state = this.stateForNav(list, q, this.currentCompanySlug);
-    this.router.navigate(commands, { state });
+    this.navigatingToDetail = true;
+    void this.router.navigate(commands, { state }).finally(() => {
+      this.navigatingToDetail = false;
+    });
   }
 
   private dedupeFrameworkRows(list: Row[]): Row[] {
