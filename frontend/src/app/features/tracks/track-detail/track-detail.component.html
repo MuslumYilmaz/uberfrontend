@@ -206,50 +206,20 @@
               </header>
 
               <ng-container *ngFor="let item of section.items">
-                <a
-                  class="crash-item-row"
-                  [attr.data-testid]="'track-question-card-' + item.id"
+                <fa-question-row
+                  class="track-question-row"
+                  [testId]="'track-question-card-' + item.id"
+                  [kindLabel]="trackKindLabel(item)"
+                  [title]="item.title"
+                  [description]="trackRowDescription(item)"
+                  [descriptionTooltip]="trackRowTooltip(item)"
+                  [solved]="isSolved(item.id)"
+                  [metaChips]="trackRowMetaChips(item)"
+                  [variants]="trackRowVariants(item)"
                   [routerLink]="linkFor(item)"
-                  [state]="navState(section.items, item)">
-                  <span class="crash-item-state" [class.crash-item-state--done]="isSolved(item.id)">
-                    <span *ngIf="isSolved(item.id)">✓</span>
-                  </span>
-
-                  <div class="crash-item-body">
-                    <div class="crash-item-title-line">
-                      <span class="crash-item-title">{{ item.title }}</span>
-                      <span class="crash-chip crash-chip--type">{{ trackKindLabel(item) }}</span>
-                      <span class="crash-chip crash-chip--difficulty" [ngClass]="trackDifficultyClass(item.difficulty)">
-                        {{ trackDifficultyLabel(item.difficulty) }}
-                      </span>
-                    </div>
-
-                    <p class="crash-item-summary">
-                      {{ preview(item.description, 160) || 'Open this prompt in the practice runner.' }}
-                    </p>
-                    <p class="crash-item-hint">{{ trackActionLabel(item) }}</p>
-
-                    <div class="framework-switcher" *ngIf="frameworkOptions(item).length > 1">
-                      <div class="fw-label-row">
-                        <span class="fw-label">Framework versions</span>
-                        <span class="fw-hint">Open in your stack</span>
-                      </div>
-                      <div class="fw-chip-row">
-                        <button
-                          type="button"
-                          class="fw-chip"
-                          *ngFor="let opt of frameworkOptions(item)"
-                          [class.active]="opt.id === item.id"
-                          (click)="goToFramework($event, opt)">
-                          <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
-                          <span class="fw-cta">Open</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="crash-item-time">{{ estimateMinutes(item) }} min</div>
-                </a>
+                  [state]="navState(section.items, item)"
+                  (variantSelected)="handleTrackVariantSelected($event, item)"
+                ></fa-question-row>
               </ng-container>
 
               <div class="empty-day" *ngIf="!section.items.length">
@@ -269,72 +239,21 @@
               <div class="note">Pace yourself — no daily check-ins.</div>
             </div>
 
-            <a
-              faCard interactive class="fa-question-card fa-question-card--compact"
+            <fa-question-row
+              class="track-question-row"
               *ngFor="let item of questions; let idx = index"
-              [attr.data-testid]="'track-question-card-' + item.id"
+              [testId]="'track-question-card-' + item.id"
+              [kindLabel]="'#' + (idx + 1) + ' ' + trackKindLabel(item)"
+              [title]="item.title"
+              [description]="trackRowDescription(item)"
+              [descriptionTooltip]="trackRowTooltip(item)"
+              [solved]="isSolved(item.id)"
+              [metaChips]="trackRowMetaChips(item)"
+              [variants]="trackRowVariants(item)"
               [routerLink]="linkFor(item)"
-              [state]="navState(questions, item)">
-              <div class="fa-question-card__grid">
-                <div class="fa-question-card__main">
-                  <div class="fa-question-card__eyebrow">
-                    <span class="eyebrow-dot"></span>
-                    <span>Track question {{ idx + 1 }} / {{ questions.length }}</span>
-                    <span class="solved-pill" *ngIf="isSolved(item.id)">Solved</span>
-                  </div>
-                  <div class="fa-question-card__title fa-card-title">{{ item.title }}</div>
-                  <div class="fa-question-card__description fa-meta-text" *ngIf="item.description">
-                    {{ preview(item.description, 160) }}
-                  </div>
-
-                  <div class="framework-switcher" *ngIf="frameworkOptions(item).length > 1">
-                    <div class="fw-label-row">
-                      <span class="fw-label">Framework versions</span>
-                      <span class="fw-hint">Open in your stack</span>
-                    </div>
-                    <div class="fw-chip-row">
-                      <button
-                        type="button"
-                        class="fw-chip"
-                        *ngFor="let opt of frameworkOptions(item)"
-                        [class.active]="opt.id === item.id"
-                        (click)="goToFramework($event, opt)">
-                        <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
-                        <span class="fw-cta">Open</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="fa-question-card__meta-row">
-                  <div class="fa-question-card__meta-item">
-                    <span class="fa-meta-label">Difficulty</span>
-                    <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="(item.difficulty || 'intermediate').toLowerCase()">
-                      {{ displayDifficulty(item.difficulty) }}
-                    </span>
-                  </div>
-
-                  <div class="fa-question-card__meta-item">
-                    <span class="fa-meta-label">Importance</span>
-                    <span
-                      class="fa-chip fa-chip--importance"
-                      [attr.data-importance]="(item.importance ?? 0) >= 4 ? 'high' : (item.importance ?? 0) >= 2 ? 'medium' : 'low'">
-                      {{ (item.importance ?? 0) >= 4 ? 'High' : (item.importance ?? 0) >= 2 ? 'Medium' : 'Low' }}
-                    </span>
-                  </div>
-
-                  <div class="fa-question-card__meta-item" *ngIf="item.tech">
-                    <span class="fa-meta-label">Tech</span>
-                    <span class="fa-chip fa-chip--tech">
-                      <span class="chip-icon" aria-hidden="true">⟡</span>
-                      {{ item.tech | titlecase }}
-                    </span>
-                  </div>
-
-                  <span class="ghost-link meta-open meta-open-pill">Open</span>
-                </div>
-              </div>
-            </a>
+              [state]="navState(questions, item)"
+              (variantSelected)="handleTrackVariantSelected($event, item)"
+            ></fa-question-row>
           </section>
         </ng-template>
       </ng-container>

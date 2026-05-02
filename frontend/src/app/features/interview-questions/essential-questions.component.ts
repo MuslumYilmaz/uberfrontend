@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { TooltipModule } from 'primeng/tooltip';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EssentialQuestionsResolved, EssentialResolvedItem, EssentialSection, EssentialTier } from '../../core/models/essential-questions.model';
 import { isQuestionLockedForTier } from '../../core/models/question.model';
 import { AuthService } from '../../core/services/auth.service';
 import { SeoMeta, SeoService } from '../../core/services/seo.service';
 import { UserProgressService } from '../../core/services/user-progress.service';
-import { companyBrandFor } from '../../shared/company-branding';
-import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
-import { FaCardComponent } from '../../shared/ui/card/fa-card.component';
-import { FaGlyphComponent } from '../../shared/ui/icon/fa-glyph.component';
+import {
+  FaQuestionRowComponent,
+  FaQuestionRowMetaChip,
+  FaQuestionRowVariant,
+} from '../../shared/ui/question-row/fa-question-row.component';
 
 type SectionOption = {
   key: EssentialSection | 'all';
@@ -25,7 +25,7 @@ type TierOption = {
 @Component({
   standalone: true,
   selector: 'app-essential-questions',
-  imports: [CommonModule, RouterModule, TooltipModule, CompanyLogoMarkComponent, FaCardComponent, FaGlyphComponent],
+  imports: [CommonModule, RouterModule, FaQuestionRowComponent],
   templateUrl: './essential-questions.component.html',
   styleUrls: ['./essential-questions.component.scss'],
 })
@@ -79,6 +79,7 @@ export class EssentialQuestionsComponent implements OnInit {
     public readonly auth: AuthService,
     private readonly progress: UserProgressService,
     private readonly seo: SeoService,
+    private readonly router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -131,6 +132,10 @@ export class EssentialQuestionsComponent implements OnInit {
     }
   }
 
+  sectionMetaLabel(section: EssentialSection): string {
+    return section === 'javascript-functions' ? 'JS functions' : this.sectionLabel(section);
+  }
+
   difficultyLabel(item: EssentialResolvedItem): string {
     return item.difficulty === 'easy'
       ? 'Easy'
@@ -151,30 +156,84 @@ export class EssentialQuestionsComponent implements OnInit {
     return `Importance score ${item.score} out of 100`;
   }
 
+  descriptionTooltip(item: EssentialResolvedItem): string {
+    return item.rationale;
+  }
+
+  rowMetaChips(item: EssentialResolvedItem): FaQuestionRowMetaChip[] {
+    const sectionLabel = this.sectionLabel(item.section);
+    const sectionMetaLabel = this.sectionMetaLabel(item.section);
+    const techLabel = this.techSummary(item);
+    const techAriaLabel = this.techAriaSummary(item);
+    const chips: FaQuestionRowMetaChip[] = [
+      {
+        label: sectionMetaLabel,
+        ariaLabel: `Section: ${sectionLabel}`,
+        tone: 'neutral',
+        priority: 'secondary',
+      },
+      {
+        label: this.tierLabel(item),
+        ariaLabel: `Tier: ${this.tierLabel(item)}`,
+        tone: 'tier',
+        priority: 'secondary',
+      },
+      {
+        label: this.scoreLabel(item),
+        ariaLabel: this.importanceAriaLabel(item),
+        tone: 'score',
+      },
+      {
+        label: this.difficultyLabel(item),
+        ariaLabel: `Difficulty: ${this.difficultyLabel(item)}`,
+        tone: 'difficulty',
+      },
+      {
+        label: techLabel,
+        ariaLabel: `Technology: ${techAriaLabel}`,
+        tone: 'tech',
+        priority: 'secondary',
+      },
+    ];
+
+    if (this.isLocked(item)) {
+      chips.push({
+        label: 'Premium',
+        ariaLabel: 'Premium question',
+        tone: 'access',
+      });
+    }
+
+    return chips;
+  }
+
+  rowVariants(item: EssentialResolvedItem): FaQuestionRowVariant[] {
+    return item.variants.map((variant) => ({
+      id: variant.id,
+      label: variant.techLabel,
+      active: variant.id === item.primary.id,
+      ariaLabel: `Open ${variant.techLabel} version`,
+    }));
+  }
+
+  openVariant(variant: FaQuestionRowVariant, item: EssentialResolvedItem): void {
+    const target = item.variants.find((candidate) => candidate.id === variant.id);
+    if (!target) return;
+    this.router.navigate(target.route);
+  }
+
   techSummary(item: EssentialResolvedItem): string {
     if (item.isSystemDesign) return 'Frontend';
     if (item.technologies.length === 0) return 'Frontend';
     if (item.technologies.length === 1) return item.variants[0]?.techLabel || 'Frontend';
-    return item.variants.map((variant) => variant.techLabel).join(' / ');
+    const primary = item.variants.find((variant) => variant.id === item.primary.id) ?? item.variants[0];
+    return `${primary?.techLabel || 'Frontend'} +${Math.max(0, item.variants.length - 1)}`;
   }
 
-  companyLogoItems(item: EssentialResolvedItem): readonly string[] {
-    return item.companies.slice(0, 3);
-  }
-
-  companyLogoOverflow(item: EssentialResolvedItem): number {
-    return Math.max(0, item.companies.length - this.companyLogoItems(item).length);
-  }
-
-  companyLogoLabel(item: EssentialResolvedItem): string {
-    const labels = item.companies
-      .map((company) => companyBrandFor(company)?.label || String(company || '').trim())
-      .filter(Boolean);
-    return labels.length ? `Company signals: ${labels.join(', ')}` : 'Company signals';
-  }
-
-  openLabel(item: EssentialResolvedItem): string {
-    return item.isSystemDesign ? 'Open prompt' : 'Open question';
+  techAriaSummary(item: EssentialResolvedItem): string {
+    if (item.isSystemDesign) return 'Frontend';
+    if (item.technologies.length === 0) return 'Frontend';
+    return item.variants.map((variant) => variant.techLabel).join(', ');
   }
 
   private updateSeo(): void {

@@ -250,7 +250,7 @@ describe('CodingListComponent', () => {
       pill.textContent?.trim()
     )).toEqual(['Senior signal', 'Architecture + tradeoffs']);
     expect(host.textContent || '').not.toContain('Frontend coding challenges');
-    expect(systemCard?.textContent || '').toContain('System design prompt');
+    expect(systemCard?.textContent || '').toContain('System design');
     expect(systemCard?.querySelector('[data-testid="coding-list-fit-pill"]')).toBeNull();
     expect(systemCard?.getAttribute('href')).toBe('/system-design/design-news-feed');
   });

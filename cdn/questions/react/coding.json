@@ -2085,6 +2085,11 @@
         ]
       }
     },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-chat-streaming-ui.v1.json",
+      "openFile": "/src/App.tsx"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json",
     "companies": [
       "openai"
     ],

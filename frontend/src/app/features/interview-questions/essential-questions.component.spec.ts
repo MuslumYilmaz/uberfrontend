@@ -174,32 +174,39 @@ describe('EssentialQuestionsComponent', () => {
     }).compileComponents();
   });
 
-  it('renders the curated grid, solved state, and framework variants', async () => {
+  it('renders the curated list, solved state, and framework variants', async () => {
     const fixture = TestBed.createComponent(EssentialQuestionsComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
-    expect(host.querySelectorAll('[data-testid^="essential-card-"]').length).toBe(3);
+    expect(host.querySelectorAll('[data-testid^="essential-row-"]').length).toBe(3);
     expect(host.textContent || '').toContain('FrontendAtlas Essential 60');
-    expect(host.querySelector('[data-testid="essential-card-js-debounce"]')?.textContent || '').toContain('Debounce Function');
-    expect(host.querySelector('[data-testid="essential-card-js-debounce"]')?.textContent || '').toContain('Must know');
+    const freeRow = host.querySelector('[data-testid="essential-row-js-debounce"]') as HTMLElement;
+    expect(freeRow?.textContent || '').toContain('Debounce Function');
     expect(host.querySelector('[title="Solved"]')).not.toBeNull();
-    expect(host.querySelector('[data-testid="essential-variant-ui-debounced-search-react-debounced-search"]')?.textContent?.trim()).toBe('React');
-    expect(host.querySelector('[data-testid="essential-variant-ui-debounced-search-angular-debounced-search"]')?.textContent?.trim()).toBe('Angular');
-    const premiumCard = host.querySelector('[data-testid="essential-card-ui-debounced-search"]') as HTMLElement;
-    const scoreBadge = host.querySelector('[aria-label="Importance score 93 out of 100"]') as HTMLElement;
-    const companyLogos = premiumCard.querySelector('[data-testid="essential-company-logos-ui-debounced-search"]') as HTMLElement;
+    expect(host.querySelector('[data-testid="question-row-variant-react-debounced-search"]')?.textContent?.trim()).toBe('React');
+    expect(host.querySelector('[data-testid="question-row-variant-angular-debounced-search"]')?.textContent?.trim()).toBe('Angular');
+    const premiumRow = host.querySelector('[data-testid="essential-row-ui-debounced-search"]') as HTMLElement;
+    const scoreBadge = freeRow.querySelector(
+      '.fa-question-row__meta-chip[aria-label="Importance score 93 out of 100"]',
+    ) as HTMLElement;
+    const companySignal = premiumRow.querySelector('[data-testid="company-signal-google"]') as HTMLElement;
 
-    expect(scoreBadge?.textContent?.trim()).toBe('93/100');
-    expect(scoreBadge?.getAttribute('title')).toBeNull();
-    expect(scoreBadge?.getAttribute('ng-reflect-content')).toContain('Importance score');
-    expect(premiumCard.textContent || '').toContain('Premium');
-    expect(premiumCard.textContent || '').not.toContain('Locked');
-    expect(premiumCard.querySelector('.essential-badge--premium')?.getAttribute('aria-label')).toBe('Premium question');
-    expect(companyLogos?.getAttribute('aria-label')).toBe('Company signals: Google, Netflix');
-    expect(companyLogos?.querySelector('[data-testid="company-logo-mark-google"]')).not.toBeNull();
+    expect(scoreBadge?.textContent || '').toContain('93/100');
+    expect(freeRow.querySelector('.fa-question-row__meta-chip[aria-label="Tier: Must know"]')).toBeNull();
+    expect(freeRow.querySelector('.fa-question-row__meta-chip[aria-label="Technology: JavaScript"]')).toBeNull();
+    expect(freeRow.querySelector('.fa-question-row__sr-meta')?.textContent || '').toContain('Tier: Must know');
+    expect(freeRow.querySelector('.fa-question-row__sr-meta')?.textContent || '').toContain('Technology: JavaScript');
+    expect(premiumRow.textContent || '').toContain('Premium');
+    expect(premiumRow.textContent || '').not.toContain('Locked');
+    expect(premiumRow.querySelector('[aria-label="Premium question"]')).not.toBeNull();
+    expect(companySignal?.getAttribute('aria-label')).toBe('Company prep signal: Google and 1 more');
+    expect(companySignal?.querySelector('[data-testid="company-signal-logo"]')).not.toBeNull();
+    expect(companySignal?.querySelector('[data-testid="company-signal-overflow"]')?.textContent?.trim()).toBe('+1');
+    expect(host.textContent || '').not.toContain('Benchmark topics');
+    expect(host.textContent || '').not.toContain('GFE 75');
   });
 
   it('filters by section and tier', async () => {
@@ -211,11 +218,11 @@ describe('EssentialQuestionsComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     (host.querySelector('[data-testid="essential-section-system-design"]') as HTMLButtonElement).click();
     fixture.detectChanges();
-    expect(host.querySelectorAll('[data-testid^="essential-card-"]').length).toBe(1);
+    expect(host.querySelectorAll('[data-testid^="essential-row-"]').length).toBe(1);
     expect(host.textContent || '').toContain('Notification Toast System');
 
     (host.querySelector('[data-testid="essential-tier-must-know"]') as HTMLButtonElement).click();
     fixture.detectChanges();
-    expect(host.querySelectorAll('[data-testid^="essential-card-"]').length).toBe(0);
+    expect(host.querySelectorAll('[data-testid^="essential-row-"]').length).toBe(0);
   });
 });

@@ -221,8 +221,43 @@ html, body { height: 100%; background: var(--uf-bg); }
 
 /* Title */
 .title-block { position: sticky; top: 0; z-index: 2; padding: 6px 0 10px; background: linear-gradient(180deg, color-mix(in srgb, var(--uf-bg) 92%, transparent), color-mix(in srgb, var(--uf-bg) 78%, transparent), transparent); backdrop-filter: blur(2px); }
-.title-row { display:flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.title { font-size: 32px; font-weight: 900; letter-spacing: -0.02em; margin: 0; color: var(--uf-text-primary); }
+.title-row { display:flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.title {
+  display: grid;
+  gap: 7px;
+  flex: 1 1 620px;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  margin: 0;
+  color: var(--uf-text-primary);
+}
+.title__question {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.title__intent {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 23px;
+  padding: 3px 9px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 74%, var(--uf-text-tertiary) 26%);
+  background: color-mix(in srgb, var(--uf-text-primary) 5%, transparent);
+  color: var(--uf-text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  line-height: 1;
+}
+.solved-pill,
+.report-issue-btn {
+  margin-top: 3px;
+}
 .solved-pill {
   display: inline-flex;
   align-items: center;
@@ -747,9 +782,31 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   margin: 0 auto;
 }
 .locked-title{
+  display: grid;
+  justify-items: center;
+  gap: 7px;
   margin: 4px 0 0;
   font-size: 22px;
   letter-spacing: -0.01em;
+}
+.locked-title__question{
+  display: block;
+  overflow-wrap: anywhere;
+}
+.locked-title__intent{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 3px 9px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 74%, var(--uf-text-tertiary) 26%);
+  background: color-mix(in srgb, var(--uf-text-primary) 5%, transparent);
+  color: var(--uf-text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  line-height: 1;
 }
 .locked-meta{
   font-size: 12px;

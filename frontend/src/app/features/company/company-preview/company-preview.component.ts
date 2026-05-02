@@ -8,6 +8,10 @@ import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { CompanyCountBucket, collectCompanyCounts } from '../../../shared/company-counts.util';
+import {
+  FaQuestionRowComponent,
+  FaQuestionRowMetaChip,
+} from '../../../shared/ui/question-row/fa-question-row.component';
 
 type CompanyPreviewQuestion = {
   id: string;
@@ -26,7 +30,7 @@ type CompanyPreviewData = {
 @Component({
   standalone: true,
   selector: 'app-company-preview',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FaQuestionRowComponent],
   templateUrl: './company-preview.component.html',
   styleUrls: ['./company-preview.component.css'],
 })
@@ -85,6 +89,68 @@ export class CompanyPreviewComponent implements OnInit {
   displayKind(kind: CompanyPreviewQuestion['kind']): string {
     if (kind === 'system-design') return 'System design';
     return kind === 'coding' ? 'Coding' : 'Concept question';
+  }
+
+  sampleDescription(item: CompanyPreviewQuestion): string {
+    return item.access === 'free'
+      ? 'Available from the public Question Library.'
+      : 'Previewed here; full company route stays premium.';
+  }
+
+  sampleMetaChips(item: CompanyPreviewQuestion): FaQuestionRowMetaChip[] {
+    const chips: FaQuestionRowMetaChip[] = [
+      {
+        label: item.access === 'free' ? 'Free now' : 'Premium',
+        ariaLabel: item.access === 'free' ? 'Access: free now' : 'Access: premium in full set',
+        tone: item.access === 'free' ? 'tier' : 'access',
+      },
+      {
+        label: this.displayKind(item.kind),
+        ariaLabel: `Kind: ${this.displayKind(item.kind)}`,
+        tone: 'neutral',
+        priority: 'secondary',
+      },
+      {
+        label: this.difficultyLabel(item.difficulty),
+        ariaLabel: `Difficulty: ${this.difficultyLabel(item.difficulty)}`,
+        tone: 'difficulty',
+      },
+    ];
+
+    if (item.tech) {
+      chips.push({
+        label: this.techLabel(item.tech),
+        ariaLabel: `Technology: ${this.techLabel(item.tech)}`,
+        tone: 'tech',
+      });
+    }
+
+    return chips;
+  }
+
+  difficultyLabel(difficulty: Difficulty): string {
+    if (difficulty === 'easy') return 'Easy';
+    if (difficulty === 'hard') return 'Hard';
+    return 'Intermediate';
+  }
+
+  techLabel(tech: Tech): string {
+    switch (tech) {
+      case 'javascript':
+        return 'JavaScript';
+      case 'react':
+        return 'React';
+      case 'angular':
+        return 'Angular';
+      case 'vue':
+        return 'Vue';
+      case 'html':
+        return 'HTML';
+      case 'css':
+        return 'CSS';
+      default:
+        return 'Frontend';
+    }
   }
 
   private buildSamples(

@@ -23,6 +23,12 @@ function authHeader(userId, role = 'admin') {
   return `Bearer ${token}`;
 }
 
+function daysFromNowIso(days) {
+  const date = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+  date.setUTCMilliseconds(0);
+  return date.toISOString();
+}
+
 function withDbName(uri, dbName) {
   const base = String(uri || '');
   return base.endsWith('/') ? `${base}${dbName}` : `${base}/${dbName}`;
@@ -131,6 +137,9 @@ describe('Admin billing simulator', () => {
         projects: { status: 'none', validUntil: null },
       },
     });
+    const startedAt = daysFromNowIso(-1);
+    const activatedValidUntil = daysFromNowIso(30);
+    const renewedValidUntil = daysFromNowIso(60);
     await CheckoutAttempt.create({
       attemptId: 'chk_sim_activate_123',
       userId: user._id,
@@ -152,8 +161,8 @@ describe('Admin billing simulator', () => {
         userId: user._id.toString(),
         attemptId: 'chk_sim_activate_123',
         scenario: 'activate',
-        validUntil: '2026-05-01T00:00:00.000Z',
-        startedAt: '2026-04-01T00:00:00.000Z',
+        validUntil: activatedValidUntil,
+        startedAt,
         customerId: 'cust_sim',
         subscriptionId: 'sub_sim',
         manageUrl: 'https://example.com/manage',
@@ -163,7 +172,7 @@ describe('Admin billing simulator', () => {
     expect(activate.body.scenario).toBe('activate');
     expect(activate.body.user.accessTier).toBe('premium');
     expect(activate.body.user.entitlements.pro.status).toBe('active');
-    expect(new Date(activate.body.user.entitlements.pro.validUntil).toISOString()).toBe('2026-05-01T00:00:00.000Z');
+    expect(new Date(activate.body.user.entitlements.pro.validUntil).toISOString()).toBe(activatedValidUntil);
     expect(activate.body.user.billing.providers.lemonsqueezy.customerId).toBe('cust_sim');
     expect(activate.body.user.billing.providers.lemonsqueezy.subscriptionId).toBe('sub_sim');
     expect(activate.body.user.billing.providers.lemonsqueezy.manageUrl).toBe('https://example.com/manage');
@@ -183,12 +192,12 @@ describe('Admin billing simulator', () => {
       .send({
         userId: user._id.toString(),
         scenario: 'renew',
-        validUntil: '2026-06-01T00:00:00.000Z',
+        validUntil: renewedValidUntil,
       });
 
     expect(renew.status).toBe(200);
     expect(renew.body.user.entitlements.pro.status).toBe('active');
-    expect(new Date(renew.body.user.entitlements.pro.validUntil).toISOString()).toBe('2026-06-01T00:00:00.000Z');
+    expect(new Date(renew.body.user.entitlements.pro.validUntil).toISOString()).toBe(renewedValidUntil);
 
     const cancel = await request(app)
       .post('/api/admin/billing/simulate/lemonsqueezy')
@@ -200,7 +209,7 @@ describe('Admin billing simulator', () => {
 
     expect(cancel.status).toBe(200);
     expect(cancel.body.user.entitlements.pro.status).toBe('cancelled');
-    expect(new Date(cancel.body.user.entitlements.pro.validUntil).toISOString()).toBe('2026-06-01T00:00:00.000Z');
+    expect(new Date(cancel.body.user.entitlements.pro.validUntil).toISOString()).toBe(renewedValidUntil);
     expect(cancel.body.user.accessTier).toBe('premium');
 
     const refund = await request(app)

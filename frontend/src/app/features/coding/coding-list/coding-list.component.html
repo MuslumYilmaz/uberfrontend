@@ -218,86 +218,25 @@
             </button>
           </div>
 
-          <a *ngFor="let q of questions; trackBy: trackByQuestionId"
-            faCard interactive class="list-row fa-question-card fa-question-card--compact"
-            [attr.data-testid]="'question-card-' + q.id"
-            [class.is-solved]="isSolved(q.id)"
-            [class.is-locked]="isLocked(q)"
-            [attr.aria-disabled]="isLocked(q) ? true : null"
+          <fa-question-row
+            *ngFor="let q of questions; trackBy: trackByQuestionId"
+            class="list-row"
+            [testId]="'question-card-' + q.id"
+            [kindLabel]="questionRowKindLabel(q)"
+            [title]="q.title"
+            [description]="questionRowDescription(q)"
+            [descriptionTooltip]="descriptionText(q)"
+            [solved]="isSolved(q.id)"
+            [lockedLabel]="isLocked(q) ? 'Locked' : ''"
+            [companies]="q.companies || []"
+            [preferredCompanySlug]="currentCompanySlug"
+            [metaChips]="questionRowMetaChips(q)"
+            [variants]="questionRowVariants(q)"
             [routerLink]="linkTo(q)"
-            (click)="handleCardClick($event, q)"
-            [state]="stateForNav(questions, q, (companySlug$ | async) || null)">
-            <div class="fa-question-card__grid">
-              <div class="fa-question-card__main">
-                <div class="fa-question-card__eyebrow">
-                  <span class="eyebrow-dot"></span>
-                  <span>{{ q.__sd ? 'System design' : q.__kind === 'trivia' ? 'Concept' : 'Coding' }} prompt</span>
-                  <app-company-signal
-                    *ngIf="q.companies?.length"
-                    class="fa-question-card__company-signal"
-                    [companies]="q.companies"
-                    [preferredSlug]="currentCompanySlug"
-                  ></app-company-signal>
-                  <span class="premium-pill" *ngIf="isLocked(q)">Locked</span>
-                </div>
-                <div class="fa-question-card__title-row">
-                  <div class="fa-question-card__title fa-card-title">{{ q.title }}</div>
-                  <span class="fa-question-card__solved-mark" *ngIf="isSolved(q.id)"
-                    [attr.data-testid]="'question-card-solved-mark-' + q.id" aria-label="Solved" title="Solved">
-                    <app-fa-glyph icon="check-circle" size="16"></app-fa-glyph>
-                  </span>
-                </div>
-
-                <div class="fa-question-card__description fa-meta-text desc-tip-target" [pTooltip]="descriptionText(q)"
-                  tooltipPosition="bottom" appendTo="body" [tooltipStyleClass]="'desc-tip'" [showDelay]="150"
-                  [hideDelay]="0" [autoHide]="true" [life]="0" [escape]="false" [tooltipDisabled]="!descriptionText(q)"
-                  tabindex="0">
-                  {{ preview(descriptionText(q), 120) }}
-                </div>
-
-                <div class="framework-switcher" *ngIf="frameworkOptions(q).length > 1">
-                  <div class="fw-label-row">
-                    <span class="fw-label">Framework versions</span>
-                    <span class="fw-hint">Open this challenge in your stack</span>
-                  </div>
-                  <div class="fw-chip-row">
-                    <button *ngFor="let opt of frameworkOptions(q); trackBy: trackByFrameworkOption" type="button" class="fw-chip"
-                      [class.active]="opt.id === q.id" [attr.aria-label]="'Open '+frameworkLabel(opt.tech)+' version'"
-                      (click)="goToFramework($event, opt, q)">
-                      <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
-                      <span class="fw-cta">Open</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="fa-question-card__meta-row">
-                <div class="fa-question-card__meta-item">
-                  <span class="fa-meta-label">Difficulty</span>
-                  <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="q.difficulty">
-                    {{ q.difficulty | titlecase }}
-                  </span>
-                </div>
-
-                <div class="fa-question-card__meta-item">
-                  <span class="fa-meta-label">Importance</span>
-                  <span class="fa-chip fa-chip--importance" [attr.data-importance]="impLabel(q)">
-                    {{ impLabel(q) | titlecase }}
-                  </span>
-                </div>
-
-                <div class="fa-question-card__meta-item" *ngIf="source!=='tech'">
-                  <span class="fa-meta-label">Tech</span>
-                  <span class="fa-chip fa-chip--tech">
-                    <span class="chip-icon" aria-hidden="true">⟡</span>
-                    {{ techName(q) }}
-                  </span>
-                </div>
-
-                <span class="ghost-link meta-open meta-open-pill">Open</span>
-              </div>
-            </div>
-          </a>
+            [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
+            (rowClick)="handleCardClick($event, q)"
+            (variantSelected)="handleQuestionVariantSelected($event, q)"
+          ></fa-question-row>
         </ng-container>
 
         <ng-template #loading>

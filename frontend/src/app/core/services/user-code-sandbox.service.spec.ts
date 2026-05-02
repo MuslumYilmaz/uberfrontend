@@ -1,4 +1,5 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { HARDENED_PROTOTYPE_CTORS } from '../security/user-code-sandbox-hardening';
 import { UserCodeSandboxService, type RunnerOutput } from './user-code-sandbox.service';
 
 class MockWorker {
@@ -152,4 +153,10 @@ describe('UserCodeSandboxService', () => {
     expect(resolveCount).toBe(1);
     expect(worker.terminate).toHaveBeenCalledTimes(1);
   }));
+});
+
+describe('UserCodeSandboxService hardening configuration', () => {
+  it('keeps Array.prototype extensible for catalog prototype-extension drills', () => {
+    expect(HARDENED_PROTOTYPE_CTORS).not.toContain(Array as any);
+  });
 });

@@ -114,7 +114,10 @@
             <!-- Title + chips -->
             <header class="title-block">
                 <div class="title-row">
-                    <h1 class="title">{{ q.title }}</h1>
+                    <h1 class="title">
+                        <span class="title__question">{{ q.title }}</span>
+                        <span class="title__intent">{{ h1IntentLabel }}</span>
+                    </h1>
                     <span class="solved-pill" *ngIf="solved()" aria-label="Solved">
                         <app-fa-glyph class="solved-pill__icon" icon="fa-solid fa-check"></app-fa-glyph>
                         Solved
@@ -320,7 +323,10 @@
             <div class="locked-shell">
                 <div class="locked-card">
                     <div class="locked-pill">Premium</div>
-                    <h1 class="locked-title">{{ lockedTitle() }}</h1>
+                    <h1 class="locked-title">
+                        <span class="locked-title__question">{{ lockedTitle() }}</span>
+                        <span class="locked-title__intent">{{ h1IntentLabel }}</span>
+                    </h1>
                     <div class="locked-meta">
                         By {{ authorLabel(question()) }}
                         <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>

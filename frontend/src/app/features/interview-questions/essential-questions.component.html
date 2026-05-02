@@ -67,126 +67,21 @@
     </div>
   </section>
 
-  <section class="essential-grid" aria-label="Essential question grid">
-    <div
+  <section class="essential-list" aria-label="Essential question list">
+    <fa-question-row
       *ngFor="let item of filteredItems()"
-      faCard
-      class="essential-card"
-      [attr.data-testid]="'essential-card-' + item.id"
-    >
-      <div class="essential-card__top">
-        <div class="essential-card__eyebrow">
-          <span>{{ item.rank }}</span>
-          <span>{{ sectionLabel(item.section) }}</span>
-        </div>
-        <div class="essential-card__chips">
-          <span class="essential-badge essential-badge--tier" [attr.data-tier]="item.tier">{{ tierLabel(item) }}</span>
-          <span
-            class="essential-badge essential-badge--score"
-            [pTooltip]="importanceTooltip(item)"
-            tooltipPosition="top"
-            appendTo="body"
-            tooltipStyleClass="essential-score-tip"
-            [showDelay]="120"
-            [hideDelay]="0"
-            [autoHide]="true"
-            [life]="0"
-            [attr.aria-label]="importanceAriaLabel(item)"
-            tabindex="0"
-          >
-            {{ scoreLabel(item) }}
-          </span>
-          <span
-            class="essential-badge essential-badge--premium"
-            *ngIf="isLocked(item)"
-            aria-label="Premium question"
-          >
-            Premium
-          </span>
-        </div>
-      </div>
-
-      <div class="essential-card__title-row">
-        <h2 class="essential-card__title">{{ item.title }}</h2>
-        <span
-          class="essential-card__solved"
-          *ngIf="isSolved(item)"
-          aria-label="Solved"
-          title="Solved"
-        >
-          <app-fa-glyph icon="check-circle" size="16"></app-fa-glyph>
-        </span>
-      </div>
-
-      <p class="essential-card__desc">{{ item.shortDescription }}</p>
-      <p class="essential-card__reason">{{ item.rationale }}</p>
-
-      <div class="essential-card__meta">
-        <span class="essential-meta-chip">{{ techSummary(item) }}</span>
-        <span class="essential-meta-chip">{{ difficultyLabel(item) }}</span>
-        <span
-          class="essential-company-logos"
-          *ngIf="companyLogoItems(item).length"
-          role="img"
-          [attr.aria-label]="companyLogoLabel(item)"
-          [attr.data-testid]="'essential-company-logos-' + item.id"
-        >
-          <app-company-logo-mark
-            *ngFor="let company of companyLogoItems(item)"
-            class="essential-company-logo"
-            [company]="company"
-            [decorative]="true"
-          ></app-company-logo-mark>
-          <span class="essential-company-overflow" *ngIf="companyLogoOverflow(item) > 0">
-            +{{ companyLogoOverflow(item) }}
-          </span>
-        </span>
-      </div>
-
-      <div class="essential-card__topics" *ngIf="item.benchmarkTopics.length">
-        <span class="essential-topic" *ngFor="let topic of item.benchmarkTopics">
-          {{ topic }}
-        </span>
-      </div>
-
-      <div class="essential-card__actions">
-        <a
-          class="essential-link"
-          [routerLink]="item.route"
-          [attr.aria-label]="openLabel(item) + ': ' + item.title"
-        >
-          {{ openLabel(item) }}
-        </a>
-      </div>
-
-      <div class="essential-card__variants" *ngIf="item.variants.length > 1">
-        <span class="essential-card__variants-label">Framework versions</span>
-        <div class="essential-variant-row">
-          <a
-            *ngFor="let variant of item.variants"
-            class="essential-variant"
-            [routerLink]="variant.route"
-            [attr.data-testid]="'essential-variant-' + item.id + '-' + variant.id"
-          >
-            {{ variant.techLabel }}
-          </a>
-        </div>
-      </div>
-    </div>
+      [testId]="'essential-row-' + item.id"
+      [kindLabel]="'#' + item.rank"
+      [title]="item.title"
+      [description]="item.shortDescription"
+      [descriptionTooltip]="descriptionTooltip(item)"
+      [routerLink]="item.route"
+      [solved]="isSolved(item)"
+      [companies]="item.companies"
+      [metaChips]="rowMetaChips(item)"
+      [variants]="rowVariants(item)"
+      (variantSelected)="openVariant($event, item)"
+    ></fa-question-row>
   </section>
 
-  <section class="essential-sources" aria-label="Benchmark sources">
-    <h2 class="essential-sources__title">Benchmark topics</h2>
-    <div class="essential-sources__list">
-      <a
-        *ngFor="let source of data.collection.benchmarkSources"
-        class="essential-source"
-        [href]="source.url"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {{ source.label }}
-      </a>
-    </div>
-  </section>
 </div>

@@ -1,5 +1,5 @@
 import { PLATFORM_ID } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ExperimentService } from '../../../../core/services/experiment.service';
 import { DecisionGraphService } from '../../../../core/services/decision-graph.service';
@@ -95,6 +95,35 @@ describe('CodingJsPanelComponent', () => {
     expect(component.hasRunTests()).toBe(true);
     expect(lastConsole.length).toBe(1);
   });
+
+  it('persists an intentionally cleared editor draft', fakeAsync(() => {
+    const codeStoreStub = {
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+    };
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+
+    component.disablePersistence = false;
+    component.question = {
+      id: 'empty-draft',
+      contentVersion: 'v1',
+      starterCode: 'const starter = true;',
+      tests: '',
+    } as any;
+    component.editorContent.set('const value = 1;');
+    (component as any)._hydrating = false;
+
+    component.onCodeChange('');
+    tick(200);
+
+    expect(codeStoreStub.saveJsAsync).toHaveBeenCalledWith(
+      'empty-draft@v1',
+      '',
+      'js',
+      { allowEmpty: true },
+    );
+  }));
 
   it('clears stale test results when loading a different question', async () => {
     const codeStoreStub = {

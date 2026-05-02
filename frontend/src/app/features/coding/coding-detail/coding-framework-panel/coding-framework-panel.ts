@@ -184,7 +184,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const p = this.pendingPersist;
     this.pendingPersist = null;
     if (this.disablePersistence) return;
-    void this.codeStore.saveFrameworkFileAsync(p.key, p.tech as any, p.path, p.code);
+    void this.codeStore.saveFrameworkFileAsync(p.key, p.tech as any, p.path, p.code, { allowEmpty: true });
   }
 
   private schedulePersist(path: string, code: string) {
@@ -201,9 +201,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   // ---------- lifecycle ----------
   ngOnInit(): void {
-    if (this.question && this.tech && this.isFrameworkTech()) {
-      this.initFromQuestion();
-    }
     this.configureLiteEditors();
   }
 
@@ -309,7 +306,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   /** Parent: "Load solution into editor" button from Solution panel. */
   applySolutionFiles(preferredOpenPath?: string): void {
-    this.cancelPendingPersist();
+    this.flushPendingPersist();
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
     this.ensurePreviewReady();
@@ -335,11 +332,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.openPath.set(open);
     this.frameworkEntryFile = open;
     this.editorContent.set(nextFiles[open] ?? '');
-
-    // Persist via CodeStorageService
-    if (!this.disablePersistence) {
-      void this.codeStore.setFrameworkBundleAsync(this.storageKey(q), this.tech as any, nextFiles, open);
-    }
 
     this.viewingSolution.set(true);
     this.showRestoreBanner.set(true);
