@@ -41,6 +41,9 @@ describe('FaQuestionRowComponent', () => {
     expect(row.getAttribute('href')).toBe('/javascript/trivia/demo');
     expect(row.textContent || '').toContain('Concept');
     expect(row.textContent || '').toContain('What are callbacks?');
+    expect(row.querySelector('[data-testid="question-row-title-question-card-demo"]')?.textContent || '').toContain(
+      'What are callbacks?',
+    );
     expect(row.textContent || '').toContain('Explain inversion of control.');
     expect(row.querySelector('[data-testid="question-card-solved-mark-demo"]')).not.toBeNull();
     expect(row.querySelector('[data-testid="company-signal-google"]')?.getAttribute('aria-label')).toBe(

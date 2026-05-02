@@ -84,7 +84,12 @@ export type FaQuestionRowVariant = {
         <div class="fa-question-row__body">
           <div class="fa-question-row__topline">
             <span class="fa-question-row__kind" *ngIf="kindLabel">{{ kindLabel }}</span>
-            <div class="fa-question-row__title fa-card-title">{{ title }}</div>
+            <div
+              class="fa-question-row__title fa-card-title"
+              [attr.data-testid]="testId ? 'question-row-title-' + testId : null"
+            >
+              {{ title }}
+            </div>
             <span
               class="fa-question-row__solved-mark"
               *ngIf="solved"

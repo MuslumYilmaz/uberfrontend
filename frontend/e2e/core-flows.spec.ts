@@ -46,7 +46,7 @@ test('change filter/sort -> list updates -> open result', async ({ page }) => {
   await expect(page).toHaveURL(/q=Clamp/);
   await expect(page.getByTestId(`question-card-${JS_QUESTION.id}`)).toBeVisible();
 
-  await page.getByTestId(`question-card-${JS_QUESTION.id}`).getByText(JS_QUESTION.title).click();
+  await page.getByTestId(`question-row-title-question-card-${JS_QUESTION.id}`).click();
   await expect(page.getByTestId('question-title')).toHaveText(JS_QUESTION.title);
 });
 
