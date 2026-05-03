@@ -26,6 +26,7 @@
 - Backend tests live in `backend/tests/` and match `*.test.js`.
 - Frontend app layers are `src/app/core/`, `src/app/features/`, `src/app/shared/`, and `src/app/store/`.
 - Use shared UI primitives from `frontend/src/app/shared/ui/` for interactive controls. Reuse `frontend/src/styles/tokens.scss` and existing typography/spacing patterns instead of one-off styles.
+- Keep assistant/editorial notes out of user-facing app content. Notes to the user belong in chat, not in rendered pages, CDN content, SEO snippets, metadata blocks, or visible templates.
 - Treat `cdn/questions/` changes as backend-impacting because `backend/services/gamification/question-catalog.js` reads from that catalog.
 - If a check reports stale generated/content metadata, rerun the owning repo script and include the generated output. Do not manually patch generated files when a generator exists.
 - Preserve cookie auth, CSRF, and CORS behavior in auth/billing paths. Never commit secrets.
