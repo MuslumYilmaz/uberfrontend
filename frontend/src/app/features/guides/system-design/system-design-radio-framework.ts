@@ -209,7 +209,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
     <fa-guide-shell
-      title="RADIO Framework Cheat Sheet + Interview Timeline for Frontend System Design"
+      title="RADIO Framework for Frontend System Design Interviews"
       [minutes]="20"
       [tags]="['system design', 'radio framework', 'frontend system design']"
       [prev]="prev"
@@ -217,19 +217,12 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [leftNav]="leftNav"
       [readerPromise]="readerPromise || undefined">
 
-      <h2>Suggested SEO Snippets</h2>
-      <ul>
-        <li><strong>Meta title:</strong> RADIO Framework for Frontend System Design Interviews</li>
-        <li><strong>Meta description:</strong> Use the RADIO framework to ace frontend system design interviews with reusable artifacts, timelines, and scripts for focused preparation.</li>
-      </ul>
-
       <h2>If You Remember Only One Thing (60 seconds)</h2>
       <p>
-        In a <strong>system design interview</strong>, do not wing architecture. Run the <strong>RADIO framework</strong> in order:
-        Requirements, Architecture, Data model, Interface, Optimizations.
-        For each step, produce one concrete artifact and say one explicit trade-off.
-        That keeps your answer structured, frontend-specific, and easy for interviewers to evaluate.
-        Use this as your default for <strong>system design interview preparation</strong> in any <strong>frontend system design</strong> round.
+        In a <strong>frontend system design interview</strong>, use the <strong>RADIO approach</strong> to keep your answer
+        structured under time pressure: Requirements, Architecture, Data model, Interface, Optimizations. In a
+        45-minute or 60-minute interview, each step should produce one concrete artifact and one explicit trade-off.
+        That keeps your answer frontend-specific, practical, and easy for interviewers to evaluate.
       </p>
 
       <h2>RADIO Cheat Sheet</h2>
@@ -626,6 +619,27 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           </tr>
         </tbody>
       </table>
+
+      <h2>RADIO Framework FAQ</h2>
+      <h3>Is RADIO for frontend system design interviews?</h3>
+      <p>
+        Yes. RADIO is a structured answer framework for <strong>frontend system design interviews</strong>, especially
+        when the prompt is broad and the interviewer expects you to move from requirements to production trade-offs.
+      </p>
+
+      <h3>How do I use RADIO in a 45-minute interview?</h3>
+      <p>
+        Spend the first few minutes on requirements, then move through architecture, data model, interface behavior,
+        and optimizations with a visible artifact for each step. Keep one core user flow as the thread so the answer
+        stays deep enough to defend.
+      </p>
+
+      <h3>How does RADIO map to system design topics?</h3>
+      <p>
+        Requirements define scope and constraints, Architecture explains the high-level system shape, Data model covers
+        contracts and state, Interface turns the design into components and interactions, and Optimizations cover
+        performance, reliability, observability, security, and trade-offs.
+      </p>
 
       <h2>Next</h2>
       <ul>

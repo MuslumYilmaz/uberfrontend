@@ -184,7 +184,7 @@ export const PLAYBOOK: GuideEntry[] = [
             readerPromise: 'Use this to turn JavaScript screens and frontend loop follow-ups into a 7/14/30-day study plan with concrete async, closure, and utility-drill priorities.',
             uniqueAngle: 'Framework-specific bug families and direct drill mapping, not a generic topic list.',
             factCheckedAt: '2026-04-19',
-            reviewedBy: 'Codex AI draft',
+            reviewedBy: 'FrontendAtlas Editor',
         },
         load: () =>
             import('../../features/guides/playbook/javascript-prep-path-article.component')
@@ -206,7 +206,7 @@ export const PLAYBOOK: GuideEntry[] = [
             readerPromise: 'Use this to turn React hooks, rerender, and performance interviews into a 7/14/30-day prep plan with clear state-design and effect-debugging priorities.',
             uniqueAngle: 'React-specific render and state-design failure patterns tied directly to trivia and coding drills.',
             factCheckedAt: '2026-04-19',
-            reviewedBy: 'Codex AI draft',
+            reviewedBy: 'FrontendAtlas Editor',
         },
         load: () =>
             import('../../features/guides/playbook/react-prep-path-article.component')
@@ -228,7 +228,7 @@ export const PLAYBOOK: GuideEntry[] = [
             readerPromise: 'Use this to turn Angular loops on RxJS, change detection, DI, and tests into a 7/14/30-day prep plan with concrete operator and architecture priorities.',
             uniqueAngle: 'Angular-specific debugging and architecture decisions connected directly to operator choice, state boundaries, and tests.',
             factCheckedAt: '2026-04-19',
-            reviewedBy: 'Codex AI draft',
+            reviewedBy: 'FrontendAtlas Editor',
         },
         load: () =>
             import('../../features/guides/playbook/angular-prep-path-article.component')
@@ -250,7 +250,7 @@ export const PLAYBOOK: GuideEntry[] = [
             readerPromise: 'Use this to turn Vue reactivity, emits, nextTick, router, and state-tradeoff interviews into a 7/14/30-day prep plan with concrete debugging and coding priorities.',
             uniqueAngle: 'Vue-specific reactivity and component-contract pitfalls tied directly to drills instead of generic topic buckets.',
             factCheckedAt: '2026-04-19',
-            reviewedBy: 'Codex AI draft',
+            reviewedBy: 'FrontendAtlas Editor',
         },
         load: () =>
             import('../../features/guides/playbook/vue-prep-path-article.component')
@@ -402,7 +402,7 @@ export const SYSTEM: GuideEntry[] = [
             primaryKeyword: 'radio framework for frontend system design interviews',
             keywords: ['radio framework for frontend system design interviews', 'radio framework frontend', 'frontend system design radio method'],
             publishedAt: '2026-02-18',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-05-03',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
