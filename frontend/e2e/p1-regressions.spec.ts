@@ -260,3 +260,32 @@ test('js console logger prints Promise objects (not {})', async ({ page }) => {
   await expect(jsPanel.locator('app-console-logger')).toContainText('Promise {<pending>}');
   await expect(jsPanel.locator('app-console-logger')).not.toContainText('LOG: {}');
 });
+
+test('js sandbox reports async debounce errors without browser page errors', async ({ page }) => {
+  const questionId = 'js-debounce';
+  await page.goto(`/javascript/coding/${questionId}`);
+
+  const jsPanel = page.getByTestId('js-panel');
+  await expect(jsPanel).toBeVisible();
+  await expect(jsPanel.getByTestId('js-run-tests')).toBeEnabled();
+
+  await setMonacoModelValue(page, `q-${questionId}-code`, [
+    'export default function debounce(fn, delay) {',
+    '  let timeoutId;',
+    '  let args;',
+    '  return function () {',
+    '    clearTimeout(timeoutId);',
+    '    timeoutId = setTimeout(() => {',
+    '      fn(...args);',
+    '    }, delay);',
+    '  };',
+    '}',
+    '',
+  ].join('\n'));
+
+  await jsPanel.getByTestId('js-run-tests').click();
+
+  const resultsPanel = jsPanel.getByTestId('js-results-panel');
+  await expect(resultsPanel.locator('[data-testid="test-result"]')).not.toHaveCount(0);
+  await expect(resultsPanel).toContainText(/args is not iterable|undefined is not iterable/i);
+});

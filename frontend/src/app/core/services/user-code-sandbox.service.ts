@@ -51,7 +51,8 @@ export class UserCodeSandboxService {
           error: msg.data.error,
         });
       };
-      const err = () => {
+      const err = (event?: Event) => {
+        try { event?.preventDefault?.(); } catch { }
         resolveOnce({
           entries: [{ level: 'error', message: 'Worker crashed', timestamp: Date.now() }],
           results: [],

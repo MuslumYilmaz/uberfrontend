@@ -153,6 +153,33 @@ describe('UserCodeSandboxService', () => {
     expect(resolveCount).toBe(1);
     expect(worker.terminate).toHaveBeenCalledTimes(1);
   }));
+
+  it('prevents default propagation when the sandbox worker emits an error', fakeAsync(() => {
+    const service = new UserCodeSandboxService();
+    let resolved: RunnerOutput | undefined;
+
+    service.runWithTests({ userCode: 'const value = 1;', testCode: 'test()', timeoutMs: 10 }).then((result) => {
+      resolved = result;
+    });
+
+    expect(MockWorker.instances.length).toBe(1);
+    const worker = MockWorker.instances[0];
+    const errorEvent = new Event('error', { cancelable: true });
+    spyOn(errorEvent, 'preventDefault').and.callThrough();
+
+    worker.emitError(errorEvent);
+    flushMicrotasks();
+
+    expect(errorEvent.preventDefault).toHaveBeenCalledTimes(1);
+    expect(errorEvent.defaultPrevented).toBeTrue();
+    expect(resolved).toEqual(jasmine.objectContaining({
+      results: [],
+      error: 'Worker crashed',
+    }));
+    expect(worker.terminate).toHaveBeenCalledTimes(1);
+    expect(worker.messageListenerCount()).toBe(0);
+    expect(worker.errorListenerCount()).toBe(0);
+  }));
 });
 
 describe('UserCodeSandboxService hardening configuration', () => {
