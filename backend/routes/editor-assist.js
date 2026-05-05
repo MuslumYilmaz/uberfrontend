@@ -180,6 +180,7 @@ router.post(
   '/sync',
   requireAuth,
   rateLimit({
+    name: 'editor-assist-sync',
     windowMs: 60_000,
     max: 120,
     keyGenerator: (req) => req?.auth?.userId || req.ip || 'unknown',

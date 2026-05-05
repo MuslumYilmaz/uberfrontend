@@ -1682,13 +1682,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
       const wrapped = this.wrapExportDefault(userSrc);
       const prepared = this.transformTestCode(testsSrc);
-      let sandboxOut: RunnerOutput | null = null;
 
       try {
         const runner = await this.loadRunner();
         const out = await runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
         if (runId !== this._runSeq) return;
-        sandboxOut = out;
         this.consoleEntries.set(this.sanitizeLogs(out?.entries));
         const sandboxResults = out?.results || [];
         if (sandboxResults.length === 0 && (out?.timedOut || !!out?.error)) {
@@ -1701,347 +1699,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
         this.testResults.set([{ name: 'Test runner error', passed: false, error: this.short(e) }]);
       }
 
-      /* ---------- LOCAL FALLBACK if sandbox produced no cases ---------- */
-      const canUseLocalFallback =
-        prepared.trim() &&
-        !!sandboxOut &&
-        !sandboxOut.timedOut &&
-        !sandboxOut.error &&
-        (this.testResults() || []).length === 0;
-      if (canUseLocalFallback) {
-        try {
-          const results: TestResult[] = [];
-          const logs: ConsoleEntry[] = [];
-          const MAX_LOGS = 200;
-          const MAX_LOG_CHARS = 2000;
-          const MAX_PREVIEW_DEPTH = 4;
-          const MAX_PREVIEW_KEYS = 20;
-          const MAX_PREVIEW_ARRAY_ITEMS = 20;
-          let logLimitHit = false;
-
-          const clamp = (s: string) => s.length > MAX_LOG_CHARS ? `${s.slice(0, MAX_LOG_CHARS)}…` : s;
-
-          const tagOf = (v: any) => Object.prototype.toString.call(v);
-          const formatSpecial = (v: any): string | null => {
-            if (v && (typeof v === 'object' || typeof v === 'function')) {
-              if (tagOf(v) === '[object Promise]') return 'Promise {<pending>}';
-              if (v instanceof Error) {
-                const name = v?.name ? String(v.name) : 'Error';
-                const msg = v?.message ? String(v.message) : '';
-                return msg ? `${name}: ${msg}` : name;
-              }
-            }
-            return null;
-          };
-          const safeStringify = (v: any) => {
-            try {
-              if (v === null) return 'null';
-              const t = typeof v;
-              if (t === 'string') return v.length > MAX_LOG_CHARS ? `${v.slice(0, MAX_LOG_CHARS)}…` : v;
-              if (t === 'undefined') return 'undefined';
-              if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
-              if (t === 'symbol') return v.toString();
-              if (t === 'function') return `[Function ${v.name || 'anonymous'}]`;
-
-              const special = formatSpecial(v);
-              if (special) return special;
-
-              const seen = new WeakSet<object>();
-              const depths = new WeakMap<object, number>();
-              const json = JSON.stringify(v, function (this: any, key: string, val: any) {
-                const specialInner = formatSpecial(val);
-                if (specialInner) return specialInner;
-
-                if (typeof val === 'string') {
-                  return val.length > MAX_LOG_CHARS ? `${val.slice(0, MAX_LOG_CHARS)}…` : val;
-                }
-                if (typeof val === 'symbol') return val.toString();
-                if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
-
-                if (!val || (typeof val !== 'object' && typeof val !== 'function')) return val;
-
-                const holder: any = this;
-                const holderDepth =
-                  holder && (typeof holder === 'object' || typeof holder === 'function')
-                    ? (depths.get(holder) ?? 0)
-                    : 0;
-                const nextDepth = key === '' ? 0 : holderDepth + 1;
-                if (!depths.has(val)) depths.set(val, nextDepth);
-                const depth = depths.get(val) ?? nextDepth;
-                if (depth > MAX_PREVIEW_DEPTH) return tagOf(val);
-
-                if (typeof val === 'object') {
-                  if (seen.has(val)) return '[Circular]';
-                  seen.add(val);
-
-                  if (Array.isArray(val)) {
-                    if (val.length > MAX_PREVIEW_ARRAY_ITEMS) {
-                      const head = val.slice(0, MAX_PREVIEW_ARRAY_ITEMS);
-                      return [...head, `… +${val.length - MAX_PREVIEW_ARRAY_ITEMS} more`];
-                    }
-                    return val;
-                  }
-
-                  if (val instanceof Map) {
-                    const entries: any[] = [];
-                    let i = 0;
-                    for (const [k, v] of val.entries()) {
-                      if (i++ >= MAX_PREVIEW_KEYS) { entries.push(['…', '…']); break; }
-                      entries.push([k, v]);
-                    }
-                    return { '[[Map]]': entries, size: val.size };
-                  }
-
-                  if (val instanceof Set) {
-                    const values: any[] = [];
-                    let i = 0;
-                    for (const item of val.values()) {
-                      if (i++ >= MAX_PREVIEW_KEYS) { values.push('…'); break; }
-                      values.push(item);
-                    }
-                    return { '[[Set]]': values, size: val.size };
-                  }
-
-                  const proto = Object.getPrototypeOf(val);
-                  const isPlain = proto === Object.prototype || proto === null;
-                  if (isPlain) {
-                    const out: Record<string, any> = {};
-                    let count = 0;
-                    for (const k in val as any) {
-                      if (!Object.prototype.hasOwnProperty.call(val, k)) continue;
-                      if (count++ >= MAX_PREVIEW_KEYS) { out['…'] = '…'; break; }
-                      out[k] = (val as any)[k];
-                    }
-                    return out;
-                  }
-                }
-                return val;
-              });
-              return typeof json === 'string' ? json : String(v);
-            } catch {
-              try { return String(v); } catch { return '[Unserializable]'; }
-            }
-          };
-          const formatArgs = (args: any[]) => {
-            let msg = '';
-            for (const a of args) {
-              const part = safeStringify(a);
-              if (!msg) msg = part;
-              else msg += ` ${part}`;
-              if (msg.length > MAX_LOG_CHARS) return clamp(msg);
-            }
-            return clamp(msg);
-          };
-          const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
-            if (logs.length >= MAX_LOGS) {
-              if (!logLimitHit) {
-                logs.push({ level: 'warn', message: `Log limit reached (${MAX_LOGS})`, timestamp: Date.now() });
-                logLimitHit = true;
-              }
-              return;
-            }
-            logs.push({ level, message: formatArgs(args), timestamp: Date.now() });
-          };
-          const consoleProxy = {
-            log: (...a: any[]) => push('log', a),
-            info: (...a: any[]) => push('info', a),
-            warn: (...a: any[]) => push('warn', a),
-            error: (...a: any[]) => push('error', a),
-          };
-
-          const isObj = (v: any) => v !== null && typeof v === 'object';
-          const deepEqual = (a: any, b: any): boolean => {
-            if (Object.is(a, b)) return true;
-            if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((v, i) => deepEqual(v, b[i]));
-            if (isObj(a) && isObj(b)) {
-              const ka = Object.keys(a), kb = Object.keys(b);
-              if (ka.length !== kb.length) return false;
-              for (const k of ka) if (!deepEqual(a[k], b[k])) return false;
-              return true;
-            }
-            return false;
-          };
-          const matchesPartial = (actual: any, expected: any): boolean => {
-            if (expected === null || expected === undefined) return Object.is(actual, expected);
-            if (Array.isArray(expected)) {
-              if (!Array.isArray(actual) || actual.length < expected.length) return false;
-              return expected.every((item, i) => matchesPartial(actual[i], item));
-            }
-            if (typeof expected === 'object') {
-              if (!isObj(actual)) return false;
-              return Object.keys(expected).every((k) => matchesPartial(actual?.[k], expected[k]));
-            }
-            return Object.is(actual, expected);
-          };
-          const asMsg = (v: any) => String(v?.message ?? v);
-          const assertErrorLike = (err: any, expected?: any) => {
-            if (expected === undefined) return;
-            const msg = asMsg(err);
-            if (typeof expected === 'string') {
-              if (!msg.includes(expected)) throw new Error(`Expected error message to include ${expected}, received ${msg}`);
-              return;
-            }
-            if (expected instanceof RegExp) {
-              if (!expected.test(msg)) throw new Error(`Expected error message to match ${expected}, received ${msg}`);
-              return;
-            }
-            if (typeof expected === 'function') {
-              const ctorName = expected?.name || '';
-              const actualName = err?.name || '';
-              if (!(err instanceof expected) && (!ctorName || actualName !== ctorName)) {
-                throw new Error(`Expected error type ${ctorName || 'Error'}`);
-              }
-            }
-          };
-          const expect = (received: any) => {
-            const base = {
-              toBe: (exp: any) => {
-                if (!Object.is(received, exp)) throw new Error(`Expected ${safeStringify(received)} to be ${safeStringify(exp)}`);
-              },
-              toEqual: (exp: any) => {
-                if (!deepEqual(received, exp)) throw new Error(`Expected ${safeStringify(received)} to equal ${safeStringify(exp)}`);
-              },
-              toStrictEqual: (exp: any) => {
-                if (!deepEqual(received, exp)) throw new Error(`Expected ${safeStringify(received)} to strictly equal ${safeStringify(exp)}`);
-              },
-              toBeTruthy: () => {
-                if (!received) throw new Error(`Expected value to be truthy, received ${safeStringify(received)}`);
-              },
-              toMatchObject: (exp: any) => {
-                if (!matchesPartial(received, exp)) throw new Error(`Expected ${safeStringify(received)} to match object ${safeStringify(exp)}`);
-              },
-              toThrow: (expected?: any) => {
-                if (typeof received !== 'function') throw new Error('toThrow matcher expects a function');
-                let thrown: any;
-                try {
-                  received();
-                } catch (err: any) {
-                  thrown = err;
-                }
-                if (!thrown) throw new Error('Expected function to throw');
-                assertErrorLike(thrown, expected);
-              },
-            };
-            return {
-              ...base,
-              resolves: {
-                toBe: async (exp: any) => {
-                  const value = await Promise.resolve(received);
-                  if (!Object.is(value, exp)) throw new Error(`Expected ${safeStringify(value)} to be ${safeStringify(exp)}`);
-                },
-                toEqual: async (exp: any) => {
-                  const value = await Promise.resolve(received);
-                  if (!deepEqual(value, exp)) throw new Error(`Expected ${safeStringify(value)} to equal ${safeStringify(exp)}`);
-                },
-                toMatchObject: async (exp: any) => {
-                  const value = await Promise.resolve(received);
-                  if (!matchesPartial(value, exp)) throw new Error(`Expected ${safeStringify(value)} to match object ${safeStringify(exp)}`);
-                },
-              },
-              rejects: {
-                toThrow: async (expected?: any) => {
-                  let resolved = false;
-                  try {
-                    await Promise.resolve(received);
-                    resolved = true;
-                  } catch (err: any) {
-                    assertErrorLike(err, expected);
-                    return;
-                  }
-                  if (resolved) throw new Error('Expected promise to reject');
-                },
-                toMatchObject: async (exp: any) => {
-                  let resolved = false;
-                  try {
-                    await Promise.resolve(received);
-                    resolved = true;
-                  } catch (err: any) {
-                    if (!matchesPartial(err, exp)) throw new Error(`Expected ${safeStringify(err)} to match object ${safeStringify(exp)}`);
-                    return;
-                  }
-                  if (resolved) throw new Error('Expected promise to reject');
-                },
-              },
-            };
-          };
-
-          const scheduled: Promise<void>[] = [];
-          const runCase = async (name: string, fn: (...args: any[]) => any | Promise<any>) => {
-            try {
-              if (typeof fn !== 'function') throw new Error('Test case is not callable');
-              if (fn.length >= 1) {
-                await new Promise<void>((resolve, reject) => {
-                  const done = (err?: any) => (err ? reject(err) : resolve());
-                  try {
-                    fn(done);
-                  } catch (e) {
-                    reject(e);
-                  }
-                });
-              } else {
-                await fn();
-              }
-              results.push({ name, passed: true });
-            } catch (e: any) {
-              results.push({ name, passed: false, error: String(e?.message ?? e) });
-            }
-          };
-          const it = (name: string, fn: (...args: any[]) => any | Promise<any>) => {
-            const task = runCase(name, fn);
-            scheduled.push(task);
-            return task;
-          };
-          const test = it;
-          const describe = (name: string, fn: () => void) => {
-            try {
-              fn();
-            } catch (e: any) {
-              results.push({ name: name || 'describe block', passed: false, error: String(e?.message ?? e) });
-            }
-          };
-
-          const prevConsole = (globalThis as any).console;
-          const unhandledRejections: string[] = [];
-          const onUnhandledRejection = (event: any) => {
-            try { event?.preventDefault?.(); } catch { }
-            const reason = event?.reason;
-            unhandledRejections.push(String(reason?.message ?? reason ?? 'Unhandled promise rejection'));
-          };
-          if (this.isBrowser && typeof window !== 'undefined') {
-            window.addEventListener('unhandledrejection', onUnhandledRejection as any);
-          }
-          (globalThis as any).console = consoleProxy;
-          try {
-            new Function(wrapped)(); // define user default on global
-            await new Function('describe', 'test', 'it', 'expect', 'console', prepared)(
-              describe as any, test as any, it as any, expect as any, consoleProxy as any
-            );
-            await Promise.allSettled(scheduled);
-          } finally {
-            if (this.isBrowser && typeof window !== 'undefined') {
-              window.removeEventListener('unhandledrejection', onUnhandledRejection as any);
-            }
-            (globalThis as any).console = prevConsole;
-          }
-          if (unhandledRejections.length) {
-            const seen = new Set<string>();
-            for (const msg of unhandledRejections) {
-              const normalized = String(msg || '').trim() || 'Unhandled promise rejection';
-              if (seen.has(normalized)) continue;
-              seen.add(normalized);
-              results.push({ name: 'Unhandled async rejection', passed: false, error: normalized });
-            }
-          }
-
-          if (runId !== this._runSeq) return;
-          this.consoleEntries.set(this.sanitizeLogs(logs));
-          this.testResults.set(results);
-        } catch (e: any) {
-          if (runId !== this._runSeq) return;
-          this.testResults.set([{ name: 'Local runner error', passed: false, error: this.short(e) }]);
-        }
+      if (runId !== this._runSeq) return;
+      if ((this.testResults() || []).length === 0) {
+        this.testResults.set([this.buildNoTestsDiscoveredResult()]);
       }
-      /* ---------- end fallback ---------- */
 
       if (runId !== this._runSeq) return;
       this.hasRunTests.set(true);
@@ -2062,6 +1723,14 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       return { name: 'Test execution timed out', passed: false, error };
     }
     return { name: 'Test runner failed', passed: false, error };
+  }
+
+  private buildNoTestsDiscoveredResult(): TestResult {
+    return {
+      name: 'No tests were discovered',
+      passed: false,
+      error: 'The sandbox finished without discovering any test() or it() cases.',
+    };
   }
 
   private isTimeoutLikeRunnerError(message: string | null | undefined): boolean {

@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
 const { rateLimit, getClientIp } = require('./middleware/rateLimit');
+const { createRequestMetricsMiddleware } = require('./middleware/observability');
 const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
@@ -78,6 +79,7 @@ if (String(process.env.TRUST_PROXY || '').toLowerCase() === 'true') {
 console.log(`🔧 SERVER_BASE: ${SERVER_BASE}`);
 console.log(`🔧 Allowed frontend origins: ${ALLOWED_FRONTEND_ORIGINS.join(', ') || '(none)'}`);
 
+app.use(createRequestMetricsMiddleware());
 app.use(
     cors({
         origin: (origin, cb) => {
@@ -195,11 +197,13 @@ function isValidEmailAddress(value) {
 app.post(
     '/api/contact',
     rateLimit({
+        name: 'contact-burst',
         windowMs: CONTACT_BURST_WINDOW_MS,
         max: CONTACT_BURST_MAX,
         message: 'Please wait a moment before sending another message.',
     }),
     rateLimit({
+        name: 'contact-hourly',
         windowMs: CONTACT_WINDOW_MS,
         max: CONTACT_MAX,
         message: 'Too many messages, please try again later.',
@@ -287,11 +291,13 @@ app.post(
 app.post(
     '/api/bug-report',
     rateLimit({
+        name: 'bug-report-burst',
         windowMs: BUG_REPORT_BURST_WINDOW_MS,
         max: BUG_REPORT_BURST_MAX,
         message: 'Please wait a moment before sending another bug report.',
     }),
     rateLimit({
+        name: 'bug-report-hourly',
         windowMs: BUG_REPORT_WINDOW_MS,
         max: BUG_REPORT_MAX,
         message: 'Too many bug reports, please try again later.',

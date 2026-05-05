@@ -2,6 +2,10 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 const { getJwtSecret } = require('../config/jwt');
+const {
+  clearAuthValidationCacheForSession,
+  clearAuthValidationCacheForUser,
+} = require('./auth-validation-cache');
 
 function normalizeAccessTokenExpiresIn(raw) {
   if (raw == null) return '15m';
@@ -167,6 +171,7 @@ async function rotateAuthSession(AuthSession, session, user, req) {
   session.ip = ip;
   session.userAgent = userAgent;
   await session.save();
+  clearAuthValidationCacheForSession(session._id);
 
   return { session, refreshToken: formatRefreshToken(session._id.toString(), secret) };
 }
@@ -177,6 +182,7 @@ async function revokeSessionById(AuthSession, sessionId, reason) {
     { _id: sessionId, revokedAt: null },
     { $set: { revokedAt: new Date(), revokedReason: String(reason || 'revoked') } }
   );
+  clearAuthValidationCacheForSession(sessionId);
 }
 
 async function revokeAllSessionsForUser(AuthSession, userId, reason) {
@@ -185,6 +191,7 @@ async function revokeAllSessionsForUser(AuthSession, userId, reason) {
     { userId, revokedAt: null },
     { $set: { revokedAt: new Date(), revokedReason: String(reason || 'revoked') } }
   );
+  clearAuthValidationCacheForUser(userId);
 }
 
 async function findRefreshSession(AuthSession, rawToken) {
@@ -201,6 +208,7 @@ async function findRefreshSession(AuthSession, rawToken) {
     session.revokedAt = new Date();
     session.revokedReason = 'refresh_token_mismatch';
     await session.save();
+    clearAuthValidationCacheForSession(session._id);
     return { session, status: 'mismatch' };
   }
 

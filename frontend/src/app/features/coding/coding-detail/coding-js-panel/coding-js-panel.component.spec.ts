@@ -1179,17 +1179,22 @@ describe('CodingJsPanelComponent', () => {
     expect(component.showExplainCard()).toBeFalse();
   });
 
-  it('local fallback handles rejects/resolves tests without local runner error', async () => {
-    const runner = new EmptyRunnerStub();
+  it('accepts worker async matcher results without local fallback', async () => {
+    const runner = {
+      runWithTests: jasmine.createSpy('runWithTests').and.resolveTo({
+        entries: [],
+        results: [{ name: 'supports rejects.toThrow', passed: true }],
+      } as { entries: ConsoleEntry[]; results: TestResult[] }),
+    };
     const component = TestBed.runInInjectionContext(
       () => new CodingJsPanelComponent({} as any),
     );
     (component as any).loadRunner = async () => runner;
-    component.question = { id: 'fallback-async-matchers' } as any;
+    component.question = { id: 'worker-async-matchers' } as any;
     component.disablePersistence = true;
 
     component.editorContent.set('export default function addTwoPromises(p1, p2) { return Promise.all([p1, p2]).then(([a, b]) => a + b); }');
-    component.testCode.set(`describe('fallback async matcher support', () => {
+    component.testCode.set(`describe('worker async matcher support', () => {
   test('supports rejects.toThrow', async () => {
     const p1 = Promise.resolve(1);
     const p2 = Promise.reject(new Error('boom'));
@@ -1205,6 +1210,46 @@ describe('CodingJsPanelComponent', () => {
     expect(component.testResults()[0].name).toBe('supports rejects.toThrow');
     expect(component.testResults()[0].passed).toBeTrue();
     expect(component.testResults().some((r) => r.name === 'Local runner error')).toBeFalse();
+  });
+
+  it('fails closed when the sandbox discovers no tests and does not execute code locally', async () => {
+    const runner = new EmptyRunnerStub();
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    (component as any).loadRunner = async () => runner;
+    component.question = { id: 'empty-worker-result' } as any;
+    component.disablePersistence = true;
+
+    const marker = '__FA_LOCAL_FALLBACK_ESCAPE_MARKER__';
+    delete (globalThis as any)[marker];
+    let solved: boolean | undefined;
+    component.solvedChange.subscribe((value) => {
+      solved = value;
+    });
+
+    component.editorContent.set(`globalThis.${marker} = 'executed'; export default function add(a, b) { return a + b; }`);
+    component.testCode.set(`test('would pass in the old local fallback', () => {
+  expect(add(1, 2)).toBe(3);
+});
+`);
+
+    try {
+      await component.runTests();
+
+      expect((globalThis as any)[marker]).toBeUndefined();
+      expect(component.isRunningTests()).toBeFalse();
+      expect(component.hasRunTests()).toBeTrue();
+      expect(component.testResults().length).toBe(1);
+      expect(component.testResults()[0]).toEqual(jasmine.objectContaining({
+        name: 'No tests were discovered',
+        passed: false,
+      }));
+      expect(component.testResults()[0].error).toContain('test() or it() cases');
+      expect(solved).toBeFalse();
+    } finally {
+      delete (globalThis as any)[marker];
+    }
   });
 
   it('surfaces sandbox timeouts as a failed result without local fallback', async () => {
