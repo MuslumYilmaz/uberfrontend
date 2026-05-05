@@ -2,10 +2,13 @@
 
 const express = require('express');
 const multer = require('multer');
+const { rateLimit } = require('../middleware/rateLimit');
 const { MAX_UPLOAD_BYTES } = require('../services/tools/cv/constants');
 const { CvAnalyzeError, analyzeCvPayload } = require('../services/tools/cv/analyze');
 
 const router = express.Router();
+const CV_ANALYZE_WINDOW_MS = Number(process.env.CV_ANALYZE_WINDOW_MS || 60 * 1000);
+const CV_ANALYZE_MAX = Number(process.env.CV_ANALYZE_MAX || 20);
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -31,28 +34,39 @@ function maybeMultipartUpload(req, res, next) {
   });
 }
 
-router.post('/cv/analyze', maybeMultipartUpload, async (req, res) => {
-  try {
-    const bodyText = typeof req.body?.text === 'string' ? req.body.text : '';
-    const targetRole = typeof req.body?.targetRole === 'string' ? req.body.targetRole : '';
-    const file = req.file || null;
+router.post(
+  '/cv/analyze',
+  rateLimit({
+    name: 'cv-analyze',
+    windowMs: CV_ANALYZE_WINDOW_MS,
+    max: CV_ANALYZE_MAX,
+    message: 'Too many CV analyses. Please wait and try again.',
+    code: 'CV_ANALYZE_RATE_LIMITED',
+  }),
+  maybeMultipartUpload,
+  async (req, res) => {
+    try {
+      const bodyText = typeof req.body?.text === 'string' ? req.body.text : '';
+      const targetRole = typeof req.body?.targetRole === 'string' ? req.body.targetRole : '';
+      const file = req.file || null;
 
-    if (!file && !bodyText.trim()) {
-      return res.status(400).json({ error: 'Provide a PDF/DOCX file or paste CV text.' });
+      if (!file && !bodyText.trim()) {
+        return res.status(400).json({ error: 'Provide a PDF/DOCX file or paste CV text.' });
+      }
+
+      const report = await analyzeCvPayload({ file, text: bodyText, targetRole });
+      return res.json(report);
+    } catch (err) {
+      if (err instanceof CvAnalyzeError) {
+        return res.status(err.statusCode).json({ error: err.message });
+      }
+
+      const name = err?.name || 'Error';
+      const message = err?.message || 'Unknown error';
+      console.error(`[cv-linter] route failure (${name}): ${message}`);
+      return res.status(500).json({ error: 'Failed to analyze CV.' });
     }
-
-    const report = await analyzeCvPayload({ file, text: bodyText, targetRole });
-    return res.json(report);
-  } catch (err) {
-    if (err instanceof CvAnalyzeError) {
-      return res.status(err.statusCode).json({ error: err.message });
-    }
-
-    const name = err?.name || 'Error';
-    const message = err?.message || 'Unknown error';
-    console.error(`[cv-linter] route failure (${name}): ${message}`);
-    return res.status(500).json({ error: 'Failed to analyze CV.' });
   }
-});
+);
 
 module.exports = router;

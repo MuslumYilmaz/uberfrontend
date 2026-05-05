@@ -2,6 +2,10 @@ const { getJwtVerifyOptions } = require('../config/jwt');
 const AuthSession = require('../models/AuthSession');
 const User = require('../models/User');
 const { verifyAccessToken } = require('../services/auth-sessions');
+const {
+    getCachedAuthValidation,
+    setCachedAuthValidation,
+} = require('../services/auth-validation-cache');
 
 const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
 const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
@@ -89,6 +93,17 @@ async function requireAuth(req, res, next) {
         }
 
         const payload = verifyAccessToken(token, getJwtVerifyOptions());
+        const cached = getCachedAuthValidation(token);
+        if (cached && cached.userId === payload.sub) {
+            req.auth = {
+                userId: cached.userId,
+                role: cached.role || 'user',
+                via,
+                sessionId: cached.sessionId || null,
+            };
+            return next();
+        }
+
         const user = await User.findById(payload.sub).select('passwordUpdatedAt role').lean();
         if (!user) return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
         if (!isTokenFreshEnoughForPasswordVersion(payload, user)) {
@@ -107,6 +122,7 @@ async function requireAuth(req, res, next) {
         }
 
         req.auth = { userId: payload.sub, role: user.role || 'user', via, sessionId };
+        setCachedAuthValidation(token, req.auth);
         next();
     } catch (e) {
         return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');

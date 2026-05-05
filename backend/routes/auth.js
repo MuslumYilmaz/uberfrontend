@@ -455,6 +455,7 @@ const AUTH_OAUTH_START_WINDOW_MS = Number(process.env.AUTH_OAUTH_START_WINDOW_MS
 const AUTH_OAUTH_START_MAX = Number(process.env.AUTH_OAUTH_START_MAX || 20);
 
 const loginRateLimit = rateLimit({
+    name: 'auth-login',
     windowMs: AUTH_LOGIN_WINDOW_MS,
     max: AUTH_LOGIN_MAX,
     code: AUTH_RATE_LIMIT_CODE,
@@ -463,6 +464,7 @@ const loginRateLimit = rateLimit({
 });
 
 const signupRateLimit = rateLimit({
+    name: 'auth-signup',
     windowMs: AUTH_SIGNUP_WINDOW_MS,
     max: AUTH_SIGNUP_MAX,
     code: AUTH_RATE_LIMIT_CODE,
@@ -474,6 +476,7 @@ const signupRateLimit = rateLimit({
 });
 
 const refreshRateLimit = rateLimit({
+    name: 'auth-refresh',
     windowMs: AUTH_REFRESH_WINDOW_MS,
     max: AUTH_REFRESH_MAX,
     code: AUTH_RATE_LIMIT_CODE,
@@ -481,6 +484,7 @@ const refreshRateLimit = rateLimit({
 });
 
 const oauthStartRateLimit = rateLimit({
+    name: 'auth-oauth-start',
     windowMs: AUTH_OAUTH_START_WINDOW_MS,
     max: AUTH_OAUTH_START_MAX,
     code: AUTH_RATE_LIMIT_CODE,

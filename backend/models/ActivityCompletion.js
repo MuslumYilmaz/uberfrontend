@@ -24,5 +24,9 @@ ActivityCompletionSchema.index(
     { userId: 1, kind: 1, itemId: 1 },
     { unique: true, name: 'uniq_user_kind_item_completion' }
 );
+ActivityCompletionSchema.index(
+    { userId: 1, active: 1, completedAt: -1 },
+    { name: 'idx_activity_completion_user_active_completed_at' }
+);
 
 module.exports = model('ActivityCompletion', ActivityCompletionSchema);

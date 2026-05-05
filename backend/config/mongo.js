@@ -81,6 +81,25 @@ function getExpectedMongoDbName() {
   return value || null;
 }
 
+function readBoundedNumber(name, fallback, { min = 0, max = Number.MAX_SAFE_INTEGER } = {}) {
+  const raw = process.env[name];
+  if (raw == null || raw === '') return fallback;
+  const value = Number(raw);
+  if (!Number.isFinite(value)) return fallback;
+  return Math.min(max, Math.max(min, Math.floor(value)));
+}
+
+function resolveMongoClientOptions() {
+  const maxPoolSize = readBoundedNumber('MONGO_MAX_POOL_SIZE', 10, { min: 1, max: 100 });
+  const minPoolSize = readBoundedNumber('MONGO_MIN_POOL_SIZE', 0, { min: 0, max: maxPoolSize });
+  return {
+    maxPoolSize,
+    minPoolSize,
+    serverSelectionTimeoutMS: readBoundedNumber('MONGO_SERVER_SELECTION_TIMEOUT_MS', 5000, { min: 1000, max: 60_000 }),
+    socketTimeoutMS: readBoundedNumber('MONGO_SOCKET_TIMEOUT_MS', 20_000, { min: 1000, max: 120_000 }),
+  };
+}
+
 function getModelCollectionMap() {
   return Object.values(mongoose.models)
     .map((model) => ({
@@ -127,6 +146,7 @@ function getMongoDiagnostics() {
     name: actualName,
     expectedName,
     matchesExpected: !expectedName || actualName === expectedName,
+    clientOptions: resolveMongoClientOptions(),
     models: getModelCollectionMap(),
   };
 }
@@ -138,7 +158,7 @@ async function connectToMongo(uri) {
   if (cache.conn) return cache.conn;
   if (!cache.promise) {
     cache.promise = mongoose
-      .connect(uri)
+      .connect(uri, resolveMongoClientOptions())
       .then((m) => m.connection)
       .catch((err) => {
         cache.promise = null;
@@ -196,6 +216,7 @@ module.exports = {
   disconnectMongo,
   getMongoDiagnostics,
   getExpectedMongoDbName,
+  resolveMongoClientOptions,
   resolveMongoConnectionConfig,
   resolveMongoTarget,
 };

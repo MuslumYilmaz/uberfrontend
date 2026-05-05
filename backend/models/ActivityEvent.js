@@ -21,4 +21,13 @@ const ActivityEventSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+ActivityEventSchema.index(
+    { userId: 1, completedAt: -1 },
+    { name: 'idx_activity_event_user_completed_at' }
+);
+ActivityEventSchema.index(
+    { userId: 1, dayUTC: 1 },
+    { name: 'idx_activity_event_user_day' }
+);
+
 module.exports = mongoose.model('ActivityEvent', ActivityEventSchema);
