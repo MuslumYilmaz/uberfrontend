@@ -23,12 +23,23 @@ type DoneMsg = {
     timedOut?: boolean;
     error?: string;
 };
+type SandboxAsyncError = {
+    message: string;
+    name?: string;
+    stack?: string;
+    testIdx: number | null;
+    testName: string | null;
+    reported?: boolean;
+};
 
 // ---------- state ----------
 let ACTIVE_NONCE = '';
 let doneSent = false;
 const logs: LogEntry[] = [];
+const asyncErrors: SandboxAsyncError[] = [];
 let logLimitHit = false;
+let activeTestIdx: number | null = null;
+let activeTestName: string | null = null;
 const now = () => Date.now();
 
 // ---------- limits ----------
@@ -198,6 +209,26 @@ const pushError = (err: unknown) => {
     return normalized.message;
 };
 
+const recordAsyncError = (err: unknown) => {
+    const normalized = normalizeWorkerError(err);
+    pushEntry({
+        level: 'error',
+        message: normalized.message,
+        timestamp: now(),
+        stack: normalized.stack,
+        name: normalized.name,
+    });
+    const entry: SandboxAsyncError = {
+        message: normalized.message,
+        name: normalized.name,
+        stack: normalized.stack,
+        testIdx: activeTestIdx,
+        testName: activeTestName,
+    };
+    asyncErrors.push(entry);
+    return entry;
+};
+
 const stripStack = (s: string) =>
     s.split('\n').filter(line => !/blob:|worker_|webpack|zone\.js/i.test(line)).join('\n');
 
@@ -223,9 +254,14 @@ freezeHardenedPrototypes();
     debug: (...a: unknown[]) => push('log', ...a),
 } as unknown as Console;
 
-self.addEventListener('error', (e) => push('error', `Uncaught: ${e.message}`));
-self.addEventListener('unhandledrejection', (e: any) =>
-    push('error', `Unhandled rejection: ${safeStringify(e?.reason)}`));
+self.addEventListener('error', (e: ErrorEvent) => {
+    try { e.preventDefault(); } catch { }
+    recordAsyncError(e.error ?? e.message ?? 'Uncaught sandbox error');
+});
+self.addEventListener('unhandledrejection', (e: any) => {
+    try { e.preventDefault?.(); } catch { }
+    recordAsyncError(e?.reason ?? 'Unhandled sandbox rejection');
+});
 
 // ---------- tiny test DSL (ORDERED execution) ----------
 type TestCase = { idx: number; name: string; fn: () => any };
@@ -327,14 +363,41 @@ function it(name: string, fn: () => any) { test(name, fn); }
 async function runQueued(): Promise<TestResult[]> {
     const results: TestResult[] = [];
     for (const t of queue) {
+        const asyncStart = asyncErrors.length;
+        const currentAsyncError = () => asyncErrors
+            .slice(asyncStart)
+            .find((err) => err.testIdx === t.idx && !err.reported);
+        activeTestIdx = t.idx;
+        activeTestName = t.name;
         try {
             const maybe = t.fn();
             if (maybe && typeof (maybe as any).then === 'function') await (maybe as any);
+            const asyncError = currentAsyncError();
+            if (asyncError) {
+                asyncError.reported = true;
+                results.push({ name: t.name, passed: false, error: asyncError.message, order: t.idx });
+                continue;
+            }
             results.push({ name: t.name, passed: true, order: t.idx });
         } catch (e: any) {
-            const msg = pushError(e);
+            const asyncError = currentAsyncError();
+            const msg = asyncError ? asyncError.message : pushError(e);
+            if (asyncError) asyncError.reported = true;
             results.push({ name: t.name, passed: false, error: msg, order: t.idx });
+        } finally {
+            activeTestIdx = null;
+            activeTestName = null;
         }
+    }
+    for (const err of asyncErrors) {
+        if (err.reported || err.testIdx !== null) continue;
+        err.reported = true;
+        results.push({
+            name: err.testName || 'Unhandled sandbox async error',
+            passed: false,
+            error: err.message,
+            order: nextIdx++,
+        });
     }
     return results;
 }
@@ -374,9 +437,12 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
     ACTIVE_NONCE = nonce;
     doneSent = false;
     logs.length = 0;
+    asyncErrors.length = 0;
     queue.length = 0;
     suiteStack.length = 0;
     nextIdx = 0;
+    activeTestIdx = null;
+    activeTestName = null;
 
     // expose DSL to tests
     (self as any).describe = describe;
