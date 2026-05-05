@@ -1,5 +1,6 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { HARDENED_PROTOTYPE_CTORS } from '../security/user-code-sandbox-hardening';
+import { createSandboxExpect } from '../security/user-code-sandbox-matchers';
 import { UserCodeSandboxService, type RunnerOutput } from './user-code-sandbox.service';
 
 class MockWorker {
@@ -185,5 +186,56 @@ describe('UserCodeSandboxService', () => {
 describe('UserCodeSandboxService hardening configuration', () => {
   it('keeps Array.prototype extensible for catalog prototype-extension drills', () => {
     expect(HARDENED_PROTOTYPE_CTORS).not.toContain(Array as any);
+  });
+});
+
+describe('UserCodeSandboxService matcher DSL', () => {
+  const sandboxExpect = createSandboxExpect((value) => {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  });
+
+  it('supports async error matchers used by catalog tests', async () => {
+    await expectAsync(
+      sandboxExpect(Promise.reject(new Error('boom'))).rejects.toThrow('boom'),
+    ).toBeResolved();
+    await expectAsync(
+      sandboxExpect(Promise.reject(new TypeError('bad type'))).rejects.toThrow(TypeError),
+    ).toBeResolved();
+
+    const abort = new Error('aborted');
+    abort.name = 'AbortError';
+    await expectAsync(
+      sandboxExpect(Promise.reject(abort)).rejects.toMatchObject({ name: 'AbortError' }),
+    ).toBeResolved();
+  });
+
+  it('supports sync toThrow expected values', () => {
+    expect(() => {
+      sandboxExpect(() => {
+        throw new Error('boom went off');
+      }).toThrow('boom');
+      sandboxExpect(() => {
+        throw new Error('boom went off');
+      }).toThrow(/went off/);
+      sandboxExpect(() => {
+        throw new TypeError('bad type');
+      }).toThrow(TypeError);
+    }).not.toThrow();
+  });
+
+  it('supports strict equality as a deep-equality alias', () => {
+    expect(() => {
+      sandboxExpect({ value: [1, 2, 3] }).toStrictEqual({ value: [1, 2, 3] });
+    }).not.toThrow();
+  });
+
+  it('fails rejects.toThrow when the promise resolves', async () => {
+    await expectAsync(
+      sandboxExpect(Promise.resolve('ok')).rejects.toThrow('boom'),
+    ).toBeRejectedWithError(/Expected promise to reject/);
   });
 });
