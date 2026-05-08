@@ -5,18 +5,52 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 export class AppUiStylesService {
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private readonly stylesheets = [
+  private readonly coreStylesheets = [
     '/assets/vendor/primeng/resources/themes/lara-dark-amber/theme.css',
     '/assets/vendor/primeng/resources/primeng.min.css',
     '/assets/vendor/primeicons/primeicons.css',
+  ];
+  private readonly iconFontStylesheets = [
     '/assets/vendor/fontawesome/css/all.min.css',
   ];
-  private loaded = false;
+  private coreLoaded = false;
+  private iconFontsLoaded = false;
+  private iconFontsScheduled = false;
+
+  ensureCoreLoaded(): void {
+    if (!this.isBrowser || this.coreLoaded) return;
+
+    this.appendStylesheets(this.coreStylesheets);
+    this.coreLoaded = true;
+  }
+
+  ensureIconFontsLoaded(options: { defer?: boolean } = {}): void {
+    if (!this.isBrowser || this.iconFontsLoaded) return;
+
+    const load = () => {
+      if (this.iconFontsLoaded) return;
+      this.iconFontsScheduled = false;
+      this.appendStylesheets(this.iconFontStylesheets);
+      this.iconFontsLoaded = true;
+    };
+
+    if (options.defer) {
+      if (this.iconFontsScheduled) return;
+      this.iconFontsScheduled = true;
+      this.schedulePostLoad(load);
+      return;
+    }
+
+    load();
+  }
 
   ensureLoaded(): void {
-    if (!this.isBrowser || this.loaded) return;
+    this.ensureCoreLoaded();
+    this.ensureIconFontsLoaded();
+  }
 
-    this.stylesheets.forEach((href) => {
+  private appendStylesheets(hrefs: string[]): void {
+    hrefs.forEach((href) => {
       if (this.document.head.querySelector(`link[data-app-ui-style="${href}"]`)) {
         return;
       }
@@ -27,7 +61,18 @@ export class AppUiStylesService {
       link.dataset['appUiStyle'] = href;
       this.document.head.appendChild(link);
     });
+  }
 
-    this.loaded = true;
+  private schedulePostLoad(task: () => void): void {
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+    };
+
+    if (typeof win.requestIdleCallback === 'function') {
+      win.requestIdleCallback(task, { timeout: 6500 });
+      return;
+    }
+
+    window.setTimeout(task, 2600);
   }
 }

@@ -15,7 +15,7 @@ import {
 } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
-import { QuestionService } from '../../../core/services/question.service';
+import { QuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
@@ -24,6 +24,7 @@ import { UserProgressService } from '../../../core/services/user-progress.servic
 import { AuthService } from '../../../core/services/auth.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { AppUiStylesService } from '../../../core/services/app-ui-styles.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import { ExperimentService } from '../../../core/services/experiment.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
@@ -70,7 +71,8 @@ type RichAnswer = { blocks: AnswerBlock[] } | null | undefined;
 
 type PracticeItem = { tech: Tech; kind: 'trivia' | 'coding'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
-type SimilarItem = { question: Question; difficulty: string };
+type QuestionListEntry = QuestionListItem;
+type SimilarItem = { question: QuestionListEntry; difficulty: string };
 type TagMatcher = { tag: string; re: RegExp };
 type IncidentCardModel = {
   title: string;
@@ -140,8 +142,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   tech!: Tech;
   readonly h1IntentLabel = TRIVIA_H1_INTENT_LABEL;
 
-  questionsList: Question[] = [];
-  sidebarQuestions: Question[] = [];
+  questionsList: QuestionListEntry[] = [];
+  sidebarQuestions: QuestionListEntry[] = [];
   sidebarTitle = 'All Questions';
   question = signal<Question | null>(null);
   copiedIndex = signal<number | null>(null);
@@ -244,7 +246,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   hasPrev() { return !!this.practice && this.practice.index > 0; }
   hasNext() { return !!this.practice && this.practice.index + 1 < this.practice.items.length; }
-  trackByQuestionId = (_: number, q: Question): string => q.id;
+  trackByQuestionId = (_: number, q: QuestionListEntry): string => q.id;
   trackByAnswerBlock = (index: number, block: AnswerBlock): string => `${block.type}:${index}`;
   trackByStringValue = (index: number, value: string): string => value || String(index);
   trackByRowCells = (index: number, row: string[]): string => `${index}:${row.join('|')}`;
@@ -325,7 +327,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const scored = this.questionsList
       .filter((q) => q.id !== current.id)
       .map((q) => {
-        const tags = this.getQuestionTags(q);
+        const tags = this.getQuestionTags(q as Question);
         let overlap = 0;
         for (const tag of tags) {
           if (baseSet.has(tag)) overlap += 1;
@@ -362,6 +364,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     public auth: AuthService,
     private activity: ActivityService,
     private analytics: AnalyticsService,
+    private appUiStyles: AppUiStylesService,
     private bugReport: BugReportService,
     private experiments: ExperimentService,
     private onboarding: OnboardingService,
@@ -462,10 +465,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private applyResolved(resolved: QuestionDetailResolved) {
     this.tech = resolved.tech;
-    this.questionsList = resolved.list ?? [];
+    const listEntries = resolved.listSummaries?.length ? resolved.listSummaries : resolved.list;
+    this.questionsList = listEntries?.length
+      ? listEntries
+      : resolved.question ? [resolved.question] : [];
     this.dataLoaded = true;
     this.refreshSidebarQuestions();
-    this.selectQuestion(resolved.id);
+    this.selectQuestion(resolved.id, resolved.question);
     this.syncPracticeIndexById(resolved.id);
   }
 
@@ -525,9 +531,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private selectQuestion(id: string) {
-    const found = this.questionsList.find((q) => q.id === id) ?? null;
+  private selectQuestion(id: string, resolvedQuestion: Question | null = null) {
+    const listHit = this.questionsList.find((q) => q.id === id);
+    const found = resolvedQuestion?.id === id
+      ? resolvedQuestion
+      : this.isFullQuestion(listHit) ? listHit : null;
     this.question.set(found);
+    this.ensureQuestionIconFonts(found);
     this.resetTriviaEngagementState();
     this.resetIncidentPrompt();
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
@@ -547,6 +557,38 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.updateTriviaScrollDepth();
   }
 
+  private isFullQuestion(q: QuestionListEntry | Question | undefined): q is Question {
+    return !!q && Object.prototype.hasOwnProperty.call(q, 'answer');
+  }
+
+  private ensureQuestionIconFonts(q: Question | null): void {
+    if (!q || !this.questionUsesFontAwesome(q)) return;
+    this.appUiStyles.ensureIconFontsLoaded({ defer: true });
+  }
+
+  private questionUsesFontAwesome(q: Question): boolean {
+    const haystack = [
+      q.description,
+      q.answer,
+      (q as any).interviewFocus,
+      (q as any).incident,
+    ];
+    return haystack.some((value) => this.valueUsesFontAwesome(value));
+  }
+
+  private valueUsesFontAwesome(value: unknown): boolean {
+    if (typeof value === 'string') {
+      return /\bfa-(?:solid|regular|brands|[a-z0-9-]+)\b/i.test(value);
+    }
+    if (Array.isArray(value)) {
+      return value.some((entry) => this.valueUsesFontAwesome(entry));
+    }
+    if (value && typeof value === 'object') {
+      return Object.values(value as Record<string, unknown>).some((entry) => this.valueUsesFontAwesome(entry));
+    }
+    return false;
+  }
+
   private setLoadState(found: Question | null) {
     if (found) {
       this.loadState.set('loaded');
@@ -559,7 +601,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadState.set('loading');
   }
 
-  isActive(q: Question) { return this.question()?.id === q.id; }
+  isActive(q: QuestionListEntry) { return this.question()?.id === q.id; }
 
   private normalizePreviewText(text: string): string {
     return String(text || '')
@@ -739,17 +781,17 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onSidebarQuestionClick(q: Question) {
+  onSidebarQuestionClick(q: QuestionListEntry) {
     this.closeQnav();
     this.saveSidebarScrollPosition();
     this.ensurePracticeBuilt(q.id);
   }
 
-  sidebarQuestionRoute(q: Question): any[] {
+  sidebarQuestionRoute(q: QuestionListEntry): any[] {
     return ['/', this.tech, 'trivia', q.id];
   }
 
-  sidebarNavState(q: Question) {
+  sidebarNavState(q: QuestionListEntry) {
     return this.buildNavState(q.id);
   }
 
@@ -765,7 +807,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.qnavOpen.set(false);
   }
 
-  similarNavState(q: Question) {
+  similarNavState(q: QuestionListEntry) {
     return this.buildNavState(q.id);
   }
 
@@ -1535,7 +1577,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const byId = new Map(this.questionsList.map((q) => [q.id, q] as const));
-    const ordered: Question[] = [];
+    const ordered: QuestionListEntry[] = [];
     const seen = new Set<string>();
 
     for (const item of sessionItems) {

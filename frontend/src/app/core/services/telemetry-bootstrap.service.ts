@@ -29,6 +29,7 @@ export class TelemetryBootstrapService {
   private inMemoryAnonymousId: string | null = null;
   private sentry: SentryBrowserClient | null = null;
   private sentryInitPromise: Promise<void> | null = null;
+  private analyticsInitScheduled = false;
 
   constructor() {
     effect(() => {
@@ -47,7 +48,7 @@ export class TelemetryBootstrapService {
     }
 
     this.disarmOnFirstInteraction();
-    this.analytics.ensureInitialized();
+    this.scheduleAnalyticsInitialization();
     void this.ensureSentryInitialized();
   }
 
@@ -57,7 +58,7 @@ export class TelemetryBootstrapService {
 
     const activate = () => {
       this.disarmOnFirstInteraction();
-      this.analytics.ensureInitialized();
+      this.scheduleAnalyticsInitialization();
       void this.ensureSentryInitialized();
     };
 
@@ -80,6 +81,18 @@ export class TelemetryBootstrapService {
 
   private disarmOnFirstInteraction(): void {
     this.interactionCleanup?.();
+  }
+
+  private scheduleAnalyticsInitialization(): void {
+    if (!this.isBrowser || this.analytics.isInitialized() || this.analyticsInitScheduled) return;
+
+    this.analyticsInitScheduled = true;
+    this.schedulePostLoad(() => {
+      window.setTimeout(() => {
+        this.analyticsInitScheduled = false;
+        this.analytics.ensureInitialized();
+      }, 1200);
+    });
   }
 
   private ensureSentryInitialized(): Promise<void> {

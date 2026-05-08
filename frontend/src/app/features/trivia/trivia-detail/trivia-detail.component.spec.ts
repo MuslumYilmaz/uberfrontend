@@ -31,6 +31,7 @@ describe('TriviaDetailComponent', () => {
 
   const makeResolved = (access: 'free' | 'premium', extras: Record<string, any> = {}) => ({
     tech: 'javascript',
+    kind: 'trivia',
     id: 'q1',
     list: [{
       id: 'q1',
@@ -78,7 +79,24 @@ describe('TriviaDetailComponent', () => {
       tags: ['closures', 'dom-events'],
       updatedAt: '2026-04-02',
     }],
+    question: null,
   });
+
+  function toSummary(q: any) {
+    return {
+      id: q.id,
+      title: q.title,
+      type: q.type,
+      technology: q.technology,
+      access: q.access,
+      difficulty: q.difficulty,
+      tags: q.tags,
+      importance: q.importance,
+      companies: q.companies || [],
+      description: undefined,
+      shortDescription: undefined,
+    };
+  }
 
   function trackCalls(eventName: string) {
     return analytics.track.calls.allArgs().filter(([name]) => name === eventName);
@@ -207,7 +225,13 @@ describe('TriviaDetailComponent', () => {
   });
 
   async function createLoadedFixture(access: 'free' | 'premium' = 'free', extras: Record<string, any> = {}) {
-    routeData$.next({ questionDetail: makeResolved(access, extras) });
+    const resolved = makeResolved(access, extras);
+    routeData$.next({
+      questionDetail: {
+        ...resolved,
+        question: resolved.list[0],
+      },
+    });
     const fixture = TestBed.createComponent(TriviaDetailComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -268,6 +292,52 @@ describe('TriviaDetailComponent', () => {
     expect(framePrimary?.getAttribute('href') || '').toContain('/coding?kind=trivia&reset=1');
     expect(framePlan?.getAttribute('href') || '').toContain('/tracks/javascript-prep-path/mastery');
     expect(frameHub?.getAttribute('href') || '').toContain('/javascript/interview-questions');
+  });
+
+  it('hydrates the current question from a lightweight resolver payload while keeping list entries as summaries', async () => {
+    const resolved = makeResolved('free');
+    const fullQuestion = resolved.list[0];
+    routeData$.next({
+      questionDetail: {
+        ...resolved,
+        list: [],
+        listSummaries: resolved.list.map(toSummary),
+        question: fullQuestion,
+      },
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('h1.title')?.textContent || '').toContain('What is closure?');
+    expect(fixture.nativeElement.textContent || '').toContain('Closure captures lexical scope');
+    expect(fixture.nativeElement.querySelectorAll('.side-list a.side-item').length).toBe(2);
+    expect(fixture.nativeElement.querySelector('.similar-list')).toBeTruthy();
+    expect((fixture.componentInstance.question() as any)?.answer).toBe(fullQuestion.answer);
+    expect((fixture.componentInstance.questionsList[0] as any).answer).toBeUndefined();
+  });
+
+  it('keeps a missing lightweight detail in not-found state instead of rendering a summary as the question', async () => {
+    const resolved = makeResolved('free');
+    routeData$.next({
+      questionDetail: {
+        ...resolved,
+        id: 'missing-question',
+        list: [],
+        listSummaries: resolved.list.map(toSummary),
+        question: null,
+      },
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.question()).toBeNull();
+    expect(fixture.componentInstance.loadState()).toBe('notFound');
   });
 
   it('renders unlocked trivia shell with sidebar, similar, guides, and prep bridge blocks', async () => {
