@@ -185,3 +185,27 @@ reference_rules:
     load:
       - docs/audits/test-quality-audit.md
     max_docs: 1
+
+  - id: font_size_audit
+    priority: 75
+    keywords:
+      - font-size
+      - typography
+      - type scale
+      - readable text
+      - line-height
+      - design tokens
+      - tokenized typography
+      - body size
+    paths:
+      - frontend/src/styles/tokens.scss
+      - frontend/src/styles/utilities.scss
+      - frontend/src/styles/primitives.scss
+      - frontend/src/app/**/*.css
+      - frontend/src/app/**/*.scss
+      - frontend/src/app/**/*.ts
+    requires:
+      - docs/ai-context/frontend-ui.md
+    load:
+      - docs/audits/font-size-best-practices-audit.md
+    max_docs: 1
