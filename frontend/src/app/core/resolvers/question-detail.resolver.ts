@@ -1,11 +1,13 @@
-import { inject } from '@angular/core';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { PLATFORM_ID, inject } from '@angular/core';
+import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { ResolveFn } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 import { Question } from '../models/question.model';
 import { Tech } from '../models/user.model';
-import { QuestionService } from '../services/question.service';
+import { QuestionListItem, QuestionService } from '../services/question.service';
 
 type QuestionKind = 'coding' | 'trivia' | 'debug';
 
@@ -14,6 +16,7 @@ export type QuestionDetailResolved = {
   kind: QuestionKind;
   id: string;
   list: Question[];
+  listSummaries?: QuestionListItem[];
   question: Question | null;
 };
 
@@ -33,16 +36,71 @@ export type SystemDesignDetailResolved = {
   question: SystemDesignQuestionResolved | null;
 };
 
+function toDetailListItem(q: Question): QuestionListItem {
+  return {
+    id: q.id,
+    title: q.title,
+    type: q.type,
+    technology: q.technology,
+    access: q.access,
+    difficulty: q.difficulty,
+    tags: Array.isArray(q.tags) ? q.tags : [],
+    importance: Number(q.importance ?? 0),
+    companies: Array.isArray(q.companies) ? q.companies : [],
+    description: undefined,
+    shortDescription: undefined,
+  };
+}
+
+function buildQuestionDetailResolved(
+  tech: Tech,
+  kind: QuestionKind,
+  id: string,
+  list: Question[],
+): QuestionDetailResolved {
+  const useLightweightList = kind === 'trivia';
+  return {
+    tech,
+    kind,
+    id,
+    list: useLightweightList ? [] : list,
+    listSummaries: useLightweightList ? list.map(toDetailListItem) : undefined,
+    question: list.find((q) => q.id === id) ?? null,
+  };
+}
+
+function questionDetailStateKey(tech: Tech, kind: QuestionKind, id: string) {
+  return makeStateKey<QuestionDetailResolved>(`question-detail:${tech}:${kind}:${id}`);
+}
+
 function resolveDetail(tech: Tech, kind: QuestionKind, id: string) {
   const qs = inject(QuestionService);
-  return qs.loadQuestions(tech, kind, { transferState: false }).pipe(
-    map((list) => ({
+  const transferState = inject(TransferState);
+  const platformId = inject(PLATFORM_ID);
+  const stateKey = questionDetailStateKey(tech, kind, id);
+  const useLightweightTransferState = kind === 'trivia';
+
+  if (useLightweightTransferState && isPlatformBrowser(platformId) && transferState.hasKey(stateKey)) {
+    const cached = transferState.get(stateKey, {
       tech,
       kind,
       id,
-      list,
-      question: list.find((q) => q.id === id) ?? null,
-    })),
+      list: [],
+      listSummaries: [],
+      question: null,
+    });
+    transferState.remove(stateKey);
+    return of(cached);
+  }
+
+  return qs.loadQuestions(tech, kind, { transferState: false }).pipe(
+    map((list) => {
+      const resolved = buildQuestionDetailResolved(tech, kind, id, list);
+      if (useLightweightTransferState && isPlatformServer(platformId)) {
+        transferState.set(stateKey, resolved);
+      }
+      return resolved;
+    }),
   );
 }
 

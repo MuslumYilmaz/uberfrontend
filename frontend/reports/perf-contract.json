@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-05T05:28:46.606Z",
+  "generatedAt": "2026-05-08T16:48:17.487Z",
   "strictMode": false,
   "buildDir": "dist/frontendatlas/browser",
   "thresholds": {
@@ -11,16 +11,16 @@
     "showcaseLazyHeavyBytes": 620000
   },
   "metrics": {
-    "initialBytes": 884150,
-    "modulePreloadBytes": 538369,
-    "modulePreloadCount": 26,
-    "entryScriptBytes": 246389,
+    "initialBytes": 887810,
+    "modulePreloadBytes": 539968,
+    "modulePreloadCount": 27,
+    "entryScriptBytes": 248450,
     "entryScriptCount": 2,
     "stylesheetBytes": 99392,
     "stylesheetCount": 2,
-    "totalHtmlBytes": 73187384,
+    "totalHtmlBytes": 78870953,
     "htmlFileCount": 605,
-    "codingHtmlBytes": 577693,
+    "codingHtmlBytes": 577744,
     "sentryLazyChunkBytes": 0,
     "sentryLazyChunkFile": null,
     "showcaseLazyHeavyBytes": 0,
@@ -30,108 +30,108 @@
     {
       "route": "/coding",
       "file": "dist/frontendatlas/browser/coding/index.html",
-      "bytes": 577693
+      "bytes": 577744
     },
     {
       "route": "/interview-questions/essential",
       "file": "dist/frontendatlas/browser/interview-questions/essential/index.html",
-      "bytes": 320472
-    },
-    {
-      "route": "/guides/framework-prep/angular-prep-path",
-      "file": "dist/frontendatlas/browser/guides/framework-prep/angular-prep-path/index.html",
-      "bytes": 222539
+      "bytes": 320523
     },
     {
       "route": "/javascript/trivia/js-cookie-options",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-cookie-options/index.html",
-      "bytes": 214407
-    },
-    {
-      "route": "/",
-      "file": "dist/frontendatlas/browser/index.html",
-      "bytes": 212065
+      "bytes": 252301
     },
     {
       "route": "/javascript/trivia/js-object-creation-methods",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-object-creation-methods/index.html",
-      "bytes": 208163
-    },
-    {
-      "route": "/guides/framework-prep/vue-prep-path",
-      "file": "dist/frontendatlas/browser/guides/framework-prep/vue-prep-path/index.html",
-      "bytes": 207591
-    },
-    {
-      "route": "/javascript/trivia/js-calback-hell-resolved-with-promise",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-calback-hell-resolved-with-promise/index.html",
-      "bytes": 205315
-    },
-    {
-      "route": "/javascript/trivia/js-arrow-vs-regular-functions",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-arrow-vs-regular-functions/index.html",
-      "bytes": 204875
-    },
-    {
-      "route": "/javascript/trivia/js-bigint-data-type",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-bigint-data-type/index.html",
-      "bytes": 204766
+      "bytes": 242310
     },
     {
       "route": "/javascript/trivia/js-type-coercion",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-type-coercion/index.html",
-      "bytes": 204649
+      "bytes": 239279
+    },
+    {
+      "route": "/javascript/trivia/js-arrow-vs-regular-functions",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-arrow-vs-regular-functions/index.html",
+      "bytes": 239048
+    },
+    {
+      "route": "/javascript/trivia/js-calback-hell-resolved-with-promise",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-calback-hell-resolved-with-promise/index.html",
+      "bytes": 238867
+    },
+    {
+      "route": "/javascript/trivia/js-bigint-data-type",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-bigint-data-type/index.html",
+      "bytes": 238525
     },
     {
       "route": "/javascript/trivia/web-performance-optimize-load-time",
       "file": "dist/frontendatlas/browser/javascript/trivia/web-performance-optimize-load-time/index.html",
-      "bytes": 203928
+      "bytes": 238406
     },
     {
       "route": "/javascript/trivia/js-compare-two-objects",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-compare-two-objects/index.html",
-      "bytes": 203872
+      "bytes": 237682
     },
     {
       "route": "/javascript/trivia/js-event-loop",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-event-loop/index.html",
-      "bytes": 203772
+      "bytes": 237338
     },
     {
       "route": "/javascript/trivia/js-why-eval-function-considered-dangerous",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-why-eval-function-considered-dangerous/index.html",
-      "bytes": 203748
-    },
-    {
-      "route": "/javascript/trivia/js-null-coalescing-operator",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-null-coalescing-operator/index.html",
-      "bytes": 203023
-    },
-    {
-      "route": "/javascript/trivia/js-passing-by-value-and-by-reference",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-passing-by-value-and-by-reference/index.html",
-      "bytes": 202888
-    },
-    {
-      "route": "/javascript/trivia/js-this-keyword",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-this-keyword/index.html",
-      "bytes": 202747
-    },
-    {
-      "route": "/javascript/trivia/js-use-strict-describe",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-use-strict-describe/index.html",
-      "bytes": 202526
+      "bytes": 236826
     },
     {
       "route": "/javascript/trivia/js-xss-dom-sinks",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-xss-dom-sinks/index.html",
-      "bytes": 202447
+      "bytes": 236572
+    },
+    {
+      "route": "/javascript/trivia/js-null-coalescing-operator",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-null-coalescing-operator/index.html",
+      "bytes": 236422
+    },
+    {
+      "route": "/javascript/trivia/js-passing-by-value-and-by-reference",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-passing-by-value-and-by-reference/index.html",
+      "bytes": 235987
+    },
+    {
+      "route": "/javascript/trivia/js-use-strict-describe",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-use-strict-describe/index.html",
+      "bytes": 235715
+    },
+    {
+      "route": "/javascript/trivia/js-check-data-type-with-typeof",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-check-data-type-with-typeof/index.html",
+      "bytes": 235609
+    },
+    {
+      "route": "/javascript/trivia/js-repaint-reflow",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-repaint-reflow/index.html",
+      "bytes": 235461
+    },
+    {
+      "route": "/javascript/trivia/js-promise-combinators-all-allsettled-race-any",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-promise-combinators-all-allsettled-race-any/index.html",
+      "bytes": 235249
+    },
+    {
+      "route": "/javascript/trivia/js-this-keyword",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-this-keyword/index.html",
+      "bytes": 235026
     }
   ],
   "bundleStatsSource": null,
   "showcaseLazyChunks": [],
   "warnings": [
-    "/coding HTML bytes 577693 exceed 450000",
-    "Total prerender HTML bytes 73187384 exceed 70000000"
+    "/coding HTML bytes 577744 exceed 450000",
+    "Total prerender HTML bytes 78870953 exceed 70000000"
   ]
 }

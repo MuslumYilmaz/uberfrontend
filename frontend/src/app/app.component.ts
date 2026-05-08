@@ -130,8 +130,26 @@ export class AppComponent implements OnInit, OnDestroy {
   private configureRouteRuntime(url: string) {
     const path = normalizePathname(url);
     if (!isMarketingPath(path)) {
-      this.appUiStyles.ensureLoaded();
+      this.appUiStyles.ensureCoreLoaded();
+      if (this.routeMayUseFontAwesome(path)) {
+        this.appUiStyles.ensureIconFontsLoaded({ defer: true });
+      }
     }
     this.telemetry.armForUrl(path);
+  }
+
+  private routeMayUseFontAwesome(path: string): boolean {
+    if (/^\/(javascript|angular|react|vue|html|css)\/trivia\/[^/]+\/?$/.test(path)) {
+      return false;
+    }
+
+    if (/^\/(javascript|angular|react|vue|html|css)\/coding\/[^/]+\/?$/.test(path) || /^\/coding\/[^/]+\/?$/.test(path)) {
+      return false;
+    }
+
+    return this.showSidebar()
+      || /^\/pricing\/?$/.test(path)
+      || /^\/system-design\/[^/]+\/?$/.test(path)
+      || /^\/guides\//.test(path);
   }
 }
