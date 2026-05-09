@@ -8,6 +8,8 @@ import {
 } from '../models/practice.model';
 import { AuthService } from './auth.service';
 import { apiUrl } from '../utils/api-base';
+import { AchievementAward } from '../models/gamification.model';
+import { AchievementNotificationService } from './achievement-notification.service';
 
 const PRACTICE_PROGRESS_PREFIX = 'fa:practice:progress:v3:';
 const PRACTICE_SESSION_PREFIX = 'fa:practice:session:v3:';
@@ -28,12 +30,18 @@ type PracticeProgressApiRecord = {
   extension?: Record<string, unknown>;
 };
 
+type PracticeProgressApiResponse = {
+  record?: PracticeProgressApiRecord;
+  achievementAwards?: AchievementAward[];
+};
+
 @Injectable({ providedIn: 'root' })
 export class PracticeProgressService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
+  private readonly achievementNotifications = inject(AchievementNotificationService);
   private activeScope = 'guest';
   private readonly recordsState = signal<Record<string, StoredPracticeRecord>>(this.readAll('guest'));
   private lastHydratedScope: string | null = null;
@@ -330,7 +338,7 @@ export class PracticeProgressService {
     if (!this.isBrowser || scope === 'guest' || !this.auth.isLoggedIn()) return;
 
     this.http
-      .put<{ record?: PracticeProgressApiRecord }>(
+      .put<PracticeProgressApiResponse>(
         apiUrl(`/practice-progress/${record.family}/${encodeURIComponent(record.id)}`),
         {
           started: record.started,
@@ -345,6 +353,7 @@ export class PracticeProgressService {
       .subscribe({
         next: (response) => {
           if (this.currentScope() !== scope) return;
+          this.achievementNotifications.enqueueAwards(response?.achievementAwards);
           const incoming = this.fromApiRecord(response?.record);
           if (!incoming) return;
           const next = {

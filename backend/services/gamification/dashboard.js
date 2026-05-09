@@ -12,6 +12,8 @@ const { currentWeekBounds, dayKeyInTimezone } = require('./timezone');
 const { loadQuestionCatalog } = require('./question-catalog');
 const { loadPracticeCatalog } = require('./practice-catalog');
 const { ensureCurrentWeeklyGoalState } = require('./weekly-goal-state');
+const { buildAchievements } = require('./achievements');
+const { loadUserAchievementRecords } = require('./achievement-awards');
 
 function toTitleCase(input) {
   return String(input || '')
@@ -117,7 +119,7 @@ function buildQuestionProgressSummary(user) {
   };
 }
 
-async function buildIncidentProgressSummary(userId) {
+async function buildIncidentProgressSummary(userId, { session = null } = {}) {
   const catalog = loadPracticeCatalog();
   const incidentEntries = Array.isArray(catalog.byFamily.get('incident')) ? catalog.byFamily.get('incident') : [];
   const totalCount = incidentEntries.length;
@@ -131,12 +133,14 @@ async function buildIncidentProgressSummary(userId) {
     };
   }
 
-  const passedCount = await PracticeProgress.countDocuments({
+  const passedQuery = PracticeProgress.countDocuments({
     userId,
     family: 'incident',
     passed: true,
     itemId: { $in: incidentIds },
   });
+  if (session) passedQuery.session(session);
+  const passedCount = await passedQuery;
 
   return {
     passedCount,
@@ -145,7 +149,7 @@ async function buildIncidentProgressSummary(userId) {
   };
 }
 
-async function buildTradeoffBattleProgressSummary(userId) {
+async function buildTradeoffBattleProgressSummary(userId, { session = null } = {}) {
   const catalog = loadPracticeCatalog();
   const tradeoffEntries = Array.isArray(catalog.byFamily.get('tradeoff-battle')) ? catalog.byFamily.get('tradeoff-battle') : [];
   const totalCount = tradeoffEntries.length;
@@ -159,12 +163,14 @@ async function buildTradeoffBattleProgressSummary(userId) {
     };
   }
 
-  const completedCount = await PracticeProgress.countDocuments({
+  const completedQuery = PracticeProgress.countDocuments({
     userId,
     family: 'tradeoff-battle',
     completed: true,
     itemId: { $in: tradeoffIds },
   });
+  if (session) completedQuery.session(session);
+  const completedCount = await completedQuery;
 
   return {
     completedCount,
@@ -173,10 +179,10 @@ async function buildTradeoffBattleProgressSummary(userId) {
   };
 }
 
-async function buildProgressSummary(user) {
+async function buildProgressSummary(user, { session = null } = {}) {
   const questions = buildQuestionProgressSummary(user);
-  const incidents = await buildIncidentProgressSummary(user?._id);
-  const tradeoffBattles = await buildTradeoffBattleProgressSummary(user?._id);
+  const incidents = await buildIncidentProgressSummary(user?._id, { session });
+  const tradeoffBattles = await buildTradeoffBattleProgressSummary(user?._id, { session });
   const practiceCompletedCount = questions.solvedCount + incidents.passedCount + tradeoffBattles.completedCount;
   const practiceTotalCount = questions.totalCount + incidents.totalCount + tradeoffBattles.totalCount;
 
@@ -245,9 +251,19 @@ async function buildDashboardPayload(user, { challenge, challengeCompletion, tim
     userId: user._id,
     weekKey: weekBounds.weekKey,
   });
+  const weeklyGoalBonusCount = await WeeklyGoalBonusCredit.countDocuments({
+    userId: user._id,
+  });
+  const earnedRecords = await loadUserAchievementRecords(user._id);
 
   const xpLevel = computeLevel(user?.stats?.xpTotal || 0);
   const progress = await buildProgressSummary(user);
+  const achievements = buildAchievements({
+    user,
+    progress,
+    weeklyGoalBonusCount,
+    earnedRecords,
+  });
   const preferenceSettings = readWeeklyGoalSettings(user);
 
   const dailyChallenge = challenge
@@ -303,6 +319,7 @@ async function buildDashboardPayload(user, { challenge, challengeCompletion, tim
     weeklyGoal,
     xpLevel,
     progress,
+    achievements,
     settings: {
       weeklyGoalEnabled: preferenceSettings.enabled,
       weeklyGoalTarget: preferenceSettings.target,
@@ -316,6 +333,8 @@ module.exports = {
   countWeeklySolvedUnique,
   countTodayCompletedKinds,
   buildQuestionProgressSummary,
+  buildIncidentProgressSummary,
+  buildTradeoffBattleProgressSummary,
   buildProgressSummary,
   deriveNextBestAction,
   buildDashboardPayload,

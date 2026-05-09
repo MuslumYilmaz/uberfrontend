@@ -5,6 +5,7 @@ type FaGlyphName =
   | 'arrow-right'
   | 'bars'
   | 'bug'
+  | 'calendar'
   | 'check'
   | 'check-circle'
   | 'chevron-down'
@@ -17,10 +18,14 @@ type FaGlyphName =
   | 'copy'
   | 'eye'
   | 'file'
+  | 'flag'
+  | 'flame'
   | 'folder'
   | 'info'
   | 'search'
+  | 'shuffle'
   | 'spinner'
+  | 'target'
   | 'times-circle'
   | 'warning'
   | 'xmark';
@@ -65,6 +70,18 @@ type FaGlyphName =
           <path d="m16.5 14.5 2.5 1" />
           <path d="M12 8c-3 0-5 2.2-5 5v2.2A1.8 1.8 0 0 0 8.8 17h6.4a1.8 1.8 0 0 0 1.8-1.8V13c0-2.8-2-5-5-5Z" />
           <path d="M12 8V5" />
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'calendar'">
+          <rect x="4" y="5.5" width="16" height="15" rx="2.5" />
+          <path d="M8 3.5v4" />
+          <path d="M16 3.5v4" />
+          <path d="M4 10h16" />
+          <path d="M8 14h.01" />
+          <path d="M12 14h.01" />
+          <path d="M16 14h.01" />
+          <path d="M8 17h.01" />
+          <path d="M12 17h.01" />
         </ng-container>
 
         <ng-container *ngSwitchCase="'check'">
@@ -124,6 +141,16 @@ type FaGlyphName =
           <path d="M14 4.5v4h4" />
         </ng-container>
 
+        <ng-container *ngSwitchCase="'flag'">
+          <path d="M6 21V4.5" />
+          <path d="M6 5h10.5l-1.8 4 1.8 4H6" />
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'flame'">
+          <path d="M12 21c3.3 0 6-2.4 6-5.8 0-2.8-1.6-4.6-3.4-6.4-.9-.9-1.8-1.9-2.2-3.4-2.4 1.5-3.1 3.8-2.5 6-1.1-.4-1.8-1.2-2.2-2.1C6.6 10.6 6 12.3 6 14.2 6 18 8.7 21 12 21Z" />
+          <path d="M12.1 17.8c1.3 0 2.3-.9 2.3-2.2 0-1.2-.7-2-1.5-2.8-.4-.4-.8-.9-1-1.5-1 .7-1.4 1.8-1.2 2.9-.5-.2-.8-.5-1.1-.9-.5.7-.8 1.4-.8 2.2 0 1.4 1 2.3 2.3 2.3Z" />
+        </ng-container>
+
         <ng-container *ngSwitchCase="'folder'">
           <path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h4l1.8 2H19a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 19 18H5A1.5 1.5 0 0 1 3.5 16.5z" />
         </ng-container>
@@ -139,9 +166,27 @@ type FaGlyphName =
           <path d="m16 16 4 4" />
         </ng-container>
 
+        <ng-container *ngSwitchCase="'shuffle'">
+          <path d="M3.5 7h3.2c2.3 0 3.6 1.3 5.1 5 1.5 3.7 2.8 5 5.1 5h3.6" />
+          <path d="m17 14 3.5 3-3.5 3" />
+          <path d="M3.5 17h3.2c1.2 0 2.2-.4 3-1.4" />
+          <path d="M14.3 8.4c.8-1 1.8-1.4 3-1.4h3.2" />
+          <path d="m17 4 3.5 3-3.5 3" />
+        </ng-container>
+
         <ng-container *ngSwitchCase="'spinner'">
           <circle cx="12" cy="12" r="8.5" opacity="0.25" />
           <path d="M20.5 12A8.5 8.5 0 0 0 12 3.5" />
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'target'">
+          <circle cx="12" cy="12" r="8.5" />
+          <circle cx="12" cy="12" r="4.8" />
+          <circle cx="12" cy="12" r="1.4" />
+          <path d="M12 3.5V6" />
+          <path d="M12 18v2.5" />
+          <path d="M3.5 12H6" />
+          <path d="M18 12h2.5" />
         </ng-container>
 
         <ng-container *ngSwitchCase="'times-circle'">
@@ -204,6 +249,7 @@ export class FaGlyphComponent {
     if (value.includes('chevron-down')) return 'chevron-down';
     if (value.includes('arrow-right')) return 'arrow-right';
     if (value.includes('clipboard')) return 'clipboard';
+    if (value.includes('calendar')) return 'calendar';
     if (value.includes('clock')) return 'clock';
     if (value.includes('spinner')) return 'spinner';
     if (value.includes('exclamation-triangle')) return 'warning';
@@ -211,6 +257,10 @@ export class FaGlyphComponent {
     if (value.includes('search')) return 'search';
     if (value.includes('xmark') || value.includes(' pi-times') || value.endsWith('times')) return 'xmark';
     if (value.includes('bug')) return 'bug';
+    if (value.includes('flame')) return 'flame';
+    if (value.includes('flag')) return 'flag';
+    if (value.includes('shuffle')) return 'shuffle';
+    if (value.includes('target')) return 'target';
     if (value.includes('copy')) return 'copy';
     if (value.includes('eye')) return 'eye';
     if (value.includes('bars')) return 'bars';

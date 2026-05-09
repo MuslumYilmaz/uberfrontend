@@ -411,6 +411,294 @@
   color: var(--fa-text-muted);
 }
 
+.snapshot-card--badges {
+  gap: 8px;
+}
+
+.badge-snapshot-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.badge-medallion-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.badge-medallion {
+  --badge-a: #f7c957;
+  --badge-b: #ff9f43;
+  --badge-c: #fff3a6;
+  --badge-progress: 0%;
+  --badge-ring: conic-gradient(from 220deg, var(--badge-a), var(--badge-b), var(--badge-c), var(--badge-a));
+  --badge-face: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.36), transparent 22%),
+    linear-gradient(145deg, color-mix(in srgb, var(--badge-a) 82%, #ffffff 18%), var(--badge-b));
+  --badge-face-muted: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.12), transparent 24%),
+    linear-gradient(145deg, rgba(var(--fa-text-rgb), 0.13), rgba(var(--fa-text-rgb), 0.055));
+  --badge-motif-opacity: 0.42;
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.badge-medallion[data-theme='cyan'] {
+  --badge-a: #42d8ff;
+  --badge-b: #3b82f6;
+  --badge-c: #bff6ff;
+}
+
+.badge-medallion[data-theme='blue'] {
+  --badge-a: #7dd3fc;
+  --badge-b: #2563eb;
+  --badge-c: #dbeafe;
+}
+
+.badge-medallion[data-theme='green'] {
+  --badge-a: #86efac;
+  --badge-b: #10b981;
+  --badge-c: #dcfce7;
+}
+
+.badge-medallion[data-theme='violet'] {
+  --badge-a: #c4b5fd;
+  --badge-b: #8b5cf6;
+  --badge-c: #f0e7ff;
+}
+
+.badge-medallion[data-theme='amber'] {
+  --badge-a: #fbbf24;
+  --badge-b: #f97316;
+  --badge-c: #fde68a;
+}
+
+.badge-medallion[data-theme='rose'] {
+  --badge-a: #fb7185;
+  --badge-b: #ec4899;
+  --badge-c: #ffe4e6;
+}
+
+.badge-medallion[data-badge-id='first-steps'] {
+  --badge-ring: conic-gradient(from 225deg, #fff1a6 0 15%, #f7c957 15% 36%, #8f6418 36% 43%, #ffb347 43% 68%, #fff4bd 68% 77%, #bd7415 77% 100%);
+  --badge-face: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.5), transparent 22%),
+    linear-gradient(145deg, #ffe082, #f59e0b 58%, #9a5c08);
+  --badge-face-muted: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.16), transparent 22%),
+    linear-gradient(145deg, rgba(250, 204, 21, 0.22), rgba(var(--fa-text-rgb), 0.06));
+  --badge-motif-opacity: 0.56;
+}
+
+.badge-medallion[data-badge-id='question-builder'] {
+  --badge-ring: conic-gradient(from 90deg, #a5f3fc 0 18%, #0891b2 18% 38%, #38bdf8 38% 58%, #1d4ed8 58% 80%, #cffafe 80% 100%);
+  --badge-face: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.42), transparent 21%),
+    linear-gradient(135deg, #67e8f9, #2563eb 58%, #172554);
+  --badge-face-muted: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.13), transparent 21%),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(var(--fa-text-rgb), 0.05));
+}
+
+.badge-medallion[data-badge-id='coverage-builder'] {
+  --badge-ring: conic-gradient(from -45deg, #dbeafe 0 12%, #60a5fa 12% 32%, #1d4ed8 32% 58%, #93c5fd 58% 72%, #1e3a8a 72% 100%);
+  --badge-face: radial-gradient(circle at 36% 25%, rgba(255, 255, 255, 0.42), transparent 21%),
+    linear-gradient(145deg, #93c5fd, #2563eb 55%, #111c52);
+  --badge-face-muted: radial-gradient(circle at 36% 25%, rgba(255, 255, 255, 0.12), transparent 21%),
+    linear-gradient(145deg, rgba(96, 165, 250, 0.22), rgba(var(--fa-text-rgb), 0.05));
+}
+
+.badge-medallion[data-badge-id='debug-starter'] {
+  --badge-ring: conic-gradient(from 200deg, #dcfce7 0 10%, #22c55e 10% 31%, #052e16 31% 42%, #86efac 42% 63%, #16a34a 63% 100%);
+  --badge-face: radial-gradient(circle at 33% 24%, rgba(255, 255, 255, 0.38), transparent 20%),
+    linear-gradient(145deg, #86efac, #10b981 58%, #064e3b);
+  --badge-face-muted: radial-gradient(circle at 33% 24%, rgba(255, 255, 255, 0.12), transparent 20%),
+    linear-gradient(145deg, rgba(34, 197, 94, 0.2), rgba(var(--fa-text-rgb), 0.05));
+}
+
+.badge-medallion[data-badge-id='tradeoff-starter'] {
+  --badge-ring: conic-gradient(from 180deg, #f0abfc 0 24%, #7c3aed 24% 50%, #fde68a 50% 74%, #a855f7 74% 100%);
+  --badge-face: radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.4), transparent 21%),
+    linear-gradient(90deg, #8b5cf6 0 49%, #f59e0b 50% 100%);
+  --badge-face-muted: radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.12), transparent 21%),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0 49%, rgba(245, 158, 11, 0.14) 50% 100%);
+}
+
+.badge-medallion[data-badge-id='weekly-finisher'] {
+  --badge-ring: repeating-conic-gradient(from 0deg, #fde68a 0 8deg, #f59e0b 8deg 22deg, #7c2d12 22deg 30deg);
+  --badge-face: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.44), transparent 21%),
+    linear-gradient(145deg, #fcd34d, #f97316 58%, #7c2d12);
+  --badge-face-muted: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.12), transparent 21%),
+    linear-gradient(145deg, rgba(251, 191, 36, 0.2), rgba(var(--fa-text-rgb), 0.05));
+}
+
+.badge-medallion[data-badge-id='consistency'] {
+  --badge-ring: repeating-conic-gradient(from 8deg, #ffe4e6 0 7deg, #fb7185 7deg 20deg, #831843 20deg 28deg);
+  --badge-face: radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.4), transparent 21%),
+    radial-gradient(ellipse at 50% 74%, rgba(253, 186, 116, 0.9), transparent 28%),
+    linear-gradient(145deg, #fb7185, #ec4899 58%, #831843);
+  --badge-face-muted: radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.12), transparent 21%),
+    linear-gradient(145deg, rgba(251, 113, 133, 0.2), rgba(var(--fa-text-rgb), 0.05));
+  --badge-motif-opacity: 0.5;
+}
+
+.badge-medallion__disc {
+  width: 64px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 4px;
+  position: relative;
+  background: var(--badge-ring);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.32),
+    0 0 0 1px color-mix(in srgb, var(--badge-a) 36%, transparent);
+}
+
+.badge-medallion--next .badge-medallion__disc {
+  background:
+    conic-gradient(var(--badge-a) var(--badge-progress), rgba(var(--fa-text-rgb), 0.12) 0),
+    rgba(var(--fa-text-rgb), 0.06);
+}
+
+.badge-medallion__face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  display: grid;
+  place-items: center;
+  color: #fffaf0;
+  overflow: hidden;
+  background: var(--badge-face);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+    inset 0 -10px 18px rgba(0, 0, 0, 0.2);
+}
+
+.badge-medallion__face::after {
+  content: '';
+  position: absolute;
+  inset: 10%;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.badge-medallion--next .badge-medallion__face {
+  color: color-mix(in srgb, var(--badge-a) 72%, var(--fa-text-muted) 28%);
+  background: var(--badge-face-muted);
+}
+
+.badge-medallion__motif {
+  position: absolute;
+  inset: 8%;
+  border-radius: inherit;
+  z-index: 1;
+  opacity: var(--badge-motif-opacity);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.badge-medallion__motif::before,
+.badge-medallion__motif::after {
+  content: '';
+  position: absolute;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.badge-medallion[data-badge-id='first-steps'] .badge-medallion__motif {
+  background:
+    radial-gradient(circle at 30% 72%, rgba(255, 255, 255, 0.55) 0 8%, transparent 9%),
+    radial-gradient(circle at 48% 60%, rgba(255, 255, 255, 0.44) 0 7%, transparent 8%),
+    radial-gradient(circle at 66% 48%, rgba(255, 255, 255, 0.34) 0 6%, transparent 7%);
+}
+
+.badge-medallion[data-badge-id='first-steps'] .badge-medallion__motif::before {
+  inset: 22% 30% 20% 46%;
+  border-left: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 2px;
+}
+
+.badge-medallion[data-badge-id='question-builder'] .badge-medallion__motif {
+  inset: 10%;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 7px, rgba(255, 255, 255, 0.2) 7px 8px),
+    repeating-linear-gradient(90deg, transparent 0 7px, rgba(255, 255, 255, 0.18) 7px 8px);
+}
+
+.badge-medallion[data-badge-id='question-builder'] .badge-medallion__motif::before {
+  inset: 26%;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 5px;
+}
+
+.badge-medallion[data-badge-id='coverage-builder'] .badge-medallion__motif {
+  inset: 6%;
+  background:
+    radial-gradient(circle, transparent 0 16%, rgba(255, 255, 255, 0.3) 17% 20%, transparent 21% 38%, rgba(255, 255, 255, 0.22) 39% 43%, transparent 44%),
+    conic-gradient(from -30deg, rgba(255, 255, 255, 0.45) 0 72deg, transparent 73deg);
+}
+
+.badge-medallion[data-badge-id='debug-starter'] .badge-medallion__motif {
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 5px, rgba(255, 255, 255, 0.18) 5px 6px),
+    radial-gradient(circle, transparent 0 44%, rgba(255, 255, 255, 0.28) 45% 47%, transparent 48%);
+}
+
+.badge-medallion[data-badge-id='debug-starter'] .badge-medallion__motif::before {
+  inset: 21%;
+  border: 1px dashed rgba(255, 255, 255, 0.44);
+}
+
+.badge-medallion[data-badge-id='tradeoff-starter'] .badge-medallion__motif {
+  inset: 7%;
+  background:
+    linear-gradient(90deg, transparent 0 47%, rgba(255, 255, 255, 0.32) 48% 52%, transparent 53%),
+    conic-gradient(from 45deg, rgba(255, 255, 255, 0.28) 0 42deg, transparent 43deg 180deg, rgba(255, 255, 255, 0.22) 181deg 222deg, transparent 223deg);
+}
+
+.badge-medallion[data-badge-id='weekly-finisher'] .badge-medallion__motif {
+  inset: 5%;
+  background:
+    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.44) 0 4deg, transparent 4deg 30deg),
+    radial-gradient(circle, transparent 0 48%, rgba(255, 255, 255, 0.22) 49% 52%, transparent 53%);
+}
+
+.badge-medallion[data-badge-id='consistency'] .badge-medallion__motif {
+  inset: 4%;
+  background:
+    repeating-conic-gradient(from 10deg, rgba(255, 255, 255, 0.32) 0 7deg, transparent 7deg 20deg),
+    radial-gradient(ellipse at 50% 70%, rgba(255, 255, 255, 0.28), transparent 30%);
+}
+
+.badge-medallion--next .badge-medallion__motif {
+  opacity: 0.24;
+}
+
+.badge-medallion__icon {
+  position: relative;
+  z-index: 4;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.34));
+}
+
+.badge-medallion__title {
+  max-width: 9ch;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.15;
+  font-weight: 800;
+  color: var(--fa-text);
+}
+
+.badge-medallion__meta {
+  font-size: 11px;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--fa-text-muted) 70%, var(--badge-a) 30%);
+}
+
 .guest-route-row {
   display: grid;
   grid-template-columns: 1fr auto;

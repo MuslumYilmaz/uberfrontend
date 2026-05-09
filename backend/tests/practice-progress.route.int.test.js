@@ -9,6 +9,7 @@ jest.setTimeout(120000);
 let app;
 let User;
 let PracticeProgress;
+let UserAchievement;
 let connectToMongo;
 let disconnectMongo;
 let mongoServer;
@@ -30,6 +31,7 @@ beforeAll(async () => {
   ({ connectToMongo, disconnectMongo } = require('../config/mongo'));
   User = require('../models/User');
   PracticeProgress = require('../models/PracticeProgress');
+  UserAchievement = require('../models/UserAchievement');
 
   await connectToMongo(process.env.MONGO_URL_TEST);
 });
@@ -42,6 +44,7 @@ afterAll(async () => {
 beforeEach(async () => {
   await User.deleteMany({});
   await PracticeProgress.deleteMany({});
+  await UserAchievement.deleteMany({});
 });
 
 describe('practice progress routes', () => {
@@ -110,6 +113,52 @@ describe('practice progress routes', () => {
       passed: true,
       bestScore: 81,
     }));
+  });
+
+  test('returns a badge award when incident progress first unlocks debug starter', async () => {
+    const user = await User.create({
+      email: 'practice-progress-badge@example.com',
+      username: 'practice_progress_badge_user',
+      passwordHash: 'hash',
+    });
+
+    const res = await request(app)
+      .put('/api/practice-progress/incident/search-typing-lag')
+      .set('Authorization', authHeader(user._id))
+      .send({
+        started: true,
+        completed: true,
+        passed: true,
+        bestScore: 81,
+        lastPlayedAt: '2026-03-20T10:00:00.000Z',
+        extension: { reflectionNote: 'Split the expensive work away from typing.' },
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body?.achievementAwards).toEqual([
+      expect.objectContaining({
+        id: 'debug-starter',
+        title: 'Debug Starter',
+        current: 1,
+        target: 1,
+        earnedAt: '2026-03-20T10:00:00.000Z',
+      }),
+    ]);
+
+    const duplicate = await request(app)
+      .put('/api/practice-progress/incident/search-typing-lag')
+      .set('Authorization', authHeader(user._id))
+      .send({
+        started: true,
+        completed: true,
+        passed: true,
+        bestScore: 83,
+        lastPlayedAt: '2026-03-20T11:00:00.000Z',
+      });
+
+    expect(duplicate.status).toBe(200);
+    expect(duplicate.body?.achievementAwards || []).toEqual([]);
+    expect(await UserAchievement.countDocuments({ userId: user._id, achievementId: 'debug-starter' })).toBe(1);
   });
 
   test('keeps the newer reflection note when an older payload arrives later', async () => {

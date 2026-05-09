@@ -1,36 +1,79 @@
 export type PublicChangelogEntry = {
+  id: string;
   weekOf: string;
   title: string;
+  summary: string;
+  category: 'New' | 'Improved' | 'Fixed';
+  area: string;
   changes: string[];
+  cta?: {
+    label: string;
+    route: string;
+    queryParams?: Record<string, string>;
+  };
 };
 
 export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
   {
+    id: 'earned-badges-are-easier-to-see',
+    weekOf: '2026-05-04',
+    title: 'Earned badges are easier to see',
+    summary: 'Progress now feels more collectible, easier to understand, and visible when a badge is earned.',
+    category: 'New',
+    area: 'Progress',
+    changes: [
+      'Profile activity now has a collectible badge shelf with visual awards and clear earning criteria.',
+      'Dashboard progress now highlights badges as the primary progress snapshot while keeping XP details secondary.',
+      'Newly earned badges now appear as lightweight in-app notifications and stay permanently available in Profile.',
+    ],
+    cta: {
+      label: 'View badge progress',
+      route: '/profile',
+      queryParams: { tab: 'activity', src: 'changelog' },
+    },
+  },
+  {
+    id: 'start-practice-faster',
     weekOf: '2026-02-09',
-    title: 'Activation flow update',
+    title: 'Start practice faster',
+    summary: 'It is easier to jump from the first visit or sign-in flow into a useful practice task.',
+    category: 'Improved',
+    area: 'Practice',
     changes: [
-      'Landing primary CTA now opens a known free challenge directly.',
-      'Login/signup now preserve redirect intent for locked questions.',
-      'Added first-pass onboarding prompt for faster next-action setup.',
+      'The main CTA now opens a known free challenge directly.',
+      'Login and signup remember the question you were trying to open.',
+      'New users get a clearer first step toward practice.',
     ],
+    cta: {
+      label: 'Try free challenge',
+      route: '/react/coding/react-counter',
+      queryParams: { src: 'changelog' },
+    },
   },
   {
+    id: 'preview-premium-tracks-before-upgrading',
     weekOf: '2026-02-02',
-    title: 'Preview routes for trust-first gating',
+    title: 'Preview premium tracks before upgrading',
+    summary: 'You can understand what a track or company prep page includes before deciding whether Premium is worth it.',
+    category: 'Improved',
+    area: 'Access',
     changes: [
-      'Added public preview pages for track and company routes.',
-      'Preview pages now show free-vs-premium scope before paywall.',
-      'Kept full premium routes protected without hard paywall bounce first.',
+      'Track and company pages now show a public preview before Premium is required.',
+      'Each preview separates what you can try for free from what Premium unlocks.',
+      'Locked sections now explain the upgrade value instead of ending at a generic access wall.',
     ],
   },
   {
+    id: 'clearer-pricing-before-checkout',
     weekOf: '2026-01-26',
-    title: 'Pricing clarity and instrumentation',
+    title: 'Clearer pricing before checkout',
+    summary: 'Pricing now makes the free plan, refund policy, and checkout expectations easier to evaluate before paying.',
+    category: 'Improved',
+    area: 'Pricing',
     changes: [
-      'Reframed pricing around Free Explorer and decision-first comparison.',
-      'Moved refund/legal context above paid CTA area.',
-      'Added activation and checkout analytics events for conversion analysis.',
+      'The pricing page now explains Free Explorer before paid plans.',
+      'Refund and legal links are easier to find before choosing a plan.',
+      'Checkout messaging is clearer when payments are unavailable or blocked.',
     ],
   },
 ];
-

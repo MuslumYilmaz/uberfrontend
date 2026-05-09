@@ -374,6 +374,7 @@ app.use('/api/billing', require('./routes/billing'));
 app.use('/api/tools', require('./routes/tools'));
 // ---- Dashboard / Gamification routes ----
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/achievements', require('./routes/achievements'));
 app.use('/api/daily', require('./routes/daily'));
 app.use('/api/weekly-goal', require('./routes/weekly-goal'));
 // ---- Editor assist sync routes ----

@@ -18,11 +18,16 @@ const {
     computeLevel,
     readActiveActivityStreakCurrent,
 } = require('../services/gamification/engine');
-const { countTodayCompletedKinds, countWeeklySolvedUnique } = require('../services/gamification/dashboard');
+const { countTodayCompletedKinds, countWeeklySolvedUnique, buildProgressSummary } = require('../services/gamification/dashboard');
 const { currentWeekBounds, dayKeyInTimezone, dayDiffByKey } = require('../services/gamification/timezone');
 const { awardWeeklyGoalBonusIfEligible } = require('../services/gamification/weekly-goal');
 const { ensureCurrentWeeklyGoalState } = require('../services/gamification/weekly-goal-state');
 const { SOLVE_KINDS } = require('../services/gamification/constants');
+const { buildAchievements } = require('../services/gamification/achievements');
+const {
+    awardNewAchievementTransitions,
+    loadUserAchievementRecords,
+} = require('../services/gamification/achievement-awards');
 
 const VALID_TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'];
 const DEFAULT_RECENT_LIMIT = 20;
@@ -71,6 +76,21 @@ async function loadWeeklyGoalState(user, session = null) {
     };
 }
 
+async function buildAchievementsForUser(user, session = null) {
+    const progress = await buildProgressSummary(user, session ? { session } : {});
+    const bonusCountQuery = WeeklyGoalBonusCredit.countDocuments({ userId: user._id });
+    if (session) bonusCountQuery.session(session);
+    const weeklyGoalBonusCount = await bonusCountQuery;
+    const earnedRecords = await loadUserAchievementRecords(user._id, session ? { session } : {});
+
+    return buildAchievements({
+        user,
+        progress,
+        weeklyGoalBonusCount,
+        earnedRecords,
+    });
+}
+
 /**
  * POST /api/activity/complete
  * body: { kind, tech, itemId, requestId?, source?, durationMin?, xp? }
@@ -105,7 +125,10 @@ router.post('/complete', requireAuth, async (req, res) => {
             : null;
         const storedReceipt = receiptQuery ? await receiptQuery : null;
         if (storedReceipt?.response) {
-            return res.json(storedReceipt.response);
+            return res.json({
+                ...storedReceipt.response,
+                achievementAwards: [],
+            });
         }
 
         const runCompletion = async (session = null) => {
@@ -114,6 +137,7 @@ router.post('/complete', requireAuth, async (req, res) => {
             const user = await userQuery;
             if (!user) throw createHttpError(404, 'User not found');
 
+            const beforeAchievements = await buildAchievementsForUser(user, session);
             const prevLevel = computeLevel(user.stats?.xpTotal || 0).level;
             const completionFilter = { userId: user._id, kind, itemId: itemIdText };
             const shouldTrackSolvedQuestions = kind !== 'incident';
@@ -316,6 +340,16 @@ router.post('/complete', requireAuth, async (req, res) => {
 
             const nextLevel = computeLevel(updatedUser.stats?.xpTotal || 0).level;
             const levelUp = firstLogicalCompletion && nextLevel > prevLevel;
+            const afterAchievements = await buildAchievementsForUser(updatedUser, session);
+            const achievementAwards = firstLogicalCompletion
+                ? await awardNewAchievementTransitions({
+                    userId: user._id,
+                    beforeAchievements,
+                    afterAchievements,
+                    earnedAt: completedAt,
+                    session,
+                })
+                : [];
 
             const recentQuery = ActivityEvent.find({ userId: user._id }).sort({ completedAt: -1 }).limit(10);
             if (session) recentQuery.session(session);
@@ -329,6 +363,7 @@ router.post('/complete', requireAuth, async (req, res) => {
                 xpAwarded: firstLogicalCompletion ? awardedXp + weekly.bonusXp : 0,
                 levelUp,
                 logicalCompletionCreated: firstLogicalCompletion,
+                achievementAwards,
                 weeklyGoal: {
                     completed: weekly.weeklyCompleted,
                     target: weekly.settings.target,

@@ -8,6 +8,7 @@ import {
 } from '../models/gamification.model';
 import { apiUrl } from '../utils/api-base';
 import { AuthService } from './auth.service';
+import { AchievementNotificationService } from './achievement-notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class GamificationService {
@@ -15,7 +16,11 @@ export class GamificationService {
   private cacheTs = 0;
   private readonly cacheTtlMs = 30_000;
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService,
+    private achievementNotifications: AchievementNotificationService,
+  ) {}
 
   getDashboard(options?: { force?: boolean }): Observable<DashboardGamificationResponse | null> {
     if (!this.auth.isLoggedIn()) return of(null);
@@ -29,6 +34,7 @@ export class GamificationService {
         withCredentials: true,
       })
       .pipe(
+        tap((payload) => this.achievementNotifications.enqueueFromDashboard(payload)),
         catchError((err) => {
           if (err?.status === 401) return of(null);
           return throwError(() => err);
@@ -49,6 +55,7 @@ export class GamificationService {
         { headers: this.auth.headers(), withCredentials: true }
       )
       .pipe(
+        tap((payload) => this.achievementNotifications.enqueueAwards(payload?.achievementAwards)),
         tap(() => this.invalidateDashboardCache())
       );
   }

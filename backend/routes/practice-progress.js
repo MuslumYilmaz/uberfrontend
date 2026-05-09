@@ -1,6 +1,14 @@
 const router = require('express').Router();
 const PracticeProgress = require('../models/PracticeProgress');
+const User = require('../models/User');
+const WeeklyGoalBonusCredit = require('../models/WeeklyGoalBonusCredit');
 const { requireAuth } = require('../middleware/Auth');
+const { buildProgressSummary } = require('../services/gamification/dashboard');
+const { buildAchievements } = require('../services/gamification/achievements');
+const {
+  awardNewAchievementTransitions,
+  loadUserAchievementRecords,
+} = require('../services/gamification/achievement-awards');
 
 const VALID_FAMILIES = new Set(['question', 'incident', 'code-review', 'tradeoff-battle']);
 
@@ -84,6 +92,21 @@ function toResponseRecord(doc) {
   };
 }
 
+async function buildAchievementsForUser(user) {
+  const [progress, weeklyGoalBonusCount, earnedRecords] = await Promise.all([
+    buildProgressSummary(user),
+    WeeklyGoalBonusCredit.countDocuments({ userId: user._id }),
+    loadUserAchievementRecords(user._id),
+  ]);
+
+  return buildAchievements({
+    user,
+    progress,
+    weeklyGoalBonusCount,
+    earnedRecords,
+  });
+}
+
 router.get('/', requireAuth, async (req, res) => {
   try {
     const family = sanitizeFamily(req.query.family);
@@ -116,6 +139,9 @@ router.put('/:family/:itemId', requireAuth, async (req, res) => {
     if (!itemId) return res.status(400).json({ error: 'itemId is required' });
 
     const incomingLastPlayedAt = parseDate(req.body?.lastPlayedAt) || new Date();
+    const user = await User.findById(req.auth.userId).select('stats solvedQuestionIds');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const beforeAchievements = await buildAchievementsForUser(user);
     const existing = await PracticeProgress.findOne({
       userId: req.auth.userId,
       family,
@@ -150,9 +176,17 @@ router.put('/:family/:itemId', requireAuth, async (req, res) => {
       { $set: merged },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     ).lean();
+    const afterAchievements = await buildAchievementsForUser(user);
+    const achievementAwards = await awardNewAchievementTransitions({
+      userId: user._id,
+      beforeAchievements,
+      afterAchievements,
+      earnedAt: incomingLastPlayedAt,
+    });
 
     return res.json({
       record: toResponseRecord(record),
+      achievementAwards,
     });
   } catch (error) {
     return res.status(500).json({ error: error?.message || 'Failed to save practice progress' });

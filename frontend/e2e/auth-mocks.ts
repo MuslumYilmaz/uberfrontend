@@ -66,11 +66,50 @@ function buildDashboardProgress(user: MockUser) {
       totalCount: incidentTotalCount,
       passedPercent: 0,
     },
+    tradeoffBattles: {
+      completedCount: 0,
+      totalCount: 0,
+      completedPercent: 0,
+    },
     practice: {
       completedCount: practiceCompletedCount,
       totalCount: practiceTotalCount,
       completedPercent: 0,
     },
+  };
+}
+
+function buildDashboardAchievements(user: MockUser, progress: ReturnType<typeof buildDashboardProgress>) {
+  const catalog = [
+    { id: 'first-steps', title: 'First Steps', reason: 'Complete 3 practice units.', icon: 'flag', theme: 'gold', current: progress.practice.completedCount, target: 3 },
+    { id: 'question-builder', title: 'Problem Solver', reason: 'Solve 10 current-catalog questions.', icon: 'code', theme: 'cyan', current: progress.questions.solvedCount, target: 10 },
+    { id: 'coverage-builder', title: 'Coverage Builder', reason: 'Complete 25 practice units.', icon: 'target', theme: 'blue', current: progress.practice.completedCount, target: 25 },
+    { id: 'debug-starter', title: 'Debug Starter', reason: 'Pass 1 debug scenario.', icon: 'bug', theme: 'green', current: progress.incidents.passedCount, target: 1 },
+    { id: 'tradeoff-starter', title: 'Tradeoff Starter', reason: 'Complete 1 tradeoff battle.', icon: 'shuffle', theme: 'violet', current: progress.tradeoffBattles.completedCount, target: 1 },
+    { id: 'weekly-finisher', title: 'Weekly Finisher', reason: 'Earn 1 weekly-goal bonus.', icon: 'calendar', theme: 'amber', current: 0, target: 1 },
+    { id: 'consistency', title: 'Consistency', reason: 'Reach a 7-day activity streak.', icon: 'flame', theme: 'rose', current: Number(user.stats?.streak?.longest || 0), target: 7 },
+  ].map((entry) => {
+    const current = Math.max(0, Math.min(entry.target, Number(entry.current) || 0));
+    return {
+      ...entry,
+      current,
+      progress: current / entry.target,
+      unlocked: Number(entry.current) >= entry.target,
+    };
+  });
+  const unlocked = catalog.filter((badge) => badge.unlocked);
+  const next = catalog
+    .filter((badge) => !badge.unlocked)
+    .sort((a, b) => b.progress - a.progress)
+    .slice(0, 3);
+
+  return {
+    summary: {
+      unlockedCount: unlocked.length,
+      totalCount: catalog.length,
+    },
+    unlocked,
+    next,
   };
 }
 
@@ -284,6 +323,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
     if (req.method() === 'GET' && path.endsWith('/dashboard')) {
       const today = new Date();
       const dayKey = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}-${String(today.getUTCDate()).padStart(2, '0')}`;
+      const progress = buildDashboardProgress(currentUser);
       return jsonResponse(route, req, 200, {
         nextBestAction: {
           id: 'practice_next',
@@ -321,7 +361,8 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           nextLevelXp: 200,
           progress: 0,
         },
-        progress: buildDashboardProgress(currentUser),
+        progress,
+        achievements: buildDashboardAchievements(currentUser, progress),
         settings: {
           weeklyGoalEnabled: true,
           weeklyGoalTarget: 10,

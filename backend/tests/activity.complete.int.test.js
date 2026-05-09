@@ -16,7 +16,9 @@ let WeeklyGoalBonusCredit;
 let WeeklyGoalState;
 let XpCredit;
 let DailyChallengeCompletion;
+let UserAchievement;
 let getOrCreateDailyChallenge;
+let loadQuestionCatalog;
 let connectToMongo;
 let disconnectMongo;
 let mongoServer;
@@ -63,7 +65,9 @@ beforeAll(async () => {
     WeeklyGoalState = require('../models/WeeklyGoalState');
     XpCredit = require('../models/XpCredit');
     DailyChallengeCompletion = require('../models/DailyChallengeCompletion');
+    UserAchievement = require('../models/UserAchievement');
     ({ getOrCreateDailyChallenge } = require('../services/gamification/daily-challenge'));
+    ({ loadQuestionCatalog } = require('../services/gamification/question-catalog'));
 
     await connectToMongo(process.env.MONGO_URL_TEST);
 });
@@ -83,6 +87,7 @@ beforeEach(async () => {
     await WeeklyGoalState.deleteMany({});
     await XpCredit.deleteMany({});
     await DailyChallengeCompletion.deleteMany({});
+    await UserAchievement.deleteMany({});
 });
 
 afterEach(() => {
@@ -240,6 +245,102 @@ describe('POST /api/activity/complete', () => {
         expect(eventCount).toBe(1);
         expect(logicalCompletionCount).toBe(1);
         expect(receiptCount).toBe(1);
+    });
+
+    test('returns a badge award once when a completion crosses an achievement threshold', async () => {
+        const user = await User.create({
+            email: 'badge-award@example.com',
+            username: 'badge_award_user',
+            passwordHash: 'hash',
+        });
+        const questions = loadQuestionCatalog().all
+            .filter((question) => ['coding', 'trivia', undefined].includes(question.kind)
+                && ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design', undefined].includes(question.tech))
+            .slice(0, 3);
+        expect(questions.length).toBeGreaterThanOrEqual(3);
+
+        for (let index = 0; index < 2; index += 1) {
+            const question = questions[index];
+            const res = await request(app)
+                .post('/api/activity/complete')
+                .set('Authorization', authHeader(user._id))
+                .send({
+                    kind: question.kind || 'coding',
+                    tech: question.tech || 'javascript',
+                    itemId: question.id,
+                    requestId: `req-badge-award-${index}`,
+                });
+            expect(res.status).toBe(200);
+            expect(res.body?.achievementAwards || []).toEqual([]);
+        }
+
+        const thirdQuestion = questions[2];
+        const thirdBody = {
+            kind: thirdQuestion.kind || 'coding',
+            tech: thirdQuestion.tech || 'javascript',
+            itemId: thirdQuestion.id,
+            requestId: 'req-badge-award-3',
+        };
+        const third = await request(app)
+            .post('/api/activity/complete')
+            .set('Authorization', authHeader(user._id))
+            .send(thirdBody);
+
+        expect(third.status).toBe(200);
+        expect(third.body?.achievementAwards).toEqual([
+            expect.objectContaining({
+                id: 'first-steps',
+                title: 'First Steps',
+                current: 3,
+                target: 3,
+                earnedAt: expect.any(String),
+            }),
+        ]);
+
+        const replay = await request(app)
+            .post('/api/activity/complete')
+            .set('Authorization', authHeader(user._id))
+            .send(thirdBody);
+
+        expect(replay.status).toBe(200);
+        expect(replay.body?.achievementAwards || []).toEqual([]);
+        expect(await UserAchievement.countDocuments({ userId: user._id, achievementId: 'first-steps' })).toBe(1);
+    });
+
+    test('does not toast legacy progress that was already unlocked before the new completion', async () => {
+        const eligibleQuestions = loadQuestionCatalog().all
+            .filter((question) => ['coding', 'trivia', undefined].includes(question.kind)
+                && ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design', undefined].includes(question.tech));
+        const catalogIds = eligibleQuestions.slice(0, 10).map((question) => question.id);
+        expect(catalogIds.length).toBeGreaterThanOrEqual(10);
+        const user = await User.create({
+            email: 'badge-legacy@example.com',
+            username: 'badge_legacy_user',
+            passwordHash: 'hash',
+            solvedQuestionIds: catalogIds,
+            stats: { xpTotal: 0, completedTotal: 10 },
+        });
+        const nextQuestion = eligibleQuestions.find((question) => !catalogIds.includes(question.id));
+        expect(nextQuestion).toBeTruthy();
+
+        const res = await request(app)
+            .post('/api/activity/complete')
+            .set('Authorization', authHeader(user._id))
+            .send({
+                kind: nextQuestion.kind || 'coding',
+                tech: nextQuestion.tech || 'javascript',
+                itemId: nextQuestion.id,
+                requestId: 'req-badge-legacy',
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body?.achievementAwards || []).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ id: 'question-builder' }),
+                expect.objectContaining({ id: 'first-steps' }),
+            ])
+        );
+        expect(await UserAchievement.countDocuments({ userId: user._id })).toBe(0);
     });
 
     test('persists per-tech aggregates for non-legacy tech keys', async () => {

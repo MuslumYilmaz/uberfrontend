@@ -1,0 +1,187 @@
+:host {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+}
+
+.achievement-toast {
+  --award-a: var(--uf-accent);
+  --award-b: var(--uf-accent-strong);
+  --award-c: color-mix(in srgb, var(--uf-accent) 42%, var(--uf-text-primary));
+  pointer-events: auto;
+  position: absolute;
+  top: calc(76px + env(safe-area-inset-top, 0px));
+  right: max(18px, env(safe-area-inset-right, 0px));
+  width: min(380px, calc(100vw - 36px));
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--award-a) 36%, var(--uf-border-subtle));
+  border-radius: var(--uf-card-radius);
+  color: var(--uf-text-primary);
+  background:
+    radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--award-a) 20%, transparent), transparent 34%),
+    color-mix(in srgb, var(--uf-surface) 92%, var(--uf-bg) 8%);
+  box-shadow:
+    0 22px 50px color-mix(in srgb, var(--uf-bg) 72%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--uf-text-primary) 9%, transparent);
+  animation: achievementToastIn var(--uf-motion-base) ease-out;
+}
+
+.achievement-toast[data-theme='cyan'] {
+  --award-a: var(--uf-status-info-text);
+  --award-b: var(--uf-learning-practice-accent);
+  --award-c: color-mix(in srgb, var(--uf-status-info-text) 76%, var(--uf-text-primary));
+}
+.achievement-toast[data-theme='blue'] {
+  --award-a: color-mix(in srgb, var(--uf-learning-practice-accent) 78%, var(--uf-text-primary));
+  --award-b: var(--uf-learning-practice-accent);
+  --award-c: var(--uf-status-info-text);
+}
+.achievement-toast[data-theme='green'] {
+  --award-a: color-mix(in srgb, var(--uf-learning-structured-accent) 68%, var(--uf-text-primary));
+  --award-b: var(--uf-learning-structured-accent);
+  --award-c: color-mix(in srgb, var(--uf-learning-structured-accent) 24%, var(--uf-text-primary));
+}
+.achievement-toast[data-theme='violet'] {
+  --award-a: color-mix(in srgb, var(--uf-learning-practice-accent) 62%, var(--uf-text-primary));
+  --award-b: color-mix(in srgb, var(--uf-learning-practice-accent) 58%, var(--uf-accent));
+  --award-c: color-mix(in srgb, var(--uf-accent) 30%, var(--uf-text-primary));
+}
+.achievement-toast[data-theme='amber'] {
+  --award-a: var(--uf-accent);
+  --award-b: var(--uf-learning-advanced-accent);
+  --award-c: color-mix(in srgb, var(--uf-accent) 46%, var(--uf-text-primary));
+}
+.achievement-toast[data-theme='rose'] {
+  --award-a: var(--uf-status-danger-text);
+  --award-b: var(--uf-status-danger-border);
+  --award-c: color-mix(in srgb, var(--uf-status-danger-text) 72%, var(--uf-text-primary));
+}
+
+.achievement-toast__medallion {
+  display: grid;
+  place-items: center;
+}
+
+.achievement-toast__disc {
+  width: 56px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  padding: 5px;
+  color: var(--uf-bg);
+  background:
+    radial-gradient(circle at 32% 24%, color-mix(in srgb, var(--uf-text-primary) 45%, transparent), transparent 22%),
+    conic-gradient(from 220deg, var(--award-a), var(--award-b), var(--award-c), var(--award-a));
+  box-shadow:
+    0 10px 24px color-mix(in srgb, var(--award-a) 24%, transparent),
+    inset 0 -12px 20px color-mix(in srgb, var(--uf-bg) 42%, transparent);
+}
+
+.achievement-toast__body {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.achievement-toast__kicker,
+.achievement-toast__body h2,
+.achievement-toast__body p {
+  margin: 0;
+}
+
+.achievement-toast__kicker {
+  color: color-mix(in srgb, var(--award-a) 50%, var(--uf-text-secondary));
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.achievement-toast__body h2 {
+  color: var(--uf-text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.achievement-toast__body p:not(.achievement-toast__kicker) {
+  display: -webkit-box;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+  font-size: 12px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.achievement-toast__action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: var(--uf-radius-pill);
+  color: var(--uf-bg);
+  background: linear-gradient(180deg, var(--award-a), color-mix(in srgb, var(--award-b) 80%, var(--uf-text-primary) 20%));
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.achievement-toast__close {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, var(--uf-text-primary) 22%);
+  border-radius: 50%;
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, transparent);
+  cursor: pointer;
+}
+
+@keyframes achievementToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .achievement-toast {
+    top: auto;
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: max(14px, env(safe-area-inset-bottom, 0px));
+    left: max(12px, env(safe-area-inset-left, 0px));
+    width: auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .achievement-toast__action {
+    grid-column: 2 / 3;
+    width: fit-content;
+  }
+
+  .achievement-toast__close {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achievement-toast {
+    animation: none;
+  }
+}

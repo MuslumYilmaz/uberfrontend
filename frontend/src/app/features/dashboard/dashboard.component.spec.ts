@@ -75,11 +75,70 @@ describe('DashboardComponent', () => {
         totalCount: 6,
         passedPercent: 33,
       },
+      tradeoffBattles: {
+        completedCount: 1,
+        totalCount: 5,
+        completedPercent: 20,
+      },
       practice: {
         completedCount: 14,
         totalCount: 66,
         completedPercent: 21,
       },
+    },
+    achievements: {
+      summary: {
+        unlockedCount: 3,
+        totalCount: 7,
+      },
+      unlocked: [
+        {
+          id: 'first-steps',
+          title: 'First Steps',
+          reason: 'Complete 3 practice units.',
+          icon: 'flag',
+          theme: 'gold',
+          current: 3,
+          target: 3,
+          progress: 1,
+          unlocked: true,
+        },
+        {
+          id: 'question-builder',
+          title: 'Problem Solver',
+          reason: 'Solve 10 current-catalog questions.',
+          icon: 'code',
+          theme: 'cyan',
+          current: 10,
+          target: 10,
+          progress: 1,
+          unlocked: true,
+        },
+        {
+          id: 'debug-starter',
+          title: 'Debug Starter',
+          reason: 'Pass 1 debug scenario.',
+          icon: 'bug',
+          theme: 'green',
+          current: 1,
+          target: 1,
+          progress: 1,
+          unlocked: true,
+        },
+      ],
+      next: [
+        {
+          id: 'coverage-builder',
+          title: 'Coverage Builder',
+          reason: 'Complete 25 practice units.',
+          icon: 'target',
+          theme: 'blue',
+          current: 14,
+          target: 25,
+          progress: 0.56,
+          unlocked: false,
+        },
+      ],
     },
     settings: {
       weeklyGoalEnabled: true,
@@ -270,7 +329,7 @@ describe('DashboardComponent', () => {
 
     expect(pageText).toContain('Start your first focused rep');
     expect(pageText).toContain(
-      'Start with one Essential 60 question. After a few completed reps, the dashboard will shift toward progress, streaks, and recommendations.',
+      'Start with one Essential 60 question. After a few completed reps, the dashboard will shift toward badges, streaks, and recommendations.',
     );
     expect(primaryCta?.textContent?.trim()).toBe('Open Essential 60');
     expect(primaryCta?.getAttribute('href') || '').toContain('/interview-questions/essential');
@@ -302,10 +361,64 @@ describe('DashboardComponent', () => {
       'Your next rep is ready. Keep the loop moving, then branch into the library only when today’s practice needs a different format.',
     );
     expect(pageText).toContain('Progress snapshot');
+    expect(pageText).toContain('Badges');
+    expect(pageText).toContain('3/7');
+    expect(pageText).toContain('First Steps');
+    expect(pageText).toContain('Coverage Builder');
     expect(pageText).toContain('Complete today’s daily challenge');
     expect(pageText).not.toContain('Next action');
     expect(pageText).not.toContain('Explore more ways to prep');
     expect(historyLink?.getAttribute('href') || '').toContain('/profile');
+    expect(page.querySelector('[data-testid="dashboard-badge-summary"]')).toBeTruthy();
+    const badgeMedallions = Array.from(page.querySelectorAll('[data-testid="dashboard-badge-medallion"]')) as HTMLElement[];
+    expect(badgeMedallions.length).toBe(3);
+    expect(badgeMedallions[0].getAttribute('data-theme')).toBe('gold');
+    expect(badgeMedallions[0].getAttribute('data-badge-id')).toBe('first-steps');
+    expect(badgeMedallions[0].querySelector('.badge-medallion__motif')).toBeTruthy();
+    expect(badgeMedallions[0].querySelector('app-fa-glyph')).toBeTruthy();
+    const nextMedallion = page.querySelector('[data-testid="dashboard-next-badge-medallion"]') as HTMLElement | null;
+    expect(nextMedallion?.getAttribute('data-theme')).toBe('blue');
+    expect(nextMedallion?.getAttribute('data-badge-id')).toBe('coverage-builder');
+    expect(nextMedallion?.querySelector('.badge-medallion__motif')).toBeTruthy();
+    expect(nextMedallion?.querySelector('app-fa-glyph')).toBeTruthy();
+    expect(Number.parseFloat(nextMedallion?.style.getPropertyValue('--badge-progress') || '0')).toBeCloseTo(56, 5);
+  });
+
+  it('shows the dashboard badge empty state when no badges are unlocked yet', () => {
+    solvedIds = ['react-counter', 'react-closures', 'js-event-loop'];
+    currentDashboardPayload = buildPayload({
+      achievements: {
+        summary: { unlockedCount: 0, totalCount: 7 },
+        unlocked: [],
+        next: [
+          {
+            id: 'first-steps',
+            title: 'First Steps',
+            reason: 'Complete 3 practice units.',
+            icon: 'flag',
+            theme: 'gold',
+            current: 2,
+            target: 3,
+            progress: 2 / 3,
+            unlocked: false,
+          },
+        ],
+      },
+    });
+
+    fixture = createComponent();
+    fixture.componentInstance.gamificationState.set(currentDashboardPayload);
+    fixture.detectChanges();
+
+    const pageText = fixture.nativeElement.textContent || '';
+    expect(pageText).toContain('0/7');
+    expect(pageText).toContain('Complete 3 practice units to earn your first badge.');
+    expect(pageText).toContain('First Steps');
+    expect(pageText).toContain('2/3');
+    expect(fixture.nativeElement.querySelector('[data-testid="dashboard-badge-medallion"]')).toBeFalsy();
+    const nextMedallion = fixture.nativeElement.querySelector('[data-testid="dashboard-next-badge-medallion"]') as HTMLElement | null;
+    expect(nextMedallion).toBeTruthy();
+    expect(Number.parseFloat(nextMedallion?.style.getPropertyValue('--badge-progress') || '0')).toBeCloseTo(66.67, 1);
   });
 
   it('renders exactly five compact library links with the expected destinations', () => {
