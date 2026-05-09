@@ -27,7 +27,7 @@
   width: 48px; height: 48px; border-radius: 50%;
   background: var(--uf-accent);
   display: grid; place-items: center;
-  font-weight: 800; font-size: 18px; color: #15130b;
+  font-weight: 800; font-size: 18px; color: var(--uf-bg);
   box-shadow: 0 8px 18px color-mix(in srgb, var(--uf-accent) 55%, transparent);
 }
 .name {
@@ -112,7 +112,7 @@
 .section-head h3 { margin: 0; }
 .section h3 { font-size: 14px; margin: 0 0 8px; font-weight: 600; }
 .muted { color: color-mix(in srgb, var(--uf-text-tertiary) 75%, transparent); font-size: 12px; }
-.error { color: #fca5a5; font-size: 12px; margin: 0; }
+.error { color: var(--uf-status-danger-text); font-size: 12px; margin: 0; }
 
 /* Badges */
 .badge-header {
@@ -173,14 +173,14 @@
   border-bottom: 1px solid color-mix(in srgb, var(--uf-border-subtle) 65%, transparent);
 }
 .badge-medallion {
-  --badge-a: #f7c957;
-  --badge-b: #ff9f43;
-  --badge-c: #fff3a6;
+  --badge-a: var(--uf-badge-gold-a);
+  --badge-b: var(--uf-badge-gold-b);
+  --badge-c: var(--uf-badge-gold-c);
   --badge-progress: 0%;
   --badge-ring: conic-gradient(from 220deg, var(--badge-a), var(--badge-b), var(--badge-c), var(--badge-a));
-  --badge-face: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.38), transparent 22%),
-    linear-gradient(145deg, color-mix(in srgb, var(--badge-a) 82%, #ffffff 18%), var(--badge-b));
-  --badge-face-muted: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.1), transparent 24%),
+  --badge-face: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--uf-text-primary) 38%, transparent), transparent 22%),
+    linear-gradient(145deg, color-mix(in srgb, var(--badge-a) 82%, var(--uf-text-primary) 18%), var(--badge-b));
+  --badge-face-muted: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--uf-text-primary) 10%, transparent), transparent 24%),
     linear-gradient(145deg, color-mix(in srgb, var(--uf-text-primary) 14%, transparent), color-mix(in srgb, var(--uf-text-primary) 6%, transparent));
   --badge-motif-opacity: 0.42;
   min-width: 0;
@@ -194,85 +194,70 @@
   text-align: center;
 }
 .badge-medallion[data-theme='cyan'] {
-  --badge-a: #42d8ff;
-  --badge-b: #3b82f6;
-  --badge-c: #bff6ff;
+  --badge-a: var(--uf-badge-cyan-a);
+  --badge-b: var(--uf-badge-cyan-b);
+  --badge-c: var(--uf-badge-cyan-c);
 }
 .badge-medallion[data-theme='blue'] {
-  --badge-a: #7dd3fc;
-  --badge-b: #2563eb;
-  --badge-c: #dbeafe;
+  --badge-a: var(--uf-badge-blue-a);
+  --badge-b: var(--uf-badge-blue-b);
+  --badge-c: var(--uf-badge-blue-c);
 }
 .badge-medallion[data-theme='green'] {
-  --badge-a: #86efac;
-  --badge-b: #10b981;
-  --badge-c: #dcfce7;
+  --badge-a: var(--uf-badge-green-a);
+  --badge-b: var(--uf-badge-green-b);
+  --badge-c: var(--uf-badge-green-c);
 }
 .badge-medallion[data-theme='violet'] {
-  --badge-a: #c4b5fd;
-  --badge-b: #8b5cf6;
-  --badge-c: #f0e7ff;
+  --badge-a: var(--uf-badge-violet-a);
+  --badge-b: var(--uf-badge-violet-b);
+  --badge-c: var(--uf-badge-violet-c);
 }
 .badge-medallion[data-theme='amber'] {
-  --badge-a: #fbbf24;
-  --badge-b: #f97316;
-  --badge-c: #fde68a;
+  --badge-a: var(--uf-badge-amber-a);
+  --badge-b: var(--uf-badge-amber-b);
+  --badge-c: var(--uf-badge-amber-c);
 }
 .badge-medallion[data-theme='rose'] {
-  --badge-a: #fb7185;
-  --badge-b: #ec4899;
-  --badge-c: #ffe4e6;
+  --badge-a: var(--uf-badge-rose-a);
+  --badge-b: var(--uf-badge-rose-b);
+  --badge-c: var(--uf-badge-rose-c);
 }
 .badge-medallion[data-badge-id='first-steps'] {
-  --badge-ring: conic-gradient(from 225deg, #fff1a6 0 15%, #f7c957 15% 36%, #8f6418 36% 43%, #ffb347 43% 68%, #fff4bd 68% 77%, #bd7415 77% 100%);
-  --badge-face: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.5), transparent 22%),
-    linear-gradient(145deg, #ffe082, #f59e0b 58%, #9a5c08);
-  --badge-face-muted: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.16), transparent 22%),
-    linear-gradient(145deg, color-mix(in srgb, #facc15 22%, transparent), color-mix(in srgb, var(--uf-text-primary) 6%, transparent));
+  --badge-ring: var(--uf-achievement-first-steps-ring);
+  --badge-face: var(--uf-achievement-first-steps-face);
+  --badge-face-muted: var(--uf-achievement-first-steps-face-muted);
   --badge-motif-opacity: 0.56;
 }
 .badge-medallion[data-badge-id='question-builder'] {
-  --badge-ring: conic-gradient(from 90deg, #a5f3fc 0 18%, #0891b2 18% 38%, #38bdf8 38% 58%, #1d4ed8 58% 80%, #cffafe 80% 100%);
-  --badge-face: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.42), transparent 21%),
-    linear-gradient(135deg, #67e8f9, #2563eb 58%, #172554);
-  --badge-face-muted: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.13), transparent 21%),
-    linear-gradient(135deg, color-mix(in srgb, #22d3ee 20%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --badge-ring: var(--uf-achievement-question-builder-ring);
+  --badge-face: var(--uf-achievement-question-builder-face);
+  --badge-face-muted: var(--uf-achievement-question-builder-face-muted);
 }
 .badge-medallion[data-badge-id='coverage-builder'] {
-  --badge-ring: conic-gradient(from -45deg, #dbeafe 0 12%, #60a5fa 12% 32%, #1d4ed8 32% 58%, #93c5fd 58% 72%, #1e3a8a 72% 100%);
-  --badge-face: radial-gradient(circle at 36% 25%, rgba(255, 255, 255, 0.42), transparent 21%),
-    linear-gradient(145deg, #93c5fd, #2563eb 55%, #111c52);
-  --badge-face-muted: radial-gradient(circle at 36% 25%, rgba(255, 255, 255, 0.12), transparent 21%),
-    linear-gradient(145deg, color-mix(in srgb, #60a5fa 22%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --badge-ring: var(--uf-achievement-coverage-builder-ring);
+  --badge-face: var(--uf-achievement-coverage-builder-face);
+  --badge-face-muted: var(--uf-achievement-coverage-builder-face-muted);
 }
 .badge-medallion[data-badge-id='debug-starter'] {
-  --badge-ring: conic-gradient(from 200deg, #dcfce7 0 10%, #22c55e 10% 31%, #052e16 31% 42%, #86efac 42% 63%, #16a34a 63% 100%);
-  --badge-face: radial-gradient(circle at 33% 24%, rgba(255, 255, 255, 0.38), transparent 20%),
-    linear-gradient(145deg, #86efac, #10b981 58%, #064e3b);
-  --badge-face-muted: radial-gradient(circle at 33% 24%, rgba(255, 255, 255, 0.12), transparent 20%),
-    linear-gradient(145deg, color-mix(in srgb, #22c55e 20%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --badge-ring: var(--uf-achievement-debug-starter-ring);
+  --badge-face: var(--uf-achievement-debug-starter-face);
+  --badge-face-muted: var(--uf-achievement-debug-starter-face-muted);
 }
 .badge-medallion[data-badge-id='tradeoff-starter'] {
-  --badge-ring: conic-gradient(from 180deg, #f0abfc 0 24%, #7c3aed 24% 50%, #fde68a 50% 74%, #a855f7 74% 100%);
-  --badge-face: radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.4), transparent 21%),
-    linear-gradient(90deg, #8b5cf6 0 49%, #f59e0b 50% 100%);
-  --badge-face-muted: radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.12), transparent 21%),
-    linear-gradient(90deg, color-mix(in srgb, #8b5cf6 20%, transparent) 0 49%, color-mix(in srgb, #f59e0b 14%, transparent) 50% 100%);
+  --badge-ring: var(--uf-achievement-tradeoff-starter-ring);
+  --badge-face: var(--uf-achievement-tradeoff-starter-face);
+  --badge-face-muted: var(--uf-achievement-tradeoff-starter-face-muted);
 }
 .badge-medallion[data-badge-id='weekly-finisher'] {
-  --badge-ring: repeating-conic-gradient(from 0deg, #fde68a 0 8deg, #f59e0b 8deg 22deg, #7c2d12 22deg 30deg);
-  --badge-face: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.44), transparent 21%),
-    linear-gradient(145deg, #fcd34d, #f97316 58%, #7c2d12);
-  --badge-face-muted: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.12), transparent 21%),
-    linear-gradient(145deg, color-mix(in srgb, #fbbf24 20%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --badge-ring: var(--uf-achievement-weekly-finisher-ring);
+  --badge-face: var(--uf-achievement-weekly-finisher-face);
+  --badge-face-muted: var(--uf-achievement-weekly-finisher-face-muted);
 }
 .badge-medallion[data-badge-id='consistency'] {
-  --badge-ring: repeating-conic-gradient(from 8deg, #ffe4e6 0 7deg, #fb7185 7deg 20deg, #831843 20deg 28deg);
-  --badge-face: radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.4), transparent 21%),
-    radial-gradient(ellipse at 50% 74%, rgba(253, 186, 116, 0.9), transparent 28%),
-    linear-gradient(145deg, #fb7185, #ec4899 58%, #831843);
-  --badge-face-muted: radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.12), transparent 21%),
-    linear-gradient(145deg, color-mix(in srgb, #fb7185 20%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --badge-ring: var(--uf-achievement-consistency-ring);
+  --badge-face: var(--uf-achievement-consistency-face);
+  --badge-face-muted: var(--uf-achievement-consistency-face-muted);
   --badge-motif-opacity: 0.5;
 }
 .badge-medallion__disc {
@@ -283,7 +268,7 @@
   position: relative;
   background: var(--badge-ring);
   box-shadow:
-    0 18px 34px rgba(0, 0, 0, 0.36),
+    0 18px 34px color-mix(in srgb, var(--uf-bg) 64%, transparent),
     0 0 0 1px color-mix(in srgb, var(--badge-a) 42%, transparent),
     0 0 28px color-mix(in srgb, var(--badge-a) 18%, transparent);
 }
@@ -331,19 +316,19 @@
   border-radius: inherit;
   display: grid;
   place-items: center;
-  color: #fffaf0;
+  color: var(--uf-text-primary);
   overflow: hidden;
   background: var(--badge-face);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.32),
-    inset 0 -18px 26px rgba(0, 0, 0, 0.22);
+    inset 0 0 0 1px color-mix(in srgb, var(--uf-text-primary) 32%, transparent),
+    inset 0 -18px 26px color-mix(in srgb, var(--uf-bg) 42%, transparent);
 }
 .badge-medallion__face::after {
   content: '';
   position: absolute;
   inset: 11%;
   border-radius: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid color-mix(in srgb, var(--uf-text-primary) 22%, transparent);
   pointer-events: none;
   z-index: 3;
 }
@@ -370,59 +355,59 @@
 }
 .badge-medallion[data-badge-id='first-steps'] .badge-medallion__motif {
   background:
-    radial-gradient(circle at 30% 72%, rgba(255, 255, 255, 0.55) 0 8%, transparent 9%),
-    radial-gradient(circle at 48% 60%, rgba(255, 255, 255, 0.44) 0 7%, transparent 8%),
-    radial-gradient(circle at 66% 48%, rgba(255, 255, 255, 0.34) 0 6%, transparent 7%);
+    radial-gradient(circle at 30% 72%, color-mix(in srgb, var(--uf-text-primary) 55%, transparent) 0 8%, transparent 9%),
+    radial-gradient(circle at 48% 60%, color-mix(in srgb, var(--uf-text-primary) 44%, transparent) 0 7%, transparent 8%),
+    radial-gradient(circle at 66% 48%, color-mix(in srgb, var(--uf-text-primary) 34%, transparent) 0 6%, transparent 7%);
 }
 .badge-medallion[data-badge-id='first-steps'] .badge-medallion__motif::before {
   inset: 22% 30% 20% 46%;
-  border-left: 2px solid rgba(255, 255, 255, 0.6);
+  border-left: 2px solid color-mix(in srgb, var(--uf-text-primary) 60%, transparent);
   border-radius: 2px;
 }
 .badge-medallion[data-badge-id='question-builder'] .badge-medallion__motif {
   inset: 10%;
   background:
-    repeating-linear-gradient(0deg, transparent 0 7px, rgba(255, 255, 255, 0.2) 7px 8px),
-    repeating-linear-gradient(90deg, transparent 0 7px, rgba(255, 255, 255, 0.18) 7px 8px);
+    repeating-linear-gradient(0deg, transparent 0 7px, color-mix(in srgb, var(--uf-text-primary) 20%, transparent) 7px 8px),
+    repeating-linear-gradient(90deg, transparent 0 7px, color-mix(in srgb, var(--uf-text-primary) 18%, transparent) 7px 8px);
 }
 .badge-medallion[data-badge-id='question-builder'] .badge-medallion__motif::before {
   inset: 26%;
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  border: 1px solid color-mix(in srgb, var(--uf-text-primary) 38%, transparent);
   border-radius: 5px;
 }
 .badge-medallion[data-badge-id='coverage-builder'] .badge-medallion__motif {
   inset: 6%;
   background:
-    radial-gradient(circle, transparent 0 16%, rgba(255, 255, 255, 0.3) 17% 20%, transparent 21% 38%, rgba(255, 255, 255, 0.22) 39% 43%, transparent 44%),
-    conic-gradient(from -30deg, rgba(255, 255, 255, 0.45) 0 72deg, transparent 73deg);
+    radial-gradient(circle, transparent 0 16%, color-mix(in srgb, var(--uf-text-primary) 30%, transparent) 17% 20%, transparent 21% 38%, color-mix(in srgb, var(--uf-text-primary) 22%, transparent) 39% 43%, transparent 44%),
+    conic-gradient(from -30deg, color-mix(in srgb, var(--uf-text-primary) 45%, transparent) 0 72deg, transparent 73deg);
 }
 .badge-medallion[data-badge-id='debug-starter'] .badge-medallion__motif {
   inset: 0;
   background:
-    repeating-linear-gradient(0deg, transparent 0 5px, rgba(255, 255, 255, 0.18) 5px 6px),
-    radial-gradient(circle, transparent 0 44%, rgba(255, 255, 255, 0.28) 45% 47%, transparent 48%);
+    repeating-linear-gradient(0deg, transparent 0 5px, color-mix(in srgb, var(--uf-text-primary) 18%, transparent) 5px 6px),
+    radial-gradient(circle, transparent 0 44%, color-mix(in srgb, var(--uf-text-primary) 28%, transparent) 45% 47%, transparent 48%);
 }
 .badge-medallion[data-badge-id='debug-starter'] .badge-medallion__motif::before {
   inset: 21%;
-  border: 1px dashed rgba(255, 255, 255, 0.44);
+  border: 1px dashed color-mix(in srgb, var(--uf-text-primary) 44%, transparent);
 }
 .badge-medallion[data-badge-id='tradeoff-starter'] .badge-medallion__motif {
   inset: 7%;
   background:
-    linear-gradient(90deg, transparent 0 47%, rgba(255, 255, 255, 0.32) 48% 52%, transparent 53%),
-    conic-gradient(from 45deg, rgba(255, 255, 255, 0.28) 0 42deg, transparent 43deg 180deg, rgba(255, 255, 255, 0.22) 181deg 222deg, transparent 223deg);
+    linear-gradient(90deg, transparent 0 47%, color-mix(in srgb, var(--uf-text-primary) 32%, transparent) 48% 52%, transparent 53%),
+    conic-gradient(from 45deg, color-mix(in srgb, var(--uf-text-primary) 28%, transparent) 0 42deg, transparent 43deg 180deg, color-mix(in srgb, var(--uf-text-primary) 22%, transparent) 181deg 222deg, transparent 223deg);
 }
 .badge-medallion[data-badge-id='weekly-finisher'] .badge-medallion__motif {
   inset: 5%;
   background:
-    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.44) 0 4deg, transparent 4deg 30deg),
-    radial-gradient(circle, transparent 0 48%, rgba(255, 255, 255, 0.22) 49% 52%, transparent 53%);
+    repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--uf-text-primary) 44%, transparent) 0 4deg, transparent 4deg 30deg),
+    radial-gradient(circle, transparent 0 48%, color-mix(in srgb, var(--uf-text-primary) 22%, transparent) 49% 52%, transparent 53%);
 }
 .badge-medallion[data-badge-id='consistency'] .badge-medallion__motif {
   inset: 4%;
   background:
-    repeating-conic-gradient(from 10deg, rgba(255, 255, 255, 0.32) 0 7deg, transparent 7deg 20deg),
-    radial-gradient(ellipse at 50% 70%, rgba(255, 255, 255, 0.28), transparent 30%);
+    repeating-conic-gradient(from 10deg, color-mix(in srgb, var(--uf-text-primary) 32%, transparent) 0 7deg, transparent 7deg 20deg),
+    radial-gradient(ellipse at 50% 70%, color-mix(in srgb, var(--uf-text-primary) 28%, transparent), transparent 30%);
 }
 .badge-medallion--next .badge-medallion__motif,
 .badge-medallion--locked .badge-medallion__motif {
@@ -431,7 +416,7 @@
 .badge-medallion__icon {
   position: relative;
   z-index: 4;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.36));
+  filter: drop-shadow(0 3px 6px color-mix(in srgb, var(--uf-bg) 64%, transparent));
 }
 .badge-medallion__title {
   margin: 0;
@@ -487,7 +472,7 @@
   width: 64px;
   padding: 4px;
   box-shadow:
-    0 10px 22px rgba(0, 0, 0, 0.3),
+    0 10px 22px color-mix(in srgb, var(--uf-bg) 58%, transparent),
     0 0 0 1px color-mix(in srgb, var(--badge-a) 32%, transparent);
 }
 .badge-next-detail h4 {
@@ -523,7 +508,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--uf-accent), color-mix(in srgb, var(--uf-accent) 64%, #7dd3fc));
+  background: linear-gradient(90deg, var(--uf-accent), color-mix(in srgb, var(--uf-accent) 64%, var(--uf-badge-blue-a)));
   box-shadow: 0 0 16px color-mix(in srgb, var(--uf-accent) 30%, transparent);
 }
 
@@ -563,7 +548,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--uf-accent) 70%, #5f8fff 30%), var(--uf-accent));
+  background: linear-gradient(90deg, color-mix(in srgb, var(--uf-accent) 70%, var(--uf-badge-blue-b) 30%), var(--uf-accent));
 }
 .detail-link {
   display: inline-flex;
@@ -606,7 +591,7 @@
 .helper { font-size: 11px; color: color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent); margin-top: 4px; text-align: right; }
 .btn-save {
   margin-top: 8px; padding: 6px 12px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer;
-  background: linear-gradient(180deg, var(--uf-accent), color-mix(in srgb, var(--uf-accent) 80%, #fff 20%));
+  background: linear-gradient(180deg, var(--uf-accent), color-mix(in srgb, var(--uf-accent) 80%, var(--uf-text-primary) 20%));
   color: var(--uf-bg);
   box-shadow: 0 10px 22px color-mix(in srgb, var(--uf-accent) 32%, transparent);
 }
@@ -641,7 +626,7 @@
 :host ::ng-deep .profile-password-dialog {
   width: min(520px, 92vw);
   border-radius: 16px;
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 28px 80px color-mix(in srgb, var(--uf-bg) 78%, transparent);
   overflow: hidden;
 }
 :host ::ng-deep .profile-password-dialog .p-dialog-header,
@@ -688,12 +673,12 @@
 }
 .field-error {
   margin: 2px 0 0;
-  color: #f87171;
+  color: color-mix(in srgb, var(--uf-status-danger-border) 76%, var(--uf-text-primary));
   font-size: 12px;
 }
 .field-success {
   margin: 2px 0 0;
-  color: #34d399;
+  color: color-mix(in srgb, var(--uf-learning-structured-accent) 78%, var(--uf-text-primary));
   font-size: 12px;
 }
 
