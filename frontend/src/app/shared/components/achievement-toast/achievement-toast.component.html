@@ -1,0 +1,39 @@
+<aside
+  class="achievement-toast"
+  *ngIf="notifications.current() as award"
+  role="status"
+  aria-live="polite"
+  data-testid="achievement-toast"
+  [attr.data-theme]="award.theme"
+  [attr.data-badge-id]="award.id"
+>
+  <div class="achievement-toast__medallion" aria-hidden="true">
+    <div class="achievement-toast__disc">
+      <app-fa-glyph [icon]="award.icon" size="24" [strokeWidth]="1.8"></app-fa-glyph>
+    </div>
+  </div>
+
+  <div class="achievement-toast__body">
+    <p class="achievement-toast__kicker">Badge earned</p>
+    <h2>{{ award.title }}</h2>
+    <p>{{ award.reason }}</p>
+  </div>
+
+  <a
+    class="achievement-toast__action"
+    routerLink="/profile"
+    [queryParams]="{ tab: 'activity' }"
+    (click)="dismiss()"
+  >
+    View badges
+  </a>
+
+  <button
+    class="achievement-toast__close"
+    type="button"
+    aria-label="Dismiss badge notification"
+    (click)="dismiss()"
+  >
+    <app-fa-glyph icon="xmark" size="16" [strokeWidth]="2"></app-fa-glyph>
+  </button>
+</aside>

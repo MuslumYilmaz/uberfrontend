@@ -3,7 +3,11 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, injec
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Params, RouterModule } from '@angular/router';
 import { take } from 'rxjs';
-import { DashboardGamificationResponse } from '../../core/models/gamification.model';
+import {
+  DashboardAchievement,
+  DashboardAchievements,
+  DashboardGamificationResponse,
+} from '../../core/models/gamification.model';
 import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -13,6 +17,7 @@ import { OfflineBannerComponent } from '../../shared/components/offline-banner/o
 import { FaButtonComponent } from '../../shared/ui/button/fa-button.component';
 import { FaCardComponent } from '../../shared/ui/card/fa-card.component';
 import { FaDialogComponent } from '../../shared/ui/dialog/fa-dialog.component';
+import { FaGlyphComponent } from '../../shared/ui/icon/fa-glyph.component';
 
 type DailyChallengeTech = 'auto' | 'javascript' | 'react' | 'angular' | 'vue' | 'html' | 'css';
 type DashboardMode = 'guest' | 'novice' | 'established';
@@ -52,7 +57,7 @@ type DashboardLink = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent, FaDialogComponent],
+  imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent, FaDialogComponent, FaGlyphComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -225,8 +230,12 @@ export class DashboardComponent {
   });
   readonly dailyChallenge = computed(() => this.gamificationState()?.dailyChallenge ?? null);
   readonly weeklyGoal = computed(() => this.gamificationState()?.weeklyGoal ?? null);
-  readonly xpLevel = computed(() => this.gamificationState()?.xpLevel ?? null);
   readonly progressSummary = computed(() => this.gamificationState()?.progress ?? null);
+  readonly achievements = computed<DashboardAchievements | null>(() => this.gamificationState()?.achievements ?? null);
+  readonly visibleUnlockedBadges = computed<DashboardAchievement[]>(() =>
+    (this.achievements()?.unlocked ?? []).slice(0, 3)
+  );
+  readonly nextBadge = computed<DashboardAchievement | null>(() => this.achievements()?.next?.[0] ?? null);
   readonly dashboardMode = computed<DashboardMode>(() => {
     if (!this.authService.isLoggedIn()) return 'guest';
 
@@ -269,17 +278,17 @@ export class DashboardComponent {
       case 'established':
         return 'Your next rep is ready. Keep the loop moving, then branch into the library only when today’s practice needs a different format.';
       case 'novice':
-        return 'Start with one Essential 60 question. After a few completed reps, the dashboard will shift toward progress, streaks, and recommendations.';
+        return 'Start with one Essential 60 question. After a few completed reps, the dashboard will shift toward badges, streaks, and recommendations.';
       default:
-        return 'Start with one question, keep today’s loop visible, and sign in only when you want to save streaks, weekly goals, XP, and loop history.';
+        return 'Start with one question, keep today’s loop visible, and sign in only when you want to save streaks, weekly goals, badges, and loop history.';
     }
   });
   readonly heroSupportCopy = computed(() => {
     if (this.dashboardMode() === 'guest') {
-      return 'Guest mode stays open. Save your loop when you want streaks, weekly goals, XP, and history to follow you.';
+      return 'Guest mode stays open. Save your loop when you want streaks, weekly goals, badges, and history to follow you.';
     }
     if (this.dashboardMode() === 'novice') {
-      return 'Progress and XP move lower in the dashboard until you have enough completed reps for them to be worth your attention.';
+      return 'Progress and badges move lower in the dashboard until you have enough completed reps for them to be worth your attention.';
     }
     return '';
   });

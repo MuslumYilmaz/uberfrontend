@@ -3,12 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
 import { Observable, Subject, catchError, finalize, firstValueFrom, of, shareReplay, tap, throwError } from 'rxjs';
 import { Tech } from '../models/user.model';
+import { AchievementAward } from '../models/gamification.model';
 import { AuthService } from './auth.service';
 import { apiUrl } from '../utils/api-base';
 import { AnalyticsService } from './analytics.service';
 import { GamificationService } from './gamification.service';
 import { OfflineService } from './offline';
 import { UserProgressService } from './user-progress.service';
+import { AchievementNotificationService } from './achievement-notification.service';
 
 export interface ActivityEvent {
   _id: string;
@@ -52,6 +54,7 @@ export interface ActivityCompleteResponse {
   queued?: boolean;
   credited?: boolean;
   requestId?: string;
+  achievementAwards?: AchievementAward[];
 }
 
 export interface ActivityUncompleteResponse {
@@ -125,6 +128,7 @@ export class ActivityService {
     private gamification: GamificationService,
     private offline: OfflineService,
     private progress: UserProgressService,
+    private achievementNotifications: AchievementNotificationService,
   ) {
     this.activityCompleted$.subscribe(() => {
       this.invalidateAll();
@@ -569,6 +573,7 @@ export class ActivityService {
     } else if (QUESTION_ACTIVITY_KINDS.has(entry.kind)) {
       this.progress.markSolvedLocal(entry.itemId);
     }
+    this.achievementNotifications.enqueueAwards(res?.achievementAwards);
 
     const xpAwarded = Number(res?.xpAwarded || 0);
     const weeklyGoalCompleted = !!res?.weeklyGoal?.reached;

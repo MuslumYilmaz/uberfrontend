@@ -9,6 +9,7 @@ const {
   resolveDailyChallengeTechPreference,
   selectDailyChallengeQuestion,
 } = require('../services/gamification/daily-challenge');
+const { buildAchievements } = require('../services/gamification/achievements');
 
 describe('gamification logic', () => {
   test('challenge streak increments on consecutive days', () => {
@@ -125,5 +126,74 @@ describe('gamification logic', () => {
     const second = selectDailyChallengeQuestion(params);
 
     expect(first.id).toBe(second.id);
+  });
+
+  test('achievement evaluator exposes locked progress without requiring persisted badges', () => {
+    const achievements = buildAchievements({
+      user: {
+        stats: {
+          streak: { longest: 2 },
+        },
+      },
+      progress: {
+        questions: { solvedCount: 1 },
+        incidents: { passedCount: 0 },
+        tradeoffBattles: { completedCount: 0 },
+        practice: { completedCount: 2 },
+      },
+      weeklyGoalBonusCount: 0,
+    });
+
+    expect(achievements.summary).toEqual({ unlockedCount: 0, totalCount: 7 });
+    expect(achievements.unlocked).toEqual([]);
+    expect(achievements.next[0]).toEqual(
+      expect.objectContaining({
+        id: 'first-steps',
+        title: 'First Steps',
+        icon: 'flag',
+        theme: 'gold',
+        current: 2,
+        target: 3,
+        unlocked: false,
+      })
+    );
+  });
+
+  test('achievement evaluator unlocks badges from existing progress and caps displayed current at target', () => {
+    const achievements = buildAchievements({
+      user: {
+        stats: {
+          streak: { longest: 11 },
+        },
+      },
+      progress: {
+        questions: { solvedCount: 12 },
+        incidents: { passedCount: 1 },
+        tradeoffBattles: { completedCount: 2 },
+        practice: { completedCount: 28 },
+      },
+      weeklyGoalBonusCount: 3,
+    });
+
+    expect(achievements.summary).toEqual({ unlockedCount: 7, totalCount: 7 });
+    expect(achievements.next).toEqual([]);
+    expect(achievements.unlocked.map((achievement) => achievement.id)).toEqual([
+      'first-steps',
+      'question-builder',
+      'coverage-builder',
+      'debug-starter',
+      'tradeoff-starter',
+      'weekly-finisher',
+      'consistency',
+    ]);
+    expect(achievements.unlocked.find((achievement) => achievement.id === 'weekly-finisher')).toEqual(
+      expect.objectContaining({
+        icon: 'calendar',
+        theme: 'amber',
+        current: 1,
+        target: 1,
+        progress: 1,
+      })
+    );
   });
 });

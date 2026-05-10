@@ -35,6 +35,12 @@ export interface DashboardIncidentProgress {
   passedPercent: number;
 }
 
+export interface DashboardTradeoffBattleProgress {
+  completedCount: number;
+  totalCount: number;
+  completedPercent: number;
+}
+
 export interface DashboardPracticeProgress {
   completedCount: number;
   totalCount: number;
@@ -71,7 +77,43 @@ export interface DashboardTopicProgress {
 export interface DashboardProgress {
   questions: DashboardQuestionProgress;
   incidents: DashboardIncidentProgress;
+  tradeoffBattles?: DashboardTradeoffBattleProgress;
   practice: DashboardPracticeProgress;
+}
+
+export interface DashboardAchievement {
+  id: string;
+  title: string;
+  reason: string;
+  icon: string;
+  theme: string;
+  current: number;
+  target: number;
+  progress: number;
+  unlocked: boolean;
+  earnedAt?: string;
+}
+
+export interface AchievementAward {
+  id: string;
+  title: string;
+  reason: string;
+  icon: string;
+  theme: string;
+  current: number;
+  target: number;
+  progress: number;
+  earnedAt: string;
+}
+
+export interface DashboardAchievements {
+  summary: {
+    unlockedCount: number;
+    totalCount: number;
+  };
+  unlocked: DashboardAchievement[];
+  next: DashboardAchievement[];
+  unseen?: AchievementAward[];
 }
 
 export interface DashboardGamificationSettings {
@@ -87,6 +129,7 @@ export interface DashboardGamificationResponse {
   weeklyGoal: DashboardWeeklyGoal;
   xpLevel: DashboardXpLevel;
   progress: DashboardProgress;
+  achievements?: DashboardAchievements;
   settings: DashboardGamificationSettings;
 }
 
@@ -107,6 +150,7 @@ export interface DailyChallengeCompleteResponse {
   xpAwarded?: number;
   levelUp?: boolean;
   xp?: DashboardXpLevel;
+  achievementAwards?: AchievementAward[];
 }
 
 export interface WeeklyGoalUpdateResponse {

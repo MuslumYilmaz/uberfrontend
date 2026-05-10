@@ -203,18 +203,30 @@ type CtaMode = 'emit' | 'navigatePricing';
       <section class="weekly-changelog" *ngIf="variant === 'full'">
         <div class="weekly-changelog__head">
           <p class="eyebrow">Build in public</p>
-          <h3>What changed this week</h3>
+          <h3>Recent product updates</h3>
           <p class="muted">Recent shipped updates so you can evaluate momentum before buying.</p>
         </div>
         <ul class="weekly-changelog__list">
           <li *ngFor="let entry of changelogPreview">
-            <div class="weekly-changelog__row">
-              <strong>{{ entry.title }}</strong>
-              <span>{{ formatWeek(entry.weekOf) }}</span>
-            </div>
-            <ul class="weekly-changelog__bullets">
-              <li *ngFor="let item of entry.changes">{{ item }}</li>
-            </ul>
+            <a
+              class="weekly-changelog__item"
+              [routerLink]="['/changelog']"
+              [fragment]="entry.id"
+              (click)="trackChangelogClick('pricing_changelog_preview_' + entry.id)"
+            >
+              <div class="weekly-changelog__row">
+                <strong>{{ entry.title }}</strong>
+                <span>{{ formatWeek(entry.weekOf) }}</span>
+              </div>
+              <div class="weekly-changelog__meta">
+                <span>{{ entry.category }}</span>
+                <span>{{ entry.area }}</span>
+              </div>
+              <p>{{ entry.summary }}</p>
+              <ul class="weekly-changelog__bullets">
+                <li *ngFor="let item of previewChanges(entry)">{{ item }}</li>
+              </ul>
+            </a>
           </li>
         </ul>
         <a
@@ -525,6 +537,10 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       day: 'numeric',
       year: 'numeric',
     });
+  }
+
+  previewChanges(entry: { changes: string[] }): string[] {
+    return Array.isArray(entry.changes) ? entry.changes.slice(0, 2) : [];
   }
 
   trackChangelogClick(location: string): void {

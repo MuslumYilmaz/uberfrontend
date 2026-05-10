@@ -3,7 +3,12 @@ import { Component, OnInit, computed, signal, DestroyRef, Injector } from '@angu
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
-import { DashboardGamificationResponse, DashboardProgress } from '../../../core/models/gamification.model';
+import {
+  DashboardAchievement,
+  DashboardAchievements,
+  DashboardGamificationResponse,
+  DashboardProgress,
+} from '../../../core/models/gamification.model';
 import { AuthService, User } from '../../../core/services/auth.service';
 import { GamificationService } from '../../../core/services/gamification.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
@@ -15,13 +20,18 @@ import { getManageSubscriptionErrorMessage } from '../../../core/utils/billing-u
 import { openExternalWindow } from '../../../core/utils/external-window.util';
 import { ConfiguredPaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
+import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 
 type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
+type ProfileShelfBadge = DashboardAchievement & {
+  shelfState: 'earned' | 'in-progress';
+  shelfLabel: 'Earned' | 'In progress';
+};
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, DialogModule, RouterModule],
+  imports: [CommonModule, FormsModule, DialogModule, RouterModule, FaGlyphComponent],
   styleUrls: ['./profile.component.css'],
   template: `
     <div class="profile-layout" *ngIf="user(); else loadingTpl">
@@ -56,6 +66,98 @@ type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
 
         <!-- Activity (solved questions) -->
         <section *ngIf="tab() === 'activity'" class="panel">
+          <div class="section" data-testid="profile-badges-section">
+            <div class="badge-header">
+              <div class="section-head section-head--stack badge-title-block">
+                <h3>Badges</h3>
+                <p class="muted">Earned milestones from your saved practice progress.</p>
+              </div>
+
+              <div class="badge-summary-pill" data-testid="profile-badge-summary" *ngIf="achievements() as badgeState">
+                <strong>{{ badgeState.summary.unlockedCount }} / {{ badgeState.summary.totalCount }}</strong>
+                <span>unlocked</span>
+              </div>
+            </div>
+
+            <ng-container *ngIf="achievements() as badgeState; else badgesUnavailable">
+              <p class="badge-context">Current-catalog practice, weekly goals, and streaks count toward badge progress.</p>
+
+              <div class="badge-shelf badge-shelf--awards" data-testid="profile-award-shelf" *ngIf="profileShelfBadges().length; else noProfileBadges">
+                <article
+                  class="badge-medallion"
+                  [class.badge-medallion--earned]="badge.shelfState === 'earned'"
+                  [class.badge-medallion--next]="badge.shelfState === 'in-progress'"
+                  data-testid="profile-award-shelf-medallion"
+                  *ngFor="let badge of profileShelfBadges()"
+                  [attr.data-theme]="badge.theme"
+                  [attr.data-badge-id]="badge.id"
+                  [attr.data-badge-state]="badge.shelfState"
+                  [style.--badge-progress]="badge.shelfState === 'in-progress' ? ((badge.progress * 100) + '%') : null"
+                  role="img"
+                  [attr.aria-label]="badge.title + ' badge, ' + badge.shelfLabel + ', ' + badge.current + ' of ' + badge.target + '. Criteria: ' + badge.reason"
+                >
+                  <span class="badge-medallion__state">{{ badge.shelfLabel }}</span>
+                  <div class="badge-medallion__disc">
+                    <div class="badge-medallion__face">
+                      <span class="badge-medallion__motif" aria-hidden="true"></span>
+                      <app-fa-glyph class="badge-medallion__icon" [icon]="badge.icon" size="34" [strokeWidth]="1.75"></app-fa-glyph>
+                    </div>
+                  </div>
+                  <h4 class="badge-medallion__title">{{ badge.title }}</h4>
+                  <p class="badge-medallion__meta">{{ badge.current }} / {{ badge.target }}</p>
+                  <p class="badge-medallion__criterion">{{ badge.reason }}</p>
+                </article>
+              </div>
+              <ng-template #noProfileBadges>
+                <div class="badge-shelf badge-shelf--awards">
+                  <article class="badge-medallion badge-medallion--locked" data-theme="gold" data-badge-id="first-steps" role="img" aria-label="First badge locked. Criteria: Complete 3 practice units.">
+                    <span class="badge-medallion__state">Locked</span>
+                    <div class="badge-medallion__disc">
+                      <div class="badge-medallion__face">
+                        <span class="badge-medallion__motif" aria-hidden="true"></span>
+                        <app-fa-glyph class="badge-medallion__icon" icon="flag" size="34" [strokeWidth]="1.75"></app-fa-glyph>
+                      </div>
+                    </div>
+                    <h4 class="badge-medallion__title">First badge</h4>
+                    <p class="badge-medallion__meta">0 / 3</p>
+                    <p class="badge-medallion__criterion">Complete 3 practice units.</p>
+                  </article>
+                </div>
+              </ng-template>
+
+              <article class="badge-next-detail" data-testid="profile-next-badge-detail" *ngIf="profileNextBadge() as badge">
+                <div
+                  class="badge-medallion badge-medallion--next badge-medallion--detail"
+                  [attr.data-theme]="badge.theme"
+                  [attr.data-badge-id]="badge.id"
+                  [style.--badge-progress]="(badge.progress * 100) + '%'"
+                  aria-hidden="true"
+                >
+                  <div class="badge-medallion__disc">
+                    <div class="badge-medallion__face">
+                      <span class="badge-medallion__motif" aria-hidden="true"></span>
+                      <app-fa-glyph class="badge-medallion__icon" [icon]="badge.icon" size="28" [strokeWidth]="1.75"></app-fa-glyph>
+                    </div>
+                  </div>
+                </div>
+                <div class="badge-next-detail__body">
+                  <p class="detail-kicker">How to earn next badge</p>
+                  <h4>{{ badge.title }}</h4>
+                  <p>{{ badge.reason }}</p>
+                </div>
+                <div class="badge-next-detail__progress">
+                  <strong>{{ badge.current }} / {{ badge.target }}</strong>
+                  <div class="badge-next-bar" role="presentation">
+                    <span [style.width.%]="badge.progress * 100"></span>
+                  </div>
+                </div>
+              </article>
+            </ng-container>
+            <ng-template #badgesUnavailable>
+              <p class="muted">We could not load badge progress right now.</p>
+            </ng-template>
+          </div>
+
           <div class="section">
             <div class="section-head section-head--stack">
               <h3>Progress details</h3>
@@ -83,22 +185,6 @@ type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
                   <p class="detail-kicker">Weekly goal</p>
                   <h4>Unavailable</h4>
                   <p class="muted">We could not load your weekly goal right now.</p>
-                </article>
-              </ng-template>
-
-              <article class="activity-detail-card" *ngIf="xpLevel() as xp; else xpDetailFallback">
-                <p class="detail-kicker">XP + level</p>
-                <h4>Level {{ xp.level }} · {{ xp.totalXp }} XP</h4>
-                <div class="detail-bar" role="presentation">
-                  <span [style.width.%]="xp.progress * 100"></span>
-                </div>
-                <p class="muted">{{ xp.nextLevelXp - xp.totalXp }} XP to next level.</p>
-              </article>
-              <ng-template #xpDetailFallback>
-                <article class="activity-detail-card">
-                  <p class="detail-kicker">XP + level</p>
-                  <h4>Unavailable</h4>
-                  <p class="muted">We could not load your XP details right now.</p>
                 </article>
               </ng-template>
 
@@ -147,6 +233,22 @@ type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
                   <p class="detail-kicker">Practice completed</p>
                   <h4>Unavailable</h4>
                   <p class="muted">We could not load total practice progress right now.</p>
+                </article>
+              </ng-template>
+
+              <article class="activity-detail-card" *ngIf="xpLevel() as xp; else xpDetailFallback">
+                <p class="detail-kicker">XP + level</p>
+                <h4>Level {{ xp.level }} · {{ xp.totalXp }} XP</h4>
+                <div class="detail-bar" role="presentation">
+                  <span [style.width.%]="xp.progress * 100"></span>
+                </div>
+                <p class="muted">{{ xp.nextLevelXp - xp.totalXp }} XP to next level.</p>
+              </article>
+              <ng-template #xpDetailFallback>
+                <article class="activity-detail-card">
+                  <p class="detail-kicker">XP + level</p>
+                  <h4>Unavailable</h4>
+                  <p class="muted">We could not load your XP details right now.</p>
                 </article>
               </ng-template>
             </div>
@@ -374,6 +476,22 @@ export class ProfileComponent implements OnInit {
   weeklyGoal = computed(() => this.activityDetails()?.weeklyGoal ?? null);
   xpLevel = computed(() => this.activityDetails()?.xpLevel ?? null);
   progressSummary = computed(() => this.activityDetails()?.progress ?? null);
+  achievements = computed<DashboardAchievements | null>(() => this.activityDetails()?.achievements ?? null);
+  profileUnlockedBadges = computed<DashboardAchievement[]>(() => this.achievements()?.unlocked ?? []);
+  profileNextBadges = computed<DashboardAchievement[]>(() => this.achievements()?.next ?? []);
+  profileNextBadge = computed<DashboardAchievement | null>(() => this.profileNextBadges()[0] ?? null);
+  profileShelfBadges = computed<ProfileShelfBadge[]>(() => [
+    ...this.profileUnlockedBadges().map((badge) => ({
+      ...badge,
+      shelfState: 'earned' as const,
+      shelfLabel: 'Earned' as const,
+    })),
+    ...this.profileNextBadges().map((badge) => ({
+      ...badge,
+      shelfState: 'in-progress' as const,
+      shelfLabel: 'In progress' as const,
+    })),
+  ]);
 
   // Form state (editable subset)
   form: { username: string; email: string } = {

@@ -5,6 +5,28 @@ const DailyChallengeCompletion = require('../models/DailyChallengeCompletion');
 const { getOrCreateDailyChallenge } = require('../services/gamification/daily-challenge');
 const { applyChallengeStreak, computeLevel } = require('../services/gamification/engine');
 const { awardWeeklyGoalBonusIfEligible } = require('../services/gamification/weekly-goal');
+const WeeklyGoalBonusCredit = require('../models/WeeklyGoalBonusCredit');
+const { buildProgressSummary } = require('../services/gamification/dashboard');
+const { buildAchievements } = require('../services/gamification/achievements');
+const {
+  awardNewAchievementTransitions,
+  loadUserAchievementRecords,
+} = require('../services/gamification/achievement-awards');
+
+async function buildAchievementsForUser(user) {
+  const [progress, weeklyGoalBonusCount, earnedRecords] = await Promise.all([
+    buildProgressSummary(user),
+    WeeklyGoalBonusCredit.countDocuments({ userId: user._id }),
+    loadUserAchievementRecords(user._id),
+  ]);
+
+  return buildAchievements({
+    user,
+    progress,
+    weeklyGoalBonusCount,
+    earnedRecords,
+  });
+}
 
 router.post('/complete', requireAuth, async (req, res) => {
   try {
@@ -34,11 +56,20 @@ router.post('/complete', requireAuth, async (req, res) => {
       });
     }
 
+    const beforeAchievements = await buildAchievementsForUser(user);
     const buildAlreadyCompletedPayload = async () => {
-      const freshUser = await User.findById(req.auth.userId).select('stats prefs');
+      const freshUser = await User.findById(req.auth.userId).select('stats prefs solvedQuestionIds');
       if (!freshUser) return null;
+      const beforeAlreadyCompletedAchievements = await buildAchievementsForUser(freshUser);
       const weekly = await awardWeeklyGoalBonusIfEligible(freshUser);
       await freshUser.save();
+      const afterAlreadyCompletedAchievements = await buildAchievementsForUser(freshUser);
+      const achievementAwards = await awardNewAchievementTransitions({
+        userId: freshUser._id,
+        beforeAchievements: beforeAlreadyCompletedAchievements,
+        afterAchievements: afterAlreadyCompletedAchievements,
+        earnedAt: new Date(),
+      });
       return res.json({
         alreadyCompleted: true,
         dayKey: challenge.dayKey,
@@ -51,6 +82,7 @@ router.post('/complete', requireAuth, async (req, res) => {
           bonusGranted: weekly.bonusAlreadyGranted,
         },
         xp: computeLevel(freshUser.stats?.xpTotal || 0),
+        achievementAwards,
       });
     };
 
@@ -83,6 +115,13 @@ router.post('/complete', requireAuth, async (req, res) => {
 
     const weekly = await awardWeeklyGoalBonusIfEligible(user);
     await user.save();
+    const afterAchievements = await buildAchievementsForUser(user);
+    const achievementAwards = await awardNewAchievementTransitions({
+      userId: user._id,
+      beforeAchievements,
+      afterAchievements,
+      earnedAt: new Date(),
+    });
 
     return res.json({
       completed: true,
@@ -100,6 +139,7 @@ router.post('/complete', requireAuth, async (req, res) => {
       xpAwarded: weekly.bonusXp,
       levelUp: weekly.awarded,
       xp: computeLevel(user.stats?.xpTotal || 0),
+      achievementAwards,
     });
   } catch (error) {
     return res.status(500).json({ error: error?.message || 'Failed to complete daily challenge' });

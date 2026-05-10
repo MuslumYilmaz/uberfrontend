@@ -89,6 +89,50 @@
   --uf-status-danger-border: color-mix(in srgb, #ef4444 44%, var(--uf-border-subtle));
   --uf-status-danger-text: color-mix(in srgb, #fee2e2 90%, var(--uf-text-primary));
 
+  /* Achievement badge palette */
+  --uf-badge-gold-a: #f7c957;
+  --uf-badge-gold-b: #ff9f43;
+  --uf-badge-gold-c: #fff3a6;
+  --uf-badge-cyan-a: #42d8ff;
+  --uf-badge-cyan-b: #3b82f6;
+  --uf-badge-cyan-c: #bff6ff;
+  --uf-badge-blue-a: #7dd3fc;
+  --uf-badge-blue-b: #2563eb;
+  --uf-badge-blue-c: #dbeafe;
+  --uf-badge-green-a: #86efac;
+  --uf-badge-green-b: #10b981;
+  --uf-badge-green-c: #dcfce7;
+  --uf-badge-violet-a: #c4b5fd;
+  --uf-badge-violet-b: #8b5cf6;
+  --uf-badge-violet-c: #f0e7ff;
+  --uf-badge-amber-a: #fbbf24;
+  --uf-badge-amber-b: #f97316;
+  --uf-badge-amber-c: #fde68a;
+  --uf-badge-rose-a: #fb7185;
+  --uf-badge-rose-b: #ec4899;
+  --uf-badge-rose-c: #ffe4e6;
+  --uf-achievement-first-steps-ring: conic-gradient(from 225deg, #fff1a6 0 15%, #f7c957 15% 36%, #8f6418 36% 43%, #ffb347 43% 68%, #fff4bd 68% 77%, #bd7415 77% 100%);
+  --uf-achievement-first-steps-face: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.5), transparent 22%), linear-gradient(145deg, #ffe082, #f59e0b 58%, #9a5c08);
+  --uf-achievement-first-steps-face-muted: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.16), transparent 22%), linear-gradient(145deg, color-mix(in srgb, #facc15 22%, transparent), color-mix(in srgb, var(--uf-text-primary) 6%, transparent));
+  --uf-achievement-question-builder-ring: conic-gradient(from 90deg, #a5f3fc 0 18%, #0891b2 18% 38%, #38bdf8 38% 58%, #1d4ed8 58% 80%, #cffafe 80% 100%);
+  --uf-achievement-question-builder-face: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.42), transparent 21%), linear-gradient(135deg, #67e8f9, #2563eb 58%, #172554);
+  --uf-achievement-question-builder-face-muted: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.13), transparent 21%), linear-gradient(135deg, color-mix(in srgb, #22d3ee 20%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --uf-achievement-coverage-builder-ring: conic-gradient(from -45deg, #dbeafe 0 12%, #60a5fa 12% 32%, #1d4ed8 32% 58%, #93c5fd 58% 72%, #1e3a8a 72% 100%);
+  --uf-achievement-coverage-builder-face: radial-gradient(circle at 36% 25%, rgba(255, 255, 255, 0.42), transparent 21%), linear-gradient(145deg, #93c5fd, #2563eb 55%, #111c52);
+  --uf-achievement-coverage-builder-face-muted: radial-gradient(circle at 36% 25%, rgba(255, 255, 255, 0.12), transparent 21%), linear-gradient(145deg, color-mix(in srgb, #60a5fa 22%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --uf-achievement-debug-starter-ring: conic-gradient(from 200deg, #dcfce7 0 10%, #22c55e 10% 31%, #052e16 31% 42%, #86efac 42% 63%, #16a34a 63% 100%);
+  --uf-achievement-debug-starter-face: radial-gradient(circle at 33% 24%, rgba(255, 255, 255, 0.38), transparent 20%), linear-gradient(145deg, #86efac, #10b981 58%, #064e3b);
+  --uf-achievement-debug-starter-face-muted: radial-gradient(circle at 33% 24%, rgba(255, 255, 255, 0.12), transparent 20%), linear-gradient(145deg, color-mix(in srgb, #22c55e 20%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --uf-achievement-tradeoff-starter-ring: conic-gradient(from 180deg, #f0abfc 0 24%, #7c3aed 24% 50%, #fde68a 50% 74%, #a855f7 74% 100%);
+  --uf-achievement-tradeoff-starter-face: radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.4), transparent 21%), linear-gradient(90deg, #8b5cf6 0 49%, #f59e0b 50% 100%);
+  --uf-achievement-tradeoff-starter-face-muted: radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.12), transparent 21%), linear-gradient(90deg, color-mix(in srgb, #8b5cf6 20%, transparent) 0 49%, color-mix(in srgb, #f59e0b 14%, transparent) 50% 100%);
+  --uf-achievement-weekly-finisher-ring: repeating-conic-gradient(from 0deg, #fde68a 0 8deg, #f59e0b 8deg 22deg, #7c2d12 22deg 30deg);
+  --uf-achievement-weekly-finisher-face: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.44), transparent 21%), linear-gradient(145deg, #fcd34d, #f97316 58%, #7c2d12);
+  --uf-achievement-weekly-finisher-face-muted: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.12), transparent 21%), linear-gradient(145deg, color-mix(in srgb, #fbbf24 20%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+  --uf-achievement-consistency-ring: repeating-conic-gradient(from 8deg, #ffe4e6 0 7deg, #fb7185 7deg 20deg, #831843 20deg 28deg);
+  --uf-achievement-consistency-face: radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.4), transparent 21%), radial-gradient(ellipse at 50% 74%, rgba(253, 186, 116, 0.9), transparent 28%), linear-gradient(145deg, #fb7185, #ec4899 58%, #831843);
+  --uf-achievement-consistency-face-muted: radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.12), transparent 21%), linear-gradient(145deg, color-mix(in srgb, #fb7185 20%, transparent), color-mix(in srgb, var(--uf-text-primary) 5%, transparent));
+
   /* Learning path accents */
   --uf-learning-practice-accent: #60a5fa;
   --uf-learning-structured-accent: #22c55e;

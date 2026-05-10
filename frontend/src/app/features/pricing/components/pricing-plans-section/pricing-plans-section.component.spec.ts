@@ -125,4 +125,22 @@ describe('PricingPlansSectionComponent', () => {
       'We could not open the billing portal automatically right now. Contact support@frontendatlas.com for help.'
     );
   });
+
+  it('renders structured recent product updates with direct changelog anchors', () => {
+    fixture.detectChanges();
+
+    const page: HTMLElement = fixture.nativeElement;
+    const text = page.textContent || '';
+    const items = Array.from(page.querySelectorAll('.weekly-changelog__item')) as HTMLAnchorElement[];
+    const firstBullets = items[0]?.querySelectorAll('.weekly-changelog__bullets li') || [];
+
+    expect(text).toContain('Recent product updates');
+    expect(text).not.toContain('What changed this week');
+    expect(items.length).toBe(3);
+    expect(items[0].getAttribute('href') || '').toContain('/changelog#earned-badges-are-easier-to-see');
+    expect(items[0].textContent || '').toContain('New');
+    expect(items[0].textContent || '').toContain('Progress');
+    expect(items[0].textContent || '').toContain('Progress now feels more collectible');
+    expect(firstBullets.length).toBe(2);
+  });
 });

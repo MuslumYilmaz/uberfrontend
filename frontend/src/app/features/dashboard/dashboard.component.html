@@ -237,7 +237,7 @@
       <div class="block-head block-head--with-action">
         <div class="block-head__content">
           <h2 class="block-title fa-section-title">Progress snapshot</h2>
-          <p class="block-subtitle fa-meta-text">Keep streaks, weekly goal, and XP visible without turning the dashboard into a metrics page.</p>
+          <p class="block-subtitle fa-meta-text">Keep streaks, weekly goal, and badges visible without turning the dashboard into a metrics page.</p>
         </div>
         <a
           faButton
@@ -276,13 +276,60 @@
           </ng-template>
         </article>
 
-        <article faCard class="snapshot-card">
-          <div class="snapshot-card__label">XP</div>
-          <ng-container *ngIf="xpLevel() as xp; else xpSnapshotFallback">
-            <div class="snapshot-card__value">Lv {{ xp.level }}</div>
-            <div class="snapshot-card__sub">{{ xp.nextLevelXp - xp.totalXp }} XP to next</div>
+        <article faCard class="snapshot-card snapshot-card--badges" data-testid="dashboard-badge-summary">
+          <ng-container *ngIf="achievements() as badgeState; else badgeSnapshotFallback">
+            <div class="badge-snapshot-head">
+              <div>
+                <div class="snapshot-card__label">Badges</div>
+                <div class="snapshot-card__value">{{ badgeState.summary.unlockedCount }}/{{ badgeState.summary.totalCount }}</div>
+              </div>
+              <div class="snapshot-card__sub">Milestones unlocked</div>
+            </div>
+
+            <div class="badge-medallion-row" *ngIf="visibleUnlockedBadges().length; else noUnlockedBadges">
+              <div
+                class="badge-medallion badge-medallion--compact badge-medallion--earned"
+                data-testid="dashboard-badge-medallion"
+                *ngFor="let badge of visibleUnlockedBadges()"
+                [attr.data-theme]="badge.theme"
+                [attr.data-badge-id]="badge.id"
+                role="img"
+                [attr.aria-label]="badge.title + ' badge unlocked'"
+              >
+                <div class="badge-medallion__disc">
+                  <div class="badge-medallion__face">
+                    <span class="badge-medallion__motif" aria-hidden="true"></span>
+                    <app-fa-glyph class="badge-medallion__icon" [icon]="badge.icon" size="22" [strokeWidth]="1.8"></app-fa-glyph>
+                  </div>
+                </div>
+                <div class="badge-medallion__title">{{ badge.title }}</div>
+              </div>
+            </div>
+            <ng-template #noUnlockedBadges>
+              <div class="snapshot-card__sub">Complete 3 practice units to earn your first badge.</div>
+            </ng-template>
+
+            <div
+              class="badge-medallion badge-medallion--compact badge-medallion--next"
+              data-testid="dashboard-next-badge-medallion"
+              *ngIf="nextBadge() as badge"
+              [attr.data-theme]="badge.theme"
+              [attr.data-badge-id]="badge.id"
+              [style.--badge-progress]="(badge.progress * 100) + '%'"
+              role="img"
+              [attr.aria-label]="'Next badge: ' + badge.title + ', ' + badge.current + ' of ' + badge.target"
+            >
+              <div class="badge-medallion__disc">
+                <div class="badge-medallion__face">
+                  <span class="badge-medallion__motif" aria-hidden="true"></span>
+                  <app-fa-glyph class="badge-medallion__icon" [icon]="badge.icon" size="22" [strokeWidth]="1.8"></app-fa-glyph>
+                </div>
+              </div>
+              <div class="badge-medallion__title">Next: {{ badge.title }}</div>
+              <div class="badge-medallion__meta">{{ badge.current }}/{{ badge.target }}</div>
+            </div>
           </ng-container>
-          <ng-template #xpSnapshotFallback>
+          <ng-template #badgeSnapshotFallback>
             <div class="snapshot-card__value">—</div>
             <div class="snapshot-card__sub">Unavailable</div>
           </ng-template>
@@ -323,7 +370,7 @@
           <div class="guest-progress-card__eyebrow">Save your loop</div>
           <h2 class="guest-progress-card__title" id="dashboard-guest-progress-title">Sign in when you want progress to stick</h2>
           <p class="guest-progress-card__copy fa-meta-text">
-            Save streaks, weekly goals, XP, and loop history without changing how you start practicing today.
+            Save streaks, weekly goals, badges, and loop history without changing how you start practicing today.
           </p>
           <div class="guest-progress-card__actions">
             <a

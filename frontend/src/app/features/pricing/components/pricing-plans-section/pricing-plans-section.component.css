@@ -182,14 +182,20 @@
 }
 .weekly-changelog__list > li{
   position:relative;
+}
+.weekly-changelog__item{
+  position:relative;
   border:1px solid color-mix(in srgb,var(--uf-border-subtle) 74%,transparent);
   border-radius:12px;
   padding:12px 12px 12px 14px;
   background:color-mix(in srgb,var(--uf-surface) 86%,var(--uf-surface-alt));
   display:grid;
   gap:8px;
+  color:inherit;
+  text-decoration:none;
+  transition:border-color 150ms ease,background-color 150ms ease,transform 120ms ease;
 }
-.weekly-changelog__list > li::before{
+.weekly-changelog__item::before{
   content:'';
   position:absolute;
   left:0;
@@ -198,6 +204,17 @@
   width:3px;
   border-radius:999px;
   background:color-mix(in srgb,var(--uf-accent) 66%,var(--uf-text-primary) 34%);
+}
+.weekly-changelog__item:hover,
+.weekly-changelog__item:focus-visible{
+  border-color:color-mix(in srgb,var(--uf-accent) 54%,var(--uf-border-subtle));
+  background:color-mix(in srgb,var(--uf-surface) 80%,var(--uf-surface-alt));
+  transform:translateY(-1px);
+}
+.weekly-changelog__item:focus-visible,
+.weekly-changelog__link:focus-visible{
+  outline:2px solid color-mix(in srgb,var(--uf-accent) 76%,white 24%);
+  outline-offset:3px;
 }
 .weekly-changelog__row{
   display:flex;
@@ -224,6 +241,31 @@
   letter-spacing:0.08em;
   color:color-mix(in srgb,var(--uf-text-secondary) 88%,transparent);
   font-weight:700;
+}
+.weekly-changelog__meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.weekly-changelog__meta span{
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:0 8px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--uf-border-subtle) 70%,var(--uf-text-primary) 16%);
+  background:color-mix(in srgb,var(--uf-text-primary) 5%,transparent);
+  color:color-mix(in srgb,var(--uf-text-secondary) 86%,transparent);
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+.weekly-changelog__item p{
+  margin:0;
+  color:color-mix(in srgb,var(--uf-text-secondary) 88%,transparent);
+  font-size:13px;
+  font-weight:600;
+  line-height:1.4;
 }
 .weekly-changelog__bullets{
   margin:0;

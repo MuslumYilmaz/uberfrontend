@@ -10,6 +10,9 @@ let app;
 let User;
 let DailyChallengeAssignment;
 let PracticeProgress;
+let WeeklyGoalBonusCredit;
+let UserAchievement;
+let loadQuestionCatalog;
 let connectToMongo;
 let disconnectMongo;
 let mongoServer;
@@ -32,6 +35,9 @@ beforeAll(async () => {
   User = require('../models/User');
   DailyChallengeAssignment = require('../models/DailyChallengeAssignment');
   PracticeProgress = require('../models/PracticeProgress');
+  WeeklyGoalBonusCredit = require('../models/WeeklyGoalBonusCredit');
+  UserAchievement = require('../models/UserAchievement');
+  ({ loadQuestionCatalog } = require('../services/gamification/question-catalog'));
 
   await connectToMongo(process.env.MONGO_URL_TEST);
 });
@@ -45,6 +51,8 @@ beforeEach(async () => {
   await User.deleteMany({});
   await DailyChallengeAssignment.deleteMany({});
   await PracticeProgress.deleteMany({});
+  await WeeklyGoalBonusCredit.deleteMany({});
+  await UserAchievement.deleteMany({});
 });
 
 describe('GET /api/dashboard', () => {
@@ -109,12 +117,89 @@ describe('GET /api/dashboard', () => {
             completedPercent: expect.any(Number),
           }),
         }),
+        achievements: expect.objectContaining({
+          summary: expect.objectContaining({
+            unlockedCount: expect.any(Number),
+            totalCount: expect.any(Number),
+          }),
+          unlocked: expect.any(Array),
+          next: expect.any(Array),
+        }),
         settings: expect.objectContaining({
           showStreakWidget: expect.any(Boolean),
           dailyChallengeTech: expect.any(String),
         }),
       })
     );
+  });
+
+  test('includes unseen earned badges and marks them seen for the current user', async () => {
+    const [user, otherUser] = await User.create([
+      {
+        email: 'dash-unseen@example.com',
+        username: 'dash_unseen_user',
+        passwordHash: 'hash',
+      },
+      {
+        email: 'dash-unseen-other@example.com',
+        username: 'dash_unseen_other_user',
+        passwordHash: 'hash',
+      },
+    ]);
+    await UserAchievement.create([
+      {
+        userId: user._id,
+        achievementId: 'first-steps',
+        earnedAt: new Date('2026-03-20T10:00:00.000Z'),
+        seenAt: null,
+      },
+      {
+        userId: otherUser._id,
+        achievementId: 'first-steps',
+        earnedAt: new Date('2026-03-20T10:00:00.000Z'),
+        seenAt: null,
+      },
+    ]);
+
+    const dashboard = await request(app)
+      .get('/api/dashboard')
+      .set('Authorization', authHeader(user._id));
+
+    expect(dashboard.status).toBe(200);
+    expect(dashboard.body?.achievements?.unlocked).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'first-steps',
+          earnedAt: '2026-03-20T10:00:00.000Z',
+          unlocked: true,
+        }),
+      ])
+    );
+    expect(dashboard.body?.achievements?.unseen).toEqual([
+      expect.objectContaining({
+        id: 'first-steps',
+        earnedAt: '2026-03-20T10:00:00.000Z',
+      }),
+    ]);
+
+    const seen = await request(app)
+      .post('/api/achievements/seen')
+      .set('Authorization', authHeader(user._id))
+      .send({ ids: ['first-steps', 'not-a-real-badge'] });
+
+    expect(seen.status).toBe(200);
+    expect(seen.body).toEqual(expect.objectContaining({
+      ok: true,
+      ids: ['first-steps'],
+      modifiedCount: 1,
+    }));
+
+    const [currentRecord, otherRecord] = await Promise.all([
+      UserAchievement.findOne({ userId: user._id, achievementId: 'first-steps' }).lean(),
+      UserAchievement.findOne({ userId: otherUser._id, achievementId: 'first-steps' }).lean(),
+    ]);
+    expect(currentRecord?.seenAt).toBeTruthy();
+    expect(otherRecord?.seenAt).toBeNull();
   });
 
   test('keeps same challenge for the same user/day after assignment is created', async () => {
@@ -168,6 +253,15 @@ describe('GET /api/dashboard', () => {
       Math.round((1 / Number(res.body?.progress?.questions?.totalCount || 1)) * 100)
     );
     expect(Array.isArray(res.body?.progress?.questions?.topTopics)).toBe(true);
+    expect(res.body?.achievements?.next?.find((badge) => badge.id === 'question-builder')).toEqual(
+      expect.objectContaining({
+        current: 1,
+        icon: 'code',
+        target: 10,
+        theme: 'cyan',
+        unlocked: false,
+      })
+    );
   });
 
   test('includes incident pass counts separately from question coverage', async () => {
@@ -253,6 +347,110 @@ describe('GET /api/dashboard', () => {
       Number(res.body?.progress?.questions?.totalCount || 0)
       + Number(res.body?.progress?.incidents?.totalCount || 0)
       + Number(res.body?.progress?.tradeoffBattles?.totalCount || 0)
+    );
+  });
+
+  test('returns locked achievement progress for old XP-only users without breaking XP payload', async () => {
+    const user = await User.create({
+      email: 'xp-only@example.com',
+      username: 'xp_only_user',
+      passwordHash: 'hash',
+      stats: { xpTotal: 800, completedTotal: 0 },
+    });
+
+    const res = await request(app)
+      .get('/api/dashboard')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body?.xpLevel?.totalXp).toBe(800);
+    expect(res.body?.achievements?.summary).toEqual({
+      unlockedCount: 0,
+      totalCount: 7,
+    });
+    expect(res.body?.achievements?.unlocked).toEqual([]);
+    expect(res.body?.achievements?.next?.[0]).toEqual(
+      expect.objectContaining({
+        id: 'first-steps',
+        icon: 'flag',
+        current: 0,
+        target: 3,
+        theme: 'gold',
+      })
+    );
+  });
+
+  test('unlocks all V1 achievements from existing progress signals', async () => {
+    const catalog = loadQuestionCatalog();
+    const solvedQuestionIds = catalog.all.slice(0, 25).map((question) => question.id);
+
+    const user = await User.create({
+      email: 'badges@example.com',
+      username: 'badges_user',
+      passwordHash: 'hash',
+      solvedQuestionIds,
+      stats: {
+        xpTotal: 800,
+        completedTotal: 25,
+        streak: { current: 2, longest: 7, lastActiveUTCDate: '2026-03-20' },
+      },
+    });
+
+    await PracticeProgress.create([
+      {
+        userId: user._id,
+        family: 'incident',
+        itemId: 'search-typing-lag',
+        started: true,
+        completed: true,
+        passed: true,
+        bestScore: 84,
+        lastPlayedAt: new Date('2026-03-20T10:00:00.000Z'),
+        extension: {},
+      },
+      {
+        userId: user._id,
+        family: 'tradeoff-battle',
+        itemId: 'context-vs-zustand-vs-redux',
+        started: true,
+        completed: true,
+        passed: false,
+        bestScore: 0,
+        lastPlayedAt: new Date('2026-03-20T11:00:00.000Z'),
+        extension: {},
+      },
+    ]);
+    await WeeklyGoalBonusCredit.create({
+      userId: user._id,
+      weekKey: '2026-03-16',
+      xp: 50,
+      grantedAt: new Date('2026-03-20T12:00:00.000Z'),
+    });
+
+    const res = await request(app)
+      .get('/api/dashboard')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body?.achievements?.summary).toEqual({
+      unlockedCount: 7,
+      totalCount: 7,
+    });
+    expect(res.body?.achievements?.next).toEqual([]);
+    expect(res.body?.achievements?.unlocked?.map((badge) => badge.id)).toEqual([
+      'first-steps',
+      'question-builder',
+      'coverage-builder',
+      'debug-starter',
+      'tradeoff-starter',
+      'weekly-finisher',
+      'consistency',
+    ]);
+    expect(res.body?.achievements?.unlocked?.find((badge) => badge.id === 'consistency')).toEqual(
+      expect.objectContaining({
+        icon: 'flame',
+        theme: 'rose',
+      })
     );
   });
 });
