@@ -330,10 +330,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   introLead(): string {
     if (this.isMasterHub()) {
-      return 'Guided warm-up for fast frontend interview prep: start with crucial JavaScript coding and concept prompts, review explanations and preview checks, then branch into the Question Library for broader coverage.';
+      return 'Frontend interview question hub with answers, coding prompts, concept questions, follow-ups, and common mistakes. Start with crucial JavaScript practice, then branch into React, Angular, Vue, HTML, CSS, and system design prep.';
     }
 
-    return `Technology warm-up for ${this.keywordSentenceCase()}: tackle crucial coding and concept prompts with explanations first, then expand into Study Plans, guides, and Company Prep.`;
+    return `${this.keywordSentenceCase()} and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice concise answers first, then expand into Study Plans, guides, and Company Prep.`;
   }
 
   listIntentItems(): string[] {
@@ -791,9 +791,14 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       inLanguage: 'en',
       about: [
         { '@type': 'Thing', name: this.keywordSentenceCase() },
+        { '@type': 'Thing', name: `${this.keywordSentenceCase()} and answers` },
         { '@type': 'Thing', name: 'Frontend interview questions' },
       ],
       mentions: [
+        { '@type': 'Thing', name: 'Coding prompts' },
+        { '@type': 'Thing', name: 'Concept questions' },
+        { '@type': 'Thing', name: 'Interview follow-ups' },
+        { '@type': 'Thing', name: 'Common interview mistakes' },
         { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ],
@@ -808,6 +813,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       };
       collectionPage['mentions'] = [
         { '@type': 'WebPage', name: 'Frontend interview questions library', url: masterHubUrl },
+        { '@type': 'Thing', name: 'Coding prompts' },
+        { '@type': 'Thing', name: 'Concept questions' },
+        { '@type': 'Thing', name: 'Interview follow-ups' },
+        { '@type': 'Thing', name: 'Common interview mistakes' },
         { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ];
@@ -818,6 +827,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         url: this.seo.buildCanonicalUrl(hub.path),
       }));
       collectionPage['mentions'] = [
+        { '@type': 'Thing', name: 'Coding prompts' },
+        { '@type': 'Thing', name: 'Concept questions' },
+        { '@type': 'Thing', name: 'Interview follow-ups' },
+        { '@type': 'Thing', name: 'Common interview mistakes' },
         { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ];

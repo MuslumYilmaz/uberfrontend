@@ -214,8 +214,32 @@ function expectFailure(tempRoot) {
     },
   });
   const output = expectSuccess(tempRoot);
-  assert.match(output, /\[generic-query-risk\]/);
+  assert.doesNotMatch(output, /\[missing-interview-intent\]/);
+  assert.doesNotMatch(output, /\[docs-intent-collision\]/);
   assert.match(output, /indexability readiness scan completed/);
+}
+
+{
+  const tempRoot = setupFixture({
+    triviaByTech: {
+      react: [
+        triviaEntry({
+          id: 'react-usememo-vs-usecallback',
+          title: 'useMemo vs useCallback in React: what is the difference?',
+          technology: 'react',
+          description: 'useMemo memoizes values and useCallback memoizes function references.',
+          seo: {
+            title: 'useMemo vs useCallback in React: what is the difference?',
+            description: 'Learn the difference between useMemo and useCallback in React.',
+          },
+        }),
+      ],
+    },
+  });
+  const output = expectSuccess(tempRoot);
+  assert.doesNotMatch(output, /\[missing-interview-intent\].*react-usememo-vs-usecallback/);
+  assert.doesNotMatch(output, /\[docs-intent-collision\].*react-usememo-vs-usecallback/);
+  assert.doesNotMatch(output, /\[detail-serp-title-too-long\].*react-usememo-vs-usecallback/);
 }
 
 {
@@ -302,20 +326,20 @@ function expectFailure(tempRoot) {
       javascript: [
         triviaEntry({
           id: 'one',
-          title: 'How do JavaScript closures work?',
+          title: 'How do JavaScript closures capture state?',
           description: 'Understand JavaScript closures with lexical scope outer variables callback state and function factory examples.',
           seo: {
-            title: 'How do JavaScript closures work?',
+            title: 'How do JavaScript closures capture state?',
             description: 'Understand JavaScript closures with lexical scope outer variables callback state and function factory examples.',
           },
         }),
         triviaEntry({
           id: 'two',
-          title: 'How do closures work in JS?',
-          description: 'Understand JavaScript closures with lexical scope outer variables callback state and function factory examples behavior.',
+          title: 'How do JavaScript closures capture values?',
+          description: 'Understand JavaScript closures with lexical scope outer variables callback values and function factory examples behavior.',
           seo: {
-            title: 'How do closures work in JS?',
-            description: 'Understand JavaScript closures with lexical scope outer variables callback state and function factory examples behavior.',
+            title: 'How do JavaScript closures capture values?',
+            description: 'Understand JavaScript closures with lexical scope outer variables callback values and function factory examples behavior.',
           },
         }),
       ],
