@@ -15,7 +15,8 @@ import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
-import { buildSystemDesignGuideRoute } from './system-design-guide-link.util';
+import { SYSTEM } from '../../../shared/guides/guide.registry';
+import { pickSystemDesignGuideSlug, SystemDesignGuideSlug } from './system-design-guide-link.util';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { SystemDesignDetailResolved } from '../../../core/resolvers/question-detail.resolver';
@@ -105,6 +106,9 @@ type SDQuestion = {
   author?: string;
   updatedAt?: string;
   difficulty?: string;
+  guideSlug?: string;
+  guide?: string;
+  guidePath?: string;
 
   radio?: RadioSection[];
 
@@ -126,6 +130,19 @@ type LockedPath = {
   route: any[];
   queryParams?: Record<string, string>;
 };
+type BlueprintGuideLink = {
+  slug: SystemDesignGuideSlug;
+  title: string;
+  route: string[];
+};
+
+const RADIO_GUIDE_SLUG: SystemDesignGuideSlug = 'radio-framework';
+const DEFAULT_DETAIL_GUIDE_SLUGS: readonly SystemDesignGuideSlug[] = [
+  'intro',
+  'framework',
+  'performance',
+  'state-data',
+];
 
 @Component({
   selector: 'app-system-design-detail',
@@ -145,6 +162,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private onboarding = inject(OnboardingService);
   private analytics = inject(AnalyticsService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly guideTitleBySlug = new Map(SYSTEM.map((entry) => [entry.slug, entry.title]));
 
   q: WritableSignal<SDQuestion | null> = signal(null);
   all: SDQuestion[] = [];
@@ -230,7 +248,22 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       candidates: this.all as any,
     });
   });
-  radioGuideRoute = computed<string[]>(() => buildSystemDesignGuideRoute(this.q()));
+  readonly radioGuideRoute: string[] = ['/', 'guides', 'system-design-blueprint', RADIO_GUIDE_SLUG];
+  recommendedBlueprintGuide = computed<BlueprintGuideLink>(() => {
+    const slug = pickSystemDesignGuideSlug(this.q());
+    return this.buildBlueprintGuideLink(slug);
+  });
+  guideLinks = computed<BlueprintGuideLink[]>(() => {
+    const recommendedSlug = this.recommendedBlueprintGuide().slug;
+    return this.buildUniqueBlueprintGuideLinks([
+      RADIO_GUIDE_SLUG,
+      recommendedSlug,
+      ...DEFAULT_DETAIL_GUIDE_SLUGS,
+    ]);
+  });
+  supportingGuideLinks = computed<BlueprintGuideLink[]>(() =>
+    this.guideLinks().filter((link) => link.slug !== RADIO_GUIDE_SLUG)
+  );
 
   sections = computed<Required<RadioSection>[]>(() => {
     const item = this.q(); if (!item) return [];
@@ -309,6 +342,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   trackByStepTitle = (index: number, step: { title: string }): string => `${step.title}:${index}`;
   trackByRelatedId = (_: number, item: RelatedItem): string => item.id;
   trackByLockedPath = (_: number, path: LockedPath): string => path.id;
+  trackByGuideSlug = (_: number, item: BlueprintGuideLink): string => item.slug;
   /** Center column for potential responsive image sizing */
   @ViewChild('centerEl', { read: ElementRef }) centerEl!: ElementRef<HTMLElement>;
 
@@ -622,6 +656,25 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       out.push(val);
     }
     return out;
+  }
+
+  private buildBlueprintGuideLink(slug: SystemDesignGuideSlug): BlueprintGuideLink {
+    return {
+      slug,
+      title: this.guideTitleBySlug.get(slug) || slug,
+      route: ['/', 'guides', 'system-design-blueprint', slug],
+    };
+  }
+
+  private buildUniqueBlueprintGuideLinks(slugs: readonly SystemDesignGuideSlug[]): BlueprintGuideLink[] {
+    const links: BlueprintGuideLink[] = [];
+    const seen = new Set<SystemDesignGuideSlug>();
+    for (const slug of slugs) {
+      if (seen.has(slug)) continue;
+      seen.add(slug);
+      links.push(this.buildBlueprintGuideLink(slug));
+    }
+    return links;
   }
 
   private trimWords(text: string, maxWords: number): string {

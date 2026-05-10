@@ -19,6 +19,23 @@ describe('system-design-guide-link.util', () => {
     expect(slug).toBe('performance');
   });
 
+  it('accepts explicit RADIO framework guide metadata', () => {
+    const slug = pickSystemDesignGuideSlug({
+      guideSlug: 'radio-framework',
+      tags: ['performance'],
+    });
+
+    expect(slug).toBe('radio-framework');
+  });
+
+  it('accepts explicit RADIO requirements guide metadata', () => {
+    const slug = pickSystemDesignGuideSlug({
+      guidePath: '/guides/system-design-blueprint/radio-requirements',
+    });
+
+    expect(slug).toBe('radio-requirements');
+  });
+
   it('maps performance-heavy questions to performance guide', () => {
     const slug = pickSystemDesignGuideSlug({
       title: 'Live chart with high-frequency updates',
@@ -35,6 +52,15 @@ describe('system-design-guide-link.util', () => {
     });
 
     expect(slug).toBe('architecture');
+  });
+
+  it('maps RADIO-specific questions to the RADIO framework guide', () => {
+    const slug = pickSystemDesignGuideSlug({
+      title: 'Use the RADIO approach for frontend system design',
+      tags: ['radio'],
+    });
+
+    expect(slug).toBe('radio-framework');
   });
 
   it('falls back to framework guide when no strong signal exists', () => {

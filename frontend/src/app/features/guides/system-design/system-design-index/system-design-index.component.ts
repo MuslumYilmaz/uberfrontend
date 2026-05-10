@@ -30,6 +30,60 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
       color: var(--uf-text-primary);
     }
 
+    .radio-start {
+      display: grid;
+      gap: 12px;
+      margin: 0 0 24px;
+      padding: 16px;
+      border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 64%, var(--uf-accent) 36%);
+      border-radius: var(--uf-card-radius);
+      background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-accent) 10%);
+      box-shadow: var(--uf-card-shadow);
+    }
+    .radio-start__title {
+      margin: 0;
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--uf-text-primary);
+    }
+    .radio-start__link {
+      color: var(--uf-text-primary);
+      text-decoration: none;
+    }
+    .radio-start__link:hover {
+      color: var(--uf-accent-strong);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .radio-start__summary {
+      margin: 0;
+      color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+      line-height: 1.5;
+    }
+    .radio-start__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .radio-start__links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--uf-border-subtle);
+      background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+      color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .radio-start__links a:hover {
+      border-color: color-mix(in srgb, var(--uf-border-subtle) 58%, var(--uf-accent) 42%);
+      background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
+      color: var(--uf-text-primary);
+    }
+
     .section { margin: 28px 0; }
     .sec-head { font-weight: 800; color: var(--uf-text-primary); margin-bottom: 10px; }
 
@@ -74,6 +128,24 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
         <a [routerLink]="['/tracks']">Interview tracks</a>
         <a [routerLink]="['/companies']">Company question sets</a>
       </div>
+
+      <section class="radio-start" aria-label="Start with RADIO framework">
+        <h2 class="radio-start__title">
+          <a class="radio-start__link" [routerLink]="['/','guides','system-design-blueprint','radio-framework']">
+            Start with RADIO framework
+          </a>
+        </h2>
+        <p class="radio-start__summary">
+          Use RADIO to move from requirements to architecture, data model, interface, and optimizations before opening a system design prompt.
+        </p>
+        <div class="radio-start__links" aria-label="RADIO deep dives">
+          <a [routerLink]="['/','guides','system-design-blueprint','radio-requirements']">Requirements deep dive</a>
+          <a [routerLink]="['/','guides','system-design-blueprint','architecture']">Architecture deep dive</a>
+          <a [routerLink]="['/','guides','system-design-blueprint','state-data']">Data model deep dive</a>
+          <a [routerLink]="['/','guides','system-design-blueprint','ux']">Interface deep dive</a>
+          <a [routerLink]="['/','guides','system-design-blueprint','performance']">Optimizations deep dive</a>
+        </div>
+      </section>
 
       <div *ngFor="let g of groups(); let gi = index" class="section">
         <div class="sec-head">{{ g.title }}</div>

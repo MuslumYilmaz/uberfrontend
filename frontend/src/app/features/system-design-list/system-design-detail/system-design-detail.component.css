@@ -121,7 +121,25 @@
   min-width:0;
   min-height:0;
 }
-.guide{ font-size: 13px; background:#141a22; border:1px solid rgba(255,255,255,.08); color:#b7c3cf; padding:10px; border-radius:8px; }
+.guide{
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  background:#141a22;
+  border:1px solid rgba(255,255,255,.08);
+  color:#b7c3cf;
+  padding:10px;
+  border-radius:8px;
+}
+.guide__line{
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.guide__current{
+  color:#e5edf6;
+  font-weight: 700;
+}
 .guide a{ color:#9ad1ff; text-decoration:underline; }
 .guide-collapsible{
   border: 1px solid rgba(255,255,255,.08);
@@ -645,7 +663,17 @@
   border-color: rgba(255,255,255,.12);
 }
 .sd-related-title{
+  display: block;
   font-size: 13px;
+}
+.sd-related-kicker{
+  display: block;
+  margin-bottom: 3px;
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 .sd-related-pill{
   font-size: 10px;

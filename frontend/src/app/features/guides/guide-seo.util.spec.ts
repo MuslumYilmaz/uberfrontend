@@ -1,4 +1,5 @@
 import { buildGuideDetailSeo } from './guide-seo.util';
+import { SYSTEM } from '../../shared/guides/guide.registry';
 
 describe('guide-seo.util', () => {
   const seoMock = {
@@ -94,5 +95,26 @@ describe('guide-seo.util', () => {
     });
     expect(article.datePublished).toBe('2025-02-10T00:00:00.000Z');
     expect(article.dateModified).toBe('2025-03-15T00:00:00.000Z');
+  });
+
+  it('keeps RADIO CTR metadata query-matched and untruncated', () => {
+    const radio = SYSTEM.find((entry) => entry.slug === 'radio-framework');
+    expect(radio).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      radio!
+    );
+
+    expect(meta.title).toBe('RADIO Framework for Frontend System Design: Requirements to Optimizations');
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.description).toContain('45- or 60-minute');
+    expect(meta.description).toMatch(/requirements/i);
+    expect(meta.description).toMatch(/architecture/i);
+    expect(meta.description).toMatch(/data model/i);
+    expect(meta.description).toMatch(/interface/i);
+    expect(meta.description).toMatch(/optimizations/i);
   });
 });

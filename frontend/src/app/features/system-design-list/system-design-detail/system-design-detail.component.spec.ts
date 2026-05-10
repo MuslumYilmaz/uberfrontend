@@ -73,4 +73,42 @@ describe('SystemDesignDetailComponent', () => {
       questionTitle: 'Design URL Shortener',
     }));
   });
+
+  it('surfaces RADIO plus the matched blueprint guide without duplicate guide links', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.q.set({
+      id: 'sd-performance',
+      title: 'Design a live chart',
+      description: 'Handle high-frequency updates without blocking the UI.',
+      tags: ['performance', 'real-time', 'virtualization'],
+      access: 'free',
+    });
+
+    expect(component.recommendedBlueprintGuide().slug).toBe('performance');
+
+    const slugs = component.guideLinks().map((link) => link.slug);
+    expect(slugs[0]).toBe('radio-framework');
+    expect(slugs[1]).toBe('performance');
+    expect(new Set(slugs).size).toBe(slugs.length);
+    expect(component.supportingGuideLinks().some((link) => link.slug === 'radio-framework')).toBeFalse();
+  });
+
+  it('uses explicit RADIO requirements metadata for the recommended blueprint guide', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.q.set({
+      id: 'sd-requirements',
+      title: 'Clarify scope for a frontend system',
+      description: 'Focus the interview scope before architecture.',
+      tags: ['scope'],
+      guideSlug: 'radio-requirements',
+      access: 'free',
+    });
+
+    expect(component.recommendedBlueprintGuide().slug).toBe('radio-requirements');
+    expect(component.guideLinks().map((link) => link.slug)).toContain('radio-requirements');
+  });
 });

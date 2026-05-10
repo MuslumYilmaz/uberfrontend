@@ -32,16 +32,25 @@
 
                 <div class="left-foot">
                     <div class="guide">
-                        New to RADIO?
-                        <a routerLink="/guides/system-design-blueprint/radio-framework">Read the guide</a> first.
+                        <div class="guide__line">
+                            New to RADIO?
+                            <a [routerLink]="radioGuideRoute">Read the RADIO framework guide</a> first.
+                        </div>
+                        <div class="guide__line" *ngIf="recommendedBlueprintGuide() as guide">
+                            Recommended blueprint guide:
+                            <ng-container *ngIf="guide.slug === 'radio-framework'; else desktopRecommendedGuideLink">
+                                <span class="guide__current">{{ guide.title }}</span>
+                            </ng-container>
+                            <ng-template #desktopRecommendedGuideLink>
+                                <a [routerLink]="guide.route">{{ guide.title }}</a>
+                            </ng-template>
+                        </div>
                     </div>
                     <details class="guide-collapsible">
                         <summary class="guide-summary">Guides</summary>
                         <div class="guide-links">
-                            <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
-                            <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
-                            <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
-                            <a routerLink="/guides/system-design-blueprint/state-data">State & caching patterns</a>
+                            <a *ngFor="let guide of supportingGuideLinks(); trackBy: trackByGuideSlug"
+                                [routerLink]="guide.route">{{ guide.title }}</a>
                         </div>
                     </details>
                 </div>
@@ -121,14 +130,26 @@
                     <div class="tags">
                         <p-chip *ngFor="let tag of tags(); trackBy: trackByTagValue" [label]="tag" styleClass="custom-chip"></p-chip>
                     </div>
+                    <div class="guide">
+                        <div class="guide__line">
+                            New to RADIO?
+                            <a [routerLink]="radioGuideRoute">Read the RADIO framework guide</a> first.
+                        </div>
+                        <div class="guide__line" *ngIf="recommendedBlueprintGuide() as guide">
+                            Recommended blueprint guide:
+                            <ng-container *ngIf="guide.slug === 'radio-framework'; else mobileRecommendedGuideLink">
+                                <span class="guide__current">{{ guide.title }}</span>
+                            </ng-container>
+                            <ng-template #mobileRecommendedGuideLink>
+                                <a [routerLink]="guide.route">{{ guide.title }}</a>
+                            </ng-template>
+                        </div>
+                    </div>
                     <details class="guide-collapsible">
                         <summary class="guide-summary">Guides</summary>
                         <div class="guide-links">
-                            <a [routerLink]="radioGuideRoute()">System design blueprint</a>
-                            <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
-                            <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
-                            <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
-                            <a routerLink="/guides/system-design-blueprint/state-data">State & caching patterns</a>
+                            <a *ngFor="let guide of supportingGuideLinks(); trackBy: trackByGuideSlug"
+                                [routerLink]="guide.route">{{ guide.title }}</a>
                         </div>
                     </details>
                 </div>
@@ -315,14 +336,14 @@
             <section class="sd-guides">
                 <div class="sd-related-head">Guides</div>
                 <div class="sd-related-list">
-                    <a class="sd-related-item" [routerLink]="['/guides/system-design-blueprint/intro']">
-                        <span class="sd-related-title">Front‑End System Design: What It Tests</span>
-                    </a>
-                    <a class="sd-related-item" [routerLink]="['/guides/system-design-blueprint/framework']">
-                        <span class="sd-related-title">Reusable 5‑Step Approach</span>
-                    </a>
-                    <a class="sd-related-item" [routerLink]="['/guides/system-design-blueprint/performance']">
-                        <span class="sd-related-title">Performance & Web Vitals at Scale</span>
+                    <a class="sd-related-item" *ngFor="let guide of guideLinks(); trackBy: trackByGuideSlug"
+                        [routerLink]="guide.route">
+                        <span>
+                            <span class="sd-related-kicker" *ngIf="guide.slug === recommendedBlueprintGuide().slug">
+                                Recommended blueprint guide
+                            </span>
+                            <span class="sd-related-title">{{ guide.title }}</span>
+                        </span>
                     </a>
                 </div>
             </section>
@@ -391,6 +412,18 @@
                         [routerLink]="['/system-design', item.id]">
                         <span class="locked-related__text">{{ item.title }}</span>
                         <span class="locked-related__pill" *ngIf="item.access === 'premium'">Premium</span>
+                    </a>
+                </div>
+            </div>
+            <div class="locked-related" *ngIf="guideLinks().length">
+                <div class="locked-related__title">Blueprint guides</div>
+                <div class="locked-related__list">
+                    <a class="locked-related__item" *ngFor="let guide of guideLinks(); trackBy: trackByGuideSlug"
+                        [routerLink]="guide.route">
+                        <span class="locked-related__text">{{ guide.title }}</span>
+                        <span class="locked-related__pill" *ngIf="guide.slug === recommendedBlueprintGuide().slug">
+                            Recommended
+                        </span>
                     </a>
                 </div>
             </div>

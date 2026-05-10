@@ -2,6 +2,8 @@ export type SystemDesignGuideSlug =
   | 'intro'
   | 'foundations'
   | 'framework'
+  | 'radio-framework'
+  | 'radio-requirements'
   | 'architecture'
   | 'state-data'
   | 'performance'
@@ -26,6 +28,8 @@ const ALL_GUIDE_SLUGS: ReadonlySet<SystemDesignGuideSlug> = new Set<SystemDesign
   'intro',
   'foundations',
   'framework',
+  'radio-framework',
+  'radio-requirements',
   'architecture',
   'state-data',
   'performance',
@@ -41,6 +45,8 @@ const GUIDE_ALIASES: Record<string, SystemDesignGuideSlug> = {
   tradeoffs: 'foundations',
   'trade-offs': 'foundations',
   tradeoff: 'foundations',
+  radio: 'radio-framework',
+  requirements: 'radio-requirements',
   'system-design': DEFAULT_GUIDE_SLUG,
   'system-design-blueprint': DEFAULT_GUIDE_SLUG,
 };
@@ -48,7 +54,9 @@ const GUIDE_ALIASES: Record<string, SystemDesignGuideSlug> = {
 const SLUG_KEYWORDS: Record<SystemDesignGuideSlug, readonly string[]> = {
   intro: ['intro', 'overview', 'what it tests'],
   foundations: ['requirements', 'constraints', 'trade-off', 'tradeoffs', 'scope', 'assumption'],
-  framework: ['radio', 'framework', '5-step', 'approach', 'structure'],
+  framework: ['framework', '5-step', 'approach', 'structure'],
+  'radio-framework': ['radio', 'radio-framework', 'radio approach', 'requirements architecture data interface optimizations'],
+  'radio-requirements': ['radio-requirements', 'requirements deep dive', 'scope box'],
   architecture: [
     'architecture',
     'frontend-architecture',
@@ -88,6 +96,7 @@ const SLUG_KEYWORDS: Record<SystemDesignGuideSlug, readonly string[]> = {
 };
 
 const TIE_BREAK_ORDER: readonly SystemDesignGuideSlug[] = [
+  'radio-framework',
   'framework',
   'architecture',
   'state-data',

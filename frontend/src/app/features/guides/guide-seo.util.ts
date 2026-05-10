@@ -3,7 +3,7 @@ import { GuideAuthor, GuideEntry } from '../../shared/guides/guide.registry';
 
 const DESCRIPTION_MAX_LEN = 158;
 const TITLE_MAX_LEN = 74;
-const INTERVIEW_INTENT_RX = /\b(interview|prep|preparation|roadmap|hiring|onsite|screen)\b/i;
+const INTERVIEW_INTENT_RX = /\b(interviews?|prep|preparation|roadmap|hiring|onsite|screen)\b/i;
 const DEFAULT_GUIDE_PUBLISHED_AT = '2025-01-01T00:00:00.000Z';
 const DEFAULT_GUIDE_AUTHOR: GuideAuthor = {
   type: 'Organization',
