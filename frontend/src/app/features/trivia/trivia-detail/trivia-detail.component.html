@@ -82,8 +82,8 @@
 
             <section class="practice-frame" data-testid="trivia-practice-frame" aria-label="Interview practice context">
                 <div class="practice-frame__copy">
-                    <div class="practice-frame__kicker">Interview concept practice</div>
-                    <p class="practice-frame__text">Use this answer to rehearse a concise {{ interviewTopicUiLabel() }} interview explanation.</p>
+                    <div class="practice-frame__kicker">Interview answer drill</div>
+                    <p class="practice-frame__text">Use this {{ interviewTopicUiLabel() }} interview question to rehearse a quick answer, common mistake, follow-up, and production pitfall.</p>
                 </div>
                 <div class="practice-frame__actions">
                     <a
@@ -156,17 +156,17 @@
                 </div>
             </section>
 
-            <!-- Quick Answer -->
+            <!-- Interview quick answer -->
             <section class="card">
-                <div class="card-head">Quick Answer</div>
+                <div class="card-head">Interview quick answer</div>
                 <div class="card-body">
                     <div class="content" [innerHTML]="md(descText(q.description)) | safeHtml"></div>
                 </div>
             </section>
 
-            <!-- Answer -->
+            <!-- Full interview answer -->
             <section class="card">
-                <div class="card-head">Answer</div>
+                <div class="card-head">Full interview answer</div>
                 <div class="card-body">
                     <ng-container *ngIf="answerIsRich(); else simpleAnswer">
                         <div class="blocks">

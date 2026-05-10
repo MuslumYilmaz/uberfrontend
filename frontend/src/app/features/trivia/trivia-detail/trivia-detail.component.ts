@@ -87,7 +87,7 @@ type LockedPath = {
 };
 type TriviaAnalyticsLocation = 'sidebar' | 'mobile_nav' | 'similar' | 'guides' | 'prep_bridge' | 'body';
 
-const TRIVIA_H1_INTENT_LABEL = 'Frontend interview Q&A';
+const TRIVIA_H1_INTENT_LABEL = 'Frontend interview answer';
 
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
   ...(Array.isArray((TAG_REGISTRY as any)?.tags) ? (TAG_REGISTRY as any).tags : []),
@@ -695,7 +695,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const seoTitle = this.seoTitle(q);
     const description = this.seoDescription(q);
     const keywords = this.questionKeywords(q);
-    const isLocked = isQuestionLockedForTier(q, this.auth.user());
     const authorName = this.resolveAuthor(q);
     const dateModified = this.resolveUpdatedIso(q);
     const datePublished = this.resolvePublishedIso(dateModified);
@@ -768,16 +767,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       dateModified: dateModified || datePublished,
     };
 
-    const faq = this.buildFaqSchema(q, canonical, isLocked);
-    const jsonLd = faq ? [breadcrumb, article, faq] : [breadcrumb, article];
-
     this.seo.updateTags({
       title: seoTitle,
       description,
       keywords,
       canonical,
       ogType: 'article',
-      jsonLd,
+      jsonLd: [breadcrumb, article],
     });
   }
 
@@ -868,7 +864,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   interviewQuestionsHubCtaLabel(): string {
-    return `Continue with ${this.interviewQuestionsHubTitleLabel()}`;
+    return `Practice more ${this.interviewQuestionsHubLabel()}`;
   }
 
   interviewTopicUiLabel(): string {
@@ -1648,51 +1644,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
       .replace(/&amp;/g, '&');
-  }
-
-  private normalizeForSchema(text: string): string {
-    return this.decodeHtmlEntities(text || '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/`+/g, '')
-      .replace(/\*\*/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  private answerPlainText(q: Question): string {
-    const answer: any = q.answer;
-    if (answer && typeof answer === 'object' && Array.isArray(answer.blocks)) {
-      const blocks = (answer.blocks as AnswerBlock[])
-        .filter((b) => b.type === 'text')
-        .filter((b) => !this.isExtraHelpBlock(b) && !this.isSummaryBlock(b))
-        .map((b) => (b as BlockText).text || '');
-      return this.normalizeForSchema(blocks.join(' '));
-    }
-    if (typeof q.answer === 'string') return this.normalizeForSchema(q.answer);
-    return '';
-  }
-
-  private buildFaqSchema(q: Question, canonical: string, locked: boolean): Record<string, any> | null {
-    const questionName = String(q.title || '').trim();
-    const quick = this.normalizeForSchema(this.questionDescription(q));
-    const answer = locked ? '' : this.answerPlainText(q);
-    const finalAnswer = (answer || quick).trim();
-    if (!questionName || !finalAnswer) return null;
-
-    return {
-      '@type': 'FAQPage',
-      '@id': `${canonical}#faq`,
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: questionName,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: this.trimWords(finalAnswer, 90),
-          },
-        },
-      ],
-    };
   }
 
   private scrollMainToTop() {

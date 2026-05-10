@@ -30,7 +30,7 @@ describe('InterviewQuestionsLandingComponent', () => {
         data: {
           interviewQuestions: {
             keyword: 'react interview questions',
-            title: 'React Interview Questions',
+            title: 'React Interview Questions and Answers',
             techs: ['react'],
           },
           interviewQuestionsList: {
@@ -49,8 +49,8 @@ describe('InterviewQuestionsLandingComponent', () => {
             ],
           },
           seo: {
-            title: 'React Interview Questions',
-            description: 'React interview questions and practice prompts.',
+            title: 'React Interview Questions and Answers',
+            description: 'React interview questions and answers with coding prompts, concept questions, follow-ups, and common mistakes.',
           },
         },
         url: [{ path: 'react' }, { path: 'interview-questions' }],
@@ -84,6 +84,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.loading).toBeFalse();
+    expect(fixture.nativeElement.textContent || '').toContain('React Interview Questions and Answers');
+    expect(fixture.nativeElement.textContent || '').toContain('answers hub with coding prompts, concept questions, follow-ups, and common mistakes');
     expect(fixture.nativeElement.querySelectorAll('.iq-route-card').length).toBe(0);
     expect(fixture.nativeElement.querySelectorAll('[data-testid^="prep-roadmap-item-"]').length).toBe(5);
     expect(fixture.componentInstance.previewRows('coding').length).toBe(3);
@@ -146,6 +148,13 @@ describe('InterviewQuestionsLandingComponent', () => {
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
 
     expect(collection).toBeTruthy();
+    expect(collection?.name).toBe('React Interview Questions and Answers');
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React interview questions and answers')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').toLowerCase().includes('common interview mistakes')
+    )).toBeTrue();
     expect(collection?.url || '').toContain('/react/interview-questions');
     expect(collection?.mainEntity?.['@type']).toBe('ItemList');
     expect(Array.isArray(collection?.mainEntity?.itemListElement)).toBeTrue();
@@ -155,7 +164,7 @@ describe('InterviewQuestionsLandingComponent', () => {
   it('uses javascript-only preview lists on the master hub', async () => {
     routeStub.snapshot.data.interviewQuestions = {
       keyword: 'frontend interview questions',
-      title: 'Frontend Interview Questions for Quick Prep',
+      title: 'Frontend Interview Questions and Answers',
       techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
       isMasterHub: true,
     };
@@ -198,7 +207,7 @@ describe('InterviewQuestionsLandingComponent', () => {
   it('uses framework-specific roadmap copy and prep path on Angular hubs', async () => {
     routeStub.snapshot.data.interviewQuestions = {
       keyword: 'angular interview questions',
-      title: 'Angular Interview Questions for Frontend Interviews',
+      title: 'Angular Interview Questions and Answers',
       techs: ['angular'],
     };
     routeStub.snapshot.data.interviewQuestionsList = {

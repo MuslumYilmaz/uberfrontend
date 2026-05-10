@@ -10,6 +10,24 @@ const QUESTIONS_DIR = path.resolve(process.env.CDN_QUESTIONS_DIR || cdnQuestions
 const GUIDE_COLLECTIONS = ['PLAYBOOK', 'SYSTEM', 'BEHAVIORAL'];
 const TECH_TOKENS = new Set(['javascript', 'js', 'typescript', 'react', 'angular', 'vue', 'css', 'html']);
 const STOPWORDS = new Set(['what', 'how', 'why', 'does', 'do', 'is', 'the', 'a', 'an', 'in', 'of', 'and', 'to', 'for']);
+const NEAR_DUPLICATE_BOILERPLATE = new Set([
+  'practice',
+  'interview',
+  'interviews',
+  'answer',
+  'answers',
+  'quick',
+  'common',
+  'mistake',
+  'mistakes',
+  'follow',
+  'follow-up',
+  'followups',
+  'up',
+  'production',
+  'pitfall',
+  'pitfalls',
+]);
 const GUIDE_DISTINCT_MARKERS = [
   /\binterview\b/i,
   /\bsenior\b/i,
@@ -50,6 +68,16 @@ const TRIVIA_DISTINCT_MARKERS = [
 const SITE_TITLE_SUFFIX = ' | FrontendAtlas';
 const DETAIL_TITLE_WARN_MAX = 70;
 const DETAIL_TITLE_CORE_WARN_MAX = DETAIL_TITLE_WARN_MAX - SITE_TITLE_SUFFIX.length;
+const DESCRIPTION_MAX_LEN = 155;
+const INTERVIEW_TITLE_SUFFIX = ': Interview Answer';
+const TECH_LABELS = {
+  javascript: 'JavaScript',
+  react: 'React',
+  angular: 'Angular',
+  vue: 'Vue',
+  html: 'HTML',
+  css: 'CSS',
+};
 const TRIVIA_INTERVIEW_INTENT_MARKERS = [
   /\binterview(?:s)?\b/i,
   /\bprep(?:aration)?\b/i,
@@ -59,6 +87,7 @@ const TRIVIA_INTERVIEW_INTENT_MARKERS = [
   /\bfollow[\s-]?ups?\b/i,
   /\bdrill(?:s)?\b/i,
   /\bquestion(?:s)?\b/i,
+  /\banswer(?:s)?\b/i,
 ];
 const TRIVIA_DOCS_INTENT_MARKERS = [
   /\bwhat\s+is\b/i,
@@ -223,6 +252,134 @@ function normalizeText(value) {
     .toLowerCase();
 }
 
+function sanitizeSerpText(value, maxLen) {
+  const normalized = String(value || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z#0-9]+;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!normalized || normalized.length <= maxLen) return normalized;
+
+  const sliced = normalized.slice(0, Math.max(0, maxLen)).trimEnd();
+  const minSoftBreak = Math.floor(maxLen * 0.65);
+  const breakAt = sliced.lastIndexOf(' ');
+  const clipped = breakAt >= minSoftBreak ? sliced.slice(0, breakAt) : sliced;
+  return clipped.replace(/[\s,;:/-]+$/g, '').trim();
+}
+
+function frameworkLabel(tech) {
+  return TECH_LABELS[String(tech || '').trim().toLowerCase()] || 'Frontend';
+}
+
+function slugToConcept(id, tech) {
+  const normalizedId = String(id || '').trim().toLowerCase();
+  if (!normalizedId) return '';
+  const normalizedTech = String(tech || '').trim().toLowerCase();
+  const withoutTech = normalizedTech && normalizedId.startsWith(`${normalizedTech}-`)
+    ? normalizedId.slice(normalizedTech.length + 1)
+    : normalizedId;
+
+  return sanitizeSerpText(
+    withoutTech
+      .replace(/-/g, ' ')
+      .replace(/\bdom\b/gi, 'DOM')
+      .replace(/\bjsx\b/gi, 'JSX')
+      .replace(/\bapi\b/gi, 'API')
+      .replace(/\bhttp\b/gi, 'HTTP')
+      .replace(/\bv-if\b/gi, 'v-if')
+      .replace(/\bv-show\b/gi, 'v-show')
+      .replace(/\btorefs\b/gi, 'toRefs')
+      .replace(/\btoref\b/gi, 'toRef')
+      .replace(/\bvs\b/gi, 'vs')
+      .replace(/\b\w/g, (ch) => ch.toUpperCase()),
+    46,
+  );
+}
+
+function cleanQuestionConcept(rawTitle) {
+  const title = sanitizeSerpText(rawTitle, 90).replace(/\?+$/, '').trim();
+  if (!title) return '';
+
+  const difference = title.match(/^what\s+is\s+the\s+difference\s+between\s+(.+?)\s+and\s+(.+)$/i);
+  if (difference) {
+    return sanitizeSerpText(`${difference[1]} vs ${difference[2]}`, 46);
+  }
+
+  const broadDifference = title.match(/^what\s+is\s+the\s+difference\s+between\s+(.+)$/i);
+  if (broadDifference) {
+    return sanitizeSerpText(broadDifference[1], 46);
+  }
+
+  const doesDo = title.match(/^what\s+does\s+(.+?)\s+do$/i);
+  if (doesDo) {
+    return sanitizeSerpText(doesDo[1], 46);
+  }
+
+  const howWorks = title.match(/^how\s+(?:does|do)\s+(.+?)\s+work$/i);
+  if (howWorks) {
+    return sanitizeSerpText(howWorks[1], 46);
+  }
+
+  const beforeColon = title.split(':')[0]?.trim();
+  if (beforeColon && title.length > 46 && beforeColon.length >= 10) {
+    return sanitizeSerpText(beforeColon, 46);
+  }
+
+  return sanitizeSerpText(
+    title
+      .replace(/^(what|why|how|when|where)\s+(does|is|are|to|can|do|should)\s+/i, '')
+      .replace(/^(what|why|how|when|where)\s+/i, '')
+      .replace(/\s+do$/i, '')
+      .trim(),
+    46,
+  );
+}
+
+function titleConcept(entry) {
+  const title = sanitizeSerpText(String(entry?.title || '').trim(), 70);
+  if (title) {
+    const trimmed = cleanQuestionConcept(title);
+    if (trimmed.length >= 10) return sanitizeSerpText(trimmed, 46);
+  }
+
+  return slugToConcept(entry?.id, entry?.technology);
+}
+
+function hasInterviewIntent(value) {
+  return hasDistinctMarker(value, TRIVIA_INTERVIEW_INTENT_MARKERS);
+}
+
+function ensureFrameworkInConcept(concept, framework) {
+  const normalizedConcept = sanitizeSerpText(concept, 70);
+  if (!normalizedConcept) return framework;
+  if (new RegExp(`\\b${framework}\\b`, 'i').test(normalizedConcept)) return normalizedConcept;
+  return `${framework} ${normalizedConcept}`;
+}
+
+function effectiveTriviaTitle(entry, tech) {
+  const framework = frameworkLabel(entry?.technology || tech);
+  const raw = sanitizeSerpText(String(entry?.seo?.title || entry?.title || '').trim(), DETAIL_TITLE_CORE_WARN_MAX);
+  if (raw && hasInterviewIntent(raw)) return raw;
+
+  const concept = titleConcept(entry) || slugToConcept(entry?.id, entry?.technology || tech) || 'Interview Concept';
+  const conceptMaxLen = DETAIL_TITLE_CORE_WARN_MAX - INTERVIEW_TITLE_SUFFIX.length;
+  const prefixedConcept = sanitizeSerpText(ensureFrameworkInConcept(concept, framework), conceptMaxLen);
+  return sanitizeSerpText(`${prefixedConcept || framework}${INTERVIEW_TITLE_SUFFIX}`, DETAIL_TITLE_CORE_WARN_MAX);
+}
+
+function effectiveTriviaDescription(entry, tech) {
+  const raw = sanitizeSerpText(String(entry?.seo?.description || entry?.description || '').trim(), DESCRIPTION_MAX_LEN);
+  if (raw && hasInterviewIntent(raw)) return raw;
+
+  const framework = frameworkLabel(entry?.technology || tech);
+  const concept = titleConcept(entry) || slugToConcept(entry?.id, entry?.technology || tech) || 'front-end concept';
+  const article = /^(Angular|HTML)$/i.test(framework) ? 'an' : 'a';
+  return sanitizeSerpText(
+    `Practice ${article} ${framework} interview answer for ${concept}: quick answer, common mistake, follow-up, and production pitfall.`,
+    DESCRIPTION_MAX_LEN,
+  );
+}
+
 function meaningfulTokens(value) {
   return normalizeText(value)
     .split(/\s+/)
@@ -230,6 +387,11 @@ function meaningfulTokens(value) {
     .filter((token) => token.length > 1)
     .filter((token) => !TECH_TOKENS.has(token))
     .filter((token) => !STOPWORDS.has(token));
+}
+
+function nearDuplicateTokens(value) {
+  return meaningfulTokens(value)
+    .filter((token) => !NEAR_DUPLICATE_BOILERPLATE.has(token));
 }
 
 function hasDistinctMarker(value, markers) {
@@ -478,15 +640,17 @@ function validateTrivia(entriesByTech) {
   entriesByTech.forEach(({ tech, entries }) => {
     entries.forEach((entry) => {
       const id = `${tech}:${String(entry?.id || '').trim() || '<missing-id>'}`;
-      const title = String(entry?.seo?.title || entry?.title || '').trim();
-      const description = String(entry?.seo?.description || entry?.description || '').trim();
+      const rawTitle = String(entry?.seo?.title || entry?.title || '').trim();
+      const rawDescription = String(entry?.seo?.description || entry?.description || '').trim();
+      const title = effectiveTriviaTitle(entry, tech);
+      const description = effectiveTriviaDescription(entry, tech);
       const broadTitle = normalizeText(title);
-      const metadataText = [entry?.title, entry?.description, entry?.seo?.title, entry?.seo?.description].join(' ');
+      const metadataText = [title, description, entry?.title, entry?.description, entry?.seo?.title, entry?.seo?.description].join(' ');
       const combinedText = collectTextFromTriviaEntry(entry);
       const metadataHasDistinct = hasDistinctMarker(metadataText, TRIVIA_DISTINCT_MARKERS);
-      const combinedHasDistinct = hasDistinctMarker(combinedText, TRIVIA_DISTINCT_MARKERS);
-      const metadataHasInterviewIntent = hasDistinctMarker(metadataText, TRIVIA_INTERVIEW_INTENT_MARKERS);
-      const titleHasDocsIntent = hasDistinctMarker(title, TRIVIA_DOCS_INTENT_MARKERS);
+      const combinedHasDistinct = hasDistinctMarker(`${metadataText} ${combinedText}`, TRIVIA_DISTINCT_MARKERS);
+      const metadataHasInterviewIntent = hasInterviewIntent(metadataText);
+      const titleHasDocsIntent = hasDistinctMarker(rawTitle || title, TRIVIA_DOCS_INTENT_MARKERS);
       const titleWithBrandLength = `${title}${SITE_TITLE_SUFFIX}`.length;
       const titleTokens = meaningfulTokens(title);
       const genericCandidate = BROAD_TRIVIA_PREFIXES.some((prefix) => broadTitle.startsWith(prefix))
@@ -501,7 +665,7 @@ function validateTrivia(entriesByTech) {
       if (!metadataHasInterviewIntent) {
         addWarning(
           'missing-interview-intent',
-          `${id} metadata does not clearly surface interview/practice intent; title="${title || '<missing-title>'}" description="${description || '<missing-description>'}"`,
+          `${id} effective metadata does not clearly surface interview/practice intent; title="${title || rawTitle || '<missing-title>'}" description="${description || rawDescription || '<missing-description>'}"`,
         );
       }
       if (titleHasDocsIntent && !metadataHasInterviewIntent) {
@@ -511,7 +675,7 @@ function validateTrivia(entriesByTech) {
         );
       }
       if (genericCandidate && !metadataHasDistinct) {
-        addWarning('generic-query-risk', `${id} looks like a broad commodity query (${title || entry?.title || '<missing-title>'}) without a stronger beyond-basics signal`);
+        addWarning('generic-query-risk', `${id} looks like a broad commodity query (${title || rawTitle || entry?.title || '<missing-title>'}) without a stronger beyond-basics signal`);
       }
       if (!combinedHasDistinct) {
         addWarning('weak-distinct-angle', `${id} does not surface a clear beyond-basics angle in metadata/answer text; add production, pitfall, debug, or interview-specific framing`);
@@ -522,10 +686,10 @@ function validateTrivia(entriesByTech) {
       for (let cursor = index + 1; cursor < entries.length; cursor += 1) {
         const left = entries[index];
         const right = entries[cursor];
-        const leftText = `${left?.seo?.title || left?.title || ''} ${left?.description || ''}`;
-        const rightText = `${right?.seo?.title || right?.title || ''} ${right?.description || ''}`;
-        const leftNormalized = meaningfulTokens(leftText).join(' ');
-        const rightNormalized = meaningfulTokens(rightText).join(' ');
+        const leftText = `${effectiveTriviaTitle(left, tech)} ${effectiveTriviaDescription(left, tech)} ${left?.description || ''} ${left?.seo?.description || ''}`;
+        const rightText = `${effectiveTriviaTitle(right, tech)} ${effectiveTriviaDescription(right, tech)} ${right?.description || ''} ${right?.seo?.description || ''}`;
+        const leftNormalized = nearDuplicateTokens(leftText).join(' ');
+        const rightNormalized = nearDuplicateTokens(rightText).join(' ');
         if (!leftNormalized || !rightNormalized || leftNormalized === rightNormalized) continue;
         const similarity = jaccardSimilarity(leftNormalized.split(/\s+/), rightNormalized.split(/\s+/));
         if (similarity >= 0.72) {

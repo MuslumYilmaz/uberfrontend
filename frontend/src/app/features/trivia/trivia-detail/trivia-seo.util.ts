@@ -1,7 +1,9 @@
 import { Question } from '../../../core/models/question.model';
 
-const TITLE_MAX_LEN = 65;
+const TITLE_MAX_LEN = 54;
 const DESCRIPTION_MAX_LEN = 155;
+const INTERVIEW_TITLE_SUFFIX = ': Interview Answer';
+const INTERVIEW_INTENT_RE = /\b(interview(?:s)?|prep(?:aration)?|practice|candidate(?:s)?|round(?:s)?|follow[\s-]?ups?|drill(?:s)?|question(?:s)?|answer(?:s)?)\b/i;
 
 const TECH_LABELS: Record<string, string> = {
   javascript: 'JavaScript',
@@ -85,14 +87,49 @@ function slugToConcept(id?: string, tech?: string): string {
   );
 }
 
+function cleanQuestionConcept(rawTitle: string): string {
+  const title = sanitizeSerpText(rawTitle, 90).replace(/\?+$/, '').trim();
+  if (!title) return '';
+
+  const difference = title.match(/^what\s+is\s+the\s+difference\s+between\s+(.+?)\s+and\s+(.+)$/i);
+  if (difference) {
+    return sanitizeSerpText(`${difference[1]} vs ${difference[2]}`, 46);
+  }
+
+  const broadDifference = title.match(/^what\s+is\s+the\s+difference\s+between\s+(.+)$/i);
+  if (broadDifference) {
+    return sanitizeSerpText(broadDifference[1], 46);
+  }
+
+  const doesDo = title.match(/^what\s+does\s+(.+?)\s+do$/i);
+  if (doesDo) {
+    return sanitizeSerpText(doesDo[1], 46);
+  }
+
+  const howWorks = title.match(/^how\s+(?:does|do)\s+(.+?)\s+work$/i);
+  if (howWorks) {
+    return sanitizeSerpText(howWorks[1], 46);
+  }
+
+  const beforeColon = title.split(':')[0]?.trim();
+  if (beforeColon && title.length > 46 && beforeColon.length >= 10) {
+    return sanitizeSerpText(beforeColon, 46);
+  }
+
+  return sanitizeSerpText(
+    title
+      .replace(/^(what|why|how|when|where)\s+(does|is|are|to|can|do|should)\s+/i, '')
+      .replace(/^(what|why|how|when|where)\s+/i, '')
+      .replace(/\s+do$/i, '')
+      .trim(),
+    46
+  );
+}
+
 function titleConcept(q: Pick<Question, 'title' | 'id' | 'technology'>): string {
   const title = sanitizeSerpText(String(q.title || '').trim(), 70);
   if (title) {
-    const trimmed = title
-      .replace(/^(what|why|how)\s+(does|is|are|to|can|do)\s+/i, '')
-      .replace(/^(what|why|how)\s+/i, '')
-      .replace(/\?+$/, '')
-      .trim();
+    const trimmed = cleanQuestionConcept(title);
     if (trimmed.length >= 10) return sanitizeSerpText(trimmed, 46);
   }
   return slugToConcept((q as any).id, (q as any).technology);
@@ -111,13 +148,36 @@ function normalizedQuestionTitle(q: Pick<Question, 'title'>): string {
   return cleaned.length >= 8 ? sanitizeSerpText(cleaned, 88) : title;
 }
 
+function hasInterviewIntent(value: string): boolean {
+  return INTERVIEW_INTENT_RE.test(String(value || ''));
+}
+
+function ensureFrameworkInConcept(concept: string, framework: string): string {
+  const normalizedConcept = sanitizeSerpText(concept, 70);
+  if (!normalizedConcept) return framework;
+  if (new RegExp(`\\b${framework}\\b`, 'i').test(normalizedConcept)) return normalizedConcept;
+  return `${framework} ${normalizedConcept}`;
+}
+
+function interviewAnswerTitle(
+  q: Pick<Question, 'id' | 'title' | 'technology'>,
+  framework: string
+): string {
+  const rawConcept = titleConcept(q)
+    || slugToConcept((q as any).id, (q as any).technology)
+    || 'Interview Concept';
+  const conceptMaxLen = TITLE_MAX_LEN - INTERVIEW_TITLE_SUFFIX.length;
+  const concept = sanitizeSerpText(ensureFrameworkInConcept(rawConcept, framework), conceptMaxLen);
+  return sanitizeSerpText(`${concept || framework}${INTERVIEW_TITLE_SUFFIX}`, TITLE_MAX_LEN);
+}
+
 export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology' | 'seo'>): string {
   const explicit = questionSeoTitle(q);
+  const framework = frameworkLabel(q.technology);
   if (explicit) {
-    return explicit;
+    return hasInterviewIntent(explicit) ? explicit : interviewAnswerTitle(q, framework);
   }
 
-  const framework = frameworkLabel(q.technology);
   const questionTitle = normalizedQuestionTitle(q);
   const concept = titleConcept(q) || 'Interview Concept';
   const prefixedQuestionTitle = questionTitle
@@ -125,10 +185,26 @@ export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technolo
     ? questionTitle
     : `${framework} ${questionTitle || concept}`;
   const candidate = sanitizeSerpText(prefixedQuestionTitle, TITLE_MAX_LEN);
-  const normalized = sanitizeSerpText(candidate, TITLE_MAX_LEN);
+  const normalized = hasInterviewIntent(candidate)
+    ? sanitizeSerpText(candidate, TITLE_MAX_LEN)
+    : interviewAnswerTitle(q, framework);
   if (normalized) return normalized;
 
   return sanitizeSerpText(`${framework} interview answer`, TITLE_MAX_LEN);
+}
+
+function interviewAnswerDescription(
+  q: Pick<Question, 'id' | 'title' | 'technology'>,
+  framework: string
+): string {
+  const concept = titleConcept(q)
+    || slugToConcept((q as any).id, (q as any).technology)
+    || 'front-end concept';
+  const article = /^(Angular|HTML)$/i.test(framework) ? 'an' : 'a';
+  return sanitizeSerpText(
+    `Practice ${article} ${framework} interview answer for ${concept}: quick answer, common mistake, follow-up, and production pitfall.`,
+    DESCRIPTION_MAX_LEN
+  );
 }
 
 export function seoDescriptionForQuestion(
@@ -137,11 +213,11 @@ export function seoDescriptionForQuestion(
   tech: string
 ): string {
   const explicit = questionSeoDescription(q);
+  const framework = frameworkLabel(q.technology || tech);
   if (explicit) {
-    return explicit;
+    return hasInterviewIntent(explicit) ? explicit : interviewAnswerDescription(q, framework);
   }
 
-  const framework = frameworkLabel(q.technology || tech);
   const concept = titleConcept(q)
     || slugToConcept((q as any).id, (q as any).technology || tech)
     || 'front-end concept';

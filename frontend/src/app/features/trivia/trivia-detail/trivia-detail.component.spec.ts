@@ -262,7 +262,7 @@ describe('TriviaDetailComponent', () => {
 
     const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
     expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe('What is closure?');
-    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Frontend interview Q&A');
+    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Frontend interview answer');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     expect(payload.title).toBe('JavaScript Closure Interview SEO Title');
@@ -274,8 +274,8 @@ describe('TriviaDetailComponent', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faq = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.headline).toBe('What is closure? - Frontend interview Q&A');
-    expect(faq?.mainEntity?.[0]?.name).toBe('What is closure?');
+    expect(article?.headline).toBe('What is closure? - Frontend interview answer');
+    expect(faq).toBeUndefined();
   });
 
   it('renders crawlable sidebar and practice entry links', async () => {
@@ -345,7 +345,9 @@ describe('TriviaDetailComponent', () => {
 
     expect(fixture.nativeElement.querySelector('.side-list')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame"]')).toBeTruthy();
-    expect(fixture.nativeElement.textContent || '').toContain('Interview concept practice');
+    expect(fixture.nativeElement.textContent || '').toContain('Interview answer drill');
+    expect(fixture.nativeElement.textContent || '').toContain('Interview quick answer');
+    expect(fixture.nativeElement.textContent || '').toContain('Full interview answer');
     expect(fixture.nativeElement.querySelector('.similar-list')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.guide-links')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="trivia-prep-entry"]')).toBeTruthy();
@@ -385,7 +387,7 @@ describe('TriviaDetailComponent', () => {
 
     const lockedHeading = fixture.nativeElement.querySelector('h1.locked-title') as HTMLElement | null;
     expect(lockedHeading?.querySelector('.locked-title__question')?.textContent?.trim()).toBe('What is closure?');
-    expect(lockedHeading?.querySelector('.locked-title__intent')?.textContent?.trim()).toBe('Frontend interview Q&A');
+    expect(lockedHeading?.querySelector('.locked-title__intent')?.textContent?.trim()).toBe('Frontend interview answer');
   });
 
   it('fires trivia scroll depth exactly once per threshold from the main scroll container', fakeAsync(() => {
@@ -555,7 +557,8 @@ describe('TriviaDetailComponent', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
 
     expect(article).toBeTruthy();
-    expect(article?.headline).toBe('What is closure? - Frontend interview Q&A');
+    expect(article?.headline).toBe('What is closure? - Frontend interview answer');
+    expect(graph.some((node: any) => node?.['@type'] === 'FAQPage')).toBeFalse();
     expect(String(article?.isPartOf?.url || '')).toContain('/javascript/interview-questions');
     expect(Array.isArray(article?.about)).toBeTrue();
     expect(Array.isArray(article?.mentions)).toBeTrue();

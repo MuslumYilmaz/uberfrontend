@@ -1085,14 +1085,14 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'frontend interview questions',
-        title: 'Frontend Interview Questions for Quick Prep',
+        title: 'Frontend Interview Questions and Answers',
         techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
         isMasterHub: true,
       },
       seo: {
-        title: 'Frontend Interview Questions for Quick Prep',
+        title: 'Frontend Interview Questions and Answers',
         description:
-          'Quick frontend interview prep with coding and concept prompts, explanations, preview links, and hubs for React, Angular, Vue, HTML, CSS, and study plans.',
+          'Practice frontend interview questions and answers with coding prompts, concept questions, explanations, follow-ups, common mistakes, and framework hubs.',
       },
     },
   },
@@ -1108,13 +1108,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'javascript interview questions',
-        title: 'JavaScript Interview Questions for Frontend Interviews',
+        title: 'JavaScript Interview Questions and Answers',
         techs: ['javascript'],
       },
       seo: {
-        title: 'JavaScript Interview Questions for Frontend Interviews',
+        title: 'JavaScript Interview Questions and Answers',
         description:
-          'Practice JavaScript interview questions with coding and concept prompts, explanations, preview checks, async behavior, closures, arrays, state, and edge cases.',
+          'Practice JavaScript interview questions and answers with coding prompts, concept questions, explanations, follow-ups, common mistakes, async, and closures.',
       },
     },
   },
@@ -1130,13 +1130,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'react interview questions',
-        title: 'React Interview Questions for Frontend Interviews',
+        title: 'React Interview Questions and Answers',
         techs: ['react'],
       },
       seo: {
-        title: 'React Interview Questions for Frontend Interviews',
+        title: 'React Interview Questions and Answers',
         description:
-          'Practice React interview questions with coding and concept prompts, explanations, preview checks, hooks, state, effects, rendering behavior, and performance tradeoffs.',
+          'Practice React interview questions and answers with coding prompts, concept questions, explanations, follow-ups, common mistakes, hooks, and effects.',
       },
     },
   },
@@ -1152,7 +1152,7 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'angular interview questions',
-        title: 'Angular Interview Questions for Frontend Interviews',
+        title: 'Angular Interview Questions and Answers',
         techs: ['angular'],
         featuredLinks: [
           {
@@ -1173,9 +1173,9 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'Angular Interview Questions for Frontend Interviews',
+        title: 'Angular Interview Questions and Answers',
         description:
-          'Practice Angular interview questions with coding and concept prompts, explanations, preview checks, RxJS, HttpClient cancellation, change detection, DI, forms, and testing.',
+          'Practice Angular interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, RxJS, change detection, and DI.',
       },
     },
   },
@@ -1191,7 +1191,7 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'vue interview questions',
-        title: 'Vue Interview Questions for Frontend Interviews',
+        title: 'Vue Interview Questions and Answers',
         techs: ['vue'],
         featuredLinks: [
           {
@@ -1207,9 +1207,9 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'Vue Interview Questions for Frontend Interviews',
+        title: 'Vue Interview Questions and Answers',
         description:
-          'Practice Vue interview questions with coding and concept prompts, explanations, preview checks, reactivity, rendering, nextTick, component contracts, and state decisions.',
+          'Practice Vue interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, reactivity, rendering, and state.',
       },
     },
   },
@@ -1225,12 +1225,12 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'html css interview questions',
-        title: 'HTML CSS Interview Questions',
+        title: 'HTML CSS Interview Questions and Answers',
         techs: ['html', 'css'],
       },
       seo: {
-        title: 'HTML CSS Interview Questions',
-        description: 'HTML CSS interview questions for frontend prep, with coding and concept prompts, explanations, preview checks, and links to guides and study plans.',
+        title: 'HTML CSS Interview Questions and Answers',
+        description: 'Practice HTML/CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, semantics, and accessibility.',
       },
     },
   },
@@ -1246,13 +1246,13 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'html interview questions',
-        title: 'HTML Interview Questions for Frontend Interviews',
+        title: 'HTML Interview Questions and Answers',
         techs: ['html'],
       },
       seo: {
-        title: 'HTML Interview Questions for Frontend Interviews',
+        title: 'HTML Interview Questions and Answers',
         description:
-          'Practice HTML interview questions with concept prompts, explanations, preview checks, semantics, forms, accessibility, metadata, validation, and browser defaults.',
+          'Practice HTML interview questions and answers with concept questions, follow-ups, common mistakes, semantics, forms, accessibility, metadata, and defaults.',
       },
     },
   },
@@ -1268,7 +1268,7 @@ export const routes: Routes = [
     data: {
       interviewQuestions: {
         keyword: 'css interview questions',
-        title: 'CSS Interview Questions for Frontend Interviews',
+        title: 'CSS Interview Questions and Answers',
         techs: ['css'],
         featuredLinks: [
           {
@@ -1284,9 +1284,9 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'CSS Interview Questions for Frontend Interviews',
+        title: 'CSS Interview Questions and Answers',
         description:
-          'Practice CSS interview questions with coding and concept prompts, explanations, preview checks, flexbox, grid, cascade, specificity, responsive layout, and visual debugging.',
+          'Practice CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, flexbox, grid, cascade, and layout.',
       },
     },
   },
