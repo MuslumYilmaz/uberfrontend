@@ -73,7 +73,9 @@ describe('MarketingHeaderComponent', () => {
     ]);
     expect(utilityLabels).toEqual(['Pricing', 'Log in']);
     expect((fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement).textContent || '')
-      .toContain('Start free');
+      .toContain('Start practicing');
+    expect((fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement).getAttribute('href'))
+      .toBe('/interview-questions/essential');
   });
 
   it('switches utility actions for logged-in users', async () => {

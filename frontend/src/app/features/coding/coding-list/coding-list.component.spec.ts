@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { PLATFORM_ID, computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
@@ -200,14 +200,48 @@ describe('CodingListComponent', () => {
 
     expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('Question Library');
     expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Frontend Interview Questions Bank');
-    expect(host.textContent || '').toContain('frontend interview question bank across coding, system design, and concept prompts');
-    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start first question');
+    expect(host.textContent || '').toContain('If you want one strong first rep, start with the Debounce drill');
+    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start with Debounce');
     expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
       pill.textContent?.trim()
     )).toEqual(['Start here', 'All levels']);
     expect(host.textContent || '').not.toContain('Frontend coding challenges');
     expect(host.querySelector('[data-testid="interview-hub-support-link"]')).not.toBeNull();
     expect(host.querySelector('[data-testid="essential-questions-support-link"]')).not.toBeNull();
+  });
+
+  it('opens Debounce directly from the unfiltered guest global library start action', async () => {
+    const fixture = await createComponent({
+      queryParams: { reset: '1' },
+      items: [
+        question({ id: 'css-selectors-text-basics', title: 'Selectors & Text Warm-Up', technology: 'css', tech: 'css', importance: 5 }),
+        question({ id: 'js-debounce', title: 'Debounce Function', difficulty: 'intermediate', importance: 5 }),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigate').and.resolveTo(true);
+
+    fixture.componentInstance.openFirstVisible();
+
+    expect(navigate).toHaveBeenCalledWith(['/', 'javascript', 'coding', 'js-debounce']);
+  });
+
+  it('keeps filtered library start actions tied to the first visible unlocked row', async () => {
+    const fixture = await createComponent({
+      queryParams: { tech: 'react', kind: 'coding' },
+      items: [
+        question({ id: 'js-debounce', title: 'Debounce Function', difficulty: 'intermediate', importance: 5 }),
+        question({ id: 'react-counter', title: 'React Counter', technology: 'react', tech: 'react', importance: 4 }),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigate').and.resolveTo(true);
+
+    fixture.componentInstance.openFirstVisible();
+    await fixture.whenStable();
+
+    expect(navigate).not.toHaveBeenCalledWith(['/', 'javascript', 'coding', 'js-debounce']);
+    expect(navigate.calls.mostRecent().args[0]).toEqual(['/', 'react', 'coding', 'react-counter']);
   });
 
   it('opens formats UI as practice types with compact framework prep support', async () => {

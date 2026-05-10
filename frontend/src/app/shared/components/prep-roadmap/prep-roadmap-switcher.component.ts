@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, DestroyRef, ElementRef, HostListener, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, Input, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs';
@@ -18,6 +18,17 @@ import { FaGlyphComponent } from '../../ui/icon/fa-glyph.component';
   styleUrls: ['./prep-roadmap-switcher.component.css'],
 })
 export class PrepRoadmapSwitcherComponent {
+  private readonly compactInput = signal(false);
+
+  @Input()
+  set compact(value: boolean) {
+    this.compactInput.set(value === true);
+  }
+
+  get compact(): boolean {
+    return this.compactInput();
+  }
+
   private readonly router = inject(Router);
   private readonly hostEl = inject(ElementRef<HTMLElement>);
   private readonly destroyRef = inject(DestroyRef);
@@ -27,7 +38,10 @@ export class PrepRoadmapSwitcherComponent {
   readonly items = INTERVIEW_PREP_SWITCHER_ITEMS;
   readonly open = signal(false);
   readonly currentUrl = signal(this.router.url || '/');
-  readonly currentItem = computed(() => findPrepRoadmapSwitcherItem(this.currentUrl()));
+  readonly currentItem = computed(() =>
+    findPrepRoadmapSwitcherItem(this.currentUrl())
+    ?? (this.compactInput() ? this.items.find((item) => item.id === 'essential_60') ?? null : null)
+  );
   readonly otherStepsLabel = computed(() => `${Math.max(0, this.items.length - 1)} other steps`);
 
   constructor() {

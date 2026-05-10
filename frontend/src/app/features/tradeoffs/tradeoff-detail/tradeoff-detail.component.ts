@@ -63,7 +63,7 @@ function buildTradeoffLockedPreview(
     }));
 
   return {
-    what: `This premium ${scenario.meta.tech} tradeoff battle focuses on ${scenario.meta.title}. Commit to a direction, justify it with the prompt constraints, and explain when the alternative wins.`,
+    what: `${scenario.meta.title}: commit to a direction, justify it with the prompt constraints, and explain when the alternative wins.`,
     keyDecisions: [
       'Pick a direction for this exact prompt, not the universal winner.',
       'State the trade-off that matters most for this scenario.',
@@ -75,6 +75,11 @@ function buildTradeoffLockedPreview(
       'Good tradeoff reasoning explains downsides, not just upsides.',
       'The answer should show when the recommendation stops being right.',
       'Follow-up pressure should not break the argument.',
+    ],
+    unlockBullets: [
+      'Full option matrix with scenario-specific evaluation dimensions.',
+      'Example answer structure that defends tradeoffs under follow-up pressure.',
+      'Rubric for explaining when the alternative becomes stronger.',
     ],
     learningGoals: scenario.evaluationDimensions
       .map((item) => trimWords(item.title, 10))

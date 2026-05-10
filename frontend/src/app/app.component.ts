@@ -10,6 +10,7 @@ import { AnalyticsService } from './core/services/analytics.service';
 import { TelemetryBootstrapService } from './core/services/telemetry-bootstrap.service';
 import { AppUiStylesService } from './core/services/app-ui-styles.service';
 import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
+import { AuthService } from './core/services/auth.service';
 import { isMarketingPath, normalizePathname } from './core/utils/marketing-route.util';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
 import { BugReportDialogComponent } from './shared/components/bug-report-dialog/bug-report-dialog.component';
@@ -46,6 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly analytics = inject(AnalyticsService);
   private readonly telemetry = inject(TelemetryBootstrapService);
   private readonly appUiStyles = inject(AppUiStylesService);
+  readonly auth = inject(AuthService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   readonly sidebarDrawerOpen = inject(AppSidebarDrawerService).isOpen;
 
@@ -75,6 +77,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // strip query/hash before testing
   private pathOnly = computed(() => this.currentUrl().split('?')[0].split('#')[0]);
+
+  readonly isGuestStarterRoute = computed(() => {
+    if (this.auth.isLoggedIn()) return false;
+    const path = this.pathOnly().replace(/\/+$/, '') || '/';
+    return path === '/dashboard'
+      || path === '/interview-questions'
+      || path === '/interview-questions/essential'
+      || path === '/coding'
+      || path === '/tracks';
+  });
 
   hideSidebar = computed(() =>
     this.HIDE_SIDEBAR_PATTERNS.some(rx => rx.test(this.pathOnly()))

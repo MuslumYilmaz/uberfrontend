@@ -78,7 +78,7 @@ function buildIncidentLockedPreview(
     }));
 
   return {
-    what: `This premium ${techLabel} debug scenario focuses on ${scenario.meta.title}. Read the failure signals, choose the highest-signal debug order, and defend the fix plus regression guard.`,
+    what: `${scenario.meta.title}: read the ${techLabel} failure signals, choose the highest-signal debug order, and defend the fix plus regression guard.`,
     keyDecisions: [
       'Separate symptom from root cause before touching code.',
       'Choose the smallest debug step that removes the most ambiguity.',
@@ -90,6 +90,11 @@ function buildIncidentLockedPreview(
       'Good debug order reduces search space quickly.',
       'The final fix should match the actual failure mode.',
       'A senior answer closes with a guardrail or test plan.',
+    ],
+    unlockBullets: [
+      'Full staged debug workflow with evidence, hypotheses, and scoring.',
+      'Root-cause explanation, durable fix, and regression guard.',
+      'Senior-level rubric for prioritizing investigation steps.',
     ],
     learningGoals: scenario.stages
       .map((stage) => trimWords(stage.prompt || stage.title, 14))

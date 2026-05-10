@@ -1,6 +1,6 @@
-<div class="prep-switcher" *ngIf="currentItem() as current" data-testid="prep-roadmap-switcher">
+<div class="prep-switcher" [class.prep-switcher--compact]="compact" *ngIf="currentItem() as current" data-testid="prep-roadmap-switcher">
   <div class="prep-switcher__inner">
-    <span class="prep-switcher__pill">Recommended preparation</span>
+    <span class="prep-switcher__pill">{{ compact ? 'Prep path' : 'Recommended preparation' }}</span>
 
     <button
       type="button"

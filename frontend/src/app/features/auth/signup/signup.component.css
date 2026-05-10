@@ -3,10 +3,6 @@
   min-height:100vh;
   background:var(--uf-bg);
   color:var(--uf-text-primary);
-
-  /* Keep the signup CTA green while matching the login page layout/styles */
-  --uf-accent: #84cc16;
-  --uf-accent-strong: #a3e635;
 }
 .auth-page{min-height:100vh; display:grid; grid-template-columns:1fr minmax(360px, 48%);}
 @media (max-width:960px){.auth-page{grid-template-columns:1fr;}}

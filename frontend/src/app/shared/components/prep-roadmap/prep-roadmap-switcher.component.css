@@ -72,6 +72,29 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
 }
 
+.prep-switcher--compact {
+  margin: 8px auto 12px;
+}
+
+.prep-switcher--compact .prep-switcher__inner {
+  gap: 8px;
+}
+
+.prep-switcher--compact .prep-switcher__pill {
+  min-height: 26px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.prep-switcher--compact .prep-switcher__trigger {
+  min-height: 30px;
+  gap: 8px;
+}
+
+.prep-switcher--compact .prep-switcher__count {
+  font-size: 12px;
+}
+
 .prep-switcher__panel {
   --prep-switcher-marker-column: 44px;
   --prep-switcher-step-size: 34px;

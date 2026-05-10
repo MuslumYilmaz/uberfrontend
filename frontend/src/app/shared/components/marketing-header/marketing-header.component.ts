@@ -80,9 +80,9 @@ export class MarketingHeaderComponent {
     },
   ];
 
-  readonly ctaLabel = computed(() => (this.auth.isLoggedIn() ? 'Open dashboard' : 'Start free'));
-  readonly ctaLink = computed(() => (this.auth.isLoggedIn() ? ['/dashboard'] : ['/auth', 'signup']));
-  readonly ctaDestination = computed(() => (this.auth.isLoggedIn() ? '/dashboard' : '/auth/signup'));
+  readonly ctaLabel = computed(() => (this.auth.isLoggedIn() ? 'Open dashboard' : 'Start practicing'));
+  readonly ctaLink = computed(() => (this.auth.isLoggedIn() ? ['/dashboard'] : ['/interview-questions', 'essential']));
+  readonly ctaDestination = computed(() => (this.auth.isLoggedIn() ? '/dashboard' : '/interview-questions/essential'));
 
   constructor() {
     this.router.events
