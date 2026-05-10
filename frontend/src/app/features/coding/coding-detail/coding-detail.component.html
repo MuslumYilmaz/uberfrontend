@@ -739,17 +739,6 @@
       </div>
       <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
       <p class="locked-persona" *ngIf="lockedPersonalizationLine">{{ lockedPersonalizationLine }}</p>
-      <div class="locked-paths" *ngIf="lockedPaths.length">
-        <a
-          class="locked-paths__item"
-          *ngFor="let path of lockedPaths"
-          [routerLink]="path.route"
-          [queryParams]="path.queryParams"
-          (click)="trackLockedPathClick(path.id)">
-          <span>{{ path.label }}</span>
-          <app-fa-glyph class="locked-paths__icon" icon="pi pi-arrow-right"></app-fa-glyph>
-        </a>
-      </div>
       <p class="locked-copy">
         <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
           {{ lockedMemberCopy }}
@@ -764,6 +753,18 @@
           Report access issue
         </button>
         <button *ngIf="!auth.isLoggedIn()" faButton variant="ghost" type="button" (click)="goToLogin()">Sign in</button>
+      </div>
+      <div class="locked-paths" *ngIf="lockedPaths.length">
+        <p class="locked-paths__title">Related free paths</p>
+        <a
+          class="locked-paths__item"
+          *ngFor="let path of lockedPaths"
+          [routerLink]="path.route"
+          [queryParams]="path.queryParams"
+          (click)="trackLockedPathClick(path.id)">
+          <span>{{ path.label }}</span>
+          <app-fa-glyph class="locked-paths__icon" icon="pi pi-arrow-right"></app-fa-glyph>
+        </a>
       </div>
     </div>
   </div>

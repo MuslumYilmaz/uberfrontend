@@ -142,6 +142,8 @@ const ALLOWED_CATEGORIES: CategoryKey[] = ['ui', 'js-fn', 'html-css', 'algo', 's
 const QUESTION_LIBRARY_FIT_PILLS = ['Start here', 'All levels'] as const;
 const PRACTICE_TYPES_FIT_PILLS = ['Format-first', 'Good after basics'] as const;
 const SYSTEM_DESIGN_FIT_PILLS = ['Senior signal', 'Architecture + tradeoffs'] as const;
+const DEFAULT_START_QUESTION_ID = 'js-debounce';
+const DEFAULT_START_ROUTE = ['/', 'javascript', 'coding', DEFAULT_START_QUESTION_ID] as const;
 const FRAMEWORK_PREP_LINKS: FrameworkPrepLink[] = [
   {
     tech: 'javascript',
@@ -528,8 +530,22 @@ export class CodingListComponent implements OnInit, OnDestroy {
         );
 
         const cmp = this.makeComparator(sortKey as SortKey);
+        const promoteDefaultStart = this.shouldPromoteDefaultStart({
+          term,
+          diffs,
+          tiers,
+          selectedTech,
+          selectedCategory,
+          selTags,
+          sortKey: sortKey as SortKey,
+          isFormats,
+        });
         const deduped = this.dedupeFrameworkRows(sysFiltered);
         const warmupFirst = (a: any, b: any) => {
+          if (promoteDefaultStart) {
+            return this.compareDefaultStartRows(a, b);
+          }
+
           if (this.source === 'global-coding') {
             const aPremium = this.isPremiumQuestion(a);
             const bPremium = this.isPremiumQuestion(b);
@@ -574,8 +590,22 @@ export class CodingListComponent implements OnInit, OnDestroy {
       );
 
       const cmp = this.makeComparator(sortKey as SortKey);
+      const promoteDefaultStart = this.shouldPromoteDefaultStart({
+        term,
+        diffs,
+        tiers,
+        selectedTech,
+        selectedCategory,
+        selTags,
+        sortKey: sortKey as SortKey,
+        isFormats,
+      });
       const deduped = this.dedupeFrameworkRows(filtered);
       const warmupFirst = (a: any, b: any) => {
+        if (promoteDefaultStart) {
+          return this.compareDefaultStartRows(a, b);
+        }
+
         if (this.source === 'global-coding') {
           const aPremium = this.isPremiumQuestion(a);
           const bPremium = this.isPremiumQuestion(b);
@@ -729,6 +759,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
         return 'Choose the format you want to rehearse, then filter the focused list without leaving the practice surface.';
       }
 
+      if (this.isGuestDefaultGlobalLibrary()) {
+        return 'Use the broader question bank after the curated shortlist. If you want one strong first rep, start with the Debounce drill.';
+      }
+
       return 'Search the frontend interview question bank across coding, system design, and concept prompts, then filter by technology, difficulty, and focus area before opening one prompt.';
     }
 
@@ -750,6 +784,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'Start system design prompt';
       if (this.isFormatsMode()) return 'Start format practice';
+      if (this.isGuestDefaultGlobalLibrary()) return 'Start with Debounce';
       return 'Start first question';
     }
 
@@ -761,6 +796,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'Opens the first matching system design scenario.';
       if (this.isFormatsMode()) return 'Opens the first matching prompt in this format.';
+      if (this.isGuestDefaultGlobalLibrary()) return 'Opens Essential 60 #1: the high-signal debounce function drill.';
       return 'Opens the first matching prompt from the current library view.';
     }
 
@@ -818,6 +854,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   openFirstVisible(): void {
+    if (this.isGuestDefaultGlobalLibrary()) {
+      void this.router.navigate([...DEFAULT_START_ROUTE]);
+      return;
+    }
+
     this.visible$
       .pipe(take(1))
       .subscribe((list) => {
@@ -1750,6 +1791,63 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   private isPremiumQuestion(q: Row | null | undefined): boolean {
     return String((q as any)?.access || '').toLowerCase() === 'premium';
+  }
+
+  isGuestDefaultGlobalLibrary(): boolean {
+    return this.source === 'global-coding'
+      && !this.auth.user()
+      && !this.isFormatsMode()
+      && this.selectedKind$.value === 'coding'
+      && !this.selectedTech$.value
+      && !this.selectedCategory$.value
+      && !(this.searchTerm || '').trim()
+      && this.diffs$.value.length === 0
+      && this.impTiers$.value.length === 0
+      && this.selectedTags$.value.length === 0
+      && this.sort$.value === 'default';
+  }
+
+  private shouldPromoteDefaultStart(state: {
+    term: string;
+    diffs: Difficulty[];
+    tiers: ImportanceTier[];
+    selectedTech: Tech | null;
+    selectedCategory: CategoryKey | null;
+    selTags: string[];
+    sortKey: SortKey;
+    isFormats: boolean;
+  }): boolean {
+    return this.source === 'global-coding'
+      && !this.auth.user()
+      && !state.isFormats
+      && this.selectedKind$.value === 'coding'
+      && !state.selectedTech
+      && !state.selectedCategory
+      && !String(state.term || '').trim()
+      && state.diffs.length === 0
+      && state.tiers.length === 0
+      && state.selTags.length === 0
+      && state.sortKey === 'default';
+  }
+
+  private compareDefaultStartRows(a: Row, b: Row): number {
+    const aDefault = a.id === DEFAULT_START_QUESTION_ID;
+    const bDefault = b.id === DEFAULT_START_QUESTION_ID;
+    if (aDefault !== bDefault) return aDefault ? -1 : 1;
+
+    const aPremium = this.isPremiumQuestion(a);
+    const bPremium = this.isPremiumQuestion(b);
+    if (aPremium !== bPremium) return aPremium ? 1 : -1;
+
+    const aImportance = Number.isFinite(a.importance) ? (a.importance ?? 0) : 0;
+    const bImportance = Number.isFinite(b.importance) ? (b.importance ?? 0) : 0;
+    if (aImportance !== bImportance) return bImportance - aImportance;
+
+    const aDifficulty = this.difficultyRank(a.difficulty);
+    const bDifficulty = this.difficultyRank(b.difficulty);
+    if (aDifficulty !== bDifficulty) return aDifficulty - bDifficulty;
+
+    return (a.title || '').localeCompare(b.title || '');
   }
   private createdTs(q: any): number {
     const raw = q.createdAt || q.created || q.date || q.addedAt || q.added;

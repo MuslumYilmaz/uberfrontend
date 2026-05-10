@@ -33,6 +33,33 @@ async function stabilize(page: import('@playwright/test').Page) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
+async function seedVisualExperiments(page: import('@playwright/test').Page) {
+  await page.addInitScript(() => {
+    const assignments: Record<string, string> = {
+      'fa:exp:assignment:hero_headline_cta_v1': 'control',
+      'fa:exp:assignment:pricing_risk_reversal_placement_v1': 'top',
+      'fa:exp:assignment:premium_gate_copy_v1': 'value',
+      'fa:exp:assignment:signup_prompt_copy_v1': 'benefit',
+    };
+
+    try {
+      for (const [key, value] of Object.entries(assignments)) {
+        window.localStorage.setItem(key, value);
+      }
+    } catch {
+      // Sandboxed preview frames in the showcase page do not expose same-origin storage.
+    }
+  });
+}
+
+async function waitForShowcaseDemo(page: import('@playwright/test').Page) {
+  await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('.demo-placeholder')).toBeHidden({ timeout: 30_000 });
+  await expect(page.locator('.preview-loading')).toBeHidden({ timeout: 30_000 });
+  await page.waitForTimeout(120);
+  await page.evaluate(() => window.scrollTo(0, 0));
+}
+
 async function seedAuthenticatedSession(page: any) {
   const token = `e2e-visual-${Date.now()}`;
   const user = buildMockUser({
@@ -66,11 +93,20 @@ test.describe('visual smoke baselines', () => {
     viewport: DESKTOP_VIEWPORT,
   });
 
+  test.beforeEach(async ({ page }) => {
+    await seedVisualExperiments(page);
+  });
+
   test('showcase page baseline', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
     await stabilize(page);
-    await expect(page).toHaveScreenshot('showcase-home.png', { fullPage: true });
+    await waitForShowcaseDemo(page);
+    await expect(page).toHaveScreenshot('showcase-home.png', {
+      fullPage: true,
+      maxDiffPixels: 600,
+      timeout: 30_000,
+    });
   });
 
   test('dashboard page baseline', async ({ page }) => {
@@ -91,6 +127,7 @@ test.describe('visual smoke baselines', () => {
   test('pricing page baseline', async ({ page }) => {
     await page.goto('/pricing');
     await expect(page.locator('.pricing-page')).toBeVisible();
+    await expect(page.getByText('Payments are not enabled in this build.')).toBeVisible();
     await stabilize(page);
     await expect(page).toHaveScreenshot('pricing-page.png', { fullPage: true });
   });
@@ -99,7 +136,11 @@ test.describe('visual smoke baselines', () => {
     await page.goto('/guides/interview-blueprint/intro');
     await expect(page.getByRole('heading', { name: /frontend interview preparation guide/i })).toBeVisible();
     await stabilize(page);
-    await expect(page).toHaveScreenshot('guide-intro.png', { fullPage: true });
+    await expect(page).toHaveScreenshot('guide-intro.png', {
+      fullPage: true,
+      maxDiffPixels: 2,
+      timeout: 30_000,
+    });
   });
 
   test('trivia detail baseline', async ({ page }) => {

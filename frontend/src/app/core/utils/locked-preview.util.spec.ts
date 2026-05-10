@@ -27,6 +27,8 @@ describe('locked preview builder', () => {
     const preview = buildLockedPreviewForCoding(q, { candidates, tech: 'javascript', kind: 'coding' });
 
     expect(preview.what.length).toBeGreaterThan(30);
+    expect(preview.what).not.toContain('This premium javascript coding focuses on');
+    expect(preview.unlockBullets?.length || 0).toBeGreaterThanOrEqual(2);
     expect(preview.learningGoals.length).toBeGreaterThanOrEqual(3);
     expect(preview.keyDecisions?.length || 0).toBeGreaterThanOrEqual(2);
     expect(preview.rubric?.length || 0).toBeGreaterThanOrEqual(3);

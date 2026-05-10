@@ -18,6 +18,7 @@ export type LockedPreviewData = {
   what: string;
   keyDecisions?: string[];
   rubric?: string[];
+  unlockBullets?: string[];
   learningGoals: string[];
   constraints: string[];
   snippet: LockedPreviewSnippet;
@@ -110,10 +111,36 @@ const buildWhatText = (ctx: BuildContext): string => {
   const tags = pickTags(ctx.tags, 2);
   const tagPhrase = tags.length ? tags.join(' and ') : 'core front-end patterns';
   const difficulty = ctx.difficulty ? `${ctx.difficulty} level` : 'interview-level';
-  const sentence1 = `This premium ${tech} ${ctx.type.replace('-', ' ')} focuses on ${ctx.title}.`;
-  const sentence2 = `You’ll apply ${tagPhrase} thinking with ${difficulty} constraints.`;
-  const sentence3 = ctx.description ? `The prompt emphasizes ${trimWords(ctx.description, 16)}.` : '';
-  return [sentence1, sentence2, sentence3].filter(Boolean).map(toSentence).join(' ');
+  const promptSummary = ctx.description
+    ? trimWords(ctx.description, 24)
+    : `${ctx.title} is a focused ${tech} interview prompt`;
+  const sentence1 = `${ctx.title}: ${promptSummary}`;
+  const sentence2 = `Expect ${tagPhrase} decisions under ${difficulty} constraints.`;
+  return [sentence1, sentence2].filter(Boolean).map(toSentence).join(' ');
+};
+
+const buildUnlockBullets = (ctx: BuildContext): string[] => {
+  if (ctx.type === 'coding') {
+    return [
+      'Full editor workflow with starter files, tests, and solution context.',
+      'Edge cases, common mistakes, and complexity notes for the interview discussion.',
+      'Progress tracking once you unlock and complete the challenge.',
+    ];
+  }
+
+  if (ctx.type === 'trivia') {
+    return [
+      'Complete answer structure with examples and common follow-ups.',
+      'Mistake checks that keep the explanation precise.',
+      'Related drills for the same concept area.',
+    ];
+  }
+
+  return [
+    'Full walkthrough across requirements, architecture, state, performance, and tradeoffs.',
+    'Evaluation cues for senior-level discussion.',
+    'Follow-up prompts and failure-mode coverage.',
+  ];
 };
 
 const buildLearningGoals = (ctx: BuildContext): string[] => {
@@ -497,6 +524,7 @@ export const buildLockedPreviewForCoding = (
     what: buildWhatText(ctx),
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),
+    unlockBullets: buildUnlockBullets(ctx),
     learningGoals: buildLearningGoals(ctx),
     constraints: buildConstraints(ctx, rawConstraints),
     snippet: buildCodingSnippet(ctx),
@@ -526,6 +554,7 @@ export const buildLockedPreviewForTrivia = (
     what: buildWhatText(ctx),
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),
+    unlockBullets: buildUnlockBullets(ctx),
     learningGoals: buildLearningGoals(ctx),
     constraints: buildConstraints(ctx, []),
     snippet: buildTriviaSnippet(ctx),
@@ -557,6 +586,7 @@ export const buildLockedPreviewForSystemDesign = (
     what: buildWhatText(ctx),
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),
+    unlockBullets: buildUnlockBullets(ctx),
     learningGoals: buildLearningGoals(ctx),
     constraints: buildConstraints(ctx, sectionConstraints),
     snippet: buildSystemDesignSnippet(ctx),
