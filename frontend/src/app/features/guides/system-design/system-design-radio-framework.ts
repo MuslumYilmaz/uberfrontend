@@ -209,7 +209,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
     <fa-guide-shell
-      title="RADIO Framework for Frontend System Design Interviews"
+      title="RADIO Framework for Frontend System Design: Requirements to Optimizations"
       [minutes]="20"
       [tags]="['system design', 'radio framework', 'frontend system design']"
       [prev]="prev"
@@ -219,10 +219,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>If You Remember Only One Thing (60 seconds)</h2>
       <p>
-        In a <strong>frontend system design interview</strong>, use the <strong>RADIO approach</strong> to keep your answer
-        structured under time pressure: Requirements, Architecture, Data model, Interface, Optimizations. In a
-        45-minute or 60-minute interview, each step should produce one concrete artifact and one explicit trade-off.
-        That keeps your answer frontend-specific, practical, and easy for interviewers to evaluate.
+        Use the <strong>RADIO framework</strong> for <strong>frontend system design interviews</strong> when you need
+        to move from requirements to architecture, data model, interface, and optimizations without rambling. In a
+        45-minute or 60-minute interview, Requirements defines scope, Architecture explains the system shape, Data
+        model covers contracts and state, Interface maps user behavior, and Optimizations closes with performance,
+        reliability, observability, security, and trade-offs.
       </p>
 
       <h2>RADIO Cheat Sheet</h2>
@@ -234,7 +235,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
               <p class="radio-step-title">Requirements</p>
               <p class="radio-step-goal">Lock scope, constraints, and success criteria before proposing tech.</p>
             </div>
-            <p class="radio-timebox"><strong>Timebox:</strong> 6-8 min (45m) / 8-10 min (60m)</p>
+            <p class="radio-timebox"><strong>Timebox:</strong> 6 min (45m) / 8 min (60m)</p>
           </div>
           <div class="radio-step-grid">
             <section class="radio-col">
@@ -274,7 +275,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
               <p class="radio-step-title">Architecture</p>
               <p class="radio-step-goal">Choose end-to-end flow and rendering strategy that fits constraints.</p>
             </div>
-            <p class="radio-timebox"><strong>Timebox:</strong> 10-12 min (45m) / 14-16 min (60m)</p>
+            <p class="radio-timebox"><strong>Timebox:</strong> 9 min (45m) / 12 min (60m)</p>
           </div>
           <div class="radio-step-grid">
             <section class="radio-col">
@@ -314,7 +315,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
               <p class="radio-step-title">Data model</p>
               <p class="radio-step-goal">Define client/server data contracts and state consistency rules.</p>
             </div>
-            <p class="radio-timebox"><strong>Timebox:</strong> 7-8 min (45m) / 9-10 min (60m)</p>
+            <p class="radio-timebox"><strong>Timebox:</strong> 5 min (45m) / 6 min (60m)</p>
           </div>
           <div class="radio-step-grid">
             <section class="radio-col">
@@ -354,7 +355,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
               <p class="radio-step-title">Interface</p>
               <p class="radio-step-goal">Translate design into components, interactions, and accessibility behavior.</p>
             </div>
-            <p class="radio-timebox"><strong>Timebox:</strong> 8-10 min (45m) / 10-12 min (60m)</p>
+            <p class="radio-timebox"><strong>Timebox:</strong> 7 min (45m) / 9 min (60m)</p>
           </div>
           <div class="radio-step-grid">
             <section class="radio-col">
@@ -392,9 +393,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <span class="radio-letter">O</span>
             <div>
               <p class="radio-step-title">Optimizations</p>
-              <p class="radio-step-goal">Show production readiness: performance, observability, security, trade-offs.</p>
+              <p class="radio-step-goal">Use the largest block for performance, observability, security, trade-offs, and deep dives.</p>
             </div>
-            <p class="radio-timebox"><strong>Timebox:</strong> 5-7 min (45m) / 7-9 min (60m)</p>
+            <p class="radio-timebox"><strong>Timebox:</strong> 15 min (45m) / 21 min (60m)</p>
           </div>
           <div class="radio-step-grid">
             <section class="radio-col">
@@ -428,194 +429,276 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </article>
       </div>
 
-      <h2>Interview Timeline</h2>
-
-      <h3>45-Minute Interview</h3>
+      <h2>45-minute interview timeline</h2>
       <table>
         <thead>
           <tr>
             <th>Time range</th>
-            <th>What to do</th>
+            <th>RADIO step</th>
             <th>Output artifact</th>
             <th>What to say out loud</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>0:00-0:03</td>
-            <td>Clarify prompt, user, and scope boundaries</td>
-            <td>Scope box draft</td>
-            <td>I will optimize for one core flow first, then extend.</td>
+            <td>0:00-0:06</td>
+            <td><strong>R - Requirements</strong></td>
+            <td>Scope box, must-have list, NFR priorities</td>
+            <td>I will lock the core flow, non-goals, and success metrics before architecture.</td>
           </tr>
           <tr>
-            <td>0:03-0:09</td>
-            <td>Requirements deep dive</td>
-            <td>Functional/NFR checklist</td>
-            <td>Let me confirm latency, accessibility, and SEO constraints.</td>
+            <td>0:06-0:15</td>
+            <td><strong>A - Architecture</strong></td>
+            <td>Client architecture, rendering choice, critical request flow</td>
+            <td>The browser, CDN, app shell, BFF/API, and state layer are the boxes I will draw first.</td>
           </tr>
           <tr>
-            <td>0:09-0:20</td>
-            <td>Architecture proposal</td>
-            <td>System diagram + rendering matrix</td>
-            <td>I am choosing SSR for entry + CSR for interaction speed.</td>
+            <td>0:15-0:20</td>
+            <td><strong>D - Data model</strong></td>
+            <td>Entities, server truth, client state, cache keys</td>
+            <td>I will separate server-originated data from client-only UI state.</td>
           </tr>
           <tr>
-            <td>0:20-0:28</td>
-            <td>Data model and state design</td>
-            <td>Entities + UI states matrix + cache policy</td>
-            <td>Server owns truth; client cache is query-keyed with TTL.</td>
+            <td>0:20-0:27</td>
+            <td><strong>I - Interface</strong></td>
+            <td>Component ownership, API contract, interaction states</td>
+            <td>Now I will define component responsibility, API shape, and accessibility behavior.</td>
           </tr>
           <tr>
-            <td>0:28-0:36</td>
-            <td>Interface and interaction plan</td>
-            <td>Component tree + flow</td>
-            <td>Here is state ownership and keyboard/focus behavior.</td>
-          </tr>
-          <tr>
-            <td>0:36-0:42</td>
-            <td>Optimizations and hardening</td>
-            <td>Perf budget + observability + security checklist</td>
-            <td>I will prioritize optimizations by impact and measurable gain.</td>
+            <td>0:27-0:42</td>
+            <td><strong>O - Optimizations/deep dive</strong></td>
+            <td>Perf budget, stale-state plan, observability, security trade-offs</td>
+            <td>I will spend the most time on the riskiest frontend constraints and measurable trade-offs.</td>
           </tr>
           <tr>
             <td>0:42-0:45</td>
-            <td>Wrap-up and trade-offs</td>
+            <td><strong>Recap</strong></td>
             <td>Decision summary + next steps</td>
-            <td>Trade-off: simpler now, scalable path identified for phase two.</td>
+            <td>The final trade-off is what I would ship first and what I would validate next.</td>
           </tr>
         </tbody>
       </table>
 
-      <h3>60-Minute Interview</h3>
+      <h2>60-minute interview timeline</h2>
       <table>
         <thead>
           <tr>
             <th>Time range</th>
-            <th>What to do</th>
+            <th>RADIO step</th>
             <th>Output artifact</th>
             <th>What to say out loud</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>0:00-0:05</td>
-            <td>Clarify goals, constraints, and success metrics</td>
-            <td>Scope box + metrics</td>
-            <td>I will use RADIO so we stay structured and complete.</td>
+            <td>0:00-0:08</td>
+            <td><strong>R - Requirements</strong></td>
+            <td>Scope box, user flows, NFRs, explicit non-goals</td>
+            <td>I will use RADIO, but I will adapt depth based on what the interviewer cares about.</td>
           </tr>
           <tr>
-            <td>0:05-0:14</td>
-            <td>Requirements and edge cases</td>
-            <td>Requirement map + non-goals</td>
-            <td>I am explicitly parking non-core features to protect depth.</td>
+            <td>0:08-0:20</td>
+            <td><strong>A - Architecture</strong></td>
+            <td>Primary architecture, one alternative, rendering matrix</td>
+            <td>I will compare the simple path with the scalable path before choosing.</td>
           </tr>
           <tr>
-            <td>0:14-0:30</td>
-            <td>Architecture with alternatives</td>
-            <td>Primary architecture + one alternative</td>
-            <td>Option A is faster to ship; Option B scales better long-term.</td>
+            <td>0:20-0:26</td>
+            <td><strong>D - Data model</strong></td>
+            <td>Entity model, cache policy, URL/client state split</td>
+            <td>These are the data contracts that prevent stale or inconsistent UI.</td>
           </tr>
           <tr>
-            <td>0:30-0:40</td>
-            <td>Data contracts and caching strategy</td>
-            <td>Entity diagram + state matrix + cache plan</td>
-            <td>These invalidation rules prevent stale UI in critical flows.</td>
+            <td>0:26-0:35</td>
+            <td><strong>I - Interface</strong></td>
+            <td>Component tree, API/interface contract, a11y state map</td>
+            <td>This is where I will define responsibility boundaries and the interaction contract.</td>
           </tr>
           <tr>
-            <td>0:40-0:50</td>
-            <td>Interface, a11y, and rendering details</td>
-            <td>Component ownership + interaction map</td>
-            <td>This keeps re-renders localized and keyboard UX reliable.</td>
+            <td>0:35-0:56</td>
+            <td><strong>O - Optimizations/deep dive</strong></td>
+            <td>Performance budget, resilience plan, telemetry, security, rollout risks</td>
+            <td>I will go deep on the bottleneck most likely to fail the user experience.</td>
           </tr>
           <tr>
-            <td>0:50-0:57</td>
-            <td>Perf, observability, and security</td>
-            <td>Perf budget + telemetry + security baseline</td>
-            <td>I am tracking user-perceived speed, not just backend latency.</td>
-          </tr>
-          <tr>
-            <td>0:57-1:00</td>
-            <td>Final recap</td>
+            <td>0:56-1:00</td>
+            <td><strong>Recap</strong></td>
             <td>Risks, trade-offs, iteration plan</td>
-            <td>Given more time, I would validate with load + accessibility audits.</td>
+            <td>Given more time, I would validate with load, accessibility, and real-user metrics.</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>What to Say Out Loud (Reusable Script Cues)</h2>
+      <h2>Candidate script</h2>
       <ol class="script-cues">
-        <li>I will use the RADIO framework so we cover scope to production hardening in order.</li>
-        <li>Before architecture, I want to lock must-haves, non-goals, and constraints.</li>
-        <li>I am optimizing for the primary user flow first, then we can extend.</li>
-        <li>For rendering, I will mix SSR for first paint and CSR for high-frequency interactions.</li>
-        <li>I will separate server truth from client-derived UI state to avoid sync bugs.</li>
-        <li>Let me define cache keys and invalidation now, so stale data behavior is explicit.</li>
-        <li>I am calling out accessibility behavior early: focus, keyboard navigation, and announcements.</li>
-        <li>Trade-off here: simpler implementation now vs higher complexity for future scale.</li>
-        <li>I will prioritize optimizations by impact and measurable improvement against a perf budget.</li>
-        <li>To wrap up: I have covered risks, observability, and what I would do in iteration two.</li>
+        <li><strong>Opening:</strong> I will use RADIO to move from requirements to architecture, data, interface, and the highest-risk deep dive.</li>
+        <li><strong>Requirements lock:</strong> Before drawing, I want to confirm the primary user, top flow, must-haves, non-goals, and success metrics.</li>
+        <li><strong>Architecture transition:</strong> With scope fixed, I will draw the browser, app shell, state layer, API boundary, and rendering strategy.</li>
+        <li><strong>Data model transition:</strong> Now I will separate server truth, client-only state, cache keys, invalidation, and stale-state behavior.</li>
+        <li><strong>Interface/API transition:</strong> I will define component responsibility, public props/events or APIs, loading states, and accessibility behavior.</li>
+        <li><strong>Optimization deep dive:</strong> I will choose the riskiest constraint and discuss measurable performance, reliability, observability, and security trade-offs.</li>
+        <li><strong>Challenged assumption:</strong> If that constraint changes, I would revise the rendering/cache/API choice first, then re-check the UI states it affects.</li>
+        <li><strong>Final recap:</strong> I would ship the simple path first, instrument the risky flow, and use real metrics to decide the next iteration.</li>
       </ol>
 
-      <h2>Mini Checklists</h2>
-
-      <h3>Before You Start</h3>
-      <ul class="mini-checklist">
-        <li>Confirm the primary user and top task.</li>
-        <li>Write must-have vs nice-to-have vs out-of-scope.</li>
-        <li>Ask for scale, traffic pattern, and latency expectations.</li>
-        <li>Set frontend performance targets (for example, p95 interaction latency).</li>
-        <li>Confirm accessibility baseline (keyboard + screen reader behavior).</li>
-        <li>Identify critical failure states (loading, empty, error, partial).</li>
-        <li>State security basics to include (auth boundary, XSS/CSRF protections).</li>
-        <li>Decide which artifacts you will draw in each RADIO step.</li>
-      </ul>
-
-      <h3>Before You Finish</h3>
-      <ul class="mini-checklist">
-        <li>Every RADIO step has one concrete artifact.</li>
-        <li>Critical UI states are fully covered (loading/empty/error/stale/partial).</li>
-        <li>Caching and invalidation rules are explicit.</li>
-        <li>Performance budget and top two optimizations are stated.</li>
-        <li>Accessibility behavior is described, not assumed.</li>
-        <li>Observability includes key metrics and alert direction.</li>
-        <li>Security basics are acknowledged in frontend context.</li>
-        <li>Final trade-off + next iteration plan is clearly summarized.</li>
-      </ul>
-
-      <h2>Quick Drill: Run RADIO on a Typeahead Search in 7 Minutes</h2>
+      <h2>One-page checklist</h2>
       <table>
         <thead>
           <tr>
             <th>Step</th>
-            <th>Time</th>
-            <th>Tiny template (what a good answer sounds like)</th>
+            <th>Artifact</th>
+            <th>Interviewer signal</th>
+            <th>Common miss</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><strong>R</strong></td>
-            <td>1 min</td>
-            <td>Goal: users find items in less than 150ms perceived response. In scope: suggestions + keyboard nav. Out of scope: personalized ranking.</td>
+            <td>Scope box, NFRs, success metrics, non-goals</td>
+            <td>You avoid solving the wrong problem.</td>
+            <td>Jumping into components before clarifying the core flow.</td>
           </tr>
           <tr>
             <td><strong>A</strong></td>
-            <td>1.5 min</td>
-            <td>Input debounced at 150ms, cancel stale requests, fetch via BFF, SSR shell + CSR widget for fast interaction.</td>
+            <td>Client architecture, rendering matrix, request flow</td>
+            <td>You can map product requirements to frontend architecture.</td>
+            <td>Drawing backend infrastructure while ignoring client boundaries.</td>
           </tr>
           <tr>
             <td><strong>D</strong></td>
-            <td>1.5 min</td>
-            <td>Entity: <code>Suggestion&#123;id,label,type&#125;</code>. Cache by normalized query with short TTL; states: idle/loading/results/empty/error.</td>
+            <td>Entities, state ownership, cache keys, invalidation rules</td>
+            <td>You understand server data, client state, and stale UI risk.</td>
+            <td>Mixing domain data, view state, and derived state.</td>
           </tr>
           <tr>
             <td><strong>I</strong></td>
-            <td>1.5 min</td>
-            <td>Use combobox/listbox pattern, arrow keys + Enter, clear focus handling, highlight matched substrings.</td>
+            <td>Component responsibility, API/interface contract, UI states, a11y behavior</td>
+            <td>You can turn architecture into an implementable UI contract.</td>
+            <td>Skipping keyboard, focus, loading, empty, and error states.</td>
           </tr>
           <tr>
             <td><strong>O</strong></td>
-            <td>1.5 min</td>
-            <td>Perf budget: keystroke-to-suggestion p95 less than 150ms. Track latency/error/zero-result rate; add virtualization for long lists.</td>
+            <td>Perf budget, observability, security baseline, trade-off backlog</td>
+            <td>You can defend production readiness with measurable priorities.</td>
+            <td>Listing optimizations without measurement or user impact.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Run RADIO on autocomplete, news feed, and chat</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Prompt</th>
+            <th>R/A/D/I/O one-liners</th>
+            <th>Practice route</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Autocomplete search</strong></td>
+            <td>
+              R: latest query wins under 150ms perceived latency. A: debounced input, cancellable requests, BFF/API boundary.
+              D: <code>Suggestion&#123;id,label,type&#125;</code>, query-keyed cache, idle/loading/results/empty/error/stale states.
+              I: combobox/listbox, keyboard navigation, focus recovery. O: stale response guards, zero-result telemetry, API latency alerts.
+            </td>
+            <td><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Real-time search design</a></td>
+          </tr>
+          <tr>
+            <td><strong>News feed</strong></td>
+            <td>
+              R: users need fresh posts, infinite loading, and reliable interaction feedback. A: feed shell, paginated API, optimistic action path.
+              D: posts, authors, cursors, reaction state, normalized cache. I: card ownership, composer, skeletons, retry states. O: virtualization,
+              image lazy loading, prefetch, RUM for scroll jank and failed mutations.
+            </td>
+            <td><a [routerLink]="['/', 'system-design', 'news-feed-timeline']">News feed timeline</a></td>
+          </tr>
+          <tr>
+            <td><strong>Chat input</strong></td>
+            <td>
+              R: users need low-latency composition, submission, and recovery from failed sends. A: input shell, streaming/message API, draft persistence.
+              D: draft, message, attachment, pending/error states. I: textarea resizing, shortcuts, screen-reader announcements. O: offline retry,
+              rate-limit handling, observability for send latency and dropped messages.
+            </td>
+            <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">AI chat text area</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Common interviewer follow-ups</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Follow-up</th>
+            <th>Answer pattern</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>What if scope doubles halfway through?</td>
+            <td>Restate the new must-have, keep the original core flow stable, and explicitly move one lower-value feature to phase two.</td>
+          </tr>
+          <tr>
+            <td>What if the API is slow or unreliable?</td>
+            <td>Add timeout, retry, stale-cache fallback, clear error UI, and telemetry for latency/error rate before changing the whole architecture.</td>
+          </tr>
+          <tr>
+            <td>What changes on mobile?</td>
+            <td>Prioritize interaction latency, smaller payloads, touch targets, viewport-safe layouts, and reduced background work.</td>
+          </tr>
+          <tr>
+            <td>How do you prove accessibility?</td>
+            <td>Name roles, keyboard paths, focus transitions, announcements, and the manual or automated checks you would run.</td>
+          </tr>
+          <tr>
+            <td>How do you prevent stale data?</td>
+            <td>Define cache keys, invalidation triggers, latest-intent guards, optimistic rollback rules, and visible stale/error states.</td>
+          </tr>
+          <tr>
+            <td>What is your performance budget?</td>
+            <td>Pick user-facing metrics first: LCP/INP/CLS, interaction latency, API p95, long tasks, bundle KB, and memory pressure.</td>
+          </tr>
+          <tr>
+            <td>What security belongs in frontend design?</td>
+            <td>Cover auth boundary, CSRF/XSS risks, output escaping, safe URL handling, rate-limit UX, and never exposing secrets client-side.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What good vs weak answers sound like</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Weak answer</th>
+            <th>Strong answer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>R</strong></td>
+            <td>I will build all the features and make it scalable.</td>
+            <td>I will optimize the primary flow first, list must-haves/non-goals, and set latency, accessibility, and reliability targets.</td>
+          </tr>
+          <tr>
+            <td><strong>A</strong></td>
+            <td>I will use React and a backend API.</td>
+            <td>I will draw the app shell, routing/rendering choice, state boundary, API/BFF boundary, and failure paths.</td>
+          </tr>
+          <tr>
+            <td><strong>D</strong></td>
+            <td>The backend stores the data and the frontend shows it.</td>
+            <td>I will define entities, server truth, client-only state, derived state, cache keys, TTLs, and invalidation triggers.</td>
+          </tr>
+          <tr>
+            <td><strong>I</strong></td>
+            <td>I will make components and pass props.</td>
+            <td>I will define component ownership, public APIs/events, loading/empty/error states, focus behavior, and announcements.</td>
+          </tr>
+          <tr>
+            <td><strong>O</strong></td>
+            <td>I will optimize performance and add monitoring.</td>
+            <td>I will pick the riskiest bottleneck, set a budget, choose two high-impact optimizations, and instrument the flow.</td>
           </tr>
         </tbody>
       </table>

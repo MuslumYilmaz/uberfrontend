@@ -393,16 +393,16 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'RADIO Framework for Frontend System Design Interviews',
+        title: 'RADIO Framework for Frontend System Design: Requirements to Optimizations',
         minutes: 20,
-        summary: 'Use the RADIO framework to ace frontend system design interviews with reusable artifacts, timelines, and scripts for focused preparation.',
+        summary: 'Use RADIO in 45- or 60-minute frontend system design interviews to move from requirements to architecture, data model, interface, and optimizations with clear artifacts and trade-offs.',
         seo: {
-            title: 'RADIO Framework for Frontend System Design Interviews',
-            description: 'Use the RADIO framework to ace frontend system design interviews with reusable artifacts, timelines, and scripts for focused preparation.',
+            title: 'RADIO Framework for Frontend System Design: Requirements to Optimizations',
+            description: 'Use RADIO in 45- or 60-minute frontend system design interviews: requirements, architecture, data model, interface, and optimizations.',
             primaryKeyword: 'radio framework for frontend system design interviews',
-            keywords: ['radio framework for frontend system design interviews', 'radio framework frontend', 'frontend system design radio method'],
+            keywords: ['radio approach system design', 'frontend system design radio framework', 'requirements architecture data interface optimizations'],
             publishedAt: '2026-02-18',
-            updatedAt: '2026-05-03',
+            updatedAt: '2026-05-10',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')

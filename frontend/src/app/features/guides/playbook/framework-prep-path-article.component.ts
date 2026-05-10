@@ -11,6 +11,35 @@ type RouteLink = {
   note: string;
 };
 
+type FrameworkPracticeNextConfig = {
+  label: string;
+  tech: 'javascript' | 'react' | 'angular' | 'vue';
+  questionHubRoute: any[];
+};
+
+const FRAMEWORK_PRACTICE_NEXT: Record<string, FrameworkPracticeNextConfig> = {
+  'javascript-prep-path': {
+    label: 'JavaScript',
+    tech: 'javascript',
+    questionHubRoute: ['/', 'javascript', 'interview-questions'],
+  },
+  'react-prep-path': {
+    label: 'React',
+    tech: 'react',
+    questionHubRoute: ['/', 'react', 'interview-questions'],
+  },
+  'angular-prep-path': {
+    label: 'Angular',
+    tech: 'angular',
+    questionHubRoute: ['/', 'angular', 'interview-questions'],
+  },
+  'vue-prep-path': {
+    label: 'Vue',
+    tech: 'vue',
+    questionHubRoute: ['/', 'vue', 'interview-questions'],
+  },
+};
+
 type SequenceStep = {
   title: string;
   link: any[];
@@ -7193,6 +7222,16 @@ function onInput(value) {
           </p>
         </ng-container>
       </ng-template>
+
+      <section class="fp-card fp-practice-next" aria-label="Practice next">
+        <h2>Practice next</h2>
+        <ul class="fp-list fp-list--compact">
+          <li *ngFor="let link of practiceNextLinks">
+            <a [routerLink]="link.route" [queryParams]="link.queryParams || null">{{ link.label }}</a>
+            — {{ link.note }}
+          </li>
+        </ul>
+      </section>
     </fa-guide-shell>
   `,
   styles: [`
@@ -7258,6 +7297,7 @@ function onInput(value) {
       background: color-mix(in srgb, var(--uf-accent) 58%, var(--uf-border-subtle));
     }
 
+    :host ::ng-deep fa-guide-shell .content .fp-card > h2,
     :host ::ng-deep fa-guide-shell .content .fp-card > h3,
     :host ::ng-deep fa-guide-shell .content .fp-card > h4 {
       margin-top: 0;
@@ -7579,6 +7619,7 @@ export class FrameworkPrepPathArticle {
   readonly config: FrameworkPrepConfig = (() => {
     return PREP_CONFIG[this.slug] ?? PREP_CONFIG['javascript-prep-path'];
   })();
+  readonly practiceNextLinks: RouteLink[] = this.buildPracticeNextLinks(this.slug);
   readonly displayFaqGroups: FaqGroup[] = (this.config.faqGroups ?? []).filter(
     (group) => !/evidence index/i.test(group.title) && !/evidence/i.test(group.id),
   );
@@ -7718,6 +7759,39 @@ export class FrameworkPrepPathArticle {
   defaultSectionHeading(offset: number, label: string): string {
     if (!this.firstDefaultCoreSectionNumber) return label;
     return `Section ${this.firstDefaultCoreSectionNumber + offset} — ${label}`;
+  }
+
+  private buildPracticeNextLinks(slug: string): RouteLink[] {
+    const config = FRAMEWORK_PRACTICE_NEXT[slug] ?? FRAMEWORK_PRACTICE_NEXT['javascript-prep-path'];
+    return [
+      {
+        label: `${config.label} interview questions hub`,
+        route: config.questionHubRoute,
+        note: `Review the ${config.label} coding and concept prompts together before mixed rounds.`,
+      },
+      {
+        label: `${config.label} coding question library filter`,
+        route: ['/coding'],
+        queryParams: { tech: config.tech, kind: 'coding', reset: '1' },
+        note: 'Apply the path with implementation drills and edge-case checks.',
+      },
+      {
+        label: `${config.label} trivia question library filter`,
+        route: ['/coding'],
+        queryParams: { tech: config.tech, kind: 'trivia', reset: '1' },
+        note: 'Practice concise explanations for framework concepts and trade-offs.',
+      },
+      {
+        label: 'Interview Blueprint',
+        route: ['/', 'guides', 'interview-blueprint'],
+        note: 'Connect framework prep to round strategy, communication, and closing questions.',
+      },
+      {
+        label: 'System Design Blueprint',
+        route: ['/', 'guides', 'system-design-blueprint'],
+        note: 'Move from framework-specific practice into frontend architecture interview structure.',
+      },
+    ];
   }
 
   readonly javascriptFaqGroups: FaqGroup[] = [
