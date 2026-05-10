@@ -61,7 +61,7 @@ test('seo: css display flex page keeps route identity + structured data', async 
   const jsonLd = page.locator('script#seo-jsonld');
   await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
   await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('TechArticle');
-  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('FAQPage');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').not.toContain('FAQPage');
 
   const triviaMain = page.getByTestId('trivia-detail-main');
   await expect(triviaMain).toContainText(/inline-flex/i);
