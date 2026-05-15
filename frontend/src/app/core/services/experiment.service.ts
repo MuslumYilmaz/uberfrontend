@@ -5,7 +5,6 @@ import { AuthService } from './auth.service';
 export type ExperimentId =
   | 'hero_headline_cta_v1'
   | 'signup_prompt_copy_v1'
-  | 'pricing_risk_reversal_placement_v1'
   | 'premium_gate_copy_v1'
   | 'assist_intervention_timing_v1'
   | 'assist_hint_density_v1';
@@ -13,7 +12,6 @@ export type ExperimentId =
 export type ExperimentVariantMap = {
   hero_headline_cta_v1: 'control' | 'outcome';
   signup_prompt_copy_v1: 'control' | 'benefit';
-  pricing_risk_reversal_placement_v1: 'top' | 'after_plans';
   premium_gate_copy_v1: 'control' | 'value';
   assist_intervention_timing_v1: 'early_l1' | 'late_l2';
   assist_hint_density_v1: 'full' | 'compact';
@@ -33,10 +31,6 @@ const DEFINITIONS: {
   },
   signup_prompt_copy_v1: {
     variants: ['control', 'benefit'],
-    weights: [50, 50],
-  },
-  pricing_risk_reversal_placement_v1: {
-    variants: ['top', 'after_plans'],
     weights: [50, 50],
   },
   premium_gate_copy_v1: {

@@ -2,10 +2,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { PricingPlansSectionComponent } from './components/pricing-plans-section/pricing-plans-section.component';
+import {
+  PRICING_PAGE_LAYOUT,
+  RECOMMENDED_PRICING_PLAN,
+  PricingPlansSectionComponent,
+} from './components/pricing-plans-section/pricing-plans-section.component';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
-import { ExperimentService } from '../../core/services/experiment.service';
 import { PlanId } from '../../core/utils/payments-provider.util';
 
 @Component({
@@ -20,7 +23,6 @@ import { PlanId } from '../../core/utils/payments-provider.util';
         [paymentsEnabled]="paymentsEnabled"
         [paymentsConfigReady]="paymentsConfigReady"
         [checkoutAvailability]="checkoutAvailability"
-        [riskReversalPlacement]="riskReversalPlacement"
         analyticsSource="pricing_page"
         ctaMode="emit">
       </app-pricing-plans-section>
@@ -32,31 +34,19 @@ export class PricingComponent implements OnInit {
   paymentsEnabled = true;
   paymentsConfigReady = false;
   checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
-  riskReversalPlacement: 'top' | 'after_plans' = 'top';
 
   constructor(
     private analytics: AnalyticsService,
     private billingCheckout: BillingCheckoutService,
-    private experiments: ExperimentService,
     private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
-    this.riskReversalPlacement = this.experiments.variant(
-      'pricing_risk_reversal_placement_v1',
-      'pricing_page',
-    );
-    this.experiments.expose(
-      'pricing_risk_reversal_placement_v1',
-      this.riskReversalPlacement,
-      'pricing_page',
-      'pricing_page',
-    );
-
     this.analytics.track('pricing_viewed', {
       src: this.readSource(),
       page: 'pricing',
-      risk_reversal_variant: this.riskReversalPlacement,
+      page_layout: PRICING_PAGE_LAYOUT,
+      recommended_plan: RECOMMENDED_PRICING_PLAN,
     });
 
     if (typeof window !== 'undefined') {

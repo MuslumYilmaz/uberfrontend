@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
@@ -16,6 +16,9 @@ import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-change
 type PricingVariant = 'full' | 'compact';
 type CtaMode = 'emit' | 'navigatePricing';
 
+export const PRICING_PAGE_LAYOUT = 'interview_sprint_v1';
+export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
+
 @Component({
   standalone: true,
   selector: 'app-pricing-plans-section',
@@ -24,36 +27,131 @@ type CtaMode = 'emit' | 'navigatePricing';
   template: `
     <section class="pr-wrap" [class.pr-wrap--compact]="variant === 'compact'">
       <header class="pr-hero" *ngIf="variant === 'full'">
-        <p class="pr-kicker">Pricing</p>
-        <h1>Practice frontend the way interviews actually work</h1>
-        <p class="muted">One place to code, preview, test, and review — with continuous updates.</p>
-        <p class="pr-early">No fake urgency. Start free, then upgrade only if the workflow fits your prep.</p>
+        <p class="pr-kicker">Premium for interview sprints</p>
+        <h1>Prepare faster with deeper frontend interview reps</h1>
+        <p class="muted">
+          Premium unlocks the full coding and system-design depth behind the free workflow:
+          deeper prompts, guided solutions where available, track/company depth, and saved progress while you prep.
+        </p>
       </header>
+
+      <div class="plan-unlock-strip">
+        <div class="plan-unlock-strip__copy">
+          <p>Same Premium library. Choose the timeline that fits your prep.</p>
+        </div>
+        <div class="pr-proof-chips" aria-label="Premium highlights">
+          <span *ngFor="let chip of proofChips">{{ chip }}</span>
+        </div>
+      </div>
+
+      <div class="pr-grid" #planCardsRef>
+        <article class="pr-card" *ngFor="let plan of plans" [class.pr-rec]="plan.id === recommendedPlan">
+          <div class="rec-badge" *ngIf="plan.badge" [class.rec-badge--muted]="plan.id !== recommendedPlan">{{ plan.badge }}</div>
+          <h3 class="title">{{ plan.title }}</h3>
+          <p class="plan-summary">{{ plan.summary }}</p>
+          <div class="price">
+            {{ plan.price }}<span>{{ plan.priceSuffix }}</span>
+          </div>
+          <p class="billing-note">{{ plan.billing }}</p>
+          <ul class="features">
+            <li *ngFor="let feat of plan.features">{{ feat }}</li>
+          </ul>
+          <button
+            class="btn"
+            type="button"
+            (click)="onCta(plan.id)"
+            [disabled]="isCheckoutDisabled(plan.id)"
+            [attr.aria-disabled]="isCheckoutDisabled(plan.id) ? 'true' : null"
+            [attr.title]="checkoutTooltip(plan.id)"
+            [attr.data-testid]="'pricing-cta-' + plan.id">
+            {{ ctaTextFor(plan) }}
+          </button>
+          <div class="plan-note" *ngIf="plan.note">
+            <span class="plan-note__label">Note</span>
+            <span class="plan-note__text">{{ plan.note }}</span>
+          </div>
+        </article>
+      </div>
+
+      <section class="unlock-preview" *ngIf="variant === 'full'" #unlockPreviewRef>
+        <div class="unlock-preview__head">
+          <p class="eyebrow">Premium unlock preview</p>
+          <h2>See what Premium adds after the free workflow</h2>
+        </div>
+        <div class="unlock-preview__grid">
+          <article class="unlock-preview__card" *ngFor="let item of unlockPreviewCards">
+            <div class="unlock-preview__icon" aria-hidden="true">
+              <i [class]="item.icon"></i>
+            </div>
+            <div class="unlock-preview__body">
+              <p class="unlock-preview__eyebrow">{{ item.label }}</p>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.desc }}</p>
+              <ul>
+                <li *ngFor="let bullet of item.bullets">{{ bullet }}</li>
+              </ul>
+            </div>
+            <a
+              class="unlock-preview__link"
+              [routerLink]="item.route"
+              (click)="trackUnlockPreviewClick(item)">
+              View preview
+            </a>
+          </article>
+        </div>
+      </section>
+
+      <section class="value-anchor" *ngIf="variant === 'full'" #valueAnchorRef>
+        <div class="value-anchor__head">
+          <p class="eyebrow">Why upgrade now?</p>
+          <h2>Use Free Explorer to sample. Use Premium when the interview clock is running.</h2>
+          <p class="muted">
+            If you are just browsing, stay free. If you have interviews coming up,
+            Premium reduces hunting and setup time so more of your session becomes practice.
+          </p>
+        </div>
+        <div class="value-anchor__grid">
+          <article *ngFor="let item of valueAnchors">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+          </article>
+        </div>
+      </section>
+
+      <ng-container *ngIf="variant === 'full'">
+        <ng-container [ngTemplateOutlet]="riskReversalBlock"></ng-container>
+      </ng-container>
 
       <section class="free-explorer" *ngIf="variant === 'full'">
         <div class="free-explorer__head">
           <p class="eyebrow">Free Explorer</p>
-          <h2>Free forever, no card required</h2>
+          <h2>Not ready to pay? Run a free challenge first</h2>
         </div>
         <ul class="free-explorer__list">
-          <li>Open and solve free coding, trivia, and system design questions.</li>
-          <li>Run tests and use live preview where the question supports it.</li>
-          <li>Browse track and company previews before deciding to buy.</li>
+          <li>Open a free challenge and run tests or preview before upgrading.</li>
+          <li>Browse the free library and premium previews to judge fit.</li>
+          <li>No card required until you choose a Premium plan.</li>
         </ul>
         <div class="free-explorer__actions">
           <a
             class="link-btn link-btn--primary"
             [routerLink]="['/react', 'coding', 'react-counter']"
-            [queryParams]="{ src: 'pricing_free_explorer' }">
+            [queryParams]="{ src: 'pricing_free_explorer' }"
+            (click)="trackFreePathClick('free_challenge', '/react/coding/react-counter')">
             Try free challenge
           </a>
-          <a class="link-btn" [routerLink]="['/coding']">Browse free library</a>
+          <a
+            class="link-btn"
+            [routerLink]="['/coding']"
+            (click)="trackFreePathClick('browse_library', '/coding')">
+            Browse free library
+          </a>
         </div>
       </section>
 
       <section class="plan-compare" *ngIf="variant === 'full'">
         <h2 class="pr-section-title">Free vs Premium</h2>
-        <p class="muted pr-section-subtitle">Use Premium when you want depth and speed, not because free access is blocked.</p>
+        <p class="muted pr-section-subtitle">Use Premium for focused depth; keep Free Explorer for sampling and warm-ups.</p>
         <table>
           <thead>
             <tr>
@@ -71,51 +169,6 @@ type CtaMode = 'emit' | 'navigatePricing';
           </tbody>
         </table>
       </section>
-
-      <ng-container *ngIf="variant === 'full' && riskReversalPlacement === 'top'">
-        <ng-container [ngTemplateOutlet]="riskReversalBlock"></ng-container>
-      </ng-container>
-
-      <div class="included-box">
-        <h3>Included in all plans</h3>
-        <ul>
-          <li>Access to coding + UI-first question sets</li>
-          <li>Live preview workflow (where available)</li>
-          <li>Progress tracking and saved work</li>
-          <li>Core library updates</li>
-        </ul>
-      </div>
-
-      <div class="pr-grid">
-        <article class="pr-card" *ngFor="let plan of plans" [class.pr-rec]="plan.badge">
-          <div class="rec-badge" *ngIf="plan.badge">{{ plan.badge }}</div>
-          <h3 class="title">{{ plan.title }}</h3>
-          <div class="price">
-            {{ plan.price }}<span>{{ plan.priceSuffix }}</span>
-          </div>
-          <ul class="features">
-            <li *ngFor="let feat of plan.features">{{ feat }}</li>
-          </ul>
-          <button
-            class="btn"
-            type="button"
-            (click)="onCta(plan.id)"
-            [disabled]="isCheckoutDisabled(plan.id)"
-            [attr.aria-disabled]="isCheckoutDisabled(plan.id) ? 'true' : null"
-            [attr.title]="checkoutTooltip(plan.id)"
-            [attr.data-testid]="'pricing-cta-' + plan.id">
-            {{ ctaText }}
-          </button>
-          <div class="plan-note" *ngIf="plan.note">
-            <span class="plan-note__label">Note</span>
-            <span class="plan-note__text">{{ plan.note }}</span>
-          </div>
-        </article>
-      </div>
-
-      <ng-container *ngIf="variant === 'full' && riskReversalPlacement === 'after_plans'">
-        <ng-container [ngTemplateOutlet]="riskReversalBlock"></ng-container>
-      </ng-container>
 
       <section class="pr-features" *ngIf="variant === 'full'">
         <h2 class="pr-section-title">What you get in FrontendAtlas</h2>
@@ -248,7 +301,7 @@ type CtaMode = 'emit' | 'navigatePricing';
     </app-login-required-dialog>
   `,
 })
-export class PricingPlansSectionComponent implements OnInit, OnDestroy {
+export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   private static readonly CHECKOUT_PLAN_KEY = 'fa:checkout:last_plan_id';
   private static readonly CHECKOUT_SOURCE_KEY = 'fa:checkout:last_source';
   private static readonly SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
@@ -259,9 +312,13 @@ export class PricingPlansSectionComponent implements OnInit, OnDestroy {
   @Input() ctaMode: CtaMode = 'navigatePricing';
   @Input() ctaLabel?: string;
   @Input() analyticsSource = 'pricing';
-  @Input() riskReversalPlacement: 'top' | 'after_plans' = 'top';
+  @Input() riskReversalPlacement: 'top' | 'after_plans' = 'after_plans';
   @Input() checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
   @Output() ctaClick = new EventEmitter<{ planId: PlanId }>();
+
+  @ViewChild('planCardsRef') private planCardsRef?: ElementRef<HTMLElement>;
+  @ViewChild('unlockPreviewRef') private unlockPreviewRef?: ElementRef<HTMLElement>;
+  @ViewChild('valueAnchorRef') private valueAnchorRef?: ElementRef<HTMLElement>;
 
   private checkoutLoading: PlanId | null = null;
   loginRequiredOpen = false;
@@ -271,23 +328,88 @@ export class PricingPlansSectionComponent implements OnInit, OnDestroy {
   loginRequiredCta = 'Sign in / create account';
   checkoutNotice: string | null = null;
   private checkoutNoticeTimer?: number;
+  private visibilityObserver?: IntersectionObserver;
+  private readonly observedTargets = new WeakMap<Element, 'plan_cards' | 'unlock_preview' | 'value_anchor'>();
+  private planCardsSeenTracked = false;
+  private unlockPreviewSeenTracked = false;
+  private valueAnchorSeenTracked = false;
   changelogPreview = PUBLIC_CHANGELOG_ENTRIES.slice(0, 3);
+  recommendedPlan = RECOMMENDED_PRICING_PLAN;
+
+  proofChips = ['140+ premium prompts', 'coding + system design', 'guided solution depth'];
+
+  unlockPreviewCards: Array<{
+    previewType: string;
+    label: string;
+    title: string;
+    desc: string;
+    bullets: string[];
+    icon: string;
+    route: any[];
+    destination: string;
+  }> = [
+      {
+        previewType: 'coding_depth',
+        label: 'Coding depth',
+        title: 'Contact Form (Component + HTTP)',
+        desc: 'Practice a realistic React form with validation and async submit behavior.',
+        bullets: ['Controlled inputs and submit states', 'Preview the locked prompt before buying'],
+        icon: 'fa-solid fa-code',
+        route: ['/', 'react', 'coding', 'react-contact-form-starter'],
+        destination: '/react/coding/react-contact-form-starter',
+      },
+      {
+        previewType: 'system_design_depth',
+        label: 'System design depth',
+        title: 'Multi-step Form with Autosave',
+        desc: 'Work through UI architecture, persistence, validation, and recovery tradeoffs.',
+        bullets: ['Front-end system design scenario', 'Structured constraints and review angles'],
+        icon: 'fa-solid fa-sitemap',
+        route: ['/', 'system-design', 'multi-step-form-autosave'],
+        destination: '/system-design/multi-step-form-autosave',
+      },
+      {
+        previewType: 'solution_depth',
+        label: 'Solution depth',
+        title: 'Throttle Function',
+        desc: 'Use guided solution coverage where available to compare edge cases and tradeoffs.',
+        bullets: ['Implementation pitfalls and edge cases', 'Solution depth where available'],
+        icon: 'fa-solid fa-list-check',
+        route: ['/', 'javascript', 'coding', 'js-throttle'],
+        destination: '/javascript/coding/js-throttle',
+      },
+    ];
+
+  valueAnchors = [
+    {
+      title: 'More targeted reps',
+      desc: 'Premium unlocks deeper coding and system-design prompts when you need more than warm-ups.',
+    },
+    {
+      title: 'Less setup time',
+      desc: 'Use the browser workflow to code, preview, test, and review instead of assembling practice from scattered tabs.',
+    },
+    {
+      title: 'Keep sprint momentum',
+      desc: 'Save progress, return to the next prompt, and keep your prep loop moving across sessions.',
+    },
+  ];
 
   comparisonRows: Array<{ label: string; freeValue: string; premiumValue: string }> = [
     {
-      label: 'Interactive practice',
-      freeValue: 'Selected free questions',
-      premiumValue: 'Full question library and track depth',
+      label: 'Practice depth',
+      freeValue: 'Selected free coding, trivia, and system design prompts',
+      premiumValue: 'Full premium prompt sets across coding and system design',
     },
     {
-      label: 'Track and company guidance',
-      freeValue: 'Public previews only',
-      premiumValue: 'Full guided sets and premium-only sections',
+      label: 'Interview sprint guidance',
+      freeValue: 'Public previews and warm-up paths',
+      premiumValue: 'Track/company depth and guided solution coverage where available',
     },
     {
-      label: 'Upgrade confidence',
-      freeValue: 'Try first without account',
-      premiumValue: 'Paid access with refund policy and legal transparency',
+      label: 'Continuity',
+      freeValue: 'Local drafts and free browsing',
+      premiumValue: 'Account-backed progress while using the full Premium library',
     },
   ];
 
@@ -296,44 +418,59 @@ export class PricingPlansSectionComponent implements OnInit, OnDestroy {
     title: string;
     price: string;
     priceSuffix: string;
+    summary: string;
+    billing: string;
     features: string[];
     badge: string;
+    ctaLabel: string;
     note?: string;
   }> = [
       {
         id: 'monthly',
         title: 'Monthly',
         price: '$12',
-        priceSuffix: '',
-        features: ['Updates while active'],
+        priceSuffix: ' / month',
+        summary: 'Best for trying Premium',
+        billing: 'Billed monthly',
+        features: ['Full Premium content', 'Cancel before the next renewal'],
         badge: '',
+        ctaLabel: 'Start monthly',
         note: 'Final price, currency, and taxes are shown at checkout.',
       },
       {
         id: 'quarterly',
         title: 'Quarterly',
         price: '$29',
-        priceSuffix: '',
-        features: ['Updates while active'],
-        badge: '',
+        priceSuffix: ' / 3 months',
+        summary: 'Best for 4-12 week interview prep',
+        billing: '$9.67/mo billed quarterly',
+        features: ['Full Premium content', 'Fits a focused interview sprint'],
+        badge: 'Recommended sprint',
+        ctaLabel: 'Start quarterly',
         note: 'Final price, currency, and taxes are shown at checkout.',
       },
       {
         id: 'annual',
         title: 'Annual',
         price: '$79',
-        priceSuffix: '',
-        features: ['Best value for active prep', 'More front-end system design scenarios (planned)'],
-        badge: 'Best for active prep',
+        priceSuffix: ' / year',
+        summary: 'Best value if you’ll keep practicing',
+        billing: '$6.58/mo billed yearly',
+        features: ['Full Premium content', 'Best value for ongoing prep'],
+        badge: 'Best value',
+        ctaLabel: 'Start annual',
         note: 'Final price, currency, and taxes are shown at checkout.',
       },
       {
         id: 'lifetime',
         title: 'Lifetime',
         price: '$199',
-        priceSuffix: '',
-        features: ['One-time payment', 'Premium access forever'],
+        priceSuffix: ' once',
+        summary: 'For long-term reuse',
+        billing: 'One-time payment',
+        features: ['Full Premium content', 'Premium access forever'],
         badge: 'Lifetime access',
+        ctaLabel: 'Get lifetime access',
         note: 'Final price, currency, and taxes are shown at checkout.',
       },
     ];
@@ -516,10 +653,10 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     },
   ];
 
-  get ctaText(): string {
+  ctaTextFor(plan: { ctaLabel: string }): string {
     if (isProActive(this.auth.user())) return 'Manage subscription';
     if (this.ctaLabel) return this.ctaLabel;
-    return this.paymentsEnabled ? 'Upgrade' : 'Upgrade';
+    return plan.ctaLabel;
   }
 
   constructor(
@@ -551,10 +688,31 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     });
   }
 
+  trackFreePathClick(cta: string, destination: string): void {
+    this.analytics.track('pricing_free_path_clicked', {
+      ...this.pricingAnalyticsBase(),
+      cta,
+      destination,
+    });
+  }
+
+  trackUnlockPreviewClick(item: { previewType: string; destination: string }): void {
+    this.analytics.track('pricing_unlock_preview_clicked', {
+      ...this.pricingAnalyticsBase(),
+      preview_type: item.previewType,
+      destination: item.destination,
+    });
+  }
+
   ngOnInit(): void {
     if (typeof window !== 'undefined' && this.paymentsEnabled) {
       void this.billingCheckout.prefetch();
     }
+  }
+
+  ngAfterViewInit(): void {
+    if (typeof window === 'undefined') return;
+    this.observePricingVisibility();
   }
 
   ngOnDestroy(): void {
@@ -562,6 +720,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       window.clearTimeout(this.checkoutNoticeTimer);
       this.checkoutNoticeTimer = undefined;
     }
+    this.visibilityObserver?.disconnect();
+    this.visibilityObserver = undefined;
   }
 
   isCheckoutAvailable(planId: PlanId): boolean {
@@ -586,6 +746,76 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     return 'Checkout is temporarily unavailable.';
   }
 
+  private observePricingVisibility(): void {
+    const targets: Array<{ element?: Element; key: 'plan_cards' | 'unlock_preview' | 'value_anchor' }> = [
+      { element: this.planCardsRef?.nativeElement, key: 'plan_cards' },
+      { element: this.unlockPreviewRef?.nativeElement, key: 'unlock_preview' },
+      { element: this.valueAnchorRef?.nativeElement, key: 'value_anchor' },
+    ];
+    const visibleTargets = targets.filter((target): target is { element: Element; key: 'plan_cards' | 'unlock_preview' | 'value_anchor' } => !!target.element);
+    if (!visibleTargets.length) return;
+
+    if (typeof window.IntersectionObserver !== 'function') {
+      for (const target of visibleTargets) {
+        if (target.key === 'plan_cards') this.trackPlanCardsSeen();
+        if (target.key === 'unlock_preview') this.trackUnlockPreviewSeen();
+        if (target.key === 'value_anchor') this.trackValueAnchorSeen();
+      }
+      return;
+    }
+
+    this.visibilityObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const key = this.observedTargets.get(entry.target);
+        if (key === 'plan_cards') {
+          this.trackPlanCardsSeen();
+          this.visibilityObserver?.unobserve(entry.target);
+        }
+        if (key === 'unlock_preview') {
+          this.trackUnlockPreviewSeen();
+          this.visibilityObserver?.unobserve(entry.target);
+        }
+        if (key === 'value_anchor') {
+          this.trackValueAnchorSeen();
+          this.visibilityObserver?.unobserve(entry.target);
+        }
+      }
+    }, { threshold: 0.25 });
+
+    for (const target of visibleTargets) {
+      this.observedTargets.set(target.element, target.key);
+      this.visibilityObserver.observe(target.element);
+    }
+  }
+
+  private trackPlanCardsSeen(): void {
+    if (this.planCardsSeenTracked) return;
+    this.planCardsSeenTracked = true;
+    this.analytics.track('pricing_plan_cards_seen', {
+      ...this.pricingAnalyticsBase(),
+      plan_count: this.plans.length,
+    });
+  }
+
+  private trackUnlockPreviewSeen(): void {
+    if (this.unlockPreviewSeenTracked) return;
+    this.unlockPreviewSeenTracked = true;
+    this.analytics.track('pricing_unlock_preview_seen', {
+      ...this.pricingAnalyticsBase(),
+      card_count: this.unlockPreviewCards.length,
+    });
+  }
+
+  private trackValueAnchorSeen(): void {
+    if (this.valueAnchorSeenTracked) return;
+    this.valueAnchorSeenTracked = true;
+    this.analytics.track('pricing_value_anchor_seen', {
+      ...this.pricingAnalyticsBase(),
+      anchor: 'why_upgrade_now',
+    });
+  }
+
   private setCheckoutNotice(message: string) {
     this.checkoutNotice = message;
     if (this.checkoutNoticeTimer && typeof window !== 'undefined') {
@@ -604,24 +834,41 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     return raw;
   }
 
+  private pricingAnalyticsBase(): Record<string, string> {
+    return {
+      src: this.normalizedSource(),
+      variant: this.variant,
+      page_layout: PRICING_PAGE_LAYOUT,
+      recommended_plan: RECOMMENDED_PRICING_PLAN,
+      risk_reversal_variant: this.riskReversalPlacement,
+    };
+  }
+
+  private planAnalyticsMeta(planId: PlanId): { cta_label: string; plan_position: number } {
+    const index = this.plans.findIndex((plan) => plan.id === planId);
+    const plan = index >= 0 ? this.plans[index] : null;
+    return {
+      cta_label: plan ? this.ctaTextFor(plan) : this.ctaLabel || 'Upgrade',
+      plan_position: index >= 0 ? index + 1 : -1,
+    };
+  }
+
   private trackPlanClick(planId: PlanId, method: string) {
     this.analytics.track('pricing_plan_cta_clicked', {
       plan_id: planId,
-      src: this.normalizedSource(),
-      variant: this.variant,
+      ...this.pricingAnalyticsBase(),
       method,
       redirect_to_present: false,
-      risk_reversal_variant: this.riskReversalPlacement,
+      ...this.planAnalyticsMeta(planId),
     });
   }
 
   private trackCheckoutStarted(planId: PlanId, method: string, mode: string) {
     this.analytics.track('checkout_started', {
       plan_id: planId,
-      src: this.normalizedSource(),
+      ...this.pricingAnalyticsBase(),
       method,
       checkout_mode: mode,
-      risk_reversal_variant: this.riskReversalPlacement,
     });
   }
 
