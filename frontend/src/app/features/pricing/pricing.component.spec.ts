@@ -3,18 +3,19 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
-import { ExperimentService } from '../../core/services/experiment.service';
 import { PricingComponent } from './pricing.component';
 
 describe('PricingComponent', () => {
   let fixture: ComponentFixture<PricingComponent>;
   let component: PricingComponent;
   let billingCheckoutStub: jasmine.SpyObj<BillingCheckoutService>;
+  let analyticsStub: jasmine.SpyObj<AnalyticsService>;
 
   beforeEach(async () => {
     billingCheckoutStub = jasmine.createSpyObj<BillingCheckoutService>('BillingCheckoutService', ['getCheckoutConfig', 'prefetch']);
     billingCheckoutStub.getCheckoutConfig.and.resolveTo(null);
     billingCheckoutStub.prefetch.and.resolveTo();
+    analyticsStub = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
 
     await TestBed.configureTestingModule({
       imports: [PricingComponent],
@@ -31,11 +32,7 @@ describe('PricingComponent', () => {
         },
         {
           provide: AnalyticsService,
-          useValue: jasmine.createSpyObj('AnalyticsService', ['track']),
-        },
-        {
-          provide: ExperimentService,
-          useValue: jasmine.createSpyObj('ExperimentService', ['variant', 'expose']),
+          useValue: analyticsStub,
         },
         {
           provide: ActivatedRoute,
@@ -47,9 +44,6 @@ describe('PricingComponent', () => {
         },
       ],
     }).compileComponents();
-
-    const experiments = TestBed.inject(ExperimentService) as jasmine.SpyObj<ExperimentService>;
-    experiments.variant.and.returnValue('top');
   });
 
   it('falls back to disabled payments when backend checkout config cannot be loaded', async () => {
@@ -63,5 +57,11 @@ describe('PricingComponent', () => {
     expect(component.paymentsConfigReady).toBeTrue();
     expect(component.paymentsEnabled).toBeFalse();
     expect(component.checkoutAvailability).toBeNull();
+    expect(analyticsStub.track).toHaveBeenCalledWith('pricing_viewed', jasmine.objectContaining({
+      src: 'pricing_test',
+      page: 'pricing',
+      page_layout: 'interview_sprint_v1',
+      recommended_plan: 'quarterly',
+    }));
   });
 });
