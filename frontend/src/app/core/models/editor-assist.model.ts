@@ -1,5 +1,5 @@
 export type StuckLevel = 0 | 1 | 2 | 3;
-export type EditorAssistLang = 'js' | 'ts';
+export type EditorAssistLang = 'js' | 'ts' | 'web' | 'react' | 'angular' | 'vue';
 
 export type FailureCategory =
   | 'missing-return'

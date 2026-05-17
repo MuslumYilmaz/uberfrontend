@@ -83,6 +83,18 @@ const UserSchema = new mongoose.Schema(
           default: 'auto',
         },
       },
+      prepGoal: {
+        tech: {
+          type: String,
+          enum: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
+          default: 'javascript',
+        },
+        level: {
+          type: String,
+          enum: ['foundation', 'intermediate', 'senior'],
+          default: 'intermediate',
+        },
+      },
     },
 
     // aggregates for fast UI

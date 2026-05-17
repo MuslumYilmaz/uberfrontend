@@ -152,16 +152,30 @@ router.put('/:family/:itemId', requireAuth, async (req, res) => {
     const mergedLastPlayedAt = !currentLastPlayedAt
       ? incomingLastPlayedAt
       : (incomingLastPlayedAt > currentLastPlayedAt ? incomingLastPlayedAt : currentLastPlayedAt);
+    const existingBestScore = Number(existing?.bestScore || 0);
+    const incomingBestScore = sanitizeBestScore(req.body?.bestScore);
+    const bestScore = Math.max(existingBestScore, incomingBestScore);
+    const scoreImproved = incomingBestScore > existingBestScore;
+    const completed = (existing?.completed === true) || req.body?.completed === true;
+    const passed = (existing?.passed === true) || req.body?.passed === true;
+    const currentCompletedAt = parseDate(existing?.completedAt);
+    const currentPassedAt = parseDate(existing?.passedAt);
+    const shouldRefreshCompletedAt = req.body?.completed === true
+      && (existing?.completed !== true || scoreImproved);
+    const shouldRefreshPassedAt = req.body?.passed === true
+      && (existing?.passed !== true || scoreImproved);
 
     const merged = {
       userId: req.auth.userId,
       family,
       itemId,
       started: (existing?.started === true) || req.body?.started === true,
-      completed: (existing?.completed === true) || req.body?.completed === true,
-      passed: (existing?.passed === true) || req.body?.passed === true,
-      bestScore: Math.max(Number(existing?.bestScore || 0), sanitizeBestScore(req.body?.bestScore)),
+      completed,
+      passed,
+      bestScore,
       lastPlayedAt: mergedLastPlayedAt,
+      completedAt: shouldRefreshCompletedAt ? incomingLastPlayedAt : currentCompletedAt,
+      passedAt: shouldRefreshPassedAt ? incomingLastPlayedAt : currentPassedAt,
       extension: mergeExtension({
         family,
         currentExtension: existing?.extension,

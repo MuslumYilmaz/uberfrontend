@@ -28,5 +28,9 @@ ActivityCompletionSchema.index(
     { userId: 1, active: 1, completedAt: -1 },
     { name: 'idx_activity_completion_user_active_completed_at' }
 );
+ActivityCompletionSchema.index(
+    { userId: 1, active: 1, tech: 1, kind: 1, lastAttemptAt: -1 },
+    { name: 'idx_activity_completion_dashboard_prep' }
+);
 
 module.exports = model('ActivityCompletion', ActivityCompletionSchema);

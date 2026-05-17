@@ -143,6 +143,37 @@ describe('POST /api/editor-assist/sync', () => {
     expect(passOverTotal.status).toBe(400);
   });
 
+  test('accepts web/framework attempts and rejects unsupported languages', async () => {
+    const user = await User.create({
+      email: 'assist-web-lang@example.com',
+      username: 'assist_web_lang_user',
+      passwordHash: 'hash',
+    });
+
+    const acceptedRuns = ['web', 'react', 'angular', 'vue'].map((lang, index) => run({
+      questionId: `${lang}-case`,
+      lang,
+      ts: 60_000 + index,
+      signature: `${lang}|Expected undefined to be 1|3`,
+    }));
+    const webRes = await request(app)
+      .post('/api/editor-assist/sync')
+      .set('Authorization', authHeader(user._id))
+      .send({ runs: acceptedRuns });
+    expect(webRes.status).toBe(200);
+
+    const badLang = await request(app)
+      .post('/api/editor-assist/sync')
+      .set('Authorization', authHeader(user._id))
+      .send({ runs: [run({ questionId: 'html-card', lang: 'python' })] });
+    expect(badLang.status).toBe(400);
+    expect(badLang.body?.error).toContain('lang must be one of: js, ts, web, react, angular, vue');
+
+    const docs = await EditorAssistAttempt.find({ userId: user._id }).lean();
+    expect(docs.length).toBe(4);
+    expect(docs.map((doc) => doc.lang).sort()).toEqual(['angular', 'react', 'vue', 'web']);
+  });
+
   test('dedupes by record key and keeps newer ts / higher passCount tie-breaker', async () => {
     const user = await User.create({
       email: 'assist-merge@example.com',

@@ -19,11 +19,14 @@ import {
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { Question } from '../../../../core/models/question.model';
+import { FrameworkTest, FrameworkTestStep, Question } from '../../../../core/models/question.model';
 import { Tech } from '../../../../core/models/user.model';
+import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { PreviewBuilderService } from '../../../../core/services/preview-builder.service';
 import { computeFrameworkContentVersion } from '../../../../core/utils/content-version.util';
+import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.util';
+import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../../core/utils/solution-asset.util';
 import {
   dismissUpdateBanner,
@@ -38,10 +41,23 @@ import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
+import { TestResult } from '../../console-logger/console-logger.component';
 
 type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
   | { type: 'file'; name: string; path: string; crumb?: string };
+
+type FrameworkCheckMount = {
+  frame: HTMLIFrameElement;
+  doc: Document;
+  cleanup: () => void;
+};
+
+export type FrameworkCheckRunEvent = {
+  questionId: string;
+  passed: boolean;
+  results: TestResult[];
+};
 
 @Component({
   selector: 'app-coding-framework-panel',
@@ -61,6 +77,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Input() liteMode = false;
   @Input() deferPreview = false;
   @Output() requestEditorUpgrade = new EventEmitter<void>();
+  @Output() frameworkCheckRun = new EventEmitter<FrameworkCheckRunEvent>();
 
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
 
@@ -104,12 +121,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private expectedPreviewReadyToken: string | null = null;
   private previewReadyFallbackTimer?: number;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
   useMonaco = signal(true);
   editorReady = signal(false);
   previewReady = signal(false);
 
   // preview loading
   loadingPreview = signal(true);
+  frameworkChecks = signal<FrameworkTest[]>([]);
+  frameworkChecksRunning = signal(false);
+  frameworkCheckResults = signal<TestResult[]>([]);
+  frameworkChecksRan = signal(false);
 
   // drag state (for future extensibility; currently only simple layout)
   private rebuildTimer: any = null;
@@ -120,6 +142,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private latestStarters: Record<string, string> | null = null;
   private latestEntryHint = '';
   private destroy = false;
+  private frameworkCheckReadyTimeoutMs = 8000;
 
   // File tree computed
   fileList = computed(() =>
@@ -273,6 +296,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.editorReady.set(true);
   }
 
+  frameworkCheckPassedCount(): number {
+    return this.frameworkCheckResults().filter(result => result.passed).length;
+  }
+
   // ---------- public API (called by parent) ----------
 
   /** Called by parent after question changes (also auto-called on input changes). */
@@ -281,6 +308,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
     this.previewReady.set(!this.deferPreview);
+    this.frameworkChecks.set(this.normalizeFrameworkTests(q));
+    this.clearFrameworkCheckResults();
 
     if (!this.isBrowser) {
       this.filesMap.set({});
@@ -336,6 +365,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.viewingSolution.set(true);
     this.showRestoreBanner.set(true);
     this.showingFrameworkSolutionPreview.set(false);
+    this.clearFrameworkCheckResults();
 
     this.scheduleRebuild();
   }
@@ -372,6 +402,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.viewingSolution.set(false);
     this.showRestoreBanner.set(false);
     this.userFilesBackup = null;
+    this.clearFrameworkCheckResults();
 
     this.scheduleRebuild();
   }
@@ -421,6 +452,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.showRestoreBanner.set(false);
     this.showingFrameworkSolutionPreview.set(false);
     this.userFilesBackup = null;
+    this.clearFrameworkCheckResults();
 
     await this.bootstrapWorkspaceFromSdk(q, { forceReset: true });
   }
@@ -707,6 +739,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
     // update current file content
     this.filesMap.update(m => ({ ...m, [path]: code }));
+    this.clearFrameworkCheckResults();
 
     // persist user changes
     this.schedulePersist(path, code);
@@ -772,6 +805,415 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       this.setPreviewHtml(null);
       this.loadingPreview.set(false);
     }
+  }
+
+  async runFrameworkChecks(options?: { emitCompletion?: boolean }): Promise<TestResult[]> {
+    const q = this.question;
+    const checks = this.frameworkChecks();
+    if (!q || !this.isBrowser || !this.isFrameworkTech() || !checks.length) {
+      return [];
+    }
+
+    this.ensurePreviewReady();
+    this.flushPendingPersist();
+    this.frameworkChecksRunning.set(true);
+    this.frameworkChecksRan.set(true);
+    this.frameworkCheckResults.set([]);
+
+    let mount: FrameworkCheckMount | null = null;
+    let results: TestResult[] = [];
+
+    try {
+      const files = this.filesMap();
+      const html = await this.previewBuilder.build(this.tech as 'react' | 'angular' | 'vue', files);
+      if (!html) {
+        throw new Error('Preview build returned empty HTML');
+      }
+
+      mount = await this.mountFrameworkScratchDoc(html);
+      results = [];
+      for (const check of checks) {
+        results.push(await this.executeFrameworkCheck(check, mount.doc));
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error || 'Framework checks failed');
+      results = [{
+        name: 'Framework checks',
+        passed: false,
+        error: message || 'Framework checks failed',
+      }];
+    } finally {
+      mount?.cleanup();
+      this.frameworkChecksRunning.set(false);
+      this.frameworkCheckResults.set(results);
+      this.recordFrameworkAttempt(q, results);
+      if (options?.emitCompletion !== false) {
+        this.frameworkCheckRun.emit({
+          questionId: q.id,
+          passed: results.length > 0 && results.every((result) => result.passed),
+          results,
+        });
+      }
+    }
+
+    return results;
+  }
+
+  private async executeFrameworkCheck(check: FrameworkTest, doc: Document): Promise<TestResult> {
+    try {
+      const steps = Array.isArray(check.steps) ? check.steps : [];
+      if (!steps.length) {
+        throw new Error('No check steps configured');
+      }
+      for (const step of steps) {
+        await this.executeFrameworkCheckStep(step, doc);
+      }
+      return { name: check.name || check.id || 'Framework check', passed: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error || 'Check failed');
+      return {
+        name: check.name || check.id || 'Framework check',
+        passed: false,
+        error: message || 'Check failed',
+      };
+    }
+  }
+
+  private async executeFrameworkCheckStep(step: FrameworkTestStep, doc: Document): Promise<void> {
+    const type = String(step.type || step.action || '').trim();
+    const selector = String(step.selector || '').trim();
+    if (!selector) {
+      throw new Error(`${type || 'step'} is missing a selector`);
+    }
+
+    if (type === 'waitForText') {
+      await this.waitForStepText(doc, step);
+      return;
+    }
+    if (type === 'waitForCount') {
+      await this.waitForStepCount(doc, step);
+      return;
+    }
+    if (type === 'expectCount') {
+      this.assertStepCount(doc, step);
+      return;
+    }
+
+    const el = this.queryStepElement(doc, step);
+    if (!el) {
+      throw new Error(`${selector} was not found`);
+    }
+
+    if (type === 'expectExists') {
+      return;
+    }
+    if (type === 'expectText') {
+      this.assertStepText(el, step);
+      return;
+    }
+    if (type === 'setValue') {
+      this.setStepValue(el, step);
+      await this.delay(50);
+      return;
+    }
+    if (type === 'expectValue') {
+      this.assertStepValue(el, step);
+      return;
+    }
+    if (type === 'expectDisabled') {
+      const expected = step.disabled !== false;
+      const actual = this.isElementDisabled(el);
+      if (actual !== expected) {
+        throw new Error(`${selector} expected ${expected ? 'disabled' : 'enabled'} but was ${actual ? 'disabled' : 'enabled'}`);
+      }
+      return;
+    }
+    if (type === 'expectAttribute') {
+      this.assertStepAttribute(el, step);
+      return;
+    }
+    if (type === 'expectClass') {
+      this.assertStepClass(el, step);
+      return;
+    }
+    if (type === 'click') {
+      const clickable = el as HTMLElement & { click?: () => void };
+      if (typeof clickable.click !== 'function') {
+        throw new Error(`${selector} is not clickable`);
+      }
+      clickable.click();
+      await this.delay(50);
+      return;
+    }
+    if (type === 'key') {
+      this.dispatchStepKey(el, step);
+      await this.delay(50);
+      return;
+    }
+
+    throw new Error(`Unsupported framework check step: ${type || 'unknown'}`);
+  }
+
+  private queryStepElement(doc: Document, step: FrameworkTestStep): Element | null {
+    const selector = String(step.selector || '').trim();
+    const rawIndex = Number(step.index);
+    const index = Math.max(0, Number.isFinite(rawIndex) ? rawIndex : 0);
+    const matches = Array.from(doc.querySelectorAll(selector));
+    return matches[index] || null;
+  }
+
+  private assertStepText(el: Element, step: FrameworkTestStep): void {
+    const expected = String(step.text ?? '').trim();
+    const actual = String((el.textContent || '').replace(/\s+/g, ' ')).trim();
+    const match = step.match || 'equals';
+    const passed = match === 'contains' ? actual.includes(expected) : actual === expected;
+    if (!passed) {
+      throw new Error(`${step.selector} expected text "${expected}" but found "${actual}"`);
+    }
+  }
+
+  private assertStepValue(el: Element, step: FrameworkTestStep): void {
+    const expected = String(step.value ?? step.text ?? '').trim();
+    const actual = String((el as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value ?? '').trim();
+    const match = step.match || 'equals';
+    const passed = match === 'contains' ? actual.includes(expected) : actual === expected;
+    if (!passed) {
+      throw new Error(`${step.selector} expected value "${expected}" but found "${actual}"`);
+    }
+  }
+
+  private setStepValue(el: Element, step: FrameworkTestStep): void {
+    const value = String(step.value ?? step.text ?? '');
+    const control = el as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+    const proto = Object.getPrototypeOf(control);
+    const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
+    if (descriptor?.set) {
+      descriptor.set.call(control, value);
+    } else {
+      control.value = value;
+    }
+    control.dispatchEvent(new Event('input', { bubbles: true }));
+    control.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  private assertStepCount(doc: Document, step: FrameworkTestStep): void {
+    const expected = Math.max(0, Number(step.count ?? step.expected ?? 0));
+    const actual = doc.querySelectorAll(String(step.selector || '').trim()).length;
+    if (actual !== expected) {
+      throw new Error(`${step.selector} expected ${expected} match${expected === 1 ? '' : 'es'} but found ${actual}`);
+    }
+  }
+
+  private async waitForStepCount(doc: Document, step: FrameworkTestStep): Promise<void> {
+    const rawTimeout = Number(step.timeoutMs);
+    const timeoutMs = Math.max(50, Number.isFinite(rawTimeout) ? rawTimeout : 1000);
+    const expected = Math.max(0, Number(step.count ?? step.expected ?? 0));
+    const startedAt = Date.now();
+    let lastCount = 0;
+    while (Date.now() - startedAt <= timeoutMs) {
+      lastCount = doc.querySelectorAll(String(step.selector || '').trim()).length;
+      if (lastCount === expected) return;
+      await this.delay(25);
+    }
+    throw new Error(`${step.selector} did not reach ${expected} match${expected === 1 ? '' : 'es'} before timeout. Last count: ${lastCount}`);
+  }
+
+  private assertStepAttribute(el: Element, step: FrameworkTestStep): void {
+    const attr = String(step.attribute || '').trim();
+    if (!attr) throw new Error(`${step.selector} is missing an attribute name`);
+    const actual = el.getAttribute(attr);
+    if (step.expected === false) {
+      if (actual !== null) throw new Error(`${step.selector} expected ${attr} to be absent`);
+      return;
+    }
+    if (step.expected === undefined || step.expected === true) {
+      if (actual === null) throw new Error(`${step.selector} expected ${attr} to exist`);
+      return;
+    }
+    const expected = String(step.expected);
+    if (actual !== expected) {
+      throw new Error(`${step.selector} expected ${attr}="${expected}" but found "${actual ?? ''}"`);
+    }
+  }
+
+  private assertStepClass(el: Element, step: FrameworkTestStep): void {
+    const className = String(step.className || step.value || '').trim();
+    if (!className) throw new Error(`${step.selector} is missing a className`);
+    const expected = step.expected !== false;
+    const actual = el.classList.contains(className);
+    if (actual !== expected) {
+      throw new Error(`${step.selector} expected class "${className}" to be ${expected ? 'present' : 'absent'}`);
+    }
+  }
+
+  private dispatchStepKey(el: Element, step: FrameworkTestStep): void {
+    const key = String(step.key || step.value || 'Enter');
+    const target = el as HTMLElement;
+    target.focus?.();
+    target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+    target.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
+  }
+
+  private async waitForStepText(doc: Document, step: FrameworkTestStep): Promise<void> {
+    const rawTimeout = Number(step.timeoutMs);
+    const timeoutMs = Math.max(50, Number.isFinite(rawTimeout) ? rawTimeout : 1000);
+    const startedAt = Date.now();
+    let lastText = '';
+    while (Date.now() - startedAt <= timeoutMs) {
+      const el = this.queryStepElement(doc, step);
+      if (el) {
+        lastText = String((el.textContent || '').replace(/\s+/g, ' ')).trim();
+        try {
+          this.assertStepText(el, step);
+          return;
+        } catch {
+          // Keep polling until timeout.
+        }
+      }
+      await this.delay(25);
+    }
+    throw new Error(`${step.selector} did not reach text "${String(step.text ?? '').trim()}" before timeout. Last text: "${lastText}"`);
+  }
+
+  private isElementDisabled(el: Element): boolean {
+    const control = el as Element & { disabled?: boolean };
+    if (typeof control.disabled === 'boolean') {
+      return !!control.disabled;
+    }
+    return el.getAttribute('disabled') !== null || el.getAttribute('aria-disabled') === 'true';
+  }
+
+  private async mountFrameworkScratchDoc(html: string): Promise<FrameworkCheckMount> {
+    const frame = document.createElement('iframe');
+    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    frame.style.cssText = 'position:fixed;left:-10000px;top:-10000px;width:0;height:0;border:0;visibility:hidden;';
+
+    const token = `fa-framework-check-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const bridged = this.injectPreviewReadyBridgeWithToken(html, token);
+
+    return new Promise<FrameworkCheckMount>((resolve, reject) => {
+      let done = false;
+      let timer: number | undefined;
+
+      const cleanupListener = () => {
+        window.removeEventListener('message', onMessage);
+        if (timer) window.clearTimeout(timer);
+      };
+
+      const finish = () => {
+        if (done) return;
+        done = true;
+        cleanupListener();
+        const doc = frame.contentDocument;
+        if (!doc) {
+          reject(new Error('Framework checks timed out before preview document loaded'));
+          return;
+        }
+        resolve({
+          frame,
+          doc,
+          cleanup: () => {
+            cleanupListener();
+            try { frame.remove(); } catch { }
+          },
+        });
+      };
+
+      const fail = (message: string) => {
+        if (done) return;
+        done = true;
+        cleanupListener();
+        try { frame.remove(); } catch { }
+        reject(new Error(message));
+      };
+
+      const onMessage = (ev: MessageEvent) => {
+        if (ev.source !== frame.contentWindow) return;
+        const payload = ev.data as { type?: unknown; token?: unknown } | null;
+        if (!payload || payload.type !== 'FA_PREVIEW_READY') return;
+        const receivedToken = typeof payload.token === 'string' ? payload.token : '';
+        if (receivedToken && receivedToken !== token) return;
+        finish();
+      };
+
+      window.addEventListener('message', onMessage);
+      timer = window.setTimeout(() => {
+        fail('Framework checks timed out waiting for preview render');
+      }, this.frameworkCheckReadyTimeoutMs);
+
+      document.body.appendChild(frame);
+      const doc = frame.contentDocument;
+      if (!doc) {
+        fail('Framework checks could not create preview document');
+        return;
+      }
+
+      try {
+        doc.open();
+        doc.write(bridged);
+        doc.close();
+      } catch {
+        fail('Framework checks could not mount preview document');
+      }
+    });
+  }
+
+  private injectPreviewReadyBridgeWithToken(html: string, token: string): string {
+    const bridge = `<script>(function(){var token=${JSON.stringify(token)};var sent=false;window.__FA_PREVIEW_READY_TOKEN=token;window.__FA_NOTIFY_PREVIEW_READY=function(reason){if(sent) return; sent=true; try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_READY',token:token,reason:String(reason||'render')},'*');}}catch(_e){}};})();</script>`;
+    if (/<head[^>]*>/i.test(html)) {
+      return html.replace(/<head[^>]*>/i, `$&\n${bridge}`);
+    }
+    if (/<body[^>]*>/i.test(html)) {
+      return html.replace(/<body[^>]*>/i, `$&\n${bridge}`);
+    }
+    return `${bridge}\n${html}`;
+  }
+
+  private recordFrameworkAttempt(question: Question, results: TestResult[]): void {
+    if (!this.attemptInsights || !Array.isArray(results) || results.length === 0 || !this.isFrameworkTech()) return;
+
+    const totalCount = results.length;
+    const passCount = results.filter((item) => item.passed).length;
+    const firstFail = results.find((item) => !item.passed);
+    const failCount = Math.max(0, totalCount - passCount);
+    const normalizedError = normalizeErrorLine(firstFail?.error || '');
+    const signature = createFailureSignature({
+      firstFailName: firstFail?.name,
+      errorLine: normalizedError,
+      failCount,
+    });
+    const codeHash = stableHash(this.sortedFrameworkFilesText(this.filesMap()));
+    const existingRuns = this.attemptInsights.getRunsForQuestion(question.id);
+    const previousRun = existingRuns.length ? existingRuns[existingRuns.length - 1] : null;
+    const prevHash = previousRun?.codeHash || '';
+    const category = classifyFailureCategory(firstFail?.error || normalizedError);
+
+    this.attemptInsights.recordRun({
+      questionId: question.id,
+      lang: this.tech as 'react' | 'angular' | 'vue',
+      ts: Date.now(),
+      passCount,
+      totalCount,
+      firstFailName: String(firstFail?.name || ''),
+      errorLine: normalizedError,
+      signature,
+      codeHash,
+      codeChanged: prevHash ? prevHash !== codeHash : true,
+      interviewMode: false,
+      errorCategory: category,
+      tags: question.tags || [],
+    });
+  }
+
+  private sortedFrameworkFilesText(files: Record<string, string>): string {
+    return Object.keys(files || {})
+      .sort()
+      .map((path) => `${path}\n${files[path] ?? ''}`)
+      .join('\n---FILE---\n');
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => window.setTimeout(resolve, ms));
   }
 
   private setPreviewHtml(html: string | null) {
@@ -890,6 +1332,31 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   private isFrameworkTech(): boolean {
     return this.tech === 'angular' || this.tech === 'react' || this.tech === 'vue';
+  }
+
+  private normalizeFrameworkTests(q: Question): FrameworkTest[] {
+    const raw = Array.isArray(q?.frameworkTests) ? q.frameworkTests : [];
+    return raw
+      .map((item, index) => {
+        const id = String(item?.id || `framework-check-${index + 1}`).trim();
+        const name = String(item?.name || id || `Framework check ${index + 1}`).trim();
+        const steps = Array.isArray(item?.steps) ? item.steps : [];
+        return {
+          id,
+          name,
+          steps: steps
+            .filter((step) => !!step && typeof step === 'object')
+            .map((step) => ({ ...step })),
+        };
+      })
+      .filter((item) => item.id && item.steps.length > 0)
+      .slice(0, 6);
+  }
+
+  private clearFrameworkCheckResults(): void {
+    this.frameworkChecksRunning.set(false);
+    this.frameworkCheckResults.set([]);
+    this.frameworkChecksRan.set(false);
   }
 
   private defaultEntry(): string {

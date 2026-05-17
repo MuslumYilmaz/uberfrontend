@@ -123,11 +123,43 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByTestId('dashboard-page')).toBeVisible();
 
     await page.getByTestId('dashboard-daily-complete').click();
-    await expect(page.getByText(/Today’s rep completed\.|Already cleared for today\./)).toBeVisible();
+    await expect(page.getByText(/Today’s practice completed\.|Already completed for today\./)).toBeVisible();
 
     await page.locator('[data-testid="dashboard-library-link"][data-destination="tech_lanes"]').click();
     await expect(page).toHaveURL('/focus-areas');
     await expect(page.getByRole('heading', { name: 'Frontend Interview Focus Areas' })).toBeVisible();
+  });
+
+  test('dashboard prep goal updates readiness loop and recommendation route', async ({ page }) => {
+    const token = `e2e-token-dashboard-prep-${Date.now()}`;
+    const user = buildMockUser({
+      _id: 'e2e-dashboard-prep-user',
+      username: 'dashboard_prep_user',
+      email: 'dashboard-prep@example.com',
+    });
+
+    await installAuthMock(page, {
+      token,
+      user,
+      validLogin: { emailOrUsername: user.email, password: 'secret123' },
+    });
+
+    await login(page, user);
+    await expect(page).toHaveURL('/dashboard');
+    await expect(page.getByTestId('dashboard-prep-loop')).toBeVisible();
+
+    await page.getByTestId('dashboard-prep-target-toggle').click();
+    await page.getByTestId('dashboard-prep-goal-level').selectOption('senior');
+    await page.getByTestId('dashboard-prep-goal-save').click();
+
+    await expect(page.getByText('Target saved. Readiness recalculated for Senior expectations.')).toBeVisible();
+    await expect(page.getByTestId('dashboard-prep-goal-label')).toContainText('JavaScript senior prep');
+    await page.getByTestId('dashboard-prep-breakdown-toggle').click();
+    await expect(page.getByText('Senior JavaScript target: 18 coding, 28 concepts, 1 currently available JS debug scenario, 4 JS tradeoffs, 12 intermediate/hard drills, 4 hard drills.')).toBeVisible();
+
+    await page.getByTestId('dashboard-prep-next-drill').click();
+    await expect(page).toHaveURL('/javascript/coding/js-is-object-empty');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
   });
 
   test('company preview route redirects premium users to full company detail', async ({ page }) => {

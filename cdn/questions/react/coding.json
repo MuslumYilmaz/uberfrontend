@@ -59,6 +59,77 @@
         ]
       }
     },
+    "frameworkTests": [
+      {
+        "id": "counter-basic-flow",
+        "name": "Counter flow",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".actions button",
+            "index": 0,
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "1"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".actions button",
+            "index": 0,
+            "disabled": false
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "1"
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 2
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".actions button",
+            "index": 0,
+            "disabled": true
+          }
+        ]
+      }
+    ],
     "sdk": {
       "asset": "assets/sb/react/question/react-counter.v1.json",
       "openFile": "/src/App.tsx",
@@ -161,7 +232,40 @@
     "seo": {
       "title": "Build React Contact Form with Validation and Submit",
       "description": "Create a contact form that captures user input, validates required fields, submits data, and shows loading, success, and error states."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "contact-form-validation",
+        "name": "Contact form enables submit after valid input",
+        "steps": [
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": true
+          },
+          {
+            "type": "setValue",
+            "selector": ".name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": ".email",
+            "value": "jane@example.com"
+          },
+          {
+            "type": "setValue",
+            "selector": ".message",
+            "value": "Hello from tests"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": false
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-todo-list",
@@ -245,7 +349,40 @@
     "seo": {
       "title": "Build React Todo List (Add Toggle Delete)",
       "description": "Create a todo list interface that supports adding items, toggling completion, and deleting tasks while keeping UI state consistent."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "todo-add-item",
+        "name": "Todo add item",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".item",
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".input-row input",
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "selector": ".primary"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".item",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".item",
+            "text": "Buy milk",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-image-slider",
@@ -409,7 +546,43 @@
     "seo": {
       "title": "Build Accessible React Tabs with Active Panel",
       "description": "Create a tabs component that switches active panels, updates visual state, and supports keyboard-friendly tab interaction."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "tabs-switch-panel",
+        "name": "Tabs switch panel",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".panel",
+            "text": "Overview",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".tabs button",
+            "index": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".panel",
+            "text": "Details",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".tabs button",
+            "index": 2
+          },
+          {
+            "type": "waitForText",
+            "selector": ".panel",
+            "text": "Settings",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-filterable-user-list",
@@ -494,7 +667,36 @@
     "seo": {
       "title": "Build Filterable User List in React",
       "description": "Create a user list that updates results based on search text and role filters, with clear behavior for empty matches."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "filter-search-users",
+        "name": "Filter searches users",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 5
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "Alice"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".row",
+            "text": "Alice",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-accordion-faq",
@@ -576,7 +778,29 @@
     "seo": {
       "title": "Build React Accordion FAQ Component",
       "description": "Create an FAQ accordion that toggles sections open and closed, supporting both single-open and multi-open interaction rules."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "accordion-toggle-answer",
+        "name": "Accordion toggles answer",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".faq-body",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 1
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-pagination-table",
@@ -660,7 +884,37 @@
     "seo": {
       "title": "Build Paginated Data Table in React",
       "description": "Create a table with page navigation that shows only current-page rows and handles first or last page boundaries correctly."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "pagination-next-page",
+        "name": "Pagination moves to next page",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "tbody tr",
+            "count": 5
+          },
+          {
+            "type": "expectText",
+            "selector": ".page-info",
+            "text": "1",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".footer button",
+            "index": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page-info",
+            "text": "2",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-theme-toggle",
@@ -746,7 +1000,31 @@
     "seo": {
       "title": "Build React Theme Toggle with Persistence",
       "description": "Create a light and dark theme toggle that applies globally and restores the saved preference on page reload."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "theme-toggle-updates-label",
+        "name": "Theme toggle updates label",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".label",
+            "text": "Dark",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".theme-toggle"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".label",
+            "text": "Light",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-multi-step-signup",
@@ -836,7 +1114,71 @@
     "seo": {
       "title": "Build Multi-Step Signup Form in React",
       "description": "Create a multi-step signup flow with step-by-step navigation, validation requirements, and final review before submit."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "multi-step-form-advances",
+        "name": "Multi-step form advances through steps",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".step-title",
+            "text": "Account",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 0,
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 1,
+            "value": "jane@example.com"
+          },
+          {
+            "type": "click",
+            "selector": ".primary"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".step-title",
+            "text": "Address",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 0,
+            "value": "123 Main St"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 1,
+            "value": "Istanbul"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 2,
+            "value": "34000"
+          },
+          {
+            "type": "click",
+            "selector": ".primary"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".step-title",
+            "text": "Review",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-shopping-cart",
@@ -927,7 +1269,41 @@
     "seo": {
       "title": "Build React Shopping Cart Component",
       "description": "Create a shopping cart UI that supports adding items, updating quantities, removing items, and showing totals accurately."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "cart-adds-product",
+        "name": "Shopping cart adds product",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".cart-row",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".product-card button"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".cart-header .subtitle",
+            "text": "Total items",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".cart-header .subtitle",
+            "text": "1",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-debounced-search",
@@ -1018,7 +1394,32 @@
     "seo": {
       "title": "Build Debounced Search in React",
       "description": "Create a search experience that delays rapid input triggers and handles loading, empty, success, and error result states."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "debounced-search-results",
+        "name": "Debounced search returns matching result",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Alice"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".result-row",
+            "text": "Alice",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-star-rating",
@@ -1263,7 +1664,29 @@
     "seo": {
       "title": "Build Nested Checkbox Tree in React",
       "description": "Create nested checkbox behavior where parent and child selections stay synchronized, including partial-selection states."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "nested-checkbox-parent-sync",
+        "name": "Nested checkbox parent selects children",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "input[type=\"checkbox\"]:checked",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".parent input[type=\"checkbox\"]"
+          },
+          {
+            "type": "waitForCount",
+            "selector": "input[type=\"checkbox\"]:checked",
+            "count": 4
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-autocomplete-search-starter",
@@ -1352,7 +1775,36 @@
     "seo": {
       "title": "Build React Autocomplete Search Component",
       "description": "Create an autocomplete input that shows matching suggestions, supports keyboard interaction, and handles selection and close states."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "autocomplete-selects-option",
+        "name": "Autocomplete selects option",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Lo"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".option",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "click",
+            "selector": ".option"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".input",
+            "value": "London",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-transfer-list",
@@ -1435,7 +1887,34 @@
     "seo": {
       "title": "Build React Transfer List Component",
       "description": "Create a transfer list UI that moves selected items between two lists while preserving expected ordering and selection behavior."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "transfer-move-item",
+        "name": "Transfer moves selected item",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".layout .listCard:nth-child(1) .row",
+            "count": 4
+          },
+          {
+            "type": "click",
+            "selector": ".layout .listCard:nth-child(1) .row"
+          },
+          {
+            "type": "click",
+            "selector": ".controls .btn",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".layout .listCard:nth-child(2) .row",
+            "count": 1
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-tictactoe",
@@ -1766,7 +2245,41 @@
     "seo": {
       "title": "Build React Progress Bar with Threshold Colors",
       "description": "Create a progress bar that updates from user actions, enforces valid range limits, and changes visual style by value thresholds."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "progress-increase-decrease",
+        "name": "Progress increases and decreases",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "0",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".increase"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "10",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".decrease"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "0",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-nested-comments",
@@ -1850,7 +2363,30 @@
     "seo": {
       "title": "Build Nested Comments UI in React",
       "description": "Create a nested comments interface that supports replying at any level and renders thread hierarchy correctly."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "comments-add-root-reply",
+        "name": "Nested comments add a root comment",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".composer textarea",
+            "value": "This is a new comment"
+          },
+          {
+            "type": "click",
+            "selector": ".composer button"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".list",
+            "text": "This is a new comment",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-dynamic-counter-buttons",
@@ -2190,7 +2726,35 @@
     "seo": {
       "title": "Build React Chips Input with Autocomplete",
       "description": "Create an input that lets users add and remove chips, shows matching suggestions, and handles keyboard interaction states."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "chips-add-suggestion",
+        "name": "Chips input adds suggestion",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input",
+            "value": "Ada"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".suggestion",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "click",
+            "selector": ".suggestion"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-chessboard-click-highlight",

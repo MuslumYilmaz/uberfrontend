@@ -16,6 +16,8 @@ const PracticeProgressSchema = new Schema(
         passed: { type: Boolean, default: false },
         bestScore: { type: Number, default: 0 },
         lastPlayedAt: { type: Date, default: null },
+        completedAt: { type: Date, default: null },
+        passedAt: { type: Date, default: null },
         extension: { type: Schema.Types.Mixed, default: {} },
     },
     { timestamps: true }
@@ -24,6 +26,10 @@ const PracticeProgressSchema = new Schema(
 PracticeProgressSchema.index(
     { userId: 1, family: 1, itemId: 1 },
     { unique: true, name: 'uniq_user_family_item_practice_progress' }
+);
+PracticeProgressSchema.index(
+    { userId: 1, family: 1, lastPlayedAt: -1 },
+    { name: 'idx_practice_progress_user_family_last_played' }
 );
 
 module.exports = model('PracticeProgress', PracticeProgressSchema);

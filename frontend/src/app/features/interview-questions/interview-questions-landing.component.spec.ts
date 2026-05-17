@@ -96,6 +96,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('FrontendAtlas Essential 60');
     expect(fixture.nativeElement.textContent || '').toContain('React coding + concept questions');
     expect(fixture.nativeElement.textContent || '').toContain('React interview prep path');
+    expect(fixture.nativeElement.textContent || '').not.toContain('Angular interview topic map');
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
   });
 
   it('tracks roadmap selection from the interview hub decision surface', async () => {
@@ -243,5 +245,60 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fourthItem.getAttribute('href') || '').toContain('/guides/framework-prep/angular-prep-path');
     expect(fifthItem.textContent || '').toContain('Final-round coverage');
     expect(fifthItem.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
+  });
+
+  it('renders Angular-only coverage for topic gaps, mistakes, modern topics, and schema mentions', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'angular interview questions',
+      title: 'Angular Interview Questions and Answers',
+      techs: ['angular'],
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['angular'],
+      coding: [
+        { id: 'angular-debounced-search-rxjs', title: 'Angular Debounced Search', type: 'coding', technology: 'angular', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Build debounced search.', tech: 'angular' },
+      ],
+      trivia: [
+        { id: 'angular-change-detection-strategies', title: 'Angular Change Detection', type: 'trivia', technology: 'angular', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain change detection.', tech: 'angular' },
+      ],
+    };
+    routeStub.snapshot.url = [{ path: 'angular' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'angular' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+
+    expect(text).toContain('Angular interview topic map');
+    expect(text).toContain('RxJS and HttpClient cancellation');
+    expect(text).toContain('Dependency injection and services');
+    expect(text).toContain('Forms and validation');
+    expect(text).toContain('Testing Angular applications');
+    expect(text).toContain('Performance optimization');
+    expect(text).toContain('State management and NgRx');
+    expect(text).toContain('Common mistakes in Angular interviews');
+    expect(text).toContain('Using mergeMap when latest search should win');
+    expect(text).toContain('Modern Angular topics interviewers may ask about');
+    expect(text).toContain('Signal Forms');
+
+    expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-http-what-actually-cancels-request"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-dependency-injection"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-performance-optimization"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/ngrx-store-vs-component-state-angular-when-to-use"]')).toBeTruthy();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Angular dependency injection')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Modern Angular interview topics')
+    )).toBeTrue();
   });
 });

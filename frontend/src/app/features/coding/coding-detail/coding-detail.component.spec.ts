@@ -27,7 +27,7 @@ describe('CodingDetailComponent', () => {
   beforeEach(async () => {
     sessionStorage.clear();
     questionService = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadQuestions']);
-    dailyService = jasmine.createSpyObj<DailyService>('DailyService', ['ensureTodaySet']);
+    dailyService = jasmine.createSpyObj<DailyService>('DailyService', ['ensureTodaySet', 'markCompletedById']);
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
@@ -281,6 +281,163 @@ describe('CodingDetailComponent', () => {
       itemId: 'q1',
     });
     expect(component.solved()).toBeFalse();
+  });
+
+  it('runs structured framework checks and completes only when they pass', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const runFrameworkChecks = jasmine.createSpy('runFrameworkChecks').and.resolveTo([
+      { name: 'Counter flow', passed: true },
+    ]);
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      difficulty: 'easy',
+      frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+    } as any);
+    component.frameworkPanel = { runFrameworkChecks } as any;
+
+    await component.submitCode();
+
+    expect(runFrameworkChecks).toHaveBeenCalledWith({ emitCompletion: false });
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      kind: 'coding',
+      tech: 'react',
+      itemId: 'react-counter',
+    }));
+    expect(component.solved()).toBeTrue();
+  });
+
+  it('completes from a framework panel Run checks event when all checks pass', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'vue';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'vue-counter',
+      access: 'free',
+      difficulty: 'easy',
+      frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+    } as any);
+
+    await component.onFrameworkCheckRun({
+      questionId: 'vue-counter',
+      passed: true,
+      results: [{ name: 'Counter flow', passed: true }],
+    });
+
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      kind: 'coding',
+      tech: 'vue',
+      itemId: 'vue-counter',
+    }));
+    expect(component.solved()).toBeTrue();
+  });
+
+  it('does not complete a structured framework question when checks fail', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+    } as any);
+    component.frameworkPanel = {
+      runFrameworkChecks: jasmine.createSpy('runFrameworkChecks').and.resolveTo([
+        { name: 'Counter flow', passed: false, error: 'Expected 1' },
+      ]),
+    } as any;
+
+    await component.submitCode();
+
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(activity.uncomplete).not.toHaveBeenCalled();
+    expect(component.solved()).toBeFalse();
+  });
+
+  it('keeps manual completion for untested framework questions', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const runFrameworkChecks = jasmine.createSpy('runFrameworkChecks');
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({ id: 'react-untested', access: 'free', difficulty: 'easy' } as any);
+    component.frameworkPanel = { runFrameworkChecks } as any;
+
+    await component.submitCode();
+
+    expect(runFrameworkChecks).not.toHaveBeenCalled();
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      itemId: 'react-untested',
+    }));
+  });
+
+  it('refreshes an already-solved structured framework question instead of toggling it incomplete', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      difficulty: 'easy',
+      frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+    } as any);
+    component.solved.set(true);
+    component.frameworkPanel = {
+      runFrameworkChecks: jasmine.createSpy('runFrameworkChecks').and.resolveTo([
+        { name: 'Counter flow', passed: true },
+      ]),
+    } as any;
+
+    await component.submitCode();
+
+    expect(activity.uncomplete).not.toHaveBeenCalled();
+    expect(activity.complete).toHaveBeenCalled();
+    expect(component.solved()).toBeTrue();
+  });
+
+  it('lets logged-out users run structured checks but prompts before saving completion', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(false);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+    } as any);
+    component.frameworkPanel = {
+      runFrameworkChecks: jasmine.createSpy('runFrameworkChecks').and.resolveTo([
+        { name: 'Counter flow', passed: true },
+      ]),
+    } as any;
+
+    await component.submitCode();
+
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(component.loginPromptOpen).toBeTrue();
   });
 
   it('navigates back using returnToUrl when available', () => {

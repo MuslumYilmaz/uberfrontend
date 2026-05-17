@@ -85,6 +85,13 @@
 
                 <div class="flex items-center gap-2">
                     <span *ngIf="viewingSolution()" class="text-[11px] text-yellow-300">Solution loaded</span>
+                    <button *ngIf="frameworkChecks().length" type="button"
+                        class="text-xs px-3 py-1.5 rounded border border-emerald-300/40 text-emerald-100 hover:bg-emerald-300/10 disabled:opacity-60"
+                        data-testid="framework-run-checks"
+                        [disabled]="frameworkChecksRunning()"
+                        (click)="runFrameworkChecks()">
+                        {{ frameworkChecksRunning() ? 'Running checks' : 'Run checks' }}
+                    </button>
                     <button type="button" class="text-xs px-3 py-1.5 rounded border border-white/20 hover:bg-white/5"
                         (click)="rebuildFrameworkPreview()">
                         Rebuild preview
@@ -125,31 +132,55 @@
         </div>
 
         <!-- RIGHT: Preview iframe -->
-        <div class="relative flex-1 min-w-0 min-h-0">
-            <div *ngIf="showingFrameworkSolutionPreview()"
-                class="absolute top-2 right-3 z-20 bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">
-                <span class="font-medium">Showing solution preview</span>
-                <button class="text-xs underline" (click)="closeSolutionPreview()">
-                    Close preview
-                </button>
-            </div>
-
-            <div *ngIf="loadingPreview()" class="preview-loading">
-                <div class="spinner" aria-hidden="true"></div>
-                <div class="loading-copy">
-                    <div class="loading-title">Loading preview…</div>
-                    <div class="loading-sub">This might take a few seconds.</div>
+        <div class="framework-preview-column flex-1 min-w-0 min-h-0">
+            <div class="framework-preview-stage">
+                <div *ngIf="showingFrameworkSolutionPreview()"
+                    class="absolute top-2 right-3 z-20 bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">
+                    <span class="font-medium">Showing solution preview</span>
+                    <button class="text-xs underline" (click)="closeSolutionPreview()">
+                        Close preview
+                    </button>
                 </div>
+
+                <div *ngIf="loadingPreview()" class="preview-loading">
+                    <div class="spinner" aria-hidden="true"></div>
+                    <div class="loading-copy">
+                        <div class="loading-title">Loading preview…</div>
+                        <div class="loading-sub">This might take a few seconds.</div>
+                    </div>
+                </div>
+
+                <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center text-xs text-gray-400">
+                    No preview yet. Click “Rebuild preview”.
+                </div>
+
+                <iframe #previewFrame class="preview-frame absolute inset-0 w-full h-full border-0" title="Framework live preview" referrerpolicy="no-referrer"
+                    [class.is-loading]="loadingPreview()"
+                    sandbox="allow-scripts">
+                </iframe>
             </div>
 
-            <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center text-xs text-gray-400">
-                No preview yet. Click “Rebuild preview”.
-            </div>
-
-            <iframe #previewFrame class="preview-frame absolute inset-0 w-full h-full border-0" title="Framework live preview" referrerpolicy="no-referrer"
-                [class.is-loading]="loadingPreview()"
-                sandbox="allow-scripts">
-            </iframe>
+            <section *ngIf="frameworkChecksRunning() || frameworkCheckResults().length"
+                class="framework-check-results" aria-live="polite">
+                <div class="framework-check-results__head">
+                    <span>Checks</span>
+                    <span *ngIf="frameworkCheckResults().length" class="framework-check-results__summary">
+                        {{ frameworkCheckPassedCount() }}/{{ frameworkCheckResults().length }} passed
+                    </span>
+                </div>
+                <div *ngIf="frameworkChecksRunning()" class="framework-check-result">
+                    <span class="framework-check-dot is-running"></span>
+                    <span>Running structured checks…</span>
+                </div>
+                <div *ngFor="let result of frameworkCheckResults()" class="framework-check-result"
+                    [class.is-pass]="result.passed" [class.is-fail]="!result.passed">
+                    <span class="framework-check-dot" [class.is-pass]="result.passed" [class.is-fail]="!result.passed"></span>
+                    <div class="framework-check-result__body">
+                        <div class="framework-check-result__name">{{ result.name }}</div>
+                        <div *ngIf="result.error" class="framework-check-result__error">{{ result.error }}</div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 

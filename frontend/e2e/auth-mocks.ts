@@ -12,6 +12,10 @@ type MockUser = {
     defaultTech: 'javascript' | 'typescript' | 'react' | 'angular' | 'vue' | 'html' | 'css' | 'system-design';
     keyboard: 'default' | 'vim';
     marketingEmails: boolean;
+    prepGoal?: {
+      tech: 'javascript' | 'react' | 'angular' | 'vue' | 'html' | 'css';
+      level: 'foundation' | 'intermediate' | 'senior';
+    };
   };
   stats?: any;
   billing?: any;
@@ -110,6 +114,126 @@ function buildDashboardAchievements(user: MockUser, progress: ReturnType<typeof 
     },
     unlocked,
     next,
+  };
+}
+
+function buildDashboardPrepLoop(user: MockUser) {
+  const tech = 'javascript';
+  const level = user.prefs.prepGoal?.level || 'intermediate';
+  const label = `JavaScript ${level} prep`;
+  const route = '/javascript/coding/js-is-object-empty';
+  const levelLabel = level === 'senior' ? 'Senior' : level === 'foundation' ? 'Foundation' : 'Intermediate';
+  const targets = level === 'senior'
+    ? { coding: 18, concepts: 28, debug: 1, tradeoffs: 4 }
+    : level === 'foundation'
+      ? { coding: 8, concepts: 12, debug: 1, tradeoffs: 1 }
+      : { coding: 12, concepts: 20, debug: 1, tradeoffs: 3 };
+  const breadth = level === 'senior'
+    ? { coding: 6, concepts: 7 }
+    : level === 'foundation'
+      ? { coding: 3, concepts: 3 }
+      : { coding: 4, concepts: 5 };
+  const difficulty: { advanced?: number; hard?: number } = level === 'senior' ? { advanced: 12, hard: 4 } : level === 'foundation' ? {} : { advanced: 6 };
+  const summaryPieces = [
+    `${targets.coding} coding`,
+    `${targets.concepts} concepts`,
+    level === 'foundation' ? '1 JS debug scenario' : '1 currently available JS debug scenario',
+    targets.tradeoffs === 1 ? '1 JS tradeoff' : `${targets.tradeoffs} JS tradeoffs`,
+  ];
+  if (difficulty.advanced) summaryPieces.push(`${difficulty.advanced} intermediate/hard drills`);
+  if (difficulty.hard) summaryPieces.push(`${difficulty.hard} hard drills`);
+
+  return {
+    goal: { tech, level, label },
+    targetProfile: {
+      label: levelLabel,
+      summary: `${levelLabel} JavaScript target: ${summaryPieces.join(', ')}.`,
+      targets,
+      breadth,
+      difficulty,
+      conceptOnly: false,
+    },
+    readiness: {
+      score: 38,
+      band: 'Starting',
+      components: [
+        { id: 'coding', label: 'JavaScript coding', score: 8, max: 30, current: 3, target: targets.coding, percent: Math.min(1, 3 / targets.coding), route: '/javascript/interview-questions' },
+        { id: 'concepts', label: 'JavaScript concepts', score: 5, max: 25, current: 4, target: targets.concepts, percent: Math.min(1, 4 / targets.concepts), route: '/javascript/interview-questions' },
+        { id: 'debug', label: 'Debug practice', score: 15, max: 15, current: 1, target: 1, percent: 1, route: '/incidents' },
+        { id: 'tradeoffs', label: 'Tradeoff practice', score: 5, max: 15, current: 1, target: targets.tradeoffs, percent: Math.min(1, 1 / targets.tradeoffs), route: '/tradeoffs' },
+        { id: 'consistency', label: 'Weekly consistency', score: 0, max: 15, current: 0, target: 10, percent: 0, route: '/dashboard' },
+      ],
+    },
+    weaknesses: [
+      { id: 'consistency', label: 'Weekly consistency', score: 0, max: 15, current: 0, target: 10, percent: 0, route: '/dashboard' },
+      { id: 'concepts', label: 'JavaScript concepts', score: 5, max: 25, current: 4, target: targets.concepts, percent: Math.min(1, 4 / targets.concepts), route: '/javascript/interview-questions' },
+    ],
+    coverageGaps: [
+      {
+        id: 'coding:js-async-runtime',
+        label: 'Async & Runtime coding',
+        kind: 'coding',
+        route,
+        priorityScore: 93,
+        source: 'essential-60',
+        solved: 0,
+        target: 3,
+        available: 8,
+        questions: [
+          {
+            id: 'js-debounce',
+            title: 'Debounce Function',
+            route,
+            access: 'free',
+            difficulty: 'intermediate',
+            importanceScore: 93,
+            essentialRank: 1,
+            rationale: 'Good starter for this target.',
+          },
+          {
+            id: 'js-promise-all',
+            title: 'Implement Promise.all',
+            route: '/javascript/coding/js-promise-all',
+            access: 'premium',
+            difficulty: 'hard',
+            importanceScore: 92,
+            essentialRank: 2,
+            rationale: 'Premium follow-up for stronger coverage.',
+          },
+        ],
+      },
+      {
+        id: 'concepts:js-async-runtime',
+        label: 'Async & Runtime concepts',
+        kind: 'concepts',
+        route: '/javascript/trivia/js-promises',
+        priorityScore: 78,
+        source: 'essential-60',
+        solved: 0,
+        target: 5,
+        available: 6,
+        questions: [],
+      },
+      {
+        id: 'coding:js-objects-prototypes',
+        label: 'Objects & Prototypes coding',
+        kind: 'coding',
+        route,
+        priorityScore: 70,
+        source: 'catalog',
+        solved: 0,
+        target: 3,
+        available: 5,
+        questions: [],
+      },
+    ],
+    nextDrill: {
+      title: 'Object emptiness guard',
+      route,
+      family: 'question',
+      reason: 'Practice the next JavaScript topic for readiness.',
+      cta: 'Start coding drill',
+    },
   };
 }
 
@@ -249,7 +373,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
   };
 
   // Activity + dashboard endpoints hit after auth redirects; mock them to avoid noisy 401s in E2E.
-  await page.route(/\/api\/(activity\/.*|dashboard$|daily\/complete$|weekly-goal$|practice-progress(?:\/.*)?$).*/, async (route) => {
+  await page.route(/\/api\/(activity\/.*|dashboard(?:\/prep-goal)?$|daily\/complete$|weekly-goal$|practice-progress(?:\/.*)?$).*/, async (route) => {
     const req = route.request();
     const url = new URL(req.url());
     const path = url.pathname;
@@ -320,6 +444,21 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
       return jsonResponse(route, req, 200, []);
     }
 
+    if (req.method() === 'POST' && path.endsWith('/dashboard/prep-goal')) {
+      const body = parseJsonBody(req) || {};
+      const level = typeof body.level === 'string' ? body.level : 'intermediate';
+      currentUser = {
+        ...currentUser,
+        prefs: {
+          ...currentUser.prefs,
+          prepGoal: { tech: 'javascript', level } as MockUser['prefs']['prepGoal'],
+        },
+      };
+      return jsonResponse(route, req, 200, {
+        goal: buildDashboardPrepLoop(currentUser).goal,
+      });
+    }
+
     if (req.method() === 'GET' && path.endsWith('/dashboard')) {
       const today = new Date();
       const dayKey = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}-${String(today.getUTCDate()).padStart(2, '0')}`;
@@ -363,6 +502,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
         },
         progress,
         achievements: buildDashboardAchievements(currentUser, progress),
+        prepLoop: buildDashboardPrepLoop(currentUser),
         settings: {
           weeklyGoalEnabled: true,
           weeklyGoalTarget: 10,

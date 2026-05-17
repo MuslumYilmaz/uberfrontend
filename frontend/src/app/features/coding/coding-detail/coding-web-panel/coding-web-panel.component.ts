@@ -20,8 +20,11 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ButtonModule } from 'primeng/button';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
+import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { computeWebQuestionContentVersion } from '../../../../core/utils/content-version.util';
+import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.util';
+import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -337,6 +340,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   @Input() liteMode = false;
   @Input() deferPreview = false;
   @Output() requestEditorUpgrade = new EventEmitter<void>();
+  private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -772,7 +776,44 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     this.testResults.set(results);
     this.hasRunTests = true;
+    this.recordWebAttempt(q, results);
     return results;
+  }
+
+  private recordWebAttempt(question: Question, results: TestResult[]): void {
+    if (!this.attemptInsights || !Array.isArray(results) || results.length === 0) return;
+
+    const totalCount = results.length;
+    const passCount = results.filter((item) => item.passed).length;
+    const firstFail = results.find((item) => !item.passed);
+    const failCount = Math.max(0, totalCount - passCount);
+    const normalizedError = normalizeErrorLine(firstFail?.error || '');
+    const signature = createFailureSignature({
+      firstFailName: firstFail?.name,
+      errorLine: normalizedError,
+      failCount,
+    });
+    const codeHash = stableHash(`${this.webHtml()}\n/* css */\n${this.webCss()}`);
+    const existingRuns = this.attemptInsights.getRunsForQuestion(question.id);
+    const previousRun = existingRuns.length ? existingRuns[existingRuns.length - 1] : null;
+    const prevHash = previousRun?.codeHash || '';
+    const category = classifyFailureCategory(firstFail?.error || normalizedError);
+
+    this.attemptInsights.recordRun({
+      questionId: question.id,
+      lang: 'web',
+      ts: Date.now(),
+      passCount,
+      totalCount,
+      firstFailName: String(firstFail?.name || ''),
+      errorLine: normalizedError,
+      signature,
+      codeHash,
+      codeChanged: prevHash ? prevHash !== codeHash : true,
+      interviewMode: false,
+      errorCategory: category,
+      tags: question.tags || [],
+    });
   }
 
   // ---------- banner actions ----------
