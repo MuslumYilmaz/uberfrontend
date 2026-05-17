@@ -6,7 +6,7 @@ const EditorAssistAttemptSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     questionId: { type: String, required: true, trim: true },
-    lang: { type: String, enum: ['js', 'ts'], required: true },
+    lang: { type: String, enum: ['js', 'ts', 'web', 'react', 'angular', 'vue'], required: true },
     ts: { type: Number, required: true, min: 0, index: true },
     passCount: { type: Number, required: true, min: 0 },
     totalCount: { type: Number, required: true, min: 0 },
@@ -29,6 +29,10 @@ EditorAssistAttemptSchema.index(
   { unique: true, name: 'uniq_editor_assist_user_record_key' }
 );
 EditorAssistAttemptSchema.index({ userId: 1, ts: -1 }, { name: 'idx_editor_assist_user_ts' });
+EditorAssistAttemptSchema.index(
+  { userId: 1, questionId: 1, ts: -1 },
+  { name: 'idx_editor_assist_user_question_ts' }
+);
 EditorAssistAttemptSchema.index(
   { createdAt: 1 },
   { expireAfterSeconds: TTL_SECONDS, name: 'idx_editor_assist_ttl' }

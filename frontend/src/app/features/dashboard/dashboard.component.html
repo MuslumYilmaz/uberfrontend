@@ -4,18 +4,17 @@
       <ng-container *ngIf="dashboardMode() === 'guest'; else memberCommandCenter">
         <div class="guest-launch">
           <div class="guest-launch__head">
-            <p class="fa-page-kicker">Curated interview path</p>
-            <h1 class="fa-page-title">Start with the curated shortlist first</h1>
+            <p class="fa-page-kicker">Interview prep path</p>
+            <h1 class="fa-page-title">Start with the 60 most useful questions</h1>
             <p class="fa-page-subtitle">
-              Open 60 curated frontend interview questions first, then branch only when you need
-              more coverage. The guide is there if you want scoring signals and round structure
-              before practicing.
+              Start with 60 focused frontend interview questions. Use the guide if you want
+              to understand the interview flow before practicing.
             </p>
           </div>
 
           <div class="guest-launch__grid">
             <article faCard elevated class="guest-featured" data-testid="dashboard-guest-featured-route">
-              <div class="guest-featured__eyebrow">Core practice block</div>
+              <div class="guest-featured__eyebrow">Recommended start</div>
               <span
                 *ngIf="guestFeaturedRoute.fitHint"
                 class="fit-pill"
@@ -68,7 +67,7 @@
       <ng-template #memberCommandCenter>
         <div class="command-center__grid">
           <div class="command-center__intro">
-            <p class="fa-page-kicker">Prep command center</p>
+            <p class="fa-page-kicker">Your prep dashboard</p>
             <h1 class="fa-page-title">{{ heroHeading() }}</h1>
             <p class="hero-copy fa-body">{{ heroCopy() }}</p>
 
@@ -96,11 +95,270 @@
       </ng-template>
     </section>
 
+    <section
+      *ngIf="dashboardMode() !== 'guest' && prepLoop() as prep"
+      class="block block--prep-loop"
+      data-testid="dashboard-prep-loop"
+    >
+      <div class="block-head block-head--with-action">
+        <div class="block-head__content">
+          <h2 class="block-title fa-section-title">JavaScript interview readiness</h2>
+          <p class="block-subtitle fa-meta-text">Focus on one JavaScript weakness at a time.</p>
+        </div>
+      </div>
+
+      <article faCard class="prep-readiness-card">
+        <div class="prep-action-grid">
+          <div class="prep-readiness-main">
+            <div class="prep-score" aria-label="Readiness score">
+              <div class="prep-score__value" data-testid="dashboard-prep-score">{{ prep.readiness.score }}</div>
+              <div class="prep-score__label">/100</div>
+            </div>
+
+            <div class="prep-readiness-copy">
+              <div class="prep-goal-label" data-testid="dashboard-prep-goal-label">{{ prep.goal.label }}</div>
+              <h3 class="prep-band" data-testid="dashboard-prep-band">{{ prep.readiness.band }}</h3>
+              <p class="prep-score-context fa-meta-text">
+                This score is based on recent practice, not a guarantee.
+              </p>
+              <div class="prep-score-bar" aria-hidden="true">
+                <span [style.width.%]="prep.readiness.score"></span>
+              </div>
+              <p class="prep-weakness fa-meta-text" *ngIf="prep.weaknesses?.length">
+                Weakest now: {{ prep.weaknesses[0].label }} · {{ componentProgressLabel(prep.weaknesses[0]) }}/{{ prep.weaknesses[0].target }}
+              </p>
+              <p class="prep-cap-note fa-meta-text" *ngIf="prep.readiness.cap as cap">
+                Score limited: {{ cap.reason }}
+              </p>
+              <p class="prep-score-reason fa-meta-text" *ngIf="prepScoreReason(prep) as scoreReason">
+                {{ scoreReason }}
+              </p>
+              <p class="prep-score-reason fa-meta-text" *ngIf="prepFreshnessReason(prep) as freshnessReason">
+                {{ freshnessReason }}
+              </p>
+            </div>
+          </div>
+
+          <div class="prep-next-drill prep-next-drill--primary">
+            <div class="prep-next-drill__copy">
+              <div class="widget-kicker">Recommended next drill</div>
+              <h3 class="widget-title" data-testid="dashboard-prep-next-title">{{ prep.nextDrill.title }}</h3>
+              <p class="fa-meta-text">{{ prep.nextDrill.reason }}</p>
+            </div>
+            <a
+              faButton
+              variant="primary"
+              data-testid="dashboard-prep-next-drill"
+              [routerLink]="prep.nextDrill.route"
+              (click)="trackPrepNextDrill(prep.nextDrill)"
+            >
+              {{ prep.nextDrill.cta }}
+            </a>
+          </div>
+        </div>
+
+        <div class="prep-coverage-gap-group" *ngIf="prep.coverageGaps?.length" aria-label="Topics to strengthen">
+          <div class="widget-kicker">Topics to strengthen</div>
+          <div class="prep-coverage-gaps">
+            <button
+              *ngFor="let gap of visiblePrepCoverageGaps()"
+              type="button"
+              class="prep-gap-chip"
+              [class.prep-gap-chip--active]="selectedPrepCoverageGap()?.id === gap.id"
+              [attr.aria-pressed]="selectedPrepCoverageGap()?.id === gap.id"
+              data-testid="dashboard-prep-gap-chip"
+              (click)="selectPrepCoverageGap(gap)"
+            >
+              {{ gap.label }}
+            </button>
+            <button
+              *ngIf="hiddenPrepCoverageGapCount() > 0"
+              type="button"
+              class="prep-gap-chip prep-gap-chip--toggle"
+              data-testid="dashboard-prep-gap-toggle"
+              (click)="togglePrepCoverageExpanded()"
+            >
+              {{ prepCoverageExpanded() ? 'Show fewer' : 'Show all coverage topics (' + prepCoverageGaps().length + ')' }}
+            </button>
+          </div>
+          <div
+            class="prep-gap-panel"
+            *ngIf="selectedPrepCoverageGap() as selectedGap"
+            data-testid="dashboard-prep-gap-panel"
+          >
+            <div class="prep-gap-panel__head">
+              <div>
+                <h3>{{ selectedGap.label }}</h3>
+                <p class="fa-meta-text">{{ coverageGapProgressLabel(selectedGap) }}</p>
+              </div>
+              <span class="prep-gap-panel__source" *ngIf="selectedGap.source === 'essential-60'">Essential 60 priority</span>
+            </div>
+            <div class="prep-gap-question-list" *ngIf="selectedGap.questions?.length; else noGapQuestions">
+              <a
+                *ngFor="let question of selectedGap.questions"
+                class="prep-gap-question"
+                [class.prep-gap-question--premium]="isPremiumCoverageQuestion(question)"
+                [routerLink]="question.route"
+                data-testid="dashboard-prep-gap-question"
+              >
+                <span class="prep-gap-question__title">{{ question.title }}</span>
+                <span class="prep-gap-question__meta">
+                  <span
+                    *ngIf="questionFeedbackLabel(question) as feedbackLabel"
+                    class="prep-gap-question__status"
+                    [attr.data-status]="question.feedback?.status || 'not-tried'"
+                  >
+                    {{ feedbackLabel }}
+                  </span>
+                  <span *ngIf="questionImportanceLabel(question) as importanceLabel">{{ importanceLabel }}</span>
+                  <span>{{ question.difficulty }}</span>
+                  <strong *ngIf="isPremiumCoverageQuestion(question)">Premium</strong>
+                </span>
+                <span class="prep-gap-question__feedback" *ngIf="questionFeedbackMeta(question) as feedbackMeta">
+                  {{ feedbackMeta }}
+                </span>
+                <span class="prep-gap-question__rationale" *ngIf="question.rationale">{{ question.rationale }}</span>
+              </a>
+            </div>
+            <ng-template #noGapQuestions>
+              <p class="fa-meta-text">No matching questions are available for this topic yet.</p>
+            </ng-template>
+          </div>
+        </div>
+
+        <div class="prep-feedback" *ngIf="prepWeakFeedbackSignals().length" data-testid="dashboard-prep-feedback">
+          <div class="prep-feedback__head">
+            <div>
+              <div class="widget-kicker">Recent feedback</div>
+              <p class="prep-feedback__summary fa-meta-text" *ngIf="prep.feedback?.summary">{{ prep.feedback?.summary }}</p>
+            </div>
+            <button
+              type="button"
+              class="prep-disclosure-button"
+              data-testid="dashboard-prep-feedback-toggle"
+              [attr.aria-expanded]="prepFeedbackExpanded()"
+              aria-controls="dashboard-prep-feedback-details"
+              (click)="togglePrepFeedbackExpanded()"
+            >
+              {{ prepFeedbackExpanded() ? 'Hide feedback' : 'View feedback' }}
+            </button>
+          </div>
+          <div
+            class="prep-feedback__signals"
+            id="dashboard-prep-feedback-details"
+            *ngIf="prepFeedbackExpanded()"
+          >
+            <a
+              *ngFor="let signal of prepWeakFeedbackSignals()"
+              class="prep-feedback-signal"
+              [routerLink]="signal.route || prep.nextDrill.route"
+              data-testid="dashboard-prep-feedback-signal"
+            >
+              <span class="prep-feedback-signal__title">{{ signal.label }}</span>
+              <span class="prep-feedback-signal__reason">{{ signal.reason }}</span>
+              <span class="prep-feedback-signal__meta">{{ feedbackSignalMeta(signal) }}</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="prep-disclosure-list">
+          <section class="prep-disclosure" data-testid="dashboard-prep-breakdown">
+            <button
+              type="button"
+              class="prep-disclosure-trigger"
+              data-testid="dashboard-prep-breakdown-toggle"
+              [attr.aria-expanded]="prepBreakdownExpanded()"
+              aria-controls="dashboard-prep-breakdown-panel"
+              (click)="togglePrepBreakdownExpanded()"
+            >
+              <span>Score breakdown</span>
+              <span>{{ prepBreakdownExpanded() ? 'Hide' : 'Show' }}</span>
+            </button>
+            <div
+              class="prep-disclosure-panel"
+              id="dashboard-prep-breakdown-panel"
+              *ngIf="prepBreakdownExpanded()"
+            >
+              <p class="prep-score-context fa-meta-text">
+                React, HTML, CSS, and framework practice stay in library progress but do not change this score.
+              </p>
+              <p class="prep-score-context fa-meta-text" *ngIf="prep.targetProfile?.summary as targetSummary">
+                {{ targetSummary }}
+              </p>
+              <div class="prep-components" aria-label="Readiness components">
+                <div class="prep-component" *ngFor="let component of prep.readiness.components">
+                  <div class="prep-component__head">
+                    <span>{{ component.label }}</span>
+                    <strong>{{ componentProgressLabel(component) }}/{{ component.target }}</strong>
+                  </div>
+                  <div class="prep-component__detail" *ngIf="componentProgressDetail(component) as progressDetail">
+                    {{ progressDetail }}
+                  </div>
+                  <div class="prep-component__bar" aria-hidden="true">
+                    <span [style.width.%]="component.percent * 100"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="prep-disclosure" data-testid="dashboard-prep-target-settings">
+            <button
+              type="button"
+              class="prep-disclosure-trigger"
+              data-testid="dashboard-prep-target-toggle"
+              [attr.aria-expanded]="prepTargetSettingsVisible()"
+              aria-controls="dashboard-prep-target-panel"
+              (click)="togglePrepTargetSettingsExpanded()"
+            >
+              <span>Target settings</span>
+              <span>{{ prepTargetSettingsVisible() ? 'Hide' : 'Change' }}</span>
+            </button>
+            <div
+              class="prep-disclosure-panel"
+              id="dashboard-prep-target-panel"
+              *ngIf="prepTargetSettingsVisible()"
+            >
+              <div class="prep-goal-controls" aria-label="Prep goal controls">
+                <label class="settings-item settings-item--field">
+                  <span class="settings-label">Target level</span>
+                  <select
+                    data-testid="dashboard-prep-goal-level"
+                    [value]="prepGoalLevel()"
+                    (change)="onPrepGoalLevelChange($event)"
+                    aria-label="Prep target level"
+                    [disabled]="prepGoalSaving()"
+                  >
+                    <option *ngFor="let option of prepGoalLevelOptions" [value]="option.value">{{ option.label }}</option>
+                  </select>
+                </label>
+                <button
+                  faButton
+                  variant="ghost"
+                  type="button"
+                  data-testid="dashboard-prep-goal-save"
+                  [disabled]="prepGoalSaving()"
+                  (click)="savePrepGoal()"
+                >
+                  {{ prepGoalSaving() ? 'Saving…' : 'Save target' }}
+                </button>
+              </div>
+              <p class="widget-feedback widget-feedback--warn" *ngIf="hasUnsavedPrepGoalChange()">
+                Unsaved level change. Save to recalculate readiness.
+              </p>
+              <p class="widget-feedback widget-feedback--ok" *ngIf="prepGoalMessage()">{{ prepGoalMessage() }}</p>
+              <p class="widget-feedback widget-feedback--warn" *ngIf="prepGoalError()">{{ prepGoalError() }}</p>
+            </div>
+          </section>
+        </div>
+      </article>
+    </section>
+
     <section *ngIf="dashboardMode() !== 'guest'" class="block block--gamification">
       <div class="block-head block-head--with-action">
         <div class="block-head__content">
-          <h2 class="block-title fa-section-title">Today’s prep loop</h2>
-          <p class="block-subtitle fa-meta-text">Keep one focused rep visible and tune the loop only when you need to.</p>
+          <h2 class="block-title fa-section-title">Today’s practice</h2>
+          <p class="block-subtitle fa-meta-text">Start one focused practice item, then adjust settings only when needed.</p>
         </div>
         <div class="progress-head-actions">
           <button
@@ -111,7 +369,7 @@
             type="button"
             (click)="openManageProgress()"
           >
-            Tune loop
+            Practice settings
           </button>
           <a
             *ngIf="!auth.isLoggedIn()"
@@ -122,13 +380,13 @@
             [routerLink]="['/auth/login']"
             [queryParams]="{ redirectTo: '/dashboard' }"
           >
-            Sign in to save your loop
+            Sign in to save progress
           </a>
         </div>
       </div>
 
       <article faCard class="widget widget--daily widget--primary" *ngIf="dailyChallenge() as daily; else dailyChallengeFallback">
-        <div class="widget-kicker">Today’s rep</div>
+        <div class="widget-kicker">Today’s practice</div>
         <h3 class="widget-title">{{ daily.title }}</h3>
         <div class="widget-meta-chips" *ngIf="daily.available !== false; else challengeUnavailable">
           <span class="meta-chip">{{ daily.tech | titlecase }}</span>
@@ -141,7 +399,7 @@
           </ng-template>
         </div>
         <ng-template #challengeUnavailable>
-          <p class="widget-copy fa-meta-text">Could not load today’s rep. You can still keep practicing normally.</p>
+          <p class="widget-copy fa-meta-text">Could not load today’s practice. You can still keep practicing normally.</p>
         </ng-template>
         <div class="widget-actions widget-actions--challenge">
           <a
@@ -150,7 +408,7 @@
             [routerLink]="daily.route"
             (click)="trackDailyChallengeOpened(daily.questionId, daily.dayKey)"
           >
-            {{ daily.available === false ? 'Start a rep' : 'Start rep' }}
+            Start practice
           </a>
           <button
             *ngIf="auth.isLoggedIn() && !daily.completed && daily.available !== false"
@@ -171,15 +429,15 @@
 
       <ng-template #dailyChallengeFallback>
         <article faCard class="widget widget--daily widget--primary" [class.widget--guest]="!auth.isLoggedIn()">
-          <div class="widget-kicker">Today’s rep</div>
-          <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Could not load today’s rep' : 'Sign in to unlock today’s rep' }}</h3>
+          <div class="widget-kicker">Today’s practice</div>
+          <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Could not load today’s practice' : 'Sign in to save today’s practice' }}</h3>
           <p class="widget-copy fa-meta-text">
             {{ auth.isLoggedIn()
-              ? 'Loop widgets are temporarily unavailable. You can still keep practicing normally.'
-              : 'Daily reps start working as soon as you sign in and save activity.' }}
+              ? 'Today’s practice is temporarily unavailable. You can still practice from the library.'
+              : 'Daily practice starts working as soon as you sign in and save activity.' }}
           </p>
           <div class="widget-actions">
-            <a *ngIf="auth.isLoggedIn()" faButton variant="ghost" [routerLink]="['/coding']">Start a rep</a>
+            <a *ngIf="auth.isLoggedIn()" faButton variant="ghost" [routerLink]="['/coding']">Start practice</a>
             <a
               *ngIf="!auth.isLoggedIn()"
               faButton
@@ -193,15 +451,15 @@
         </article>
       </ng-template>
 
-      <p *ngIf="auth.isLoggedIn() && gamificationLoading()" class="fa-meta-text widget-status">Refreshing prep loop…</p>
+      <p *ngIf="auth.isLoggedIn() && gamificationLoading()" class="fa-meta-text widget-status">Refreshing dashboard…</p>
       <p *ngIf="auth.isLoggedIn() && gamificationError()" class="widget-feedback widget-feedback--warn">{{ gamificationError() }}</p>
     </section>
 
     <section *ngIf="dashboardMode() === 'guest'" class="block block--guest-practice">
       <div class="block-head">
         <div class="block-head__content">
-          <h2 class="block-title fa-section-title">Practice formats after the shortlist</h2>
-          <p class="block-subtitle fa-meta-text">Switch formats here after you know which prep route you are following.</p>
+          <h2 class="block-title fa-section-title">More ways to practice</h2>
+          <p class="block-subtitle fa-meta-text">Use these when you want a different kind of practice.</p>
         </div>
       </div>
 
@@ -237,7 +495,7 @@
       <div class="block-head block-head--with-action">
         <div class="block-head__content">
           <h2 class="block-title fa-section-title">Progress snapshot</h2>
-          <p class="block-subtitle fa-meta-text">Keep streaks, weekly goal, and badges visible without turning the dashboard into a metrics page.</p>
+          <p class="block-subtitle fa-meta-text">A quick view of streaks, weekly goal, and badges.</p>
         </div>
         <a
           faButton
@@ -260,7 +518,7 @@
             <div class="snapshot-card__value">Hidden</div>
           </ng-template>
           <div class="snapshot-card__sub">
-            {{ shouldShowStreak() ? 'Current run' : 'Turn it back on in loop settings' }}
+            {{ shouldShowStreak() ? 'Current streak' : 'Turn it back on in practice settings' }}
           </div>
         </article>
 
@@ -340,8 +598,8 @@
     <section *ngIf="dashboardMode() === 'guest'" class="block block--guest-related">
       <div class="block-head">
         <div class="block-head__content">
-          <h2 class="block-title fa-section-title">Add later when relevant</h2>
-          <p class="block-subtitle fa-meta-text">These are valuable surfaces, but they should not be your first decision on day one.</p>
+          <h2 class="block-title fa-section-title">Come back to these later</h2>
+          <p class="block-subtitle fa-meta-text">Use these after your core practice is moving.</p>
         </div>
       </div>
 
@@ -367,10 +625,10 @@
         aria-labelledby="dashboard-guest-progress-title"
       >
         <div class="guest-progress-card__content">
-          <div class="guest-progress-card__eyebrow">Save your loop</div>
-          <h2 class="guest-progress-card__title" id="dashboard-guest-progress-title">Sign in when you want progress to stick</h2>
+          <div class="guest-progress-card__eyebrow">Save your progress</div>
+          <h2 class="guest-progress-card__title" id="dashboard-guest-progress-title">Sign in to keep your progress</h2>
           <p class="guest-progress-card__copy fa-meta-text">
-            Save streaks, weekly goals, badges, and loop history without changing how you start practicing today.
+            Keep streaks, weekly goals, badges, and history when you come back.
           </p>
           <div class="guest-progress-card__actions">
             <a
@@ -401,8 +659,8 @@
     <section *ngIf="dashboardMode() !== 'guest'" class="block block--library">
       <div class="block-head">
         <div class="block-head__content">
-          <h2 class="block-title fa-section-title">Browse prep library</h2>
-          <p class="block-subtitle fa-meta-text">Branch out only when you need a different entry point than the main loop.</p>
+          <h2 class="block-title fa-section-title">Browse practice library</h2>
+          <p class="block-subtitle fa-meta-text">Use the library when you want a different kind of practice.</p>
         </div>
       </div>
 
@@ -444,10 +702,10 @@
     >
       <div class="progress-manage-panel" role="dialog" aria-labelledby="progress-manage-title" aria-describedby="progress-manage-desc">
         <div class="progress-manage-head">
-          <p class="progress-manage-kicker">Loop settings</p>
-          <h3 class="progress-manage-title" id="progress-manage-title">Tune your prep loop</h3>
+          <p class="progress-manage-kicker">Practice settings</p>
+          <h3 class="progress-manage-title" id="progress-manage-title">Adjust practice settings</h3>
           <p class="progress-manage-copy fa-meta-text" id="progress-manage-desc">
-            Adjust weekly goal, today’s rep tech, and streak visibility without leaving the dashboard.
+            Change weekly goal, today’s practice tech, and streak visibility.
           </p>
         </div>
 
@@ -473,8 +731,8 @@
             </select>
           </label>
           <label class="settings-item settings-item--field settings-item--daily-tech">
-            <span class="settings-label">Today’s rep tech</span>
-            <select [value]="dailyChallengeTech()" (change)="onDailyChallengeTechChange($event)" aria-label="Today's rep framework">
+            <span class="settings-label">Today’s practice tech</span>
+            <select [value]="dailyChallengeTech()" (change)="onDailyChallengeTechChange($event)" aria-label="Today's practice framework">
               <option value="auto">Auto (based on progress)</option>
               <option value="javascript">JavaScript</option>
               <option value="react">React</option>
@@ -501,7 +759,7 @@
             Cancel
           </button>
           <button faButton variant="primary" type="button" [disabled]="settingsSaving()" (click)="saveGamificationSettings()">
-            {{ settingsSaving() ? 'Saving…' : 'Save loop settings' }}
+            {{ settingsSaving() ? 'Saving…' : 'Save settings' }}
           </button>
         </div>
       </div>

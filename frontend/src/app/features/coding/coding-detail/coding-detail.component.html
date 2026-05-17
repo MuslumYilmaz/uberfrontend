@@ -520,7 +520,8 @@
       [tech]="tech" [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [deferPreview]="demoMode"
       [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
       [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="solutionFilesMap()"
-      (requestEditorUpgrade)="requestLiteUpgrade()">
+      (requestEditorUpgrade)="requestLiteUpgrade()"
+      (frameworkCheckRun)="onFrameworkCheckRun($event)">
     </app-coding-framework-panel>
 
     <!-- NON-FRAMEWORK: WEB or JS -->

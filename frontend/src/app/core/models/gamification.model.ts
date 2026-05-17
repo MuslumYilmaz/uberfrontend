@@ -6,6 +6,170 @@ export interface DashboardNextAction {
   cta: string;
 }
 
+export type DashboardPrepGoalTech = 'javascript' | 'react' | 'angular' | 'vue' | 'html' | 'css';
+export type DashboardPrepGoalLevel = 'foundation' | 'intermediate' | 'senior';
+export type DashboardReadinessBand = 'Starting' | 'Developing' | 'Interview-ready' | 'Strong';
+
+export interface DashboardPrepGoal {
+  tech: DashboardPrepGoalTech;
+  level: DashboardPrepGoalLevel;
+  label: string;
+}
+
+export interface DashboardPrepTargetProfile {
+  label: string;
+  summary: string;
+  targets: {
+    coding?: number;
+    concepts: number;
+    debug: number;
+    tradeoffs: number;
+  };
+  breadth: {
+    coding?: number;
+    concepts: number;
+  };
+  difficulty?: {
+    advanced?: number;
+    hard?: number;
+  };
+  conceptOnly: boolean;
+}
+
+export interface DashboardReadinessComponent {
+  id: 'coding' | 'concepts' | 'debug' | 'tradeoffs' | 'consistency';
+  label: string;
+  score: number;
+  max: number;
+  current: number;
+  effectiveCurrent?: number;
+  target: number;
+  percent: number;
+  route: string;
+  breadth?: {
+    solved: number;
+    required: number;
+    percent: number;
+    gaps: Array<{
+      id: string;
+      label: string;
+      solved: number;
+      target: number;
+    }>;
+    dominant?: {
+      id: string;
+      label: string;
+      solved: number;
+      target: number;
+    };
+  };
+  freshness?: {
+    fresh: number;
+    aging: number;
+    stale: number;
+    latestAt?: string;
+  };
+  feedback?: DashboardPrepComponentFeedback;
+}
+
+export interface DashboardPrepDrill {
+  title: string;
+  route: string;
+  family: 'question' | 'incident' | 'tradeoff-battle';
+  reason: string;
+  cta: string;
+}
+
+export interface DashboardPrepComponentFeedback {
+  attempts: number;
+  failRuns: number;
+  passRate: number;
+  repeatedFailures: number;
+  topFailureCategories: Array<{
+    category: string;
+    count: number;
+  }>;
+}
+
+export interface DashboardPrepFeedbackSignal {
+  id: string;
+  kind: 'coding';
+  bucket: string;
+  bucketLabel?: string;
+  label: string;
+  severity?: 'high' | 'medium' | 'low' | string;
+  attempts: number;
+  failRuns?: number;
+  passRate: number;
+  latestAt: string;
+  category?: string;
+  lang?: 'js' | 'ts' | 'web' | 'react' | 'angular' | 'vue' | string;
+  questionId?: string;
+  route?: string;
+  accessible?: boolean;
+  access?: 'free' | 'premium' | string;
+  reason: string;
+}
+
+export interface DashboardPrepFeedback {
+  windowDays: number;
+  summary: string;
+  weakSignals: DashboardPrepFeedbackSignal[];
+  strengthSignals: DashboardPrepFeedbackSignal[];
+}
+
+export interface DashboardCoverageGapQuestionFeedback {
+  status: 'not-tried' | 'needs-review' | 'passed-recently' | string;
+  attempts: number;
+  passRate: number;
+  latestAt?: string;
+  category?: string;
+  lang?: 'js' | 'ts' | 'web' | 'react' | 'angular' | 'vue' | string;
+}
+
+export interface DashboardCoverageGapQuestion {
+  id: string;
+  title: string;
+  route: string;
+  access: 'free' | 'premium' | string;
+  difficulty: string;
+  importanceScore?: number;
+  essentialRank?: number;
+  rationale?: string;
+  feedback?: DashboardCoverageGapQuestionFeedback;
+}
+
+export interface DashboardCoverageGap {
+  id: string;
+  label: string;
+  kind: 'coding' | 'concepts';
+  route: string;
+  priorityScore?: number;
+  source?: 'essential-60' | 'catalog' | string;
+  solved?: number;
+  target?: number;
+  available?: number;
+  questions?: DashboardCoverageGapQuestion[];
+}
+
+export interface DashboardPrepLoop {
+  goal: DashboardPrepGoal;
+  targetProfile?: DashboardPrepTargetProfile;
+  readiness: {
+    score: number;
+    band: DashboardReadinessBand;
+    cap?: {
+      maxScore: number;
+      reason: string;
+    };
+    components: DashboardReadinessComponent[];
+  };
+  weaknesses: DashboardReadinessComponent[];
+  coverageGaps?: DashboardCoverageGap[];
+  feedback?: DashboardPrepFeedback;
+  nextDrill: DashboardPrepDrill;
+}
+
 export interface DashboardDailyChallenge {
   dayKey: string;
   questionId: string;
@@ -130,6 +294,7 @@ export interface DashboardGamificationResponse {
   xpLevel: DashboardXpLevel;
   progress: DashboardProgress;
   achievements?: DashboardAchievements;
+  prepLoop?: DashboardPrepLoop;
   settings: DashboardGamificationSettings;
 }
 
@@ -162,4 +327,8 @@ export interface WeeklyGoalUpdateResponse {
     weekKey: string;
   };
   settings: DashboardGamificationSettings;
+}
+
+export interface PrepGoalUpdateResponse {
+  goal: DashboardPrepGoal;
 }

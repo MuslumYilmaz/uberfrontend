@@ -38,6 +38,9 @@ type RawQuestionSummaryRow = QuestionListItem & { tech: Tech };
 type SchemaQuestionLink = { title: string; path: string };
 type PrepPlanLink = { label: string; route: any[]; summary: string };
 type HubConceptLink = { label: string; route: any[]; ariaLabel: string };
+type AngularCoverageLink = { label: string; route: any[] };
+type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
+type AngularMistakeItem = { title: string; detail: string };
 type HubIntentProfile = {
   heading: string;
   lead: string;
@@ -267,6 +270,107 @@ const PRIMARY_TECH_HUB_PATHS = new Set<string>([
   '/css/interview-questions',
 ]);
 
+const ANGULAR_TOPIC_CARDS: AngularTopicCard[] = [
+  {
+    title: 'RxJS and HttpClient cancellation',
+    answer: 'HttpClient returns Observables, and real cancellation depends on unsubscribing from the active request. For typeahead or route changes, choose switchMap, AsyncPipe, or lifecycle teardown so stale responses do not win.',
+    link: {
+      label: 'Practice HttpClient cancellation',
+      route: ['/angular', 'trivia', 'angular-http-what-actually-cancels-request'],
+    },
+  },
+  {
+    title: 'Dependency injection and services',
+    answer: 'Angular DI creates and supplies services, config values, and scoped dependencies. Strong answers connect service responsibility with provider placement, because root, route, and component providers change instance lifetime.',
+    link: {
+      label: 'Review Angular dependency injection',
+      route: ['/angular', 'trivia', 'angular-dependency-injection'],
+    },
+  },
+  {
+    title: 'Forms and validation',
+    answer: 'Angular forms questions usually test state ownership, validation timing, async validation, and reusable controls. Reactive Forms are the safer default once the workflow is dynamic, validation-heavy, or needs focused tests.',
+    link: {
+      label: 'Compare Angular form strategies',
+      route: ['/angular', 'trivia', 'angular-template-driven-vs-reactive-forms-which-scales'],
+    },
+  },
+  {
+    title: 'Change detection and OnPush',
+    answer: 'Change detection answers should name the trigger path, not just the API. Default, OnPush, AsyncPipe, signals, markForCheck, and detectChanges all matter when you debug stale UI or excessive rerenders.',
+    link: {
+      label: 'Debug change detection strategies',
+      route: ['/angular', 'trivia', 'angular-change-detection-strategies'],
+    },
+  },
+  {
+    title: 'Standalone components vs NgModules',
+    answer: 'Standalone components cover most new Angular composition, routing, and provider setup. NgModules still matter for legacy declarations, module-shaped libraries, and compatibility boundaries.',
+    link: {
+      label: 'Compare standalone and NgModules',
+      route: ['/angular', 'trivia', 'angular-ngmodules-vs-standalone'],
+    },
+  },
+  {
+    title: 'Testing Angular applications',
+    answer: 'Good Angular tests protect behavior at the right boundary: pure validators and services without TestBed where possible, TestBed for template integration, and HTTP/router tools for async flows. Avoid tests that only prove construction.',
+    link: {
+      label: 'Open the Angular testing prep path',
+      route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    },
+  },
+  {
+    title: 'Performance optimization',
+    answer: 'Performance answers should start with evidence, then choose the fix: lazy loading for bundle cost, OnPush and trackBy for render churn, and moving expensive work when the main thread is blocked.',
+    link: {
+      label: 'Review Angular performance optimization',
+      route: ['/angular', 'trivia', 'angular-performance-optimization'],
+    },
+  },
+  {
+    title: 'State management and NgRx',
+    answer: 'State management questions test whether state is local, shared, durable, or business-critical. Use local component state for short-lived UI state, services for contained feature state, and NgRx when explicit global transitions pay for their cost.',
+    link: {
+      label: 'Choose Store vs component state',
+      route: ['/angular', 'trivia', 'ngrx-store-vs-component-state-angular-when-to-use'],
+    },
+  },
+];
+
+const ANGULAR_MISTAKE_ITEMS: AngularMistakeItem[] = [
+  {
+    title: 'Memorizing lifecycle hooks without timing',
+    detail: 'Name what belongs in constructor, ngOnInit, ngAfterViewInit, and ngOnDestroy, then explain the production bug each hook can prevent.',
+  },
+  {
+    title: 'Using mergeMap when latest search should win',
+    detail: 'Typeahead and filter flows usually need switchMap so slower previous responses cannot overwrite newer user intent.',
+  },
+  {
+    title: 'Treating DI as only service injection',
+    detail: 'Provider scope, InjectionToken usage, multi providers, and lazy route boundaries are the interview details that reveal real Angular experience.',
+  },
+  {
+    title: 'Mutating OnPush inputs and patching symptoms',
+    detail: 'Fix the state update path first; random detectChanges calls usually hide a reference, zone, or async ownership problem.',
+  },
+  {
+    title: 'Ignoring form edge cases',
+    detail: 'Async validation cancellation, touched and disabled propagation, FormArray shape, and CVA behavior are what turn a simple form into an interview-grade form.',
+  },
+  {
+    title: 'Writing tests that skip async behavior',
+    detail: 'Cover loading, error, HTTP cancellation, router timing, and DOM interaction when those behaviors are the reason the Angular code exists.',
+  },
+];
+
+const ANGULAR_MODERN_TOPICS: string[] = [
+  'Standalone apps and route providers: know what moved out of AppModule and how provider scope changes during migration.',
+  'Signals: explain where signal-based state helps and where RxJS still fits better for streams, cancellation, and multicasting.',
+  'Zoneless change detection: describe how UI updates are scheduled when Zone.js is no longer the default notification path.',
+  'Signal Forms: mention as an experimental modern forms direction, not as a production replacement for every Reactive Forms workflow.',
+];
+
 const DIFFICULTY_RANK: Record<string, number> = {
   easy: 0,
   intermediate: 1,
@@ -383,6 +487,22 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   prepPlanLinks(): PrepPlanLink[] {
     return PREP_PLAN_LINKS;
+  }
+
+  isAngularHub(): boolean {
+    return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'angular';
+  }
+
+  angularTopicCards(): AngularTopicCard[] {
+    return ANGULAR_TOPIC_CARDS;
+  }
+
+  angularMistakeItems(): AngularMistakeItem[] {
+    return ANGULAR_MISTAKE_ITEMS;
+  }
+
+  angularModernTopics(): string[] {
+    return ANGULAR_MODERN_TOPICS;
   }
 
   prepRoadmapTitle(): string {
@@ -833,6 +953,25 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'Thing', name: 'Common interview mistakes' },
         { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
+      ];
+    }
+
+    if (this.isAngularHub()) {
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'Angular RxJS and HttpClient cancellation' },
+        { '@type': 'Thing', name: 'Angular dependency injection' },
+        { '@type': 'Thing', name: 'Angular forms and validation' },
+        { '@type': 'Thing', name: 'Angular change detection' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'Angular common interview mistakes' },
+        { '@type': 'Thing', name: 'Angular testing applications' },
+        { '@type': 'Thing', name: 'Angular performance optimization' },
+        { '@type': 'Thing', name: 'Angular standalone components versus NgModules' },
+        { '@type': 'Thing', name: 'Angular state management and NgRx' },
+        { '@type': 'Thing', name: 'Modern Angular interview topics' },
       ];
     }
 

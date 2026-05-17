@@ -108,6 +108,54 @@
     </ng-container>
   </section>
 
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-coverage"
+    aria-labelledby="iq-angular-coverage-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Angular coverage map</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-coverage-title">Angular interview topic map</h2>
+      <p class="fa-meta-text">
+        Use these Angular interview questions to connect short answers with the deeper practice routes behind them.
+      </p>
+    </div>
+
+    <div class="iq-topic-grid">
+      <article class="iq-topic-card" *ngFor="let topic of angularTopicCards()">
+        <h3>{{ topic.title }}</h3>
+        <p>{{ topic.answer }}</p>
+        <a class="iq-topic-card__link" [routerLink]="topic.link.route">{{ topic.link.label }} →</a>
+      </article>
+    </div>
+
+    <div class="iq-angular-support-grid">
+      <article class="iq-angular-support-card">
+        <h3>Common mistakes in Angular interviews</h3>
+        <ul>
+          <li *ngFor="let mistake of angularMistakeItems()">
+            <strong>{{ mistake.title }}</strong>
+            <span>{{ mistake.detail }}</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="iq-angular-support-card iq-angular-support-card--modern">
+        <h3>Modern Angular topics interviewers may ask about</h3>
+        <p>
+          Treat modern Angular as a production reasoning topic: explain the trade-off, current maturity,
+          and migration risk instead of naming a feature in isolation.
+        </p>
+        <ul>
+          <li *ngFor="let topic of angularModernTopics()">{{ topic }}</li>
+        </ul>
+        <a class="iq-topic-card__link" [routerLink]="['/guides', 'framework-prep', 'angular-prep-path']">
+          Open the Angular prep path →
+        </a>
+      </article>
+    </div>
+  </section>
+
   <section class="iq-section iq-section--surface iq-section--intent" aria-labelledby="iq-intent-title">
     <div class="iq-section__head iq-section__head--split">
       <div>

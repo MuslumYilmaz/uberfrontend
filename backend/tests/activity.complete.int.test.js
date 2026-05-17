@@ -141,6 +141,54 @@ describe('POST /api/activity/complete', () => {
         expect(firstCompletionCount).toBe(1);
     });
 
+    test('refreshes lastAttemptAt for repeated active completions without duplicate XP', async () => {
+        const user = await User.create({
+            email: 'repeat-completion-refresh@example.com',
+            username: 'repeat_completion_refresh_user',
+            passwordHash: 'hash',
+        });
+
+        mockSystemTime('2026-01-01T10:00:00.000Z');
+        const first = await request(app)
+            .post('/api/activity/complete')
+            .set('Authorization', authHeader(user._id))
+            .send({
+                kind: 'coding',
+                tech: 'react',
+                itemId: 'react-counter',
+                difficulty: 'easy',
+            });
+        expect(first.status).toBe(200);
+        expect(Number(first.body?.xpAwarded || 0)).toBeGreaterThan(0);
+
+        mockSystemTime('2026-01-03T12:00:00.000Z');
+        const second = await request(app)
+            .post('/api/activity/complete')
+            .set('Authorization', authHeader(user._id))
+            .send({
+                kind: 'coding',
+                tech: 'react',
+                itemId: 'react-counter',
+                difficulty: 'easy',
+            });
+
+        expect(second.status).toBe(200);
+        expect(Number(second.body?.xpAwarded || 0)).toBe(0);
+
+        const completion = await ActivityCompletion.findOne({
+            userId: user._id,
+            kind: 'coding',
+            itemId: 'react-counter',
+        }).lean();
+        const reloaded = await User.findById(user._id).lean();
+
+        expect(await ActivityCompletion.countDocuments({ userId: user._id, kind: 'coding', itemId: 'react-counter' })).toBe(1);
+        expect(await ActivityEvent.countDocuments({ userId: user._id, kind: 'coding', itemId: 'react-counter' })).toBe(1);
+        expect(new Date(completion?.completedAt).toISOString()).toBe('2026-01-01T10:00:00.000Z');
+        expect(new Date(completion?.lastAttemptAt).toISOString()).toBe('2026-01-03T12:00:00.000Z');
+        expect(reloaded?.stats?.completedTotal).toBe(1);
+    });
+
     test('awards XP only once for concurrent reactivation of the same item', async () => {
         const user = await User.create({
             email: 'reactivation-race@example.com',

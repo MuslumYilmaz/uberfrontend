@@ -4,6 +4,13 @@
   min-width: 0;
   min-height: 0;
   height: 100%;
+  --framework-preview-bg: color-mix(in srgb, var(--uf-surface-alt) 78%, var(--uf-bg) 22%);
+  --framework-preview-border: color-mix(in srgb, var(--fa-text) 10%, transparent);
+  --framework-preview-muted: color-mix(in srgb, var(--fa-text) 72%, transparent);
+  --framework-check-neutral: color-mix(in srgb, var(--fa-text-subtle) 80%, transparent);
+  --framework-check-pass: var(--uf-badge-green-a);
+  --framework-check-fail: var(--uf-status-danger-text);
+  --framework-check-running: var(--uf-badge-blue-a);
 }
 
 .editor-shell {
@@ -271,6 +278,94 @@
 
 .preview-frame.is-loading {
   opacity: 0;
+}
+
+.framework-preview-column {
+  display: flex;
+  flex-direction: column;
+  background: var(--framework-preview-bg);
+}
+
+.framework-preview-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.framework-check-results {
+  flex: 0 0 auto;
+  max-height: 190px;
+  overflow: auto;
+  border-top: 1px solid var(--framework-preview-border);
+  background: color-mix(in srgb, var(--uf-surface) 92%, transparent);
+  padding: 10px 12px;
+  color: var(--fa-text);
+}
+
+.framework-check-results__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.framework-check-results__summary {
+  color: var(--framework-preview-muted);
+  font-weight: 600;
+}
+
+.framework-check-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 28px;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.framework-check-dot {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: var(--framework-check-neutral);
+}
+
+.framework-check-dot.is-pass {
+  background: var(--framework-check-pass);
+}
+
+.framework-check-dot.is-fail {
+  background: var(--framework-check-fail);
+}
+
+.framework-check-dot.is-running {
+  background: var(--framework-check-running);
+  animation: pulseCheck 1s ease-in-out infinite;
+}
+
+.framework-check-result__body {
+  min-width: 0;
+}
+
+.framework-check-result__name {
+  font-weight: 650;
+}
+
+.framework-check-result__error {
+  margin-top: 2px;
+  color: var(--framework-check-fail);
+  word-break: break-word;
+}
+
+@keyframes pulseCheck {
+  0%, 100% { opacity: .45; }
+  50% { opacity: 1; }
 }
 
 @keyframes spin {

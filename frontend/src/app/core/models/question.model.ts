@@ -42,6 +42,43 @@ export type QuestionInterviewFocus = {
   tests?: string[];
 };
 
+export type FrameworkTestStepType =
+  | 'expectExists'
+  | 'expectText'
+  | 'expectDisabled'
+  | 'click'
+  | 'waitForText'
+  | 'setValue'
+  | 'expectValue'
+  | 'expectCount'
+  | 'waitForCount'
+  | 'expectAttribute'
+  | 'expectClass'
+  | 'key';
+
+export type FrameworkTestStep = {
+  type?: FrameworkTestStepType;
+  action?: FrameworkTestStepType;
+  selector: string;
+  index?: number;
+  text?: string;
+  match?: 'equals' | 'contains';
+  disabled?: boolean;
+  timeoutMs?: number;
+  value?: string;
+  key?: string;
+  count?: number;
+  attribute?: string;
+  className?: string;
+  expected?: string | boolean | number;
+};
+
+export type FrameworkTest = {
+  id: string;
+  name: string;
+  steps: FrameworkTestStep[];
+};
+
 export type TriviaIncidentOption = {
   id: string;
   label: string;
@@ -76,6 +113,7 @@ export interface Question {
   code?: string;
   starterCode?: string;
   tests?: string;
+  frameworkTests?: FrameworkTest[];
   examples?: string[]; // fallback if structured description lacks examples
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
   decisionGraphAsset?: string;

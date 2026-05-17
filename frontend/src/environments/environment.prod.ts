@@ -38,7 +38,7 @@ export const environment = {
         interviewMode: true,
         weaknessRadar: false,
         rubberDuck: false,
-        syncTelemetry: false,
+        syncTelemetry: true,
         assistExperiments: false,
     },
     content: {

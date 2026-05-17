@@ -59,7 +59,7 @@ import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
-import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
+import { CodingFrameworkPanelComponent, FrameworkCheckRunEvent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
 import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
 
@@ -434,6 +434,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     const canSave = this.auth.isLoggedIn();
     const solved = canSave && this.solved();
+
+    if (this.hasFrameworkStructuredChecks()) {
+      return solved ? 'Run checks again' : 'Run checks';
+    }
 
     if (this.isFrameworkTech() || this.isWebTech()) {
       return solved ? 'Mark as incomplete' : 'Mark as complete';
@@ -1623,13 +1627,24 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.isCompletionPending()) {
       return;
     }
-    if (!this.ensureAuthenticated()) {
-      return;
-    }
 
     const q = this.question();
     if (!q) return;
     this.markQuickWinEngaged('submit');
+
+    if (this.hasFrameworkStructuredChecks(q)) {
+      const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
+      await this.completeFrameworkCheckRun({
+        questionId: q.id,
+        passed: results.length > 0 && results.every((result) => result.passed),
+        results,
+      });
+      return;
+    }
+
+    if (!this.ensureAuthenticated()) {
+      return;
+    }
 
     // Toggle off if already completed
     if (this.solved()) {
@@ -1677,6 +1692,39 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     await this.celebrate('submit');
+  }
+
+  hasFrameworkStructuredChecks(q: Question | null = this.question()): boolean {
+    return this.isFrameworkTech()
+      && Array.isArray((q as any)?.frameworkTests)
+      && (q as any).frameworkTests.length > 0;
+  }
+
+  async onFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
+    await this.completeFrameworkCheckRun(event);
+  }
+
+  private async completeFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
+    const q = this.question();
+    if (!q || event.questionId !== q.id || !event.passed) {
+      return;
+    }
+
+    if (!this.ensureAuthenticated()) {
+      return;
+    }
+
+    const completed = await this.recordCompletion('tests');
+    if (!completed) {
+      this.solved.set(false);
+      return;
+    }
+
+    this.solved.set(true);
+    this.trackQuickWinCompleted(q.id, 'first_pass');
+    this.maybePromptLifecycle('coding_submit', q.id);
+    this.creditDaily();
+    await this.celebrate('tests');
   }
 
 

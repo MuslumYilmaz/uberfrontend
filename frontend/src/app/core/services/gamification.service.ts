@@ -4,6 +4,9 @@ import { Observable, catchError, of, shareReplay, tap, throwError } from 'rxjs';
 import {
   DailyChallengeCompleteResponse,
   DashboardGamificationResponse,
+  DashboardPrepGoalLevel,
+  DashboardPrepGoalTech,
+  PrepGoalUpdateResponse,
   WeeklyGoalUpdateResponse,
 } from '../models/gamification.model';
 import { apiUrl } from '../utils/api-base';
@@ -68,6 +71,20 @@ export class GamificationService {
   }): Observable<WeeklyGoalUpdateResponse> {
     return this.http
       .post<WeeklyGoalUpdateResponse>(apiUrl('/weekly-goal'), payload, {
+        headers: this.auth.headers(),
+        withCredentials: true,
+      })
+      .pipe(
+        tap(() => this.invalidateDashboardCache())
+      );
+  }
+
+  updatePrepGoal(payload: {
+    tech?: DashboardPrepGoalTech;
+    level: DashboardPrepGoalLevel;
+  }): Observable<PrepGoalUpdateResponse> {
+    return this.http
+      .post<PrepGoalUpdateResponse>(apiUrl('/dashboard/prep-goal'), payload, {
         headers: this.auth.headers(),
         withCredentials: true,
       })

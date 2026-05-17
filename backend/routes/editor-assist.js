@@ -16,7 +16,7 @@ const MAX_CODE_HASH_LEN = 200;
 const MAX_TAGS = 8;
 const MAX_TAG_LEN = 40;
 
-const VALID_LANGS = new Set(['js', 'ts']);
+const VALID_LANGS = new Set(['js', 'ts', 'web', 'react', 'angular', 'vue']);
 const VALID_ERROR_CATEGORIES = new Set([
   'missing-return',
   'undefined-access',
@@ -98,7 +98,9 @@ function normalizeRun(raw) {
   const signature = signatureResult.value;
 
   const lang = String(raw.lang || '').trim().toLowerCase();
-  if (!VALID_LANGS.has(lang)) return { error: 'lang must be "js" or "ts"' };
+  if (!VALID_LANGS.has(lang)) {
+    return { error: 'lang must be one of: js, ts, web, react, angular, vue' };
+  }
 
   const tsRaw = Number(raw.ts);
   if (!Number.isFinite(tsRaw) || tsRaw < 0) {

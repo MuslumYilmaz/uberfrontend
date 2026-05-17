@@ -6,7 +6,14 @@ import { take } from 'rxjs';
 import {
   DashboardAchievement,
   DashboardAchievements,
+  DashboardCoverageGap,
   DashboardGamificationResponse,
+  DashboardPrepDrill,
+  DashboardPrepFeedbackSignal,
+  DashboardPrepGoalLevel,
+  DashboardPrepGoalTech,
+  DashboardPrepLoop,
+  DashboardReadinessComponent,
 } from '../../core/models/gamification.model';
 import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
@@ -80,7 +87,7 @@ export class DashboardComponent {
   };
   readonly guestFeaturedRoute: DashboardLink = {
     title: 'FrontendAtlas Essential 60',
-    subtitle: 'Start with 60 curated frontend interview questions across JavaScript, UI coding, system design, and concepts.',
+    subtitle: 'Practice JavaScript, UI coding, system design, and concepts in one focused set.',
     route: ['/interview-questions', 'essential'],
     destination: 'essential_60',
     fitHint: 'Recommended start',
@@ -88,21 +95,21 @@ export class DashboardComponent {
   readonly guestSecondaryRoutes: DashboardLink[] = [
     {
       title: 'Frontend interview preparation guide',
-      subtitle: 'Read first if you want the interview flow, scoring signals, and prep sequence before practicing.',
+      subtitle: 'Use this first if you want to understand the interview flow before practicing.',
       route: ['/guides', 'interview-blueprint', 'intro'],
       destination: 'interview_blueprint',
       fitHint: 'Read first if unsure',
     },
     {
-      title: 'Study Plans / Framework Prep',
-      subtitle: 'Use when you want a weekly sequence instead of choosing question by question.',
+      title: 'Study plans',
+      subtitle: 'Use a weekly path when you do not want to choose each question yourself.',
       route: ['/tracks'],
       destination: 'sprints',
       fitHint: 'Structured path',
     },
     {
-      title: 'Final-round coverage',
-      subtitle: 'Add after core practice when system design, behavioral, or company-style follow-ups matter.',
+      title: 'Final-round prep',
+      subtitle: 'Add this when system design, behavioral, or company-style follow-ups matter.',
       route: ['/system-design'],
       destination: 'system_design',
       fitHint: 'Final rounds',
@@ -130,14 +137,14 @@ export class DashboardComponent {
       subtitle: 'Diagnose broken UI and failing tests under pressure.',
       route: ['/incidents'],
       destination: 'debug_scenarios',
-      fitHint: 'Debug signal',
+      fitHint: 'Debug practice',
     },
     {
       title: 'Architecture tradeoffs',
       subtitle: 'Compare solutions when there is no single perfect answer.',
       route: ['/tradeoffs'],
       destination: 'architecture_tradeoffs',
-      fitHint: 'Senior signal',
+      fitHint: 'Senior practice',
     },
   ];
   readonly guestRelatedPrepLinks: DashboardLink[] = [
@@ -160,14 +167,14 @@ export class DashboardComponent {
   readonly libraryLinks: DashboardLink[] = [
     {
       title: 'FrontendAtlas Essential 60',
-      subtitle: 'Open the curated shortlist first when you want the strongest default interview prep route.',
+      subtitle: 'Start with the strongest default interview practice set.',
       route: ['/interview-questions', 'essential'],
       destination: 'essential_60',
       fitHint: 'Start here',
     },
     {
       title: 'Question Library',
-      subtitle: 'Open the full Question Library when you want broader coverage, more filters, and every format.',
+      subtitle: 'Use the full library for more filters, topics, and formats.',
       route: ['/coding'],
       queryParams: { reset: 1 },
       destination: 'question_library',
@@ -175,21 +182,21 @@ export class DashboardComponent {
     },
     {
       title: 'Study Plans',
-      subtitle: 'Jump into a structured prep path when you want momentum.',
+      subtitle: 'Follow a structured path when you want momentum.',
       route: ['/tracks'],
       destination: 'sprints',
       fitHint: 'Structured path',
     },
     {
       title: 'Company Prep',
-      subtitle: 'Bias practice toward one hiring bar without reworking the whole loop.',
+      subtitle: 'Practice for a specific company style.',
       route: ['/companies'],
       destination: 'companies',
       fitHint: 'Targeted prep',
     },
     {
       title: 'Focus Areas',
-      subtitle: 'Branch into one stack when you want cleaner repetition.',
+      subtitle: 'Focus on one stack at a time.',
       route: ['/focus-areas'],
       destination: 'tech_lanes',
       fitHint: 'Weak spot focus',
@@ -215,21 +222,62 @@ export class DashboardComponent {
   readonly weeklyGoalTarget = signal(10);
   readonly showStreakWidget = signal(true);
   readonly dailyChallengeTech = signal<DailyChallengeTech>('auto');
+  readonly prepGoalTech = signal<DashboardPrepGoalTech>('javascript');
+  readonly prepGoalLevel = signal<DashboardPrepGoalLevel>('intermediate');
+  readonly prepGoalSaving = signal(false);
+  readonly prepGoalMessage = signal<string | null>(null);
+  readonly prepGoalError = signal<string | null>(null);
+  readonly prepCoverageExpanded = signal(false);
+  readonly selectedPrepCoverageGapId = signal<string | null>(null);
+  readonly prepFeedbackExpanded = signal(false);
+  readonly prepBreakdownExpanded = signal(false);
+  readonly prepTargetSettingsExpanded = signal(false);
+
+  readonly prepGoalLevelOptions: Array<{ value: DashboardPrepGoalLevel; label: string }> = [
+    { value: 'foundation', label: 'Foundation' },
+    { value: 'intermediate', label: 'Intermediate' },
+    { value: 'senior', label: 'Senior' },
+  ];
 
   readonly nextBestAction = computed(() => {
     const payload = this.gamificationState();
     return (
       payload?.nextBestAction ?? {
         id: 'fallback_continue',
-        title: 'Keep the loop moving',
-        description: 'Take one focused coding rep, then review what changed.',
+        title: 'Keep practicing',
+        description: 'Take one focused coding drill, then review what changed.',
         route: '/coding',
-        cta: 'Start a rep',
+        cta: 'Start practice',
       }
     );
   });
   readonly dailyChallenge = computed(() => this.gamificationState()?.dailyChallenge ?? null);
   readonly weeklyGoal = computed(() => this.gamificationState()?.weeklyGoal ?? null);
+  readonly prepLoop = computed(() => this.gamificationState()?.prepLoop ?? null);
+  readonly prepCoverageGaps = computed<DashboardCoverageGap[]>(() => this.prepLoop()?.coverageGaps ?? []);
+  readonly prepWeakFeedbackSignals = computed<DashboardPrepFeedbackSignal[]>(() =>
+    (this.prepLoop()?.feedback?.weakSignals ?? []).slice(0, 2)
+  );
+  readonly visiblePrepCoverageGaps = computed<DashboardCoverageGap[]>(() => {
+    const gaps = this.prepCoverageGaps();
+    return this.prepCoverageExpanded() ? gaps : gaps.slice(0, 3);
+  });
+  readonly selectedPrepCoverageGap = computed<DashboardCoverageGap | null>(() => {
+    const selectedId = this.selectedPrepCoverageGapId();
+    if (!selectedId) return null;
+    return this.prepCoverageGaps().find((gap) => gap.id === selectedId) ?? null;
+  });
+  readonly hiddenPrepCoverageGapCount = computed(() => Math.max(0, this.prepCoverageGaps().length - 3));
+  readonly hasUnsavedPrepGoalChange = computed(() => {
+    const goal = this.prepLoop()?.goal;
+    if (!goal) return false;
+    return this.prepGoalLevel() !== goal.level;
+  });
+  readonly prepTargetSettingsVisible = computed(() =>
+    this.prepTargetSettingsExpanded()
+    || this.hasUnsavedPrepGoalChange()
+    || this.prepGoalSaving()
+  );
   readonly progressSummary = computed(() => this.gamificationState()?.progress ?? null);
   readonly achievements = computed<DashboardAchievements | null>(() => this.gamificationState()?.achievements ?? null);
   readonly visibleUnlockedBadges = computed<DashboardAchievement[]>(() =>
@@ -270,25 +318,25 @@ export class DashboardComponent {
     };
   });
   readonly heroHeading = computed(() => {
-    if (this.dashboardMode() === 'novice') return 'Start your first focused rep';
+    if (this.dashboardMode() === 'novice') return 'Start your first focused practice';
     return 'Choose one clear next move';
   });
   readonly heroCopy = computed(() => {
     switch (this.dashboardMode()) {
       case 'established':
-        return 'Your next rep is ready. Keep the loop moving, then branch into the library only when today’s practice needs a different format.';
+        return 'Your next practice item is ready. Use the library only when you need a different format.';
       case 'novice':
-        return 'Start with one Essential 60 question. After a few completed reps, the dashboard will shift toward badges, streaks, and recommendations.';
+        return 'Start with one Essential 60 question. After a few completed items, the dashboard will show badges, streaks, and recommendations.';
       default:
-        return 'Start with one question, keep today’s loop visible, and sign in only when you want to save streaks, weekly goals, badges, and loop history.';
+        return 'Start with one question. Sign in when you want to save streaks, weekly goals, badges, and history.';
     }
   });
   readonly heroSupportCopy = computed(() => {
     if (this.dashboardMode() === 'guest') {
-      return 'Guest mode stays open. Save your loop when you want streaks, weekly goals, badges, and history to follow you.';
+      return 'Guest mode stays open. Sign in when you want your progress to follow you.';
     }
     if (this.dashboardMode() === 'novice') {
-      return 'Progress and badges move lower in the dashboard until you have enough completed reps for them to be worth your attention.';
+      return 'Progress and badges move lower in the dashboard until you have enough completed practice to make them useful.';
     }
     return '';
   });
@@ -306,6 +354,16 @@ export class DashboardComponent {
         this.weeklyGoalTarget.set(10);
         this.showStreakWidget.set(true);
         this.dailyChallengeTech.set('auto');
+        this.prepGoalTech.set('javascript');
+        this.prepGoalLevel.set('intermediate');
+        this.prepGoalSaving.set(false);
+        this.prepGoalMessage.set(null);
+        this.prepGoalError.set(null);
+        this.prepCoverageExpanded.set(false);
+        this.selectedPrepCoverageGapId.set(null);
+        this.prepFeedbackExpanded.set(false);
+        this.prepBreakdownExpanded.set(false);
+        this.prepTargetSettingsExpanded.set(false);
         this.isManageProgressOpen.set(false);
         this.dashboardTracked = false;
         this.lastDailyChallengeTrackedKey = null;
@@ -393,7 +451,7 @@ export class DashboardComponent {
         next: (res) => {
           this.dailyCompletePending.set(false);
           this.dailyCompleteMessage.set(
-            res.alreadyCompleted ? 'Already cleared for today.' : 'Today’s rep completed.'
+            res.alreadyCompleted ? 'Already completed for today.' : 'Today’s practice completed.'
           );
           this.analytics.track('daily_challenge_completed', {
             day_key: res.dayKey,
@@ -426,7 +484,7 @@ export class DashboardComponent {
         error: (err) => {
           this.dailyCompletePending.set(false);
           this.dailyCompleteError.set(
-            err?.error?.error || 'Complete the rep first, then mark it complete.'
+            err?.error?.error || 'Complete the practice item first, then mark it complete.'
           );
         },
       });
@@ -470,7 +528,7 @@ export class DashboardComponent {
         },
         error: () => {
           this.settingsSaving.set(false);
-          this.gamificationError.set('Could not save your gamification settings.');
+          this.gamificationError.set('Could not save your practice settings.');
         },
       });
   }
@@ -498,12 +556,204 @@ export class DashboardComponent {
     this.dailyChallengeTech.set(allowed.includes(value) ? value : 'auto');
   }
 
+  onPrepGoalLevelChange(event: Event): void {
+    if (this.prepGoalSaving()) return;
+    const target = event.target as HTMLSelectElement | null;
+    const value = String(target?.value || 'intermediate').toLowerCase() as DashboardPrepGoalLevel;
+    const allowed = this.prepGoalLevelOptions.map((option) => option.value);
+    this.prepGoalLevel.set(allowed.includes(value) ? value : 'intermediate');
+    this.prepGoalMessage.set(null);
+    this.prepGoalError.set(null);
+  }
+
+  savePrepGoal(): void {
+    if (!this.authService.isLoggedIn() || this.prepGoalSaving()) return;
+    const level = this.prepGoalLevel();
+    this.prepGoalSaving.set(true);
+    this.prepGoalMessage.set(null);
+    this.prepGoalError.set(null);
+
+    this.gamification
+      .updatePrepGoal({ level })
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.prepGoalSaving.set(false);
+          this.prepGoalMessage.set(`Target saved. Readiness recalculated for ${this.prepGoalLevelLabel(level)} expectations.`);
+          this.analytics.track('prep_goal_saved', { tech: 'javascript', level, surface: 'dashboard' });
+          this.loadGamification(true);
+        },
+        error: () => {
+          this.prepGoalSaving.set(false);
+          this.prepGoalError.set('Could not save prep goal.');
+        },
+      });
+  }
+
+  trackPrepNextDrill(drill: DashboardPrepDrill): void {
+    this.analytics.track('prep_next_drill_clicked', {
+      family: drill.family,
+      route: drill.route,
+      title: drill.title,
+      goal_tech: this.prepGoalTech(),
+      goal_level: this.prepGoalLevel(),
+    });
+  }
+
+  selectPrepCoverageGap(gap: DashboardCoverageGap): void {
+    const nextId = this.selectedPrepCoverageGapId() === gap.id ? null : gap.id;
+    this.selectedPrepCoverageGapId.set(nextId);
+    if (nextId) {
+      this.analytics.track('prep_coverage_gap_selected', {
+        gap_id: gap.id,
+        kind: gap.kind,
+        source: gap.source || 'catalog',
+        goal_tech: this.prepGoalTech(),
+        goal_level: this.prepGoalLevel(),
+      });
+    }
+  }
+
+  togglePrepCoverageExpanded(): void {
+    const next = !this.prepCoverageExpanded();
+    this.prepCoverageExpanded.set(next);
+    this.analytics.track('prep_coverage_gaps_toggled', {
+      expanded: next,
+      visible_count: this.visiblePrepCoverageGaps().length,
+      total_count: this.prepCoverageGaps().length,
+    });
+  }
+
+  togglePrepFeedbackExpanded(): void {
+    this.prepFeedbackExpanded.set(!this.prepFeedbackExpanded());
+  }
+
+  togglePrepBreakdownExpanded(): void {
+    this.prepBreakdownExpanded.set(!this.prepBreakdownExpanded());
+  }
+
+  togglePrepTargetSettingsExpanded(): void {
+    this.prepTargetSettingsExpanded.set(!this.prepTargetSettingsExpanded());
+  }
+
+  coverageGapProgressLabel(gap: DashboardCoverageGap): string {
+    return `${this.formatProgressCount(gap.solved)} / ${this.formatProgressCount(gap.target)} counted`;
+  }
+
+  questionImportanceLabel(question: { essentialRank?: number; importanceScore?: number }): string | null {
+    if (question.essentialRank) return `Essential #${question.essentialRank}`;
+    if (question.importanceScore) return `${question.importanceScore}/100 importance`;
+    return null;
+  }
+
+  isPremiumCoverageQuestion(question: { access?: string }): boolean {
+    return String(question.access || '').toLowerCase() === 'premium';
+  }
+
+  feedbackSignalMeta(signal: DashboardPrepFeedbackSignal): string {
+    const failRuns = Number(signal.failRuns || 0);
+    const pieces = [
+      this.feedbackSourceLabel(signal.lang),
+      `${this.formatPercentLabel(Number(signal.passRate || 0) * 100)} pass rate`,
+      `${failRuns} failed ${failRuns === 1 ? 'run' : 'runs'}`,
+    ].filter(Boolean);
+    if (signal.accessible === false) pieces.push('Premium');
+    if (signal.category) pieces.push(this.failureCategoryLabel(signal.category));
+    return pieces.join(' · ');
+  }
+
+  questionFeedbackLabel(question: { feedback?: { status?: string; attempts?: number; passRate?: number } }): string | null {
+    const feedback = question.feedback;
+    if (!feedback) return null;
+    const status = String(feedback.status || '');
+    if (status === 'needs-review') return 'Needs review';
+    if (status === 'passed-recently') return 'Passed recently';
+    if (status === 'not-tried') return 'Not tried';
+    return status ? this.failureCategoryLabel(status) : null;
+  }
+
+  questionFeedbackMeta(question: { feedback?: { attempts?: number; passRate?: number; category?: string; lang?: string } }): string | null {
+    const feedback = question.feedback;
+    if (!feedback || !feedback.attempts) return null;
+    const parts = [
+      this.feedbackSourceLabel(feedback.lang),
+      `${feedback.attempts} recent ${feedback.attempts === 1 ? 'run' : 'runs'}`,
+      `${this.formatPercentLabel(Number(feedback.passRate || 0) * 100)} pass rate`,
+    ].filter(Boolean);
+    if (feedback.category) parts.push(this.failureCategoryLabel(feedback.category));
+    return parts.join(' · ');
+  }
+
+  componentProgressValue(component: DashboardReadinessComponent): number {
+    return component.effectiveCurrent ?? component.current;
+  }
+
+  componentProgressLabel(component: DashboardReadinessComponent): string {
+    return this.formatProgressCount(this.componentProgressValue(component));
+  }
+
+  hasEffectiveProgressCap(component: DashboardReadinessComponent): boolean {
+    return component.effectiveCurrent !== undefined && component.effectiveCurrent !== component.current;
+  }
+
+  componentProgressDetail(component: DashboardReadinessComponent): string | null {
+    if (!this.hasEffectiveProgressCap(component)) return null;
+    return `${this.formatProgressCount(component.current)} solved · ${this.formatCountedProgress(component.effectiveCurrent)} counted`;
+  }
+
+  prepScoreReason(prep: DashboardPrepLoop | null | undefined): string | null {
+    if (!prep || prep.readiness.score >= 40) return null;
+    const emptyLabels = prep.readiness.components
+      .filter((component) => component.current <= 0 && this.componentProgressValue(component) <= 0)
+      .map((component) => this.emptyComponentLabel(component))
+      .filter((label): label is string => Boolean(label));
+    if (!emptyLabels.length) return null;
+    return `Score is low because ${this.formatReadableList(emptyLabels)} ${emptyLabels.length === 1 ? 'is' : 'are'} empty.`;
+  }
+
+  prepFreshnessReason(prep: DashboardPrepLoop | null | undefined): string | null {
+    if (!prep) return null;
+    const staleComponents = prep.readiness.components.filter((component) => {
+      const stale = Number(component.freshness?.stale || 0);
+      return stale > 0 && component.current > this.componentProgressValue(component);
+    });
+    if (!staleComponents.length) return null;
+    const hasPartiallyCountedEvidence = staleComponents.some((component) => this.componentProgressValue(component) > 0);
+    return hasPartiallyCountedEvidence
+      ? 'Older practice is partially counted. Refresh it to verify readiness.'
+      : 'Refresh older practice to verify readiness.';
+  }
+
+  isConceptOnlyPrepGoal(prep: DashboardPrepLoop | null | undefined): boolean {
+    const tech = prep?.goal?.tech;
+    return tech === 'html' || tech === 'css';
+  }
+
   formatPercentLabel(value: number | null | undefined): string {
     const numeric = Number(value ?? 0);
     if (!Number.isFinite(numeric) || numeric <= 0) return '0%';
     const rounded = Math.round(numeric * 100) / 100;
     if (Number.isInteger(rounded)) return `${rounded}%`;
     return `${rounded.toFixed(2).replace(/\.?0+$/, '')}%`;
+  }
+
+  private failureCategoryLabel(value: string): string {
+    return String(value || 'unknown')
+      .split(/[\s-_]+/)
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  }
+
+  private feedbackSourceLabel(value: string | null | undefined): string | null {
+    const lang = String(value || '').toLowerCase();
+    if (lang === 'js') return 'JS tests';
+    if (lang === 'ts') return 'TS tests';
+    if (lang === 'web') return 'DOM tests';
+    if (lang === 'react') return 'React checks';
+    if (lang === 'angular') return 'Angular checks';
+    if (lang === 'vue') return 'Vue checks';
+    return null;
   }
 
   private loadGamification(force = false, opts?: { preserveDailyCompleteFeedback?: boolean }): void {
@@ -523,6 +773,8 @@ export class DashboardComponent {
           this.weeklyGoalTarget.set(payload?.settings?.weeklyGoalTarget || payload?.weeklyGoal?.target || 10);
           this.showStreakWidget.set(payload?.settings?.showStreakWidget !== false);
           this.dailyChallengeTech.set((payload?.settings?.dailyChallengeTech as DailyChallengeTech) || 'auto');
+          this.syncPrepGoalFromPayload(payload);
+          this.syncPrepCoverageFromPayload(payload);
           if (!preserveDailyCompleteFeedback) {
             this.dailyCompleteMessage.set(null);
             this.dailyCompleteError.set(null);
@@ -549,12 +801,70 @@ export class DashboardComponent {
         },
         error: () => {
           this.gamificationLoading.set(false);
-          this.gamificationError.set('Unable to load loop widgets right now.');
+          this.gamificationError.set('Unable to load dashboard practice widgets right now.');
         },
       });
   }
 
   private serializeRoute(route: string | any[]): string {
     return typeof route === 'string' ? route : route.join('/');
+  }
+
+  private syncPrepCoverageFromPayload(payload: DashboardGamificationResponse | null | undefined): void {
+    const gaps = payload?.prepLoop?.coverageGaps ?? [];
+    const selectedId = this.selectedPrepCoverageGapId();
+    if (selectedId && !gaps.some((gap) => gap.id === selectedId)) {
+      this.selectedPrepCoverageGapId.set(null);
+    }
+    if (gaps.length <= 3) this.prepCoverageExpanded.set(false);
+    if (!(payload?.prepLoop?.feedback?.weakSignals?.length)) this.prepFeedbackExpanded.set(false);
+  }
+
+  private formatProgressCount(value: number | null | undefined): string {
+    const numeric = Number(value ?? 0);
+    if (!Number.isFinite(numeric)) return '0';
+    return `${Math.round(numeric)}`;
+  }
+
+  private formatCountedProgress(value: number | null | undefined): string {
+    const numeric = Number(value ?? 0);
+    if (!Number.isFinite(numeric)) return '0';
+    const rounded = Math.round(numeric);
+    return Number.isInteger(numeric) ? `${rounded}` : `about ${rounded}`;
+  }
+
+  private prepGoalLevelLabel(level: DashboardPrepGoalLevel): string {
+    return this.prepGoalLevelOptions.find((option) => option.value === level)?.label || 'Intermediate';
+  }
+
+  private emptyComponentLabel(component: DashboardReadinessComponent): string | null {
+    switch (component.id) {
+      case 'coding':
+        return 'coding';
+      case 'concepts':
+        return 'concepts';
+      case 'debug':
+        return 'debug';
+      case 'tradeoffs':
+        return 'tradeoffs';
+      case 'consistency':
+        return 'weekly consistency';
+      default:
+        return null;
+    }
+  }
+
+  private formatReadableList(items: string[]): string {
+    if (items.length <= 1) return items[0] || '';
+    if (items.length === 2) return `${items[0]} and ${items[1]}`;
+    return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+  }
+
+  private syncPrepGoalFromPayload(payload: DashboardGamificationResponse | null): void {
+    const goal = payload?.prepLoop?.goal;
+    if (!goal) return;
+    const levelAllowed = this.prepGoalLevelOptions.some((option) => option.value === goal.level);
+    this.prepGoalTech.set('javascript');
+    if (levelAllowed) this.prepGoalLevel.set(goal.level);
   }
 }
