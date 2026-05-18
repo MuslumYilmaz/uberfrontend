@@ -110,6 +110,69 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
   });
 
+  it('renders React-only coverage for topic gaps, mistakes, libraries, and schema mentions', async () => {
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+
+    expect(text).toContain('React interview topic map');
+    expect(text).toContain('Props, state, and one-way data flow');
+    expect(text).toContain('Hooks and useEffect implementation');
+    expect(text).toContain('Context API and state management');
+    expect(text).toContain('Forms and controlled inputs');
+    expect(text).toContain('Class vs functional components and lifecycle');
+    expect(text).toContain('Performance optimization');
+    expect(text).toContain('Debugging React applications');
+    expect(text).toContain('Testing React components');
+    expect(text).toContain('Common mistakes in React interviews');
+    expect(text).toContain('Common React libraries interviewers may expect');
+    expect(text).toContain('TanStack Query');
+    expect(text).toContain('Testing Library');
+    expect(text).not.toContain('Angular interview topic map');
+    expect(text).not.toContain('HTML interview topic map');
+
+    expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-why-props-immutable"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-purpose"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-context-performance-issues"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-controlled-vs-uncontrolled"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-functional-vs-class-components"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-prevent-unnecessary-rerenders"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/coding/react-debug-double-render"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/react-prep-path"]')).toBeTruthy();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Hooks and useEffect implementation')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Context API and state management')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React component lifecycle')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Common React interview mistakes')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React performance optimization')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Testing React components')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Common React libraries')
+    )).toBeTrue();
+  });
+
   it('tracks roadmap selection from the interview hub decision surface', async () => {
     const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
     fixture.detectChanges();
@@ -374,6 +437,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('What are the best resources for learning HTML?');
     expect(text).toContain('How do behavioral questions show up in HTML interviews?');
     expect(text).not.toContain('Angular interview topic map');
+    expect(text).not.toContain('React interview topic map');
 
     expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-basic-structure"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-contact-form-labeled"]')).toBeTruthy();
@@ -400,6 +464,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML learning resources')
     )).toBeTrue();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeNull();
   });
 
   it('does not render HTML-only coverage on CSS hubs', async () => {
@@ -429,8 +494,10 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     expect(text).toContain('CSS Interview Questions and Answers');
     expect(text).not.toContain('HTML interview topic map');
+    expect(text).not.toContain('React interview topic map');
     expect(text).not.toContain('Best resources for learning HTML');
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeNull();
   });
 
   it('renders Angular-only coverage for topic gaps, mistakes, modern topics, and schema mentions', async () => {
@@ -470,6 +537,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Modern Angular topics interviewers may ask about');
     expect(text).toContain('Signal Forms');
     expect(text).not.toContain('HTML interview topic map');
+    expect(text).not.toContain('React interview topic map');
 
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-http-what-actually-cancels-request"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-dependency-injection"]')).toBeTruthy();
@@ -488,5 +556,6 @@ describe('InterviewQuestionsLandingComponent', () => {
       String(entry?.name || '').includes('Modern Angular interview topics')
     )).toBeTrue();
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeNull();
   });
 });
