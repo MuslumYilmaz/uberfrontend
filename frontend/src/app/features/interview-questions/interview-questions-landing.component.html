@@ -109,6 +109,58 @@
   </section>
 
   <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-coverage"
+    aria-labelledby="iq-react-coverage-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">React coverage map</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-coverage-title">React interview topic map</h2>
+      <p class="fa-meta-text">
+        Use these React interview questions to connect props, hooks, context, forms, lifecycle, performance,
+        debugging, testing, and library trade-offs with the deeper practice routes behind them.
+      </p>
+    </div>
+
+    <div class="iq-topic-grid">
+      <article class="iq-topic-card" *ngFor="let topic of reactTopicCards()">
+        <h3>{{ topic.title }}</h3>
+        <p>{{ topic.answer }}</p>
+        <a class="iq-topic-card__link" [routerLink]="topic.link.route">{{ topic.link.label }} &rarr;</a>
+      </article>
+    </div>
+
+    <div class="iq-react-support-grid">
+      <article class="iq-react-support-card">
+        <h3>Common mistakes in React interviews</h3>
+        <ul>
+          <li *ngFor="let mistake of reactMistakeItems()">
+            <strong>{{ mistake.title }}</strong>
+            <span>{{ mistake.detail }}</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="iq-react-support-card iq-react-support-card--libraries">
+        <h3>Common React libraries interviewers may expect</h3>
+        <p>
+          Treat libraries as trade-off examples: name the problem they solve, the cost they add,
+          and when local React primitives are still enough.
+        </p>
+        <ul>
+          <li *ngFor="let item of reactLibraryItems()">
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.detail }}</span>
+          </li>
+        </ul>
+        <a class="iq-topic-card__link" [routerLink]="['/guides', 'framework-prep', 'react-prep-path']">
+          Open the React prep path &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
     *ngIf="isAngularHub()"
     class="iq-section iq-section--surface iq-section--angular-coverage"
     aria-labelledby="iq-angular-coverage-title"

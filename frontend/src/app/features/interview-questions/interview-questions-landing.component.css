@@ -205,6 +205,7 @@
   line-height: 1.5;
 }
 
+.iq-section--react-coverage,
 .iq-section--angular-coverage,
 .iq-section--html-coverage {
   display: grid;
@@ -218,6 +219,7 @@
 }
 
 .iq-topic-card,
+.iq-react-support-card,
 .iq-angular-support-card,
 .iq-html-support-card {
   padding: 14px;
@@ -233,6 +235,7 @@
 }
 
 .iq-topic-card h3,
+.iq-react-support-card h3,
 .iq-angular-support-card h3,
 .iq-html-support-card h3 {
   margin: 0;
@@ -243,6 +246,7 @@
 }
 
 .iq-topic-card p,
+.iq-react-support-card p,
 .iq-angular-support-card p,
 .iq-html-support-card p {
   margin: 0;
@@ -266,6 +270,7 @@
   text-underline-offset: 3px;
 }
 
+.iq-react-support-grid,
 .iq-angular-support-grid,
 .iq-html-support-grid {
   display: grid;
@@ -273,12 +278,14 @@
   gap: 10px;
 }
 
+.iq-react-support-card,
 .iq-angular-support-card,
 .iq-html-support-card {
   display: grid;
   gap: 10px;
 }
 
+.iq-react-support-card--libraries,
 .iq-angular-support-card--modern,
 .iq-html-support-card--modern {
   border-color: color-mix(in srgb, var(--uf-accent) 28%, var(--uf-border-subtle));
@@ -289,6 +296,7 @@
   border-color: color-mix(in srgb, var(--uf-accent) 24%, var(--uf-border-subtle));
 }
 
+.iq-react-support-card ul,
 .iq-angular-support-card ul,
 .iq-html-support-card ul {
   margin: 0;
@@ -298,6 +306,7 @@
   gap: 9px;
 }
 
+.iq-react-support-card li,
 .iq-angular-support-card li,
 .iq-html-support-card li {
   display: grid;
@@ -307,6 +316,7 @@
   line-height: 1.45;
 }
 
+.iq-react-support-card li strong,
 .iq-angular-support-card li strong,
 .iq-html-support-card li strong {
   color: var(--uf-text-primary);
@@ -489,6 +499,7 @@
   .iq-related-row,
   .iq-faq-list,
   .iq-topic-grid,
+  .iq-react-support-grid,
   .iq-angular-support-grid,
   .iq-html-support-grid {
     grid-template-columns: 1fr;
@@ -513,6 +524,7 @@
   .iq-related-block,
   .iq-faq-card,
   .iq-topic-card,
+  .iq-react-support-card,
   .iq-angular-support-card,
   .iq-html-support-card {
     padding: 12px;

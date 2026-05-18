@@ -38,6 +38,9 @@ type RawQuestionSummaryRow = QuestionListItem & { tech: Tech };
 type SchemaQuestionLink = { title: string; path: string };
 type PrepPlanLink = { label: string; route: any[]; summary: string };
 type HubConceptLink = { label: string; route: any[]; ariaLabel: string };
+type ReactCoverageLink = { label: string; route: any[] };
+type ReactTopicCard = { title: string; answer: string; link: ReactCoverageLink };
+type ReactSupportItem = { title: string; detail: string };
 type AngularCoverageLink = { label: string; route: any[] };
 type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
 type AngularMistakeItem = { title: string; detail: string };
@@ -427,6 +430,123 @@ const PRIMARY_TECH_HUB_PATHS = new Set<string>([
   '/css/interview-questions',
 ]);
 
+const REACT_TOPIC_CARDS: ReactTopicCard[] = [
+  {
+    title: 'Props, state, and one-way data flow',
+    answer: 'Props are read-only inputs owned by a parent, while state belongs to the component that changes it. Strong answers connect callbacks, lifting state up, immutable updates, and when prop drilling should move into context or a store.',
+    link: {
+      label: 'Review props immutability',
+      route: ['/react', 'trivia', 'react-why-props-immutable'],
+    },
+  },
+  {
+    title: 'Hooks and useEffect implementation',
+    answer: 'Hooks let function components hold state, refs, reducer logic, memoization, and external synchronization. For useEffect, explain dependencies, cleanup, stale closures, and when derived values should stay in render instead.',
+    link: {
+      label: 'Practice useEffect timing and cleanup',
+      route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    },
+  },
+  {
+    title: 'Context API and state management',
+    answer: 'The React Context API shares values below a provider, but provider updates can fan out to many consumers. Use it for cross-tree state like auth or theme, split providers, memoize values, and choose local state or a store when updates are frequent.',
+    link: {
+      label: 'Debug Context performance',
+      route: ['/react', 'trivia', 'react-context-performance-issues'],
+    },
+  },
+  {
+    title: 'Forms and controlled inputs',
+    answer: 'React form answers should explain controlled values, validation timing, defaultValue, refs, file input limits, loading and error states, and the warning that appears when field ownership switches.',
+    link: {
+      label: 'Compare controlled and uncontrolled inputs',
+      route: ['/react', 'trivia', 'react-controlled-vs-uncontrolled'],
+    },
+  },
+  {
+    title: 'Class vs functional components and lifecycle',
+    answer: 'Function components use hooks for state, effects, refs, memoization, and cleanup. Class components use this.state and lifecycle methods, so interviews often ask how mount, update, and unmount behavior maps to useEffect.',
+    link: {
+      label: 'Compare functions, classes, and lifecycle',
+      route: ['/react', 'trivia', 'react-functional-vs-class-components'],
+    },
+  },
+  {
+    title: 'Performance optimization',
+    answer: 'Start with profiling, then target real waste: unstable props, broad context updates, expensive derived work, list rendering, unnecessary effects, and memoization that adds complexity without reducing work.',
+    link: {
+      label: 'Prevent unnecessary rerenders',
+      route: ['/react', 'trivia', 'react-prevent-unnecessary-rerenders'],
+    },
+  },
+  {
+    title: 'Debugging React applications',
+    answer: 'Debug React by separating render, commit, effects, and event handlers. Use React DevTools, StrictMode signals, console traces, and small reproduction cases before guessing at memoization or state fixes.',
+    link: {
+      label: 'Debug double renders',
+      route: ['/react', 'coding', 'react-debug-double-render'],
+    },
+  },
+  {
+    title: 'Testing React components',
+    answer: 'Good tests cover user-visible behavior: initial state, interactions, validation, async loading and error paths, cleanup, and rerender edge cases. Prefer Testing Library style assertions over implementation details.',
+    link: {
+      label: 'Open the React prep path',
+      route: ['/guides', 'framework-prep', 'react-prep-path'],
+    },
+  },
+];
+
+const REACT_MISTAKE_ITEMS: ReactSupportItem[] = [
+  {
+    title: 'Mutating props or state objects',
+    detail: 'Mutation breaks React ownership, memoization, and predictable rerender behavior. Use callbacks and immutable updates instead.',
+  },
+  {
+    title: 'Putting derived data into effect-managed state',
+    detail: 'Pure derived values usually belong in render. Storing them in useEffect creates extra renders and stale synchronization bugs.',
+  },
+  {
+    title: 'Missing effect dependencies or cleanup',
+    detail: 'Timers, subscriptions, event listeners, and fetches need cleanup and dependency arrays that match the external sync being performed.',
+  },
+  {
+    title: 'Using index keys for reorderable lists',
+    detail: 'Index keys hide identity bugs when rows reorder, insert, delete, or hold input state. Prefer stable IDs from the data.',
+  },
+  {
+    title: 'Treating Context as a global store',
+    detail: 'Context is convenient for shared reads, but fast-changing provider values can rerender too much of the tree.',
+  },
+  {
+    title: 'Adding memoization before measuring',
+    detail: 'Blanket useMemo and useCallback can add noise. Profile first, then stabilize props or split components where it reduces real work.',
+  },
+];
+
+const REACT_LIBRARY_ITEMS: ReactSupportItem[] = [
+  {
+    title: 'Routing and app structure',
+    detail: 'React Router, Next.js, and Remix commonly appear when interviews discuss routes, nested layouts, server rendering, or data loading.',
+  },
+  {
+    title: 'Server state and data fetching',
+    detail: 'TanStack Query and SWR are common examples for caching, request dedupe, retries, stale data, and loading/error state.',
+  },
+  {
+    title: 'Client state',
+    detail: 'Redux Toolkit, Zustand, and Jotai are useful comparison points when Context or local state no longer fits the update pattern.',
+  },
+  {
+    title: 'Forms and validation',
+    detail: 'React Hook Form and Formik often show up when forms need validation, touched state, async submit handling, and field arrays.',
+  },
+  {
+    title: 'Testing and component review',
+    detail: 'Testing Library, Jest, Vitest, Playwright, and Storybook help explain behavior tests, integration checks, and component documentation.',
+  },
+];
+
 const ANGULAR_TOPIC_CARDS: AngularTopicCard[] = [
   {
     title: 'RxJS and HttpClient cancellation',
@@ -787,6 +907,22 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   prepPlanLinks(): PrepPlanLink[] {
     return PREP_PLAN_LINKS;
+  }
+
+  isReactHub(): boolean {
+    return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'react';
+  }
+
+  reactTopicCards(): ReactTopicCard[] {
+    return REACT_TOPIC_CARDS;
+  }
+
+  reactMistakeItems(): ReactSupportItem[] {
+    return REACT_MISTAKE_ITEMS;
+  }
+
+  reactLibraryItems(): ReactSupportItem[] {
+    return REACT_LIBRARY_ITEMS;
   }
 
   isAngularHub(): boolean {
@@ -1315,6 +1451,27 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'Thing', name: 'Common interview mistakes' },
         { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
+      ];
+    }
+
+    if (this.isReactHub()) {
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'React props, state, and one-way data flow' },
+        { '@type': 'Thing', name: 'React Hooks and useEffect implementation' },
+        { '@type': 'Thing', name: 'React Context API and state management' },
+        { '@type': 'Thing', name: 'React forms and controlled inputs' },
+        { '@type': 'Thing', name: 'React class components versus functional components' },
+        { '@type': 'Thing', name: 'React component lifecycle' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'Common React interview mistakes' },
+        { '@type': 'Thing', name: 'React performance optimization' },
+        { '@type': 'Thing', name: 'Debugging React applications' },
+        { '@type': 'Thing', name: 'Testing React components' },
+        { '@type': 'Thing', name: 'Common React libraries' },
+        { '@type': 'Thing', name: 'React Hooks interview questions' },
       ];
     }
 
