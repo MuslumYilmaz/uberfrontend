@@ -105,7 +105,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('Common questions before you start');
     expect(fixture.nativeElement.textContent || '').toContain('How do React interview questions differ from React interview preparation?');
     expect(fixture.nativeElement.textContent || '').not.toContain('Angular interview topic map');
+    expect(fixture.nativeElement.textContent || '').not.toContain('HTML interview topic map');
     expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
   });
 
   it('tracks roadmap selection from the interview hub decision surface', async () => {
@@ -326,6 +328,111 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Are Vue.js and Vue JS interview questions the same target?');
   });
 
+  it('renders HTML-only coverage for accessibility testing, HTML5, resources, mistakes, and schema mentions', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'html interview questions',
+      title: 'HTML Interview Questions and Answers',
+      techs: ['html'],
+    };
+    routeStub.snapshot.data.seo = {
+      title: 'HTML Interview Questions and Answers',
+      description: 'Practice HTML interview questions and answers with concept questions, follow-ups, common mistakes, HTML5 basics, accessibility testing, forms, semantics, and metadata.',
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['html'],
+      coding: [
+        { id: 'html-basic-structure', title: 'Warm-Up: Basic Structure', type: 'coding', technology: 'html', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Create a valid HTML page skeleton.', tech: 'html' },
+        { id: 'html-semantic-layout', title: 'Semantic Page Layout', type: 'coding', technology: 'html', difficulty: 'easy', access: 'free', tags: [], importance: 4, companies: [], description: 'Build a semantic page layout.', tech: 'html' },
+      ],
+      trivia: [
+        { id: 'html-dom', title: 'What is the DOM?', type: 'trivia', technology: 'html', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain the DOM.', tech: 'html' },
+        { id: 'html-semantic-elements', title: 'What are semantic HTML elements?', type: 'trivia', technology: 'html', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain semantic elements.', tech: 'html' },
+      ],
+    };
+    routeStub.snapshot.url = [{ path: 'html' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'html' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+
+    expect(text).toContain('HTML Interview Questions and Answers');
+    expect(text).toContain('HTML interview topic map');
+    expect(text).toContain('HTML role in web development');
+    expect(text).toContain('HTML vs HTML5 in interviews');
+    expect(text).toContain('Accessibility testing workflow');
+    expect(text).toContain('Common HTML coding mistakes');
+    expect(text).toContain('HTML best practices for interviews');
+    expect(text).toContain('Modern HTML topics interviewers may ask about');
+    expect(text).toContain('Best resources for learning HTML');
+    expect(text).toContain('Behavioral prep for HTML interviews');
+    expect(text).toContain('What is the difference between HTML and HTML5?');
+    expect(text).toContain('How do I test my HTML code for accessibility?');
+    expect(text).toContain('What are the best resources for learning HTML?');
+    expect(text).toContain('How do behavioral questions show up in HTML interviews?');
+    expect(text).not.toContain('Angular interview topic map');
+
+    expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-basic-structure"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-contact-form-labeled"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/web-accessibility-make-page-accessible"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="https://html.spec.whatwg.org/multipage/introduction.html"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="https://www.w3.org/WAI/tutorials/forms/labels/"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="https://developer.chrome.com/docs/devtools/accessibility/reference?hl=en"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="https://validator.w3.org/docs/users.html"]')).toBeTruthy();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML accessibility testing')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML5 basics')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Common HTML mistakes')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML learning resources')
+    )).toBeTrue();
+  });
+
+  it('does not render HTML-only coverage on CSS hubs', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'css interview questions',
+      title: 'CSS Interview Questions and Answers',
+      techs: ['css'],
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['css'],
+      coding: [
+        { id: 'css-card-layout', title: 'CSS Card Layout', type: 'coding', technology: 'css', difficulty: 'intermediate', access: 'free', tags: [], importance: 4, companies: [], description: 'Build a card layout.', tech: 'css' },
+      ],
+      trivia: [
+        { id: 'css-specificity', title: 'CSS specificity', type: 'trivia', technology: 'css', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain specificity.', tech: 'css' },
+      ],
+    };
+    routeStub.snapshot.url = [{ path: 'css' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'css' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+
+    expect(text).toContain('CSS Interview Questions and Answers');
+    expect(text).not.toContain('HTML interview topic map');
+    expect(text).not.toContain('Best resources for learning HTML');
+    expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
+  });
+
   it('renders Angular-only coverage for topic gaps, mistakes, modern topics, and schema mentions', async () => {
     routeStub.snapshot.data.interviewQuestions = {
       keyword: 'angular interview questions',
@@ -362,6 +469,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Using mergeMap when latest search should win');
     expect(text).toContain('Modern Angular topics interviewers may ask about');
     expect(text).toContain('Signal Forms');
+    expect(text).not.toContain('HTML interview topic map');
 
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-http-what-actually-cancels-request"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-dependency-injection"]')).toBeTruthy();
@@ -379,5 +487,6 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Modern Angular interview topics')
     )).toBeTrue();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
   });
 });

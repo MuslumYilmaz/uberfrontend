@@ -156,6 +156,98 @@
     </div>
   </section>
 
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-coverage"
+    aria-labelledby="iq-html-coverage-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">HTML coverage map</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-coverage-title">HTML interview topic map</h2>
+      <p class="fa-meta-text">
+        Use these HTML interview questions to connect basic questions, coding programs, accessibility checks,
+        and modern HTML concepts without leaving the interview-prep context.
+      </p>
+    </div>
+
+    <div class="iq-topic-grid">
+      <article class="iq-topic-card" *ngFor="let topic of htmlTopicCards()">
+        <h3>{{ topic.title }}</h3>
+        <p>{{ topic.answer }}</p>
+        <a class="iq-topic-card__link" [routerLink]="topic.link.route">{{ topic.link.label }} &rarr;</a>
+      </article>
+    </div>
+
+    <div class="iq-html-support-grid">
+      <article class="iq-html-support-card">
+        <h3>Common HTML coding mistakes</h3>
+        <ul>
+          <li *ngFor="let mistake of htmlMistakeItems()">
+            <strong>{{ mistake.title }}</strong>
+            <span>{{ mistake.detail }}</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="iq-html-support-card">
+        <h3>HTML best practices for interviews</h3>
+        <ul>
+          <li *ngFor="let practice of htmlBestPractices()">{{ practice }}</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="iq-html-support-grid">
+      <article class="iq-html-support-card iq-html-support-card--modern">
+        <h3>Modern HTML topics interviewers may ask about</h3>
+        <p>
+          Treat modern HTML as browser behavior and progressive enhancement, not a detached trends list.
+        </p>
+        <ul>
+          <li *ngFor="let topic of htmlModernTopics()">{{ topic }}</li>
+        </ul>
+        <a class="iq-topic-card__link" [routerLink]="['/html', 'coding', 'html-dialog-confirm-a11y']">
+          Practice native dialog accessibility &rarr;
+        </a>
+      </article>
+
+      <article class="iq-html-support-card">
+        <h3>Best resources for learning HTML</h3>
+        <p>
+          Use official references for syntax and browser behavior, then practice the same ideas through interview prompts.
+        </p>
+        <div class="iq-resource-links">
+          <a
+            *ngFor="let resource of htmlResourceLinks()"
+            [href]="resource.href"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>{{ resource.label }}</span>
+            <small>{{ resource.summary }}</small>
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <article class="iq-html-support-card iq-html-support-card--behavioral">
+      <h3>Behavioral prep for HTML interviews</h3>
+      <p>
+        HTML behavioral questions usually test how markup decisions improved accessibility, SEO, form clarity,
+        and collaboration outcomes in real product work.
+      </p>
+      <ul>
+        <li *ngFor="let item of htmlBehavioralItems()">
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.detail }}</span>
+        </li>
+      </ul>
+      <a class="iq-topic-card__link" [routerLink]="['/guides', 'behavioral']">
+        Open behavioral prep &rarr;
+      </a>
+    </article>
+  </section>
+
   <section class="iq-section iq-section--surface iq-section--intent" aria-labelledby="iq-intent-title">
     <div class="iq-section__head iq-section__head--split">
       <div>

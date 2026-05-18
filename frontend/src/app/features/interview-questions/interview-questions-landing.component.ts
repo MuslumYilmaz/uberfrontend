@@ -41,6 +41,11 @@ type HubConceptLink = { label: string; route: any[]; ariaLabel: string };
 type AngularCoverageLink = { label: string; route: any[] };
 type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
 type AngularMistakeItem = { title: string; detail: string };
+type HtmlCoverageLink = { label: string; route: any[] };
+type HtmlTopicCard = { title: string; answer: string; link: HtmlCoverageLink };
+type HtmlMistakeItem = { title: string; detail: string };
+type HtmlBehavioralItem = { title: string; detail: string };
+type HtmlResourceLink = { label: string; href: string; summary: string };
 type HubIntentProfile = {
   heading: string;
   lead: string;
@@ -380,6 +385,22 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
       q: 'When should HTML prep move into UI coding?',
       a: 'Move into UI coding once the semantic answer is clear and you need to prove the structure works in a real component.',
     },
+    {
+      q: 'What is the difference between HTML and HTML5?',
+      a: 'HTML5 is the common shorthand for modern HTML: the simple doctype, semantic elements, native media, validation, and living-standard browser behavior used in current web development.',
+    },
+    {
+      q: 'How do I test my HTML code for accessibility?',
+      a: 'Start manually with keyboard navigation, labels, focus order, headings, table headers, and mobile reflow. Then run Lighthouse, axe, an accessibility-tree inspection, and an HTML checker.',
+    },
+    {
+      q: 'What are the best resources for learning HTML?',
+      a: 'Use MDN for practical reference, the WHATWG HTML Living Standard for source-of-truth behavior, WAI tutorials for accessibility, Chrome DevTools for inspection, and W3C tools for validation.',
+    },
+    {
+      q: 'How do behavioral questions show up in HTML interviews?',
+      a: 'They usually ask for judgment stories: improving accessibility, fixing metadata or SEO, choosing native semantics over custom code, and collaborating on form or content clarity.',
+    },
   ],
   css: [
     {
@@ -505,6 +526,131 @@ const ANGULAR_MODERN_TOPICS: string[] = [
   'Signals: explain where signal-based state helps and where RxJS still fits better for streams, cancellation, and multicasting.',
   'Zoneless change detection: describe how UI updates are scheduled when Zone.js is no longer the default notification path.',
   'Signal Forms: mention as an experimental modern forms direction, not as a production replacement for every Reactive Forms workflow.',
+];
+
+const HTML_TOPIC_CARDS: HtmlTopicCard[] = [
+  {
+    title: 'HTML role in web development',
+    answer: 'HTML is the structural layer browsers parse into the DOM. Strong interview answers explain how markup gives content meaning before CSS styles it or JavaScript changes behavior.',
+    link: {
+      label: 'Practice HTML basic structure',
+      route: ['/html', 'coding', 'html-basic-structure'],
+    },
+  },
+  {
+    title: 'Semantic HTML, forms, and validation',
+    answer: 'Use headings, landmarks, labels, form controls, table headers, and metadata before adding ARIA or custom scripts. This keeps answers grounded in accessibility, SEO, and native browser behavior.',
+    link: {
+      label: 'Build a labeled contact form',
+      route: ['/html', 'coding', 'html-contact-form-labeled'],
+    },
+  },
+  {
+    title: 'HTML vs HTML5 in interviews',
+    answer: 'Treat HTML5 as modern HTML: the simple doctype, semantic elements, media, native validation, and the living-standard mindset. The interview signal is knowing which browser behavior comes for free.',
+    link: {
+      label: 'Review HTML document standards',
+      route: ['/html', 'trivia', 'html-vs-xhtml'],
+    },
+  },
+  {
+    title: 'Accessibility testing workflow',
+    answer: 'Do not stop at a validator. Test keyboard flow, labels, focus order, table headers, contrast, screen-reader or accessibility-tree output, then run Lighthouse, axe, and an HTML checker.',
+    link: {
+      label: 'Practice accessibility review',
+      route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    },
+  },
+];
+
+const HTML_MISTAKE_ITEMS: HtmlMistakeItem[] = [
+  {
+    title: 'Using div and span for every structure',
+    detail: 'Reach for header, nav, main, section, article, footer, button, and anchor before generic containers.',
+  },
+  {
+    title: 'Treating placeholders as labels',
+    detail: 'Every input needs a durable accessible name; placeholder text disappears and is not a reliable label.',
+  },
+  {
+    title: 'Skipping table captions and header scope',
+    detail: 'Accessible tables need captions and header associations so row and column meaning survives assistive technology.',
+  },
+  {
+    title: 'Building fake links or buttons',
+    detail: 'Use anchors for navigation and buttons for actions so keyboard behavior, semantics, and browser defaults stay correct.',
+  },
+  {
+    title: 'Adding ARIA before fixing native markup',
+    detail: 'ARIA can help custom widgets, but it should not hide missing labels, wrong landmarks, or broken control choices.',
+  },
+  {
+    title: 'Ignoring head metadata',
+    detail: 'Charset, viewport, title, description, canonical, and social metadata are part of production HTML quality.',
+  },
+];
+
+const HTML_BEST_PRACTICES: string[] = [
+  'Start with a valid document skeleton: doctype, html lang, charset, viewport, title, and body content.',
+  'Choose semantic elements first, then add ARIA only when native HTML cannot express the interaction.',
+  'Keep heading order, one main landmark, descriptive links, useful alt text, and keyboard-friendly controls.',
+  'Label every form control, group related fields, expose validation errors, and use native input types when they fit.',
+  'Validate markup, run accessibility checks, test keyboard navigation, and inspect mobile reflow before calling the answer done.',
+];
+
+const HTML_MODERN_TOPICS: string[] = [
+  'HTML5 as modern HTML: simple doctype, semantic elements, native media, form validation, and ongoing Living Standard updates.',
+  'Native UI primitives: dialog, popover, details, summary, and when custom JavaScript still needs accessibility work.',
+  'Web components: template, slot, custom elements, and Shadow DOM as encapsulation topics for experienced rounds.',
+  'Responsive and performance-minded markup: srcset, sizes, loading, fetch priority, preload, and script loading attributes.',
+  'Metadata and structured pages: language, viewport, title, description, canonical, Open Graph, and crawlable content.',
+];
+
+const HTML_BEHAVIORAL_ITEMS: HtmlBehavioralItem[] = [
+  {
+    title: 'Accessibility improvement story',
+    detail: 'Prepare a short example where labels, keyboard flow, table headers, or focus order changed the user outcome.',
+  },
+  {
+    title: 'SEO or metadata cleanup',
+    detail: 'Show how better titles, descriptions, canonical tags, or semantic structure reduced ambiguity for users and crawlers.',
+  },
+  {
+    title: 'Progressive enhancement trade-off',
+    detail: 'Explain when native validation, dialog, or semantic controls avoided extra JavaScript while keeping a fallback path.',
+  },
+  {
+    title: 'Design and product collaboration',
+    detail: 'Tie markup decisions to shared language: clear labels, error copy, responsive constraints, and measurable acceptance checks.',
+  },
+];
+
+const HTML_RESOURCE_LINKS: HtmlResourceLink[] = [
+  {
+    label: 'MDN HTML reference',
+    href: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Reference',
+    summary: 'Elements, attributes, content categories, forms, metadata, and browser behavior.',
+  },
+  {
+    label: 'WHATWG HTML Living Standard',
+    href: 'https://html.spec.whatwg.org/multipage/introduction.html',
+    summary: 'The current source for modern HTML behavior and standards terminology.',
+  },
+  {
+    label: 'WAI form labels tutorial',
+    href: 'https://www.w3.org/WAI/tutorials/forms/labels/',
+    summary: 'Accessible labels, form control naming, instructions, and validation feedback.',
+  },
+  {
+    label: 'Chrome DevTools accessibility reference',
+    href: 'https://developer.chrome.com/docs/devtools/accessibility/reference?hl=en',
+    summary: 'Accessibility tree inspection, Lighthouse checks, contrast, and reflow testing.',
+  },
+  {
+    label: 'W3C HTML checker docs',
+    href: 'https://validator.w3.org/docs/users.html',
+    summary: 'Markup validation workflow for modern HTML documents and automated checks.',
+  },
 ];
 
 const DIFFICULTY_RANK: Record<string, number> = {
@@ -657,6 +803,34 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   angularModernTopics(): string[] {
     return ANGULAR_MODERN_TOPICS;
+  }
+
+  isHtmlHub(): boolean {
+    return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'html';
+  }
+
+  htmlTopicCards(): HtmlTopicCard[] {
+    return HTML_TOPIC_CARDS;
+  }
+
+  htmlMistakeItems(): HtmlMistakeItem[] {
+    return HTML_MISTAKE_ITEMS;
+  }
+
+  htmlBestPractices(): string[] {
+    return HTML_BEST_PRACTICES;
+  }
+
+  htmlModernTopics(): string[] {
+    return HTML_MODERN_TOPICS;
+  }
+
+  htmlBehavioralItems(): HtmlBehavioralItem[] {
+    return HTML_BEHAVIORAL_ITEMS;
+  }
+
+  htmlResourceLinks(): HtmlResourceLink[] {
+    return HTML_RESOURCE_LINKS;
   }
 
   prepRoadmapTitle(): string {
@@ -1160,6 +1334,24 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'Thing', name: 'Angular standalone components versus NgModules' },
         { '@type': 'Thing', name: 'Angular state management and NgRx' },
         { '@type': 'Thing', name: 'Modern Angular interview topics' },
+      ];
+    }
+
+    if (this.isHtmlHub()) {
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'HTML5 basics' },
+        { '@type': 'Thing', name: 'HTML accessibility testing' },
+        { '@type': 'Thing', name: 'HTML best practices' },
+        { '@type': 'Thing', name: 'Semantic HTML forms and tables' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'Common HTML mistakes' },
+        { '@type': 'Thing', name: 'Modern HTML interview topics' },
+        { '@type': 'Thing', name: 'HTML learning resources' },
+        { '@type': 'Thing', name: 'HTML role in web development' },
+        { '@type': 'Thing', name: 'HTML behavioral interview preparation' },
       ];
     }
 
