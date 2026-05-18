@@ -172,6 +172,39 @@
   line-height: 1.5;
 }
 
+.iq-section--faq {
+  display: grid;
+  gap: 10px;
+}
+
+.iq-faq-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.iq-faq-card {
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 82%, transparent);
+  background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt));
+}
+
+.iq-faq-card h3 {
+  margin: 0 0 8px;
+  color: var(--uf-text-primary);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.iq-faq-card p {
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .iq-section--angular-coverage {
   display: grid;
   gap: 14px;
@@ -404,6 +437,7 @@
 @media (max-width: 940px) {
   .iq-context-grid,
   .iq-related-row,
+  .iq-faq-list,
   .iq-topic-grid,
   .iq-angular-support-grid {
     grid-template-columns: 1fr;
@@ -426,6 +460,7 @@
 
   .iq-context-card,
   .iq-related-block,
+  .iq-faq-card,
   .iq-topic-card,
   .iq-angular-support-card {
     padding: 12px;

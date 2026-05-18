@@ -624,10 +624,10 @@ function onInput(value) {
     ],
   },
   'react-prep-path': {
-    pathLabel: 'React prep path',
-    title: 'React Interview Prep Path: State, Effects, Performance',
+    pathLabel: 'React interview preparation path',
+    title: 'React Interview Preparation: Hooks, State, Performance',
     subtitle:
-      'A 7/14/30-day React interview prep path for frontend engineers who need cleaner state design, effect reasoning, and performance trade-off communication.',
+      'A 7/14/30-day React interview preparation path for frontend engineers who need cleaner state design, effect reasoning, and performance trade-off communication.',
     minutes: 9,
     tags: ['react', 'interview-prep', 'hooks', 'state', 'performance'],
     firstFoldSignals: [
@@ -642,7 +642,7 @@ function onInput(value) {
     ],
     intro: {
       paragraphs: [
-        'If React prep feels scattered between hook tips, random clips, and mock prompts, that is normal. Most loops still test the same handful of signals; they just repackage them.',
+        'If React interview preparation feels scattered between hook tips, random clips, and mock prompts, that is normal. Most loops still test the same handful of signals; they just repackage them.',
         'Use one 3-layer loop to keep prep grounded: Topics, Trivia, and Coding prompts. It helps you separate real understanding from “I’ve seen this before” familiarity.',
         'When interviewers ask why useEffect runs twice or why callbacks read stale values, they’re not testing memorized hook rules. They’re checking whether your render/commit/update model is stable under pressure.',
         'This page maps high-frequency React topics to coding patterns that actually appear in rounds, so you can practice on purpose instead of guessing what might show up.',
@@ -960,7 +960,7 @@ function onInput(value) {
         '10 seconds: one trade-off',
       ],
       closing:
-        'Next we map these probes to UI-building prompts. That is where React prep becomes repeatable: one mental model, applied under implementation pressure.',
+        'Next we map these probes to UI-building prompts. That is where React interview preparation becomes repeatable: one mental model, applied under implementation pressure.',
     },
     codingPatternsSection: {
       title: 'React coding prompt patterns (UI-building tasks you’ll actually implement)',
@@ -5560,7 +5560,7 @@ function onInput(value) {
           {
             id: 'vue-faq-ref-reactive',
             q: 'How do I decide between ref and reactive without guessing?',
-            a: 'Many Vue interview questions here are update-prediction checks, not API recall checks. Use <code>ref</code> for explicit value wrappers or primitives, and <code>reactive</code> when object-shaped state should be tracked deeply. <strong>Practical rule:</strong> if you cannot explain what triggers the next update, stop and restate the state shape first. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-ref-vs-reactive-difference-traps</code>, <code>/vue/trivia/vue-reactivity-system</code>, <code>/vue/coding/vue-todo-list</code>.',
+            a: 'Many Vue.js interview questions here are update-prediction checks, not API recall checks. Use <code>ref</code> for explicit value wrappers or primitives, and <code>reactive</code> when object-shaped state should be tracked deeply. <strong>Practical rule:</strong> if you cannot explain what triggers the next update, stop and restate the state shape first. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-ref-vs-reactive-difference-traps</code>, <code>/vue/trivia/vue-reactivity-system</code>, <code>/vue/coding/vue-todo-list</code>.',
           },
           {
             id: 'vue-faq-computed-watch',

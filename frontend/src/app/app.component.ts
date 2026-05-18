@@ -1,5 +1,5 @@
 // app.component.ts
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -40,7 +40,9 @@ import { AchievementToastComponent } from './shared/components/achievement-toast
 })
 export class AppComponent implements OnInit, OnDestroy {
   private router = inject(Router);
-  private currentUrl = signal(this.router.url || '/');
+  private readonly doc = inject(DOCUMENT);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  readonly currentUrl = signal(this.initialUrl());
   bugReport = inject(BugReportService);
   premiumGate = inject(PremiumGateService);
   premiumGateState = this.premiumGate.dialogState;
@@ -48,7 +50,6 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly telemetry = inject(TelemetryBootstrapService);
   private readonly appUiStyles = inject(AppUiStylesService);
   readonly auth = inject(AuthService);
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   readonly sidebarDrawerOpen = inject(AppSidebarDrawerService).isOpen;
 
   // hide header on /auth/*
@@ -109,8 +110,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     if (!this.isBrowser) return;
 
-    this.configureRouteRuntime(this.router.url || '/');
-    this.analytics.trackPageView(this.router.url || '/');
+    const initialUrl = this.initialUrl();
+    this.currentUrl.set(initialUrl);
+    this.configureRouteRuntime(initialUrl);
+    this.analytics.trackPageView(initialUrl);
     this.daily.ensureTodaySet();
     this.scheduleToNextMidnight();
     document.addEventListener('visibilitychange', this.onVisibility);
@@ -165,5 +168,14 @@ export class AppComponent implements OnInit, OnDestroy {
       || /^\/pricing\/?$/.test(path)
       || /^\/system-design\/[^/]+\/?$/.test(path)
       || /^\/guides\//.test(path);
+  }
+
+  private initialUrl(): string {
+    const routerUrl = this.router.url || '/';
+    if (routerUrl !== '/') return routerUrl;
+    if (!this.isBrowser) return routerUrl;
+
+    const location = this.doc.location;
+    return `${location.pathname || '/'}${location.search || ''}${location.hash || ''}`;
   }
 }

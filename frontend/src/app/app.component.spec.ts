@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { DOCUMENT } from '@angular/common';
 import { AppComponent } from './app.component';
 import { BugReportService } from './core/services/bug-report.service';
 import { AuthService, User } from './core/services/auth.service';
@@ -13,6 +14,23 @@ import { AuthService, User } from './core/services/auth.service';
   template: '',
 })
 class DummyDashboardComponent {}
+
+function createDocumentAt(pathname: string): Document {
+  const testLocation = {
+    pathname,
+    search: '',
+    hash: '',
+  };
+
+  return new Proxy(document, {
+    get(target, prop) {
+      if (prop === 'location') return testLocation;
+
+      const value = Reflect.get(target, prop, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+  }) as Document;
+}
 
 describe('AppComponent', () => {
   async function renderDeferredBlocks(fixture: any): Promise<void> {
@@ -47,6 +65,9 @@ describe('AppComponent', () => {
         ]),
         NoopAnimationsModule,
         HttpClientTestingModule,
+      ],
+      providers: [
+        { provide: DOCUMENT, useValue: createDocumentAt('/') },
       ],
       deferBlockBehavior: DeferBlockBehavior.Playthrough,
     }).compileComponents();
@@ -120,7 +141,7 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('[data-testid="prep-roadmap-switcher"]')?.classList.contains('prep-switcher--compact')).toBeTrue();
   });
 
-  it('uses the compact prep fallback on guest dashboard', async () => {
+  it('does not show the prep switcher on guest dashboard without an explicit prep route', async () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
@@ -130,10 +151,7 @@ describe('AppComponent', () => {
     await renderDeferredBlocks(fixture);
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const switcher = compiled.querySelector('[data-testid="prep-roadmap-switcher"]') as HTMLElement;
-    expect(switcher).toBeTruthy();
-    expect(switcher.classList.contains('prep-switcher--compact')).toBeTrue();
-    expect(switcher.textContent || '').toContain('FrontendAtlas Essential 60');
+    expect(compiled.querySelector('[data-testid="prep-roadmap-switcher"]')).toBeNull();
   });
 
   it('keeps logged-in starter routes in the regular shell density', async () => {

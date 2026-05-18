@@ -115,7 +115,7 @@ export class TrackListComponent implements OnInit {
       toneClass: 'hero-link--iq-angular',
     },
     {
-      label: 'Vue interview questions',
+      label: 'Vue.js interview questions',
       route: ['/vue/interview-questions'],
       toneClass: 'hero-link--iq-vue',
     },
@@ -130,7 +130,7 @@ export class TrackListComponent implements OnInit {
       toneClass: 'hero-link--iq-css',
     },
     {
-      label: 'HTML CSS interview questions',
+      label: 'HTML and CSS interview questions',
       route: ['/html-css/interview-questions'],
       toneClass: 'hero-link--iq-htmlcss',
     },

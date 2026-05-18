@@ -40,12 +40,18 @@ describe('InterviewQuestionsLandingComponent', () => {
               { id: 'react-tabs', title: 'React Tabs', type: 'coding', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 4, companies: [], description: 'Build tabs.', tech: 'react' },
               { id: 'react-modal', title: 'React Modal', type: 'coding', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 3, companies: [], description: 'Build a modal.', tech: 'react' },
               { id: 'react-grid', title: 'React Grid', type: 'coding', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 2, companies: [], description: 'Build a grid.', tech: 'react' },
+              { id: 'react-transfer-list', title: 'React Transfer List', type: 'coding', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 2, companies: [], description: 'Build a transfer list.', tech: 'react' },
+              { id: 'react-search', title: 'React Search', type: 'coding', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 1, companies: [], description: 'Build search.', tech: 'react' },
+              { id: 'react-form', title: 'React Form', type: 'coding', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 1, companies: [], description: 'Build a form.', tech: 'react' },
             ],
             trivia: [
               { id: 'react-useeffect-purpose', title: 'useEffect in React', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain useEffect.', tech: 'react' },
               { id: 'react-context', title: 'React Context', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 4, companies: [], description: 'Explain context.', tech: 'react' },
               { id: 'react-memo', title: 'React memo', type: 'trivia', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 3, companies: [], description: 'Explain memo.', tech: 'react' },
               { id: 'react-suspense', title: 'React Suspense', type: 'trivia', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 2, companies: [], description: 'Explain suspense.', tech: 'react' },
+              { id: 'react-stale-closure', title: 'React stale closure', type: 'trivia', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 2, companies: [], description: 'Explain stale closures.', tech: 'react' },
+              { id: 'react-keys', title: 'React keys', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain keys.', tech: 'react' },
+              { id: 'react-refs', title: 'React refs', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain refs.', tech: 'react' },
             ],
           },
           seo: {
@@ -77,7 +83,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     }).compileComponents();
   });
 
-  it('renders the prep roadmap instead of route cards and limits each preview list to three items', async () => {
+  it('renders the prep roadmap instead of route cards and limits each preview list to six items', async () => {
     const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -88,14 +94,16 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('answers hub with coding prompts, concept questions, follow-ups, and common mistakes');
     expect(fixture.nativeElement.querySelectorAll('.iq-route-card').length).toBe(0);
     expect(fixture.nativeElement.querySelectorAll('[data-testid^="prep-roadmap-item-"]').length).toBe(5);
-    expect(fixture.componentInstance.previewRows('coding').length).toBe(3);
-    expect(fixture.componentInstance.previewRows('trivia').length).toBe(3);
+    expect(fixture.componentInstance.previewRows('coding').length).toBe(6);
+    expect(fixture.componentInstance.previewRows('trivia').length).toBe(6);
     expect(fixture.nativeElement.textContent || '').toContain('View full coding list');
     expect(fixture.nativeElement.textContent || '').toContain('View full concepts list');
     expect(fixture.nativeElement.textContent || '').toContain('Frontend interview preparation guide');
     expect(fixture.nativeElement.textContent || '').toContain('FrontendAtlas Essential 60');
     expect(fixture.nativeElement.textContent || '').toContain('React coding + concept questions');
-    expect(fixture.nativeElement.textContent || '').toContain('React interview prep path');
+    expect(fixture.nativeElement.textContent || '').toContain('React interview preparation path');
+    expect(fixture.nativeElement.textContent || '').toContain('Common questions before you start');
+    expect(fixture.nativeElement.textContent || '').toContain('How do React interview questions differ from React interview preparation?');
     expect(fixture.nativeElement.textContent || '').not.toContain('Angular interview topic map');
     expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
   });
@@ -245,6 +253,77 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fourthItem.getAttribute('href') || '').toContain('/guides/framework-prep/angular-prep-path');
     expect(fifthItem.textContent || '').toContain('Final-round coverage');
     expect(fifthItem.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
+  });
+
+  it('uses HTML and CSS wording and format-category links on the combined hub', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'html and css interview questions',
+      title: 'HTML and CSS Interview Questions and Answers',
+      techs: ['html', 'css'],
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['html', 'css'],
+      coding: [
+        { id: 'html-accessible-form', title: 'Accessible Form', type: 'coding', technology: 'html', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Build a semantic form.', tech: 'html' },
+        { id: 'css-card-layout', title: 'CSS Card Layout', type: 'coding', technology: 'css', difficulty: 'intermediate', access: 'free', tags: [], importance: 4, companies: [], description: 'Build a responsive card layout.', tech: 'css' },
+      ],
+      trivia: [
+        { id: 'html-labels', title: 'HTML labels', type: 'trivia', technology: 'html', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain labels.', tech: 'html' },
+        { id: 'css-specificity', title: 'CSS specificity', type: 'trivia', technology: 'css', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain specificity.', tech: 'css' },
+      ],
+    };
+    routeStub.snapshot.url = [{ path: 'html-css' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'html-css' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+    const codingViewAll = fixture.nativeElement.querySelector('.iq-inline-link') as HTMLAnchorElement;
+    const thirdItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]') as HTMLAnchorElement;
+
+    expect(text).toContain('HTML and CSS Interview Questions and Answers');
+    expect(text).toContain('Most crucial HTML and CSS coding interview questions');
+    expect(text).toContain('Most crucial HTML and CSS concept questions for interviews');
+    expect(text).toContain('What HTML and CSS interview rounds test');
+    expect(text).toContain('Should I study HTML and CSS interview questions together?');
+    expect(text).toContain('HTML and CSS coding + concept questions');
+    expect(text).not.toContain('Most crucial HTML coding interview questions');
+    expect(codingViewAll.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css&kind=coding&reset=1');
+    expect(thirdItem.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css&reset=1');
+  });
+
+  it('uses Vue.js wording on the Vue hub while preserving Vue JS query intent', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'vue js interview questions',
+      title: 'Vue.js Interview Questions and Answers',
+      techs: ['vue'],
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['vue'],
+      coding: [
+        { id: 'vue-tabs', title: 'Vue Tabs', type: 'coding', technology: 'vue', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Build tabs.', tech: 'vue' },
+      ],
+      trivia: [
+        { id: 'vue-reactivity-system', title: 'Vue reactivity system', type: 'trivia', technology: 'vue', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain reactivity.', tech: 'vue' },
+      ],
+    };
+    routeStub.snapshot.url = [{ path: 'vue' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'vue' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+
+    expect(text).toContain('Vue.js Interview Questions and Answers');
+    expect(text).toContain('Vue.js interview questions and Vue JS answers hub');
+    expect(text).toContain('What Vue.js interview rounds test');
+    expect(text).toContain('Are Vue.js and Vue JS interview questions the same target?');
   });
 
   it('renders Angular-only coverage for topic gaps, mistakes, modern topics, and schema mentions', async () => {

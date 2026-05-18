@@ -11,6 +11,7 @@ type FaDialogStyle = {
   selector: 'fa-dialog',
   standalone: true,
   imports: [CommonModule, DialogModule],
+  host: { ngSkipHydration: 'true' },
   template: `
     <p-dialog
       [visible]="visible"

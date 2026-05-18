@@ -204,6 +204,20 @@
     <p class="iq-context-note">{{ hubIntentProfile().credibility }}</p>
   </section>
 
+  <section class="iq-section iq-section--surface iq-section--faq" aria-labelledby="iq-faq-title">
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Quick answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-faq-title">Common questions before you start</h2>
+    </div>
+
+    <div class="iq-faq-list">
+      <article class="iq-faq-card" *ngFor="let item of faqItems()">
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+      </article>
+    </div>
+  </section>
+
   <section class="iq-next">
     <h2 class="fa-section-title">Keep the scope tight</h2>
     <p>

@@ -853,7 +853,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       case 'angular':
         return 'Angular interview questions';
       case 'vue':
-        return 'Vue interview questions';
+        return 'Vue.js interview questions';
       case 'html':
         return 'HTML interview questions';
       case 'css':

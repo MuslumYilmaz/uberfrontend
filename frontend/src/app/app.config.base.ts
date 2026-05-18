@@ -1,5 +1,6 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpRequest, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
+import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, TitleStrategy, withInMemoryScrolling, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
@@ -10,6 +11,17 @@ import { StorageVersionService } from './core/services/storage-version.service';
 
 function initStorage(versioner: StorageVersionService) {
   return () => versioner.ensureFreshStorage().catch(() => void 0);
+}
+
+function shouldTransferCacheRequest(req: HttpRequest<unknown>): boolean {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return false;
+
+  try {
+    const url = new URL(req.url, 'https://frontendatlas.com');
+    return url.pathname.startsWith('/assets/');
+  } catch {
+    return req.url.startsWith('assets/') || req.url.startsWith('/assets/');
+  }
 }
 
 export const appConfig: ApplicationConfig = {
@@ -28,6 +40,11 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(withInterceptors([apiCredentialsInterceptor, authRefreshInterceptor])),
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        filter: shouldTransferCacheRequest,
+      }),
+    ),
     provideAnimations(),
     { provide: TitleStrategy, useClass: SeoTitleStrategy },
     {

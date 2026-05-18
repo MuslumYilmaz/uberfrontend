@@ -49,6 +49,7 @@ type HubIntentProfile = {
   credibility: string;
   relatedPrep: PrepPlanLink;
 };
+type HubFaqItem = { q: string; a: string };
 const DEFAULT_CONFIG: InterviewQuestionsLandingConfig = {
   keyword: 'javascript interview questions',
   title: 'JavaScript Interview Questions',
@@ -79,7 +80,7 @@ const INTERVIEW_HUB_LINKS: HubLink[] = [
     path: '/angular/interview-questions',
   },
   {
-    label: 'Vue interview questions',
+    label: 'Vue.js interview questions',
     route: ['/vue/interview-questions'],
     path: '/vue/interview-questions',
   },
@@ -94,7 +95,7 @@ const INTERVIEW_HUB_LINKS: HubLink[] = [
     path: '/css/interview-questions',
   },
   {
-    label: 'HTML CSS interview questions',
+    label: 'HTML and CSS interview questions',
     route: ['/html-css/interview-questions'],
     path: '/html-css/interview-questions',
   },
@@ -170,11 +171,11 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
     usage: [
       'Run one implementation prompt before opening deeper concept questions.',
       'Use concept questions to tighten explanations after you pass the basic UI behavior.',
-      'Follow the React prep path when hooks or rerender reasoning keeps repeating as the miss.',
+      'Follow the React interview preparation path when hooks or rerender reasoning keeps repeating as the miss.',
     ],
     credibility: 'React prompts are prioritized by FrontendAtlas importance signals and reviewed for concrete interview follow-ups.',
     relatedPrep: {
-      label: 'React interview prep path',
+      label: 'React interview preparation path',
       route: ['/guides', 'framework-prep', 'react-prep-path'],
       summary: 'A focused path for state, effects, rerender reasoning, and performance trade-offs.',
     },
@@ -200,8 +201,8 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
     },
   },
   vue: {
-    heading: 'What Vue interview rounds test',
-    lead: 'Vue interviews test reactivity, rendering, component contracts, router/state decisions, and the ability to explain subtle lifecycle behavior.',
+    heading: 'What Vue.js interview rounds test',
+    lead: 'Vue.js interviews test reactivity, rendering, component contracts, router/state decisions, and the ability to explain subtle lifecycle behavior. Use this Vue JS interview questions hub to rehearse that reasoning with practical prompts.',
     tests: [
       'Reactivity, refs, computed values, watchers, nextTick, and render timing.',
       'Component communication, props/emits, v-model, provide/inject, and store boundaries.',
@@ -217,6 +218,26 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       label: 'Vue interview prep path',
       route: ['/guides', 'framework-prep', 'vue-prep-path'],
       summary: 'A focused path for reactivity, rendering, state, and component contracts.',
+    },
+  },
+  htmlCss: {
+    heading: 'What HTML and CSS interview rounds test',
+    lead: 'HTML and CSS interview questions test whether you can connect semantic markup, accessible forms, layout systems, cascade behavior, and responsive constraints in one UI answer.',
+    tests: [
+      'Semantic HTML, forms, labels, landmarks, metadata, and browser defaults.',
+      'CSS layout with flexbox and grid, plus cascade, specificity, custom properties, and responsive sizing.',
+      'Whether you can debug overflow, alignment, stacking, and accessibility issues without guessing.',
+    ],
+    usage: [
+      'Start with one HTML concept question and one CSS layout question in the same session.',
+      'Use coding prompts when your explanation is clear but the implementation still breaks under constraints.',
+      'Move into the UI interviews guide when accessibility, layout, or browser behavior keeps repeating as the weak area.',
+    ],
+    credibility: 'HTML and CSS prompts are reviewed for practical browser behavior, accessible UI decisions, and interview-ready debugging language.',
+    relatedPrep: {
+      label: 'Frontend UI interviews guide',
+      route: ['/guides', 'interview-blueprint', 'ui-interviews'],
+      summary: 'A practical guide for accessible UI prompts, semantic markup, and layout-focused rounds.',
     },
   },
   html: {
@@ -241,7 +262,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
   },
   css: {
     heading: 'What CSS interview rounds test',
-    lead: 'CSS interviews test layout reasoning, selectors, cascade behavior, responsive constraints, accessibility, and whether you can debug visual bugs methodically.',
+    lead: 'CSS interviews test layout reasoning, selectors, cascade behavior, responsive constraints, accessibility, and whether you can debug visual bugs methodically. Treat each CSS interview question as a short trade-off rehearsal, not a vocabulary check.',
     tests: [
       'Flexbox, grid, cascade, specificity, custom properties, forms, and responsive layouts.',
       'Whether you can choose layout tools based on constraints instead of memorized rules.',
@@ -250,7 +271,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
     usage: [
       'Start with one CSS concept question, then implement one small layout prompt.',
       'Use the fundamentals guide when cascade or layout vocabulary is shaky.',
-      'Return to the Question Library for broader UI coding practice after the basics stabilize.',
+      'Return to each CSS interview question after the layout fix and explain the failure mode out loud.',
     ],
     credibility: 'CSS questions are reviewed for practical UI debugging and interview-ready trade-off language.',
     relatedPrep: {
@@ -259,6 +280,121 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       summary: 'A practical guide for accessible UI prompts and layout-focused rounds.',
     },
   },
+};
+
+const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
+  master: [
+    {
+      q: 'Where should frontend interview preparation start?',
+      a: 'Start with one compact baseline: a process guide, Essential 60, and then one focused coding or concept rep. Broad browsing comes after you know the weak area.',
+    },
+    {
+      q: 'Are these official company interview questions?',
+      a: 'No. They are practice prompts and answer drills built around common frontend interview signals: implementation, explanation, debugging, and trade-off reasoning.',
+    },
+    {
+      q: 'When should I move from questions to study plans?',
+      a: 'Move into a study plan when misses repeat across the same topic, such as async JavaScript, React effects, CSS layout, or system-design trade-offs.',
+    },
+  ],
+  javascript: [
+    {
+      q: 'How should I practice JavaScript interview questions?',
+      a: 'Pair one utility or async coding prompt with one concept explanation. The goal is to prove both execution and reasoning in the same short loop.',
+    },
+    {
+      q: 'Which JavaScript topics matter most first?',
+      a: 'Start with execution order, closures, arrays/maps, equality, async behavior, and edge cases before expanding into less common language details.',
+    },
+    {
+      q: 'When is a JavaScript answer interview-ready?',
+      a: 'It is interview-ready when you can state the constraint, code the core behavior, name edge cases, and explain what you would test next.',
+    },
+  ],
+  react: [
+    {
+      q: 'How do React interview questions differ from React interview preparation?',
+      a: 'The questions test individual skills. React interview preparation connects those skills into a repeatable path for hooks, state ownership, effects, rendering, and performance trade-offs.',
+    },
+    {
+      q: 'What should I practice first for React interviews?',
+      a: 'Start with state ownership and effects, then add async UI, forms, lists, and performance follow-ups once the render model feels stable.',
+    },
+    {
+      q: 'When should I use the React interview preparation path?',
+      a: 'Use it when random React questions are not enough and you need a 7/14/30-day sequence that ties concept answers to coding drills.',
+    },
+  ],
+  angular: [
+    {
+      q: 'What makes Angular interview questions hard?',
+      a: 'Angular rounds often mix RxJS flow control, change detection, dependency boundaries, forms, and testing judgment in one scenario.',
+    },
+    {
+      q: 'What should I review before Angular coding prompts?',
+      a: 'Review Observables, HttpClient cancellation, template binding, form state, and lifecycle cleanup so implementation choices have a clear reason.',
+    },
+    {
+      q: 'When should I open the Angular prep path?',
+      a: 'Open it when the same RxJS, change detection, DI, or testing miss repeats across multiple questions.',
+    },
+  ],
+  vue: [
+    {
+      q: 'Are Vue.js and Vue JS interview questions the same target?',
+      a: 'Yes. Candidates search both variants, so this hub uses Vue.js for the framework name while still making the Vue JS query intent clear.',
+    },
+    {
+      q: 'What should I practice first for Vue.js interviews?',
+      a: 'Start with reactivity, computed values, watchers, nextTick timing, props/emits, and key stability before moving into larger component prompts.',
+    },
+    {
+      q: 'How do I know a Vue answer is strong enough?',
+      a: 'A strong answer predicts the update path, names the state boundary, and explains the bug you would expect if the component contract is wrong.',
+    },
+  ],
+  htmlCss: [
+    {
+      q: 'Should I study HTML and CSS interview questions together?',
+      a: 'Yes for UI rounds. Markup semantics, accessibility, layout, and cascade behavior usually appear together when you have to build or debug a component.',
+    },
+    {
+      q: 'What should I practice first?',
+      a: 'Start with semantic structure, forms, labels, flexbox, grid, cascade, specificity, and responsive constraints before moving into polish.',
+    },
+    {
+      q: 'When should I use coding prompts instead of concept questions?',
+      a: 'Use coding prompts when you can explain the rule but still miss alignment, overflow, focus, responsive, or accessibility details in implementation.',
+    },
+  ],
+  html: [
+    {
+      q: 'What do HTML interview questions usually test?',
+      a: 'They test semantic structure, forms, labels, landmarks, metadata, browser defaults, accessibility, and progressive enhancement decisions.',
+    },
+    {
+      q: 'How should I answer an HTML concept question?',
+      a: 'Explain the user or browser behavior first, then name the element, attribute, accessibility effect, and validation or SEO trade-off.',
+    },
+    {
+      q: 'When should HTML prep move into UI coding?',
+      a: 'Move into UI coding once the semantic answer is clear and you need to prove the structure works in a real component.',
+    },
+  ],
+  css: [
+    {
+      q: 'How should I practice each CSS interview question?',
+      a: 'State the layout constraint, choose the CSS tool, explain why alternatives are weaker, then test overflow, responsiveness, and accessibility impact.',
+    },
+    {
+      q: 'Which CSS interview questions are highest leverage?',
+      a: 'Flexbox, grid, cascade, specificity, custom properties, stacking, responsive sizing, and overflow debugging usually pay off first.',
+    },
+    {
+      q: 'When should I switch from concepts to coding?',
+      a: 'Switch when you understand the rule but cannot yet produce a stable layout under width, content, and interaction constraints.',
+    },
+  ],
 };
 
 const PRIMARY_TECH_HUB_PATHS = new Set<string>([
@@ -396,7 +532,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   triviaQuestions: QuestionSummaryRow[] = [];
   relatedHubLinks: HubLink[] = [];
   featuredLinks: HubLink[] = [];
-  readonly previewLimit = 3;
+  readonly previewLimit = 6;
 
   ngOnInit(): void {
     const incoming = this.route.snapshot.data['interviewQuestions'] as Partial<InterviewQuestionsLandingConfig> | undefined;
@@ -429,12 +565,30 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   keywordSentenceCase(): string {
+    const keyword = this.config.keyword.trim().toLowerCase();
+    if (keyword.startsWith('javascript')) return this.config.keyword.replace(/^javascript/i, 'JavaScript');
+    if (keyword.startsWith('react')) return this.config.keyword.replace(/^react/i, 'React');
+    if (keyword.startsWith('angular')) return this.config.keyword.replace(/^angular/i, 'Angular');
+    if (keyword.startsWith('vue js')) return this.config.keyword.replace(/^vue js/i, 'Vue JS');
+    if (keyword.startsWith('vue')) return this.config.keyword.replace(/^vue/i, 'Vue');
+    if (keyword.startsWith('html and css')) return this.config.keyword.replace(/^html and css/i, 'HTML and CSS');
+    if (keyword.startsWith('html css')) return this.config.keyword.replace(/^html css/i, 'HTML CSS');
+    if (keyword.startsWith('html')) return this.config.keyword.replace(/^html/i, 'HTML');
+    if (keyword.startsWith('css')) return this.config.keyword.replace(/^css/i, 'CSS');
     return this.config.keyword.charAt(0).toUpperCase() + this.config.keyword.slice(1);
   }
 
   introLead(): string {
     if (this.isMasterHub()) {
       return 'Frontend interview question hub with answers, coding prompts, concept questions, follow-ups, and common mistakes. Start with crucial JavaScript practice, then branch into React, Angular, Vue, HTML, CSS, and system design prep.';
+    }
+
+    if (this.isHtmlCssHub()) {
+      return 'HTML and CSS interview questions and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice semantic markup, accessibility, layout, and cascade reasoning before moving into broader UI drills.';
+    }
+
+    if (this.isVueHub()) {
+      return 'Vue.js interview questions and Vue JS answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice reactivity and component reasoning first, then expand into prep paths and company-style drills.';
     }
 
     return `${this.keywordSentenceCase()} and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice concise answers first, then expand into Study Plans, guides, and Company Prep.`;
@@ -568,7 +722,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     const tech = this.currentRoadmapTechDisplay();
-    const primaryTech = this.primaryTechForLibrary() || this.config.techs[0] || 'javascript';
+    const questionTarget = this.libraryTarget();
 
     return [
       {
@@ -592,8 +746,8 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         step: 3,
         title: `${tech} coding + concept questions`,
         description: `Practice ${tech} implementation prompts and explanation follow-ups from one filtered library view.`,
-        route: ['/coding'],
-        queryParams: { tech: primaryTech, reset: 1 },
+        route: questionTarget.route,
+        queryParams: questionTarget.queryParams,
         meta: 'Coding execution + concept recall',
         tone: 'practice',
       },
@@ -655,8 +809,11 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   hubIntentProfile(): HubIntentProfile {
-    const key = this.isMasterHub() ? 'master' : this.primaryTechForLibrary();
-    return HUB_INTENT_PROFILES[key || 'master'] || HUB_INTENT_PROFILES['master'];
+    return HUB_INTENT_PROFILES[this.hubProfileKey()] || HUB_INTENT_PROFILES['master'];
+  }
+
+  faqItems(): HubFaqItem[] {
+    return HUB_FAQ_PROFILES[this.hubProfileKey()] || HUB_FAQ_PROFILES['master'];
   }
 
   questionCtaLabel(row: QuestionSummaryRow): string {
@@ -671,13 +828,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   viewAllTarget(kind: Kind): { route: any[]; queryParams?: Record<string, string | number | boolean> } {
-    const queryParams: Record<string, string | number | boolean> = {
-      kind,
-      reset: 1,
-    };
-    const primaryTech = this.primaryTechForLibrary();
-    if (primaryTech) queryParams['tech'] = primaryTech;
-    return { route: ['/coding'], queryParams };
+    return this.libraryTarget(kind);
   }
 
   trackPrepRoadmapSelection(item: PrepRoadmapItem): void {
@@ -728,6 +879,18 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   isMasterHub(): boolean {
     return this.config.isMasterHub;
+  }
+
+  isHtmlCssHub(): boolean {
+    return !this.isMasterHub()
+      && this.config.techs.includes('html')
+      && this.config.techs.includes('css');
+  }
+
+  isVueHub(): boolean {
+    return !this.isMasterHub()
+      && this.config.techs.length === 1
+      && this.config.techs[0] === 'vue';
   }
 
   techLabel(tech: Tech): string {
@@ -837,6 +1000,31 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     if (this.isMasterHub()) return 'javascript';
     if (this.config.techs.length === 1) return this.config.techs[0];
     return null;
+  }
+
+  private libraryTarget(kind?: Kind): { route: any[]; queryParams?: Record<string, string | number | boolean> } {
+    if (this.isHtmlCssHub()) {
+      const queryParams: Record<string, string | number | boolean> = {
+        view: 'formats',
+        category: 'html-css',
+      };
+      if (kind) queryParams['kind'] = kind;
+      queryParams['reset'] = 1;
+      return { route: ['/coding'], queryParams };
+    }
+
+    const queryParams: Record<string, string | number | boolean> = {};
+    const primaryTech = this.primaryTechForLibrary();
+    if (primaryTech) queryParams['tech'] = primaryTech;
+    if (kind) queryParams['kind'] = kind;
+    queryParams['reset'] = 1;
+    return { route: ['/coding'], queryParams };
+  }
+
+  private hubProfileKey(): string {
+    if (this.isMasterHub()) return 'master';
+    if (this.isHtmlCssHub()) return 'htmlCss';
+    return this.primaryTechForLibrary() || 'master';
   }
 
   private toRow(row: RawQuestionSummaryRow, kind: Kind): QuestionSummaryRow {
@@ -1106,20 +1294,18 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   private currentHubTechLabel(): string {
+    if (this.isHtmlCssHub()) return 'html and css';
     if (!this.config.techs.length) return 'frontend';
     return this.techLabel(this.config.techs[0]).toLowerCase();
   }
 
   private currentHubTechDisplay(): string {
+    if (this.isHtmlCssHub()) return 'HTML and CSS';
     if (!this.config.techs.length) return 'frontend';
     return this.techLabel(this.config.techs[0]);
   }
 
   private currentRoadmapTechDisplay(): string {
-    if (this.config.techs.includes('html') && this.config.techs.includes('css')) {
-      return 'HTML/CSS';
-    }
-
     return this.currentHubTechDisplay();
   }
 }

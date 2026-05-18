@@ -2511,7 +2511,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       case 'angular':
         return 'Angular interview questions';
       case 'vue':
-        return 'Vue interview questions';
+        return 'Vue.js interview questions';
       case 'html':
         return 'HTML interview questions';
       case 'css':
