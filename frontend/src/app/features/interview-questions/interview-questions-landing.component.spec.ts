@@ -131,9 +131,11 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Common React libraries interviewers may expect');
     expect(text).toContain('TanStack Query');
     expect(text).toContain('Testing Library');
+    expect(text).not.toContain('JavaScript interview topic map');
     expect(text).not.toContain('Angular interview topic map');
     expect(text).not.toContain('HTML interview topic map');
 
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
@@ -170,6 +172,91 @@ describe('InterviewQuestionsLandingComponent', () => {
     )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Common React libraries')
+    )).toBeTrue();
+  });
+
+  it('renders JavaScript-only coverage for cloning, async debugging, best practices, resources, and schema mentions', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'javascript interview questions',
+      title: 'JavaScript Interview Questions and Answers',
+      techs: ['javascript'],
+    };
+    routeStub.snapshot.data.seo = {
+      title: 'JavaScript Interview Questions and Answers',
+      description: 'Practice JavaScript interview questions and answers with coding prompts, concept questions, cloning, promises, async debugging, immutability, XSS prevention, common mistakes, and resources.',
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['javascript'],
+      coding: [
+        { id: 'js-shallow-clone', title: 'Shallow Clone', type: 'coding', technology: 'javascript', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Clone top-level object properties.', tech: 'javascript' },
+        { id: 'js-array-sort', title: 'Sort Numbers', type: 'coding', technology: 'javascript', difficulty: 'easy', access: 'free', tags: [], importance: 4, companies: [], description: 'Sort numbers with a comparator.', tech: 'javascript' },
+      ],
+      trivia: [
+        { id: 'js-promises-async-await', title: 'Promises and async/await', type: 'trivia', technology: 'javascript', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain promises.', tech: 'javascript' },
+        { id: 'js-shallow-vs-deep-copy', title: 'Shallow vs Deep Copy', type: 'trivia', technology: 'javascript', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Compare clone depth.', tech: 'javascript' },
+      ],
+    };
+    routeStub.snapshot.url = [{ path: 'javascript' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'javascript' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+
+    expect(text).toContain('JavaScript Interview Questions and Answers');
+    expect(text).toContain('JavaScript interview topic map');
+    expect(text).toContain('Shallow vs deep cloning');
+    expect(text).toContain('Promises and async operations');
+    expect(text).toContain('Async race conditions and stale updates');
+    expect(text).toContain('Immutability and state updates');
+    expect(text).toContain('Sorting, comparators, and mutation');
+    expect(text).toContain('DOM XSS prevention');
+    expect(text).toContain('Common mistakes in JavaScript interviews');
+    expect(text).toContain('JavaScript coding interview best practices');
+    expect(text).toContain('How to debug async JavaScript issues');
+    expect(text).toContain('Best resources for JavaScript interview preparation');
+    expect(text).toContain('What are common mistakes in JavaScript interviews?');
+    expect(text).toContain('What are the best resources for JavaScript interview preparation?');
+    expect(text).not.toContain('React interview topic map');
+    expect(text).not.toContain('Angular interview topic map');
+    expect(text).not.toContain('HTML interview topic map');
+
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-coverage')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-shallow-vs-deep-copy"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-promises-async-await"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-async-race-conditions"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-mutability-vs-immutability"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-array-sort"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-xss-dom-sinks"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/debug/js-debug-async-race"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="https://tc39.es/ecma262/multipage/"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"]')).toBeTruthy();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('JavaScript shallow copy versus deep copy')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('JavaScript async race conditions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('DOM XSS prevention in JavaScript')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Common JavaScript interview mistakes')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('JavaScript interview preparation resources')
     )).toBeTrue();
   });
 

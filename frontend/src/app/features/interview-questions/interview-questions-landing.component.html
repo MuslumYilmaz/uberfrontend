@@ -109,6 +109,84 @@
   </section>
 
   <section
+    *ngIf="isJavaScriptHub()"
+    class="iq-section iq-section--surface iq-section--javascript-coverage"
+    aria-labelledby="iq-javascript-coverage-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">JavaScript coverage map</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-javascript-coverage-title">JavaScript interview topic map</h2>
+      <p class="fa-meta-text">
+        Use these JavaScript interview questions to connect cloning, promises, async races, immutability,
+        sorting, security, debugging, and interview best practices with the deeper practice routes behind them.
+      </p>
+    </div>
+
+    <div class="iq-topic-grid">
+      <article class="iq-topic-card" *ngFor="let topic of javascriptTopicCards()">
+        <h3>{{ topic.title }}</h3>
+        <p>{{ topic.answer }}</p>
+        <a class="iq-topic-card__link" [routerLink]="topic.link.route">{{ topic.link.label }} &rarr;</a>
+      </article>
+    </div>
+
+    <div class="iq-javascript-support-grid">
+      <article class="iq-javascript-support-card">
+        <h3>Common mistakes in JavaScript interviews</h3>
+        <ul>
+          <li *ngFor="let mistake of javascriptMistakeItems()">
+            <strong>{{ mistake.title }}</strong>
+            <span>{{ mistake.detail }}</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="iq-javascript-support-card iq-javascript-support-card--best-practices">
+        <h3>JavaScript coding interview best practices</h3>
+        <ul>
+          <li *ngFor="let practice of javascriptBestPractices()">{{ practice }}</li>
+        </ul>
+        <a class="iq-topic-card__link" [routerLink]="['/guides', 'framework-prep', 'javascript-prep-path']">
+          Open the JavaScript prep path &rarr;
+        </a>
+      </article>
+    </div>
+
+    <div class="iq-javascript-support-grid">
+      <article class="iq-javascript-support-card">
+        <h3>How to debug async JavaScript issues</h3>
+        <ul>
+          <li *ngFor="let item of javascriptAsyncDebugItems()">
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.detail }}</span>
+          </li>
+        </ul>
+        <a class="iq-topic-card__link" [routerLink]="['/javascript', 'debug', 'js-debug-async-race']">
+          Practice an async race debug prompt &rarr;
+        </a>
+      </article>
+
+      <article class="iq-javascript-support-card iq-javascript-support-card--resources">
+        <h3>Best resources for JavaScript interview preparation</h3>
+        <p>
+          Use official references for language behavior and security, then practice the same ideas through interview prompts.
+        </p>
+        <div class="iq-resource-links">
+          <a
+            *ngFor="let resource of javascriptResourceLinks()"
+            [href]="resource.href"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>{{ resource.label }}</span>
+            <small>{{ resource.summary }}</small>
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section
     *ngIf="isReactHub()"
     class="iq-section iq-section--surface iq-section--react-coverage"
     aria-labelledby="iq-react-coverage-title"

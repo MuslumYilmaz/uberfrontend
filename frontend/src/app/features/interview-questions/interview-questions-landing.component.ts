@@ -38,6 +38,10 @@ type RawQuestionSummaryRow = QuestionListItem & { tech: Tech };
 type SchemaQuestionLink = { title: string; path: string };
 type PrepPlanLink = { label: string; route: any[]; summary: string };
 type HubConceptLink = { label: string; route: any[]; ariaLabel: string };
+type JavaScriptCoverageLink = { label: string; route: any[] };
+type JavaScriptTopicCard = { title: string; answer: string; link: JavaScriptCoverageLink };
+type JavaScriptSupportItem = { title: string; detail: string };
+type JavaScriptResourceLink = { label: string; href: string; summary: string };
 type ReactCoverageLink = { label: string; route: any[] };
 type ReactTopicCard = { title: string; answer: string; link: ReactCoverageLink };
 type ReactSupportItem = { title: string; detail: string };
@@ -318,6 +322,14 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
       q: 'When is a JavaScript answer interview-ready?',
       a: 'It is interview-ready when you can state the constraint, code the core behavior, name edge cases, and explain what you would test next.',
     },
+    {
+      q: 'What are common mistakes in JavaScript interviews?',
+      a: 'Common misses include mutating inputs, sorting numbers without a comparator, losing this in callbacks, treating closures as frozen snapshots, ignoring rejected promises, and using JSON cloning as a universal deep-copy answer.',
+    },
+    {
+      q: 'What are the best resources for JavaScript interview preparation?',
+      a: 'Use MDN for practical language reference, the ECMAScript specification for precise semantics, Chrome DevTools docs for debugging workflow, OWASP guidance for XSS prevention, and FrontendAtlas practice routes for interview drills.',
+    },
   ],
   react: [
     {
@@ -429,6 +441,139 @@ const PRIMARY_TECH_HUB_PATHS = new Set<string>([
   '/html/interview-questions',
   '/css/interview-questions',
 ]);
+
+const JAVASCRIPT_TOPIC_CARDS: JavaScriptTopicCard[] = [
+  {
+    title: 'Shallow vs deep cloning',
+    answer: 'A shallow clone copies the top-level array or object but keeps nested references shared. A deep clone copies nested structures too, which means you must discuss cycles, Dates, Maps, Sets, functions, prototypes, and performance before choosing an approach.',
+    link: {
+      label: 'Compare shallow and deep copy',
+      route: ['/javascript', 'trivia', 'js-shallow-vs-deep-copy'],
+    },
+  },
+  {
+    title: 'Promises and async operations',
+    answer: 'Promises represent a future success or failure value and give async work a composable contract. Strong answers explain chaining, microtask timing, error propagation, async/await readability, and when Promise combinators are the real interview target.',
+    link: {
+      label: 'Review Promises and async/await',
+      route: ['/javascript', 'trivia', 'js-promises-async-await'],
+    },
+  },
+  {
+    title: 'Async race conditions and stale updates',
+    answer: 'Race conditions happen when multiple async operations can finish in a different order than user intent. Debug by naming the owner of the latest request, cancelling or ignoring stale work, and testing success, error, abort, and retry paths.',
+    link: {
+      label: 'Explain async race conditions',
+      route: ['/javascript', 'trivia', 'js-async-race-conditions'],
+    },
+  },
+  {
+    title: 'Immutability and state updates',
+    answer: 'Immutability keeps state transitions traceable, avoids accidental shared-reference bugs, and makes UI change detection easier to reason about. In interviews, explain where copying is required and where mutation is harmless local implementation detail.',
+    link: {
+      label: 'Review mutability vs immutability',
+      route: ['/javascript', 'trivia', 'js-mutability-vs-immutability'],
+    },
+  },
+  {
+    title: 'Sorting, comparators, and mutation',
+    answer: 'JavaScript sort converts values to strings unless you pass a comparator, so numeric sorting needs a function such as a - b. Also call out that sort mutates the array unless you copy first.',
+    link: {
+      label: 'Practice numeric sorting',
+      route: ['/javascript', 'coding', 'js-array-sort'],
+    },
+  },
+  {
+    title: 'DOM XSS prevention',
+    answer: 'XSS answers should separate escaping text from sanitizing HTML. Prefer safe DOM APIs such as textContent, validate URLs before assigning href, avoid dangerous sinks, and use Trusted Types or reviewed sanitizers when HTML is unavoidable.',
+    link: {
+      label: 'Review DOM XSS prevention',
+      route: ['/javascript', 'trivia', 'js-xss-dom-sinks'],
+    },
+  },
+];
+
+const JAVASCRIPT_MISTAKE_ITEMS: JavaScriptSupportItem[] = [
+  {
+    title: 'Mutating inputs without saying so',
+    detail: 'Array.sort, push, splice, and nested object edits can change caller-owned data. Copy first when the contract expects immutability.',
+  },
+  {
+    title: 'Sorting numbers lexicographically',
+    detail: 'Default sort compares strings, so 100 can come before 20. Use an explicit comparator and mention mutation.',
+  },
+  {
+    title: 'Dropping Promise returns or rejection handling',
+    detail: 'A missing return breaks chains, and unhandled rejections hide failure states. Explain success, error, and cleanup paths.',
+  },
+  {
+    title: 'Explaining closures as copied values',
+    detail: 'Closures keep access to lexical bindings. That distinction matters for loops, delayed callbacks, and stale-state bugs.',
+  },
+  {
+    title: 'Using JSON clone as a universal deep clone',
+    detail: 'JSON cloning drops undefined, functions, Symbols, prototypes, Dates, Maps, Sets, BigInt, and cycles. Name the trade-off before using it.',
+  },
+  {
+    title: 'Fixing XSS with partial string filters',
+    detail: 'Blocklists miss dangerous contexts. Choose safe sinks, encode for the right context, sanitize reviewed HTML, and validate URLs.',
+  },
+];
+
+const JAVASCRIPT_BEST_PRACTICES: string[] = [
+  'Restate inputs, outputs, constraints, mutation policy, and edge cases before writing code.',
+  'Prefer the simplest correct implementation first, then explain the built-in or optimized variant as a follow-up.',
+  'Test empty input, single item, duplicates, nested data, invalid values, async rejection, cancellation, and ordering.',
+  'Narrate trade-offs clearly: mutation versus copying, shallow versus deep behavior, sync versus async control flow, and readability versus performance.',
+  'Finish by naming complexity, failure modes, and the regression tests you would keep.',
+];
+
+const JAVASCRIPT_ASYNC_DEBUG_ITEMS: JavaScriptSupportItem[] = [
+  {
+    title: 'Trace ownership first',
+    detail: 'Identify which request, timer, listener, or callback owns the next state update before changing code.',
+  },
+  {
+    title: 'Separate ordering from failure',
+    detail: 'Check whether the bug is stale success, late rejection, missing cleanup, duplicate work, or a swallowed error.',
+  },
+  {
+    title: 'Use browser tools deliberately',
+    detail: 'Pause on exceptions, inspect async stack traces, watch network cancellation, and add focused logs around start, settle, and cleanup.',
+  },
+  {
+    title: 'Protect the regression',
+    detail: 'Keep tests for overlapping requests, rejected promises, aborts, retries, and component or listener teardown when those behaviors exist.',
+  },
+];
+
+const JAVASCRIPT_RESOURCE_LINKS: JavaScriptResourceLink[] = [
+  {
+    label: 'MDN JavaScript Guide',
+    href: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide',
+    summary: 'Practical language guide for functions, objects, promises, modules, collections, and core semantics.',
+  },
+  {
+    label: 'ECMAScript language specification',
+    href: 'https://tc39.es/ecma262/multipage/',
+    summary: 'Source-of-truth semantics for the language when an interview answer needs precision.',
+  },
+  {
+    label: 'MDN Promise reference',
+    href: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+    summary: 'Promise states, chaining, static combinators, and async behavior reference.',
+  },
+  {
+    label: 'Chrome DevTools JavaScript debugging',
+    href: 'https://developer.chrome.com/docs/devtools/javascript',
+    summary: 'Breakpoints, stepping, console workflow, and runtime debugging tools.',
+  },
+  {
+    label: 'OWASP XSS Prevention Cheat Sheet',
+    href: 'https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html',
+    summary: 'Context-aware escaping, safe sinks, sanitization, and browser security controls.',
+  },
+];
 
 const REACT_TOPIC_CARDS: ReactTopicCard[] = [
   {
@@ -907,6 +1052,30 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   prepPlanLinks(): PrepPlanLink[] {
     return PREP_PLAN_LINKS;
+  }
+
+  isJavaScriptHub(): boolean {
+    return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'javascript';
+  }
+
+  javascriptTopicCards(): JavaScriptTopicCard[] {
+    return JAVASCRIPT_TOPIC_CARDS;
+  }
+
+  javascriptMistakeItems(): JavaScriptSupportItem[] {
+    return JAVASCRIPT_MISTAKE_ITEMS;
+  }
+
+  javascriptBestPractices(): string[] {
+    return JAVASCRIPT_BEST_PRACTICES;
+  }
+
+  javascriptAsyncDebugItems(): JavaScriptSupportItem[] {
+    return JAVASCRIPT_ASYNC_DEBUG_ITEMS;
+  }
+
+  javascriptResourceLinks(): JavaScriptResourceLink[] {
+    return JAVASCRIPT_RESOURCE_LINKS;
   }
 
   isReactHub(): boolean {
@@ -1472,6 +1641,26 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'Thing', name: 'Testing React components' },
         { '@type': 'Thing', name: 'Common React libraries' },
         { '@type': 'Thing', name: 'React Hooks interview questions' },
+      ];
+    }
+
+    if (this.isJavaScriptHub()) {
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'JavaScript shallow copy versus deep copy' },
+        { '@type': 'Thing', name: 'JavaScript Promises and async await' },
+        { '@type': 'Thing', name: 'JavaScript async race conditions' },
+        { '@type': 'Thing', name: 'JavaScript immutability and state updates' },
+        { '@type': 'Thing', name: 'JavaScript sorting comparators and mutation' },
+        { '@type': 'Thing', name: 'DOM XSS prevention in JavaScript' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'Common JavaScript interview mistakes' },
+        { '@type': 'Thing', name: 'JavaScript coding interview best practices' },
+        { '@type': 'Thing', name: 'Debugging async JavaScript issues' },
+        { '@type': 'Thing', name: 'JavaScript interview preparation resources' },
+        { '@type': 'Thing', name: 'Promise combinators and error handling' },
       ];
     }
 
