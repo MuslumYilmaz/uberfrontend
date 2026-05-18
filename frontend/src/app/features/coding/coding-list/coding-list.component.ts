@@ -163,7 +163,7 @@ const FRAMEWORK_PREP_LINKS: FrameworkPrepLink[] = [
   {
     tech: 'react',
     slug: 'react-prep-path',
-    label: 'React prep',
+    label: 'React interview preparation',
     summary: 'Sharpen hook decisions, rerender reasoning, and component architecture communication.',
     outcomes: [
       'Write predictable hook-based solutions under interview time pressure.',
@@ -173,7 +173,7 @@ const FRAMEWORK_PREP_LINKS: FrameworkPrepLink[] = [
       'Memorizing hook rules without explaining dependency and rerender behavior.',
       'Over-optimizing early instead of first building readable, correct flows.',
     ],
-    sequenceLabel: 'React interview path',
+    sequenceLabel: 'React interview preparation path',
   },
   {
     tech: 'angular',

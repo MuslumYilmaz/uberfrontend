@@ -60,13 +60,19 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
       return {
         ...item,
         id: 'interview_blueprint',
-        match: [/^\/guides\/interview-blueprint(?:\/.*)?$/],
+        match: [
+          /^\/guides\/?$/,
+          /^\/guides\/interview-blueprint(?:\/.*)?$/,
+        ],
       };
     case 2:
       return {
         ...item,
         id: 'essential_60',
-        match: [/^\/interview-questions\/essential\/?$/],
+        match: [
+          /^\/interview-questions\/?$/,
+          /^\/interview-questions\/essential\/?$/,
+        ],
       };
     case 3:
       return {
@@ -82,7 +88,10 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
       return {
         ...item,
         id: 'study_plans',
-        match: [/^\/tracks(?:\/.*)?$/, /^\/guides\/framework-prep(?:\/.*)?$/],
+        match: [
+          /^\/tracks(?:\/.*)?$/,
+          /^\/guides\/framework-prep(?:\/.*)?$/,
+        ],
       };
     default:
       return {

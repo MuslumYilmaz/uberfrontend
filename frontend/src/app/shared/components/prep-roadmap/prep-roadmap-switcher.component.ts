@@ -19,6 +19,7 @@ import { FaGlyphComponent } from '../../ui/icon/fa-glyph.component';
 })
 export class PrepRoadmapSwitcherComponent {
   private readonly compactInput = signal(false);
+  private readonly currentUrlInput = signal<string | null>(null);
 
   @Input()
   set compact(value: boolean) {
@@ -29,6 +30,11 @@ export class PrepRoadmapSwitcherComponent {
     return this.compactInput();
   }
 
+  @Input()
+  set currentUrl(value: string | null | undefined) {
+    this.currentUrlInput.set(value || null);
+  }
+
   private readonly router = inject(Router);
   private readonly hostEl = inject(ElementRef<HTMLElement>);
   private readonly destroyRef = inject(DestroyRef);
@@ -37,11 +43,8 @@ export class PrepRoadmapSwitcherComponent {
 
   readonly items = INTERVIEW_PREP_SWITCHER_ITEMS;
   readonly open = signal(false);
-  readonly currentUrl = signal(this.router.url || '/');
-  readonly currentItem = computed(() =>
-    findPrepRoadmapSwitcherItem(this.currentUrl())
-    ?? (this.compactInput() ? this.items.find((item) => item.id === 'essential_60') ?? null : null)
-  );
+  private readonly routeUrl = signal(this.initialUrl());
+  readonly currentItem = computed(() => findPrepRoadmapSwitcherItem(this.currentUrlInput() ?? this.routeUrl()));
   readonly otherStepsLabel = computed(() => `${Math.max(0, this.items.length - 1)} other steps`);
 
   constructor() {
@@ -59,7 +62,7 @@ export class PrepRoadmapSwitcherComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((event) => {
-        this.currentUrl.set(event.urlAfterRedirects || event.url);
+        this.routeUrl.set(event.urlAfterRedirects || event.url);
         this.open.set(false);
       });
   }
@@ -91,5 +94,14 @@ export class PrepRoadmapSwitcherComponent {
   @HostListener('document:keydown.escape')
   onDocumentEscape(): void {
     this.close();
+  }
+
+  private initialUrl(): string {
+    const routerUrl = this.router.url || '/';
+    if (routerUrl !== '/') return routerUrl;
+    if (!this.isBrowser) return routerUrl;
+
+    const location = this.doc.location;
+    return `${location.pathname || '/'}${location.search || ''}${location.hash || ''}`;
   }
 }

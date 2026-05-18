@@ -4,6 +4,8 @@ import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
 const CHUNK_RELOAD_SESSION_KEY = 'c';
+const CANONICAL_HOST = 'frontendatlas.com';
+const WWW_CANONICAL_HOST = 'www.frontendatlas.com';
 
 function enforceCanonicalOrigin(): void {
   if (typeof window === 'undefined') return;
@@ -11,11 +13,11 @@ function enforceCanonicalOrigin(): void {
 
   const { protocol, hostname, pathname, search, hash } = window.location;
   const normalizedHost = String(hostname || '').toLowerCase();
-  const forceHost = normalizedHost === 'www.frontendatlas.com';
-  const forceHttps = protocol === 'http:';
+  const forceHost = normalizedHost === WWW_CANONICAL_HOST;
+  const forceHttps = protocol === 'http:' && (normalizedHost === CANONICAL_HOST || forceHost);
   if (!forceHost && !forceHttps) return;
 
-  const target = `https://frontendatlas.com${pathname}${search}${hash}`;
+  const target = `https://${CANONICAL_HOST}${pathname}${search}${hash}`;
   window.location.replace(target);
 }
 

@@ -1190,8 +1190,8 @@ export const routes: Routes = [
     },
     data: {
       interviewQuestions: {
-        keyword: 'vue interview questions',
-        title: 'Vue Interview Questions and Answers',
+        keyword: 'vue js interview questions',
+        title: 'Vue.js Interview Questions and Answers',
         techs: ['vue'],
         featuredLinks: [
           {
@@ -1207,9 +1207,9 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'Vue Interview Questions and Answers',
+        title: 'Vue.js Interview Questions and Answers',
         description:
-          'Practice Vue interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, reactivity, rendering, and state.',
+          'Practice Vue.js interview questions and Vue JS answers with coding prompts, concept questions, follow-ups, reactivity, rendering, and state.',
       },
     },
   },
@@ -1224,13 +1224,13 @@ export const routes: Routes = [
     },
     data: {
       interviewQuestions: {
-        keyword: 'html css interview questions',
-        title: 'HTML CSS Interview Questions and Answers',
+        keyword: 'html and css interview questions',
+        title: 'HTML and CSS Interview Questions and Answers',
         techs: ['html', 'css'],
       },
       seo: {
-        title: 'HTML CSS Interview Questions and Answers',
-        description: 'Practice HTML/CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, semantics, and accessibility.',
+        title: 'HTML and CSS Interview Questions and Answers',
+        description: 'Practice HTML and CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, semantics, layout, and accessibility.',
       },
     },
   },
@@ -1286,7 +1286,7 @@ export const routes: Routes = [
       seo: {
         title: 'CSS Interview Questions and Answers',
         description:
-          'Practice CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, flexbox, grid, cascade, and layout.',
+          'Practice CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, flexbox, grid, cascade, and layout. Use each CSS interview question to rehearse practical trade-offs.',
       },
     },
   },

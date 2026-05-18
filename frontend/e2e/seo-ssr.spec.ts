@@ -15,14 +15,14 @@ const SSR_ENABLED = (() => {
 const CASES = [
   {
     path: '/coding',
-    titleIncludes: 'coding interview questions',
-    h1: 'All questions',
+    titleIncludes: 'frontend interview questions bank',
+    h1: 'Frontend Interview Questions Bank',
     detail: false,
     listTestIdPrefix: 'question-card-',
   },
   {
     path: '/angular/coding/angular-autocomplete-search-starter',
-    titleIncludes: 'Autocomplete Search Bar',
+    titleIncludes: 'Angular Autocomplete Search',
     h1: 'Autocomplete Search Bar (Standalone Component)',
     detail: true,
     premiumPreviewText: 'autocomplete search bar',
@@ -30,7 +30,7 @@ const CASES = [
   {
     path: '/react/coding/react-counter',
     titleIncludes: 'Counter',
-    h1: 'Counter (Component with Guarded Decrement)',
+    h1: 'React Counter (Guarded Decrement)',
     detail: true,
   },
   {
@@ -42,7 +42,7 @@ const CASES = [
   },
 ];
 
-const HOME_TITLE = 'Frontend interview preparation roadmap | FrontendAtlas';
+const HOME_TITLE = 'Frontend Interview Prep Platform | FrontendAtlas';
 
 function expectedCanonical(path: string): string {
   if (path === '/') return `${CANONICAL_BASE}/`;
@@ -65,6 +65,26 @@ function normalizeText(value: string): string {
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+}
+
+function collectClientRuntimeIssues(page: Page): string[] {
+  const issues: string[] = [];
+  page.on('console', (msg) => {
+    if (msg.type() === 'error' || msg.type() === 'warning') {
+      issues.push(msg.text());
+    }
+  });
+  page.on('pageerror', (error) => {
+    issues.push(error.message);
+  });
+  return issues;
+}
+
+function expectNoHydrationOrChunkIssues(issues: string[], path: string): void {
+  const relevant = issues.filter((message) =>
+    /NG05|hydration|hydrate|chunkloaderror|dynamically imported module|loading chunk|module script failed/i.test(message),
+  );
+  expect(relevant, `hydration/chunk runtime issues on ${path}`).toEqual([]);
 }
 
 async function assertSsrBasics(
@@ -188,6 +208,24 @@ test.describe('seo-ssr', () => {
     }
   });
 
+  test('dashboard shell does not prerender the prep switcher and hydration is clean', async ({ browser, page }) => {
+    const ssrContext = await browser.newContext({ javaScriptEnabled: false });
+    const ssrPage = await ssrContext.newPage();
+
+    await ssrPage.goto(fullUrl('/dashboard'), { waitUntil: 'domcontentloaded' });
+    await expect(ssrPage.getByTestId('prep-roadmap-switcher')).toHaveCount(0);
+    await ssrContext.close();
+
+    const runtimeIssues = collectClientRuntimeIssues(page);
+    for (const path of ['/dashboard', '/coding']) {
+      runtimeIssues.length = 0;
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('app-root')).toBeVisible();
+      await page.waitForTimeout(300);
+      expectNoHydrationOrChunkIssues(runtimeIssues, path);
+    }
+  });
+
   test('home intent stays stable between SSR and hydration, and differs from blueprint index intent', async ({ browser, page }) => {
     const ssrContext = await browser.newContext({ javaScriptEnabled: false });
     const ssrPage = await ssrContext.newPage();
@@ -196,22 +234,22 @@ test.describe('seo-ssr', () => {
     const ssrHomeTitle = await ssrPage.title();
     const ssrHomeH1 = (await ssrPage.locator('h1').first().textContent())?.trim() || '';
 
-    expect(normalizeText(ssrHomeTitle)).toContain('frontend interview preparation roadmap');
-    expect(normalizeText(ssrHomeH1)).toContain('frontend interview preparation');
+    expect(normalizeText(ssrHomeTitle)).toContain('frontend interview prep platform');
+    expect(normalizeText(ssrHomeH1)).toContain('practice frontend interviews');
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const hydratedHomeTitle = await page.title();
     const hydratedHomeH1 = (await page.locator('h1').first().textContent())?.trim() || '';
 
-    expect(normalizeText(hydratedHomeTitle)).toContain('frontend interview preparation roadmap');
-    expect(normalizeText(hydratedHomeH1)).toContain('frontend interview preparation');
+    expect(normalizeText(hydratedHomeTitle)).toContain('frontend interview prep platform');
+    expect(normalizeText(hydratedHomeH1)).toContain('practice frontend interviews');
     expect(normalizeText(hydratedHomeH1)).toBe(normalizeText(ssrHomeH1));
 
     await page.goto('/guides/interview-blueprint', { waitUntil: 'domcontentloaded' });
     const guidesTitle = await page.title();
     const guidesH1 = (await page.locator('h1').first().textContent())?.trim() || '';
 
-    expect(normalizeText(guidesTitle)).not.toContain('frontend interview preparation roadmap');
+    expect(normalizeText(guidesTitle)).not.toContain('frontend interview prep platform');
     expect(normalizeText(guidesTitle)).not.toBe(normalizeText(hydratedHomeTitle));
     expect(normalizeText(guidesH1)).not.toBe(normalizeText(hydratedHomeH1));
 

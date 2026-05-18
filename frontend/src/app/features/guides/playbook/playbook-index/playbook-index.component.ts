@@ -138,7 +138,7 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
         <div class="framework-links">
           <a [routerLink]="['/guides/framework-prep']">Browse all framework prep paths</a>
           <a [routerLink]="['/guides/framework-prep/javascript-prep-path']">JavaScript path</a>
-          <a [routerLink]="['/guides/framework-prep/react-prep-path']">React path</a>
+          <a [routerLink]="['/guides/framework-prep/react-prep-path']">React interview preparation path</a>
           <a [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular path</a>
           <a [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue path</a>
         </div>
