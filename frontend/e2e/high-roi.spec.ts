@@ -15,7 +15,24 @@ type RequestFailure = {
   errorText: string;
 };
 
-function trackRequestFailures(page: Page, opts?: { allowlist?: RegExp[] }) {
+type RequestFailureAllowlistEntry = RegExp | ((failure: RequestFailure) => boolean);
+
+function isAllowedRequestFailure(failure: RequestFailure, allowlist: RequestFailureAllowlistEntry[]) {
+  return allowlist.some((entry) => {
+    if (entry instanceof RegExp) {
+      return entry.test(failure.url) || entry.test(failure.errorText);
+    }
+
+    return entry(failure);
+  });
+}
+
+const blockedMonacoWorkerScript = (failure: RequestFailure) =>
+  failure.resourceType === 'script'
+  && /\/assets\/monaco\/min\/vs\/base\/worker\/workerMain\.js(?:\?.*)?$/i.test(failure.url)
+  && /net::ERR_BLOCKED_BY_RESPONSE/i.test(failure.errorText);
+
+function trackRequestFailures(page: Page, opts?: { allowlist?: RequestFailureAllowlistEntry[] }) {
   const failures: RequestFailure[] = [];
   const allowlist = opts?.allowlist ?? [];
 
@@ -27,18 +44,21 @@ function trackRequestFailures(page: Page, opts?: { allowlist?: RegExp[] }) {
     if (/net::ERR_ABORTED/i.test(errorText)) return;
 
     const url = req.url();
-    if (allowlist.some((re) => re.test(url) || re.test(errorText))) return;
 
     // Keep this guard high-signal: focus on document/scripts and app fetches.
     const resourceType = req.resourceType();
     if (!['document', 'script', 'xhr', 'fetch'].includes(resourceType)) return;
 
-    failures.push({
+    const requestFailure = {
       url,
       method: req.method(),
       resourceType,
       errorText,
-    });
+    };
+
+    if (isAllowedRequestFailure(requestFailure, allowlist)) return;
+
+    failures.push(requestFailure);
   });
 
   return failures;
@@ -58,7 +78,9 @@ async function waitForTwoAnimationFrames(page: Page) {
 }
 
 test('editor reset clears persisted override and survives refresh', async ({ page }) => {
-  const requestFailures = trackRequestFailures(page);
+  const requestFailures = trackRequestFailures(page, {
+    allowlist: [blockedMonacoWorkerScript],
+  });
 
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
   await expect(page.getByTestId('js-panel')).toBeVisible();
@@ -79,6 +101,9 @@ test('editor reset clears persisted override and survives refresh', async ({ pag
 
   await page.reload();
   await expect(page.getByTestId('js-panel')).toBeVisible();
+  await expect.poll(() => getMonacoModelValue(page, codeModelKey), {
+    message: 'saved draft marker should restore into the editor before the restore banner is asserted',
+  }).toContain(marker);
   await expect(page.getByTestId('restore-banner')).toBeVisible();
 
   await page.getByTestId('restore-banner-reset').click();
