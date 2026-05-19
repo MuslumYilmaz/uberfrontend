@@ -1114,7 +1114,7 @@ export const routes: Routes = [
       seo: {
         title: 'JavaScript Interview Questions and Answers',
         description:
-          'Practice JavaScript interview questions and answers, beginner to advanced, with output-based questions, coding prompts, DOM events, async, promises, and XSS.',
+          'Practice JavaScript interview questions with coding prompts, concept explanations, promises, async debugging, immutability, XSS, and common mistakes.',
       },
     },
   },
