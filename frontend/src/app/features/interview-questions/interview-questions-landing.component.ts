@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -42,6 +42,39 @@ type JavaScriptCoverageLink = { label: string; route: any[] };
 type JavaScriptTopicCard = { title: string; answer: string; link: JavaScriptCoverageLink };
 type JavaScriptSupportItem = { title: string; detail: string };
 type JavaScriptResourceLink = { label: string; href: string; summary: string };
+type JavaScriptQuestionLevel = 'beginner' | 'intermediate' | 'advanced';
+type JavaScriptShortAnswerCategory = 'fundamentals' | 'async' | 'coding' | 'browser-security';
+type JavaScriptShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: JavaScriptShortAnswerCategory;
+  level: JavaScriptQuestionLevel;
+};
+type JavaScriptAnchorItem = { label: string; targetId: string };
+type JavaScriptOutputQuestionItem = {
+  q: string;
+  code: string;
+  output: string;
+  explanation: string;
+  level: JavaScriptQuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type JavaScriptBrowserQuestionItem = {
+  q: string;
+  a: string;
+  level: JavaScriptQuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type JavaScriptEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type ReactCoverageLink = { label: string; route: any[] };
 type ReactTopicCard = { title: string; answer: string; link: ReactCoverageLink };
 type ReactSupportItem = { title: string; detail: string };
@@ -311,16 +344,16 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   javascript: [
     {
-      q: 'How should I practice JavaScript interview questions?',
-      a: 'Pair one utility or async coding prompt with one concept explanation. The goal is to prove both execution and reasoning in the same short loop.',
+      q: 'Are these JavaScript interview questions for beginners or experienced developers?',
+      a: 'Yes. The short-answer grid starts with beginner fundamentals, then moves into intermediate and advanced topics such as async races, prototypes, browser events, XSS, and debugging.',
     },
     {
-      q: 'Which JavaScript topics matter most first?',
-      a: 'Start with execution order, closures, arrays/maps, equality, async behavior, and edge cases before expanding into less common language details.',
+      q: 'Do these include output-based JavaScript interview questions?',
+      a: 'Yes. The output section includes code snippets for coercion, sort behavior, object references, var timing, microtasks, timers, and this binding so you can practice predicting console output.',
     },
     {
-      q: 'When is a JavaScript answer interview-ready?',
-      a: 'It is interview-ready when you can state the constraint, code the core behavior, name edge cases, and explain what you would test next.',
+      q: 'Where should I practice JavaScript coding interview questions?',
+      a: 'Start with the coding prompts on this page, then open the full JavaScript coding list for utilities such as sort, debounce, throttle, duplicate removal, cloning, and DOM traversal.',
     },
     {
       q: 'What are common mistakes in JavaScript interviews?',
@@ -442,6 +475,382 @@ const PRIMARY_TECH_HUB_PATHS = new Set<string>([
   '/css/interview-questions',
 ]);
 
+const JAVASCRIPT_SHORT_ANSWERS: JavaScriptShortAnswerItem[] = [
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What are callbacks in JavaScript?',
+    a: 'A callback is a function passed into another function so it can be called later. Callbacks are used in event handlers, array methods, timers, and older asynchronous APIs. The main risk is losing clear control flow or error handling when callbacks become deeply nested or when this is not preserved.',
+    route: ['/javascript', 'trivia', 'js-callbacks'],
+    cta: 'Review callbacks',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is the difference between == and ===?',
+    a: '== checks equality after JavaScript converts one or both operands to compatible types. === checks equality without type conversion, so both the value and the type must already match. This makes === the safer default because expressions like false == 0 and "" == 0 can be true even though the original values mean different things.',
+    route: ['/javascript', 'trivia', 'js-equality-vs-strict-equality'],
+    cta: 'Review equality rules',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is hoisting in JavaScript?',
+    a: 'Hoisting is JavaScript behavior where declarations are registered before the surrounding code executes. Function declarations are initialized early enough to be called before their written position, while var declarations exist early but hold undefined until assignment. let and const bindings also exist before execution reaches them, but reading them too early throws because they are in the temporal dead zone.',
+    route: ['/javascript', 'trivia', 'js-hoisting'],
+    cta: 'Practice hoisting',
+  },
+  {
+    category: 'fundamentals',
+    level: 'intermediate',
+    q: 'How do closures work in JavaScript?',
+    a: 'A closure is formed when a function keeps access to variables from the scope where it was created. Those variables stay available even after the outer function has finished running. Closures are useful for callbacks, function factories, private state, and delayed work, but they can also keep memory alive longer than expected when references are retained.',
+    route: ['/javascript', 'trivia', 'js-closures'],
+    cta: 'Review closures',
+  },
+  {
+    category: 'fundamentals',
+    level: 'intermediate',
+    q: 'What is the difference between arrow functions and regular functions?',
+    a: 'Arrow functions do not create their own this, arguments object, or constructor behavior. They read this from the surrounding lexical scope, which makes them useful for callbacks that should preserve outer context. Regular functions are better for object methods, constructors, generators, and APIs where this should depend on how the function is called.',
+    route: ['/javascript', 'trivia', 'js-arrow-vs-regular-functions'],
+    cta: 'Compare function styles',
+  },
+  {
+    category: 'fundamentals',
+    level: 'intermediate',
+    q: 'How does this work in JavaScript?',
+    a: 'In a regular function, this is determined by how the function is called. In obj.method(), this is obj, but assigning the method to another variable and calling it can remove that receiver. bind, call, and apply set this explicitly, while arrow functions inherit this from the surrounding scope.',
+    route: ['/javascript', 'trivia', 'js-this-keyword'],
+    cta: 'Review this binding',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is the difference between var, let, and const?',
+    a: 'var is scoped to the nearest function and can be redeclared in the same scope. let and const are scoped to the nearest block, which makes them safer inside loops and conditionals. const requires an initial value and prevents rebinding, but object properties and array items can still be mutated.',
+    route: ['/javascript', 'trivia', 'js-var-let-const-hoisting'],
+    cta: 'Review variable scope',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is the difference between null, undefined, and undeclared?',
+    a: 'undefined is the default value for a declared variable or missing object property that has no assigned value. null is an explicit value that represents an intentional absence. Undeclared means the identifier was never declared, so reading it directly throws a ReferenceError unless you check it with typeof.',
+    route: ['/javascript', 'trivia', 'js-null-undefined-undeclared'],
+    cta: 'Compare null and undefined',
+  },
+  {
+    category: 'async',
+    level: 'intermediate',
+    q: 'What is the JavaScript event loop?',
+    a: 'The event loop is the mechanism that lets JavaScript run synchronous code and later resume asynchronous callbacks. The call stack runs first, then queued microtasks run, then the runtime can take another task such as a timer or user event. This model allows a single JavaScript thread to coordinate timers, Promises, network callbacks, rendering, and user input.',
+    route: ['/javascript', 'trivia', 'js-event-loop'],
+    cta: 'Review the event loop',
+  },
+  {
+    category: 'async',
+    level: 'advanced',
+    q: 'What are microtasks and macrotasks?',
+    a: 'Microtasks are high-priority queued callbacks such as Promise.then, Promise.catch, Promise.finally, and queueMicrotask. Macrotasks are broader event-loop tasks such as timers, message events, and user input callbacks. After the current stack finishes, JavaScript drains the microtask queue before it moves to the next macrotask, so Promise callbacks usually run before setTimeout callbacks.',
+    route: ['/javascript', 'trivia', 'js-microtasks-vs-macrotasks'],
+    cta: 'Compare task queues',
+  },
+  {
+    category: 'async',
+    level: 'beginner',
+    q: 'What is the purpose of Promises?',
+    a: 'A Promise is an object that represents the eventual result of asynchronous work. It starts pending, then either fulfills with a value or rejects with a reason. Promises make async code easier to compose because success, failure, chaining, and fan-out behavior all use the same contract.',
+    route: ['/javascript', 'trivia', 'js-promise-fundamental-understanding'],
+    cta: 'Review Promise fundamentals',
+  },
+  {
+    category: 'async',
+    level: 'intermediate',
+    q: 'How is async/await different from Promises?',
+    a: 'async/await is syntax built on top of Promises, not a separate async system. An async function always returns a Promise, and await unwraps a fulfilled Promise or throws the rejection. It reads well for sequential steps, but independent work should still be started before awaiting or grouped with Promise.all.',
+    route: ['/javascript', 'trivia', 'js-promises-async-await'],
+    cta: 'Practice async/await',
+  },
+  {
+    category: 'async',
+    level: 'intermediate',
+    q: 'What is the difference between Promise.all, allSettled, race, and any?',
+    a: 'Promise.all waits for every input to fulfill, but rejects immediately when one input rejects. Promise.allSettled waits for every input and returns status objects for both fulfilled and rejected results. Promise.race mirrors the first settled input, while Promise.any returns the first fulfillment and rejects only when every input rejects.',
+    route: ['/javascript', 'trivia', 'js-promise-combinators-all-allsettled-race-any'],
+    cta: 'Compare Promise combinators',
+  },
+  {
+    category: 'async',
+    level: 'advanced',
+    q: 'How do you handle async race conditions?',
+    a: 'An async race condition happens when two or more async operations can finish in an order that no longer matches the current user intent. The usual fix is to cancel stale work with AbortController or ignore stale results with a request id, timestamp, or version token. The state update should happen only if the completed operation still matches the latest accepted operation.',
+    route: ['/javascript', 'trivia', 'js-async-race-conditions'],
+    cta: 'Review async races',
+  },
+  {
+    category: 'async',
+    level: 'advanced',
+    q: 'How do you debug async JavaScript issues?',
+    a: 'Debug async issues by tracing when each operation starts, settles, updates state, and cleans up. Browser network tools show request timing, async stack traces show where callbacks came from, and rejected Promise handling shows hidden failure paths. A small reproduction helps separate stale responses, duplicate requests, missing cleanup, and swallowed errors.',
+    route: ['/javascript', 'debug', 'js-debug-async-race'],
+    cta: 'Debug an async race',
+  },
+  {
+    category: 'coding',
+    level: 'beginner',
+    q: 'What is the difference between map, filter, and reduce?',
+    a: 'map transforms every item and returns a new array with the same length. filter keeps only the items that pass a condition and can return a shorter array. reduce accumulates the array into one result, such as a number, object, grouped map, or rebuilt array.',
+    route: ['/javascript', 'trivia', 'js-map-filter-reduce'],
+    cta: 'Compare array methods',
+  },
+  {
+    category: 'coding',
+    level: 'beginner',
+    q: 'How do you remove duplicates from an array?',
+    a: 'For primitive values, [...new Set(arr)] returns a new array with duplicates removed in first-seen order. Set uses SameValueZero equality, so NaN matches NaN and 1 is different from "1". For arrays of objects, deduplicate by a stable key such as id, because two object literals with the same fields are still different references.',
+    route: ['/javascript', 'coding', 'js-unique-array'],
+    cta: 'Practice remove duplicates',
+  },
+  {
+    category: 'coding',
+    level: 'intermediate',
+    q: 'How do you implement debounce?',
+    a: 'Debounce creates a wrapper that waits until calls stop for a specified delay before running the original function. Each call clears the old timer and schedules a new one, so only the final call in a burst normally runs. The wrapper should pass through the latest arguments and this value, and optional cancel or flush methods can make it easier to control.',
+    route: ['/javascript', 'coding', 'js-debounce'],
+    cta: 'Practice debounce',
+  },
+  {
+    category: 'coding',
+    level: 'intermediate',
+    q: 'How do you implement throttle?',
+    a: 'Throttle creates a wrapper that runs the original function at most once during a fixed time window. Calls that happen during the cooldown can be ignored or saved for one trailing execution, depending on the chosen API. The implementation should preserve this, forward arguments, and define whether the first call, last call, or both can run.',
+    route: ['/javascript', 'coding', 'js-throttle'],
+    cta: 'Practice throttle',
+  },
+  {
+    category: 'coding',
+    level: 'intermediate',
+    q: 'What is the difference between shallow and deep cloning?',
+    a: 'A shallow clone copies only the top-level object or array and reuses nested object references. A deep clone recursively creates new nested objects and arrays so changes in the copy do not affect the original. Deep cloning is harder because real values can include cycles, Dates, Maps, Sets, class instances, functions, and prototypes.',
+    route: ['/javascript', 'trivia', 'js-shallow-vs-deep-copy'],
+    cta: 'Compare clone depth',
+  },
+  {
+    category: 'coding',
+    level: 'beginner',
+    q: 'Why does Array.sort() sometimes sort numbers incorrectly?',
+    a: 'Array.sort() sorts values as strings by default, not as numbers. That means [2, 10] can become [10, 2] because "10" comes before "2" lexicographically. Use a numeric comparator such as (a, b) => a - b, and copy the array first if the original order must be preserved.',
+    route: ['/javascript', 'coding', 'js-array-sort'],
+    cta: 'Practice numeric sort',
+  },
+  {
+    category: 'coding',
+    level: 'intermediate',
+    q: 'Why is immutability important in JavaScript interviews?',
+    a: 'Immutability means representing a change by creating a new value instead of modifying the existing one. It prevents accidental updates through shared references, which is especially important for nested objects and arrays. It also makes UI rendering, reducer logic, memoization, undo history, and debugging easier because each state transition has a clear before and after.',
+    route: ['/javascript', 'trivia', 'js-mutability-vs-immutability'],
+    cta: 'Review immutability',
+  },
+  {
+    category: 'browser-security',
+    level: 'advanced',
+    q: 'How do you prevent XSS in JavaScript?',
+    a: 'Prevent XSS by treating user-controlled strings as unsafe until they are encoded, validated, or sanitized for the exact context where they are used. Prefer safe DOM APIs such as textContent for text, validate URLs before assigning href, and avoid dangerous sinks such as innerHTML for untrusted input. If trusted HTML rendering is required, use a proven sanitizer and add defenses such as Content Security Policy and Trusted Types.',
+    route: ['/javascript', 'trivia', 'js-xss-dom-sinks'],
+    cta: 'Review DOM XSS prevention',
+  },
+  {
+    category: 'fundamentals',
+    level: 'intermediate',
+    q: 'What is prototypal inheritance in JavaScript?',
+    a: 'Prototypal inheritance means objects can delegate property lookups to another object through their prototype chain. If a property is not found on the object itself, JavaScript checks its prototype, then the next prototype, until it reaches null. Constructor functions and classes both use this prototype mechanism under the hood.',
+    route: ['/javascript', 'trivia', 'js-prototypal-inheritance'],
+    cta: 'Review prototypes',
+  },
+  {
+    category: 'fundamentals',
+    level: 'intermediate',
+    q: 'What is type coercion in JavaScript?',
+    a: 'Type coercion is JavaScript converting a value from one type to another during an operation. It happens with loose equality, arithmetic, string concatenation, Boolean contexts, and many built-in APIs. Coercion can be useful, but explicit conversion with Number, String, or Boolean is clearer when behavior matters.',
+    route: ['/javascript', 'trivia', 'js-type-coercion'],
+    cta: 'Review type coercion',
+  },
+];
+
+const JAVASCRIPT_ANCHOR_ITEMS: JavaScriptAnchorItem[] = [
+  { label: 'Short answers', targetId: 'iq-javascript-short-answers-title' },
+  { label: 'Code output', targetId: 'iq-javascript-output-title' },
+  { label: 'Browser + DOM', targetId: 'iq-javascript-browser-title' },
+  { label: 'Coding prompts', targetId: 'iq-javascript-coding-preview-title' },
+  { label: 'Concept prompts', targetId: 'iq-javascript-concept-preview-title' },
+  { label: 'Topic map', targetId: 'iq-javascript-coverage-title' },
+];
+
+const JAVASCRIPT_EDITORIAL_SIGNAL: JavaScriptEditorialSignal = {
+  reviewedLabel: 'Reviewed May 19, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '25 answers, 8 output questions, and 8 browser/DOM/security questions',
+  dateModified: '2026-05-19T00:00:00.000Z',
+};
+
+const JAVASCRIPT_OUTPUT_QUESTIONS: JavaScriptOutputQuestionItem[] = [
+  {
+    level: 'beginner',
+    q: 'What does typeof null return?',
+    code: `console.log(typeof null);`,
+    output: `"object"`,
+    explanation: 'typeof null returns "object" because of a long-standing JavaScript legacy bug. The value is still the primitive null, so check null directly with value === null.',
+  },
+  {
+    level: 'beginner',
+    q: 'What is the output of loose equality compared with strict equality?',
+    code: `console.log(false == 0);
+console.log(false === 0);
+console.log("" == 0);`,
+    output: `true
+false
+true`,
+    explanation: 'Loose equality converts types before comparison, while strict equality does not. This is why strict equality is the default choice when the original value type matters.',
+    route: ['/javascript', 'trivia', 'js-equality-vs-strict-equality'],
+    cta: 'Review equality rules',
+  },
+  {
+    level: 'beginner',
+    q: 'What is the output of Array.sort() without a comparator?',
+    code: `console.log([2, 10, 1].sort());`,
+    output: `[1, 10, 2]`,
+    explanation: 'sort() converts values to strings by default and compares them lexicographically. Use (a, b) => a - b for numeric sorting and copy first when mutation is not allowed.',
+    route: ['/javascript', 'coding', 'js-array-sort'],
+    cta: 'Practice numeric sort',
+  },
+  {
+    level: 'intermediate',
+    q: 'What does this var loop log?',
+    code: `for (var i = 0; i < 3; i += 1) {
+  setTimeout(() => console.log(i), 0);
+}`,
+    output: `3
+3
+3`,
+    explanation: 'var creates one function-scoped binding shared by every callback. By the time the timers run, the loop has finished and that shared i is 3.',
+    route: ['/javascript', 'trivia', 'js-var-let-const-hoisting'],
+    cta: 'Review var and let',
+  },
+  {
+    level: 'beginner',
+    q: 'What happens when two variables reference the same object?',
+    code: `const a = { user: { name: "Ada" } };
+const b = a;
+b.user.name = "Lin";
+console.log(a.user.name);`,
+    output: `"Lin"`,
+    explanation: 'Objects are assigned by reference, so a and b point at the same object. Mutating nested data through b is visible through a.',
+    route: ['/javascript', 'trivia', 'js-mutability-vs-immutability'],
+    cta: 'Review mutation',
+  },
+  {
+    level: 'beginner',
+    q: 'Why do string plus and minus behave differently?',
+    code: `console.log("5" + 1);
+console.log("5" - 1);`,
+    output: `"51"
+4`,
+    explanation: 'The + operator performs string concatenation when one side is a string. The - operator only has numeric meaning, so JavaScript coerces "5" to 5.',
+    route: ['/javascript', 'trivia', 'js-type-coercion'],
+    cta: 'Review coercion',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the event loop output order?',
+    code: `console.log("A");
+setTimeout(() => console.log("B"), 0);
+Promise.resolve().then(() => console.log("C"));
+console.log("D");`,
+    output: `A
+D
+C
+B`,
+    explanation: 'Synchronous code runs first, then the microtask from Promise.then, then the timer task. This order is the key event-loop rule behind many async output questions.',
+    route: ['/javascript', 'trivia', 'js-event-loop'],
+    cta: 'Review event loop',
+  },
+  {
+    level: 'intermediate',
+    q: 'What happens when a method loses its receiver?',
+    code: `"use strict";
+const user = {
+  name: "Ada",
+  getName() {
+    return this.name;
+  },
+};
+const fn = user.getName;
+console.log(fn());`,
+    output: `TypeError`,
+    explanation: 'Calling fn() without user as the receiver makes this undefined in strict mode. Keep the receiver with user.getName(), bind the method, or wrap the call in another function.',
+    route: ['/javascript', 'debug', 'js-debug-lost-this-binding'],
+    cta: 'Debug lost this',
+  },
+];
+
+const JAVASCRIPT_BROWSER_QUESTIONS: JavaScriptBrowserQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'What is event delegation?',
+    a: 'Event delegation attaches one listener to a common parent and handles events from matching child elements. It works because many DOM events bubble upward. It reduces listener count for dynamic lists, but the handler still needs a reliable target check such as closest().',
+    route: ['/javascript', 'trivia', 'js-event-delegation'],
+    cta: 'Review event delegation',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the difference between event bubbling and capturing?',
+    a: 'Capturing runs listeners from the document down toward the target before the target phase. Bubbling runs listeners from the target back up toward the document. Most app code relies on bubbling, while capture is useful when a parent must observe an event before child handlers run.',
+    route: ['/javascript', 'trivia', 'js-event-bubbling-capturing'],
+    cta: 'Compare event phases',
+  },
+  {
+    level: 'beginner',
+    q: 'What is the difference between preventDefault() and stopPropagation()?',
+    a: 'preventDefault() cancels the browser default action, such as navigating a link or submitting a form. stopPropagation() stops the event from continuing through the capture or bubble path. They solve different problems, so using one does not imply the other.',
+  },
+  {
+    level: 'beginner',
+    q: 'What is the difference between innerHTML and textContent?',
+    a: 'textContent writes text and treats characters such as < and > as text. innerHTML parses a string as HTML and can execute dangerous markup paths if the content is not trusted. Use textContent for user-controlled strings and only render sanitized HTML when markup is required.',
+    route: ['/javascript', 'trivia', 'js-xss-dom-sinks'],
+    cta: 'Review safe DOM sinks',
+  },
+  {
+    level: 'beginner',
+    q: 'What is the difference between cookies, localStorage, and sessionStorage?',
+    a: 'Cookies can be sent with HTTP requests and can use security flags such as HttpOnly, Secure, and SameSite. localStorage persists until cleared, while sessionStorage lasts for the current tab session. Storage APIs are convenient for non-sensitive client state, but they are readable by JavaScript.',
+    route: ['/javascript', 'trivia', 'js-cookie-sessionstorage-localstorage'],
+    cta: 'Compare browser storage',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you safely use user input in DOM URLs or HTML?',
+    a: 'Treat user input as unsafe until it is encoded, validated, or sanitized for the exact context. For links, allow only safe schemes such as http, https, mailto, tel, or safe relative URLs. For HTML, use a reviewed sanitizer and avoid assigning untrusted strings to dangerous sinks.',
+    route: ['/javascript', 'trivia', 'js-xss-dom-sinks'],
+    cta: 'Review DOM XSS prevention',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you search or traverse DOM nodes safely?',
+    a: 'Use focused DOM APIs such as querySelector, querySelectorAll, closest, matches, and tree traversal instead of assuming a fixed child index. Code should handle missing nodes with null checks. Traversal logic also needs to preserve document order when the result order matters.',
+    route: ['/javascript', 'coding', 'js-dom-find-node'],
+    cta: 'Practice DOM search',
+  },
+  {
+    level: 'advanced',
+    q: 'What causes browser memory leaks in JavaScript?',
+    a: 'Leaks often come from event listeners, timers, subscriptions, detached DOM references, and unbounded Maps or caches that keep objects reachable. Cleanup should remove listeners, clear timers, abort stale work, and bound long-lived storage. DevTools memory snapshots help confirm whether objects are still retained after a user flow ends.',
+    route: ['/javascript', 'coding', 'js-storage-ttl-cache'],
+    cta: 'Practice bounded storage',
+  },
+];
+
 const JAVASCRIPT_TOPIC_CARDS: JavaScriptTopicCard[] = [
   {
     title: 'Shallow vs deep cloning',
@@ -453,7 +862,7 @@ const JAVASCRIPT_TOPIC_CARDS: JavaScriptTopicCard[] = [
   },
   {
     title: 'Promises and async operations',
-    answer: 'Promises represent a future success or failure value and give async work a composable contract. Strong answers explain chaining, microtask timing, error propagation, async/await readability, and when Promise combinators are the real interview target.',
+    answer: 'Promises represent a future success or failure value and give async work a composable contract. Chaining, microtask timing, error propagation, async/await readability, and Promise combinators all follow from that same contract.',
     link: {
       label: 'Review Promises and async/await',
       route: ['/javascript', 'trivia', 'js-promises-async-await'],
@@ -469,7 +878,7 @@ const JAVASCRIPT_TOPIC_CARDS: JavaScriptTopicCard[] = [
   },
   {
     title: 'Immutability and state updates',
-    answer: 'Immutability keeps state transitions traceable, avoids accidental shared-reference bugs, and makes UI change detection easier to reason about. In interviews, explain where copying is required and where mutation is harmless local implementation detail.',
+    answer: 'Immutability keeps state transitions traceable, avoids accidental shared-reference bugs, and makes UI change detection easier to reason about. Copy caller-owned or shared data, and keep mutation limited to local implementation details.',
     link: {
       label: 'Review mutability vs immutability',
       route: ['/javascript', 'trivia', 'js-mutability-vs-immutability'],
@@ -936,6 +1345,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   private readonly questionService = inject(QuestionService);
   private readonly seo = inject(SeoService);
   private readonly analytics = inject(AnalyticsService);
+  private readonly document = inject(DOCUMENT);
 
   config: InterviewQuestionsLandingConfig = DEFAULT_CONFIG;
   loading = true;
@@ -1076,6 +1486,61 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   javascriptResourceLinks(): JavaScriptResourceLink[] {
     return JAVASCRIPT_RESOURCE_LINKS;
+  }
+
+  javascriptAnchorItems(): JavaScriptAnchorItem[] {
+    return JAVASCRIPT_ANCHOR_ITEMS;
+  }
+
+  javascriptEditorialSignal(): JavaScriptEditorialSignal {
+    return JAVASCRIPT_EDITORIAL_SIGNAL;
+  }
+
+  scrollToJavaScriptSection(targetId: string): void {
+    const target = this.document.getElementById(targetId);
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const view = this.document.defaultView;
+    if (view) {
+      view.history.replaceState(null, '', `${view.location.pathname}${view.location.search}#${targetId}`);
+    }
+  }
+
+  javascriptShortAnswers(): JavaScriptShortAnswerItem[] {
+    return JAVASCRIPT_SHORT_ANSWERS;
+  }
+
+  javascriptOutputQuestions(): JavaScriptOutputQuestionItem[] {
+    return JAVASCRIPT_OUTPUT_QUESTIONS;
+  }
+
+  javascriptBrowserQuestions(): JavaScriptBrowserQuestionItem[] {
+    return JAVASCRIPT_BROWSER_QUESTIONS;
+  }
+
+  javascriptQuestionLevelLabel(level: JavaScriptQuestionLevel): string {
+    switch (level) {
+      case 'beginner':
+        return 'Beginner';
+      case 'intermediate':
+        return 'Intermediate';
+      default:
+        return 'Advanced';
+    }
+  }
+
+  javascriptShortAnswerCategoryLabel(category: JavaScriptShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'async':
+        return 'Async';
+      case 'coding':
+        return 'Coding';
+      default:
+        return 'Browser + security';
+    }
   }
 
   isReactHub(): boolean {
@@ -1645,22 +2110,36 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isJavaScriptHub()) {
+      collectionPage['dateModified'] = JAVASCRIPT_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: JAVASCRIPT_EDITORIAL_SIGNAL.reviewer,
+      };
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'Beginner to advanced JavaScript interview questions' },
+        { '@type': 'Thing', name: 'JavaScript interview questions for beginners' },
+        { '@type': 'Thing', name: 'JavaScript interview questions for experienced developers' },
         { '@type': 'Thing', name: 'JavaScript shallow copy versus deep copy' },
         { '@type': 'Thing', name: 'JavaScript Promises and async await' },
         { '@type': 'Thing', name: 'JavaScript async race conditions' },
         { '@type': 'Thing', name: 'JavaScript immutability and state updates' },
         { '@type': 'Thing', name: 'JavaScript sorting comparators and mutation' },
+        { '@type': 'Thing', name: 'Output-based JavaScript interview questions' },
+        { '@type': 'Thing', name: 'JavaScript DOM events and event delegation' },
+        { '@type': 'Thing', name: 'JavaScript browser storage questions' },
         { '@type': 'Thing', name: 'DOM XSS prevention in JavaScript' },
       ];
       collectionPage['mentions'] = [
         ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'JavaScript coding interview questions' },
         { '@type': 'Thing', name: 'Common JavaScript interview mistakes' },
         { '@type': 'Thing', name: 'JavaScript coding interview best practices' },
         { '@type': 'Thing', name: 'Debugging async JavaScript issues' },
         { '@type': 'Thing', name: 'JavaScript interview preparation resources' },
         { '@type': 'Thing', name: 'Promise combinators and error handling' },
+        { '@type': 'Thing', name: 'JavaScript event bubbling and capturing' },
+        { '@type': 'Thing', name: 'JavaScript typeof null and coercion output questions' },
       ];
     }
 
@@ -1713,11 +2192,33 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       itemListElement: this.breadcrumbItems(canonicalUrl, masterHubUrl),
     };
 
+    const jsonLd = [collectionPage, breadcrumbList];
+    if (this.isJavaScriptHub()) {
+      jsonLd.push(this.javascriptShortAnswersFaqPage(canonicalUrl));
+    }
+
     this.seo.updateTags({
       ...routeSeo,
       canonical: currentPath,
-      jsonLd: [collectionPage, breadcrumbList],
+      jsonLd,
     });
+  }
+
+  private javascriptShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#javascript-short-answers`,
+      url: canonicalUrl,
+      name: 'Top JavaScript interview questions and short answers, beginner to advanced',
+      mainEntity: this.javascriptShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
   }
 
   private schemaQuestionLinks(): SchemaQuestionLink[] {
