@@ -7,6 +7,34 @@ import { QuestionService } from '../../core/services/question.service';
 import { SeoService } from '../../core/services/seo.service';
 import { InterviewQuestionsLandingComponent } from './interview-questions-landing.component';
 
+const JAVASCRIPT_SHORT_ANSWER_QUESTIONS = [
+  'What are callbacks in JavaScript?',
+  'What is the difference between == and ===?',
+  'What is hoisting in JavaScript?',
+  'How do closures work in JavaScript?',
+  'What is the difference between arrow functions and regular functions?',
+  'How does this work in JavaScript?',
+  'What is the difference between var, let, and const?',
+  'What is the difference between null, undefined, and undeclared?',
+  'What is the JavaScript event loop?',
+  'What are microtasks and macrotasks?',
+  'What is the purpose of Promises?',
+  'How is async/await different from Promises?',
+  'What is the difference between Promise.all, allSettled, race, and any?',
+  'How do you handle async race conditions?',
+  'How do you debug async JavaScript issues?',
+  'What is the difference between map, filter, and reduce?',
+  'How do you remove duplicates from an array?',
+  'How do you implement debounce?',
+  'How do you implement throttle?',
+  'What is the difference between shallow and deep cloning?',
+  'Why does Array.sort() sometimes sort numbers incorrectly?',
+  'Why is immutability important in JavaScript interviews?',
+  'How do you prevent XSS in JavaScript?',
+  'What is prototypal inheritance in JavaScript?',
+  'What is type coercion in JavaScript?',
+];
+
 describe('InterviewQuestionsLandingComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
   let analytics: jasmine.SpyObj<AnalyticsService>;
@@ -106,6 +134,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('How do React interview questions differ from React interview preparation?');
     expect(fixture.nativeElement.textContent || '').not.toContain('Angular interview topic map');
     expect(fixture.nativeElement.textContent || '').not.toContain('HTML interview topic map');
+    expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-editorial-signal')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
   });
@@ -131,10 +163,20 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Common React libraries interviewers may expect');
     expect(text).toContain('TanStack Query');
     expect(text).toContain('Testing Library');
+    expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('Are these JavaScript interview questions for beginners or experienced developers?');
+    expect(text).not.toContain('Do these include output-based JavaScript interview questions?');
+    expect(text).not.toContain('Where should I practice JavaScript coding interview questions?');
+    expect(text).not.toContain('Output-based JavaScript interview questions');
+    expect(text).not.toContain('DOM, browser, and security questions');
     expect(text).not.toContain('JavaScript interview topic map');
     expect(text).not.toContain('Angular interview topic map');
     expect(text).not.toContain('HTML interview topic map');
 
+    expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
@@ -207,7 +249,29 @@ describe('InterviewQuestionsLandingComponent', () => {
     const text = fixture.nativeElement.textContent || '';
 
     expect(text).toContain('JavaScript Interview Questions and Answers');
+    expect(text).toContain('Reviewed May 19, 2026');
+    expect(text).toContain('FrontendAtlas Editor');
+    expect(text).toContain('25 answers, 8 output questions, and 8 browser/DOM/security questions');
+    expect(text).toContain('On this page');
+    expect(text).toContain('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(text).toContain('Use these beginner, intermediate, and advanced answers for a fast review');
+    expect(text).toContain('Output-based JavaScript interview questions');
+    expect(text).toContain('DOM, browser, and security questions');
+    for (const question of JAVASCRIPT_SHORT_ANSWER_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    expect(text.indexOf('Top JavaScript interview questions and short answers, beginner to advanced')).toBeLessThan(
+      text.indexOf('Most crucial JavaScript coding interview questions')
+    );
+    expect(text.indexOf('DOM, browser, and security questions')).toBeLessThan(
+      text.indexOf('Most crucial JavaScript coding interview questions')
+    );
     expect(text).toContain('JavaScript interview topic map');
+    expect(text).toContain('What does typeof null return?');
+    expect(text).toContain('What is the event loop output order?');
+    expect(text).toContain('What happens when a method loses its receiver?');
+    expect(text).toContain('What is event delegation?');
+    expect(text).toContain('What is the difference between cookies, localStorage, and sessionStorage?');
     expect(text).toContain('Shallow vs deep cloning');
     expect(text).toContain('Promises and async operations');
     expect(text).toContain('Async race conditions and stale updates');
@@ -218,16 +282,50 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('JavaScript coding interview best practices');
     expect(text).toContain('How to debug async JavaScript issues');
     expect(text).toContain('Best resources for JavaScript interview preparation');
+    expect(text).toContain('Are these JavaScript interview questions for beginners or experienced developers?');
+    expect(text).toContain('Do these include output-based JavaScript interview questions?');
+    expect(text).toContain('Where should I practice JavaScript coding interview questions?');
     expect(text).toContain('What are common mistakes in JavaScript interviews?');
     expect(text).toContain('What are the best resources for JavaScript interview preparation?');
     expect(text).not.toContain('React interview topic map');
     expect(text).not.toContain('Angular interview topic map');
     expect(text).not.toContain('HTML interview topic map');
 
+    expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-editorial-signal')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-output-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-browser-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-coding-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-concept-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-coverage-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-short-answer').length).toBe(25);
+    expect(fixture.nativeElement.querySelectorAll('.iq-short-answer__level').length).toBeGreaterThanOrEqual(25);
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-output-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-browser-card').length).toBe(8);
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-coverage')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-closures"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-callbacks"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-event-loop"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-promise-fundamental-understanding"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-async-race-conditions"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-xss-dom-sinks"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-map-filter-reduce"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-prototypal-inheritance"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-type-coercion"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-event-delegation"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-event-bubbling-capturing"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-cookie-sessionstorage-localstorage"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-dom-find-node"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/debug/js-debug-lost-this-binding"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-array-sort"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/javascript-prep-path"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-shallow-vs-deep-copy"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-promises-async-await"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-async-race-conditions"]')).toBeTruthy();
@@ -242,6 +340,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('JavaScript shallow copy versus deep copy')
@@ -252,12 +351,81 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('DOM XSS prevention in JavaScript')
     )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Output-based JavaScript interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('JavaScript DOM events and event delegation')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Beginner to advanced JavaScript interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('JavaScript interview questions for beginners')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('JavaScript interview questions for experienced developers')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('JavaScript coding interview questions')
+    )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Common JavaScript interview mistakes')
     )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('JavaScript interview preparation resources')
     )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('JavaScript event bubbling and capturing')
+    )).toBeTrue();
+    expect(collection?.dateModified).toBe('2026-05-19T00:00:00.000Z');
+    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(faqPage).toBeTruthy();
+    expect(faqPage?.name).toBe('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
+    expect(faqPage?.mainEntity.length).toBe(25);
+    expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(JAVASCRIPT_SHORT_ANSWER_QUESTIONS);
+    const hoistingEntry = faqPage?.mainEntity.find((entry: any) =>
+      entry?.name === 'What is hoisting in JavaScript?'
+    );
+    expect(String(hoistingEntry?.acceptedAnswer?.text || '')).toContain('temporal dead zone');
+  });
+
+  it('scrolls JavaScript TOC buttons to page sections without routing to the app root', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'javascript interview questions',
+      title: 'JavaScript Interview Questions and Answers',
+      techs: ['javascript'],
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['javascript'],
+      coding: [],
+      trivia: [],
+    };
+    routeStub.snapshot.url = [{ path: 'javascript' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'javascript' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const outputHeading = fixture.nativeElement.querySelector('#iq-javascript-output-title') as HTMLElement;
+    const scrollIntoView = jasmine.createSpy('scrollIntoView');
+    (outputHeading as any).scrollIntoView = scrollIntoView;
+    const replaceState = spyOn(window.history, 'replaceState').and.stub();
+
+    const tocButton = fixture.nativeElement.querySelector(
+      'button[data-target="iq-javascript-output-title"]',
+    ) as HTMLButtonElement;
+    tocButton.click();
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    expect(replaceState).toHaveBeenCalledWith(
+      null,
+      '',
+      `${window.location.pathname}${window.location.search}#iq-javascript-output-title`,
+    );
   });
 
   it('tracks roadmap selection from the interview hub decision surface', async () => {
@@ -523,9 +691,17 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('How do I test my HTML code for accessibility?');
     expect(text).toContain('What are the best resources for learning HTML?');
     expect(text).toContain('How do behavioral questions show up in HTML interviews?');
+    expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('Are these JavaScript interview questions for beginners or experienced developers?');
+    expect(text).not.toContain('Output-based JavaScript interview questions');
+    expect(text).not.toContain('DOM, browser, and security questions');
     expect(text).not.toContain('Angular interview topic map');
     expect(text).not.toContain('React interview topic map');
 
+    expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
     expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-basic-structure"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-contact-form-labeled"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/html/trivia/web-accessibility-make-page-accessible"]')).toBeTruthy();
@@ -580,9 +756,17 @@ describe('InterviewQuestionsLandingComponent', () => {
     const text = fixture.nativeElement.textContent || '';
 
     expect(text).toContain('CSS Interview Questions and Answers');
+    expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('Where should I practice JavaScript coding interview questions?');
+    expect(text).not.toContain('Output-based JavaScript interview questions');
+    expect(text).not.toContain('DOM, browser, and security questions');
     expect(text).not.toContain('HTML interview topic map');
     expect(text).not.toContain('React interview topic map');
     expect(text).not.toContain('Best resources for learning HTML');
+    expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeNull();
   });
@@ -623,9 +807,17 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Using mergeMap when latest search should win');
     expect(text).toContain('Modern Angular topics interviewers may ask about');
     expect(text).toContain('Signal Forms');
+    expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('Do these include output-based JavaScript interview questions?');
+    expect(text).not.toContain('Output-based JavaScript interview questions');
+    expect(text).not.toContain('DOM, browser, and security questions');
     expect(text).not.toContain('HTML interview topic map');
     expect(text).not.toContain('React interview topic map');
 
+    expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-http-what-actually-cancels-request"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-dependency-injection"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales"]')).toBeTruthy();

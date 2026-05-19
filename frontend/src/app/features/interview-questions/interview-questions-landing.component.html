@@ -3,21 +3,139 @@
     <p class="fa-page-kicker">{{ isMasterHub() ? 'Guided interview warm-up' : 'Technology interview warm-up' }}</p>
     <h1 class="fa-page-title">{{ config.title }}</h1>
     <p class="fa-page-subtitle">{{ introLead() }}</p>
+    <div
+      *ngIf="isJavaScriptHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ javascriptEditorialSignal().reviewedLabel }}</span>
+      <span>{{ javascriptEditorialSignal().reviewer }}</span>
+      <span>{{ javascriptEditorialSignal().coverage }}</span>
+    </div>
   </header>
 
-  <app-prep-roadmap
-    class="iq-roadmap"
-    [title]="prepRoadmapTitle()"
-    [subtitle]="prepRoadmapSubtitle()"
-    [items]="prepRoadmapItems()"
-    variant="compact"
-    (itemSelected)="trackPrepRoadmapSelection($event)"
-  ></app-prep-roadmap>
+  <section
+    *ngIf="isJavaScriptHub()"
+    class="iq-section iq-js-toc"
+    aria-label="JavaScript interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-js-toc__links">
+      <button
+        *ngFor="let item of javascriptAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToJavaScriptSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
 
-  <section class="iq-section iq-section--surface">
+  <section
+    *ngIf="isJavaScriptHub()"
+    class="iq-section iq-section--surface iq-section--javascript-short-answers"
+    aria-labelledby="iq-javascript-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Short answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-javascript-short-answers-title">
+        Top JavaScript interview questions and short answers, beginner to advanced
+      </h2>
+      <p class="fa-meta-text">
+        Use these beginner, intermediate, and advanced answers for a fast review, then open the linked practice route when a topic needs deeper coding or explanation work.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of javascriptShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ javascriptShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ javascriptQuestionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isJavaScriptHub()"
+    class="iq-section iq-section--surface iq-section--javascript-output"
+    aria-labelledby="iq-javascript-output-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Code output</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-javascript-output-title">
+        Output-based JavaScript interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice the runtime details that usually decide JavaScript output questions: coercion, references, task queues, sort behavior, and this binding.
+      </p>
+    </div>
+
+    <div class="iq-output-grid">
+      <article class="iq-output-card" *ngFor="let item of javascriptOutputQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ javascriptQuestionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <pre class="iq-code-block"><code>{{ item.code }}</code></pre>
+        <div class="iq-output-card__answer">
+          <span>Output</span>
+          <pre class="iq-code-output"><code>{{ item.output }}</code></pre>
+        </div>
+        <p>{{ item.explanation }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isJavaScriptHub()"
+    class="iq-section iq-section--surface iq-section--javascript-browser"
+    aria-labelledby="iq-javascript-browser-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Browser + DOM</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-javascript-browser-title">
+        DOM, browser, and security questions
+      </h2>
+      <p class="fa-meta-text">
+        Review browser-side JavaScript topics that commonly appear in frontend rounds: event phases, storage, safe DOM writes, URL handling, traversal, and cleanup.
+      </p>
+    </div>
+
+    <div class="iq-browser-grid">
+      <article class="iq-browser-card" *ngFor="let item of javascriptBrowserQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ javascriptQuestionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
-        <h2 class="fa-section-title iq-section__title">{{ codingSectionTitle() }}</h2>
+        <h2
+          class="fa-section-title iq-section__title"
+          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : null"
+        >
+          {{ codingSectionTitle() }}
+        </h2>
         <p class="fa-meta-text">{{ codingSectionSubtitle() }}</p>
       </div>
       <a
@@ -61,10 +179,15 @@
     </ng-container>
   </section>
 
-  <section class="iq-section iq-section--surface">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
-        <h2 class="fa-section-title iq-section__title">{{ triviaSectionTitle() }}</h2>
+        <h2
+          class="fa-section-title iq-section__title"
+          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : null"
+        >
+          {{ triviaSectionTitle() }}
+        </h2>
         <p class="fa-meta-text">{{ triviaSectionSubtitle() }}</p>
       </div>
       <a
@@ -451,6 +574,15 @@
       only when you need them.
     </p>
   </section>
+
+  <app-prep-roadmap
+    class="iq-roadmap"
+    [title]="prepRoadmapTitle()"
+    [subtitle]="prepRoadmapSubtitle()"
+    [items]="prepRoadmapItems()"
+    variant="compact"
+    (itemSelected)="trackPrepRoadmapSelection($event)"
+  ></app-prep-roadmap>
 
   <ng-template #loadingState>
     <div class="iq-loading">Loading interview questions…</div>
