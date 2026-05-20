@@ -82,7 +82,7 @@ const criticalRouteContracts = [
     route: '/react/interview-questions',
     title: 'React Interview Questions',
     h1: 'React Interview Questions',
-    descriptionTerms: ['coding', 'concept', 'explanations'],
+    descriptionTerms: ['coding prompts', 'rendering internals', 'React 19', 'Server Components', 'scenario questions'],
   },
   {
     route: '/system-design',
