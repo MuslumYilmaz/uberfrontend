@@ -433,16 +433,46 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'RADIO Framework for Frontend System Design: Requirements to Optimizations',
+        title: 'Frontend System Design Interview Framework: RADIO Method',
         minutes: 20,
-        summary: 'Use RADIO in 45- or 60-minute frontend system design interviews to move from requirements to architecture, data model, interface, and optimizations with clear artifacts and trade-offs.',
+        summary: 'Use the RADIO method as a frontend system design interview framework for requirements, architecture, data model, interface behavior, and optimizations.',
         seo: {
-            title: 'RADIO Framework for Frontend System Design: Requirements to Optimizations',
-            description: 'Use RADIO in 45- or 60-minute frontend system design interviews: requirements, architecture, data model, interface, and optimizations.',
-            primaryKeyword: 'radio framework for frontend system design interviews',
-            keywords: ['radio framework for frontend system design interviews', 'radio approach system design', 'frontend system design radio framework', 'requirements architecture data interface optimizations'],
+            title: 'Frontend System Design Interview Framework: RADIO Method',
+            description: 'Use RADIO for frontend system design interviews: clarify requirements, sketch architecture, model data, define interfaces, and choose optimizations.',
+            primaryKeyword: 'frontend system design interview framework',
+            keywords: [
+                'RADIO framework for frontend system design interviews',
+                'radio approach system design',
+                'how to answer frontend system design interview',
+                'requirements architecture data interface optimizations',
+            ],
+            faqPage: {
+                name: 'RADIO framework frontend system design interview FAQ',
+                items: [
+                    {
+                        question: 'What is the RADIO framework for frontend system design interviews?',
+                        answer: 'RADIO is a practical answer method for frontend system design interviews. It moves through Requirements, Architecture, Data, Interface, and Optimizations so the answer has scope, system shape, contracts, user behavior, and trade-offs instead of disconnected ideas.',
+                    },
+                    {
+                        question: 'How do I use RADIO to answer a frontend system design interview question?',
+                        answer: 'Start by clarifying the user flow and constraints, then sketch the frontend architecture, model server and client state, define component and API interfaces, and close with the highest-risk optimizations. Keep one core flow as the thread so every RADIO step supports the same answer.',
+                    },
+                    {
+                        question: 'What should I cover in Requirements, Architecture, Data, Interface, and Optimizations?',
+                        answer: 'Requirements covers scope, users, constraints, and success metrics. Architecture covers rendering, client/server boundaries, routing, data flow, and dependencies. Data covers contracts, state ownership, cache keys, and invalidation; Interface covers components, states, accessibility, and events; Optimizations covers performance, reliability, observability, security, and trade-offs.',
+                    },
+                    {
+                        question: 'How does RADIO work in a 45-minute system design interview?',
+                        answer: 'In a 45-minute interview, spend a few minutes on requirements, then move quickly through architecture, data model, interface behavior, and optimizations. The goal is not equal time on every step; it is a defensible path from problem scope to production trade-offs.',
+                    },
+                    {
+                        question: 'Is RADIO only for frontend system design?',
+                        answer: 'No. RADIO can structure broader system design answers, but this page adapts it for frontend-heavy interviews where rendering, state, accessibility, browser performance, API contracts, and UI failure states matter most.',
+                    },
+                ],
+            },
             publishedAt: '2026-02-18',
-            updatedAt: '2026-05-10',
+            updatedAt: '2026-05-20',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')

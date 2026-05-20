@@ -15,6 +15,39 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       max-width: none;
     }
 
+    :host ::ng-deep .content .radio-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin: 10px 0 14px;
+      padding: 10px;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+    }
+
+    :host ::ng-deep .content .radio-flow-step {
+      min-width: 0;
+      border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, var(--uf-accent) 22%);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: color-mix(in srgb, var(--uf-surface-alt) 88%, var(--uf-surface));
+    }
+
+    :host ::ng-deep .content .radio-flow-step strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--uf-text-primary);
+      font-size: 13px;
+    }
+
+    :host ::ng-deep .content .radio-flow-step span {
+      display: block;
+      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
     :host ::ng-deep .content .radio-step {
       border: 1px solid var(--uf-border-subtle);
       border-radius: 14px;
@@ -190,6 +223,10 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       :host ::ng-deep .content .radio-step-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      :host ::ng-deep .content .radio-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 820px) {
@@ -205,13 +242,17 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       :host ::ng-deep .content .radio-step-grid {
         grid-template-columns: 1fr;
       }
+
+      :host ::ng-deep .content .radio-flow {
+        grid-template-columns: 1fr;
+      }
     }
   `],
   template: `
     <fa-guide-shell
-      title="RADIO Framework for Frontend System Design: Requirements to Optimizations"
+      title="Frontend System Design Interview Framework: RADIO Method"
       [minutes]="20"
-      [tags]="['system design', 'radio framework', 'frontend system design']"
+      [tags]="['system design', 'interview framework', 'radio method']"
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav"
@@ -219,12 +260,36 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>If You Remember Only One Thing (60 seconds)</h2>
       <p>
-        Use the <strong>RADIO framework</strong> for <strong>frontend system design interviews</strong> when you need
-        to move from requirements to architecture, data model, interface, and optimizations without rambling. In a
-        45-minute or 60-minute interview, Requirements defines scope, Architecture explains the system shape, Data
-        model covers contracts and state, Interface maps user behavior, and Optimizations closes with performance,
-        reliability, observability, security, and trade-offs.
+        RADIO is a practical <strong>frontend system design interview framework</strong>, not just an acronym to
+        memorize. Use the RADIO method when you need to move from requirements to architecture, data model, interface,
+        and optimizations without rambling. In a 45-minute or 60-minute interview, Requirements defines scope,
+        Architecture explains the system shape, Data model covers contracts and state, Interface maps user behavior,
+        and Optimizations closes with performance, reliability, observability, security, and trade-offs.
       </p>
+
+      <h2>45-minute interview flow</h2>
+      <div class="radio-flow" aria-label="45-minute RADIO interview flow">
+        <div class="radio-flow-step">
+          <strong>Requirements</strong>
+          <span>Clarify users, scope, constraints, and success metrics.</span>
+        </div>
+        <div class="radio-flow-step">
+          <strong>Architecture</strong>
+          <span>Sketch client/server boundaries, rendering, routing, and data flow.</span>
+        </div>
+        <div class="radio-flow-step">
+          <strong>Data</strong>
+          <span>Model API contracts, client state, cache keys, and invalidation.</span>
+        </div>
+        <div class="radio-flow-step">
+          <strong>Interface</strong>
+          <span>Define components, states, accessibility, events, and errors.</span>
+        </div>
+        <div class="radio-flow-step">
+          <strong>Optimizations</strong>
+          <span>Choose the highest-risk performance, reliability, and security trade-offs.</span>
+        </div>
+      </div>
 
       <h2>RADIO Cheat Sheet</h2>
       <div class="radio-steps">
@@ -704,24 +769,39 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </table>
 
       <h2>RADIO Framework FAQ</h2>
-      <h3>Is RADIO for frontend system design interviews?</h3>
+      <h3>What is the RADIO framework for frontend system design interviews?</h3>
       <p>
-        Yes. RADIO is a structured answer framework for <strong>frontend system design interviews</strong>, especially
-        when the prompt is broad and the interviewer expects you to move from requirements to production trade-offs.
+        RADIO is a practical answer method for frontend system design interviews. It moves through Requirements,
+        Architecture, Data, Interface, and Optimizations so the answer has scope, system shape, contracts, user
+        behavior, and trade-offs instead of disconnected ideas.
       </p>
 
-      <h3>How do I use RADIO in a 45-minute interview?</h3>
+      <h3>How do I use RADIO to answer a frontend system design interview question?</h3>
       <p>
-        Spend the first few minutes on requirements, then move through architecture, data model, interface behavior,
-        and optimizations with a visible artifact for each step. Keep one core user flow as the thread so the answer
-        stays deep enough to defend.
+        Start by clarifying the user flow and constraints, then sketch the frontend architecture, model server and
+        client state, define component and API interfaces, and close with the highest-risk optimizations. Keep one core
+        flow as the thread so every RADIO step supports the same answer.
       </p>
 
-      <h3>How does RADIO map to system design topics?</h3>
+      <h3>What should I cover in Requirements, Architecture, Data, Interface, and Optimizations?</h3>
       <p>
-        Requirements define scope and constraints, Architecture explains the high-level system shape, Data model covers
-        contracts and state, Interface turns the design into components and interactions, and Optimizations cover
+        Requirements covers scope, users, constraints, and success metrics. Architecture covers rendering,
+        client/server boundaries, routing, data flow, and dependencies. Data covers contracts, state ownership, cache
+        keys, and invalidation; Interface covers components, states, accessibility, and events; Optimizations covers
         performance, reliability, observability, security, and trade-offs.
+      </p>
+
+      <h3>How does RADIO work in a 45-minute system design interview?</h3>
+      <p>
+        In a 45-minute interview, spend a few minutes on requirements, then move quickly through architecture, data
+        model, interface behavior, and optimizations. The goal is not equal time on every step; it is a defensible path
+        from problem scope to production trade-offs.
+      </p>
+
+      <h3>Is RADIO only for frontend system design?</h3>
+      <p>
+        No. RADIO can structure broader system design answers, but this page adapts it for frontend-heavy interviews
+        where rendering, state, accessibility, browser performance, API contracts, and UI failure states matter most.
       </p>
 
       <h2>Next</h2>

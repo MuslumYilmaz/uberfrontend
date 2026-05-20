@@ -97,7 +97,7 @@ describe('guide-seo.util', () => {
     expect(article.dateModified).toBe('2025-03-15T00:00:00.000Z');
   });
 
-  it('keeps RADIO CTR metadata query-matched and untruncated', () => {
+  it('targets frontend system design interview intent on the RADIO framework page', () => {
     const radio = SYSTEM.find((entry) => entry.slug === 'radio-framework');
     expect(radio).toBeDefined();
 
@@ -108,14 +108,36 @@ describe('guide-seo.util', () => {
       radio!
     );
 
-    expect(meta.title).toBe('RADIO Framework for Frontend System Design: Requirements to Optimizations');
+    expect(meta.title).toBe('Frontend System Design Interview Framework: RADIO Method');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
-    expect(meta.description).toContain('45- or 60-minute');
+    expect(meta.description).toContain('Use RADIO');
+    expect(meta.description).toMatch(/frontend system design interviews/i);
     expect(meta.description).toMatch(/requirements/i);
     expect(meta.description).toMatch(/architecture/i);
-    expect(meta.description).toMatch(/data model/i);
-    expect(meta.description).toMatch(/interface/i);
+    expect(meta.description).toMatch(/model data/i);
+    expect(meta.description).toMatch(/interfaces/i);
     expect(meta.description).toMatch(/optimizations/i);
+    expect(meta.keywords).toContain('frontend system design interview framework');
+    expect(meta.keywords).toContain('RADIO framework for frontend system design interviews');
+    expect(meta.keywords).toContain('radio approach system design');
+    expect(meta.keywords).toContain('how to answer frontend system design interview');
+    expect(meta.keywords).toContain('requirements architecture data interface optimizations');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design interview framework');
+    expect(faqPage?.name).toBe('RADIO framework frontend system design interview FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is the RADIO framework for frontend system design interviews?',
+      'How do I use RADIO to answer a frontend system design interview question?',
+      'What should I cover in Requirements, Architecture, Data, Interface, and Optimizations?',
+      'How does RADIO work in a 45-minute system design interview?',
+      'Is RADIO only for frontend system design?',
+    ]);
   });
 
   it('targets React preparation long-tail queries on the React prep path', () => {
