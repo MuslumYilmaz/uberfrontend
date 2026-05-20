@@ -78,6 +78,50 @@ type JavaScriptEditorialSignal = {
 type ReactCoverageLink = { label: string; route: any[] };
 type ReactTopicCard = { title: string; answer: string; link: ReactCoverageLink };
 type ReactSupportItem = { title: string; detail: string };
+type ReactShortAnswerCategory = 'fundamentals' | 'state-hooks' | 'rendering-performance' | 'modern';
+type ReactShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: ReactShortAnswerCategory;
+  level: QuestionLevel;
+};
+type ReactAnchorItem = { label: string; targetId: string };
+type ReactKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type ReactScenarioQuestionItem = {
+  q: string;
+  code: string;
+  explanation: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type ReactModernQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type ReactAudienceTrack = { title: string; detail: string };
+type ReactFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type ReactEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type AngularCoverageLink = { label: string; route: any[] };
 type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
 type AngularMistakeItem = { title: string; detail: string };
@@ -410,16 +454,24 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   react: [
     {
-      q: 'How do React interview questions differ from React interview preparation?',
-      a: 'The questions test individual skills. React interview preparation connects those skills into a repeatable path for hooks, state ownership, effects, rendering, and performance trade-offs.',
+      q: 'Are these React interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with beginner React fundamentals, then moves into experienced-developer topics such as hooks, effects, rendering internals, React 19, server/client boundaries, testing, Context performance, hydration, and server-state trade-offs.',
     },
     {
-      q: 'What should I practice first for React interviews?',
-      a: 'Start with state ownership and effects, then add async UI, forms, lists, and performance follow-ups once the render model feels stable.',
+      q: 'Does this page cover React rendering internals?',
+      a: 'Yes. The rendering internals section covers Virtual DOM, render and commit phases, reconciliation, diffing assumptions, Fiber, keys, fragments, and useLayoutEffect timing.',
     },
     {
-      q: 'When should I use the React interview preparation path?',
-      a: 'Use it when random React questions are not enough and you need a 7/14/30-day sequence that ties concept answers to coding drills.',
+      q: 'Does this page include React 19 and server-first React questions?',
+      a: 'Yes. The React 19 section covers Actions, useActionState, useOptimistic, useFormStatus, use(), Server Components, Next.js App Router boundaries, streaming, Suspense, and hydration mismatches.',
+    },
+    {
+      q: 'Does this page include React testing interview questions?',
+      a: 'Yes. The testing section covers React Testing Library, Jest, Vitest, act, async loading and error UI, mocked API boundaries, hook testing, StrictMode effects, and brittle test mistakes.',
+    },
+    {
+      q: 'How should I prepare after reviewing these React interview questions?',
+      a: 'Use this hub to find gaps, then move to the React interview preparation path for a 7, 14, or 30-day plan. The prep path owns the study-plan intent; this page owns the question-and-answer review intent.',
     },
   ],
   angular: [
@@ -1627,10 +1679,615 @@ const JAVASCRIPT_RESOURCE_LINKS: JavaScriptResourceLink[] = [
   },
 ];
 
+const REACT_EDITORIAL_SIGNAL: ReactEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const REACT_ANCHOR_ITEMS: ReactAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-react-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-react-short-answers-title' },
+  { label: 'Beginner/experienced', targetId: 'iq-react-audience-title' },
+  { label: 'Rendering internals', targetId: 'iq-react-rendering-internals-title' },
+  { label: 'React 19 + server', targetId: 'iq-react-react19-server-title' },
+  { label: 'Testing', targetId: 'iq-react-testing-title' },
+  { label: 'Scenarios + code', targetId: 'iq-react-scenarios-title' },
+  { label: 'Modern React', targetId: 'iq-react-modern-title' },
+  { label: 'Coding prompts', targetId: 'iq-react-coding-preview-title' },
+  { label: 'Concept prompts', targetId: 'iq-react-concept-preview-title' },
+  { label: 'Topic map', targetId: 'iq-react-coverage-title' },
+];
+
+const REACT_KEYWORD_CLUSTERS: ReactKeywordClusterItem[] = [
+  {
+    label: 'Beginner',
+    targetId: 'iq-react-short-answers-title',
+    detail: 'React, JSX, components, props, state, keys, controlled inputs, and one-way data flow.',
+  },
+  {
+    label: 'Experienced',
+    targetId: 'iq-react-audience-title',
+    detail: 'State ownership, effects, Context fan-out, rendering internals, server boundaries, testing, and performance.',
+  },
+  {
+    label: 'Rendering internals',
+    targetId: 'iq-react-rendering-internals-title',
+    detail: 'Virtual DOM, render and commit phases, reconciliation, diffing, Fiber, fragments, keys, and layout effects.',
+  },
+  {
+    label: 'React 19/server',
+    targetId: 'iq-react-react19-server-title',
+    detail: 'Actions, useActionState, useOptimistic, useFormStatus, use(), Server Components, Next.js boundaries, and streaming.',
+  },
+  {
+    label: 'Testing',
+    targetId: 'iq-react-testing-title',
+    detail: 'Testing Library, Jest, Vitest, act, async UI, mocked APIs, hooks, StrictMode, and brittle tests.',
+  },
+  {
+    label: 'Hooks',
+    targetId: 'iq-react-short-answers-title',
+    detail: 'useState, useEffect, cleanup, stale closures, refs, memoization, and Rules of Hooks.',
+  },
+  {
+    label: 'State/forms',
+    targetId: 'iq-react-short-answers-title',
+    detail: 'Props, state ownership, lifting state up, derived state, batching, and controlled inputs.',
+  },
+  {
+    label: 'Performance',
+    targetId: 'iq-react-modern-title',
+    detail: 'Context fan-out, unstable props, memoization, profiling, external stores, and server-state trade-offs.',
+  },
+];
+
+const REACT_SHORT_ANSWERS: ReactShortAnswerItem[] = [
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is React?',
+    a: 'React is a JavaScript library for building user interfaces from components. A React app describes what the UI should look like for a given state, and React updates the DOM when that state changes. Routing, server-state caching, and form validation are separate architectural choices rather than built-in React features.',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What are React components?',
+    a: 'React components are reusable UI units that receive props, hold state when needed, and return JSX. Function components are the standard shape in modern React, while class components still appear in older codebases. A component should keep rendering predictable by treating props as read-only and moving shared behavior into smaller components or hooks.',
+    route: ['/react', 'trivia', 'react-pure-function-of-props-and-state'],
+    cta: 'Review component rendering',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is JSX?',
+    a: 'JSX is a syntax extension that lets React UI look close to HTML while still being JavaScript. JSX expressions compile to function calls, so values inside braces are evaluated as JavaScript and must follow JavaScript rules. The common edge case is that attributes are React props, so names such as className and htmlFor differ from plain HTML.',
+    route: ['/react', 'trivia', 'react-jsx-transform-and-why-not-required'],
+    cta: 'Review the JSX transform',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What are props in React?',
+    a: 'Props are read-only values passed from a parent component to a child component. They describe the child UI contract, such as labels, data, callbacks, and configuration. Mutating props breaks ownership and can hide update bugs because the parent still owns the source value.',
+    route: ['/react', 'trivia', 'react-why-props-immutable'],
+    cta: 'Review props immutability',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is state in React?',
+    a: 'State is component-owned data that can change over time and trigger a new render. Use state for values that affect what the user sees, such as form input, selected tabs, loading state, and expanded sections. Values that can be derived directly from props or other state usually should not be stored separately.',
+    route: ['/react', 'trivia', 'react-usestate-purpose'],
+    cta: 'Review useState',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is one-way data flow in React?',
+    a: 'One-way data flow means data moves down from parent to child through props, while changes move up through callbacks. The parent owns the state transition and passes the updated value back down. This keeps ownership clear, but deeply nested updates may need component composition, Context, or a store.',
+    route: ['/react', 'trivia', 'react-lifting-state-up'],
+    cta: 'Review lifting state up',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'beginner',
+    q: 'Why are keys important in React lists?',
+    a: 'Keys tell React which list item identity should be preserved across renders. Stable keys let React keep row state, focus, and DOM reuse aligned with the right data item. Index keys are risky when items can be inserted, removed, sorted, or filtered because state can move to the wrong row.',
+    route: ['/react', 'trivia', 'react-keys-in-lists'],
+    cta: 'Review list keys',
+  },
+  {
+    category: 'fundamentals',
+    level: 'intermediate',
+    q: 'What is the difference between controlled and uncontrolled inputs?',
+    a: 'A controlled input gets its current value from React state and reports changes through events. An uncontrolled input keeps its current value in the DOM, usually read with a ref when needed. Switching a field between controlled and uncontrolled ownership can create warnings and broken form behavior.',
+    route: ['/react', 'trivia', 'react-controlled-vs-uncontrolled'],
+    cta: 'Compare form ownership',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What does lifting state up mean?',
+    a: 'Lifting state up means moving state to the closest shared parent that needs to coordinate multiple children. The parent passes the current value down as props and passes callbacks down for child events. It prevents duplicated state, but if the shared parent becomes too broad, rerenders and prop drilling can grow.',
+    route: ['/react', 'trivia', 'react-lifting-state-up'],
+    cta: 'Practice state ownership',
+  },
+  {
+    category: 'state-hooks',
+    level: 'beginner',
+    q: 'What are React hooks?',
+    a: 'Hooks are functions that let function components use React features such as state, effects, refs, reducers, memoization, and context. They must run in a consistent order on every render so React can associate each hook call with its stored state. Custom hooks reuse stateful logic, but they do not share state unless they call shared external state.',
+    route: ['/react', 'trivia', 'react-hooks-youve-used'],
+    cta: 'Review common hooks',
+  },
+  {
+    category: 'state-hooks',
+    level: 'intermediate',
+    q: 'What are the Rules of Hooks?',
+    a: 'Hooks must be called at the top level of a React function component or custom hook. They should not be called inside loops, conditions, nested functions, or ordinary utility functions. Breaking the order makes React read the wrong stored hook state on later renders.',
+    route: ['/react', 'trivia', 'react-why-hooks-have-rules'],
+    cta: 'Review Rules of Hooks',
+  },
+  {
+    category: 'state-hooks',
+    level: 'beginner',
+    q: 'What is useState used for?',
+    a: 'useState stores a value that belongs to a component and should trigger rendering when it changes. The setter schedules an update instead of mutating the current value immediately. When the next value depends on the previous value, a functional update avoids stale reads.',
+    route: ['/react', 'trivia', 'react-usestate-purpose'],
+    cta: 'Review useState',
+  },
+  {
+    category: 'state-hooks',
+    level: 'intermediate',
+    q: 'What is useEffect used for?',
+    a: 'useEffect synchronizes a component with something outside rendering, such as subscriptions, timers, DOM APIs, analytics, or network state. It runs after React commits the UI, and cleanup runs before the effect is replaced or the component unmounts. Pure derived values usually belong in render instead of in an effect.',
+    route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    cta: 'Review useEffect',
+  },
+  {
+    category: 'state-hooks',
+    level: 'intermediate',
+    q: 'How does effect cleanup work?',
+    a: 'An effect may return a cleanup function that removes the external work created by that effect. Cleanup runs before React reruns the effect with changed dependencies and when the component unmounts. Timers, subscriptions, event listeners, and in-flight async work should have clear cleanup ownership.',
+    route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    cta: 'Review effect timing',
+  },
+  {
+    category: 'state-hooks',
+    level: 'advanced',
+    q: 'What are stale closures in React?',
+    a: 'A stale closure happens when a callback keeps reading values from an older render. It often appears in timers, promises, subscriptions, and event handlers that outlive the render that created them. Functional state updates, correct dependencies, refs, or moving logic into the event path can fix the ownership problem.',
+    route: ['/react', 'trivia', 'react-stale-state-closures'],
+    cta: 'Debug stale closures',
+  },
+  {
+    category: 'state-hooks',
+    level: 'intermediate',
+    q: 'What is the difference between useRef and useState?',
+    a: 'useState stores render-affecting data and schedules a rerender when changed. useRef stores a mutable value that persists across renders without causing a rerender. Refs are useful for DOM nodes, timer IDs, previous values, and imperative handles, but they can hide UI bugs if used as state.',
+    route: ['/react', 'trivia', 'react-useref-vs-usestate'],
+    cta: 'Compare refs and state',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'intermediate',
+    q: 'What is the difference between useMemo and useCallback?',
+    a: 'useMemo memoizes the result of running a calculation. useCallback memoizes the function reference itself. Both depend on stable dependency arrays, and neither helps if the expensive work is small or the props passed to children are still unstable.',
+    route: ['/react', 'trivia', 'react-usememo-vs-usecallback'],
+    cta: 'Compare memo hooks',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'advanced',
+    q: 'How can Context cause performance issues?',
+    a: 'When a Context provider value changes, consumers that read that context can render again. A broad provider with a new object value on every render can fan out updates across a large tree. Splitting providers, stabilizing values, using local state, or choosing an external store can reduce unnecessary work.',
+    route: ['/react', 'trivia', 'react-context-performance-issues'],
+    cta: 'Debug Context performance',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'intermediate',
+    q: 'What causes a React component to re-render?',
+    a: 'A component can re-render when its state updates, its parent renders, a consumed context value changes, or an external store subscription notifies it. Rendering does not always mean the DOM changes; React still compares the result before committing updates. Performance debugging should separate render frequency from actual slow commits.',
+    route: ['/react', 'trivia', 'react-component-rerendering'],
+    cta: 'Review rerender causes',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'intermediate',
+    q: 'What is state batching in React?',
+    a: 'State batching means React groups multiple state updates into a single render pass when it can. React 18 broadened automatic batching across more async boundaries. The important edge case is that reading state immediately after calling a setter still reads the value from the current render.',
+    route: ['/react', 'trivia', 'react-why-batching-state-updates'],
+    cta: 'Review batching',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'advanced',
+    q: 'Why is derived state risky?',
+    a: 'Derived state is risky when you store data that can be calculated from props or other state. The duplicated value can drift out of sync and often creates an extra render through an effect. Keep pure derived values in render, and use memoization only when the calculation is expensive enough to matter.',
+    route: ['/react', 'trivia', 'react-derived-state-anti-pattern'],
+    cta: 'Avoid derived state bugs',
+  },
+  {
+    category: 'modern',
+    level: 'intermediate',
+    q: 'What problem do error boundaries solve?',
+    a: 'Error boundaries catch rendering errors in their child tree and let the app show a fallback UI instead of unmounting everything. They do not catch errors in event handlers, async callbacks, or server-side rendering. Place them around meaningful product regions so a failure is isolated to the smallest useful surface.',
+    route: ['/react', 'trivia', 'react-error-boundaries-what-they-solve'],
+    cta: 'Review error boundaries',
+  },
+  {
+    category: 'modern',
+    level: 'intermediate',
+    q: 'What are React portals?',
+    a: 'Portals render children into a DOM node outside the parent DOM hierarchy while keeping the React owner tree intact. They are useful for modals, popovers, tooltips, and overlays that need to escape clipping or stacking contexts. Events still bubble through the React tree, so event handling can differ from the physical DOM position.',
+    route: ['/react', 'trivia', 'react-portals'],
+    cta: 'Review portals',
+  },
+  {
+    category: 'modern',
+    level: 'advanced',
+    q: 'What is the difference between render props and HOCs?',
+    a: 'Render props share behavior by passing a function that returns UI. Higher-order components share behavior by wrapping a component and returning a new component. Hooks replaced many of these patterns, but render props and HOCs still appear in older libraries and can add wrapper or composition complexity.',
+    route: ['/react', 'trivia', 'react-render-props-vs-hocs'],
+    cta: 'Compare reuse patterns',
+  },
+  {
+    category: 'modern',
+    level: 'advanced',
+    q: 'Why does StrictMode run some effects twice in development?',
+    a: 'StrictMode can intentionally mount, clean up, and remount components in development to reveal unsafe effects. This does not happen the same way in production, but the issue it exposes is real: effects must tolerate setup and cleanup correctly. Duplicate logs or requests usually mean the effect is not idempotent or the cleanup is incomplete.',
+    route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
+    cta: 'Review StrictMode effects',
+  },
+];
+
+const REACT_AUDIENCE_TRACKS: ReactAudienceTrack[] = [
+  {
+    title: 'For beginners',
+    detail: 'Start with React, components, JSX, props, state, one-way data flow, keys, controlled inputs, and lifting state up. These topics make hooks, effects, Context, and rendering behavior easier to reason about later.',
+  },
+  {
+    title: 'For experienced developers',
+    detail: 'Focus on ownership boundaries: effect cleanup, stale closures, Context performance, reconciliation, server/client component boundaries, testing async UI, and profiling before memoizing. These topics expose whether React knowledge holds up in production code.',
+  },
+];
+
+const REACT_RENDERING_INTERNALS_QUESTIONS: ReactFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'What is the Virtual DOM in React?',
+    a: 'The Virtual DOM is a lightweight description of the UI that React creates from components. React compares the new description with the previous one, decides what changed, and commits the necessary host updates. The important detail is that the Virtual DOM is a means to coordinate updates, not a guarantee that every render is cheap.',
+    route: ['/react', 'trivia', 'react-virtual-dom'],
+    cta: 'Review Virtual DOM',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the difference between render phase and commit phase?',
+    a: 'The render phase calls components and calculates the next UI tree. The commit phase applies the chosen changes to the host environment and runs layout-related work. Render work can be restarted or discarded, so component render logic must stay pure and side effects belong in effects or event handlers.',
+    route: ['/react', 'trivia', 'react-rerender-decision-and-render'],
+    cta: 'Review render behavior',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is reconciliation in React?',
+    a: 'Reconciliation is the process React uses to compare the previous element tree with the next one. It matches elements by type and key, then decides which parts can be reused, updated, moved, or remounted. Incorrect keys or changing component types can reset state because React sees a different identity.',
+    route: ['/react', 'trivia', 'react-reconciliation'],
+    cta: 'Review reconciliation',
+  },
+  {
+    level: 'advanced',
+    q: 'What assumptions does React diffing use?',
+    a: 'React uses heuristics instead of comparing every possible tree transformation. Different element types are treated as different subtrees, and keys tell React which children should keep identity across list changes. Those assumptions make updates practical, but unstable keys or accidental type changes can cause unexpected remounts.',
+    route: ['/react', 'trivia', 'react-diffing-algorithm'],
+    cta: 'Review diffing',
+  },
+  {
+    level: 'advanced',
+    q: 'What is Fiber in React?',
+    a: 'Fiber is React internal architecture for organizing rendering work as units that can be scheduled, paused, resumed, or abandoned. It enables React to prioritize urgent updates differently from non-urgent work. You do not usually program against Fiber directly, but it explains why render logic must be pure and why concurrent rendering can restart work.',
+    route: ['/react', 'trivia', 'react-reconciliation'],
+    cta: 'Review render internals',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do keys preserve or reset state?',
+    a: 'React uses keys to decide whether a child in a list is the same child across renders. A stable key preserves component state for the same data item, while a changed key forces React to treat it as a new instance. This is useful for intentional resets, but index keys can accidentally move state to the wrong row.',
+    route: ['/react', 'trivia', 'react-keys-in-lists'],
+    cta: 'Review list keys',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do fragments affect reconciliation?',
+    a: 'Fragments group multiple children without adding an extra DOM node. Keyed fragments can preserve identity for a group of siblings during reconciliation. Unkeyed fragments are useful for markup cleanliness, but lists of fragments still need stable keys when identity matters.',
+    route: ['/react', 'trivia', 'react-fragments-dom-and-reconciliation'],
+    cta: 'Review fragments and reconciliation',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the difference between useLayoutEffect and useEffect?',
+    a: 'useEffect runs after the browser has painted the committed UI. useLayoutEffect runs after DOM mutations but before paint, so it can measure layout and synchronously adjust the UI before the user sees it. Overusing layout effects can block painting, so ordinary subscriptions and async work should stay in useEffect.',
+    route: ['/react', 'trivia', 'react-useeffect-vs-uselayouteffect'],
+    cta: 'Compare effect timing',
+  },
+];
+
+const REACT_REACT19_SERVER_QUESTIONS: ReactFocusedQuestionItem[] = [
+  {
+    level: 'advanced',
+    q: 'What are React 19 Actions?',
+    a: 'Actions are async functions used with transitions or form submissions to manage mutation workflows. React can coordinate pending state, errors, optimistic updates, and final state around the action. The practical benefit is reducing manual loading and error wiring for form-like mutations.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'What is useActionState used for?',
+    a: 'useActionState connects an action to state that updates when the action completes. It is useful when a form submit or mutation returns validation errors, success messages, or next state. The hook keeps pending and result handling close to the action, but the mutation contract still needs clear server and client ownership.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review React 19 actions',
+  },
+  {
+    level: 'advanced',
+    q: 'What is useOptimistic used for?',
+    a: 'useOptimistic lets the UI show an expected result before the server confirms it. It is useful for quick feedback on mutations such as adding comments, toggling likes, or reordering items. The edge case is rollback and ordering: failed or out-of-order responses must not leave the UI in a false state.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review optimistic updates',
+  },
+  {
+    level: 'advanced',
+    q: 'What is useFormStatus used for?',
+    a: 'useFormStatus reads the pending status of the nearest parent form submission. It lets a submit button or status message react to the form action without passing loading props through every component. It only works inside the form context, so placement matters.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review form status',
+  },
+  {
+    level: 'advanced',
+    q: 'What is use() with Suspense at a high level?',
+    a: 'use() can read certain resources, such as promises or context, during rendering in supported React environments. When a promise is still pending, the nearest Suspense boundary can show fallback UI. The key requirement is that data ownership and caching are stable, otherwise rendering can repeatedly suspend or restart work.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review Suspense data flow',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the difference between Server Components and Client Components?',
+    a: 'Server Components render on the server and can access server-only data without shipping their component code to the browser. Client Components run in the browser and own interactivity, state, effects, and event handlers. Values passed from server to client boundaries must be serializable, and browser-only APIs belong on the client side.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review server/client boundaries',
+  },
+  {
+    level: 'advanced',
+    q: 'How do Next.js App Router boundaries affect data ownership?',
+    a: 'The App Router encourages colocating data loading with server-rendered route segments and using client boundaries only where interactivity is needed. Caching, revalidation, and streaming behavior become part of the route contract. A good boundary keeps server data on the server while isolating client state to the smallest interactive surface.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do streaming, Suspense, and hydration mismatches fit together?',
+    a: 'Streaming lets the server send usable HTML before every part of the UI is ready. Suspense boundaries define where loading fallbacks can appear while delayed content streams in. Hydration mismatches happen when the first client render disagrees with the server HTML, often because the output depends on time, randomness, browser state, or inconsistent data.',
+    route: ['/react', 'coding', 'react-chat-streaming-ui'],
+    cta: 'Practice streaming UI',
+  },
+];
+
+const REACT_TESTING_QUESTIONS: ReactFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How should React Testing Library tests be written?',
+    a: 'React Testing Library tests should assert behavior that a user can observe. Prefer role, label, text, and accessible name queries over component internals. A reliable test covers the visible state before and after interaction instead of asserting private methods or implementation details.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React testing prep path',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the difference between Jest and Vitest for React tests?',
+    a: 'Jest and Vitest both provide test runners, assertions, mocks, and watch workflows. Vitest is often faster in Vite-based projects because it integrates with the Vite transform pipeline. The important choice is consistency with the app tooling, DOM environment, mocks, and coverage setup.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review React test tooling',
+  },
+  {
+    level: 'advanced',
+    q: 'What does act() do in React tests?',
+    a: 'act() makes React flush updates related to an interaction or async step before assertions run. Testing utilities often wrap common user events for you, but warnings appear when a state update escapes the test boundary. The fix is to await the user action or async UI transition that causes the update.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review async test timing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you test async loading and error UI?',
+    a: 'Start by asserting the initial state, trigger the user action or render path, then wait for loading, success, or error text that the user sees. The test should cover at least one failure path when the component has recovery UI. Avoid asserting raw promise timing because the visible transition is the behavior that matters.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review async UI tests',
+  },
+  {
+    level: 'advanced',
+    q: 'How do mocked API tests with MSW-style boundaries work?',
+    a: 'Mock Service Worker style tests intercept requests at the network boundary instead of mocking every fetch call manually. That keeps the component closer to production behavior while still controlling success, error, delay, and malformed-response cases. The test should assert the UI contract, not the internals of the data-fetching library.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review mocked API testing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you test hooks through components?',
+    a: 'A hook should be tested through a component when its value affects rendered UI or user interactions. That keeps the test aligned with React behavior such as render, commit, effects, and cleanup. Direct hook helpers can be useful for low-level reusable hooks, but user-facing behavior is usually safer to protect.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review hook testing',
+  },
+  {
+    level: 'advanced',
+    q: 'How does StrictMode affect effect tests?',
+    a: 'StrictMode can run setup and cleanup more than once in development, which exposes effects that are not idempotent. Tests should not depend on an effect running exactly once when StrictMode is enabled. Assert the final user-visible behavior and make subscriptions, timers, and analytics calls cleanup-safe.',
+    route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
+    cta: 'Review StrictMode effects',
+  },
+  {
+    level: 'intermediate',
+    q: 'What makes React tests brittle?',
+    a: 'React tests become brittle when they assert component names, state variables, exact DOM nesting, or implementation-specific mocks. They also become flaky when async updates, timers, and network responses are not awaited through visible UI. Prefer stable user-facing queries, realistic interactions, and one clear assertion target per behavior.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review React testing mistakes',
+  },
+];
+
+const REACT_SCENARIO_QUESTIONS: ReactScenarioQuestionItem[] = [
+  {
+    level: 'advanced',
+    q: 'Why can this delayed counter lose updates?',
+    code: `function Counter() {
+  const [count, setCount] = useState(0);
+
+  function incrementLater() {
+    setTimeout(() => setCount(count + 1), 500);
+  }
+}`,
+    explanation: 'The timeout callback captures count from the render that created it. Multiple delayed clicks can all write the same next value. Use setCount((current) => current + 1) when the next value depends on previous state.',
+    route: ['/react', 'trivia', 'react-stale-state-closures'],
+    cta: 'Debug stale closures',
+  },
+  {
+    level: 'advanced',
+    q: 'What is wrong with this polling effect?',
+    code: `useEffect(() => {
+  const id = setInterval(() => poll(userId), 1000);
+  return () => clearInterval(id);
+}, []);`,
+    explanation: 'The effect reads userId but never reruns when userId changes. That leaves the interval polling the user from the first render. Include the dependency, or move ownership so the interval is recreated and cleaned up when the user changes.',
+    route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    cta: 'Review effect dependencies',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why can an index key reset the wrong row state?',
+    code: `{users.map((user, index) => (
+  <UserRow key={index} user={user} />
+))}`,
+    explanation: 'React uses the key to match previous and next list items. If the list reorders or a row is inserted, an index key can point existing state at a different user. Use a stable ID from the data whenever row identity matters.',
+    route: ['/react', 'trivia', 'react-keys-in-lists'],
+    cta: 'Review list keys',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can this Context provider rerender too much UI?',
+    code: `<AppContext.Provider value={{ user, theme, cart, setCart }}>
+  {children}
+</AppContext.Provider>`,
+    explanation: 'The provider creates a new object value whenever the parent renders, and every consumer sees the whole value as changed. Fast-changing cart state can rerender theme-only consumers. Split contexts or stabilize provider values around actual ownership boundaries.',
+    route: ['/react', 'trivia', 'react-context-performance-issues'],
+    cta: 'Debug Context fan-out',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is this derived state unnecessary?',
+    code: `const [fullName, setFullName] = useState('');
+
+useEffect(() => {
+  setFullName(first + ' ' + last);
+}, [first, last]);`,
+    explanation: 'fullName is a pure value derived from first and last, so storing it creates a second source of truth. The effect also adds an extra render after every name change. Calculate it during render, or use useMemo only if the calculation is expensive.',
+    route: ['/react', 'trivia', 'react-derived-state-anti-pattern'],
+    cta: 'Fix derived state',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does this input switch from uncontrolled to controlled?',
+    code: `const [name, setName] = useState<string | undefined>();
+
+return (
+  <input value={name} onChange={(event) => setName(event.target.value)} />
+);`,
+    explanation: 'The input starts with value undefined, so React treats it as uncontrolled. After typing, value becomes a string and React treats it as controlled. Initialize with an empty string or provide value={name ?? ""} so ownership is consistent.',
+    route: ['/react', 'trivia', 'react-controlled-vs-uncontrolled'],
+    cta: 'Compare form ownership',
+  },
+  {
+    level: 'advanced',
+    q: 'Why does memoization not help this child?',
+    code: `const MemoChart = memo(Chart);
+
+return <MemoChart options={{ theme, stacked: true }} />;`,
+    explanation: 'The options object is recreated on every parent render, so the memoized child receives a different prop reference each time. React.memo can only skip work when props are equal by the comparison being used. Stabilize the object with useMemo or pass simpler stable props if profiling shows the chart is expensive.',
+    route: ['/react', 'trivia', 'react-usememo-vs-usecallback'],
+    cta: 'Review memoization trade-offs',
+  },
+  {
+    level: 'advanced',
+    q: 'Why does this effect appear to run twice in development?',
+    code: `useEffect(() => {
+  analytics.startSession();
+  return () => analytics.stopSession();
+}, []);`,
+    explanation: 'StrictMode can remount components in development to check that effects clean up correctly. The effect should tolerate setup, cleanup, and setup again without leaking subscriptions or duplicating permanent work. Move one-time application boot logic outside component effects when component lifetime is not the right owner.',
+    route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
+    cta: 'Review StrictMode behavior',
+  },
+];
+
+const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'What changed with React 18 automatic batching?',
+    a: 'React 18 batches more state updates that happen in promises, timeouts, native events, and other async callbacks. Batching reduces extra renders by applying related updates together. Code still should not expect state variables to change immediately after calling setters within the same render.',
+    route: ['/react', 'trivia', 'react-why-batching-state-updates'],
+    cta: 'Review batching',
+  },
+  {
+    level: 'advanced',
+    q: 'What does StrictMode check in modern React apps?',
+    a: 'StrictMode enables extra development checks for unsafe rendering and effect behavior. It can reveal effects that do not clean up, render logic with side effects, and assumptions that fail under remounting. The fix is usually ownership and cleanup, not disabling StrictMode.',
+    route: ['/react', 'trivia', 'react-strictmode-purpose'],
+    cta: 'Review StrictMode purpose',
+  },
+  {
+    level: 'advanced',
+    q: 'What are Suspense boundaries used for?',
+    a: 'Suspense boundaries let part of the UI show a fallback while a child is waiting for supported async work. They create loading boundaries instead of forcing the whole screen to block. Placement matters because a boundary that is too high hides too much UI, while one that is too low can create noisy loading fragments.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'What are transitions in React?',
+    a: 'Transitions mark updates as non-urgent so React can keep urgent interactions responsive. They are useful when typing, clicking, or selecting should stay immediate while expensive UI updates can lag slightly. They do not make slow code fast, so profiling and splitting expensive work still matter.',
+    route: ['/react', 'trivia', 'react-prevent-unnecessary-rerenders'],
+    cta: 'Review render performance',
+  },
+  {
+    level: 'advanced',
+    q: 'What are React Server Components at a high level?',
+    a: 'Server Components render on the server and can access server-only resources without shipping their component code to the browser. Client Components still handle browser interactivity, state, effects, and event handlers. The boundary matters because props crossing from server to client must be serializable.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you debug a hydration mismatch?',
+    a: 'A hydration mismatch happens when server-rendered markup does not match the first client render. Common causes include time-dependent output, random IDs, browser-only data, locale differences, and conditional rendering that differs between server and client. Make the initial render deterministic, then move browser-only reads into effects or client-only boundaries.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'When should React use an external store or server-state library?',
+    a: 'Use local state for state owned by one component or a small subtree. Use Context sparingly for shared low-frequency values, and consider an external store when many components read and write frequently. Server-state libraries are a better fit for caching, dedupe, retries, stale data, and request status than hand-rolled effects.',
+    route: ['/react', 'trivia', 'react-context-performance-issues'],
+    cta: 'Compare Context and stores',
+  },
+  {
+    level: 'intermediate',
+    q: 'How should React behavior be tested?',
+    a: 'React tests should assert user-visible behavior instead of private implementation details. Good coverage includes initial render, interactions, validation, loading, error, cleanup, and rerender edge cases. Testing Library style queries keep tests closer to the way users and assistive technology observe the UI.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+];
+
 const REACT_TOPIC_CARDS: ReactTopicCard[] = [
   {
     title: 'Props, state, and one-way data flow',
-    answer: 'Props are read-only inputs owned by a parent, while state belongs to the component that changes it. Strong answers connect callbacks, lifting state up, immutable updates, and when prop drilling should move into context or a store.',
+    answer: 'Props are read-only inputs owned by a parent, while state belongs to the component that changes it. Use callbacks to request parent state changes, lift state when siblings need the same value, and keep updates immutable so rerender behavior stays predictable.',
     link: {
       label: 'Review props immutability',
       route: ['/react', 'trivia', 'react-why-props-immutable'],
@@ -2147,6 +2804,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     this.scrollToSection(targetId);
   }
 
+  scrollToReactSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
   private scrollToSection(targetId: string): void {
     const target = this.document.getElementById(targetId);
     if (!target) return;
@@ -2200,6 +2861,59 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   isReactHub(): boolean {
     return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'react';
+  }
+
+  reactEditorialSignal(): ReactEditorialSignal {
+    return REACT_EDITORIAL_SIGNAL;
+  }
+
+  reactAnchorItems(): ReactAnchorItem[] {
+    return REACT_ANCHOR_ITEMS;
+  }
+
+  reactKeywordClusters(): ReactKeywordClusterItem[] {
+    return REACT_KEYWORD_CLUSTERS;
+  }
+
+  reactShortAnswers(): ReactShortAnswerItem[] {
+    return REACT_SHORT_ANSWERS;
+  }
+
+  reactAudienceTracks(): ReactAudienceTrack[] {
+    return REACT_AUDIENCE_TRACKS;
+  }
+
+  reactRenderingInternalsQuestions(): ReactFocusedQuestionItem[] {
+    return REACT_RENDERING_INTERNALS_QUESTIONS;
+  }
+
+  reactReact19ServerQuestions(): ReactFocusedQuestionItem[] {
+    return REACT_REACT19_SERVER_QUESTIONS;
+  }
+
+  reactTestingQuestions(): ReactFocusedQuestionItem[] {
+    return REACT_TESTING_QUESTIONS;
+  }
+
+  reactScenarioQuestions(): ReactScenarioQuestionItem[] {
+    return REACT_SCENARIO_QUESTIONS;
+  }
+
+  reactModernQuestions(): ReactModernQuestionItem[] {
+    return REACT_MODERN_QUESTIONS;
+  }
+
+  reactShortAnswerCategoryLabel(category: ReactShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'state-hooks':
+        return 'State + hooks';
+      case 'rendering-performance':
+        return 'Rendering + performance';
+      default:
+        return 'Modern React';
+    }
   }
 
   reactTopicCards(): ReactTopicCard[] {
@@ -2799,8 +3513,38 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isReactHub()) {
+      collectionPage['dateModified'] = REACT_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: REACT_EDITORIAL_SIGNAL.reviewer,
+      };
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'React interview questions and answers' },
+        { '@type': 'Thing', name: 'Beginner to advanced React interview questions' },
+        { '@type': 'Thing', name: 'React interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'React hooks interview questions' },
+        { '@type': 'Thing', name: 'React useEffect interview questions' },
+        { '@type': 'Thing', name: 'React state interview questions' },
+        { '@type': 'Thing', name: 'React rendering interview questions' },
+        { '@type': 'Thing', name: 'React performance interview questions' },
+        { '@type': 'Thing', name: 'React Context interview questions' },
+        { '@type': 'Thing', name: 'React forms interview questions' },
+        { '@type': 'Thing', name: 'React StrictMode interview questions' },
+        { '@type': 'Thing', name: 'React Suspense interview questions' },
+        { '@type': 'Thing', name: 'React rendering internals interview questions' },
+        { '@type': 'Thing', name: 'React Virtual DOM interview questions' },
+        { '@type': 'Thing', name: 'React reconciliation interview questions' },
+        { '@type': 'Thing', name: 'React Fiber interview questions' },
+        { '@type': 'Thing', name: 'React 19 interview questions' },
+        { '@type': 'Thing', name: 'React Actions interview questions' },
+        { '@type': 'Thing', name: 'React useActionState interview questions' },
+        { '@type': 'Thing', name: 'React useOptimistic interview questions' },
+        { '@type': 'Thing', name: 'React Server Components interview questions' },
+        { '@type': 'Thing', name: 'Next.js App Router React interview questions' },
+        { '@type': 'Thing', name: 'React hydration interview questions' },
+        { '@type': 'Thing', name: 'React Testing Library interview questions' },
+        { '@type': 'Thing', name: 'React testing interview questions' },
         { '@type': 'Thing', name: 'React props, state, and one-way data flow' },
         { '@type': 'Thing', name: 'React Hooks and useEffect implementation' },
         { '@type': 'Thing', name: 'React Context API and state management' },
@@ -2810,6 +3554,25 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
       collectionPage['mentions'] = [
         ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'React scenario questions' },
+        { '@type': 'Thing', name: 'React state ownership' },
+        { '@type': 'Thing', name: 'React effect cleanup' },
+        { '@type': 'Thing', name: 'React stale closures' },
+        { '@type': 'Thing', name: 'React keys in lists' },
+        { '@type': 'Thing', name: 'React controlled and uncontrolled inputs' },
+        { '@type': 'Thing', name: 'React memoization trade-offs' },
+        { '@type': 'Thing', name: 'React 18 automatic batching' },
+        { '@type': 'Thing', name: 'React Server Components' },
+        { '@type': 'Thing', name: 'React hydration mismatch debugging' },
+        { '@type': 'Thing', name: 'React render phase and commit phase' },
+        { '@type': 'Thing', name: 'React diffing algorithm' },
+        { '@type': 'Thing', name: 'React form actions and useFormStatus' },
+        { '@type': 'Thing', name: 'React use with Suspense' },
+        { '@type': 'Thing', name: 'Next.js caching and data ownership' },
+        { '@type': 'Thing', name: 'React streaming UI questions' },
+        { '@type': 'Thing', name: 'Jest and Vitest React testing' },
+        { '@type': 'Thing', name: 'React act async updates' },
+        { '@type': 'Thing', name: 'MSW mocked API testing' },
         { '@type': 'Thing', name: 'Common React interview mistakes' },
         { '@type': 'Thing', name: 'React performance optimization' },
         { '@type': 'Thing', name: 'Debugging React applications' },
@@ -2945,6 +3708,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     if (this.isJavaScriptHub()) {
       jsonLd.push(this.javascriptShortAnswersFaqPage(canonicalUrl));
     }
+    if (this.isReactHub()) {
+      jsonLd.push(this.reactShortAnswersFaqPage(canonicalUrl));
+    }
     if (this.isAngularHub()) {
       jsonLd.push(this.angularShortAnswersFaqPage(canonicalUrl));
     }
@@ -2980,6 +3746,23 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       url: canonicalUrl,
       name: 'Top Angular interview questions and short answers, beginner to advanced',
       mainEntity: this.angularShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private reactShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#react-short-answers`,
+      url: canonicalUrl,
+      name: 'Top React interview questions and short answers, beginner to advanced',
+      mainEntity: this.reactShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: {

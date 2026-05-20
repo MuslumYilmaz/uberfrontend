@@ -201,9 +201,29 @@ type DecisionLeaf = {
   actions: string[];
   practice: PracticeMapEntry[];
 };
+type PrepChecklistStep = {
+  title: string;
+  detail: string;
+  link: {
+    label: string;
+    route: any[];
+    queryParams?: Record<string, string>;
+  };
+};
+type PrepChecklistSection = {
+  title: string;
+  intro: string;
+  steps: PrepChecklistStep[];
+  closing: string;
+};
+type PlanChooserItem = {
+  title: string;
+  detail: string;
+};
 type PracticalPlanSection = {
   title: string;
   opener: string[];
+  planChooser?: PlanChooserItem[];
   practiceMap: PracticeMapEntry[];
   plan7: TimeboxedPlan;
   plan14: TimeboxedPlan;
@@ -278,6 +298,7 @@ type FrameworkPrepConfig = {
   readinessChecklist?: string[];
   nextActions?: DrillMapping[];
   intro?: PrepIntro;
+  prepChecklistSection?: PrepChecklistSection;
   topicsSection?: TopicsSection;
   triviaSection?: TriviaSection;
   codingPatternsSection?: CodingPatternsSection;
@@ -625,13 +646,13 @@ function onInput(value) {
   },
   'react-prep-path': {
     pathLabel: 'React interview preparation path',
-    title: 'React Interview Preparation: Hooks, State, Performance',
+    title: 'How to Prepare for a React Interview: 7/14/30-Day Plan',
     subtitle:
-      'A 7/14/30-day React interview preparation path for frontend engineers who need cleaner state design, effect reasoning, and performance trade-off communication.',
+      'A 7/14/30-day React interview preparation study plan for hooks, state ownership, rendering, coding drills, testing, and performance trade-off communication.',
     minutes: 9,
     tags: ['react', 'interview-prep', 'hooks', 'state', 'performance'],
     firstFoldSignals: [
-      'Best fit: React interviews that mix hooks, rerender reasoning, machine coding, and performance follow-ups in the same loop.',
+      'Best fit: engineers asking how to prepare for a React interview that mixes hooks, rerender reasoning, machine coding, testing, and performance follow-ups.',
       'Cadence: 7 days to stabilize hook and effect answers, 14 days to make state-design choices repeatable, 30 days to make UI coding and trade-off narration mock-ready.',
       'Editorial stance: this page assumes you already ship React and need interview-grade reasoning, not beginner framework onboarding.',
     ],
@@ -654,6 +675,71 @@ function onInput(value) {
         'How to implement robust solutions that handle edge cases and trade-offs',
         'How to reset your prep if you keep thinking “I know React, but interviews still feel inconsistent”',
       ],
+    },
+    prepChecklistSection: {
+      title: 'How to prepare for a React interview',
+      intro:
+        'Use this checklist before choosing a timeline. It keeps React interview preparation tied to the same loop every day: review the model, answer one focused question, build one small UI behavior, and write down the failure mode.',
+      steps: [
+        {
+          title: '1. Lock the React fundamentals',
+          detail:
+            'Review components, JSX, props, state, one-way data flow, keys, controlled inputs, and lifting state before advanced hooks or architecture work.',
+          link: {
+            label: 'Open React interview questions',
+            route: ['/', 'react', 'interview-questions'],
+          },
+        },
+        {
+          title: '2. Stabilize hooks and effects',
+          detail:
+            'Practice Rules of Hooks, useState snapshots, useEffect dependencies, cleanup, stale closures, refs, and memoization trade-offs until you can explain the bug and the fix.',
+          link: {
+            label: 'Run React trivia drills',
+            route: ['/coding'],
+            queryParams: { tech: 'react', kind: 'trivia' },
+          },
+        },
+        {
+          title: '3. Connect rendering and state ownership',
+          detail:
+            'Focus on rerenders, reconciliation, list keys, Context fan-out, derived state, batching, and where state should live in a component tree.',
+          link: {
+            label: 'Review the React questions hub',
+            route: ['/', 'react', 'interview-questions'],
+          },
+        },
+        {
+          title: '4. Practice React coding prompts',
+          detail:
+            'Build small UI tasks with loading, error, empty, reset, accessibility, and cleanup behavior instead of stopping at the happy path.',
+          link: {
+            label: 'Open React coding drills',
+            route: ['/coding'],
+            queryParams: { tech: 'react', kind: 'coding' },
+          },
+        },
+        {
+          title: '5. Add testing and performance checks',
+          detail:
+            'Use Testing Library-style behavior checks, async UI assertions, profiling language, and memoization judgment so your answers cover quality beyond working code.',
+          link: {
+            label: 'Practice React testing topics',
+            route: ['/', 'react', 'interview-questions'],
+          },
+        },
+        {
+          title: '6. Finish with mock review',
+          detail:
+            'Replay one solution out loud, name the trade-off, state two edge cases, and log one prevention rule for the next session.',
+          link: {
+            label: 'Use the interview blueprint',
+            route: ['/', 'guides', 'interview-blueprint'],
+          },
+        },
+      ],
+      closing:
+        'If a step repeatedly fails, do not add more topics. Repeat that topic through trivia, coding, and review until the mistake stops repeating.',
     },
     topicsSection: {
       title: 'Most asked React interview topics (and what they really test)',
@@ -1254,11 +1340,28 @@ function onInput(value) {
         'Next we turn this rubric into a practical routine: 7/14/30-day plans plus a weak-spot decision tree.',
     },
     practicalPlanSection: {
-      title: 'How to prepare for React interviews with FrontendAtlas (a practical plan)',
+      title: 'React interview study plan: 7, 14, or 30 days',
       opener: [
-        'Run one repeatable loop every day: Topics → Trivia → UI Coding.',
-        'Topics build the model, trivia sharpens explanation speed, and coding verifies whether your model survives real constraints.',
-        'Keep the week simple: short warmup, one focused drill, one review note. Consistency beats random volume.',
+        'Use this React interview study plan when preparation needs a repeatable sequence instead of random question lists.',
+        'Each session should connect one topic, one trivia answer, and one React coding interview preparation drill so the model survives real constraints.',
+        'For senior React interview preparation, add explicit trade-offs around state ownership, rendering cost, testing strategy, and performance validation.',
+      ],
+      planChooser: [
+        {
+          title: '7 days: refresh high-risk gaps',
+          detail:
+            'Use the 7-day plan when the interview is close and the goal is to stabilize effects, stale closures, keys, forms, and one timed mixed session.',
+        },
+        {
+          title: '14 days: make the loop repeatable',
+          detail:
+            'Use the 14-day plan when you need daily repetition across hooks, rendering, state design, coding prompts, and review notes.',
+        },
+        {
+          title: '30 days: build mock-ready depth',
+          detail:
+            'Use the 30-day plan when senior React interview preparation needs deeper performance, testing, architecture, and trade-off communication.',
+        },
       ],
       practiceMap: [
         {
@@ -1953,12 +2056,37 @@ function onInput(value) {
       closing:
         'Next, Section 8 answers the practical FAQs that usually decide what to prioritize when interview time is tight.',
     },
-    faqInitialOpenId: 'react-faq-leetcode',
+    faqInitialOpenId: 'react-faq-how-prepare',
     faqGroups: [
       {
         id: 'react-faq-strategy',
         title: 'Prep strategy',
         items: [
+          {
+            id: 'react-faq-how-prepare',
+            q: 'How do I prepare for a React interview?',
+            a: 'Use a repeatable loop: review one React concept, answer a short trivia prompt, build one UI coding drill, then write one mistake and one prevention rule. Prioritize hooks, effects, state ownership, rendering behavior, forms, testing, and performance before broad topic browsing. <strong>Where to practice in FrontendAtlas:</strong> start with <code>/guides/framework-prep/react-prep-path</code>, then pair <code>/coding?tech=react&kind=trivia</code> with <code>/coding?tech=react&kind=coding</code>.',
+          },
+          {
+            id: 'react-faq-study-first',
+            q: 'What should I study first for a React interview?',
+            a: 'Start with components, JSX, props, state, one-way data flow, keys, controlled inputs, hooks, useEffect cleanup, and stale closures. These topics support most React coding prompts and make advanced rendering or performance questions easier to reason about. <strong>Practical rule:</strong> do not move into architecture until you can explain state snapshots and cleanup without guessing.',
+          },
+          {
+            id: 'react-faq-how-long',
+            q: 'How long does it take to prepare for a React interview?',
+            a: 'A 7-day pass can refresh high-risk gaps, 14 days can make the practice loop repeatable, and 30 days can build mock-ready depth. Extend the plan when the same miss repeats across trivia, coding, or review notes. <strong>Practical rule:</strong> timeline is less important than whether your misses stop repeating.',
+          },
+          {
+            id: 'react-faq-coding-practice',
+            q: 'How should I practice React coding interview questions?',
+            a: 'Build small UI prompts under time pressure, then harden the result with loading, error, empty, cleanup, accessibility, and state-reset cases. Pair each coding drill with one related concept answer so implementation and explanation improve together. <strong>Where to practice in FrontendAtlas:</strong> use <code>/coding?tech=react&kind=coding</code> and review linked React trivia immediately after.',
+          },
+          {
+            id: 'react-faq-senior-prep',
+            q: 'How do I prepare for a senior React interview?',
+            a: 'Focus on state ownership, effect cleanup, rendering internals, Context boundaries, Server Components, testing strategy, profiling, and trade-off communication. Senior preparation should include why a design scales, what can fail, and how you would validate the decision. <strong>Practical rule:</strong> every answer should include a correctness risk, a performance risk, or a maintainability trade-off.',
+          },
           {
             id: 'react-faq-leetcode',
             q: 'Do I need LeetCode for React interviews?',
@@ -6780,6 +6908,21 @@ function onInput(value) {
 
       <ng-template #defaultFrameworkContent>
         <div class="fp-content">
+        <ng-container *ngIf="config.prepChecklistSection as prepChecklistSection">
+          <h2>{{ prepChecklistSection.title }}</h2>
+          <p>{{ prepChecklistSection.intro }}</p>
+          <ol class="fp-list fp-list--boxed">
+            <li *ngFor="let step of prepChecklistSection.steps">
+              <strong>{{ step.title }}:</strong>
+              {{ step.detail }}
+              <a [routerLink]="step.link.route" [queryParams]="step.link.queryParams || null">
+                {{ step.link.label }}
+              </a>
+            </li>
+          </ol>
+          <p>{{ prepChecklistSection.closing }}</p>
+        </ng-container>
+
         <ng-container *ngIf="config.intro as intro">
           <h2>{{ introSectionHeading() }}</h2>
           <p *ngFor="let paragraph of intro.paragraphs">{{ paragraph }}</p>
@@ -6986,6 +7129,13 @@ function onInput(value) {
         <ng-container *ngIf="config.practicalPlanSection as practicalPlanSection">
           <h2>{{ practicalPlanSectionHeading() }}</h2>
           <p *ngFor="let paragraph of practicalPlanSection.opener">{{ paragraph }}</p>
+
+          <div *ngIf="practicalPlanSection.planChooser?.length" class="fp-card-grid">
+            <article class="fp-card fp-card--cluster" *ngFor="let item of practicalPlanSection.planChooser">
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.detail }}</p>
+            </article>
+          </div>
 
           <h3>Where to practice in FrontendAtlas</h3>
           <ul class="fp-list fp-list--boxed">
@@ -7258,6 +7408,13 @@ function onInput(value) {
     :host ::ng-deep fa-guide-shell .content .fp-content a:hover {
       color: var(--uf-accent-strong);
       text-decoration-color: color-mix(in srgb, var(--uf-accent) 92%, transparent);
+    }
+
+    :host ::ng-deep fa-guide-shell .content .fp-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 2px 0 8px;
     }
 
     :host p.fp-first-fold-lead {
@@ -7574,6 +7731,10 @@ function onInput(value) {
       :host ::ng-deep fa-guide-shell .content .fp-list--boxed,
       :host ::ng-deep fa-guide-shell .content .fp-list--compact {
         padding-right: 10px;
+      }
+
+      :host ::ng-deep fa-guide-shell .content .fp-card-grid {
+        grid-template-columns: 1fr;
       }
 
       :host ::ng-deep fa-guide-shell .content .fp-list--boxed > li {

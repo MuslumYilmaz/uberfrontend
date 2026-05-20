@@ -237,6 +237,14 @@
 .iq-section--javascript-short-answers,
 .iq-section--javascript-output,
 .iq-section--javascript-browser,
+.iq-section--react-clusters,
+.iq-section--react-short-answers,
+.iq-section--react-audience,
+.iq-section--react-rendering-internals,
+.iq-section--react-react19-server,
+.iq-section--react-testing,
+.iq-section--react-scenarios,
+.iq-section--react-modern,
 .iq-section--angular-short-answers,
 .iq-section--angular-clusters,
 .iq-section--angular-audience,
@@ -254,6 +262,7 @@
 }
 
 .iq-js-toc,
+.iq-react-toc,
 .iq-angular-toc {
   display: flex;
   align-items: center;
@@ -266,11 +275,13 @@
 }
 
 .iq-js-toc .iq-context-kicker,
+.iq-react-toc .iq-context-kicker,
 .iq-angular-toc .iq-context-kicker {
   margin: 0;
 }
 
 .iq-js-toc__links,
+.iq-react-toc__links,
 .iq-angular-toc__links {
   display: flex;
   gap: 8px;
@@ -278,6 +289,7 @@
 }
 
 .iq-js-toc__links button,
+.iq-react-toc__links button,
 .iq-angular-toc__links button {
   display: inline-flex;
   align-items: center;
@@ -295,12 +307,14 @@
 }
 
 .iq-js-toc__links button:hover,
+.iq-react-toc__links button:hover,
 .iq-angular-toc__links button:hover {
   border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
   color: var(--uf-text-primary);
 }
 
 .iq-js-toc__links button:focus-visible,
+.iq-react-toc__links button:focus-visible,
 .iq-angular-toc__links button:focus-visible {
   outline: none;
   box-shadow: var(--uf-focus-ring);
@@ -829,11 +843,13 @@
   }
 
   .iq-js-toc,
+  .iq-react-toc,
   .iq-angular-toc {
     align-items: stretch;
   }
 
   .iq-js-toc__links,
+  .iq-react-toc__links,
   .iq-angular-toc__links {
     gap: 6px;
   }

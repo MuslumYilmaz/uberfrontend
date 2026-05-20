@@ -1,5 +1,5 @@
 import { buildGuideDetailSeo } from './guide-seo.util';
-import { SYSTEM } from '../../shared/guides/guide.registry';
+import { PLAYBOOK, SYSTEM } from '../../shared/guides/guide.registry';
 
 describe('guide-seo.util', () => {
   const seoMock = {
@@ -116,5 +116,36 @@ describe('guide-seo.util', () => {
     expect(meta.description).toMatch(/data model/i);
     expect(meta.description).toMatch(/interface/i);
     expect(meta.description).toMatch(/optimizations/i);
+  });
+
+  it('targets React preparation long-tail queries on the React prep path', () => {
+    const reactPrep = PLAYBOOK.find((entry) => entry.slug === 'react-prep-path');
+    expect(reactPrep).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Framework Prep',
+      'framework-prep',
+      reactPrep!
+    );
+
+    expect(meta.title).toBe('How to Prepare for a React Interview: 7/14/30-Day Plan');
+    expect(meta.description).toContain('React interview preparation');
+    expect(meta.description).toContain('study plan');
+    expect(meta.description).toContain('hooks');
+    expect(meta.description).toContain('testing');
+    expect(meta.keywords).toContain('how to prepare for react interview');
+    expect(meta.keywords).toContain('react coding interview preparation');
+    expect(meta.keywords).toContain('senior react interview preparation');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(article?.keywords).toContain('react interview preparation 7 days');
+    expect(faqPage?.name).toBe('React interview preparation FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.[0]?.name).toBe('How do I prepare for a React interview?');
   });
 });

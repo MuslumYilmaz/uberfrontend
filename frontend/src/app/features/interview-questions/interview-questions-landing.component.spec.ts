@@ -96,6 +96,67 @@ const ANGULAR_CLASSIC_QUESTIONS = [
   'What is the difference between lazy loading and preloading?',
 ];
 
+const REACT_SHORT_ANSWER_QUESTIONS = [
+  'What is React?',
+  'What are React components?',
+  'What is JSX?',
+  'What are props in React?',
+  'What is state in React?',
+  'What is one-way data flow in React?',
+  'Why are keys important in React lists?',
+  'What is the difference between controlled and uncontrolled inputs?',
+  'What does lifting state up mean?',
+  'What are React hooks?',
+  'What are the Rules of Hooks?',
+  'What is useState used for?',
+  'What is useEffect used for?',
+  'How does effect cleanup work?',
+  'What are stale closures in React?',
+  'What is the difference between useRef and useState?',
+  'What is the difference between useMemo and useCallback?',
+  'How can Context cause performance issues?',
+  'What causes a React component to re-render?',
+  'What is state batching in React?',
+  'Why is derived state risky?',
+  'What problem do error boundaries solve?',
+  'What are React portals?',
+  'What is the difference between render props and HOCs?',
+  'Why does StrictMode run some effects twice in development?',
+];
+
+const REACT_RENDERING_INTERNALS_QUESTIONS = [
+  'What is the Virtual DOM in React?',
+  'What is the difference between render phase and commit phase?',
+  'What is reconciliation in React?',
+  'What assumptions does React diffing use?',
+  'What is Fiber in React?',
+  'How do keys preserve or reset state?',
+  'How do fragments affect reconciliation?',
+  'What is the difference between useLayoutEffect and useEffect?',
+];
+
+const REACT_REACT19_SERVER_QUESTIONS = [
+  'What are React 19 Actions?',
+  'What is useActionState used for?',
+  'What is useOptimistic used for?',
+  'What is useFormStatus used for?',
+  'What is use() with Suspense at a high level?',
+  'What is the difference between Server Components and Client Components?',
+  'How do Next.js App Router boundaries affect data ownership?',
+  'How do streaming, Suspense, and hydration mismatches fit together?',
+];
+
+const REACT_TESTING_QUESTIONS = [
+  'How should React Testing Library tests be written?',
+  'What is the difference between Jest and Vitest for React tests?',
+  'What does act() do in React tests?',
+  'How do you test async loading and error UI?',
+  'How do mocked API tests with MSW-style boundaries work?',
+  'How do you test hooks through components?',
+  'How does StrictMode affect effect tests?',
+  'What makes React tests brittle?',
+];
+
 describe('InterviewQuestionsLandingComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
   let analytics: jasmine.SpyObj<AnalyticsService>;
@@ -192,14 +253,23 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('React coding + concept questions');
     expect(fixture.nativeElement.textContent || '').toContain('React interview preparation path');
     expect(fixture.nativeElement.textContent || '').toContain('Common questions before you start');
-    expect(fixture.nativeElement.textContent || '').toContain('How do React interview questions differ from React interview preparation?');
+    expect(fixture.nativeElement.textContent || '').toContain('Are these React interview questions for beginners and experienced developers?');
     expect(fixture.nativeElement.textContent || '').not.toContain('Angular interview topic map');
     expect(fixture.nativeElement.textContent || '').not.toContain('HTML interview topic map');
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
-    expect(fixture.nativeElement.querySelector('.iq-editorial-signal')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-editorial-signal')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-audience')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-rendering-internals')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-react19-server')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -212,7 +282,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
   });
 
-  it('renders React-only coverage for topic gaps, mistakes, libraries, and schema mentions', async () => {
+  it('renders React-only answer-first coverage, scenarios, modern topics, and schema mentions', async () => {
     const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -220,6 +290,72 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     const text = fixture.nativeElement.textContent || '';
 
+    expect(text).toContain('React Interview Questions and Answers');
+    expect(text).toContain('Reviewed May 20, 2026');
+    expect(text).toContain('FrontendAtlas Editor');
+    expect(text).toContain('65 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance');
+    expect(text).toContain('On this page');
+    expect(text).toContain('Popular React interview question clusters');
+    expect(text).toContain('Beginner');
+    expect(text).toContain('Experienced');
+    expect(text).toContain('Rendering internals');
+    expect(text).toContain('React 19/server');
+    expect(text).toContain('Testing');
+    expect(text).toContain('Hooks');
+    expect(text).toContain('State/forms');
+    expect(text).toContain('Performance');
+    expect(text).toContain('Top React interview questions and short answers, beginner to advanced');
+    expect(text).toContain('Review React fundamentals, hooks, state ownership, rendering behavior, and modern APIs');
+    expect(text).toContain('React interview questions for beginners and experienced developers');
+    expect(text).toContain('For beginners');
+    expect(text).toContain('For experienced developers');
+    expect(text).toContain('React rendering internals interview questions');
+    expect(text).toContain('React 19 and server-first React interview questions');
+    expect(text).toContain('React testing interview questions with Testing Library, act, and mocked APIs');
+    expect(text).toContain('React scenario and code interview questions');
+    expect(text).toContain('Modern React interview questions');
+    for (const question of REACT_SHORT_ANSWER_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of REACT_RENDERING_INTERNALS_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of REACT_REACT19_SERVER_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of REACT_TESTING_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    expect(text.indexOf('Top React interview questions and short answers, beginner to advanced')).toBeLessThan(
+      text.indexOf('React rendering internals interview questions')
+    );
+    expect(text.indexOf('React testing interview questions with Testing Library, act, and mocked APIs')).toBeLessThan(
+      text.indexOf('React scenario and code interview questions')
+    );
+    expect(text.indexOf('Modern React interview questions')).toBeLessThan(
+      text.indexOf('Most crucial React coding interview questions')
+    );
+    expect(text.indexOf('React rendering internals interview questions')).toBeLessThan(
+      text.indexOf('Most crucial React coding interview questions')
+    );
+    expect(text).toContain('Why can this delayed counter lose updates?');
+    expect(text).toContain('What is wrong with this polling effect?');
+    expect(text).toContain('Why can an index key reset the wrong row state?');
+    expect(text).toContain('Why can this Context provider rerender too much UI?');
+    expect(text).toContain('Why is this derived state unnecessary?');
+    expect(text).toContain('Why does this input switch from uncontrolled to controlled?');
+    expect(text).toContain('Why does memoization not help this child?');
+    expect(text).toContain('Why does this effect appear to run twice in development?');
+    expect(text).toContain('What changed with React 18 automatic batching?');
+    expect(text).toContain('What are Suspense boundaries used for?');
+    expect(text).toContain('What are React Server Components at a high level?');
+    expect(text).toContain('How do you debug a hydration mismatch?');
+    expect(text).toContain('Are these React interview questions for beginners and experienced developers?');
+    expect(text).toContain('Does this page cover React rendering internals?');
+    expect(text).toContain('Does this page include React 19 and server-first React questions?');
+    expect(text).toContain('Does this page include React testing interview questions?');
+    expect(text).toContain('How should I prepare after reviewing these React interview questions?');
+    expect(text).toContain('Learn how to prepare for a React interview');
     expect(text).toContain('React interview topic map');
     expect(text).toContain('Props, state, and one-way data flow');
     expect(text).toContain('Hooks and useEffect implementation');
@@ -236,6 +372,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Angular scenario and code interview questions');
+    expect(text).not.toContain('Popular Angular interview question clusters');
     expect(text).not.toContain('Are these JavaScript interview questions for beginners or experienced developers?');
     expect(text).not.toContain('Do these include output-based JavaScript interview questions?');
     expect(text).not.toContain('Where should I practice JavaScript coding interview questions?');
@@ -247,9 +384,48 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-clusters-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-audience-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-rendering-internals-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-react19-server-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-testing-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-scenarios-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-modern-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-coding-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-concept-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-react-coverage-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-cluster-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-react-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-react-audience-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-react-rendering-internals-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-react-react19-server-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-react-testing-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-react-modern-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-short-answer').length).toBe(25);
+    expect(fixture.nativeElement.querySelector('.iq-section--react-audience')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-audience-card').length).toBe(2);
+    expect(fixture.nativeElement.querySelector('.iq-section--react-rendering-internals')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--react-rendering-internals .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--react-react19-server')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--react-react19-server .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--react-testing .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-scenario-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-modern-card').length).toBe(8);
+    expect(
+      fixture.nativeElement.querySelectorAll(
+        '.iq-short-answer, .iq-scenario-card, .iq-modern-card, .iq-focused-card'
+      ).length
+    ).toBe(65);
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -263,9 +439,30 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--angular-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-why-props-immutable"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-why-hooks-have-rules"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-usestate-purpose"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-purpose"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-stale-state-closures"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-useref-vs-usestate"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-usememo-vs-usecallback"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-context-performance-issues"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-controlled-vs-uncontrolled"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-keys-in-lists"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-lifting-state-up"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-component-rerendering"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-why-batching-state-updates"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-derived-state-anti-pattern"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-error-boundaries-what-they-solve"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-portals"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-render-props-vs-hocs"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-virtual-dom"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-reconciliation"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-diffing-algorithm"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-fragments-dom-and-reconciliation"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-vs-uselayouteffect"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-strictmode-purpose"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-strictmode-double-invoke-effects"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/coding/react-chat-streaming-ui"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-functional-vs-class-components"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-prevent-unnecessary-rerenders"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/coding/react-debug-double-render"]')).toBeTruthy();
@@ -274,7 +471,80 @@ describe('InterviewQuestionsLandingComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Beginner to advanced React interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React interview questions for experienced developers')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React hooks interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React useEffect interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React state interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React rendering interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React performance interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Context interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React forms interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React StrictMode interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Suspense interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React rendering internals interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Virtual DOM interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React reconciliation interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Fiber interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React 19 interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Actions interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React useActionState interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React useOptimistic interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Server Components interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Next.js App Router React interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React hydration interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Testing Library interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('React testing interview questions')
+    )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('React Hooks and useEffect implementation')
     )).toBeTrue();
@@ -283,6 +553,54 @@ describe('InterviewQuestionsLandingComponent', () => {
     )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('React component lifecycle')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React scenario questions')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React stale closures')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React keys in lists')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React controlled and uncontrolled inputs')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React 18 automatic batching')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React Server Components')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React hydration mismatch debugging')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React render phase and commit phase')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React diffing algorithm')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React form actions and useFormStatus')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React use with Suspense')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Next.js caching and data ownership')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React streaming UI questions')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Jest and Vitest React testing')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('React act async updates')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('MSW mocked API testing')
     )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Common React interview mistakes')
@@ -296,6 +614,17 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Common React libraries')
     )).toBeTrue();
+    expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(faqPage).toBeTruthy();
+    expect(faqPage?.name).toBe('Top React interview questions and short answers, beginner to advanced');
+    expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
+    expect(faqPage?.mainEntity.length).toBe(25);
+    expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(REACT_SHORT_ANSWER_QUESTIONS);
+    const staleClosureEntry = faqPage?.mainEntity.find((entry: any) =>
+      entry?.name === 'What are stale closures in React?'
+    );
+    expect(String(staleClosureEntry?.acceptedAnswer?.text || '')).toContain('older render');
   });
 
   it('renders JavaScript-only coverage for cloning, async debugging, best practices, resources, and schema mentions', async () => {
@@ -369,6 +698,14 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('What are common mistakes in JavaScript interviews?');
     expect(text).toContain('What are the best resources for JavaScript interview preparation?');
     expect(text).not.toContain('React interview topic map');
+    expect(text).not.toContain('Popular React interview question clusters');
+    expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('React interview questions for beginners and experienced developers');
+    expect(text).not.toContain('React rendering internals interview questions');
+    expect(text).not.toContain('React 19 and server-first React interview questions');
+    expect(text).not.toContain('React testing interview questions with Testing Library, act, and mocked APIs');
+    expect(text).not.toContain('React scenario and code interview questions');
+    expect(text).not.toContain('Modern React interview questions');
     expect(text).not.toContain('Angular interview topic map');
     expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Angular scenario and code interview questions');
@@ -376,6 +713,7 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-editorial-signal')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-short-answers-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-output-title"]')).toBeTruthy();
@@ -391,6 +729,14 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeTruthy();
     expect(fixture.nativeElement.querySelectorAll('.iq-browser-card').length).toBe(8);
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-coverage')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-audience')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-rendering-internals')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-react19-server')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -554,6 +900,30 @@ describe('InterviewQuestionsLandingComponent', () => {
       null,
       '',
       `${window.location.pathname}${window.location.search}#iq-angular-testing-title`,
+    );
+  });
+
+  it('scrolls React TOC buttons to page sections without routing to the app root', async () => {
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const scenariosHeading = fixture.nativeElement.querySelector('#iq-react-scenarios-title') as HTMLElement;
+    const scrollIntoView = jasmine.createSpy('scrollIntoView');
+    (scenariosHeading as any).scrollIntoView = scrollIntoView;
+    const replaceState = spyOn(window.history, 'replaceState').and.stub();
+
+    const tocButton = fixture.nativeElement.querySelector(
+      'button[data-target="iq-react-scenarios-title"]',
+    ) as HTMLButtonElement;
+    tocButton.click();
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    expect(replaceState).toHaveBeenCalledWith(
+      null,
+      '',
+      `${window.location.pathname}${window.location.search}#iq-react-scenarios-title`,
     );
   });
 
@@ -773,6 +1143,23 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Vue.js interview questions and Vue JS answers hub');
     expect(text).toContain('What Vue.js interview rounds test');
     expect(text).toContain('Are Vue.js and Vue JS interview questions the same target?');
+    expect(text).not.toContain('Popular React interview question clusters');
+    expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('React interview questions for beginners and experienced developers');
+    expect(text).not.toContain('React rendering internals interview questions');
+    expect(text).not.toContain('React 19 and server-first React interview questions');
+    expect(text).not.toContain('React testing interview questions with Testing Library, act, and mocked APIs');
+    expect(text).not.toContain('React scenario and code interview questions');
+    expect(text).not.toContain('Modern React interview questions');
+    expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-audience')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-rendering-internals')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-react19-server')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
   });
 
   it('renders HTML-only coverage for accessibility testing, HTML5, resources, mistakes, and schema mentions', async () => {
@@ -828,12 +1215,29 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('DOM, browser, and security questions');
     expect(text).not.toContain('Angular interview topic map');
     expect(text).not.toContain('React interview topic map');
+    expect(text).not.toContain('Popular React interview question clusters');
+    expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('React interview questions for beginners and experienced developers');
+    expect(text).not.toContain('React rendering internals interview questions');
+    expect(text).not.toContain('React 19 and server-first React interview questions');
+    expect(text).not.toContain('React testing interview questions with Testing Library, act, and mocked APIs');
+    expect(text).not.toContain('React scenario and code interview questions');
+    expect(text).not.toContain('Modern React interview questions');
 
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-audience')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-rendering-internals')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-react19-server')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -904,12 +1308,29 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('DOM, browser, and security questions');
     expect(text).not.toContain('HTML interview topic map');
     expect(text).not.toContain('React interview topic map');
+    expect(text).not.toContain('Popular React interview question clusters');
+    expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('React interview questions for beginners and experienced developers');
+    expect(text).not.toContain('React rendering internals interview questions');
+    expect(text).not.toContain('React 19 and server-first React interview questions');
+    expect(text).not.toContain('React testing interview questions with Testing Library, act, and mocked APIs');
+    expect(text).not.toContain('React scenario and code interview questions');
+    expect(text).not.toContain('Modern React interview questions');
     expect(text).not.toContain('Best resources for learning HTML');
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-audience')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-rendering-internals')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-react19-server')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -1014,9 +1435,18 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('DOM, browser, and security questions');
     expect(text).not.toContain('HTML interview topic map');
     expect(text).not.toContain('React interview topic map');
+    expect(text).not.toContain('Popular React interview question clusters');
+    expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('React interview questions for beginners and experienced developers');
+    expect(text).not.toContain('React rendering internals interview questions');
+    expect(text).not.toContain('React 19 and server-first React interview questions');
+    expect(text).not.toContain('React testing interview questions with Testing Library, act, and mocked APIs');
+    expect(text).not.toContain('React scenario and code interview questions');
+    expect(text).not.toContain('Modern React interview questions');
 
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-angular-short-answers-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-angular-audience-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-angular-testing-title"]')).toBeTruthy();
@@ -1030,6 +1460,14 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-audience')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-rendering-internals')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-react19-server')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeTruthy();
     expect(fixture.nativeElement.querySelectorAll('.iq-cluster-card').length).toBe(6);
     expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-angular-short-answers-title"]')).toBeTruthy();

@@ -21,6 +21,15 @@
       <span>{{ angularEditorialSignal().reviewer }}</span>
       <span>{{ angularEditorialSignal().coverage }}</span>
     </div>
+    <div
+      *ngIf="isReactHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ reactEditorialSignal().reviewedLabel }}</span>
+      <span>{{ reactEditorialSignal().reviewer }}</span>
+      <span>{{ reactEditorialSignal().coverage }}</span>
+    </div>
   </header>
 
   <section
@@ -384,12 +393,260 @@
     </div>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : null">
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-react-toc"
+    aria-label="React interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-react-toc__links">
+      <button
+        *ngFor="let item of reactAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToReactSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
+
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-clusters"
+    aria-labelledby="iq-react-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-clusters-title">
+        Popular React interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Jump to React interview clusters by level and depth: beginner fundamentals, experienced topics, rendering internals, React 19/server-first React, testing, hooks, state/forms, and performance.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of reactKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToReactSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-short-answers"
+    aria-labelledby="iq-react-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Short answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-short-answers-title">
+        Top React interview questions and short answers, beginner to advanced
+      </h2>
+      <p class="fa-meta-text">
+        Review React fundamentals, hooks, state ownership, rendering behavior, and modern APIs, then open the linked practice route when a topic needs deeper work.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of reactShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ reactShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ questionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-audience"
+    aria-labelledby="iq-react-audience-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Beginner to experienced</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-audience-title">
+        React interview questions for beginners and experienced developers
+      </h2>
+      <p class="fa-meta-text">
+        Use the level chips and topic clusters to move from React fundamentals into rendering internals, server-first React, testing, and performance.
+      </p>
+    </div>
+
+    <div class="iq-audience-grid">
+      <article class="iq-audience-card" *ngFor="let item of reactAudienceTracks()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-rendering-internals"
+    aria-labelledby="iq-react-rendering-internals-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Rendering internals</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-rendering-internals-title">
+        React rendering internals interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review Virtual DOM, render and commit phases, reconciliation, diffing, Fiber, key identity, fragments, and layout effect timing.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of reactRenderingInternalsQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-react19-server"
+    aria-labelledby="iq-react-react19-server-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">React 19 + server-first React</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-react19-server-title">
+        React 19 and server-first React interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover Actions, useActionState, useOptimistic, useFormStatus, use(), Server Components, Next.js boundaries, streaming, Suspense, and hydration.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of reactReact19ServerQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-testing"
+    aria-labelledby="iq-react-testing-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Testing</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-testing-title">
+        React testing interview questions with Testing Library, act, and mocked APIs
+      </h2>
+      <p class="fa-meta-text">
+        Review behavior tests, Jest, Vitest, act, async loading and error UI, mocked network boundaries, hook testing, StrictMode, and brittle test failures.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of reactTestingQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-scenarios"
+    aria-labelledby="iq-react-scenarios-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Scenarios + code</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-scenarios-title">
+        React scenario and code interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice React bugs that expose state ownership, effect dependencies, cleanup, list identity, Context fan-out, form ownership, memoization, and StrictMode behavior.
+      </p>
+    </div>
+
+    <div class="iq-scenario-grid">
+      <article class="iq-scenario-card" *ngFor="let item of reactScenarioQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <pre class="iq-code-block"><code>{{ item.code }}</code></pre>
+        <p>{{ item.explanation }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isReactHub()"
+    class="iq-section iq-section--surface iq-section--react-modern"
+    aria-labelledby="iq-react-modern-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Modern React</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-react-modern-title">
+        Modern React interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review React 18 batching, StrictMode, Suspense, transitions, server components, hydration, external stores, and behavior-focused testing.
+      </p>
+    </div>
+
+    <div class="iq-modern-grid">
+      <article class="iq-modern-card" *ngFor="let item of reactModernQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : null"
         >
           {{ codingSectionTitle() }}
         </h2>
@@ -436,12 +693,12 @@
     </ng-container>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : null">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : null"
         >
           {{ triviaSectionTitle() }}
         </h2>
@@ -612,7 +869,7 @@
           </li>
         </ul>
         <a class="iq-topic-card__link" [routerLink]="['/guides', 'framework-prep', 'react-prep-path']">
-          Open the React prep path &rarr;
+          Learn how to prepare for a React interview &rarr;
         </a>
       </article>
     </div>

@@ -11,6 +11,13 @@ export type GuideSeo = {
     description?: string;
     primaryKeyword?: string;
     keywords?: string[];
+    faqPage?: {
+        name?: string;
+        items: Array<{
+            question: string;
+            answer: string;
+        }>;
+    };
     publishedAt?: string;
     updatedAt?: string;
     author?: GuideAuthor;
@@ -192,20 +199,53 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'react-prep-path',
-        title: 'React Interview Preparation: Hooks, State, Performance',
+        title: 'How to Prepare for a React Interview: 7/14/30-Day Plan',
         minutes: 9,
-        summary: 'Use this React interview preparation path to stabilize hooks, rerender reasoning, stale-state fixes, and performance trade-offs with a 7/14/30-day study plan for frontend engineers.',
+        summary: 'Use this React interview preparation path to learn how to prepare for a React interview with hooks, state, rendering, coding drills, testing, and a 7/14/30-day study plan.',
         seo: {
-            title: 'React Interview Preparation: Hooks, State, Performance',
-            description: 'Use this React interview preparation path to stabilize hooks, rerender reasoning, stale-state fixes, and performance trade-offs with a 7/14/30-day study plan.',
-            primaryKeyword: 'react interview preparation',
-            keywords: ['react interview preparation', 'react interview prep path', 'react interview study plan', 'react hooks interview prep'],
+            title: 'How to Prepare for a React Interview: 7/14/30-Day Plan',
+            description: 'React interview preparation study plan for hooks, state, rendering, coding drills, testing, performance, and how to prepare in 7, 14, or 30 days.',
+            primaryKeyword: 'how to prepare for react interview',
+            keywords: [
+                'react interview preparation',
+                'react interview study plan',
+                'react interview prep path',
+                'react hooks interview prep',
+                'react coding interview preparation',
+                'senior react interview preparation',
+                'react interview preparation 7 days',
+            ],
+            faqPage: {
+                name: 'React interview preparation FAQ',
+                items: [
+                    {
+                        question: 'How do I prepare for a React interview?',
+                        answer: 'Use a repeatable loop: review one React concept, answer a short trivia prompt, build one UI coding drill, then write one mistake and one prevention rule. Prioritize hooks, effects, state ownership, rendering behavior, forms, testing, and performance before broad topic browsing. Where to practice in FrontendAtlas: start with /guides/framework-prep/react-prep-path, then pair /coding?tech=react&kind=trivia with /coding?tech=react&kind=coding.',
+                    },
+                    {
+                        question: 'What should I study first for a React interview?',
+                        answer: 'Start with components, JSX, props, state, one-way data flow, keys, controlled inputs, hooks, useEffect cleanup, and stale closures. These topics support most React coding prompts and make advanced rendering or performance questions easier to reason about. Practical rule: do not move into architecture until you can explain state snapshots and cleanup without guessing.',
+                    },
+                    {
+                        question: 'How long does it take to prepare for a React interview?',
+                        answer: 'A 7-day pass can refresh high-risk gaps, 14 days can make the practice loop repeatable, and 30 days can build mock-ready depth. Extend the plan when the same miss repeats across trivia, coding, or review notes. Practical rule: timeline is less important than whether your misses stop repeating.',
+                    },
+                    {
+                        question: 'How should I practice React coding interview questions?',
+                        answer: 'Build small UI prompts under time pressure, then harden the result with loading, error, empty, cleanup, accessibility, and state-reset cases. Pair each coding drill with one related concept answer so implementation and explanation improve together. Where to practice in FrontendAtlas: use /coding?tech=react&kind=coding and review linked React trivia immediately after.',
+                    },
+                    {
+                        question: 'How do I prepare for a senior React interview?',
+                        answer: 'Focus on state ownership, effect cleanup, rendering internals, Context boundaries, Server Components, testing strategy, profiling, and trade-off communication. Senior preparation should include why a design scales, what can fail, and how you would validate the decision. Practical rule: every answer should include a correctness risk, a performance risk, or a maintainability trade-off.',
+                    },
+                ],
+            },
             publishedAt: '2026-02-12',
-            updatedAt: '2026-05-10',
-            searchIntent: 'Find a React interview study plan that makes hooks, rerender logic, state design, and performance trade-offs easier to explain under pressure.',
-            readerPromise: 'Use this React interview preparation path to turn hooks, rerender, and performance interviews into a 7/14/30-day plan with clear state-design and effect-debugging priorities.',
+            updatedAt: '2026-05-20',
+            searchIntent: 'Find how to prepare for a React interview with a practical study plan for hooks, state, rendering, coding drills, testing, and performance.',
+            readerPromise: 'Use this React interview preparation path to turn hooks, rendering, coding, testing, and performance practice into a 7/14/30-day study plan.',
             uniqueAngle: 'React-specific render and state-design failure patterns tied directly to trivia and coding drills.',
-            factCheckedAt: '2026-04-19',
+            factCheckedAt: '2026-05-20',
             reviewedBy: 'FrontendAtlas Editor',
         },
         load: () =>
