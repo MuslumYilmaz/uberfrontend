@@ -42,7 +42,7 @@ type JavaScriptCoverageLink = { label: string; route: any[] };
 type JavaScriptTopicCard = { title: string; answer: string; link: JavaScriptCoverageLink };
 type JavaScriptSupportItem = { title: string; detail: string };
 type JavaScriptResourceLink = { label: string; href: string; summary: string };
-type JavaScriptQuestionLevel = 'beginner' | 'intermediate' | 'advanced';
+type QuestionLevel = 'beginner' | 'intermediate' | 'advanced';
 type JavaScriptShortAnswerCategory = 'fundamentals' | 'async' | 'coding' | 'browser-security';
 type JavaScriptShortAnswerItem = {
   q: string;
@@ -50,7 +50,7 @@ type JavaScriptShortAnswerItem = {
   route?: any[];
   cta?: string;
   category: JavaScriptShortAnswerCategory;
-  level: JavaScriptQuestionLevel;
+  level: QuestionLevel;
 };
 type JavaScriptAnchorItem = { label: string; targetId: string };
 type JavaScriptOutputQuestionItem = {
@@ -58,14 +58,14 @@ type JavaScriptOutputQuestionItem = {
   code: string;
   output: string;
   explanation: string;
-  level: JavaScriptQuestionLevel;
+  level: QuestionLevel;
   route?: any[];
   cta?: string;
 };
 type JavaScriptBrowserQuestionItem = {
   q: string;
   a: string;
-  level: JavaScriptQuestionLevel;
+  level: QuestionLevel;
   route?: any[];
   cta?: string;
 };
@@ -81,6 +81,45 @@ type ReactSupportItem = { title: string; detail: string };
 type AngularCoverageLink = { label: string; route: any[] };
 type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
 type AngularMistakeItem = { title: string; detail: string };
+type AngularShortAnswerCategory = 'fundamentals' | 'components' | 'di-change-detection' | 'rxjs-forms' | 'modern';
+type AngularShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: AngularShortAnswerCategory;
+  level: QuestionLevel;
+};
+type AngularAnchorItem = { label: string; targetId: string };
+type AngularScenarioQuestionItem = {
+  q: string;
+  code: string;
+  explanation: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type AngularModernQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type AngularAudienceTrack = { title: string; detail: string };
+type AngularFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type AngularEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type HtmlCoverageLink = { label: string; route: any[] };
 type HtmlTopicCard = { title: string; answer: string; link: HtmlCoverageLink };
 type HtmlMistakeItem = { title: string; detail: string };
@@ -380,16 +419,16 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   angular: [
     {
-      q: 'What makes Angular interview questions hard?',
-      a: 'Angular rounds often mix RxJS flow control, change detection, dependency boundaries, forms, and testing judgment in one scenario.',
+      q: 'Are these Angular interview questions for beginners or experienced developers?',
+      a: 'They cover both. The first section starts with beginner Angular fundamentals, then the page moves into experienced-level scenario, testing, security, routing, performance, and modern Angular questions.',
     },
     {
-      q: 'What should I review before Angular coding prompts?',
-      a: 'Review Observables, HttpClient cancellation, template binding, form state, and lifecycle cleanup so implementation choices have a clear reason.',
+      q: 'Do these Angular questions include testing and security?',
+      a: 'Yes. The page includes TestBed, fakeAsync, HttpTestingController, harnesses, Angular sanitization, DomSanitizer, user-controlled URLs, and direct DOM access risks.',
     },
     {
-      q: 'When should I open the Angular prep path?',
-      a: 'Open it when the same RxJS, change detection, DI, or testing miss repeats across multiple questions.',
+      q: 'Do these include Angular scenario and code questions?',
+      a: 'Yes. The scenario section covers OnPush stale UI, RxJS cancellation, provider scope, subscriptions, async validators, list identity, async pipe ownership, and lazy route boundaries.',
     },
   ],
   vue: [
@@ -851,6 +890,572 @@ const JAVASCRIPT_BROWSER_QUESTIONS: JavaScriptBrowserQuestionItem[] = [
   },
 ];
 
+const ANGULAR_SHORT_ANSWERS: AngularShortAnswerItem[] = [
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is Angular?',
+    a: 'Angular is a TypeScript framework for building component-based web applications. It includes routing, forms, dependency injection, templates, HTTP utilities, and a CLI-driven build workflow. The key difference from a small view library is that Angular gives the application structure and many production conventions up front.',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is the difference between Angular and AngularJS?',
+    a: 'AngularJS is the original 1.x framework based on JavaScript, scopes, controllers, and digest-cycle patterns. Angular is the modern TypeScript framework built around components, decorators, dependency injection, RxJS, and a different rendering and tooling model. They are different platforms, so migrating from AngularJS to Angular is usually a rewrite or staged migration, not a simple version bump.',
+    route: ['/angular', 'trivia', 'angular-vs-angularjs'],
+    cta: 'Compare Angular and AngularJS',
+  },
+  {
+    category: 'components',
+    level: 'beginner',
+    q: 'What are components in Angular?',
+    a: 'Components are the main building blocks of Angular UI. A component combines a TypeScript class, a template, styles, metadata, inputs, outputs, and lifecycle hooks. Components should own view behavior, while shared business logic usually belongs in services or facades.',
+    route: ['/angular', 'trivia', 'angular-component-vs-service-responsibilities'],
+    cta: 'Review component responsibilities',
+  },
+  {
+    category: 'components',
+    level: 'beginner',
+    q: 'What is metadata in an Angular component?',
+    a: 'Component metadata is the configuration passed to the @Component decorator. It tells Angular the selector, template, styles, imports, providers, change detection mode, and other compile-time/runtime details. Metadata mistakes can cause missing directives, wrong provider scope, or templates that compile but behave differently than expected.',
+    route: ['/angular', 'trivia', 'angular-component-metadata'],
+    cta: 'Review component metadata',
+  },
+  {
+    category: 'components',
+    level: 'beginner',
+    q: 'What are directives in Angular?',
+    a: 'Directives attach behavior to templates. Components are directives with templates, attribute directives change behavior or styling on an existing element, and structural directives change the rendered tree. The practical detail is that structural directives can create and destroy embedded views, so state and cleanup behavior can change.',
+    route: ['/angular', 'trivia', 'angular-directives'],
+    cta: 'Review Angular directives',
+  },
+  {
+    category: 'components',
+    level: 'beginner',
+    q: 'What is the difference between structural and attribute directives?',
+    a: 'Structural directives change whether a block exists in the view tree, usually by creating or destroying embedded views. Attribute directives keep the host element in place and change behavior, classes, styles, or properties. This matters because structural directives can reset component state and trigger teardown, while attribute directives normally do not.',
+    route: ['/angular', 'trivia', 'angular-structural-vs-attribute-directives'],
+    cta: 'Compare directive types',
+  },
+  {
+    category: 'components',
+    level: 'beginner',
+    q: 'What are pipes in Angular?',
+    a: 'Pipes transform values for display in a template. Built-in pipes handle common formatting such as dates, numbers, and currency, while custom pipes keep presentation transforms reusable. Expensive or impure pipes can run often, so heavy work should be cached, moved to state, or handled before rendering.',
+    route: ['/angular', 'trivia', 'angular-pipes'],
+    cta: 'Review Angular pipes',
+  },
+  {
+    category: 'components',
+    level: 'beginner',
+    q: 'What is data binding in Angular?',
+    a: 'Data binding connects component state and template behavior. Interpolation and property binding move data from the component to the view, event binding moves user actions back to the component, and two-way binding combines both directions. Binding bugs often come from targeting the wrong DOM property, mutating state in place, or hiding ownership with two-way syntax.',
+    route: ['/angular', 'trivia', 'angular-data-binding'],
+    cta: 'Review Angular data binding',
+  },
+  {
+    category: 'components',
+    level: 'beginner',
+    q: 'What is the difference between interpolation and property binding?',
+    a: 'Interpolation writes a string expression into text content or an attribute-like position. Property binding sets a DOM or directive property with the actual value type, such as a boolean, object, or array. Use property binding when type matters, because interpolation always passes through string rendering.',
+    route: ['/angular', 'trivia', 'angular-interpolation-vs-property-binding'],
+    cta: 'Compare binding syntax',
+  },
+  {
+    category: 'components',
+    level: 'beginner',
+    q: 'What are @Input() and @Output()?',
+    a: '@Input() lets a parent pass data into a child component. @Output() exposes events from the child back to the parent, usually with EventEmitter or newer output APIs. The contract should stay one-way: inputs describe state, outputs describe user or child events, and the parent owns the resulting state change.',
+    route: ['/angular', 'trivia', 'angular-input-output'],
+    cta: 'Review input and output',
+  },
+  {
+    category: 'components',
+    level: 'intermediate',
+    q: 'What is the difference between constructor and ngOnInit()?',
+    a: 'The constructor is for TypeScript class creation and dependency injection. ngOnInit() runs after Angular has initialized inputs, so it is the safer place for initialization that depends on bound data. DOM-dependent work still belongs later, such as ngAfterViewInit, because the view is not fully ready in ngOnInit().',
+    route: ['/angular', 'trivia', 'angular-ngoninit-vs-constructor'],
+    cta: 'Compare constructor and ngOnInit',
+  },
+  {
+    category: 'components',
+    level: 'intermediate',
+    q: 'What are Angular lifecycle hooks?',
+    a: 'Lifecycle hooks let a component respond to creation, input changes, content/view initialization, checks, and destruction. Common hooks include ngOnInit, ngOnChanges, ngAfterViewInit, and ngOnDestroy. The important part is timing: subscriptions, DOM reads, cleanup, and input-dependent setup belong in different hooks.',
+    route: ['/angular', 'trivia', 'angular-lifecycle-hooks'],
+    cta: 'Review lifecycle hooks',
+  },
+  {
+    category: 'di-change-detection',
+    level: 'intermediate',
+    q: 'What is dependency injection in Angular?',
+    a: 'Dependency injection is the Angular system for creating and supplying services, tokens, and other dependencies. Providers decide what value is created and injector scope decides who shares it. A correct answer names where the provider lives, when the instance is created, and which components or routes share it.',
+    route: ['/angular', 'trivia', 'angular-dependency-injection'],
+    cta: 'Review dependency injection',
+  },
+  {
+    category: 'di-change-detection',
+    level: 'intermediate',
+    q: 'What are services in Angular?',
+    a: 'Services hold reusable logic that should not belong to a single template. They commonly manage API calls, feature state, mapping, permissions, logging, or coordination between components. The main trade-off is scope: a root service is shared broadly, while route or component providers create narrower instances.',
+    route: ['/angular', 'trivia', 'angular-services'],
+    cta: 'Review Angular services',
+  },
+  {
+    category: 'di-change-detection',
+    level: 'advanced',
+    q: 'What is hierarchical dependency injection?',
+    a: 'Hierarchical dependency injection means Angular resolves providers through an injector tree. A child injector can reuse a parent provider or override it with a more local instance. This is powerful for feature boundaries, but accidental local providers can create duplicate service state.',
+    route: ['/angular', 'trivia', 'angular-hierarchical-dependency-injection-real-bug'],
+    cta: 'Debug provider scope',
+  },
+  {
+    category: 'di-change-detection',
+    level: 'intermediate',
+    q: 'What is change detection in Angular?',
+    a: 'Change detection is how Angular checks application state and updates templates. Zone-based apps usually schedule checks from async activity, events, and framework hooks, while newer patterns can make update triggers more explicit. When debugging stale UI, first identify the trigger path before reaching for detectChanges or markForCheck.',
+    route: ['/angular', 'trivia', 'angular-change-detection-strategies'],
+    cta: 'Review change detection',
+  },
+  {
+    category: 'di-change-detection',
+    level: 'advanced',
+    q: 'What is OnPush change detection?',
+    a: 'OnPush tells Angular to check a component when inputs change by reference, events run, observables update through async pipe, signals update, or change detection is explicitly requested. It improves render predictability but exposes mutation bugs quickly. If the object reference stays the same after a nested mutation, an OnPush child may not update.',
+    route: ['/angular', 'trivia', 'angular-onpush-change-detection-debugging-real-bug'],
+    cta: 'Debug OnPush stale UI',
+  },
+  {
+    category: 'di-change-detection',
+    level: 'advanced',
+    q: 'What is Zone.js used for in Angular?',
+    a: 'Zone.js patches async APIs so Angular can know when tasks finish and schedule change detection in zone-based applications. It makes many UI updates feel automatic after timers, promises, and DOM events. In zoneless setups, updates need explicit notification paths such as signals, async pipe, or manual change detection APIs.',
+    route: ['/angular', 'trivia', 'angular-zonejs-change-detection'],
+    cta: 'Review Zone.js and change detection',
+  },
+  {
+    category: 'rxjs-forms',
+    level: 'intermediate',
+    q: 'What are Observables and RxJS in Angular?',
+    a: 'Observables represent streams of values over time, and RxJS provides operators for transforming, combining, canceling, and sharing those streams. Angular uses Observables in HttpClient, forms, router events, and many async workflows. The practical skill is choosing operators that match user intent, such as switchMap for latest-only search.',
+    route: ['/angular', 'trivia', 'angular-observables-rxjs'],
+    cta: 'Review Observables and RxJS',
+  },
+  {
+    category: 'rxjs-forms',
+    level: 'advanced',
+    q: 'How does HttpClient request cancellation work?',
+    a: 'HttpClient requests are canceled when the subscription to the request Observable is unsubscribed. switchMap cancels the previous inner request when a new value arrives, and async pipe or takeUntilDestroyed can cancel work during teardown. Ignoring an old response is not the same as aborting the underlying request.',
+    route: ['/angular', 'trivia', 'angular-http-what-actually-cancels-request'],
+    cta: 'Review HttpClient cancellation',
+  },
+  {
+    category: 'rxjs-forms',
+    level: 'intermediate',
+    q: 'What is the difference between template-driven and reactive forms?',
+    a: 'Template-driven forms keep more form behavior in the template and are fine for simple workflows. Reactive forms model controls in TypeScript, which makes dynamic fields, validation, async flows, and tests easier to control. For complex forms, reactive forms are usually the safer default because the state graph is explicit.',
+    route: ['/angular', 'trivia', 'angular-template-driven-vs-reactive-forms-which-scales'],
+    cta: 'Compare form strategies',
+  },
+  {
+    category: 'modern',
+    level: 'intermediate',
+    q: 'What is lazy loading in Angular?',
+    a: 'Lazy loading delays loading a route or feature until it is needed. It reduces initial bundle cost and creates clearer feature boundaries. The trade-off is that provider scope, preloading strategy, and route-level data loading must be planned so navigation stays predictable.',
+    route: ['/angular', 'trivia', 'angular-lazy-loading'],
+    cta: 'Review lazy loading',
+  },
+  {
+    category: 'modern',
+    level: 'intermediate',
+    q: 'What are standalone components?',
+    a: 'Standalone components can declare their own imports and participate in routing without being declared in an NgModule. They simplify new Angular apps and feature composition. NgModules still appear in older codebases and some library boundaries, so migration answers should cover compatibility and provider scope.',
+    route: ['/angular', 'trivia', 'angular-ngmodules-vs-standalone'],
+    cta: 'Compare standalone and NgModules',
+  },
+  {
+    category: 'modern',
+    level: 'advanced',
+    q: 'What is NgRx and when should you use it?',
+    a: 'NgRx is a Redux-style state management library for Angular. It is useful when shared state has complex transitions, multiple writers, effects, optimistic updates, or audit/debugging needs. For local UI state or small feature state, component state, services, signals, or RxJS may be simpler.',
+    route: ['/angular', 'trivia', 'ngrx-store-vs-component-state-angular-when-to-use'],
+    cta: 'Choose NgRx vs local state',
+  },
+  {
+    category: 'rxjs-forms',
+    level: 'advanced',
+    q: 'How do you prevent memory leaks in Angular?',
+    a: 'Prefer async pipe when templates consume streams because Angular handles subscription cleanup. For manual subscriptions, use takeUntilDestroyed, takeUntil with a destroy subject, or explicit unsubscribe when needed. Also clean up timers, global listeners, WebSocket streams, and resolver streams that might never complete.',
+    route: ['/angular', 'trivia', 'angular-prevent-memory-leaks-unsubscribe-patterns'],
+    cta: 'Review memory leak prevention',
+  },
+];
+
+const ANGULAR_ANCHOR_ITEMS: AngularAnchorItem[] = [
+  { label: 'Short answers', targetId: 'iq-angular-short-answers-title' },
+  { label: 'Beginner/experienced', targetId: 'iq-angular-audience-title' },
+  { label: 'Testing', targetId: 'iq-angular-testing-title' },
+  { label: 'Security', targetId: 'iq-angular-security-title' },
+  { label: 'Routing + perf', targetId: 'iq-angular-classic-title' },
+  { label: 'Scenarios + code', targetId: 'iq-angular-scenarios-title' },
+  { label: 'Modern Angular', targetId: 'iq-angular-modern-title' },
+  { label: 'Coding prompts', targetId: 'iq-angular-coding-preview-title' },
+  { label: 'Concept prompts', targetId: 'iq-angular-concept-preview-title' },
+  { label: 'Topic map', targetId: 'iq-angular-coverage-title' },
+];
+
+const ANGULAR_EDITORIAL_SIGNAL: AngularEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible Angular questions across answers, scenarios, modern Angular, testing, security, routing, and performance',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const ANGULAR_AUDIENCE_TRACKS: AngularAudienceTrack[] = [
+  {
+    title: 'For beginners',
+    detail: 'Start with Angular, components, templates, directives, pipes, binding, inputs, outputs, services, and lifecycle timing. These questions build the vocabulary needed before RxJS, routing, testing, and performance trade-offs become useful.',
+  },
+  {
+    title: 'For experienced developers',
+    detail: 'Focus on change detection, provider scope, HttpClient cancellation, route boundaries, testing strategy, sanitization, standalone migration, and profiling. These topics expose whether an Angular answer can survive production edge cases.',
+  },
+];
+
+const ANGULAR_TESTING_QUESTIONS: AngularFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'When should you use TestBed instead of a plain unit test?',
+    a: 'Use plain unit tests for pure functions, validators, mapping logic, and services that do not need Angular runtime behavior. Use TestBed when the code depends on templates, dependency injection, lifecycle hooks, pipes, directives, or Angular change detection. TestBed has more setup cost, so the boundary should match the behavior you need to prove.',
+    route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    cta: 'Open the Angular testing prep path',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you test Angular component inputs and outputs?',
+    a: 'Set inputs through the host or fixture API, run change detection, and assert the rendered behavior instead of private fields. For outputs, trigger the user action or child method that emits and assert the parent-facing event. Useful component tests cover changed inputs, missing optional inputs, disabled states, and emitted payload shape.',
+    route: ['/angular', 'trivia', 'angular-input-output'],
+    cta: 'Review input and output',
+  },
+  {
+    level: 'advanced',
+    q: 'What do fakeAsync() and tick() do in Angular tests?',
+    a: 'fakeAsync runs a test inside a controlled async zone so timers and microtasks can be advanced deterministically. tick() moves virtual time forward and flushes timer work scheduled for that window. It is useful for debounce, delay, timeout, and lifecycle timing, but it should not hide unclear async ownership.',
+    route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    cta: 'Review async testing strategy',
+  },
+  {
+    level: 'advanced',
+    q: 'How does HttpTestingController test HttpClient code?',
+    a: 'HttpTestingController lets a test expect a request, assert its method, URL, params, and body, then flush a success or error response. It proves the service sends the right HTTP contract without making a network call. A reliable test also verifies no unexpected requests remain after the scenario.',
+    route: ['/angular', 'trivia', 'angular-http-what-actually-cancels-request'],
+    cta: 'Review HttpClient behavior',
+  },
+  {
+    level: 'advanced',
+    q: 'What are Angular component harnesses?',
+    a: 'Component harnesses provide a stable testing API for interacting with components through user-facing behavior. They reduce brittle selectors and hide markup details that should not matter to the test. Harnesses are most valuable for shared UI components where many tests need the same reliable interactions.',
+    route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    cta: 'Open the Angular prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you test Angular guards and resolvers?',
+    a: 'Test guards by controlling route state, auth or permission services, and the expected allow, redirect, or block result. Test resolvers by asserting the data request and by checking completion behavior, because navigation can wait for a resolver. Router-focused tests should separate access control from data prefetch behavior.',
+    route: ['/angular', 'trivia', 'angular-routing'],
+    cta: 'Review Angular routing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you test Observable UI rendered with async pipe?',
+    a: 'Push values through a controllable Observable or subject, run change detection, and assert the text, loading state, or error state visible to the user. The async pipe owns subscription cleanup, so the test should focus on rendering transitions instead of manual unsubscribe calls. Include empty, loading, next value, and failure paths when the UI depends on them.',
+    route: ['/angular', 'trivia', 'angular-observables-rxjs'],
+    cta: 'Review Angular Observables',
+  },
+  {
+    level: 'intermediate',
+    q: 'What makes Angular tests brittle?',
+    a: 'Tests become brittle when they assert private methods, framework internals, or exact DOM structure that users cannot observe. They also become flaky when async work is not owned clearly, such as unflushed HTTP requests or timers. Prefer behavior assertions, stable selectors or harnesses, explicit async control, and tests at the smallest boundary that proves the risk.',
+    route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    cta: 'Review Angular testing mistakes',
+  },
+];
+
+const ANGULAR_SECURITY_QUESTIONS: AngularFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How does Angular protect templates from XSS?',
+    a: 'Angular treats template expressions as data binding, not executable template strings created at runtime. It escapes interpolated text and sanitizes values for risky contexts such as HTML and URLs. The protection is strongest when data stays in Angular templates instead of being written through direct DOM APIs.',
+    route: ['/angular', 'trivia', 'angular-data-binding'],
+    cta: 'Review Angular data binding',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the security difference between interpolation and [innerHTML]?',
+    a: 'Interpolation renders text, so HTML markup from a user is displayed as text instead of becoming elements. [innerHTML] asks Angular to render HTML and relies on sanitization to remove unsafe content. Use interpolation or text content for ordinary user input, and treat rich HTML as a special case with strict source and sanitization rules.',
+    route: ['/angular', 'trivia', 'angular-interpolation-vs-property-binding'],
+    cta: 'Compare binding syntax',
+  },
+  {
+    level: 'advanced',
+    q: 'What is DomSanitizer used for?',
+    a: 'DomSanitizer is an Angular API for sanitizing values or explicitly marking a value trusted for a specific security context. It is needed only when ordinary binding and built-in sanitization are not enough for a controlled use case. The dangerous part is that trust decisions move responsibility from Angular to application code.',
+    route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    cta: 'Review Angular security topics',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is bypassSecurityTrustHtml dangerous?',
+    a: 'bypassSecurityTrustHtml tells Angular to skip normal sanitization for that value. If the value contains user-controlled markup, the app can reintroduce XSS even though Angular templates are normally safe. Only use bypass APIs for tightly controlled, audited content and keep the trusted boundary small.',
+    route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    cta: 'Review Angular security topics',
+  },
+  {
+    level: 'advanced',
+    q: 'How should Angular handle user-controlled URLs?',
+    a: 'Bind URLs through Angular properties when possible so framework sanitization can run for the target context. Validate allowed schemes and destinations before using user-controlled links, redirects, images, or resource URLs. Special contexts such as iframe sources and script-like URLs need stricter allowlists, not string concatenation.',
+    route: ['/angular', 'trivia', 'angular-data-binding'],
+    cta: 'Review safe binding',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you render CMS or rich text safely in Angular?',
+    a: 'Treat CMS HTML as untrusted unless it comes from a trusted pipeline with server-side sanitization and a narrow allowlist. Client-side rendering should still avoid scripts, event-handler attributes, unsafe URLs, and unknown embeds. The safer architecture sanitizes before storage or delivery, then renders through a small component with clear ownership.',
+    route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    cta: 'Review Angular security topics',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do CSP and backend validation support Angular security?',
+    a: 'Content Security Policy reduces the damage of injected scripts by limiting what the browser can execute or load. Backend validation and output encoding protect data before it reaches the Angular app and protect non-Angular consumers too. Angular template safety is one layer, not a replacement for server-side validation and browser policy.',
+    route: ['/guides', 'framework-prep', 'angular-prep-path'],
+    cta: 'Review Angular prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can direct DOM access create Angular security bugs?',
+    a: 'Direct DOM writes can bypass Angular binding, sanitization, and change detection assumptions. APIs such as nativeElement.innerHTML or third-party widgets need careful review because they may insert unsanitized markup. Prefer Angular templates, Renderer2 for DOM operations, and explicit sanitization boundaries for unavoidable integrations.',
+    route: ['/angular', 'trivia', 'angular-data-binding'],
+    cta: 'Review Angular binding safety',
+  },
+];
+
+const ANGULAR_CLASSIC_QUESTIONS: AngularFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'What is the difference between guards and resolvers?',
+    a: 'Guards decide whether navigation may proceed, redirect, or stop. Resolvers fetch data before route activation so the destination can start with required data available. Access control belongs in guards, while data prefetch belongs in resolvers or component loading depending on the user experience.',
+    route: ['/angular', 'trivia', 'angular-routing'],
+    cta: 'Review Angular routing',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the difference between CanMatch and CanActivate?',
+    a: 'CanMatch runs while the router is deciding whether a route can match at all. CanActivate runs after a route has matched and before it activates. CanMatch is useful for feature flags, role-based route trees, and lazy route selection, while CanActivate fits ordinary activation checks.',
+    route: ['/angular', 'trivia', 'angular-routing'],
+    cta: 'Review guard behavior',
+  },
+  {
+    level: 'advanced',
+    q: 'What happens if a resolver Observable never completes?',
+    a: 'A resolver that never completes can keep navigation waiting indefinitely. HTTP Observables usually complete, but streams such as subjects, router events, or store selectors may not complete on their own. Use finite streams, take(1), or move non-blocking data to in-component loading when waiting would harm navigation.',
+    route: ['/angular', 'trivia', 'angular-routing'],
+    cta: 'Review resolver timing',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the difference between AOT and JIT in Angular?',
+    a: 'AOT compiles Angular templates during the build, while JIT compiles them at runtime. AOT improves startup, catches more template issues earlier, and is the normal production choice. JIT can be useful in development-style workflows, but it adds runtime compilation cost.',
+    route: ['/angular', 'trivia', 'angular-template-compilation-and-binding'],
+    cta: 'Review template compilation',
+  },
+  {
+    level: 'advanced',
+    q: 'How does Angular template compilation help catch bugs?',
+    a: 'Angular compiles templates into instructions and can type-check bindings before production runtime. That catches mistakes such as misspelled properties, incompatible input types, and invalid template expressions earlier. Runtime stale UI problems still require change detection and state ownership debugging.',
+    route: ['/angular', 'trivia', 'angular-template-compilation-and-binding'],
+    cta: 'Review compiler behavior',
+  },
+  {
+    level: 'advanced',
+    q: 'How should you approach Angular performance profiling?',
+    a: 'Start by measuring the slow route, interaction, or render path before applying a checklist. Common bottlenecks include heavy template work, unstable list identity, excessive change detection, oversized route chunks, and repeated HTTP or derived-state work. The fix should match the measured bottleneck, such as trackBy, OnPush, lazy loading, memoized state, or moving work out of the template.',
+    route: ['/angular', 'trivia', 'angular-performance-optimization'],
+    cta: 'Review Angular performance',
+  },
+  {
+    level: 'advanced',
+    q: 'What can go wrong during NgModule to standalone migration?',
+    a: 'Declarations move out of NgModules, but provider scope must be handled separately. A migration can accidentally duplicate services, drop shared imports, or move providers to a broader or narrower lifetime than intended. Validate route boundaries, lazy loading, and shared UI imports as separate migration checks.',
+    route: ['/angular', 'trivia', 'angular-appmodule-standalone-changes'],
+    cta: 'Review standalone migration',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the difference between lazy loading and preloading?',
+    a: 'Lazy loading delays fetching a route or feature until it is needed. Preloading fetches lazy code in the background after initial load so future navigation can feel faster. The trade-off is startup cost, network timing, and whether a feature is likely enough to justify early background loading.',
+    route: ['/angular', 'trivia', 'angular-lazy-loading'],
+    cta: 'Review lazy loading',
+  },
+];
+
+const ANGULAR_SCENARIO_QUESTIONS: AngularScenarioQuestionItem[] = [
+  {
+    level: 'advanced',
+    q: 'Why does this OnPush child stay stale after a nested mutation?',
+    code: `@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '{{ user.name }}'
+})
+export class UserCard {
+  @Input() user!: User;
+}
+
+this.user.name = 'Ada';`,
+    explanation: 'OnPush checks input references, not every nested field mutation. If the parent mutates user.name while keeping the same object reference, the child can stay stale. Create a new object, emit new state, or use an explicit observable/signal update path.',
+    route: ['/angular', 'trivia', 'angular-onpush-change-detection-debugging-real-bug'],
+    cta: 'Debug OnPush stale UI',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is switchMap safer than mergeMap for typeahead search?',
+    code: `results$ = search.valueChanges.pipe(
+  debounceTime(250),
+  switchMap(query => http.get('/api/search', { params: { query } }))
+);`,
+    explanation: 'switchMap unsubscribes from the previous inner request when a new query arrives. With HttpClient, that unsubscribe can abort the old request and prevents stale responses from winning. mergeMap allows parallel requests, which is correct for some workflows but risky for latest-only UI.',
+    route: ['/angular', 'trivia', 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use'],
+    cta: 'Choose the right RxJS operator',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is wrong with a manual subscription that never tears down?',
+    code: `ngOnInit() {
+  this.form.valueChanges.subscribe(value => {
+    this.saveDraft(value);
+  });
+}`,
+    explanation: 'valueChanges is long-lived and can keep emitting after the component should be gone. Use async pipe where possible, or bind manual subscriptions to the component lifetime with takeUntilDestroyed or another teardown pattern. HttpClient one-shot streams are different because they usually complete.',
+    route: ['/angular', 'trivia', 'angular-prevent-memory-leaks-unsubscribe-patterns'],
+    cta: 'Review teardown patterns',
+  },
+  {
+    level: 'advanced',
+    q: 'How can provider scope create duplicate service instances?',
+    code: `@Component({
+  selector: 'app-cart-panel',
+  providers: [CartService]
+})
+export class CartPanel {}`,
+    explanation: 'A provider on a component creates an instance for that component subtree. If the cart state was supposed to be shared app-wide, this local provider can create a second cart. Move the provider to root or the intended route boundary and state who should share the instance.',
+    route: ['/angular', 'trivia', 'angular-hierarchical-dependency-injection-real-bug'],
+    cta: 'Debug DI scope',
+  },
+  {
+    level: 'advanced',
+    q: 'How do async validators create stale form results?',
+    code: `username = new FormControl('', [], [
+  value => this.api.checkUsername(value)
+]);`,
+    explanation: 'Async validators can race when old requests finish after newer values. Angular handles async validator subscriptions, but the validator still needs predictable cancellation/error behavior and should return finite Observables. Add debouncing or switchMap-style ownership when validation depends on fast-changing input.',
+    route: ['/angular', 'trivia', 'angular-template-driven-vs-reactive-forms-which-scales'],
+    cta: 'Review form validation strategy',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does trackBy or track identity matter in Angular lists?',
+    code: `<li *ngFor="let user of users; trackBy: trackUser">
+  {{ user.name }}
+</li>`,
+    explanation: 'Stable identity lets Angular reuse DOM and component instances when a list changes. Without a useful trackBy or track expression, reordering or refreshing arrays can recreate more UI than necessary. The bug is not only performance; local row state and focus can also reset unexpectedly.',
+    route: ['/angular', 'trivia', 'angular-ngfor-trackby'],
+    cta: 'Review list identity',
+  },
+  {
+    level: 'intermediate',
+    q: 'When is async pipe better than a manual subscribe?',
+    code: `<section *ngIf="user$ | async as user">
+  {{ user.name }}
+</section>`,
+    explanation: 'async pipe subscribes, updates the template, and unsubscribes when the view is destroyed. It is usually better for read-only template data because lifecycle ownership is clear. Manual subscribe is still useful for imperative effects, but then teardown and error handling are your responsibility.',
+    route: ['/angular', 'trivia', 'angular-observables-rxjs'],
+    cta: 'Review Angular Observables',
+  },
+  {
+    level: 'advanced',
+    q: 'What changes when a provider moves to a lazy route boundary?',
+    code: `export const routes: Routes = [
+  {
+    path: 'admin',
+    providers: [AdminFeatureService],
+    loadComponent: () => import('./admin.page')
+  }
+];`,
+    explanation: 'Route-level providers create instances scoped to that route branch. That is useful for feature isolation, but it can split state if callers expected a root singleton. Lazy loading and provider boundaries should be explained together because both affect runtime ownership.',
+    route: ['/angular', 'trivia', 'angular-lazy-loading'],
+    cta: 'Review lazy loading boundaries',
+  },
+];
+
+const ANGULAR_MODERN_QUESTIONS: AngularModernQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How do standalone components change Angular architecture?',
+    a: 'Standalone components remove the need to declare every component in an NgModule. Imports move closer to the component or route that uses them, which makes feature boundaries easier to see. The migration risk is provider scope, because moving declarations and providers are different decisions.',
+    route: ['/angular', 'trivia', 'angular-ngmodules-vs-standalone'],
+    cta: 'Compare standalone and NgModules',
+  },
+  {
+    level: 'advanced',
+    q: 'What are route-level providers useful for?',
+    a: 'Route-level providers scope services to a route branch instead of the whole app. They are useful for feature state, temporary workflows, and lazy-loaded boundaries that should not share instances globally. They can also create duplicate state if a root singleton was expected.',
+    route: ['/angular', 'trivia', 'angular-lazy-loading'],
+    cta: 'Review route boundaries',
+  },
+  {
+    level: 'advanced',
+    q: 'When should you use signals instead of RxJS?',
+    a: 'Signals are a good fit for local synchronous state and derived values that the template reads directly. RxJS remains stronger for event streams, cancellation, multicasting, retry, debouncing, and HTTP orchestration. Many Angular apps use both: signals for state reads and RxJS for async pipelines.',
+    route: ['/angular', 'trivia', 'angular-observables-rxjs'],
+    cta: 'Compare streams and state',
+  },
+  {
+    level: 'advanced',
+    q: 'How do signal inputs and outputs affect component contracts?',
+    a: 'Signal-based APIs make input reads and derived state more explicit in modern Angular components. They do not remove the need for clear ownership: parents still pass state down, and children still emit meaningful events up. The main benefit is predictable reactivity with less glue code for derived template state.',
+    route: ['/angular', 'trivia', 'angular-input-output'],
+    cta: 'Review component contracts',
+  },
+  {
+    level: 'intermediate',
+    q: 'What problem does the new Angular control flow syntax solve?',
+    a: 'The newer @if, @for, and @switch syntax makes template control flow more explicit and avoids some microsyntax friction. The interview value is understanding view creation, list identity, and empty states, not only naming the syntax. The same performance and state-reset concerns still apply.',
+    route: ['/angular', 'trivia', 'angular-structural-vs-attribute-directives'],
+    cta: 'Review view creation',
+  },
+  {
+    level: 'advanced',
+    q: 'What are deferrable views in Angular?',
+    a: 'Deferrable views let Angular delay loading part of a template until a trigger such as viewport visibility, interaction, or idle time. They are mainly a performance and loading-strategy tool. Use them for expensive non-critical UI, but keep loading, placeholder, and error states deliberate.',
+    route: ['/angular', 'trivia', 'angular-lazy-loading'],
+    cta: 'Review loading strategy',
+  },
+  {
+    level: 'advanced',
+    q: 'What changes in zoneless Angular change detection?',
+    a: 'Zoneless Angular removes the assumption that patched async APIs automatically notify the framework. Updates need explicit notification paths such as signals, async pipe, or change detection APIs. That can reduce hidden work, but it requires clearer state ownership and update boundaries.',
+    route: ['/angular', 'trivia', 'angular-zonejs-change-detection'],
+    cta: 'Review zoneless change detection',
+  },
+  {
+    level: 'advanced',
+    q: 'How do SSR and hydration affect Angular performance?',
+    a: 'Server-side rendering can improve first contentful paint and crawlable content by sending HTML earlier. Hydration lets Angular attach behavior to server-rendered markup instead of rebuilding the whole page from scratch. The trade-off is complexity around browser-only code, data consistency, and measuring whether SSR helps the actual route.',
+    route: ['/angular', 'trivia', 'angular-performance-optimization'],
+    cta: 'Review Angular performance',
+  },
+];
+
 const JAVASCRIPT_TOPIC_CARDS: JavaScriptTopicCard[] = [
   {
     title: 'Shallow vs deep cloning',
@@ -1112,7 +1717,7 @@ const ANGULAR_TOPIC_CARDS: AngularTopicCard[] = [
   },
   {
     title: 'Dependency injection and services',
-    answer: 'Angular DI creates and supplies services, config values, and scoped dependencies. Strong answers connect service responsibility with provider placement, because root, route, and component providers change instance lifetime.',
+    answer: 'Angular DI creates and supplies services, config values, and scoped dependencies. Service responsibility should be explained with provider placement, because root, route, and component providers change instance lifetime.',
     link: {
       label: 'Review Angular dependency injection',
       route: ['/angular', 'trivia', 'angular-dependency-injection'],
@@ -1497,6 +2102,14 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   scrollToJavaScriptSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  scrollToAngularSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  private scrollToSection(targetId: string): void {
     const target = this.document.getElementById(targetId);
     if (!target) return;
 
@@ -1519,7 +2132,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return JAVASCRIPT_BROWSER_QUESTIONS;
   }
 
-  javascriptQuestionLevelLabel(level: JavaScriptQuestionLevel): string {
+  questionLevelLabel(level: QuestionLevel): string {
     switch (level) {
       case 'beginner':
         return 'Beginner';
@@ -1528,6 +2141,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       default:
         return 'Advanced';
     }
+  }
+
+  javascriptQuestionLevelLabel(level: QuestionLevel): string {
+    return this.questionLevelLabel(level);
   }
 
   javascriptShortAnswerCategoryLabel(category: JavaScriptShortAnswerCategory): string {
@@ -1565,6 +2182,57 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   angularTopicCards(): AngularTopicCard[] {
     return ANGULAR_TOPIC_CARDS;
+  }
+
+  angularAnchorItems(): AngularAnchorItem[] {
+    return ANGULAR_ANCHOR_ITEMS;
+  }
+
+  angularEditorialSignal(): AngularEditorialSignal {
+    return ANGULAR_EDITORIAL_SIGNAL;
+  }
+
+  angularShortAnswers(): AngularShortAnswerItem[] {
+    return ANGULAR_SHORT_ANSWERS;
+  }
+
+  angularAudienceTracks(): AngularAudienceTrack[] {
+    return ANGULAR_AUDIENCE_TRACKS;
+  }
+
+  angularTestingQuestions(): AngularFocusedQuestionItem[] {
+    return ANGULAR_TESTING_QUESTIONS;
+  }
+
+  angularSecurityQuestions(): AngularFocusedQuestionItem[] {
+    return ANGULAR_SECURITY_QUESTIONS;
+  }
+
+  angularClassicQuestions(): AngularFocusedQuestionItem[] {
+    return ANGULAR_CLASSIC_QUESTIONS;
+  }
+
+  angularScenarioQuestions(): AngularScenarioQuestionItem[] {
+    return ANGULAR_SCENARIO_QUESTIONS;
+  }
+
+  angularModernQuestions(): AngularModernQuestionItem[] {
+    return ANGULAR_MODERN_QUESTIONS;
+  }
+
+  angularShortAnswerCategoryLabel(category: AngularShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'components':
+        return 'Components';
+      case 'di-change-detection':
+        return 'DI + change detection';
+      case 'rxjs-forms':
+        return 'RxJS + forms';
+      default:
+        return 'Modern Angular';
+    }
   }
 
   angularMistakeItems(): AngularMistakeItem[] {
@@ -2144,8 +2812,24 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isAngularHub()) {
+      collectionPage['dateModified'] = ANGULAR_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: ANGULAR_EDITORIAL_SIGNAL.reviewer,
+      };
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'Beginner to advanced Angular interview questions' },
+        { '@type': 'Thing', name: 'Angular interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'Angular RxJS interview questions' },
+        { '@type': 'Thing', name: 'Angular change detection interview questions' },
+        { '@type': 'Thing', name: 'Angular dependency injection interview questions' },
+        { '@type': 'Thing', name: 'Angular testing interview questions' },
+        { '@type': 'Thing', name: 'Angular security interview questions' },
+        { '@type': 'Thing', name: 'Angular guards and resolvers interview questions' },
+        { '@type': 'Thing', name: 'Angular AOT and JIT interview questions' },
+        { '@type': 'Thing', name: 'Angular compiler interview questions' },
+        { '@type': 'Thing', name: 'Angular performance profiling interview questions' },
         { '@type': 'Thing', name: 'Angular RxJS and HttpClient cancellation' },
         { '@type': 'Thing', name: 'Angular dependency injection' },
         { '@type': 'Thing', name: 'Angular forms and validation' },
@@ -2157,6 +2841,14 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'Thing', name: 'Angular testing applications' },
         { '@type': 'Thing', name: 'Angular performance optimization' },
         { '@type': 'Thing', name: 'Angular standalone components versus NgModules' },
+        { '@type': 'Thing', name: 'Angular standalone components and signals' },
+        { '@type': 'Thing', name: 'Angular forms and testing' },
+        { '@type': 'Thing', name: 'Angular TestBed and fakeAsync' },
+        { '@type': 'Thing', name: 'Angular HttpTestingController' },
+        { '@type': 'Thing', name: 'Angular DomSanitizer and sanitization' },
+        { '@type': 'Thing', name: 'Angular XSS prevention' },
+        { '@type': 'Thing', name: 'Angular route guards and resolvers' },
+        { '@type': 'Thing', name: 'Angular AOT versus JIT' },
         { '@type': 'Thing', name: 'Angular state management and NgRx' },
         { '@type': 'Thing', name: 'Modern Angular interview topics' },
       ];
@@ -2196,6 +2888,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     if (this.isJavaScriptHub()) {
       jsonLd.push(this.javascriptShortAnswersFaqPage(canonicalUrl));
     }
+    if (this.isAngularHub()) {
+      jsonLd.push(this.angularShortAnswersFaqPage(canonicalUrl));
+    }
 
     this.seo.updateTags({
       ...routeSeo,
@@ -2211,6 +2906,23 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       url: canonicalUrl,
       name: 'Top JavaScript interview questions and short answers, beginner to advanced',
       mainEntity: this.javascriptShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private angularShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#angular-short-answers`,
+      url: canonicalUrl,
+      name: 'Top Angular interview questions and short answers, beginner to advanced',
+      mainEntity: this.angularShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: {
