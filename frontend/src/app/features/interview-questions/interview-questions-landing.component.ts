@@ -120,6 +120,11 @@ type AngularEditorialSignal = {
   coverage: string;
   dateModified: string;
 };
+type AngularKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
 type HtmlCoverageLink = { label: string; route: any[] };
 type HtmlTopicCard = { title: string; answer: string; link: HtmlCoverageLink };
 type HtmlMistakeItem = { title: string; detail: string };
@@ -419,16 +424,16 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   angular: [
     {
-      q: 'Are these Angular interview questions for beginners or experienced developers?',
-      a: 'They cover both. The first section starts with beginner Angular fundamentals, then the page moves into experienced-level scenario, testing, security, routing, performance, and modern Angular questions.',
+      q: 'Are these Angular interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with beginner Angular fundamentals, then moves into experienced-developer topics such as scenarios, testing, security, routing, performance, RxJS, change detection, and modern Angular.',
     },
     {
-      q: 'Do these Angular questions include testing and security?',
-      a: 'Yes. The page includes TestBed, fakeAsync, HttpTestingController, harnesses, Angular sanitization, DomSanitizer, user-controlled URLs, and direct DOM access risks.',
+      q: 'Does this page include Angular testing interview questions?',
+      a: 'Yes. The testing section covers TestBed, fakeAsync, tick, HttpTestingController, component harnesses, guards, resolvers, async pipe UI, and brittle Angular test mistakes.',
     },
     {
-      q: 'Do these include Angular scenario and code questions?',
-      a: 'Yes. The scenario section covers OnPush stale UI, RxJS cancellation, provider scope, subscriptions, async validators, list identity, async pipe ownership, and lazy route boundaries.',
+      q: 'Does this page cover Angular security, guards, resolvers, and performance?',
+      a: 'Yes. The security and routing sections cover Angular sanitization, DomSanitizer, XSS prevention, user-controlled URLs, guards, resolvers, AOT/JIT, template compilation, lazy loading, and performance profiling.',
     },
   ],
   vue: [
@@ -1110,6 +1115,39 @@ const ANGULAR_EDITORIAL_SIGNAL: AngularEditorialSignal = {
   coverage: '65 visible Angular questions across answers, scenarios, modern Angular, testing, security, routing, and performance',
   dateModified: '2026-05-20T00:00:00.000Z',
 };
+
+const ANGULAR_KEYWORD_CLUSTERS: AngularKeywordClusterItem[] = [
+  {
+    label: 'Beginner',
+    targetId: 'iq-angular-short-answers-title',
+    detail: 'Angular basics, components, directives, pipes, binding, inputs, outputs, services, and lifecycle timing.',
+  },
+  {
+    label: 'Experienced',
+    targetId: 'iq-angular-audience-title',
+    detail: 'Senior Angular questions around production boundaries, RxJS, change detection, testing strategy, and migration risk.',
+  },
+  {
+    label: 'Testing',
+    targetId: 'iq-angular-testing-title',
+    detail: 'TestBed, fakeAsync, tick, HttpTestingController, harnesses, guards, resolvers, and Observable UI tests.',
+  },
+  {
+    label: 'Security',
+    targetId: 'iq-angular-security-title',
+    detail: 'XSS prevention, sanitization, DomSanitizer, trusted HTML, user-controlled URLs, CSP, and direct DOM risks.',
+  },
+  {
+    label: 'Modern Angular',
+    targetId: 'iq-angular-modern-title',
+    detail: 'Standalone components, signals, route providers, control flow, deferrable views, zoneless change detection, SSR, and hydration.',
+  },
+  {
+    label: 'Routing/Performance',
+    targetId: 'iq-angular-classic-title',
+    detail: 'Guards, resolvers, AOT/JIT, template compilation, lazy loading, preloading, profiling, and standalone migration.',
+  },
+];
 
 const ANGULAR_AUDIENCE_TRACKS: AngularAudienceTrack[] = [
   {
@@ -2196,6 +2234,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return ANGULAR_SHORT_ANSWERS;
   }
 
+  angularKeywordClusters(): AngularKeywordClusterItem[] {
+    return ANGULAR_KEYWORD_CLUSTERS;
+  }
+
   angularAudienceTracks(): AngularAudienceTrack[] {
     return ANGULAR_AUDIENCE_TRACKS;
   }
@@ -2820,16 +2862,31 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'Beginner to advanced Angular interview questions' },
+        { '@type': 'Thing', name: 'Angular interview questions' },
+        { '@type': 'Thing', name: 'Angular interview questions and answers' },
+        { '@type': 'Thing', name: 'Angular interview questions for beginners' },
         { '@type': 'Thing', name: 'Angular interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'Senior Angular interview questions' },
         { '@type': 'Thing', name: 'Angular RxJS interview questions' },
         { '@type': 'Thing', name: 'Angular change detection interview questions' },
+        { '@type': 'Thing', name: 'OnPush change detection Angular interview questions' },
         { '@type': 'Thing', name: 'Angular dependency injection interview questions' },
         { '@type': 'Thing', name: 'Angular testing interview questions' },
+        { '@type': 'Thing', name: 'Angular TestBed interview questions' },
+        { '@type': 'Thing', name: 'fakeAsync tick Angular interview' },
+        { '@type': 'Thing', name: 'HttpTestingController interview questions' },
         { '@type': 'Thing', name: 'Angular security interview questions' },
+        { '@type': 'Thing', name: 'Angular DomSanitizer interview questions' },
+        { '@type': 'Thing', name: 'Angular XSS prevention interview questions' },
+        { '@type': 'Thing', name: 'Angular signals interview questions' },
+        { '@type': 'Thing', name: 'Angular standalone components interview questions' },
+        { '@type': 'Thing', name: 'zoneless Angular interview questions' },
         { '@type': 'Thing', name: 'Angular guards and resolvers interview questions' },
         { '@type': 'Thing', name: 'Angular AOT and JIT interview questions' },
+        { '@type': 'Thing', name: 'AOT vs JIT Angular interview questions' },
         { '@type': 'Thing', name: 'Angular compiler interview questions' },
         { '@type': 'Thing', name: 'Angular performance profiling interview questions' },
+        { '@type': 'Thing', name: 'Angular performance optimization interview questions' },
         { '@type': 'Thing', name: 'Angular RxJS and HttpClient cancellation' },
         { '@type': 'Thing', name: 'Angular dependency injection' },
         { '@type': 'Thing', name: 'Angular forms and validation' },

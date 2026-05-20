@@ -156,6 +156,35 @@
 
   <section
     *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-clusters"
+    aria-labelledby="iq-angular-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-clusters-title">
+        Popular Angular interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Jump to the Angular interview topics candidates usually need most: beginner, experienced, testing, security, modern Angular, routing, and performance.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of angularKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToAngularSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
     class="iq-section iq-section--surface iq-section--angular-short-answers"
     aria-labelledby="iq-angular-short-answers-title"
   >
@@ -217,7 +246,7 @@
     <div class="iq-section__head">
       <p class="iq-context-kicker">Testing</p>
       <h2 class="fa-section-title iq-section__title" id="iq-angular-testing-title">
-        Angular testing interview questions
+        Angular testing interview questions with TestBed, fakeAsync, and HttpTestingController
       </h2>
       <p class="fa-meta-text">
         Review TestBed, component tests, fakeAsync, HttpTestingController, harnesses, guards, resolvers, and Observable-driven UI behavior.
@@ -246,7 +275,7 @@
     <div class="iq-section__head">
       <p class="iq-context-kicker">Security</p>
       <h2 class="fa-section-title iq-section__title" id="iq-angular-security-title">
-        Angular security interview questions
+        Angular security interview questions about XSS, sanitization, and DomSanitizer
       </h2>
       <p class="fa-meta-text">
         Cover template XSS protection, sanitization, DomSanitizer, trusted HTML, user-controlled URLs, CSP, backend validation, and direct DOM risks.
@@ -275,7 +304,7 @@
     <div class="iq-section__head">
       <p class="iq-context-kicker">Routing + compiler + performance</p>
       <h2 class="fa-section-title iq-section__title" id="iq-angular-classic-title">
-        Angular routing, compiler, and performance questions
+        Angular routing, compiler, and performance interview questions
       </h2>
       <p class="fa-meta-text">
         Add the classic Angular topics that often decide senior rounds: guards, resolvers, AOT/JIT, template compilation, profiling, migration, lazy loading, and preloading.
