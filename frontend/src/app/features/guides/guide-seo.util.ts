@@ -1,5 +1,5 @@
 import { SeoMeta, SeoService } from '../../core/services/seo.service';
-import { GuideAuthor, GuideEntry } from '../../shared/guides/guide.registry';
+import { GuideAuthor, GuideEntry, GuideSeo } from '../../shared/guides/guide.registry';
 
 const DESCRIPTION_MAX_LEN = 158;
 const TITLE_MAX_LEN = 74;
@@ -46,6 +46,36 @@ function buildKeywordList(primaryKeyword: string | undefined, keywords: string[]
   if (normalizedPrimary) seed.push(normalizedPrimary);
   if (Array.isArray(keywords)) seed.push(...keywords);
   return normalizeKeywords(seed);
+}
+
+function buildFaqPageSchema(canonical: string, faqPage: GuideSeo['faqPage'] | undefined): Record<string, any> | null {
+  const rawItems = faqPage?.items;
+  if (!Array.isArray(rawItems)) return null;
+
+  const mainEntity = rawItems
+    .map((item) => ({
+      q: normalizeText(item?.question || ''),
+      a: normalizeText(item?.answer || ''),
+    }))
+    .filter((item) => item.q && item.a)
+    .map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.a,
+      },
+    }));
+
+  if (!mainEntity.length) return null;
+
+  return {
+    '@type': 'FAQPage',
+    '@id': `${canonical}#faq`,
+    url: canonical,
+    name: normalizeText(faqPage?.name || 'Guide FAQ'),
+    mainEntity,
+  };
 }
 
 function buildAuthorSchema(author: GuideAuthor | undefined): Record<string, any> {
@@ -152,6 +182,7 @@ export function buildGuideDetailSeo(
       },
     },
   };
+  const faqPage = buildFaqPageSchema(canonical, entry.seo?.faqPage);
 
   return {
     title,
@@ -159,6 +190,6 @@ export function buildGuideDetailSeo(
     keywords,
     canonical,
     ogType: 'article',
-    jsonLd: [breadcrumb, article],
+    jsonLd: faqPage ? [breadcrumb, article, faqPage] : [breadcrumb, article],
   };
 }

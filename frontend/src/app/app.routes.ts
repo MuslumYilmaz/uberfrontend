@@ -1136,7 +1136,7 @@ export const routes: Routes = [
       seo: {
         title: 'React Interview Questions and Answers',
         description:
-          'Practice React interview questions and answers with coding prompts, concept questions, explanations, follow-ups, common mistakes, hooks, and effects.',
+          'React interview questions and answers, beginner to advanced, with experienced developer topics, rendering internals, Virtual DOM, reconciliation, Fiber, React 19, Actions, useActionState, useOptimistic, Server Components, Next.js, hydration, Testing Library, scenario questions, and coding prompts.',
       },
     },
   },
@@ -1230,7 +1230,7 @@ export const routes: Routes = [
       },
       seo: {
         title: 'HTML and CSS Interview Questions and Answers',
-        description: 'Practice HTML and CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, semantics, layout, and accessibility.',
+        description: 'HTML and CSS interview questions and answers, beginner to advanced, with semantic HTML, forms, accessibility, Flexbox, Grid, cascade, specificity, responsive layout, and code scenarios.',
       },
     },
   },

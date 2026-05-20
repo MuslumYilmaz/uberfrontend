@@ -78,6 +78,50 @@ type JavaScriptEditorialSignal = {
 type ReactCoverageLink = { label: string; route: any[] };
 type ReactTopicCard = { title: string; answer: string; link: ReactCoverageLink };
 type ReactSupportItem = { title: string; detail: string };
+type ReactShortAnswerCategory = 'fundamentals' | 'state-hooks' | 'rendering-performance' | 'modern';
+type ReactShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: ReactShortAnswerCategory;
+  level: QuestionLevel;
+};
+type ReactAnchorItem = { label: string; targetId: string };
+type ReactKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type ReactScenarioQuestionItem = {
+  q: string;
+  code: string;
+  explanation: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type ReactModernQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type ReactAudienceTrack = { title: string; detail: string };
+type ReactFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type ReactEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type AngularCoverageLink = { label: string; route: any[] };
 type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
 type AngularMistakeItem = { title: string; detail: string };
@@ -130,6 +174,43 @@ type HtmlTopicCard = { title: string; answer: string; link: HtmlCoverageLink };
 type HtmlMistakeItem = { title: string; detail: string };
 type HtmlBehavioralItem = { title: string; detail: string };
 type HtmlResourceLink = { label: string; href: string; summary: string };
+type HtmlCssShortAnswerCategory = 'html' | 'css' | 'accessibility' | 'responsive-debugging';
+type HtmlCssShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: HtmlCssShortAnswerCategory;
+  level: QuestionLevel;
+};
+type HtmlCssAnchorItem = { label: string; targetId: string };
+type HtmlCssKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type HtmlCssAudienceTrack = { title: string; detail: string };
+type HtmlCssFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type HtmlCssCodeQuestionItem = {
+  q: string;
+  code: string;
+  explanation: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type HtmlCssEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type HubIntentProfile = {
   heading: string;
   lead: string;
@@ -410,16 +491,24 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   react: [
     {
-      q: 'How do React interview questions differ from React interview preparation?',
-      a: 'The questions test individual skills. React interview preparation connects those skills into a repeatable path for hooks, state ownership, effects, rendering, and performance trade-offs.',
+      q: 'Are these React interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with beginner React fundamentals, then moves into experienced-developer topics such as hooks, effects, rendering internals, React 19, server/client boundaries, testing, Context performance, hydration, and server-state trade-offs.',
     },
     {
-      q: 'What should I practice first for React interviews?',
-      a: 'Start with state ownership and effects, then add async UI, forms, lists, and performance follow-ups once the render model feels stable.',
+      q: 'Does this page cover React rendering internals?',
+      a: 'Yes. The rendering internals section covers Virtual DOM, render and commit phases, reconciliation, diffing assumptions, Fiber, keys, fragments, and useLayoutEffect timing.',
     },
     {
-      q: 'When should I use the React interview preparation path?',
-      a: 'Use it when random React questions are not enough and you need a 7/14/30-day sequence that ties concept answers to coding drills.',
+      q: 'Does this page include React 19 and server-first React questions?',
+      a: 'Yes. The React 19 section covers Actions, useActionState, useOptimistic, useFormStatus, use(), Server Components, Next.js App Router boundaries, streaming, Suspense, and hydration mismatches.',
+    },
+    {
+      q: 'Does this page include React testing interview questions?',
+      a: 'Yes. The testing section covers React Testing Library, Jest, Vitest, act, async loading and error UI, mocked API boundaries, hook testing, StrictMode effects, and brittle test mistakes.',
+    },
+    {
+      q: 'How should I prepare after reviewing these React interview questions?',
+      a: 'Use this hub to find gaps, then move to the React interview preparation path for a 7, 14, or 30-day plan. The prep path owns the study-plan intent; this page owns the question-and-answer review intent.',
     },
   ],
   angular: [
@@ -452,16 +541,20 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   htmlCss: [
     {
-      q: 'Should I study HTML and CSS interview questions together?',
-      a: 'Yes for UI rounds. Markup semantics, accessibility, layout, and cascade behavior usually appear together when you have to build or debug a component.',
+      q: 'Are these HTML and CSS interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with beginner HTML and CSS fundamentals, then moves into experienced frontend topics such as accessibility, cascade strategy, layout debugging, browser rendering, responsive UI, and code scenarios.',
     },
     {
-      q: 'What should I practice first?',
-      a: 'Start with semantic structure, forms, labels, flexbox, grid, cascade, specificity, and responsive constraints before moving into polish.',
+      q: 'Does this page cover accessibility and forms?',
+      a: 'Yes. It covers semantic HTML, labels, form validation, landmarks, focus states, alt text, dialog behavior, and quick accessibility testing for practical UI rounds.',
     },
     {
-      q: 'When should I use coding prompts instead of concept questions?',
-      a: 'Use coding prompts when you can explain the rule but still miss alignment, overflow, focus, responsive, or accessibility details in implementation.',
+      q: 'Does this page cover CSS layout, cascade, and responsive UI?',
+      a: 'Yes. It covers box model, cascade, specificity, Flexbox, Grid, positioning, z-index, media queries, responsive images, overflow debugging, and layout shift.',
+    },
+    {
+      q: 'Where should I practice HTML and CSS coding scenarios?',
+      a: 'Start with the code scenarios and preview prompts on this page, then open the HTML/CSS coding list for forms, links, images, semantic layouts, Flexbox nav bars, and responsive card grids.',
     },
   ],
   html: [
@@ -1627,10 +1720,615 @@ const JAVASCRIPT_RESOURCE_LINKS: JavaScriptResourceLink[] = [
   },
 ];
 
+const REACT_EDITORIAL_SIGNAL: ReactEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const REACT_ANCHOR_ITEMS: ReactAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-react-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-react-short-answers-title' },
+  { label: 'Beginner/experienced', targetId: 'iq-react-audience-title' },
+  { label: 'Rendering internals', targetId: 'iq-react-rendering-internals-title' },
+  { label: 'React 19 + server', targetId: 'iq-react-react19-server-title' },
+  { label: 'Testing', targetId: 'iq-react-testing-title' },
+  { label: 'Scenarios + code', targetId: 'iq-react-scenarios-title' },
+  { label: 'Modern React', targetId: 'iq-react-modern-title' },
+  { label: 'Coding prompts', targetId: 'iq-react-coding-preview-title' },
+  { label: 'Concept prompts', targetId: 'iq-react-concept-preview-title' },
+  { label: 'Topic map', targetId: 'iq-react-coverage-title' },
+];
+
+const REACT_KEYWORD_CLUSTERS: ReactKeywordClusterItem[] = [
+  {
+    label: 'Beginner',
+    targetId: 'iq-react-short-answers-title',
+    detail: 'React, JSX, components, props, state, keys, controlled inputs, and one-way data flow.',
+  },
+  {
+    label: 'Experienced',
+    targetId: 'iq-react-audience-title',
+    detail: 'State ownership, effects, Context fan-out, rendering internals, server boundaries, testing, and performance.',
+  },
+  {
+    label: 'Rendering internals',
+    targetId: 'iq-react-rendering-internals-title',
+    detail: 'Virtual DOM, render and commit phases, reconciliation, diffing, Fiber, fragments, keys, and layout effects.',
+  },
+  {
+    label: 'React 19/server',
+    targetId: 'iq-react-react19-server-title',
+    detail: 'Actions, useActionState, useOptimistic, useFormStatus, use(), Server Components, Next.js boundaries, and streaming.',
+  },
+  {
+    label: 'Testing',
+    targetId: 'iq-react-testing-title',
+    detail: 'Testing Library, Jest, Vitest, act, async UI, mocked APIs, hooks, StrictMode, and brittle tests.',
+  },
+  {
+    label: 'Hooks',
+    targetId: 'iq-react-short-answers-title',
+    detail: 'useState, useEffect, cleanup, stale closures, refs, memoization, and Rules of Hooks.',
+  },
+  {
+    label: 'State/forms',
+    targetId: 'iq-react-short-answers-title',
+    detail: 'Props, state ownership, lifting state up, derived state, batching, and controlled inputs.',
+  },
+  {
+    label: 'Performance',
+    targetId: 'iq-react-modern-title',
+    detail: 'Context fan-out, unstable props, memoization, profiling, external stores, and server-state trade-offs.',
+  },
+];
+
+const REACT_SHORT_ANSWERS: ReactShortAnswerItem[] = [
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is React?',
+    a: 'React is a JavaScript library for building user interfaces from components. A React app describes what the UI should look like for a given state, and React updates the DOM when that state changes. Routing, server-state caching, and form validation are separate architectural choices rather than built-in React features.',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What are React components?',
+    a: 'React components are reusable UI units that receive props, hold state when needed, and return JSX. Function components are the standard shape in modern React, while class components still appear in older codebases. A component should keep rendering predictable by treating props as read-only and moving shared behavior into smaller components or hooks.',
+    route: ['/react', 'trivia', 'react-pure-function-of-props-and-state'],
+    cta: 'Review component rendering',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is JSX?',
+    a: 'JSX is a syntax extension that lets React UI look close to HTML while still being JavaScript. JSX expressions compile to function calls, so values inside braces are evaluated as JavaScript and must follow JavaScript rules. The common edge case is that attributes are React props, so names such as className and htmlFor differ from plain HTML.',
+    route: ['/react', 'trivia', 'react-jsx-transform-and-why-not-required'],
+    cta: 'Review the JSX transform',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What are props in React?',
+    a: 'Props are read-only values passed from a parent component to a child component. They describe the child UI contract, such as labels, data, callbacks, and configuration. Mutating props breaks ownership and can hide update bugs because the parent still owns the source value.',
+    route: ['/react', 'trivia', 'react-why-props-immutable'],
+    cta: 'Review props immutability',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is state in React?',
+    a: 'State is component-owned data that can change over time and trigger a new render. Use state for values that affect what the user sees, such as form input, selected tabs, loading state, and expanded sections. Values that can be derived directly from props or other state usually should not be stored separately.',
+    route: ['/react', 'trivia', 'react-usestate-purpose'],
+    cta: 'Review useState',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What is one-way data flow in React?',
+    a: 'One-way data flow means data moves down from parent to child through props, while changes move up through callbacks. The parent owns the state transition and passes the updated value back down. This keeps ownership clear, but deeply nested updates may need component composition, Context, or a store.',
+    route: ['/react', 'trivia', 'react-lifting-state-up'],
+    cta: 'Review lifting state up',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'beginner',
+    q: 'Why are keys important in React lists?',
+    a: 'Keys tell React which list item identity should be preserved across renders. Stable keys let React keep row state, focus, and DOM reuse aligned with the right data item. Index keys are risky when items can be inserted, removed, sorted, or filtered because state can move to the wrong row.',
+    route: ['/react', 'trivia', 'react-keys-in-lists'],
+    cta: 'Review list keys',
+  },
+  {
+    category: 'fundamentals',
+    level: 'intermediate',
+    q: 'What is the difference between controlled and uncontrolled inputs?',
+    a: 'A controlled input gets its current value from React state and reports changes through events. An uncontrolled input keeps its current value in the DOM, usually read with a ref when needed. Switching a field between controlled and uncontrolled ownership can create warnings and broken form behavior.',
+    route: ['/react', 'trivia', 'react-controlled-vs-uncontrolled'],
+    cta: 'Compare form ownership',
+  },
+  {
+    category: 'fundamentals',
+    level: 'beginner',
+    q: 'What does lifting state up mean?',
+    a: 'Lifting state up means moving state to the closest shared parent that needs to coordinate multiple children. The parent passes the current value down as props and passes callbacks down for child events. It prevents duplicated state, but if the shared parent becomes too broad, rerenders and prop drilling can grow.',
+    route: ['/react', 'trivia', 'react-lifting-state-up'],
+    cta: 'Practice state ownership',
+  },
+  {
+    category: 'state-hooks',
+    level: 'beginner',
+    q: 'What are React hooks?',
+    a: 'Hooks are functions that let function components use React features such as state, effects, refs, reducers, memoization, and context. They must run in a consistent order on every render so React can associate each hook call with its stored state. Custom hooks reuse stateful logic, but they do not share state unless they call shared external state.',
+    route: ['/react', 'trivia', 'react-hooks-youve-used'],
+    cta: 'Review common hooks',
+  },
+  {
+    category: 'state-hooks',
+    level: 'intermediate',
+    q: 'What are the Rules of Hooks?',
+    a: 'Hooks must be called at the top level of a React function component or custom hook. They should not be called inside loops, conditions, nested functions, or ordinary utility functions. Breaking the order makes React read the wrong stored hook state on later renders.',
+    route: ['/react', 'trivia', 'react-why-hooks-have-rules'],
+    cta: 'Review Rules of Hooks',
+  },
+  {
+    category: 'state-hooks',
+    level: 'beginner',
+    q: 'What is useState used for?',
+    a: 'useState stores a value that belongs to a component and should trigger rendering when it changes. The setter schedules an update instead of mutating the current value immediately. When the next value depends on the previous value, a functional update avoids stale reads.',
+    route: ['/react', 'trivia', 'react-usestate-purpose'],
+    cta: 'Review useState',
+  },
+  {
+    category: 'state-hooks',
+    level: 'intermediate',
+    q: 'What is useEffect used for?',
+    a: 'useEffect synchronizes a component with something outside rendering, such as subscriptions, timers, DOM APIs, analytics, or network state. It runs after React commits the UI, and cleanup runs before the effect is replaced or the component unmounts. Pure derived values usually belong in render instead of in an effect.',
+    route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    cta: 'Review useEffect',
+  },
+  {
+    category: 'state-hooks',
+    level: 'intermediate',
+    q: 'How does effect cleanup work?',
+    a: 'An effect may return a cleanup function that removes the external work created by that effect. Cleanup runs before React reruns the effect with changed dependencies and when the component unmounts. Timers, subscriptions, event listeners, and in-flight async work should have clear cleanup ownership.',
+    route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    cta: 'Review effect timing',
+  },
+  {
+    category: 'state-hooks',
+    level: 'advanced',
+    q: 'What are stale closures in React?',
+    a: 'A stale closure happens when a callback keeps reading values from an older render. It often appears in timers, promises, subscriptions, and event handlers that outlive the render that created them. Functional state updates, correct dependencies, refs, or moving logic into the event path can fix the ownership problem.',
+    route: ['/react', 'trivia', 'react-stale-state-closures'],
+    cta: 'Debug stale closures',
+  },
+  {
+    category: 'state-hooks',
+    level: 'intermediate',
+    q: 'What is the difference between useRef and useState?',
+    a: 'useState stores render-affecting data and schedules a rerender when changed. useRef stores a mutable value that persists across renders without causing a rerender. Refs are useful for DOM nodes, timer IDs, previous values, and imperative handles, but they can hide UI bugs if used as state.',
+    route: ['/react', 'trivia', 'react-useref-vs-usestate'],
+    cta: 'Compare refs and state',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'intermediate',
+    q: 'What is the difference between useMemo and useCallback?',
+    a: 'useMemo memoizes the result of running a calculation. useCallback memoizes the function reference itself. Both depend on stable dependency arrays, and neither helps if the expensive work is small or the props passed to children are still unstable.',
+    route: ['/react', 'trivia', 'react-usememo-vs-usecallback'],
+    cta: 'Compare memo hooks',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'advanced',
+    q: 'How can Context cause performance issues?',
+    a: 'When a Context provider value changes, consumers that read that context can render again. A broad provider with a new object value on every render can fan out updates across a large tree. Splitting providers, stabilizing values, using local state, or choosing an external store can reduce unnecessary work.',
+    route: ['/react', 'trivia', 'react-context-performance-issues'],
+    cta: 'Debug Context performance',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'intermediate',
+    q: 'What causes a React component to re-render?',
+    a: 'A component can re-render when its state updates, its parent renders, a consumed context value changes, or an external store subscription notifies it. Rendering does not always mean the DOM changes; React still compares the result before committing updates. Performance debugging should separate render frequency from actual slow commits.',
+    route: ['/react', 'trivia', 'react-component-rerendering'],
+    cta: 'Review rerender causes',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'intermediate',
+    q: 'What is state batching in React?',
+    a: 'State batching means React groups multiple state updates into a single render pass when it can. React 18 broadened automatic batching across more async boundaries. The important edge case is that reading state immediately after calling a setter still reads the value from the current render.',
+    route: ['/react', 'trivia', 'react-why-batching-state-updates'],
+    cta: 'Review batching',
+  },
+  {
+    category: 'rendering-performance',
+    level: 'advanced',
+    q: 'Why is derived state risky?',
+    a: 'Derived state is risky when you store data that can be calculated from props or other state. The duplicated value can drift out of sync and often creates an extra render through an effect. Keep pure derived values in render, and use memoization only when the calculation is expensive enough to matter.',
+    route: ['/react', 'trivia', 'react-derived-state-anti-pattern'],
+    cta: 'Avoid derived state bugs',
+  },
+  {
+    category: 'modern',
+    level: 'intermediate',
+    q: 'What problem do error boundaries solve?',
+    a: 'Error boundaries catch rendering errors in their child tree and let the app show a fallback UI instead of unmounting everything. They do not catch errors in event handlers, async callbacks, or server-side rendering. Place them around meaningful product regions so a failure is isolated to the smallest useful surface.',
+    route: ['/react', 'trivia', 'react-error-boundaries-what-they-solve'],
+    cta: 'Review error boundaries',
+  },
+  {
+    category: 'modern',
+    level: 'intermediate',
+    q: 'What are React portals?',
+    a: 'Portals render children into a DOM node outside the parent DOM hierarchy while keeping the React owner tree intact. They are useful for modals, popovers, tooltips, and overlays that need to escape clipping or stacking contexts. Events still bubble through the React tree, so event handling can differ from the physical DOM position.',
+    route: ['/react', 'trivia', 'react-portals'],
+    cta: 'Review portals',
+  },
+  {
+    category: 'modern',
+    level: 'advanced',
+    q: 'What is the difference between render props and HOCs?',
+    a: 'Render props share behavior by passing a function that returns UI. Higher-order components share behavior by wrapping a component and returning a new component. Hooks replaced many of these patterns, but render props and HOCs still appear in older libraries and can add wrapper or composition complexity.',
+    route: ['/react', 'trivia', 'react-render-props-vs-hocs'],
+    cta: 'Compare reuse patterns',
+  },
+  {
+    category: 'modern',
+    level: 'advanced',
+    q: 'Why does StrictMode run some effects twice in development?',
+    a: 'StrictMode can intentionally mount, clean up, and remount components in development to reveal unsafe effects. This does not happen the same way in production, but the issue it exposes is real: effects must tolerate setup and cleanup correctly. Duplicate logs or requests usually mean the effect is not idempotent or the cleanup is incomplete.',
+    route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
+    cta: 'Review StrictMode effects',
+  },
+];
+
+const REACT_AUDIENCE_TRACKS: ReactAudienceTrack[] = [
+  {
+    title: 'For beginners',
+    detail: 'Start with React, components, JSX, props, state, one-way data flow, keys, controlled inputs, and lifting state up. These topics make hooks, effects, Context, and rendering behavior easier to reason about later.',
+  },
+  {
+    title: 'For experienced developers',
+    detail: 'Focus on ownership boundaries: effect cleanup, stale closures, Context performance, reconciliation, server/client component boundaries, testing async UI, and profiling before memoizing. These topics expose whether React knowledge holds up in production code.',
+  },
+];
+
+const REACT_RENDERING_INTERNALS_QUESTIONS: ReactFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'What is the Virtual DOM in React?',
+    a: 'The Virtual DOM is a lightweight description of the UI that React creates from components. React compares the new description with the previous one, decides what changed, and commits the necessary host updates. The important detail is that the Virtual DOM is a means to coordinate updates, not a guarantee that every render is cheap.',
+    route: ['/react', 'trivia', 'react-virtual-dom'],
+    cta: 'Review Virtual DOM',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the difference between render phase and commit phase?',
+    a: 'The render phase calls components and calculates the next UI tree. The commit phase applies the chosen changes to the host environment and runs layout-related work. Render work can be restarted or discarded, so component render logic must stay pure and side effects belong in effects or event handlers.',
+    route: ['/react', 'trivia', 'react-rerender-decision-and-render'],
+    cta: 'Review render behavior',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is reconciliation in React?',
+    a: 'Reconciliation is the process React uses to compare the previous element tree with the next one. It matches elements by type and key, then decides which parts can be reused, updated, moved, or remounted. Incorrect keys or changing component types can reset state because React sees a different identity.',
+    route: ['/react', 'trivia', 'react-reconciliation'],
+    cta: 'Review reconciliation',
+  },
+  {
+    level: 'advanced',
+    q: 'What assumptions does React diffing use?',
+    a: 'React uses heuristics instead of comparing every possible tree transformation. Different element types are treated as different subtrees, and keys tell React which children should keep identity across list changes. Those assumptions make updates practical, but unstable keys or accidental type changes can cause unexpected remounts.',
+    route: ['/react', 'trivia', 'react-diffing-algorithm'],
+    cta: 'Review diffing',
+  },
+  {
+    level: 'advanced',
+    q: 'What is Fiber in React?',
+    a: 'Fiber is React internal architecture for organizing rendering work as units that can be scheduled, paused, resumed, or abandoned. It enables React to prioritize urgent updates differently from non-urgent work. You do not usually program against Fiber directly, but it explains why render logic must be pure and why concurrent rendering can restart work.',
+    route: ['/react', 'trivia', 'react-reconciliation'],
+    cta: 'Review render internals',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do keys preserve or reset state?',
+    a: 'React uses keys to decide whether a child in a list is the same child across renders. A stable key preserves component state for the same data item, while a changed key forces React to treat it as a new instance. This is useful for intentional resets, but index keys can accidentally move state to the wrong row.',
+    route: ['/react', 'trivia', 'react-keys-in-lists'],
+    cta: 'Review list keys',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do fragments affect reconciliation?',
+    a: 'Fragments group multiple children without adding an extra DOM node. Keyed fragments can preserve identity for a group of siblings during reconciliation. Unkeyed fragments are useful for markup cleanliness, but lists of fragments still need stable keys when identity matters.',
+    route: ['/react', 'trivia', 'react-fragments-dom-and-reconciliation'],
+    cta: 'Review fragments and reconciliation',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the difference between useLayoutEffect and useEffect?',
+    a: 'useEffect runs after the browser has painted the committed UI. useLayoutEffect runs after DOM mutations but before paint, so it can measure layout and synchronously adjust the UI before the user sees it. Overusing layout effects can block painting, so ordinary subscriptions and async work should stay in useEffect.',
+    route: ['/react', 'trivia', 'react-useeffect-vs-uselayouteffect'],
+    cta: 'Compare effect timing',
+  },
+];
+
+const REACT_REACT19_SERVER_QUESTIONS: ReactFocusedQuestionItem[] = [
+  {
+    level: 'advanced',
+    q: 'What are React 19 Actions?',
+    a: 'Actions are async functions used with transitions or form submissions to manage mutation workflows. React can coordinate pending state, errors, optimistic updates, and final state around the action. The practical benefit is reducing manual loading and error wiring for form-like mutations.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'What is useActionState used for?',
+    a: 'useActionState connects an action to state that updates when the action completes. It is useful when a form submit or mutation returns validation errors, success messages, or next state. The hook keeps pending and result handling close to the action, but the mutation contract still needs clear server and client ownership.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review React 19 actions',
+  },
+  {
+    level: 'advanced',
+    q: 'What is useOptimistic used for?',
+    a: 'useOptimistic lets the UI show an expected result before the server confirms it. It is useful for quick feedback on mutations such as adding comments, toggling likes, or reordering items. The edge case is rollback and ordering: failed or out-of-order responses must not leave the UI in a false state.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review optimistic updates',
+  },
+  {
+    level: 'advanced',
+    q: 'What is useFormStatus used for?',
+    a: 'useFormStatus reads the pending status of the nearest parent form submission. It lets a submit button or status message react to the form action without passing loading props through every component. It only works inside the form context, so placement matters.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review form status',
+  },
+  {
+    level: 'advanced',
+    q: 'What is use() with Suspense at a high level?',
+    a: 'use() can read certain resources, such as promises or context, during rendering in supported React environments. When a promise is still pending, the nearest Suspense boundary can show fallback UI. The key requirement is that data ownership and caching are stable, otherwise rendering can repeatedly suspend or restart work.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review Suspense data flow',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the difference between Server Components and Client Components?',
+    a: 'Server Components render on the server and can access server-only data without shipping their component code to the browser. Client Components run in the browser and own interactivity, state, effects, and event handlers. Values passed from server to client boundaries must be serializable, and browser-only APIs belong on the client side.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review server/client boundaries',
+  },
+  {
+    level: 'advanced',
+    q: 'How do Next.js App Router boundaries affect data ownership?',
+    a: 'The App Router encourages colocating data loading with server-rendered route segments and using client boundaries only where interactivity is needed. Caching, revalidation, and streaming behavior become part of the route contract. A good boundary keeps server data on the server while isolating client state to the smallest interactive surface.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do streaming, Suspense, and hydration mismatches fit together?',
+    a: 'Streaming lets the server send usable HTML before every part of the UI is ready. Suspense boundaries define where loading fallbacks can appear while delayed content streams in. Hydration mismatches happen when the first client render disagrees with the server HTML, often because the output depends on time, randomness, browser state, or inconsistent data.',
+    route: ['/react', 'coding', 'react-chat-streaming-ui'],
+    cta: 'Practice streaming UI',
+  },
+];
+
+const REACT_TESTING_QUESTIONS: ReactFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How should React Testing Library tests be written?',
+    a: 'React Testing Library tests should assert behavior that a user can observe. Prefer role, label, text, and accessible name queries over component internals. A reliable test covers the visible state before and after interaction instead of asserting private methods or implementation details.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React testing prep path',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the difference between Jest and Vitest for React tests?',
+    a: 'Jest and Vitest both provide test runners, assertions, mocks, and watch workflows. Vitest is often faster in Vite-based projects because it integrates with the Vite transform pipeline. The important choice is consistency with the app tooling, DOM environment, mocks, and coverage setup.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review React test tooling',
+  },
+  {
+    level: 'advanced',
+    q: 'What does act() do in React tests?',
+    a: 'act() makes React flush updates related to an interaction or async step before assertions run. Testing utilities often wrap common user events for you, but warnings appear when a state update escapes the test boundary. The fix is to await the user action or async UI transition that causes the update.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review async test timing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you test async loading and error UI?',
+    a: 'Start by asserting the initial state, trigger the user action or render path, then wait for loading, success, or error text that the user sees. The test should cover at least one failure path when the component has recovery UI. Avoid asserting raw promise timing because the visible transition is the behavior that matters.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review async UI tests',
+  },
+  {
+    level: 'advanced',
+    q: 'How do mocked API tests with MSW-style boundaries work?',
+    a: 'Mock Service Worker style tests intercept requests at the network boundary instead of mocking every fetch call manually. That keeps the component closer to production behavior while still controlling success, error, delay, and malformed-response cases. The test should assert the UI contract, not the internals of the data-fetching library.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review mocked API testing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you test hooks through components?',
+    a: 'A hook should be tested through a component when its value affects rendered UI or user interactions. That keeps the test aligned with React behavior such as render, commit, effects, and cleanup. Direct hook helpers can be useful for low-level reusable hooks, but user-facing behavior is usually safer to protect.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review hook testing',
+  },
+  {
+    level: 'advanced',
+    q: 'How does StrictMode affect effect tests?',
+    a: 'StrictMode can run setup and cleanup more than once in development, which exposes effects that are not idempotent. Tests should not depend on an effect running exactly once when StrictMode is enabled. Assert the final user-visible behavior and make subscriptions, timers, and analytics calls cleanup-safe.',
+    route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
+    cta: 'Review StrictMode effects',
+  },
+  {
+    level: 'intermediate',
+    q: 'What makes React tests brittle?',
+    a: 'React tests become brittle when they assert component names, state variables, exact DOM nesting, or implementation-specific mocks. They also become flaky when async updates, timers, and network responses are not awaited through visible UI. Prefer stable user-facing queries, realistic interactions, and one clear assertion target per behavior.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Review React testing mistakes',
+  },
+];
+
+const REACT_SCENARIO_QUESTIONS: ReactScenarioQuestionItem[] = [
+  {
+    level: 'advanced',
+    q: 'Why can this delayed counter lose updates?',
+    code: `function Counter() {
+  const [count, setCount] = useState(0);
+
+  function incrementLater() {
+    setTimeout(() => setCount(count + 1), 500);
+  }
+}`,
+    explanation: 'The timeout callback captures count from the render that created it. Multiple delayed clicks can all write the same next value. Use setCount((current) => current + 1) when the next value depends on previous state.',
+    route: ['/react', 'trivia', 'react-stale-state-closures'],
+    cta: 'Debug stale closures',
+  },
+  {
+    level: 'advanced',
+    q: 'What is wrong with this polling effect?',
+    code: `useEffect(() => {
+  const id = setInterval(() => poll(userId), 1000);
+  return () => clearInterval(id);
+}, []);`,
+    explanation: 'The effect reads userId but never reruns when userId changes. That leaves the interval polling the user from the first render. Include the dependency, or move ownership so the interval is recreated and cleaned up when the user changes.',
+    route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    cta: 'Review effect dependencies',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why can an index key reset the wrong row state?',
+    code: `{users.map((user, index) => (
+  <UserRow key={index} user={user} />
+))}`,
+    explanation: 'React uses the key to match previous and next list items. If the list reorders or a row is inserted, an index key can point existing state at a different user. Use a stable ID from the data whenever row identity matters.',
+    route: ['/react', 'trivia', 'react-keys-in-lists'],
+    cta: 'Review list keys',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can this Context provider rerender too much UI?',
+    code: `<AppContext.Provider value={{ user, theme, cart, setCart }}>
+  {children}
+</AppContext.Provider>`,
+    explanation: 'The provider creates a new object value whenever the parent renders, and every consumer sees the whole value as changed. Fast-changing cart state can rerender theme-only consumers. Split contexts or stabilize provider values around actual ownership boundaries.',
+    route: ['/react', 'trivia', 'react-context-performance-issues'],
+    cta: 'Debug Context fan-out',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is this derived state unnecessary?',
+    code: `const [fullName, setFullName] = useState('');
+
+useEffect(() => {
+  setFullName(first + ' ' + last);
+}, [first, last]);`,
+    explanation: 'fullName is a pure value derived from first and last, so storing it creates a second source of truth. The effect also adds an extra render after every name change. Calculate it during render, or use useMemo only if the calculation is expensive.',
+    route: ['/react', 'trivia', 'react-derived-state-anti-pattern'],
+    cta: 'Fix derived state',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does this input switch from uncontrolled to controlled?',
+    code: `const [name, setName] = useState<string | undefined>();
+
+return (
+  <input value={name} onChange={(event) => setName(event.target.value)} />
+);`,
+    explanation: 'The input starts with value undefined, so React treats it as uncontrolled. After typing, value becomes a string and React treats it as controlled. Initialize with an empty string or provide value={name ?? ""} so ownership is consistent.',
+    route: ['/react', 'trivia', 'react-controlled-vs-uncontrolled'],
+    cta: 'Compare form ownership',
+  },
+  {
+    level: 'advanced',
+    q: 'Why does memoization not help this child?',
+    code: `const MemoChart = memo(Chart);
+
+return <MemoChart options={{ theme, stacked: true }} />;`,
+    explanation: 'The options object is recreated on every parent render, so the memoized child receives a different prop reference each time. React.memo can only skip work when props are equal by the comparison being used. Stabilize the object with useMemo or pass simpler stable props if profiling shows the chart is expensive.',
+    route: ['/react', 'trivia', 'react-usememo-vs-usecallback'],
+    cta: 'Review memoization trade-offs',
+  },
+  {
+    level: 'advanced',
+    q: 'Why does this effect appear to run twice in development?',
+    code: `useEffect(() => {
+  analytics.startSession();
+  return () => analytics.stopSession();
+}, []);`,
+    explanation: 'StrictMode can remount components in development to check that effects clean up correctly. The effect should tolerate setup, cleanup, and setup again without leaking subscriptions or duplicating permanent work. Move one-time application boot logic outside component effects when component lifetime is not the right owner.',
+    route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
+    cta: 'Review StrictMode behavior',
+  },
+];
+
+const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'What changed with React 18 automatic batching?',
+    a: 'React 18 batches more state updates that happen in promises, timeouts, native events, and other async callbacks. Batching reduces extra renders by applying related updates together. Code still should not expect state variables to change immediately after calling setters within the same render.',
+    route: ['/react', 'trivia', 'react-why-batching-state-updates'],
+    cta: 'Review batching',
+  },
+  {
+    level: 'advanced',
+    q: 'What does StrictMode check in modern React apps?',
+    a: 'StrictMode enables extra development checks for unsafe rendering and effect behavior. It can reveal effects that do not clean up, render logic with side effects, and assumptions that fail under remounting. The fix is usually ownership and cleanup, not disabling StrictMode.',
+    route: ['/react', 'trivia', 'react-strictmode-purpose'],
+    cta: 'Review StrictMode purpose',
+  },
+  {
+    level: 'advanced',
+    q: 'What are Suspense boundaries used for?',
+    a: 'Suspense boundaries let part of the UI show a fallback while a child is waiting for supported async work. They create loading boundaries instead of forcing the whole screen to block. Placement matters because a boundary that is too high hides too much UI, while one that is too low can create noisy loading fragments.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'What are transitions in React?',
+    a: 'Transitions mark updates as non-urgent so React can keep urgent interactions responsive. They are useful when typing, clicking, or selecting should stay immediate while expensive UI updates can lag slightly. They do not make slow code fast, so profiling and splitting expensive work still matter.',
+    route: ['/react', 'trivia', 'react-prevent-unnecessary-rerenders'],
+    cta: 'Review render performance',
+  },
+  {
+    level: 'advanced',
+    q: 'What are React Server Components at a high level?',
+    a: 'Server Components render on the server and can access server-only resources without shipping their component code to the browser. Client Components still handle browser interactivity, state, effects, and event handlers. The boundary matters because props crossing from server to client must be serializable.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you debug a hydration mismatch?',
+    a: 'A hydration mismatch happens when server-rendered markup does not match the first client render. Common causes include time-dependent output, random IDs, browser-only data, locale differences, and conditional rendering that differs between server and client. Make the initial render deterministic, then move browser-only reads into effects or client-only boundaries.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'When should React use an external store or server-state library?',
+    a: 'Use local state for state owned by one component or a small subtree. Use Context sparingly for shared low-frequency values, and consider an external store when many components read and write frequently. Server-state libraries are a better fit for caching, dedupe, retries, stale data, and request status than hand-rolled effects.',
+    route: ['/react', 'trivia', 'react-context-performance-issues'],
+    cta: 'Compare Context and stores',
+  },
+  {
+    level: 'intermediate',
+    q: 'How should React behavior be tested?',
+    a: 'React tests should assert user-visible behavior instead of private implementation details. Good coverage includes initial render, interactions, validation, loading, error, cleanup, and rerender edge cases. Testing Library style queries keep tests closer to the way users and assistive technology observe the UI.',
+    route: ['/guides', 'framework-prep', 'react-prep-path'],
+    cta: 'Open the React prep path',
+  },
+];
+
 const REACT_TOPIC_CARDS: ReactTopicCard[] = [
   {
     title: 'Props, state, and one-way data flow',
-    answer: 'Props are read-only inputs owned by a parent, while state belongs to the component that changes it. Strong answers connect callbacks, lifting state up, immutable updates, and when prop drilling should move into context or a store.',
+    answer: 'Props are read-only inputs owned by a parent, while state belongs to the component that changes it. Use callbacks to request parent state changes, lift state when siblings need the same value, and keep updates immutable so rerender behavior stays predictable.',
     link: {
       label: 'Review props immutability',
       route: ['/react', 'trivia', 'react-why-props-immutable'],
@@ -1845,6 +2543,532 @@ const ANGULAR_MODERN_TOPICS: string[] = [
   'Signal Forms: mention as an experimental modern forms direction, not as a production replacement for every Reactive Forms workflow.',
 ];
 
+const HTML_CSS_EDITORIAL_SIGNAL: HtmlCssEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible HTML and CSS questions across semantics, forms, accessibility, layout, cascade, responsive UI, code scenarios, and browser debugging',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const HTML_CSS_ANCHOR_ITEMS: HtmlCssAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-html-css-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-html-css-short-answers-title' },
+  { label: 'Audience', targetId: 'iq-html-css-audience-title' },
+  { label: 'Semantics + forms', targetId: 'iq-html-css-semantics-title' },
+  { label: 'Layout + cascade', targetId: 'iq-html-css-layout-title' },
+  { label: 'Code scenarios', targetId: 'iq-html-css-code-title' },
+  { label: 'Browser debugging', targetId: 'iq-html-css-browser-title' },
+  { label: 'Responsive UI', targetId: 'iq-html-css-responsive-title' },
+  { label: 'Coding drills', targetId: 'iq-html-css-coding-preview-title' },
+  { label: 'Concepts', targetId: 'iq-html-css-concept-preview-title' },
+];
+
+const HTML_CSS_KEYWORD_CLUSTERS: HtmlCssKeywordClusterItem[] = [
+  {
+    label: 'Beginner',
+    targetId: 'iq-html-css-short-answers-title',
+    detail: 'HTML structure, forms, labels, box model, cascade, and basic responsive rules.',
+  },
+  {
+    label: 'Experienced',
+    targetId: 'iq-html-css-audience-title',
+    detail: 'Debugging, trade-offs, accessibility constraints, and production UI reasoning.',
+  },
+  {
+    label: 'Semantics + forms',
+    targetId: 'iq-html-css-semantics-title',
+    detail: 'Landmarks, headings, native controls, validation, labels, and useful ARIA boundaries.',
+  },
+  {
+    label: 'CSS layout',
+    targetId: 'iq-html-css-layout-title',
+    detail: 'Flexbox, Grid, positioning, stacking, specificity, cascade, and custom properties.',
+  },
+  {
+    label: 'Code scenarios',
+    targetId: 'iq-html-css-code-title',
+    detail: 'Small markup and CSS snippets that reveal real layout, accessibility, and overflow behavior.',
+  },
+  {
+    label: 'Responsive UI',
+    targetId: 'iq-html-css-responsive-title',
+    detail: 'Mobile-first constraints, responsive images, container behavior, and layout stability.',
+  },
+];
+
+const HTML_CSS_SHORT_ANSWERS: HtmlCssShortAnswerItem[] = [
+  {
+    q: 'What is semantic HTML?',
+    a: 'Semantic HTML uses elements that describe the meaning and structure of content, such as header, nav, main, article, section, button, and form. It helps browsers, search engines, assistive technologies, and other developers understand the page without guessing from class names. A common failure is replacing native buttons, links, and headings with generic div elements that then need extra keyboard and accessibility work.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Practice semantic HTML',
+    category: 'html',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the DOM?',
+    a: 'The DOM is the browser-created object tree that represents the parsed HTML document. JavaScript reads and updates this tree, while CSS selectors match elements in it for styling. The source HTML and live DOM can differ after scripts run, so debugging often means inspecting the current DOM instead of only reading the original markup.',
+    category: 'html',
+    level: 'beginner',
+  },
+  {
+    q: 'How should labels work in HTML forms?',
+    a: 'A form control needs a durable accessible name, usually from a label associated with for and id or by wrapping the control. Labels increase the clickable target and help screen-reader users understand the field. Placeholder text is not a replacement because it disappears during input and may not be announced as a stable label.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Build labeled forms',
+    category: 'accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'What is accessibility in HTML and CSS?',
+    a: 'Accessibility means the UI can be understood and operated by people using keyboards, screen readers, zoom, high contrast, or other assistive technology. HTML provides much of the semantic contract, while CSS must preserve readable contrast, focus visibility, and usable layout. A design can look correct but still fail if focus order, labels, or hidden content are wrong.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Review accessibility fixes',
+    category: 'accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'How should alt text work for images?',
+    a: 'Alt text describes the purpose of an image when the image carries information. Decorative images should usually have empty alt text so assistive technology can skip them. The edge case is an image inside a link or button, where the alt text may need to describe the action rather than the visual pixels.',
+    route: ['/html', 'coding', 'html-links-and-images'],
+    cta: 'Practice links and images',
+    category: 'accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use a button instead of a link?',
+    a: 'Use a link for navigation to another URL or location, and use a button for an action on the current page. Native elements provide the expected keyboard behavior, roles, focus handling, and activation events. A fake link or fake button often breaks keyboard access unless you rebuild behavior the browser already gives you.',
+    category: 'html',
+    level: 'beginner',
+  },
+  {
+    q: 'How does native form validation work?',
+    a: 'Native validation uses attributes such as required, type, min, max, pattern, and minlength to let the browser check common constraints. It reduces custom JavaScript but should be paired with clear labels and useful error text. Server-side validation is still required because client-side validation can be bypassed.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice form validation',
+    category: 'html',
+    level: 'intermediate',
+  },
+  {
+    q: 'What metadata belongs in the head?',
+    a: 'A production document should include charset, viewport, title, useful description, canonical when needed, and relevant social metadata. These tags help browsers render correctly and help crawlers understand the page. Missing viewport metadata is a common mobile bug because the layout may render at a desktop-style width on phones.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Review head metadata',
+    category: 'html',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the CSS box model?',
+    a: 'The box model describes how content, padding, border, and margin combine to determine an element box and spacing around it. With content-box, width applies to the content area, while border-box includes padding and border in the declared width. Many layout bugs come from forgetting which sizing model is active.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Review the box model',
+    category: 'css',
+    level: 'beginner',
+  },
+  {
+    q: 'How does the CSS cascade work?',
+    a: 'The cascade decides which declaration wins when more than one rule applies to the same property. It considers origin, importance, cascade layers, specificity, scoping proximity, and source order. Source order only wins after the earlier cascade factors are effectively tied.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade order',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is CSS specificity?',
+    a: 'Specificity is the selector scoring system used when competing rules are in the same cascade layer and origin. Inline styles, IDs, classes or attributes, and element selectors contribute different weight. A common failure is fixing conflicts by adding more specific selectors until the stylesheet becomes hard to override.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use Flexbox?',
+    a: 'Flexbox is best for one-dimensional layout where items flow in a row or column and need alignment or space distribution. It works well for nav bars, button groups, media objects, and vertically centered content. The trade-off is that complex two-dimensional placement is usually clearer with Grid.',
+    route: ['/css', 'trivia', 'css-display-flex'],
+    cta: 'Review Flexbox',
+    category: 'css',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use CSS Grid?',
+    a: 'Grid is best for two-dimensional layout where rows and columns both matter. It lets you define tracks, gaps, named areas, and responsive templates without relying on extra wrappers. It can be overkill for a simple row of controls where Flexbox would be easier to maintain.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Compare Grid and Flexbox',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does CSS positioning work?',
+    a: 'Positioning changes how an element participates in normal document flow and how offsets are calculated. Relative keeps the element in flow, absolute positions against the nearest positioned ancestor, fixed attaches to the viewport, and sticky switches behavior based on scroll. Many bugs happen because the expected containing block is not the one the browser uses.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Review positioning',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does z-index work?',
+    a: 'z-index only compares elements inside the relevant stacking context. New stacking contexts can be created by positioned elements, transforms, opacity, filters, isolation, and other properties. Raising a z-index value will not beat an element in a higher parent stacking context.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Debug z-index',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are media queries used for?',
+    a: 'Media queries apply CSS conditionally based on viewport, device, user preference, or environment features. They are commonly used for layout changes, reduced motion, dark mode, and print styles. Good responsive CSS changes constraints and flow, not only font sizes.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media queries',
+    category: 'responsive-debugging',
+    level: 'beginner',
+  },
+  {
+    q: 'How do responsive images work?',
+    a: 'Responsive images use srcset, sizes, picture, and modern loading attributes to let the browser choose an appropriate resource. The goal is to avoid shipping oversized images while preserving sharpness and layout stability. Width and height or aspect-ratio should be set so the page does not jump while images load.',
+    category: 'responsive-debugging',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are CSS custom properties?',
+    a: 'CSS custom properties are variables declared with names such as --space and read with var(). They cascade, inherit by default, and can change at runtime without recompiling CSS. A missing fallback or unexpected inheritance path can make a component pick up the wrong token.',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are pseudo-classes and pseudo-elements?',
+    a: 'Pseudo-classes select an element in a state, such as :hover, :focus-visible, :checked, or :nth-child(). Pseudo-elements style a generated part of an element, such as ::before, ::after, or ::marker. The practical edge case is focus styling: :focus-visible is usually better than removing outlines globally.',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug CSS overflow?',
+    a: 'Start by identifying which element is wider or taller than its container, then inspect fixed widths, long unwrapped text, min-width defaults, grid tracks, and absolute positioning. Flex and grid children often need min-width: 0 or min-height: 0 to shrink as expected. Hiding overflow can mask the symptom while leaving keyboard focus or content access broken.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive fixes',
+    category: 'responsive-debugging',
+    level: 'advanced',
+  },
+  {
+    q: 'What causes layout shift?',
+    a: 'Layout shift happens when content moves after initial render because dimensions, fonts, ads, images, or async UI were not reserved. Set stable dimensions, reserve space for dynamic regions, and avoid inserting content above what the user is reading. The failure mode is a page that passes visual review but feels unstable while loading.',
+    category: 'responsive-debugging',
+    level: 'advanced',
+  },
+  {
+    q: 'How should focus states be styled?',
+    a: 'Focus states should be visible, consistent, and not depend only on color. Use :focus-visible to show keyboard focus without adding noisy outlines for pointer users. Removing outlines globally breaks keyboard navigation and makes interactive elements hard to locate.',
+    category: 'accessibility',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is the difference between block, inline, and inline-block?',
+    a: 'Block elements start on a new line and usually fill the available width. Inline elements flow with text and do not accept width and height in the same way, while inline-block keeps inline flow but allows box dimensions. Confusing these display modes often causes unexpected spacing, alignment, or clickable-area bugs.',
+    category: 'css',
+    level: 'beginner',
+  },
+  {
+    q: 'How do rem, em, px, and percent differ?',
+    a: 'px is an absolute CSS pixel unit, rem is relative to the root font size, em is relative to the current element font size, and percent depends on the property and containing context. rem is often easier for consistent spacing and type scales, while em can be useful for component-relative sizing. Percent can be powerful but surprising when height or transforms use a different reference than expected.',
+    category: 'responsive-debugging',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you make an HTML and CSS component responsive?',
+    a: 'Start with semantic markup and fluid layout constraints, then add breakpoints only where the component actually needs a different structure. Use max-width, minmax(), flexible tracks, wrapping, responsive images, and stable spacing tokens. Test narrow widths, long text, zoom, keyboard focus, and overflow instead of only resizing a desktop viewport.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive CSS',
+    category: 'responsive-debugging',
+    level: 'advanced',
+  },
+];
+
+const HTML_CSS_AUDIENCE_TRACKS: HtmlCssAudienceTrack[] = [
+  {
+    title: 'HTML and CSS interview questions for beginners',
+    detail: 'Start with valid document structure, semantic elements, labels, forms, the box model, basic selectors, Flexbox, Grid, and media queries. The goal is to explain what the browser gives you before reaching for custom scripts or heavy abstractions.',
+  },
+  {
+    title: 'HTML and CSS interview questions for experienced frontend developers',
+    detail: 'Move into accessibility trade-offs, cascade strategy, layout debugging, stacking contexts, responsive images, performance, stable dimensions, and browser rendering behavior. Experienced answers should connect UI constraints to maintainable markup and CSS decisions.',
+  },
+];
+
+const HTML_CSS_SEMANTICS_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
+  {
+    q: 'How do landmarks improve a page?',
+    a: 'Landmarks such as header, nav, main, aside, and footer divide the page into recognizable regions. They help assistive technology users jump through the page without reading every element. The page should normally have one main landmark, and landmarks should represent real regions rather than decorative wrappers.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Review semantic elements',
+    level: 'beginner',
+  },
+  {
+    q: 'How should headings be structured?',
+    a: 'Headings create an outline that helps users scan the page and understand content hierarchy. Use heading levels for structure, not for visual size. Skipping levels or using headings only for styling can make the page harder to navigate with assistive technology.',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you add ARIA?',
+    a: 'Add ARIA when native HTML cannot express the role, state, or relationship you need. Native controls should come first because they already include keyboard and accessibility behavior. Misused ARIA can create a worse accessibility tree than plain semantic markup.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Practice accessibility review',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should form errors be exposed?',
+    a: 'Form errors should be visible, specific, and connected to the affected control. Use text near the field, update aria-describedby when helpful, and keep focus behavior predictable after submission. Color alone is not enough because users may miss the state or use assistive technology.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Build validation states',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do tables stay accessible?',
+    a: 'Data tables need real table markup, a useful caption when context is not obvious, and header cells that define row or column meaning. Complex tables may need scope or header associations. Layout tables should be avoided because they create misleading relationships for assistive technology.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should a dialog be implemented?',
+    a: 'A dialog should expose modal state, focus the right starting point, keep keyboard focus inside while open, and restore focus when closed. The native dialog element can help, but the surrounding interaction still needs careful labels and escape behavior. A visually correct overlay is incomplete if background content remains reachable by keyboard.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice dialog accessibility',
+    level: 'advanced',
+  },
+  {
+    q: 'How do anchors and buttons affect keyboard behavior?',
+    a: 'Anchors activate with Enter and navigate, while buttons activate with Enter or Space and trigger actions. Using the wrong element changes expected keyboard behavior and screen-reader announcement. Styling can make them look alike, but semantics should follow the user action.',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you test HTML accessibility quickly?',
+    a: 'Check keyboard navigation, visible focus, labels, headings, landmarks, image text, and form errors before relying on automated tools. Then run a validator, axe or Lighthouse, and inspect the accessibility tree for names and roles. Automated checks catch many issues but cannot prove that the interaction makes sense.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Review an accessibility flow',
+    level: 'advanced',
+  },
+];
+
+const HTML_CSS_LAYOUT_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
+  {
+    q: 'How do Flexbox and Grid differ?',
+    a: 'Flexbox lays out items along one main axis and is strongest for alignment and distribution within a row or column. Grid defines rows and columns together, so it is better for two-dimensional page or card layouts. Mixing them is normal: Grid can place regions, and Flexbox can align content inside a region.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Compare layout systems',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do cascade layers change CSS conflicts?',
+    a: 'Cascade layers let you group CSS by priority before specificity is compared. A low-specificity rule in a later layer can beat a highly specific rule in an earlier layer. This is useful for separating reset, theme, component, and override CSS without escalating selectors.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade rules',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you avoid specificity wars?',
+    a: 'Use predictable selectors, keep component scopes shallow, and reserve high specificity for real overrides. Cascade layers, custom properties, and utility classes can reduce the need for nested selectors. The failure mode is CSS that works once but becomes impossible to safely change.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does position sticky fail?',
+    a: 'Sticky positioning depends on scroll containment, offsets, and available space inside the parent. It often fails when an ancestor has overflow that creates a different scroll container or when the sticky element has no room to move. Debug by inspecting ancestors and the element offsets, not just z-index.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Review positioning',
+    level: 'advanced',
+  },
+  {
+    q: 'How do stacking contexts affect overlays?',
+    a: 'An overlay can appear behind another element even with a large z-index if it is trapped in a lower stacking context. Transforms, opacity, filters, isolation, and positioned elements can create those contexts. Fixing the parent context or DOM placement is often better than increasing z-index values.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Debug stacking',
+    level: 'advanced',
+  },
+  {
+    q: 'How should CSS custom properties be scoped?',
+    a: 'Global tokens should describe broad design values, while component-level custom properties should expose controlled styling hooks. Because custom properties inherit, a value can travel farther than expected. Scope names and fallbacks should make overrides intentional.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you choose breakpoints?',
+    a: 'Choose breakpoints where the content or component starts to fail, not only common device widths. A card may need a breakpoint because text wraps poorly or controls no longer fit. Content-driven breakpoints age better than a fixed list of device sizes.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media queries',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you keep CSS maintainable at scale?',
+    a: 'Keep selectors predictable, avoid accidental global leakage, document tokens, and make component states explicit. Prefer small layout primitives and clear naming over deeply nested selectors. Maintainability breaks when every new UI requires a more specific override than the last one.',
+    level: 'advanced',
+  },
+];
+
+const HTML_CSS_CODE_SCENARIOS: HtmlCssCodeQuestionItem[] = [
+  {
+    q: 'Why is this input hard to use with assistive technology?',
+    code: `<input placeholder="Email" type="email">`,
+    explanation: 'The input has no durable accessible label. Add a label connected with for and id so the field name remains available after the user starts typing. Placeholder text can still provide an example, but it should not be the only name.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Fix labeled forms',
+    level: 'beginner',
+  },
+  {
+    q: 'Why can this image link have a poor accessible name?',
+    code: `<a href="/pricing">\n  <img src="arrow.png" alt="arrow">\n</a>`,
+    explanation: 'The link name becomes the image alt text, so "arrow" does not describe the destination or action. Use alt text such as "View pricing" or add visible text. The accessible name should match what the link does.',
+    route: ['/html', 'coding', 'html-links-and-images'],
+    cta: 'Practice links and images',
+    level: 'beginner',
+  },
+  {
+    q: 'Why does this flex item overflow?',
+    code: `.row { display: flex; }\n.title { white-space: nowrap; }`,
+    explanation: 'Flex items have an automatic minimum size that can prevent shrinking below content width. Add min-width: 0 to the flex child that must shrink, then apply overflow handling intentionally. Setting overflow hidden on the parent may hide the symptom without fixing the layout constraint.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive fixes',
+    level: 'advanced',
+  },
+  {
+    q: 'Why does this grid create horizontal scroll?',
+    code: `.cards {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n}`,
+    explanation: 'Three fixed columns can exceed the viewport when the container is narrow. Use responsive tracks such as repeat(auto-fit, minmax(220px, 1fr)) or add a breakpoint. The fix should preserve card readability and avoid squeezing content below its usable width.',
+    route: ['/css', 'coding', 'css-grid-card-gallery'],
+    cta: 'Build a responsive grid',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why does this modal appear behind the header?',
+    code: `.header { position: relative; z-index: 10; }\n.page { transform: translateZ(0); }\n.modal { position: fixed; z-index: 9999; }`,
+    explanation: 'The transformed parent can create a stacking context that changes how the fixed modal is layered. A large z-index inside one context cannot beat a different parent context. Move the overlay to a safer root or adjust the stacking context hierarchy.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Review z-index',
+    level: 'advanced',
+  },
+  {
+    q: 'Why is this button not keyboard friendly?',
+    code: `<div class="button" onclick="save()">Save</div>`,
+    explanation: 'A div does not provide button semantics, keyboard activation, disabled behavior, or the expected role. Use a real button and style it with CSS. Rebuilding native behavior with roles and key handlers is more error-prone than using the correct element.',
+    level: 'beginner',
+  },
+  {
+    q: 'Why can this hero image cause layout shift?',
+    code: `<img src="/hero.jpg" alt="Dashboard preview">`,
+    explanation: 'The browser does not know the image dimensions before it loads, so surrounding content can move when the image appears. Add width and height or an aspect-ratio so space is reserved. Responsive CSS can still scale the image after the intrinsic ratio is known.',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why does this required field still need server validation?',
+    code: `<input name="email" type="email" required>`,
+    explanation: 'The browser can block common invalid submissions, but users or scripts can bypass client-side validation. Server validation protects the real data boundary and should return useful errors. Client validation improves user experience, not application trust.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice validation',
+    level: 'intermediate',
+  },
+];
+
+const HTML_CSS_BROWSER_DEBUG_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
+  {
+    q: 'How does the browser turn HTML and CSS into pixels?',
+    a: 'The browser parses HTML into the DOM, parses CSS into style rules, calculates computed styles, builds layout, paints, and composites layers. JavaScript or resource loading can interrupt parts of this process. Performance work starts by identifying whether the problem is style, layout, paint, compositing, or scripting.',
+    level: 'advanced',
+  },
+  {
+    q: 'What is a reflow or layout recalculation?',
+    a: 'A layout recalculation happens when the browser must recompute element geometry. It can be triggered by DOM changes, class changes, font loading, image sizing, or reading layout after writing styles. Batching reads and writes reduces repeated layout work.',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you debug an element that is not clickable?',
+    a: 'Inspect whether another element is covering it, whether pointer-events is disabled, whether the element is outside its visible box, and whether it is actually a link or button. Stacking context and overflow clipping are common causes. The fix should preserve keyboard access, not only pointer clicks.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Review stacking behavior',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug missing styles?',
+    a: 'Check whether the stylesheet loaded, whether the selector matches, whether another declaration wins in the cascade, and whether the property is valid for that element. DevTools computed styles show the winning and overridden declarations. The fastest path is to inspect the actual element state instead of reading the stylesheet in isolation.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review the cascade',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you debug invisible content?',
+    a: 'Check display, visibility, opacity, color contrast, clipping, overflow, positioning, transforms, and whether the content exists in the DOM. Content can be present but inaccessible if it is visually hidden incorrectly or removed from the accessibility tree. The fix depends on whether the content should be hidden from everyone or only visually.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do fonts affect layout?',
+    a: 'Font loading can change text metrics and cause layout shifts when the final font replaces a fallback. Use good fallback stacks, font-display choices, size-adjust where appropriate, and stable layout constraints. Long labels should be tested because they often reveal font and wrapping issues.',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you debug mobile viewport issues?',
+    a: 'Check the viewport meta tag, fixed widths, min-width values, overflowing grids, absolute positioning, and controls that do not wrap. Simulate narrow widths and zoom, then test on a real device when possible. The issue is often a single child that refuses to shrink.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Review viewport metadata',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug focus order?',
+    a: 'Navigate with the keyboard and compare the focus order to the visual and DOM order. Positive tabindex values usually create fragile ordering and should be avoided. If focus disappears into hidden or offscreen content, the hiding and modal behavior need to be fixed.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice focus handling',
+    level: 'advanced',
+  },
+];
+
+const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
+  {
+    q: 'What does mobile-first CSS mean?',
+    a: 'Mobile-first CSS starts with the narrowest useful layout and adds complexity as space becomes available. This usually creates fewer overrides because the base styles handle constrained screens. The edge case is a desktop-only component that still needs a usable narrow fallback.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review responsive CSS',
+    level: 'beginner',
+  },
+  {
+    q: 'How do container queries differ from media queries?',
+    a: 'Media queries react to the viewport or environment, while container queries react to the size or style context of a container. Container queries make reusable components adapt where they are placed. They are most useful when the same component appears in a sidebar, grid, and full-width region.',
+    level: 'advanced',
+  },
+  {
+    q: 'How should a navigation bar adapt on small screens?',
+    a: 'The nav should preserve readable labels, reachable focus states, and clear current-location cues. Flex wrapping, overflow menus, or a disclosure pattern can work depending on item count. A responsive nav fails if it only hides links without giving users another path to them.',
+    route: ['/css', 'coding', 'css-flexbox-navbar'],
+    cta: 'Build a responsive nav',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should cards adapt in a responsive grid?',
+    a: 'Cards should keep readable text, stable media ratios, and consistent action placement as columns change. Grid with minmax() and auto-fit can reduce breakpoint code while preserving minimum card width. Test long titles and missing images because they expose fragile card layouts.',
+    route: ['/css', 'coding', 'css-grid-card-gallery'],
+    cta: 'Build card grids',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you handle long words and untrusted text?',
+    a: 'Long words, URLs, and user-generated strings can break otherwise clean layouts. Use overflow-wrap, min-width: 0, max-width constraints, and clear truncation rules when content must stay on one line. Truncation should not hide essential information without another way to access it.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Fix responsive overflow',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you keep touch targets usable?',
+    a: 'Interactive controls need enough physical size and spacing to avoid accidental taps. CSS should not shrink buttons below a usable hit area just to fit a dense layout. If space is tight, wrapping or grouping controls is better than making them tiny.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do reduced motion preferences affect CSS?',
+    a: 'The prefers-reduced-motion media query lets users request less animation. Use it to remove or simplify motion that can distract, delay, or cause discomfort. Essential state changes should still be visible without relying on animation.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media features',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you test responsive HTML and CSS before shipping?',
+    a: 'Test narrow and wide widths, zoom, long text, keyboard navigation, image loading, and common device sizes. Inspect overflow, focus visibility, layout shift, and readable contrast. A page that only passes one viewport can still fail real users because content and device constraints vary.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive review',
+    level: 'advanced',
+  },
+];
+
 const HTML_TOPIC_CARDS: HtmlTopicCard[] = [
   {
     title: 'HTML role in web development',
@@ -2048,7 +3272,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isHtmlCssHub()) {
-      return 'HTML and CSS interview questions and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice semantic markup, accessibility, layout, and cascade reasoning before moving into broader UI drills.';
+      return 'HTML and CSS interview questions and answers for UI rounds, with short answers, code scenarios, semantic markup, accessibility, layout, cascade, responsive behavior, and browser debugging.';
     }
 
     if (this.isVueHub()) {
@@ -2147,6 +3371,14 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     this.scrollToSection(targetId);
   }
 
+  scrollToReactSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  scrollToHtmlCssSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
   private scrollToSection(targetId: string): void {
     const target = this.document.getElementById(targetId);
     if (!target) return;
@@ -2200,6 +3432,59 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   isReactHub(): boolean {
     return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'react';
+  }
+
+  reactEditorialSignal(): ReactEditorialSignal {
+    return REACT_EDITORIAL_SIGNAL;
+  }
+
+  reactAnchorItems(): ReactAnchorItem[] {
+    return REACT_ANCHOR_ITEMS;
+  }
+
+  reactKeywordClusters(): ReactKeywordClusterItem[] {
+    return REACT_KEYWORD_CLUSTERS;
+  }
+
+  reactShortAnswers(): ReactShortAnswerItem[] {
+    return REACT_SHORT_ANSWERS;
+  }
+
+  reactAudienceTracks(): ReactAudienceTrack[] {
+    return REACT_AUDIENCE_TRACKS;
+  }
+
+  reactRenderingInternalsQuestions(): ReactFocusedQuestionItem[] {
+    return REACT_RENDERING_INTERNALS_QUESTIONS;
+  }
+
+  reactReact19ServerQuestions(): ReactFocusedQuestionItem[] {
+    return REACT_REACT19_SERVER_QUESTIONS;
+  }
+
+  reactTestingQuestions(): ReactFocusedQuestionItem[] {
+    return REACT_TESTING_QUESTIONS;
+  }
+
+  reactScenarioQuestions(): ReactScenarioQuestionItem[] {
+    return REACT_SCENARIO_QUESTIONS;
+  }
+
+  reactModernQuestions(): ReactModernQuestionItem[] {
+    return REACT_MODERN_QUESTIONS;
+  }
+
+  reactShortAnswerCategoryLabel(category: ReactShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'state-hooks':
+        return 'State + hooks';
+      case 'rendering-performance':
+        return 'Rendering + performance';
+      default:
+        return 'Modern React';
+    }
   }
 
   reactTopicCards(): ReactTopicCard[] {
@@ -2311,6 +3596,59 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   htmlResourceLinks(): HtmlResourceLink[] {
     return HTML_RESOURCE_LINKS;
+  }
+
+  htmlCssEditorialSignal(): HtmlCssEditorialSignal {
+    return HTML_CSS_EDITORIAL_SIGNAL;
+  }
+
+  htmlCssAnchorItems(): HtmlCssAnchorItem[] {
+    return HTML_CSS_ANCHOR_ITEMS;
+  }
+
+  htmlCssKeywordClusters(): HtmlCssKeywordClusterItem[] {
+    return HTML_CSS_KEYWORD_CLUSTERS;
+  }
+
+  htmlCssShortAnswers(): HtmlCssShortAnswerItem[] {
+    return HTML_CSS_SHORT_ANSWERS;
+  }
+
+  htmlCssAudienceTracks(): HtmlCssAudienceTrack[] {
+    return HTML_CSS_AUDIENCE_TRACKS;
+  }
+
+  htmlCssSemanticsQuestions(): HtmlCssFocusedQuestionItem[] {
+    return HTML_CSS_SEMANTICS_QUESTIONS;
+  }
+
+  htmlCssLayoutQuestions(): HtmlCssFocusedQuestionItem[] {
+    return HTML_CSS_LAYOUT_QUESTIONS;
+  }
+
+  htmlCssCodeScenarios(): HtmlCssCodeQuestionItem[] {
+    return HTML_CSS_CODE_SCENARIOS;
+  }
+
+  htmlCssBrowserDebugQuestions(): HtmlCssFocusedQuestionItem[] {
+    return HTML_CSS_BROWSER_DEBUG_QUESTIONS;
+  }
+
+  htmlCssResponsiveQuestions(): HtmlCssFocusedQuestionItem[] {
+    return HTML_CSS_RESPONSIVE_QUESTIONS;
+  }
+
+  htmlCssShortAnswerCategoryLabel(category: HtmlCssShortAnswerCategory): string {
+    switch (category) {
+      case 'html':
+        return 'HTML';
+      case 'css':
+        return 'CSS';
+      case 'accessibility':
+        return 'Accessibility';
+      default:
+        return 'Responsive + debugging';
+    }
   }
 
   prepRoadmapTitle(): string {
@@ -2799,8 +4137,38 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isReactHub()) {
+      collectionPage['dateModified'] = REACT_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: REACT_EDITORIAL_SIGNAL.reviewer,
+      };
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'React interview questions and answers' },
+        { '@type': 'Thing', name: 'Beginner to advanced React interview questions' },
+        { '@type': 'Thing', name: 'React interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'React hooks interview questions' },
+        { '@type': 'Thing', name: 'React useEffect interview questions' },
+        { '@type': 'Thing', name: 'React state interview questions' },
+        { '@type': 'Thing', name: 'React rendering interview questions' },
+        { '@type': 'Thing', name: 'React performance interview questions' },
+        { '@type': 'Thing', name: 'React Context interview questions' },
+        { '@type': 'Thing', name: 'React forms interview questions' },
+        { '@type': 'Thing', name: 'React StrictMode interview questions' },
+        { '@type': 'Thing', name: 'React Suspense interview questions' },
+        { '@type': 'Thing', name: 'React rendering internals interview questions' },
+        { '@type': 'Thing', name: 'React Virtual DOM interview questions' },
+        { '@type': 'Thing', name: 'React reconciliation interview questions' },
+        { '@type': 'Thing', name: 'React Fiber interview questions' },
+        { '@type': 'Thing', name: 'React 19 interview questions' },
+        { '@type': 'Thing', name: 'React Actions interview questions' },
+        { '@type': 'Thing', name: 'React useActionState interview questions' },
+        { '@type': 'Thing', name: 'React useOptimistic interview questions' },
+        { '@type': 'Thing', name: 'React Server Components interview questions' },
+        { '@type': 'Thing', name: 'Next.js App Router React interview questions' },
+        { '@type': 'Thing', name: 'React hydration interview questions' },
+        { '@type': 'Thing', name: 'React Testing Library interview questions' },
+        { '@type': 'Thing', name: 'React testing interview questions' },
         { '@type': 'Thing', name: 'React props, state, and one-way data flow' },
         { '@type': 'Thing', name: 'React Hooks and useEffect implementation' },
         { '@type': 'Thing', name: 'React Context API and state management' },
@@ -2810,6 +4178,25 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
       collectionPage['mentions'] = [
         ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'React scenario questions' },
+        { '@type': 'Thing', name: 'React state ownership' },
+        { '@type': 'Thing', name: 'React effect cleanup' },
+        { '@type': 'Thing', name: 'React stale closures' },
+        { '@type': 'Thing', name: 'React keys in lists' },
+        { '@type': 'Thing', name: 'React controlled and uncontrolled inputs' },
+        { '@type': 'Thing', name: 'React memoization trade-offs' },
+        { '@type': 'Thing', name: 'React 18 automatic batching' },
+        { '@type': 'Thing', name: 'React Server Components' },
+        { '@type': 'Thing', name: 'React hydration mismatch debugging' },
+        { '@type': 'Thing', name: 'React render phase and commit phase' },
+        { '@type': 'Thing', name: 'React diffing algorithm' },
+        { '@type': 'Thing', name: 'React form actions and useFormStatus' },
+        { '@type': 'Thing', name: 'React use with Suspense' },
+        { '@type': 'Thing', name: 'Next.js caching and data ownership' },
+        { '@type': 'Thing', name: 'React streaming UI questions' },
+        { '@type': 'Thing', name: 'Jest and Vitest React testing' },
+        { '@type': 'Thing', name: 'React act async updates' },
+        { '@type': 'Thing', name: 'MSW mocked API testing' },
         { '@type': 'Thing', name: 'Common React interview mistakes' },
         { '@type': 'Thing', name: 'React performance optimization' },
         { '@type': 'Thing', name: 'Debugging React applications' },
@@ -2911,6 +4298,38 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
     }
 
+    if (this.isHtmlCssHub()) {
+      collectionPage['dateModified'] = HTML_CSS_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: HTML_CSS_EDITORIAL_SIGNAL.reviewer,
+      };
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'HTML CSS interview questions' },
+        { '@type': 'Thing', name: 'HTML and CSS interview questions and answers' },
+        { '@type': 'Thing', name: 'HTML and CSS interview questions for beginners' },
+        { '@type': 'Thing', name: 'HTML and CSS interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'semantic HTML interview questions' },
+        { '@type': 'Thing', name: 'CSS layout interview questions' },
+        { '@type': 'Thing', name: 'Flexbox and Grid interview questions' },
+        { '@type': 'Thing', name: 'CSS specificity and cascade interview questions' },
+        { '@type': 'Thing', name: 'accessibility interview questions' },
+        { '@type': 'Thing', name: 'responsive UI interview questions' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'HTML forms and labels' },
+        { '@type': 'Thing', name: 'Accessible HTML and CSS components' },
+        { '@type': 'Thing', name: 'CSS responsive layout debugging' },
+        { '@type': 'Thing', name: 'HTML and CSS code scenarios' },
+        { '@type': 'Thing', name: 'Browser rendering and UI debugging' },
+        { '@type': 'Thing', name: 'CSS box model and overflow' },
+        { '@type': 'Thing', name: 'HTML metadata and viewport' },
+        { '@type': 'Thing', name: 'Responsive images and layout shift' },
+      ];
+    }
+
     if (this.isHtmlHub()) {
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -2945,8 +4364,14 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     if (this.isJavaScriptHub()) {
       jsonLd.push(this.javascriptShortAnswersFaqPage(canonicalUrl));
     }
+    if (this.isReactHub()) {
+      jsonLd.push(this.reactShortAnswersFaqPage(canonicalUrl));
+    }
     if (this.isAngularHub()) {
       jsonLd.push(this.angularShortAnswersFaqPage(canonicalUrl));
+    }
+    if (this.isHtmlCssHub()) {
+      jsonLd.push(this.htmlCssShortAnswersFaqPage(canonicalUrl));
     }
 
     this.seo.updateTags({
@@ -2980,6 +4405,40 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       url: canonicalUrl,
       name: 'Top Angular interview questions and short answers, beginner to advanced',
       mainEntity: this.angularShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private reactShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#react-short-answers`,
+      url: canonicalUrl,
+      name: 'Top React interview questions and short answers, beginner to advanced',
+      mainEntity: this.reactShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private htmlCssShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#html-css-short-answers`,
+      url: canonicalUrl,
+      name: 'Top HTML and CSS interview questions and short answers, beginner to advanced',
+      mainEntity: this.htmlCssShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: {

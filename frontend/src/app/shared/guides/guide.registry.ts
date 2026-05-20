@@ -11,6 +11,13 @@ export type GuideSeo = {
     description?: string;
     primaryKeyword?: string;
     keywords?: string[];
+    faqPage?: {
+        name?: string;
+        items: Array<{
+            question: string;
+            answer: string;
+        }>;
+    };
     publishedAt?: string;
     updatedAt?: string;
     author?: GuideAuthor;
@@ -179,7 +186,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'javascript prep path',
             keywords: ['javascript prep path', 'javascript interview prep path', 'javascript interview study plan', 'javascript async closures state'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-05-10',
+            updatedAt: '2026-05-20',
             searchIntent: 'Find a JavaScript interview study plan that turns async, closures, stale state, and utility prompts into a repeatable 7/14/30-day prep system.',
             readerPromise: 'Use this to turn JavaScript screens and frontend loop follow-ups into a 7/14/30-day study plan with concrete async, closure, and utility-drill priorities.',
             uniqueAngle: 'Framework-specific bug families and direct drill mapping, not a generic topic list.',
@@ -192,20 +199,54 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'react-prep-path',
-        title: 'React Interview Preparation: Hooks, State, Performance',
+        title: 'How to Prepare for a React Interview: 7/14/30-Day Plan',
         minutes: 9,
-        summary: 'Use this React interview preparation path to stabilize hooks, rerender reasoning, stale-state fixes, and performance trade-offs with a 7/14/30-day study plan for frontend engineers.',
+        summary: 'Use this React interview preparation path to learn how to prepare for a React interview with hooks, state, rendering, coding drills, testing, and a 7/14/30-day study plan.',
         seo: {
-            title: 'React Interview Preparation: Hooks, State, Performance',
-            description: 'Use this React interview preparation path to stabilize hooks, rerender reasoning, stale-state fixes, and performance trade-offs with a 7/14/30-day study plan.',
-            primaryKeyword: 'react interview preparation',
-            keywords: ['react interview preparation', 'react interview prep path', 'react interview study plan', 'react hooks interview prep'],
+            title: 'How to Prepare for a React Interview: 7/14/30-Day Plan',
+            description: 'React interview preparation study plan for hooks, state, rendering, coding drills, testing, performance, and how to prepare in 7, 14, or 30 days.',
+            primaryKeyword: 'how to prepare for react interview',
+            keywords: [
+                'how to prepare for react interview',
+                'react interview preparation',
+                'react interview study plan',
+                'react interview prep path',
+                'react hooks interview prep',
+                'react coding interview preparation',
+                'senior react interview preparation',
+                'react interview preparation 7 days',
+            ],
+            faqPage: {
+                name: 'React interview preparation FAQ',
+                items: [
+                    {
+                        question: 'How do I prepare for a React interview?',
+                        answer: 'Use a repeatable loop: review one React concept, answer a short trivia prompt, build one UI coding drill, then write one mistake and one prevention rule. Prioritize hooks, effects, state ownership, rendering behavior, forms, testing, and performance before broad topic browsing. Where to practice in FrontendAtlas: start with /guides/framework-prep/react-prep-path, then pair /coding?tech=react&kind=trivia with /coding?tech=react&kind=coding.',
+                    },
+                    {
+                        question: 'What should I study first for a React interview?',
+                        answer: 'Start with components, JSX, props, state, one-way data flow, keys, controlled inputs, hooks, useEffect cleanup, and stale closures. These topics support most React coding prompts and make advanced rendering or performance questions easier to reason about. Practical rule: do not move into architecture until you can explain state snapshots and cleanup without guessing.',
+                    },
+                    {
+                        question: 'How long does it take to prepare for a React interview?',
+                        answer: 'A 7-day pass can refresh high-risk gaps, 14 days can make the practice loop repeatable, and 30 days can build mock-ready depth. Extend the plan when the same miss repeats across trivia, coding, or review notes. Practical rule: timeline is less important than whether your misses stop repeating.',
+                    },
+                    {
+                        question: 'How should I practice React coding interview questions?',
+                        answer: 'Build small UI prompts under time pressure, then harden the result with loading, error, empty, cleanup, accessibility, and state-reset cases. Pair each coding drill with one related concept answer so implementation and explanation improve together. Where to practice in FrontendAtlas: use /coding?tech=react&kind=coding and review linked React trivia immediately after.',
+                    },
+                    {
+                        question: 'How do I prepare for a senior React interview?',
+                        answer: 'Focus on state ownership, effect cleanup, rendering internals, Context boundaries, Server Components, testing strategy, profiling, and trade-off communication. Senior preparation should include why a design scales, what can fail, and how you would validate the decision. Practical rule: every answer should include a correctness risk, a performance risk, or a maintainability trade-off.',
+                    },
+                ],
+            },
             publishedAt: '2026-02-12',
-            updatedAt: '2026-05-10',
-            searchIntent: 'Find a React interview study plan that makes hooks, rerender logic, state design, and performance trade-offs easier to explain under pressure.',
-            readerPromise: 'Use this React interview preparation path to turn hooks, rerender, and performance interviews into a 7/14/30-day plan with clear state-design and effect-debugging priorities.',
+            updatedAt: '2026-05-20',
+            searchIntent: 'Find how to prepare for a React interview with a practical study plan for hooks, state, rendering, coding drills, testing, and performance.',
+            readerPromise: 'Use this React interview preparation path to turn hooks, rendering, coding, testing, and performance practice into a 7/14/30-day study plan.',
             uniqueAngle: 'React-specific render and state-design failure patterns tied directly to trivia and coding drills.',
-            factCheckedAt: '2026-04-19',
+            factCheckedAt: '2026-05-20',
             reviewedBy: 'FrontendAtlas Editor',
         },
         load: () =>
@@ -223,7 +264,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'angular prep path',
             keywords: ['angular prep path', 'angular interview prep path', 'angular interview study plan', 'angular rxjs architecture tests'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-05-10',
+            updatedAt: '2026-05-20',
             searchIntent: 'Find an Angular interview study plan that makes RxJS, change detection, DI, forms, and testing choices easier to explain and implement.',
             readerPromise: 'Use this to turn Angular loops on RxJS, change detection, DI, and tests into a 7/14/30-day prep plan with concrete operator and architecture priorities.',
             uniqueAngle: 'Angular-specific debugging and architecture decisions connected directly to operator choice, state boundaries, and tests.',
@@ -245,7 +286,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'vue prep path',
             keywords: ['vue prep path', 'vue interview prep path', 'vue interview study plan', 'vue reactivity rendering state'],
             publishedAt: '2026-02-12',
-            updatedAt: '2026-05-10',
+            updatedAt: '2026-05-20',
             searchIntent: 'Find a Vue interview study plan that makes reactivity, nextTick, emits, router, and state trade-offs easier to explain under follow-ups.',
             readerPromise: 'Use this to turn Vue reactivity, emits, nextTick, router, and state-tradeoff interviews into a 7/14/30-day prep plan with concrete debugging and coding priorities.',
             uniqueAngle: 'Vue-specific reactivity and component-contract pitfalls tied directly to drills instead of generic topic buckets.',
@@ -393,16 +434,47 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'RADIO Framework for Frontend System Design: Requirements to Optimizations',
+        title: 'Frontend System Design Interview Framework: RADIO Method',
         minutes: 20,
-        summary: 'Use RADIO in 45- or 60-minute frontend system design interviews to move from requirements to architecture, data model, interface, and optimizations with clear artifacts and trade-offs.',
+        summary: 'Use the RADIO method as a frontend system design interview framework for requirements, architecture, data model, interface behavior, and optimizations.',
         seo: {
-            title: 'RADIO Framework for Frontend System Design: Requirements to Optimizations',
-            description: 'Use RADIO in 45- or 60-minute frontend system design interviews: requirements, architecture, data model, interface, and optimizations.',
+            title: 'Frontend System Design Interview Framework: RADIO Method',
+            description: 'Use RADIO for frontend system design interviews: clarify requirements, sketch architecture, model data, define interfaces, and choose optimizations.',
             primaryKeyword: 'radio framework for frontend system design interviews',
-            keywords: ['radio framework for frontend system design interviews', 'radio approach system design', 'frontend system design radio framework', 'requirements architecture data interface optimizations'],
+            keywords: [
+                'frontend system design interview framework',
+                'RADIO framework for frontend system design interviews',
+                'radio approach system design',
+                'how to answer frontend system design interview',
+                'requirements architecture data interface optimizations',
+            ],
+            faqPage: {
+                name: 'RADIO framework frontend system design interview FAQ',
+                items: [
+                    {
+                        question: 'What is the RADIO framework for frontend system design interviews?',
+                        answer: 'RADIO is a practical answer method for frontend system design interviews. It moves through Requirements, Architecture, Data, Interface, and Optimizations so the answer has scope, system shape, contracts, user behavior, and trade-offs instead of disconnected ideas.',
+                    },
+                    {
+                        question: 'How do I use RADIO to answer a frontend system design interview question?',
+                        answer: 'Start by clarifying the user flow and constraints, then sketch the frontend architecture, model server and client state, define component and API interfaces, and close with the highest-risk optimizations. Keep one core flow as the thread so every RADIO step supports the same answer.',
+                    },
+                    {
+                        question: 'What should I cover in Requirements, Architecture, Data, Interface, and Optimizations?',
+                        answer: 'Requirements covers scope, users, constraints, and success metrics. Architecture covers rendering, client/server boundaries, routing, data flow, and dependencies. Data covers contracts, state ownership, cache keys, and invalidation; Interface covers components, states, accessibility, and events; Optimizations covers performance, reliability, observability, security, and trade-offs.',
+                    },
+                    {
+                        question: 'How does RADIO work in a 45-minute system design interview?',
+                        answer: 'In a 45-minute interview, spend a few minutes on requirements, then move quickly through architecture, data model, interface behavior, and optimizations. The goal is not equal time on every step; it is a defensible path from problem scope to production trade-offs.',
+                    },
+                    {
+                        question: 'Is RADIO only for frontend system design?',
+                        answer: 'No. RADIO can structure broader system design answers, but this page adapts it for frontend-heavy interviews where rendering, state, accessibility, browser performance, API contracts, and UI failure states matter most.',
+                    },
+                ],
+            },
             publishedAt: '2026-02-18',
-            updatedAt: '2026-05-10',
+            updatedAt: '2026-05-20',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
