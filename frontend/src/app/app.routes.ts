@@ -1209,7 +1209,7 @@ export const routes: Routes = [
       seo: {
         title: 'Vue.js Interview Questions and Answers',
         description:
-          'Practice Vue.js interview questions and Vue JS answers with coding prompts, concept questions, follow-ups, reactivity, rendering, and state.',
+          'Vue.js interview questions and answers, beginner to advanced, for experienced developers with Vue 3, Composition API, ref vs reactive, computed vs watch, Vue Router, Pinia, Vuex, testing, security, performance, and scenario questions.',
       },
     },
   },

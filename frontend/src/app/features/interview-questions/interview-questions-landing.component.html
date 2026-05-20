@@ -31,6 +31,15 @@
       <span>{{ reactEditorialSignal().coverage }}</span>
     </div>
     <div
+      *ngIf="isVueHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ vueEditorialSignal().reviewedLabel }}</span>
+      <span>{{ vueEditorialSignal().reviewer }}</span>
+      <span>{{ vueEditorialSignal().coverage }}</span>
+    </div>
+    <div
       *ngIf="isHtmlCssHub()"
       class="iq-editorial-signal"
       aria-label="Editorial review details"
@@ -651,6 +660,254 @@
   </section>
 
   <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-vue-toc"
+    aria-label="Vue.js interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-vue-toc__links">
+      <button
+        *ngFor="let item of vueAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToVueSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-clusters"
+    aria-labelledby="iq-vue-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-clusters-title">
+        Popular Vue.js interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Jump to Vue-specific interview areas: reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, testing, security, and performance.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of vueKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToVueSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-short-answers"
+    aria-labelledby="iq-vue-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Short answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-short-answers-title">
+        Top Vue.js interview questions and short answers, beginner to advanced
+      </h2>
+      <p class="fa-meta-text">
+        Review Vue 3 fundamentals, reactivity, component contracts, Router, Pinia/Vuex, Composition API, and performance before opening deeper practice routes.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of vueShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ vueShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ questionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-audience"
+    aria-labelledby="iq-vue-audience-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Beginner to experienced</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-audience-title">
+        Vue.js interview questions for beginners and experienced developers
+      </h2>
+      <p class="fa-meta-text">
+        Use the level chips to move from template and component fundamentals into reactivity traps, application architecture, testing, security, and performance.
+      </p>
+    </div>
+
+    <div class="iq-audience-grid">
+      <article class="iq-audience-card" *ngFor="let item of vueAudienceTracks()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-reactivity"
+    aria-labelledby="iq-vue-reactivity-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Reactivity + rendering</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-reactivity-title">
+        Vue reactivity and rendering interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review how Vue tracks dependencies, batches DOM updates, preserves list identity, and patches the DOM when reactive state changes.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of vueReactivityRenderingQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-components"
+    aria-labelledby="iq-vue-components-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Component contracts</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-components-title">
+        Vue component contract interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover props, emits, slots, provide/inject, v-model, single-file components, public APIs, and scalable component boundaries.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of vueComponentContractQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-scenarios"
+    aria-labelledby="iq-vue-scenarios-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Scenarios + code</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-scenarios-title">
+        Vue scenario and code interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice Vue debugging scenarios around reactivity extraction, watcher loops, key identity, prop ownership, nextTick, v-if lifecycle, computed side effects, and async race conditions.
+      </p>
+    </div>
+
+    <div class="iq-scenario-grid">
+      <article class="iq-scenario-card" *ngFor="let item of vueScenarioQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <pre class="iq-code-block"><code>{{ item.code }}</code></pre>
+        <p>{{ item.explanation }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-modern"
+    aria-labelledby="iq-vue-modern-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Modern Vue 3</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-modern-title">
+        Modern Vue 3 interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review current Vue topics through production trade-offs: script setup, composables, Pinia, Router 4 guards, Teleport, Suspense, SSR, Nuxt, and hydration.
+      </p>
+    </div>
+
+    <div class="iq-modern-grid">
+      <article class="iq-modern-card" *ngFor="let item of vueModernQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-testing-security"
+    aria-labelledby="iq-vue-testing-security-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Testing + security + performance</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-testing-security-title">
+        Vue testing, security, and performance interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover Vue Test Utils, Vitest, async DOM updates, emitted events, v-html safety, rich text, profiling, and memory cleanup.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of vueTestingSecurityPerformanceQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
     *ngIf="isHtmlCssHub()"
     class="iq-section iq-html-css-toc"
     aria-label="HTML and CSS interview question sections"
@@ -898,12 +1155,12 @@
     </div>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : null">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : null"
         >
           {{ codingSectionTitle() }}
         </h2>
@@ -950,12 +1207,12 @@
     </ng-container>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : null">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : null"
         >
           {{ triviaSectionTitle() }}
         </h2>

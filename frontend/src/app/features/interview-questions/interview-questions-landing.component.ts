@@ -122,6 +122,50 @@ type ReactEditorialSignal = {
   coverage: string;
   dateModified: string;
 };
+type VueShortAnswerCategory = 'fundamentals' | 'reactivity-rendering' | 'components' | 'routing-state' | 'modern';
+type VueShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: VueShortAnswerCategory;
+  level: QuestionLevel;
+};
+type VueAnchorItem = { label: string; targetId: string };
+type VueKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type VueAudienceTrack = { title: string; detail: string };
+type VueFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type VueScenarioQuestionItem = {
+  q: string;
+  code: string;
+  explanation: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type VueModernQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type VueEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type AngularCoverageLink = { label: string; route: any[] };
 type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
 type AngularMistakeItem = { title: string; detail: string };
@@ -527,16 +571,28 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   vue: [
     {
-      q: 'Are Vue.js and Vue JS interview questions the same target?',
-      a: 'Yes. Candidates search both variants, so this hub uses Vue.js for the framework name while still making the Vue JS query intent clear.',
+      q: 'Are these Vue.js interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with Vue fundamentals, then moves into experienced-developer topics such as reactivity traps, Composition API design, Router, Pinia/Vuex, scenarios, testing, security, and performance.',
     },
     {
-      q: 'What should I practice first for Vue.js interviews?',
-      a: 'Start with reactivity, computed values, watchers, nextTick timing, props/emits, and key stability before moving into larger component prompts.',
+      q: 'Does this page cover Vue 3 and Composition API interview questions?',
+      a: 'Yes. It covers Vue 3 reactivity, ref, reactive, computed values, watch, watchEffect, script setup, composables, Composition API trade-offs, Router, Pinia/Vuex, Teleport, Suspense, SSR, and Nuxt-style concerns.',
     },
     {
-      q: 'How do I know a Vue answer is strong enough?',
-      a: 'A strong answer predicts the update path, names the state boundary, and explains the bug you would expect if the component contract is wrong.',
+      q: 'Does this page include Vue reactivity interview questions like ref vs reactive and computed vs watch?',
+      a: 'Yes. The reactivity sections cover ref, reactive, computed values, methods, watch, watchEffect, nextTick, dependency tracking, destructuring traps, virtual DOM diffing, and update batching.',
+    },
+    {
+      q: 'Does this page include Vue scenario and code interview questions?',
+      a: 'Yes. The scenario section covers destructuring that breaks reactivity, watcher loops, unstable v-for keys, prop mutation, nextTick timing, v-if lifecycle resets, computed side effects, and stale async search results.',
+    },
+    {
+      q: 'Does this page include Vue testing, security, and performance interview questions?',
+      a: 'Yes. It covers Vue Test Utils, Vitest, async DOM assertions, emitted events, v-html XSS risk, safe rich text, profiling, update dependencies, and cleanup for timers, listeners, and external subscriptions.',
+    },
+    {
+      q: 'Where should I practice Vue.js coding interview questions?',
+      a: 'Start with the Vue coding preview on this page, then move into debounced search, autocomplete, tabs, shopping cart, and the Vue prep path when you need a structured practice sequence.',
     },
   ],
   htmlCss: [
@@ -2325,6 +2381,595 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
   },
 ];
 
+const VUE_EDITORIAL_SIGNAL: VueEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible Vue.js questions across reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, modern Vue, testing, security, and performance',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const VUE_ANCHOR_ITEMS: VueAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-vue-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-vue-short-answers-title' },
+  { label: 'Audience', targetId: 'iq-vue-audience-title' },
+  { label: 'Reactivity', targetId: 'iq-vue-reactivity-title' },
+  { label: 'Components', targetId: 'iq-vue-components-title' },
+  { label: 'Scenarios + code', targetId: 'iq-vue-scenarios-title' },
+  { label: 'Modern Vue 3', targetId: 'iq-vue-modern-title' },
+  { label: 'Testing + security', targetId: 'iq-vue-testing-security-title' },
+  { label: 'Coding drills', targetId: 'iq-vue-coding-preview-title' },
+  { label: 'Concepts', targetId: 'iq-vue-concept-preview-title' },
+];
+
+const VUE_KEYWORD_CLUSTERS: VueKeywordClusterItem[] = [
+  {
+    label: 'Beginner Vue.js questions',
+    targetId: 'iq-vue-short-answers-title',
+    detail: 'Vue basics, templates, directives, components, props, emits, lifecycle hooks, and common Vue.js interview answers.',
+  },
+  {
+    label: 'Experienced Vue.js questions',
+    targetId: 'iq-vue-audience-title',
+    detail: 'Reactivity traps, component contracts, Router, Pinia/Vuex, SSR, testing, security, performance, and production debugging.',
+  },
+  {
+    label: 'Vue 3 and Composition API',
+    targetId: 'iq-vue-modern-title',
+    detail: 'Composition API, script setup, composables, Pinia, Router 4, Teleport, Suspense, and SSR.',
+  },
+  {
+    label: 'Reactivity: ref, reactive, computed, watch',
+    targetId: 'iq-vue-reactivity-title',
+    detail: 'ref vs reactive, computed vs watch, watchEffect, nextTick, dependency tracking, destructuring traps, and update timing.',
+  },
+  {
+    label: 'Router, Pinia, and Vuex',
+    targetId: 'iq-vue-components-title',
+    detail: 'Vue Router navigation, route lifecycle, Pinia/Vuex boundaries, and shared state ownership.',
+  },
+  {
+    label: 'Testing, security, and performance',
+    targetId: 'iq-vue-testing-security-title',
+    detail: 'Vue Test Utils, Vitest, async DOM updates, v-html safety, cleanup, and render performance.',
+  },
+];
+
+const VUE_SHORT_ANSWERS: VueShortAnswerItem[] = [
+  {
+    q: 'What is Vue.js?',
+    a: 'Vue.js is a progressive JavaScript framework for building reactive user interfaces with components. Vue tracks reactive state, renders templates, and patches the DOM when dependencies change. Its practical strength is that simple components stay approachable while larger apps can add Router, Pinia, composables, testing, and build tooling as needed.',
+    route: ['/vue', 'trivia', 'vue-reactivity-vs-react-concepts'],
+    cta: 'Review Vue concepts',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between Vue 2 and Vue 3?',
+    a: 'Vue 3 introduced a Proxy-based reactivity system, the Composition API, better TypeScript support, fragments, Teleport, Suspense, and a faster runtime. Vue 2 used Object.defineProperty-based reactivity and the Options API as the dominant authoring model. The compatibility concern is that migrations can expose plugin, lifecycle, state-management, and template-assumption differences.',
+    route: ['/vue', 'trivia', 'vue-composition-api'],
+    cta: 'Review Vue 3 patterns',
+    category: 'modern',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does Vue reactivity work?',
+    a: 'Vue tracks reactive reads during rendering or effects and triggers the dependent work when those values are written. In Vue 3, proxies let Vue observe object property access and updates more flexibly than Vue 2. The important edge case is that extracting values out of a reactive proxy can disconnect them from tracking unless you preserve refs.',
+    route: ['/vue', 'trivia', 'vue-reactivity-system'],
+    cta: 'Review reactivity',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is the difference between ref and reactive?',
+    a: 'ref wraps a value in an object with a .value property, while reactive returns a proxy for object-shaped state. ref is usually clearer for primitives and replaceable values; reactive can be convenient when mutating properties on a stable object. Destructuring reactive state can break reactivity, so toRef or toRefs may be needed when extracting fields.',
+    route: ['/vue', 'trivia', 'vue-ref-vs-reactive-difference-traps'],
+    cta: 'Compare ref and reactive',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are computed properties in Vue?',
+    a: 'Computed properties are cached derived values based on reactive dependencies. They rerun only when a dependency changes, which makes them better than methods for values used repeatedly in templates. Computed getters should stay pure and synchronous; side effects belong in watch or watchEffect.',
+    route: ['/vue', 'trivia', 'vue-computed-properties'],
+    cta: 'Review computed values',
+    category: 'reactivity-rendering',
+    level: 'beginner',
+  },
+  {
+    q: 'What happens when methods are called in Vue templates?',
+    a: 'A method called from a template can run again whenever the component renders. That is fine for cheap event handlers or formatting, but it is risky for expensive derived values. If the value is derived from reactive state and should be cached, computed is usually the better fit.',
+    route: ['/vue', 'trivia', 'vue-methods-in-templates'],
+    cta: 'Review template methods',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use watch in Vue?',
+    a: 'Use watch when a reactive value changing should trigger an imperative side effect such as fetching, logging, writing to storage, or syncing external state. A watcher can observe a specific source and gives access to new and old values. It is the wrong tool for pure derived display state, where computed is simpler and safer.',
+    route: ['/vue', 'trivia', 'vue-computed-vs-watchers'],
+    cta: 'Compare computed and watch',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is watchEffect in Vue?',
+    a: 'watchEffect automatically tracks reactive values read during its callback and reruns when any of them change. It is useful when dependencies are natural to read inside the effect, but it can be less explicit than watch. A common failure is creating loops by writing to the same reactive state the effect reads.',
+    route: ['/vue', 'trivia', 'vue-watch-vs-watcheffect-differences-infinite-loops'],
+    cta: 'Review watchEffect traps',
+    category: 'reactivity-rendering',
+    level: 'advanced',
+  },
+  {
+    q: 'What does nextTick do in Vue?',
+    a: 'nextTick waits until Vue has flushed pending DOM updates from reactive state changes. It is useful when you need to focus, measure, or scroll after the DOM reflects new state. It should not be used as a general fix for unclear data flow; first explain why DOM timing is the actual dependency.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    cta: 'Review nextTick timing',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are Vue lifecycle hooks?',
+    a: 'Lifecycle hooks run at specific points in a component lifecycle, such as creation, mount, update, and unmount. They help place setup, DOM-dependent work, subscriptions, and cleanup at the correct time. Bugs often come from reading DOM too early or forgetting to clean up timers, listeners, and external subscriptions.',
+    route: ['/vue', 'trivia', 'vue-lifecycle-hooks'],
+    cta: 'Review lifecycle hooks',
+    category: 'components',
+    level: 'beginner',
+  },
+  {
+    q: 'What are components in Vue?',
+    a: 'Vue components are reusable UI units that combine template, state, behavior, styles, and a public contract. Single-file components make that contract easier to maintain by keeping the component implementation in one file. The component should expose clear props and emits instead of letting children mutate parent-owned state directly.',
+    route: ['/vue', 'trivia', 'vue-sfc-vs-global-components'],
+    cta: 'Review component scope',
+    category: 'components',
+    level: 'beginner',
+  },
+  {
+    q: 'How should props work in Vue?',
+    a: 'Props are inputs owned by the parent and passed down to a child. A child should treat props as read-only and emit an event when it wants the parent to change state. Mutating props directly creates ownership confusion and can be overwritten on the next parent update.',
+    route: ['/vue', 'trivia', 'vue-child-mutates-prop-directly'],
+    cta: 'Review prop ownership',
+    category: 'components',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why should emits be declared in Vue?',
+    a: 'Declaring emits documents the events a component can send and helps catch mistakes in event names or payload expectations. It also separates component events from native DOM events. In larger codebases, explicit emits make component contracts safer to refactor.',
+    route: ['/vue', 'trivia', 'vue-why-declare-emits-type-safety-maintenance'],
+    cta: 'Review emits contracts',
+    category: 'components',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are slots in Vue?',
+    a: 'Slots let a parent provide content to a child component while the child controls placement. Named slots support multiple content regions, and scoped slots let the child expose data back to the parent render scope. The trade-off is that too many slot contracts can make component behavior harder to trace.',
+    route: ['/vue', 'trivia', 'vue-slots-default-named-scoped-slot-props'],
+    cta: 'Review Vue slots',
+    category: 'components',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use provide and inject?',
+    a: 'provide and inject pass dependencies through a component tree without threading props through every level. They fit design-system services, form context, deeply nested wiring, or plugin-style dependencies. They can hide coupling, so app-wide business state is often clearer in a store such as Pinia.',
+    route: ['/vue', 'trivia', 'vue-provide-inject-vs-prop-drilling-tradeoffs'],
+    cta: 'Review provide/inject',
+    category: 'components',
+    level: 'advanced',
+  },
+  {
+    q: 'What does v-model expand to?',
+    a: 'v-model is syntax sugar for binding a value and listening for an update event. On custom components, it usually maps to a modelValue prop and update:modelValue event, with support for named models and modifiers. Understanding the expansion helps debug controlled form components and event payload bugs.',
+    route: ['/vue', 'trivia', 'vue-v-model-syntax-sugar-expansion'],
+    cta: 'Review v-model internals',
+    category: 'components',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is the difference between v-if and v-show?',
+    a: 'v-if conditionally creates and destroys DOM and component instances, while v-show keeps the element mounted and toggles display. v-if is better when the block is rarely shown, and v-show is better for frequent visibility toggles. State reset and lifecycle cleanup are the key behavioral differences.',
+    route: ['/vue', 'trivia', 'vue-v-show-vs-v-if-dom-lifecycle'],
+    cta: 'Compare visibility strategies',
+    category: 'reactivity-rendering',
+    level: 'beginner',
+  },
+  {
+    q: 'Why are keys important in v-for lists?',
+    a: 'Keys give Vue stable identity for list items across insertions, removals, and reordering. Without stable keys, Vue may reuse DOM or component state for the wrong item. Index keys are fragile for dynamic lists because identity changes when order changes.',
+    route: ['/vue', 'trivia', 'vue-v-for-keys-why-not-index'],
+    cta: 'Review list keys',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are Vue directives?',
+    a: 'Directives are template instructions such as v-bind, v-on, v-if, v-for, v-model, and v-show. They compile into reactive behavior that connects state, events, attributes, rendering, and visibility. Custom directives are useful for direct DOM behavior, but they should not replace component state flow.',
+    route: ['/vue', 'trivia', 'vue-directives'],
+    cta: 'Review directives',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the Composition API?',
+    a: 'The Composition API lets Vue components organize logic around features using setup, refs, reactive state, computed values, watchers, and composables. It is especially useful when one feature spans state, lifecycle, and side effects. The main benefit is maintainability and reuse, not simply replacing Options API syntax.',
+    route: ['/vue', 'trivia', 'vue-composition-api'],
+    cta: 'Review Composition API',
+    category: 'modern',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are composables in Vue?',
+    a: 'Composables are functions that encapsulate reusable Composition API logic. They can own refs, computed values, watchers, lifecycle hooks, and cleanup behavior. A good composable has a clear ownership boundary and does not hide surprising global state unless that is its explicit purpose.',
+    route: ['/vue', 'trivia', 'vue-composition-api-vs-mixins'],
+    cta: 'Review reuse patterns',
+    category: 'modern',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is Vue Router used for?',
+    a: 'Vue Router manages client-side navigation, route matching, nested views, params, query state, and navigation guards. It lets a Vue app behave like multiple pages while avoiding full document reloads. Route guards should have clear allowed, denied, and redirect outcomes to avoid navigation loops.',
+    route: ['/vue', 'trivia', 'vue-router-navigation'],
+    cta: 'Review Vue Router',
+    category: 'routing-state',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use Pinia or Vuex?',
+    a: 'Use local component state until state must be shared across distant components, persisted, debugged centrally, or coordinated through a predictable update path. Pinia is the modern Vue 3 default, while Vuex still appears in older applications. The key decision is state ownership, not moving every value into a global store.',
+    route: ['/vue', 'trivia', 'vuex-state-management'],
+    cta: 'Review store boundaries',
+    category: 'routing-state',
+    level: 'advanced',
+  },
+  {
+    q: 'How does Vue virtual DOM diffing work?',
+    a: 'Vue renders a virtual node tree and compares the next tree with the previous one to decide what DOM patches are needed. Stable keys help Vue preserve the correct item and component identity during list changes. Diffing is efficient, but it cannot fix unclear identity or excessive reactive dependencies.',
+    route: ['/vue', 'trivia', 'vue-virtual-dom-diffing'],
+    cta: 'Review Vue diffing',
+    category: 'reactivity-rendering',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you improve Vue performance?',
+    a: 'Start by reducing unnecessary reactive work, using computed values for cached derived state, keeping keys stable, splitting heavy components, and avoiding expensive template methods. For large lists, use pagination, windowing, or server-side constraints instead of rendering everything. Measure before optimizing because many Vue bottlenecks are data-shape or component-boundary problems.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+    category: 'modern',
+    level: 'advanced',
+  },
+];
+
+const VUE_AUDIENCE_TRACKS: VueAudienceTrack[] = [
+  {
+    title: 'Vue.js interview questions for beginners',
+    detail: 'Start with Vue templates, directives, components, props, emits, v-model, computed values, watchers, lifecycle hooks, and the difference between v-if, v-show, and v-for keys.',
+  },
+  {
+    title: 'Vue.js interview questions for experienced developers',
+    detail: 'Move into reactivity traps, Composition API design, composables, Router guards, Pinia/Vuex boundaries, SSR/Nuxt hydration, testing, security, performance, and production debugging scenarios.',
+  },
+];
+
+const VUE_REACTIVITY_RENDERING_QUESTIONS: VueFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How does Vue know which component to update?',
+    a: 'Vue tracks which reactive values are read while rendering or while running an effect. When one of those values changes, Vue schedules the dependent component or effect instead of rerendering everything immediately. The practical debugging step is to find which reactive read created the dependency.',
+    route: ['/vue', 'trivia', 'vue-reactivity-system'],
+    cta: 'Review dependency tracking',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can destructuring break Vue reactivity?',
+    a: 'Destructuring a property out of a reactive object can copy the current value out of the proxy. Later reads may no longer go through Vue tracking, so updates can appear stale. Use toRef or toRefs when extracted properties must remain reactive.',
+    route: ['/vue', 'trivia', 'vue-destructuring-breaks-reactivity-torefs-toref'],
+    cta: 'Debug destructuring',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why should computed values avoid side effects?',
+    a: 'Computed getters are meant to return cached derived state from reactive inputs. If a computed getter writes state, fetches data, or mutates external resources, rendering can become unpredictable. Use watch or watchEffect for side effects and keep computed values pure.',
+    route: ['/vue', 'trivia', 'vue-computed-vs-watchers'],
+    cta: 'Compare computed and watch',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does nextTick matter for DOM reads?',
+    a: 'Vue batches reactive updates and patches the DOM asynchronously. Reading or focusing DOM immediately after changing state can see the old DOM. nextTick waits for the pending patch, which makes it useful for focus, measurement, and scroll logic.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    cta: 'Review DOM timing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How does v-if affect component lifecycle?',
+    a: 'v-if creates and destroys the element or component as the condition changes. That means child state resets, mounted and unmounted hooks can run, and cleanup must be correct. Use v-show when preserving state and avoiding repeated lifecycle work matters more than removing DOM.',
+    route: ['/vue', 'trivia', 'vue-v-if-component-creation-destruction'],
+    cta: 'Review v-if behavior',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do keys affect state preservation?',
+    a: 'Keys tell Vue which item or component instance is the same across renders. Stable keys preserve the right local state during reorder, insertion, and deletion. Unstable or index keys can attach input state, animation state, or component state to the wrong data item.',
+    route: ['/vue', 'trivia', 'vue-v-for-keys-why-not-index'],
+    cta: 'Review keyed lists',
+  },
+  {
+    level: 'advanced',
+    q: 'What does Vue virtual DOM diffing optimize?',
+    a: 'Vue compares virtual nodes to patch only the DOM regions that changed. Static analysis and keyed identity help Vue skip or narrow work. Diffing still depends on clear state and stable identity; it cannot guess business meaning when keys are wrong.',
+    route: ['/vue', 'trivia', 'vue-virtual-dom-diffing'],
+    cta: 'Review diffing',
+  },
+  {
+    level: 'advanced',
+    q: 'How are Vue DOM updates batched?',
+    a: 'Vue queues reactive updates and flushes DOM patches together to avoid unnecessary repeated work. Multiple state writes in the same tick can produce one DOM update. This improves performance but means DOM-dependent code must wait for the flush when timing matters.',
+    route: ['/vue', 'trivia', 'vue-internal-rendering-pipeline'],
+    cta: 'Review rendering pipeline',
+  },
+];
+
+const VUE_COMPONENT_CONTRACT_QUESTIONS: VueFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'Why should child components avoid mutating props?',
+    a: 'Props are parent-owned inputs, so mutating them inside a child creates two unclear owners for the same state. Vue may warn, and the next parent render can overwrite the child mutation. Emit an event that describes intent and let the parent update its state.',
+    route: ['/vue', 'trivia', 'vue-child-mutates-prop-directly'],
+    cta: 'Review prop ownership',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the difference between native and component events?',
+    a: 'Native events come from DOM elements, while component events are emitted by Vue components as part of their public API. Component events do not automatically bubble like DOM events. Declaring emits makes that boundary explicit and easier to type or refactor.',
+    route: ['/vue', 'trivia', 'vue-native-vs-component-events'],
+    cta: 'Compare event boundaries',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do scoped slots change component design?',
+    a: 'Scoped slots let a child expose data while the parent controls how that data is rendered. This is useful for reusable list, table, and layout components. The trade-off is that the parent becomes responsible for rendering details, so the slot contract must stay clear.',
+    route: ['/vue', 'trivia', 'vue-slots-default-named-scoped-slot-props'],
+    cta: 'Review scoped slots',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the hidden cost of provide/inject?',
+    a: 'provide/inject reduces prop drilling but creates an implicit dependency between ancestor and descendant. That can make data flow harder to discover and test. Use it for stable context-like dependencies, not as a replacement for every shared state problem.',
+    route: ['/vue', 'trivia', 'vue-provide-inject-vs-prop-drilling-tradeoffs'],
+    cta: 'Review provide/inject',
+  },
+  {
+    level: 'intermediate',
+    q: 'How should v-model be designed on custom components?',
+    a: 'A custom component should treat its model prop as an input and emit update events when the user changes it. It should not mutate the model prop directly. Named models and modifiers can support richer contracts, but the one-way ownership pattern still matters.',
+    route: ['/vue', 'trivia', 'vue-v-model-syntax-sugar-expansion'],
+    cta: 'Review v-model expansion',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why do single-file components help maintainability?',
+    a: 'Single-file components keep template, script, and style for a component in one explicit module. They make ownership, imports, and local styles easier to reason about than broad global registration. Global components still fit truly shared primitives, but feature components should usually remain local.',
+    route: ['/vue', 'trivia', 'vue-sfc-vs-global-components'],
+    cta: 'Review SFC trade-offs',
+  },
+  {
+    level: 'beginner',
+    q: 'What should a Vue component public API include?',
+    a: 'A component public API is mostly its props, emits, slots, and exposed behavior. The API should describe what the parent can control and what events the child can request. Internal refs, watchers, and DOM details should not leak unless the component is intentionally exposing them.',
+    route: ['/vue', 'trivia', 'vue-why-declare-emits-type-safety-maintenance'],
+    cta: 'Review emits contracts',
+  },
+  {
+    level: 'advanced',
+    q: 'How do component boundaries affect scalability?',
+    a: 'Vue apps scale better when state ownership, feature boundaries, and component contracts are explicit. A flat global store or broad provide/inject tree can hide too much coupling. Clear component boundaries make tests, refactors, and route-level loading safer.',
+    route: ['/vue', 'trivia', 'vue-architecture-decisions-scalability'],
+    cta: 'Review architecture choices',
+  },
+];
+
+const VUE_SCENARIO_QUESTIONS: VueScenarioQuestionItem[] = [
+  {
+    level: 'advanced',
+    q: 'Why does this destructured value stop updating?',
+    code: `const state = reactive({ count: 0 });
+const { count } = state;
+
+function increment() {
+  state.count++;
+}`,
+    explanation: 'count is copied out of the reactive proxy, so reads of count no longer go through Vue tracking. Use toRef(state, "count") or toRefs(state) when the extracted value must remain reactive.',
+    route: ['/vue', 'trivia', 'vue-destructuring-breaks-reactivity-torefs-toref'],
+    cta: 'Fix destructuring',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can this watcher loop forever?',
+    code: `watchEffect(() => {
+  total.value = items.value.length + total.value;
+});`,
+    explanation: 'The effect reads total and writes total, so the write can retrigger the same effect. Derived values should be computed, while effects should avoid writing to the same reactive values they depend on.',
+    route: ['/vue', 'trivia', 'vue-watch-vs-watcheffect-differences-infinite-loops'],
+    cta: 'Review watchEffect loops',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why can this list keep the wrong input value?',
+    code: `<li v-for="(item, index) in items" :key="index">
+  <input v-model="item.name">
+</li>`,
+    explanation: 'The index key changes meaning when items are inserted, removed, or reordered. Vue can reuse DOM and component state for the wrong item. Use a stable item id as the key.',
+    route: ['/vue', 'trivia', 'vue-v-for-keys-why-not-index'],
+    cta: 'Debug index keys',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why is this prop mutation fragile?',
+    code: `const props = defineProps<{ user: { name: string } }>();
+
+function rename() {
+  props.user.name = 'Ada';
+}`,
+    explanation: 'The child is mutating parent-owned data through an object prop. That hides the update from the component contract and can be overwritten by the parent. Emit an intent event or ask the parent to pass a dedicated update callback.',
+    route: ['/vue', 'trivia', 'vue-child-mutates-prop-directly'],
+    cta: 'Review prop mutation',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does this focus call miss the input?',
+    code: `editing.value = true;
+inputRef.value?.focus();`,
+    explanation: 'Changing editing schedules a DOM update, but the input may not exist until Vue flushes that update. Await nextTick before focusing the element. This is a timing issue, not a reason to delay every state change.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    cta: 'Review nextTick',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does this form reset when toggled?',
+    code: `<ProfileForm v-if="showProfile" />`,
+    explanation: 'v-if destroys and recreates the component, so local form state resets. If the form should preserve state while hidden, v-show or lifting the state may be a better choice. The correct answer depends on whether reset is desired.',
+    route: ['/vue', 'trivia', 'vue-v-show-vs-v-if-dom-lifecycle'],
+    cta: 'Compare v-if and v-show',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is this computed property unsafe?',
+    code: `const fullName = computed(() => {
+  analytics.track('full-name-read');
+  return first.value + ' ' + last.value;
+});`,
+    explanation: 'Computed getters can run during rendering and should remain pure. Tracking analytics inside the getter creates a side effect tied to rendering and cache invalidation. Use watch when a state change should trigger external work.',
+    route: ['/vue', 'trivia', 'vue-computed-vs-watchers'],
+    cta: 'Review computed purity',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can this search show stale results?',
+    code: `watch(query, async (value) => {
+  results.value = await searchUsers(value);
+});`,
+    explanation: 'A slower previous request can resolve after a newer request and overwrite the latest results. Track request identity, cancel stale work when possible, or ignore responses that no longer match the current query.',
+    route: ['/vue', 'coding', 'vue-debounced-search'],
+    cta: 'Practice debounced search',
+  },
+];
+
+const VUE_MODERN_QUESTIONS: VueModernQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How does Composition API differ from Options API?',
+    a: 'Options API organizes code by option type, such as data, computed, methods, and hooks. Composition API organizes related feature logic together inside setup and composables. Options API can still be fine, but Composition API is usually easier to scale when logic is reused or split by feature.',
+    route: ['/vue', 'trivia', 'vue-composition-api'],
+    cta: 'Review Composition API',
+  },
+  {
+    level: 'intermediate',
+    q: 'What does script setup improve?',
+    a: 'script setup is a compile-time syntax for writing Composition API components with less boilerplate. Top-level bindings are directly available to the template, and defineProps and defineEmits make component contracts concise. The trade-off is that developers must understand the compile-time macros instead of treating them like normal runtime functions.',
+    route: ['/vue', 'trivia', 'vue-composition-api'],
+    cta: 'Review setup patterns',
+  },
+  {
+    level: 'advanced',
+    q: 'What makes a good Vue composable?',
+    a: 'A good composable has a clear input and output contract, owns cleanup for side effects it creates, and does not hide surprising shared state. It should be reusable without forcing a component structure. If every consumer needs different lifecycle or ownership rules, the abstraction may be too broad.',
+    route: ['/vue', 'trivia', 'vue-composition-api-vs-mixins'],
+    cta: 'Review reuse trade-offs',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is Pinia the modern default over Vuex?',
+    a: 'Pinia has a simpler API, strong TypeScript ergonomics, and fits Vue 3 Composition API patterns well. Vuex still appears in existing apps and teaches useful centralized-state concepts. Migration should focus on store boundaries and update flow, not only syntax replacement.',
+    route: ['/vue', 'trivia', 'vuex-state-management'],
+    cta: 'Review store boundaries',
+  },
+  {
+    level: 'intermediate',
+    q: 'What changed with Vue Router 4 style guards?',
+    a: 'Vue Router 4 encourages returning values from guards instead of relying on next callbacks everywhere. This makes allowed, redirected, and canceled navigation outcomes clearer. Guard code still needs careful async handling to avoid loops or unresolved navigation.',
+    route: ['/vue', 'trivia', 'vue-router-navigation'],
+    cta: 'Review router flow',
+  },
+  {
+    level: 'advanced',
+    q: 'What is Teleport used for in Vue?',
+    a: 'Teleport renders part of a component subtree somewhere else in the DOM, such as moving a modal to a root overlay container. It keeps logical component ownership while changing DOM placement. Focus management, stacking, and cleanup still need to be handled correctly.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'What is Suspense used for in Vue?',
+    a: 'Suspense can coordinate fallback UI while async dependencies inside a component tree resolve. It is useful around async setup and route-level loading patterns. The boundary placement matters because too broad a boundary hides too much UI and too narrow a boundary can create noisy loading states.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do SSR and Nuxt affect Vue interviews?',
+    a: 'SSR renders HTML on the server, then the client hydrates it into an interactive Vue app. Nuxt adds routing, data loading, SSR conventions, and deployment structure around Vue. Hydration bugs often come from different server and client output, browser-only data during initial render, or unstable IDs.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+];
+
+const VUE_TESTING_SECURITY_PERFORMANCE_QUESTIONS: VueFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How should Vue component behavior be tested?',
+    a: 'Test user-visible behavior through rendered output, interactions, emitted events, validation states, loading, and errors. Vue Test Utils helps mount components and interact with them, while tests should avoid depending on private implementation details. The goal is to prove the component contract, not the exact internal ref names.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do Vitest and Vue Test Utils fit together?',
+    a: 'Vitest runs assertions, mocks, timers, and test files, while Vue Test Utils renders Vue components and exposes wrapper utilities. Together they cover component behavior and smaller unit logic. A good test still waits for Vue async DOM updates before asserting rendered changes.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you test async Vue updates?',
+    a: 'After changing reactive state or triggering DOM events, wait for Vue to flush updates with nextTick or helper utilities. For promises and network-like flows, flush pending promises before asserting final UI. Otherwise tests may pass or fail based on timing instead of behavior.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    cta: 'Review update timing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you test Vue emitted events?',
+    a: 'Mount the component, trigger the user action, and assert the emitted event name and payload. This verifies the child contract without requiring a parent component. For v-model components, assert the update event rather than mutating the prop in the child.',
+    route: ['/vue', 'trivia', 'vue-why-declare-emits-type-safety-maintenance'],
+    cta: 'Review emits',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is v-html a security risk?',
+    a: 'v-html inserts raw HTML into the DOM, so untrusted content can create XSS if it is not sanitized before rendering. Interpolation escapes text by default, but v-html intentionally bypasses that escaping. Use it only for trusted or sanitized HTML and keep user-controlled input out of DOM sinks.',
+    route: ['/vue', 'trivia', 'vue-reactive-interpolation-into-dom'],
+    cta: 'Review interpolation safety',
+  },
+  {
+    level: 'advanced',
+    q: 'How should rich text be rendered safely in Vue?',
+    a: 'Sanitize rich text before it reaches v-html, restrict allowed tags and attributes, and avoid user-controlled URLs or scripts. Backend validation and a Content Security Policy reduce the impact of mistakes. Client-side rendering choices do not replace server-side trust boundaries.',
+    route: ['/vue', 'trivia', 'vue-reactive-interpolation-into-dom'],
+    cta: 'Review DOM safety',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you profile Vue performance?',
+    a: 'Start with browser performance tools and Vue Devtools to identify expensive components, renders, and data changes. Then reduce unnecessary reactive dependencies, expensive template methods, unstable keys, and oversized lists. Optimization should follow measurement instead of guessing.',
+    route: ['/vue', 'trivia', 'vue-virtual-dom-diffing'],
+    cta: 'Review rendering costs',
+  },
+  {
+    level: 'advanced',
+    q: 'How do Vue components leak memory?',
+    a: 'Leaks usually come from timers, event listeners, subscriptions, observers, or async callbacks that outlive the component. Cleanup belongs in the lifecycle owner that created the resource. Watchers and effects should also have clear invalidation or teardown behavior when they create external work.',
+    route: ['/vue', 'trivia', 'vue-lifecycle-hooks'],
+    cta: 'Review cleanup hooks',
+  },
+];
+
 const REACT_TOPIC_CARDS: ReactTopicCard[] = [
   {
     title: 'Props, state, and one-way data flow',
@@ -3276,7 +3921,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isVueHub()) {
-      return 'Vue.js interview questions and Vue JS answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice reactivity and component reasoning first, then expand into prep paths and company-style drills.';
+      return 'Vue.js interview questions and Vue JS answers for Vue 3 rounds, with short answers, reactivity scenarios, Composition API, Router, Pinia/Vuex, testing, security, performance, and coding prompts.';
     }
 
     return `${this.keywordSentenceCase()} and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice concise answers first, then expand into Study Plans, guides, and Company Prep.`;
@@ -3372,6 +4017,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   scrollToReactSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  scrollToVueSection(targetId: string): void {
     this.scrollToSection(targetId);
   }
 
@@ -3497,6 +4146,61 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   reactLibraryItems(): ReactSupportItem[] {
     return REACT_LIBRARY_ITEMS;
+  }
+
+  vueEditorialSignal(): VueEditorialSignal {
+    return VUE_EDITORIAL_SIGNAL;
+  }
+
+  vueAnchorItems(): VueAnchorItem[] {
+    return VUE_ANCHOR_ITEMS;
+  }
+
+  vueKeywordClusters(): VueKeywordClusterItem[] {
+    return VUE_KEYWORD_CLUSTERS;
+  }
+
+  vueShortAnswers(): VueShortAnswerItem[] {
+    return VUE_SHORT_ANSWERS;
+  }
+
+  vueAudienceTracks(): VueAudienceTrack[] {
+    return VUE_AUDIENCE_TRACKS;
+  }
+
+  vueReactivityRenderingQuestions(): VueFocusedQuestionItem[] {
+    return VUE_REACTIVITY_RENDERING_QUESTIONS;
+  }
+
+  vueComponentContractQuestions(): VueFocusedQuestionItem[] {
+    return VUE_COMPONENT_CONTRACT_QUESTIONS;
+  }
+
+  vueScenarioQuestions(): VueScenarioQuestionItem[] {
+    return VUE_SCENARIO_QUESTIONS;
+  }
+
+  vueModernQuestions(): VueModernQuestionItem[] {
+    return VUE_MODERN_QUESTIONS;
+  }
+
+  vueTestingSecurityPerformanceQuestions(): VueFocusedQuestionItem[] {
+    return VUE_TESTING_SECURITY_PERFORMANCE_QUESTIONS;
+  }
+
+  vueShortAnswerCategoryLabel(category: VueShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'reactivity-rendering':
+        return 'Reactivity + rendering';
+      case 'components':
+        return 'Components';
+      case 'routing-state':
+        return 'Router + state';
+      default:
+        return 'Modern Vue';
+    }
   }
 
   isAngularHub(): boolean {
@@ -4206,6 +4910,49 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
     }
 
+    if (this.isVueHub()) {
+      collectionPage['dateModified'] = VUE_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: VUE_EDITORIAL_SIGNAL.reviewer,
+      };
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'Vue.js interview questions' },
+        { '@type': 'Thing', name: 'Vue.js interview questions and answers' },
+        { '@type': 'Thing', name: 'Vue JS interview questions for beginners' },
+        { '@type': 'Thing', name: 'Vue interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'Vue 3 interview questions' },
+        { '@type': 'Thing', name: 'Vue Composition API interview questions' },
+        { '@type': 'Thing', name: 'Vue reactivity interview questions' },
+        { '@type': 'Thing', name: 'Vue ref vs reactive interview questions' },
+        { '@type': 'Thing', name: 'Vue computed vs watch interview questions' },
+        { '@type': 'Thing', name: 'Vue Router interview questions' },
+        { '@type': 'Thing', name: 'Pinia interview questions' },
+        { '@type': 'Thing', name: 'Vuex interview questions' },
+        { '@type': 'Thing', name: 'Vue testing interview questions' },
+        { '@type': 'Thing', name: 'Vue security interview questions' },
+        { '@type': 'Thing', name: 'Vue performance interview questions' },
+        { '@type': 'Thing', name: 'Vue scenario interview questions' },
+        { '@type': 'Thing', name: 'Vue coding interview questions' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'Vue JS interview questions' },
+        { '@type': 'Thing', name: 'Beginner to advanced Vue.js interview questions' },
+        { '@type': 'Thing', name: 'Vue reactivity and rendering questions' },
+        { '@type': 'Thing', name: 'Vue component contract questions' },
+        { '@type': 'Thing', name: 'Vue scenario and code questions' },
+        { '@type': 'Thing', name: 'Modern Vue 3 interview questions' },
+        { '@type': 'Thing', name: 'Vue Router and navigation guards' },
+        { '@type': 'Thing', name: 'Vue Pinia and Vuex state management' },
+        { '@type': 'Thing', name: 'Vue Test Utils and Vitest testing' },
+        { '@type': 'Thing', name: 'Vue XSS and v-html security' },
+        { '@type': 'Thing', name: 'Vue SSR, Nuxt, and hydration' },
+        { '@type': 'Thing', name: 'Vue coding interview prompts' },
+      ];
+    }
+
     if (this.isJavaScriptHub()) {
       collectionPage['dateModified'] = JAVASCRIPT_EDITORIAL_SIGNAL.dateModified;
       collectionPage['reviewedBy'] = {
@@ -4367,6 +5114,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     if (this.isReactHub()) {
       jsonLd.push(this.reactShortAnswersFaqPage(canonicalUrl));
     }
+    if (this.isVueHub()) {
+      jsonLd.push(this.vueShortAnswersFaqPage(canonicalUrl));
+    }
     if (this.isAngularHub()) {
       jsonLd.push(this.angularShortAnswersFaqPage(canonicalUrl));
     }
@@ -4422,6 +5172,23 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       url: canonicalUrl,
       name: 'Top React interview questions and short answers, beginner to advanced',
       mainEntity: this.reactShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private vueShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#vue-short-answers`,
+      url: canonicalUrl,
+      name: 'Top Vue.js interview questions and short answers, beginner to advanced',
+      mainEntity: this.vueShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: {

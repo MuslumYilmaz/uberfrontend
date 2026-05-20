@@ -245,6 +245,14 @@
 .iq-section--react-testing,
 .iq-section--react-scenarios,
 .iq-section--react-modern,
+.iq-section--vue-clusters,
+.iq-section--vue-short-answers,
+.iq-section--vue-audience,
+.iq-section--vue-reactivity,
+.iq-section--vue-components,
+.iq-section--vue-scenarios,
+.iq-section--vue-modern,
+.iq-section--vue-testing-security,
 .iq-section--angular-short-answers,
 .iq-section--angular-clusters,
 .iq-section--angular-audience,
@@ -271,6 +279,7 @@
 
 .iq-js-toc,
 .iq-react-toc,
+.iq-vue-toc,
 .iq-angular-toc,
 .iq-html-css-toc {
   display: flex;
@@ -285,6 +294,7 @@
 
 .iq-js-toc .iq-context-kicker,
 .iq-react-toc .iq-context-kicker,
+.iq-vue-toc .iq-context-kicker,
 .iq-angular-toc .iq-context-kicker,
 .iq-html-css-toc .iq-context-kicker {
   margin: 0;
@@ -292,6 +302,7 @@
 
 .iq-js-toc__links,
 .iq-react-toc__links,
+.iq-vue-toc__links,
 .iq-angular-toc__links,
 .iq-html-css-toc__links {
   display: flex;
@@ -301,6 +312,7 @@
 
 .iq-js-toc__links button,
 .iq-react-toc__links button,
+.iq-vue-toc__links button,
 .iq-angular-toc__links button,
 .iq-html-css-toc__links button {
   display: inline-flex;
@@ -320,6 +332,7 @@
 
 .iq-js-toc__links button:hover,
 .iq-react-toc__links button:hover,
+.iq-vue-toc__links button:hover,
 .iq-angular-toc__links button:hover,
 .iq-html-css-toc__links button:hover {
   border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
@@ -328,6 +341,7 @@
 
 .iq-js-toc__links button:focus-visible,
 .iq-react-toc__links button:focus-visible,
+.iq-vue-toc__links button:focus-visible,
 .iq-angular-toc__links button:focus-visible,
 .iq-html-css-toc__links button:focus-visible {
   outline: none;
@@ -858,6 +872,7 @@
 
   .iq-js-toc,
   .iq-react-toc,
+  .iq-vue-toc,
   .iq-angular-toc,
   .iq-html-css-toc {
     align-items: stretch;
@@ -865,6 +880,7 @@
 
   .iq-js-toc__links,
   .iq-react-toc__links,
+  .iq-vue-toc__links,
   .iq-angular-toc__links,
   .iq-html-css-toc__links {
     gap: 6px;
