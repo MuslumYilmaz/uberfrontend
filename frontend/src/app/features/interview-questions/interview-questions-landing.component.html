@@ -12,6 +12,15 @@
       <span>{{ javascriptEditorialSignal().reviewer }}</span>
       <span>{{ javascriptEditorialSignal().coverage }}</span>
     </div>
+    <div
+      *ngIf="isAngularHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ angularEditorialSignal().reviewedLabel }}</span>
+      <span>{{ angularEditorialSignal().reviewer }}</span>
+      <span>{{ angularEditorialSignal().coverage }}</span>
+    </div>
   </header>
 
   <section
@@ -127,12 +136,260 @@
     </div>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : null">
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-angular-toc"
+    aria-label="Angular interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-angular-toc__links">
+      <button
+        *ngFor="let item of angularAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToAngularSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-clusters"
+    aria-labelledby="iq-angular-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-clusters-title">
+        Popular Angular interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Jump to the Angular interview topics candidates usually need most: beginner, experienced, testing, security, modern Angular, routing, and performance.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of angularKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToAngularSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-short-answers"
+    aria-labelledby="iq-angular-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Short answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-short-answers-title">
+        Top Angular interview questions and short answers, beginner to advanced
+      </h2>
+      <p class="fa-meta-text">
+        Use these beginner, intermediate, and advanced Angular answers for a fast review, then open the linked practice route when a topic needs deeper framework work.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of angularShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ angularShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ questionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-audience"
+    aria-labelledby="iq-angular-audience-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Beginner to experienced</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-audience-title">
+        Angular interview questions for beginners and experienced developers
+      </h2>
+      <p class="fa-meta-text">
+        Use the level chips to choose the right pass: fundamentals first, then production trade-offs around async work, routing, testing, security, and performance.
+      </p>
+    </div>
+
+    <div class="iq-audience-grid">
+      <article class="iq-audience-card" *ngFor="let item of angularAudienceTracks()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-testing"
+    aria-labelledby="iq-angular-testing-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Testing</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-testing-title">
+        Angular testing interview questions with TestBed, fakeAsync, and HttpTestingController
+      </h2>
+      <p class="fa-meta-text">
+        Review TestBed, component tests, fakeAsync, HttpTestingController, harnesses, guards, resolvers, and Observable-driven UI behavior.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of angularTestingQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-security"
+    aria-labelledby="iq-angular-security-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Security</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-security-title">
+        Angular security interview questions about XSS, sanitization, and DomSanitizer
+      </h2>
+      <p class="fa-meta-text">
+        Cover template XSS protection, sanitization, DomSanitizer, trusted HTML, user-controlled URLs, CSP, backend validation, and direct DOM risks.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of angularSecurityQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-classic"
+    aria-labelledby="iq-angular-classic-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Routing + compiler + performance</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-classic-title">
+        Angular routing, compiler, and performance interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Add the classic Angular topics that often decide senior rounds: guards, resolvers, AOT/JIT, template compilation, profiling, migration, lazy loading, and preloading.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of angularClassicQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-scenarios"
+    aria-labelledby="iq-angular-scenarios-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Scenarios + code</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-scenarios-title">
+        Angular scenario and code interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice the Angular bugs and trade-offs that show up in senior frontend rounds: change detection, RxJS cancellation, provider scope, forms, list identity, subscriptions, and lazy boundaries.
+      </p>
+    </div>
+
+    <div class="iq-scenario-grid">
+      <article class="iq-scenario-card" *ngFor="let item of angularScenarioQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <pre class="iq-code-block"><code>{{ item.code }}</code></pre>
+        <p>{{ item.explanation }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isAngularHub()"
+    class="iq-section iq-section--surface iq-section--angular-modern"
+    aria-labelledby="iq-angular-modern-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Modern Angular</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-angular-modern-title">
+        Modern Angular interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review current Angular topics through production trade-offs: standalone boundaries, route providers, signals, control flow, deferrable views, zoneless change detection, SSR, and hydration.
+      </p>
+    </div>
+
+    <div class="iq-modern-grid">
+      <article class="iq-modern-card" *ngFor="let item of angularModernQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : null"
         >
           {{ codingSectionTitle() }}
         </h2>
@@ -179,12 +436,12 @@
     </ng-container>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : null">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : null"
         >
           {{ triviaSectionTitle() }}
         </h2>
@@ -370,7 +627,8 @@
       <p class="iq-context-kicker">Angular coverage map</p>
       <h2 class="fa-section-title iq-section__title" id="iq-angular-coverage-title">Angular interview topic map</h2>
       <p class="fa-meta-text">
-        Use these Angular interview questions to connect short answers with the deeper practice routes behind them.
+        Use these Angular interview questions to connect RxJS, change detection, dependency injection, forms,
+        testing, performance, standalone components, and state management with deeper practice routes.
       </p>
     </div>
 

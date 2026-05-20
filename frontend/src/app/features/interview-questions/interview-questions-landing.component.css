@@ -22,6 +22,7 @@
 .iq-editorial-signal span {
   display: inline-flex;
   align-items: center;
+  max-width: 100%;
   min-height: 28px;
   padding: 0 10px;
   border-radius: var(--uf-radius-pill);
@@ -31,6 +32,7 @@
   font-size: 12px;
   font-weight: 800;
   line-height: 1.25;
+  white-space: normal;
 }
 
 .iq-editorial-signal span:first-child {
@@ -235,6 +237,14 @@
 .iq-section--javascript-short-answers,
 .iq-section--javascript-output,
 .iq-section--javascript-browser,
+.iq-section--angular-short-answers,
+.iq-section--angular-clusters,
+.iq-section--angular-audience,
+.iq-section--angular-testing,
+.iq-section--angular-security,
+.iq-section--angular-classic,
+.iq-section--angular-scenarios,
+.iq-section--angular-modern,
 .iq-section--javascript-coverage,
 .iq-section--react-coverage,
 .iq-section--angular-coverage,
@@ -243,7 +253,8 @@
   gap: 14px;
 }
 
-.iq-js-toc {
+.iq-js-toc,
+.iq-angular-toc {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -254,17 +265,20 @@
   background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
 }
 
-.iq-js-toc .iq-context-kicker {
+.iq-js-toc .iq-context-kicker,
+.iq-angular-toc .iq-context-kicker {
   margin: 0;
 }
 
-.iq-js-toc__links {
+.iq-js-toc__links,
+.iq-angular-toc__links {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.iq-js-toc__links button {
+.iq-js-toc__links button,
+.iq-angular-toc__links button {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
@@ -280,12 +294,14 @@
   cursor: pointer;
 }
 
-.iq-js-toc__links button:hover {
+.iq-js-toc__links button:hover,
+.iq-angular-toc__links button:hover {
   border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
   color: var(--uf-text-primary);
 }
 
-.iq-js-toc__links button:focus-visible {
+.iq-js-toc__links button:focus-visible,
+.iq-angular-toc__links button:focus-visible {
   outline: none;
   box-shadow: var(--uf-focus-ring);
 }
@@ -297,10 +313,57 @@
 }
 
 .iq-output-grid,
-.iq-browser-grid {
+.iq-browser-grid,
+.iq-cluster-grid,
+.iq-audience-grid,
+.iq-focused-grid,
+.iq-scenario-grid,
+.iq-modern-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.iq-cluster-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.iq-cluster-card {
+  display: grid;
+  gap: 5px;
+  align-content: start;
+  min-height: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 84%, transparent);
+  color: inherit;
+  background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt));
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.iq-cluster-card:hover {
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
+  background: color-mix(in srgb, var(--uf-surface) 82%, var(--uf-surface-alt));
+}
+
+.iq-cluster-card:focus-visible {
+  outline: none;
+  box-shadow: var(--uf-focus-ring);
+}
+
+.iq-cluster-card span {
+  color: var(--uf-text-primary);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.iq-cluster-card small {
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .iq-short-answer {
@@ -383,6 +446,10 @@
 .iq-topic-card,
 .iq-output-card,
 .iq-browser-card,
+.iq-audience-card,
+.iq-focused-card,
+.iq-scenario-card,
+.iq-modern-card,
 .iq-javascript-support-card,
 .iq-react-support-card,
 .iq-angular-support-card,
@@ -400,7 +467,11 @@
 }
 
 .iq-output-card,
-.iq-browser-card {
+.iq-browser-card,
+.iq-audience-card,
+.iq-focused-card,
+.iq-scenario-card,
+.iq-modern-card {
   display: grid;
   align-content: start;
   gap: 10px;
@@ -409,6 +480,10 @@
 .iq-topic-card h3,
 .iq-output-card h3,
 .iq-browser-card h3,
+.iq-audience-card h3,
+.iq-focused-card h3,
+.iq-scenario-card h3,
+.iq-modern-card h3,
 .iq-javascript-support-card h3,
 .iq-react-support-card h3,
 .iq-angular-support-card h3,
@@ -423,6 +498,10 @@
 .iq-topic-card p,
 .iq-output-card p,
 .iq-browser-card p,
+.iq-audience-card p,
+.iq-focused-card p,
+.iq-scenario-card p,
+.iq-modern-card p,
 .iq-javascript-support-card p,
 .iq-react-support-card p,
 .iq-angular-support-card p,
@@ -721,6 +800,11 @@
   .iq-short-answer-grid,
   .iq-output-grid,
   .iq-browser-grid,
+  .iq-cluster-grid,
+  .iq-audience-grid,
+  .iq-focused-grid,
+  .iq-scenario-grid,
+  .iq-modern-grid,
   .iq-topic-grid,
   .iq-javascript-support-grid,
   .iq-react-support-grid,
@@ -744,11 +828,13 @@
     align-items: stretch;
   }
 
-  .iq-js-toc {
+  .iq-js-toc,
+  .iq-angular-toc {
     align-items: stretch;
   }
 
-  .iq-js-toc__links {
+  .iq-js-toc__links,
+  .iq-angular-toc__links {
     gap: 6px;
   }
 
@@ -758,6 +844,9 @@
   .iq-short-answer,
   .iq-output-card,
   .iq-browser-card,
+  .iq-cluster-card,
+  .iq-audience-card,
+  .iq-focused-card,
   .iq-topic-card,
   .iq-javascript-support-card,
   .iq-react-support-card,

@@ -1175,7 +1175,7 @@ export const routes: Routes = [
       seo: {
         title: 'Angular Interview Questions and Answers',
         description:
-          'Practice Angular interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, RxJS, change detection, and DI.',
+          'Angular interview questions and answers for beginners and experienced developers, with testing, security, RxJS, change detection, standalone components, signals, guards, resolvers, AOT/JIT, and performance.',
       },
     },
   },
