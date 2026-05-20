@@ -253,6 +253,14 @@
 .iq-section--angular-classic,
 .iq-section--angular-scenarios,
 .iq-section--angular-modern,
+.iq-section--html-css-clusters,
+.iq-section--html-css-short-answers,
+.iq-section--html-css-audience,
+.iq-section--html-css-semantics,
+.iq-section--html-css-layout,
+.iq-section--html-css-code,
+.iq-section--html-css-browser,
+.iq-section--html-css-responsive,
 .iq-section--javascript-coverage,
 .iq-section--react-coverage,
 .iq-section--angular-coverage,
@@ -263,7 +271,8 @@
 
 .iq-js-toc,
 .iq-react-toc,
-.iq-angular-toc {
+.iq-angular-toc,
+.iq-html-css-toc {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -276,13 +285,15 @@
 
 .iq-js-toc .iq-context-kicker,
 .iq-react-toc .iq-context-kicker,
-.iq-angular-toc .iq-context-kicker {
+.iq-angular-toc .iq-context-kicker,
+.iq-html-css-toc .iq-context-kicker {
   margin: 0;
 }
 
 .iq-js-toc__links,
 .iq-react-toc__links,
-.iq-angular-toc__links {
+.iq-angular-toc__links,
+.iq-html-css-toc__links {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -290,7 +301,8 @@
 
 .iq-js-toc__links button,
 .iq-react-toc__links button,
-.iq-angular-toc__links button {
+.iq-angular-toc__links button,
+.iq-html-css-toc__links button {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
@@ -308,14 +320,16 @@
 
 .iq-js-toc__links button:hover,
 .iq-react-toc__links button:hover,
-.iq-angular-toc__links button:hover {
+.iq-angular-toc__links button:hover,
+.iq-html-css-toc__links button:hover {
   border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
   color: var(--uf-text-primary);
 }
 
 .iq-js-toc__links button:focus-visible,
 .iq-react-toc__links button:focus-visible,
-.iq-angular-toc__links button:focus-visible {
+.iq-angular-toc__links button:focus-visible,
+.iq-html-css-toc__links button:focus-visible {
   outline: none;
   box-shadow: var(--uf-focus-ring);
 }
@@ -844,13 +858,15 @@
 
   .iq-js-toc,
   .iq-react-toc,
-  .iq-angular-toc {
+  .iq-angular-toc,
+  .iq-html-css-toc {
     align-items: stretch;
   }
 
   .iq-js-toc__links,
   .iq-react-toc__links,
-  .iq-angular-toc__links {
+  .iq-angular-toc__links,
+  .iq-html-css-toc__links {
     gap: 6px;
   }
 
@@ -863,6 +879,8 @@
   .iq-cluster-card,
   .iq-audience-card,
   .iq-focused-card,
+  .iq-scenario-card,
+  .iq-modern-card,
   .iq-topic-card,
   .iq-javascript-support-card,
   .iq-react-support-card,

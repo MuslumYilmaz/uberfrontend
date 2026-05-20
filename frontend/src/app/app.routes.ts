@@ -1230,7 +1230,7 @@ export const routes: Routes = [
       },
       seo: {
         title: 'HTML and CSS Interview Questions and Answers',
-        description: 'Practice HTML and CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, semantics, layout, and accessibility.',
+        description: 'HTML and CSS interview questions and answers, beginner to advanced, with semantic HTML, forms, accessibility, Flexbox, Grid, cascade, specificity, responsive layout, and code scenarios.',
       },
     },
   },

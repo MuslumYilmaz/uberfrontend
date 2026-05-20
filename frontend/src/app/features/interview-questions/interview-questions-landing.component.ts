@@ -174,6 +174,43 @@ type HtmlTopicCard = { title: string; answer: string; link: HtmlCoverageLink };
 type HtmlMistakeItem = { title: string; detail: string };
 type HtmlBehavioralItem = { title: string; detail: string };
 type HtmlResourceLink = { label: string; href: string; summary: string };
+type HtmlCssShortAnswerCategory = 'html' | 'css' | 'accessibility' | 'responsive-debugging';
+type HtmlCssShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: HtmlCssShortAnswerCategory;
+  level: QuestionLevel;
+};
+type HtmlCssAnchorItem = { label: string; targetId: string };
+type HtmlCssKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type HtmlCssAudienceTrack = { title: string; detail: string };
+type HtmlCssFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type HtmlCssCodeQuestionItem = {
+  q: string;
+  code: string;
+  explanation: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type HtmlCssEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type HubIntentProfile = {
   heading: string;
   lead: string;
@@ -504,16 +541,20 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   htmlCss: [
     {
-      q: 'Should I study HTML and CSS interview questions together?',
-      a: 'Yes for UI rounds. Markup semantics, accessibility, layout, and cascade behavior usually appear together when you have to build or debug a component.',
+      q: 'Are these HTML and CSS interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with beginner HTML and CSS fundamentals, then moves into experienced frontend topics such as accessibility, cascade strategy, layout debugging, browser rendering, responsive UI, and code scenarios.',
     },
     {
-      q: 'What should I practice first?',
-      a: 'Start with semantic structure, forms, labels, flexbox, grid, cascade, specificity, and responsive constraints before moving into polish.',
+      q: 'Does this page cover accessibility and forms?',
+      a: 'Yes. It covers semantic HTML, labels, form validation, landmarks, focus states, alt text, dialog behavior, and quick accessibility testing for practical UI rounds.',
     },
     {
-      q: 'When should I use coding prompts instead of concept questions?',
-      a: 'Use coding prompts when you can explain the rule but still miss alignment, overflow, focus, responsive, or accessibility details in implementation.',
+      q: 'Does this page cover CSS layout, cascade, and responsive UI?',
+      a: 'Yes. It covers box model, cascade, specificity, Flexbox, Grid, positioning, z-index, media queries, responsive images, overflow debugging, and layout shift.',
+    },
+    {
+      q: 'Where should I practice HTML and CSS coding scenarios?',
+      a: 'Start with the code scenarios and preview prompts on this page, then open the HTML/CSS coding list for forms, links, images, semantic layouts, Flexbox nav bars, and responsive card grids.',
     },
   ],
   html: [
@@ -2502,6 +2543,532 @@ const ANGULAR_MODERN_TOPICS: string[] = [
   'Signal Forms: mention as an experimental modern forms direction, not as a production replacement for every Reactive Forms workflow.',
 ];
 
+const HTML_CSS_EDITORIAL_SIGNAL: HtmlCssEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible HTML and CSS questions across semantics, forms, accessibility, layout, cascade, responsive UI, code scenarios, and browser debugging',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const HTML_CSS_ANCHOR_ITEMS: HtmlCssAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-html-css-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-html-css-short-answers-title' },
+  { label: 'Audience', targetId: 'iq-html-css-audience-title' },
+  { label: 'Semantics + forms', targetId: 'iq-html-css-semantics-title' },
+  { label: 'Layout + cascade', targetId: 'iq-html-css-layout-title' },
+  { label: 'Code scenarios', targetId: 'iq-html-css-code-title' },
+  { label: 'Browser debugging', targetId: 'iq-html-css-browser-title' },
+  { label: 'Responsive UI', targetId: 'iq-html-css-responsive-title' },
+  { label: 'Coding drills', targetId: 'iq-html-css-coding-preview-title' },
+  { label: 'Concepts', targetId: 'iq-html-css-concept-preview-title' },
+];
+
+const HTML_CSS_KEYWORD_CLUSTERS: HtmlCssKeywordClusterItem[] = [
+  {
+    label: 'Beginner',
+    targetId: 'iq-html-css-short-answers-title',
+    detail: 'HTML structure, forms, labels, box model, cascade, and basic responsive rules.',
+  },
+  {
+    label: 'Experienced',
+    targetId: 'iq-html-css-audience-title',
+    detail: 'Debugging, trade-offs, accessibility constraints, and production UI reasoning.',
+  },
+  {
+    label: 'Semantics + forms',
+    targetId: 'iq-html-css-semantics-title',
+    detail: 'Landmarks, headings, native controls, validation, labels, and useful ARIA boundaries.',
+  },
+  {
+    label: 'CSS layout',
+    targetId: 'iq-html-css-layout-title',
+    detail: 'Flexbox, Grid, positioning, stacking, specificity, cascade, and custom properties.',
+  },
+  {
+    label: 'Code scenarios',
+    targetId: 'iq-html-css-code-title',
+    detail: 'Small markup and CSS snippets that reveal real layout, accessibility, and overflow behavior.',
+  },
+  {
+    label: 'Responsive UI',
+    targetId: 'iq-html-css-responsive-title',
+    detail: 'Mobile-first constraints, responsive images, container behavior, and layout stability.',
+  },
+];
+
+const HTML_CSS_SHORT_ANSWERS: HtmlCssShortAnswerItem[] = [
+  {
+    q: 'What is semantic HTML?',
+    a: 'Semantic HTML uses elements that describe the meaning and structure of content, such as header, nav, main, article, section, button, and form. It helps browsers, search engines, assistive technologies, and other developers understand the page without guessing from class names. A common failure is replacing native buttons, links, and headings with generic div elements that then need extra keyboard and accessibility work.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Practice semantic HTML',
+    category: 'html',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the DOM?',
+    a: 'The DOM is the browser-created object tree that represents the parsed HTML document. JavaScript reads and updates this tree, while CSS selectors match elements in it for styling. The source HTML and live DOM can differ after scripts run, so debugging often means inspecting the current DOM instead of only reading the original markup.',
+    category: 'html',
+    level: 'beginner',
+  },
+  {
+    q: 'How should labels work in HTML forms?',
+    a: 'A form control needs a durable accessible name, usually from a label associated with for and id or by wrapping the control. Labels increase the clickable target and help screen-reader users understand the field. Placeholder text is not a replacement because it disappears during input and may not be announced as a stable label.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Build labeled forms',
+    category: 'accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'What is accessibility in HTML and CSS?',
+    a: 'Accessibility means the UI can be understood and operated by people using keyboards, screen readers, zoom, high contrast, or other assistive technology. HTML provides much of the semantic contract, while CSS must preserve readable contrast, focus visibility, and usable layout. A design can look correct but still fail if focus order, labels, or hidden content are wrong.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Review accessibility fixes',
+    category: 'accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'How should alt text work for images?',
+    a: 'Alt text describes the purpose of an image when the image carries information. Decorative images should usually have empty alt text so assistive technology can skip them. The edge case is an image inside a link or button, where the alt text may need to describe the action rather than the visual pixels.',
+    route: ['/html', 'coding', 'html-links-and-images'],
+    cta: 'Practice links and images',
+    category: 'accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use a button instead of a link?',
+    a: 'Use a link for navigation to another URL or location, and use a button for an action on the current page. Native elements provide the expected keyboard behavior, roles, focus handling, and activation events. A fake link or fake button often breaks keyboard access unless you rebuild behavior the browser already gives you.',
+    category: 'html',
+    level: 'beginner',
+  },
+  {
+    q: 'How does native form validation work?',
+    a: 'Native validation uses attributes such as required, type, min, max, pattern, and minlength to let the browser check common constraints. It reduces custom JavaScript but should be paired with clear labels and useful error text. Server-side validation is still required because client-side validation can be bypassed.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice form validation',
+    category: 'html',
+    level: 'intermediate',
+  },
+  {
+    q: 'What metadata belongs in the head?',
+    a: 'A production document should include charset, viewport, title, useful description, canonical when needed, and relevant social metadata. These tags help browsers render correctly and help crawlers understand the page. Missing viewport metadata is a common mobile bug because the layout may render at a desktop-style width on phones.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Review head metadata',
+    category: 'html',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the CSS box model?',
+    a: 'The box model describes how content, padding, border, and margin combine to determine an element box and spacing around it. With content-box, width applies to the content area, while border-box includes padding and border in the declared width. Many layout bugs come from forgetting which sizing model is active.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Review the box model',
+    category: 'css',
+    level: 'beginner',
+  },
+  {
+    q: 'How does the CSS cascade work?',
+    a: 'The cascade decides which declaration wins when more than one rule applies to the same property. It considers origin, importance, cascade layers, specificity, scoping proximity, and source order. Source order only wins after the earlier cascade factors are effectively tied.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade order',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is CSS specificity?',
+    a: 'Specificity is the selector scoring system used when competing rules are in the same cascade layer and origin. Inline styles, IDs, classes or attributes, and element selectors contribute different weight. A common failure is fixing conflicts by adding more specific selectors until the stylesheet becomes hard to override.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use Flexbox?',
+    a: 'Flexbox is best for one-dimensional layout where items flow in a row or column and need alignment or space distribution. It works well for nav bars, button groups, media objects, and vertically centered content. The trade-off is that complex two-dimensional placement is usually clearer with Grid.',
+    route: ['/css', 'trivia', 'css-display-flex'],
+    cta: 'Review Flexbox',
+    category: 'css',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use CSS Grid?',
+    a: 'Grid is best for two-dimensional layout where rows and columns both matter. It lets you define tracks, gaps, named areas, and responsive templates without relying on extra wrappers. It can be overkill for a simple row of controls where Flexbox would be easier to maintain.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Compare Grid and Flexbox',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does CSS positioning work?',
+    a: 'Positioning changes how an element participates in normal document flow and how offsets are calculated. Relative keeps the element in flow, absolute positions against the nearest positioned ancestor, fixed attaches to the viewport, and sticky switches behavior based on scroll. Many bugs happen because the expected containing block is not the one the browser uses.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Review positioning',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does z-index work?',
+    a: 'z-index only compares elements inside the relevant stacking context. New stacking contexts can be created by positioned elements, transforms, opacity, filters, isolation, and other properties. Raising a z-index value will not beat an element in a higher parent stacking context.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Debug z-index',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are media queries used for?',
+    a: 'Media queries apply CSS conditionally based on viewport, device, user preference, or environment features. They are commonly used for layout changes, reduced motion, dark mode, and print styles. Good responsive CSS changes constraints and flow, not only font sizes.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media queries',
+    category: 'responsive-debugging',
+    level: 'beginner',
+  },
+  {
+    q: 'How do responsive images work?',
+    a: 'Responsive images use srcset, sizes, picture, and modern loading attributes to let the browser choose an appropriate resource. The goal is to avoid shipping oversized images while preserving sharpness and layout stability. Width and height or aspect-ratio should be set so the page does not jump while images load.',
+    category: 'responsive-debugging',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are CSS custom properties?',
+    a: 'CSS custom properties are variables declared with names such as --space and read with var(). They cascade, inherit by default, and can change at runtime without recompiling CSS. A missing fallback or unexpected inheritance path can make a component pick up the wrong token.',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are pseudo-classes and pseudo-elements?',
+    a: 'Pseudo-classes select an element in a state, such as :hover, :focus-visible, :checked, or :nth-child(). Pseudo-elements style a generated part of an element, such as ::before, ::after, or ::marker. The practical edge case is focus styling: :focus-visible is usually better than removing outlines globally.',
+    category: 'css',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug CSS overflow?',
+    a: 'Start by identifying which element is wider or taller than its container, then inspect fixed widths, long unwrapped text, min-width defaults, grid tracks, and absolute positioning. Flex and grid children often need min-width: 0 or min-height: 0 to shrink as expected. Hiding overflow can mask the symptom while leaving keyboard focus or content access broken.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive fixes',
+    category: 'responsive-debugging',
+    level: 'advanced',
+  },
+  {
+    q: 'What causes layout shift?',
+    a: 'Layout shift happens when content moves after initial render because dimensions, fonts, ads, images, or async UI were not reserved. Set stable dimensions, reserve space for dynamic regions, and avoid inserting content above what the user is reading. The failure mode is a page that passes visual review but feels unstable while loading.',
+    category: 'responsive-debugging',
+    level: 'advanced',
+  },
+  {
+    q: 'How should focus states be styled?',
+    a: 'Focus states should be visible, consistent, and not depend only on color. Use :focus-visible to show keyboard focus without adding noisy outlines for pointer users. Removing outlines globally breaks keyboard navigation and makes interactive elements hard to locate.',
+    category: 'accessibility',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is the difference between block, inline, and inline-block?',
+    a: 'Block elements start on a new line and usually fill the available width. Inline elements flow with text and do not accept width and height in the same way, while inline-block keeps inline flow but allows box dimensions. Confusing these display modes often causes unexpected spacing, alignment, or clickable-area bugs.',
+    category: 'css',
+    level: 'beginner',
+  },
+  {
+    q: 'How do rem, em, px, and percent differ?',
+    a: 'px is an absolute CSS pixel unit, rem is relative to the root font size, em is relative to the current element font size, and percent depends on the property and containing context. rem is often easier for consistent spacing and type scales, while em can be useful for component-relative sizing. Percent can be powerful but surprising when height or transforms use a different reference than expected.',
+    category: 'responsive-debugging',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you make an HTML and CSS component responsive?',
+    a: 'Start with semantic markup and fluid layout constraints, then add breakpoints only where the component actually needs a different structure. Use max-width, minmax(), flexible tracks, wrapping, responsive images, and stable spacing tokens. Test narrow widths, long text, zoom, keyboard focus, and overflow instead of only resizing a desktop viewport.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive CSS',
+    category: 'responsive-debugging',
+    level: 'advanced',
+  },
+];
+
+const HTML_CSS_AUDIENCE_TRACKS: HtmlCssAudienceTrack[] = [
+  {
+    title: 'HTML and CSS interview questions for beginners',
+    detail: 'Start with valid document structure, semantic elements, labels, forms, the box model, basic selectors, Flexbox, Grid, and media queries. The goal is to explain what the browser gives you before reaching for custom scripts or heavy abstractions.',
+  },
+  {
+    title: 'HTML and CSS interview questions for experienced frontend developers',
+    detail: 'Move into accessibility trade-offs, cascade strategy, layout debugging, stacking contexts, responsive images, performance, stable dimensions, and browser rendering behavior. Experienced answers should connect UI constraints to maintainable markup and CSS decisions.',
+  },
+];
+
+const HTML_CSS_SEMANTICS_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
+  {
+    q: 'How do landmarks improve a page?',
+    a: 'Landmarks such as header, nav, main, aside, and footer divide the page into recognizable regions. They help assistive technology users jump through the page without reading every element. The page should normally have one main landmark, and landmarks should represent real regions rather than decorative wrappers.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Review semantic elements',
+    level: 'beginner',
+  },
+  {
+    q: 'How should headings be structured?',
+    a: 'Headings create an outline that helps users scan the page and understand content hierarchy. Use heading levels for structure, not for visual size. Skipping levels or using headings only for styling can make the page harder to navigate with assistive technology.',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you add ARIA?',
+    a: 'Add ARIA when native HTML cannot express the role, state, or relationship you need. Native controls should come first because they already include keyboard and accessibility behavior. Misused ARIA can create a worse accessibility tree than plain semantic markup.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Practice accessibility review',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should form errors be exposed?',
+    a: 'Form errors should be visible, specific, and connected to the affected control. Use text near the field, update aria-describedby when helpful, and keep focus behavior predictable after submission. Color alone is not enough because users may miss the state or use assistive technology.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Build validation states',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do tables stay accessible?',
+    a: 'Data tables need real table markup, a useful caption when context is not obvious, and header cells that define row or column meaning. Complex tables may need scope or header associations. Layout tables should be avoided because they create misleading relationships for assistive technology.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should a dialog be implemented?',
+    a: 'A dialog should expose modal state, focus the right starting point, keep keyboard focus inside while open, and restore focus when closed. The native dialog element can help, but the surrounding interaction still needs careful labels and escape behavior. A visually correct overlay is incomplete if background content remains reachable by keyboard.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice dialog accessibility',
+    level: 'advanced',
+  },
+  {
+    q: 'How do anchors and buttons affect keyboard behavior?',
+    a: 'Anchors activate with Enter and navigate, while buttons activate with Enter or Space and trigger actions. Using the wrong element changes expected keyboard behavior and screen-reader announcement. Styling can make them look alike, but semantics should follow the user action.',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you test HTML accessibility quickly?',
+    a: 'Check keyboard navigation, visible focus, labels, headings, landmarks, image text, and form errors before relying on automated tools. Then run a validator, axe or Lighthouse, and inspect the accessibility tree for names and roles. Automated checks catch many issues but cannot prove that the interaction makes sense.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Review an accessibility flow',
+    level: 'advanced',
+  },
+];
+
+const HTML_CSS_LAYOUT_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
+  {
+    q: 'How do Flexbox and Grid differ?',
+    a: 'Flexbox lays out items along one main axis and is strongest for alignment and distribution within a row or column. Grid defines rows and columns together, so it is better for two-dimensional page or card layouts. Mixing them is normal: Grid can place regions, and Flexbox can align content inside a region.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Compare layout systems',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do cascade layers change CSS conflicts?',
+    a: 'Cascade layers let you group CSS by priority before specificity is compared. A low-specificity rule in a later layer can beat a highly specific rule in an earlier layer. This is useful for separating reset, theme, component, and override CSS without escalating selectors.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade rules',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you avoid specificity wars?',
+    a: 'Use predictable selectors, keep component scopes shallow, and reserve high specificity for real overrides. Cascade layers, custom properties, and utility classes can reduce the need for nested selectors. The failure mode is CSS that works once but becomes impossible to safely change.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does position sticky fail?',
+    a: 'Sticky positioning depends on scroll containment, offsets, and available space inside the parent. It often fails when an ancestor has overflow that creates a different scroll container or when the sticky element has no room to move. Debug by inspecting ancestors and the element offsets, not just z-index.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Review positioning',
+    level: 'advanced',
+  },
+  {
+    q: 'How do stacking contexts affect overlays?',
+    a: 'An overlay can appear behind another element even with a large z-index if it is trapped in a lower stacking context. Transforms, opacity, filters, isolation, and positioned elements can create those contexts. Fixing the parent context or DOM placement is often better than increasing z-index values.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Debug stacking',
+    level: 'advanced',
+  },
+  {
+    q: 'How should CSS custom properties be scoped?',
+    a: 'Global tokens should describe broad design values, while component-level custom properties should expose controlled styling hooks. Because custom properties inherit, a value can travel farther than expected. Scope names and fallbacks should make overrides intentional.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you choose breakpoints?',
+    a: 'Choose breakpoints where the content or component starts to fail, not only common device widths. A card may need a breakpoint because text wraps poorly or controls no longer fit. Content-driven breakpoints age better than a fixed list of device sizes.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media queries',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you keep CSS maintainable at scale?',
+    a: 'Keep selectors predictable, avoid accidental global leakage, document tokens, and make component states explicit. Prefer small layout primitives and clear naming over deeply nested selectors. Maintainability breaks when every new UI requires a more specific override than the last one.',
+    level: 'advanced',
+  },
+];
+
+const HTML_CSS_CODE_SCENARIOS: HtmlCssCodeQuestionItem[] = [
+  {
+    q: 'Why is this input hard to use with assistive technology?',
+    code: `<input placeholder="Email" type="email">`,
+    explanation: 'The input has no durable accessible label. Add a label connected with for and id so the field name remains available after the user starts typing. Placeholder text can still provide an example, but it should not be the only name.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Fix labeled forms',
+    level: 'beginner',
+  },
+  {
+    q: 'Why can this image link have a poor accessible name?',
+    code: `<a href="/pricing">\n  <img src="arrow.png" alt="arrow">\n</a>`,
+    explanation: 'The link name becomes the image alt text, so "arrow" does not describe the destination or action. Use alt text such as "View pricing" or add visible text. The accessible name should match what the link does.',
+    route: ['/html', 'coding', 'html-links-and-images'],
+    cta: 'Practice links and images',
+    level: 'beginner',
+  },
+  {
+    q: 'Why does this flex item overflow?',
+    code: `.row { display: flex; }\n.title { white-space: nowrap; }`,
+    explanation: 'Flex items have an automatic minimum size that can prevent shrinking below content width. Add min-width: 0 to the flex child that must shrink, then apply overflow handling intentionally. Setting overflow hidden on the parent may hide the symptom without fixing the layout constraint.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive fixes',
+    level: 'advanced',
+  },
+  {
+    q: 'Why does this grid create horizontal scroll?',
+    code: `.cards {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n}`,
+    explanation: 'Three fixed columns can exceed the viewport when the container is narrow. Use responsive tracks such as repeat(auto-fit, minmax(220px, 1fr)) or add a breakpoint. The fix should preserve card readability and avoid squeezing content below its usable width.',
+    route: ['/css', 'coding', 'css-grid-card-gallery'],
+    cta: 'Build a responsive grid',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why does this modal appear behind the header?',
+    code: `.header { position: relative; z-index: 10; }\n.page { transform: translateZ(0); }\n.modal { position: fixed; z-index: 9999; }`,
+    explanation: 'The transformed parent can create a stacking context that changes how the fixed modal is layered. A large z-index inside one context cannot beat a different parent context. Move the overlay to a safer root or adjust the stacking context hierarchy.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Review z-index',
+    level: 'advanced',
+  },
+  {
+    q: 'Why is this button not keyboard friendly?',
+    code: `<div class="button" onclick="save()">Save</div>`,
+    explanation: 'A div does not provide button semantics, keyboard activation, disabled behavior, or the expected role. Use a real button and style it with CSS. Rebuilding native behavior with roles and key handlers is more error-prone than using the correct element.',
+    level: 'beginner',
+  },
+  {
+    q: 'Why can this hero image cause layout shift?',
+    code: `<img src="/hero.jpg" alt="Dashboard preview">`,
+    explanation: 'The browser does not know the image dimensions before it loads, so surrounding content can move when the image appears. Add width and height or an aspect-ratio so space is reserved. Responsive CSS can still scale the image after the intrinsic ratio is known.',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why does this required field still need server validation?',
+    code: `<input name="email" type="email" required>`,
+    explanation: 'The browser can block common invalid submissions, but users or scripts can bypass client-side validation. Server validation protects the real data boundary and should return useful errors. Client validation improves user experience, not application trust.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice validation',
+    level: 'intermediate',
+  },
+];
+
+const HTML_CSS_BROWSER_DEBUG_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
+  {
+    q: 'How does the browser turn HTML and CSS into pixels?',
+    a: 'The browser parses HTML into the DOM, parses CSS into style rules, calculates computed styles, builds layout, paints, and composites layers. JavaScript or resource loading can interrupt parts of this process. Performance work starts by identifying whether the problem is style, layout, paint, compositing, or scripting.',
+    level: 'advanced',
+  },
+  {
+    q: 'What is a reflow or layout recalculation?',
+    a: 'A layout recalculation happens when the browser must recompute element geometry. It can be triggered by DOM changes, class changes, font loading, image sizing, or reading layout after writing styles. Batching reads and writes reduces repeated layout work.',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you debug an element that is not clickable?',
+    a: 'Inspect whether another element is covering it, whether pointer-events is disabled, whether the element is outside its visible box, and whether it is actually a link or button. Stacking context and overflow clipping are common causes. The fix should preserve keyboard access, not only pointer clicks.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Review stacking behavior',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug missing styles?',
+    a: 'Check whether the stylesheet loaded, whether the selector matches, whether another declaration wins in the cascade, and whether the property is valid for that element. DevTools computed styles show the winning and overridden declarations. The fastest path is to inspect the actual element state instead of reading the stylesheet in isolation.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review the cascade',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you debug invisible content?',
+    a: 'Check display, visibility, opacity, color contrast, clipping, overflow, positioning, transforms, and whether the content exists in the DOM. Content can be present but inaccessible if it is visually hidden incorrectly or removed from the accessibility tree. The fix depends on whether the content should be hidden from everyone or only visually.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do fonts affect layout?',
+    a: 'Font loading can change text metrics and cause layout shifts when the final font replaces a fallback. Use good fallback stacks, font-display choices, size-adjust where appropriate, and stable layout constraints. Long labels should be tested because they often reveal font and wrapping issues.',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you debug mobile viewport issues?',
+    a: 'Check the viewport meta tag, fixed widths, min-width values, overflowing grids, absolute positioning, and controls that do not wrap. Simulate narrow widths and zoom, then test on a real device when possible. The issue is often a single child that refuses to shrink.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Review viewport metadata',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug focus order?',
+    a: 'Navigate with the keyboard and compare the focus order to the visual and DOM order. Positive tabindex values usually create fragile ordering and should be avoided. If focus disappears into hidden or offscreen content, the hiding and modal behavior need to be fixed.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice focus handling',
+    level: 'advanced',
+  },
+];
+
+const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
+  {
+    q: 'What does mobile-first CSS mean?',
+    a: 'Mobile-first CSS starts with the narrowest useful layout and adds complexity as space becomes available. This usually creates fewer overrides because the base styles handle constrained screens. The edge case is a desktop-only component that still needs a usable narrow fallback.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review responsive CSS',
+    level: 'beginner',
+  },
+  {
+    q: 'How do container queries differ from media queries?',
+    a: 'Media queries react to the viewport or environment, while container queries react to the size or style context of a container. Container queries make reusable components adapt where they are placed. They are most useful when the same component appears in a sidebar, grid, and full-width region.',
+    level: 'advanced',
+  },
+  {
+    q: 'How should a navigation bar adapt on small screens?',
+    a: 'The nav should preserve readable labels, reachable focus states, and clear current-location cues. Flex wrapping, overflow menus, or a disclosure pattern can work depending on item count. A responsive nav fails if it only hides links without giving users another path to them.',
+    route: ['/css', 'coding', 'css-flexbox-navbar'],
+    cta: 'Build a responsive nav',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should cards adapt in a responsive grid?',
+    a: 'Cards should keep readable text, stable media ratios, and consistent action placement as columns change. Grid with minmax() and auto-fit can reduce breakpoint code while preserving minimum card width. Test long titles and missing images because they expose fragile card layouts.',
+    route: ['/css', 'coding', 'css-grid-card-gallery'],
+    cta: 'Build card grids',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you handle long words and untrusted text?',
+    a: 'Long words, URLs, and user-generated strings can break otherwise clean layouts. Use overflow-wrap, min-width: 0, max-width constraints, and clear truncation rules when content must stay on one line. Truncation should not hide essential information without another way to access it.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Fix responsive overflow',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you keep touch targets usable?',
+    a: 'Interactive controls need enough physical size and spacing to avoid accidental taps. CSS should not shrink buttons below a usable hit area just to fit a dense layout. If space is tight, wrapping or grouping controls is better than making them tiny.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do reduced motion preferences affect CSS?',
+    a: 'The prefers-reduced-motion media query lets users request less animation. Use it to remove or simplify motion that can distract, delay, or cause discomfort. Essential state changes should still be visible without relying on animation.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media features',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you test responsive HTML and CSS before shipping?',
+    a: 'Test narrow and wide widths, zoom, long text, keyboard navigation, image loading, and common device sizes. Inspect overflow, focus visibility, layout shift, and readable contrast. A page that only passes one viewport can still fail real users because content and device constraints vary.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive review',
+    level: 'advanced',
+  },
+];
+
 const HTML_TOPIC_CARDS: HtmlTopicCard[] = [
   {
     title: 'HTML role in web development',
@@ -2705,7 +3272,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isHtmlCssHub()) {
-      return 'HTML and CSS interview questions and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice semantic markup, accessibility, layout, and cascade reasoning before moving into broader UI drills.';
+      return 'HTML and CSS interview questions and answers for UI rounds, with short answers, code scenarios, semantic markup, accessibility, layout, cascade, responsive behavior, and browser debugging.';
     }
 
     if (this.isVueHub()) {
@@ -2805,6 +3372,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   scrollToReactSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  scrollToHtmlCssSection(targetId: string): void {
     this.scrollToSection(targetId);
   }
 
@@ -3025,6 +3596,59 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   htmlResourceLinks(): HtmlResourceLink[] {
     return HTML_RESOURCE_LINKS;
+  }
+
+  htmlCssEditorialSignal(): HtmlCssEditorialSignal {
+    return HTML_CSS_EDITORIAL_SIGNAL;
+  }
+
+  htmlCssAnchorItems(): HtmlCssAnchorItem[] {
+    return HTML_CSS_ANCHOR_ITEMS;
+  }
+
+  htmlCssKeywordClusters(): HtmlCssKeywordClusterItem[] {
+    return HTML_CSS_KEYWORD_CLUSTERS;
+  }
+
+  htmlCssShortAnswers(): HtmlCssShortAnswerItem[] {
+    return HTML_CSS_SHORT_ANSWERS;
+  }
+
+  htmlCssAudienceTracks(): HtmlCssAudienceTrack[] {
+    return HTML_CSS_AUDIENCE_TRACKS;
+  }
+
+  htmlCssSemanticsQuestions(): HtmlCssFocusedQuestionItem[] {
+    return HTML_CSS_SEMANTICS_QUESTIONS;
+  }
+
+  htmlCssLayoutQuestions(): HtmlCssFocusedQuestionItem[] {
+    return HTML_CSS_LAYOUT_QUESTIONS;
+  }
+
+  htmlCssCodeScenarios(): HtmlCssCodeQuestionItem[] {
+    return HTML_CSS_CODE_SCENARIOS;
+  }
+
+  htmlCssBrowserDebugQuestions(): HtmlCssFocusedQuestionItem[] {
+    return HTML_CSS_BROWSER_DEBUG_QUESTIONS;
+  }
+
+  htmlCssResponsiveQuestions(): HtmlCssFocusedQuestionItem[] {
+    return HTML_CSS_RESPONSIVE_QUESTIONS;
+  }
+
+  htmlCssShortAnswerCategoryLabel(category: HtmlCssShortAnswerCategory): string {
+    switch (category) {
+      case 'html':
+        return 'HTML';
+      case 'css':
+        return 'CSS';
+      case 'accessibility':
+        return 'Accessibility';
+      default:
+        return 'Responsive + debugging';
+    }
   }
 
   prepRoadmapTitle(): string {
@@ -3674,6 +4298,38 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
     }
 
+    if (this.isHtmlCssHub()) {
+      collectionPage['dateModified'] = HTML_CSS_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: HTML_CSS_EDITORIAL_SIGNAL.reviewer,
+      };
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'HTML CSS interview questions' },
+        { '@type': 'Thing', name: 'HTML and CSS interview questions and answers' },
+        { '@type': 'Thing', name: 'HTML and CSS interview questions for beginners' },
+        { '@type': 'Thing', name: 'HTML and CSS interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'semantic HTML interview questions' },
+        { '@type': 'Thing', name: 'CSS layout interview questions' },
+        { '@type': 'Thing', name: 'Flexbox and Grid interview questions' },
+        { '@type': 'Thing', name: 'CSS specificity and cascade interview questions' },
+        { '@type': 'Thing', name: 'accessibility interview questions' },
+        { '@type': 'Thing', name: 'responsive UI interview questions' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'HTML forms and labels' },
+        { '@type': 'Thing', name: 'Accessible HTML and CSS components' },
+        { '@type': 'Thing', name: 'CSS responsive layout debugging' },
+        { '@type': 'Thing', name: 'HTML and CSS code scenarios' },
+        { '@type': 'Thing', name: 'Browser rendering and UI debugging' },
+        { '@type': 'Thing', name: 'CSS box model and overflow' },
+        { '@type': 'Thing', name: 'HTML metadata and viewport' },
+        { '@type': 'Thing', name: 'Responsive images and layout shift' },
+      ];
+    }
+
     if (this.isHtmlHub()) {
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -3713,6 +4369,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
     if (this.isAngularHub()) {
       jsonLd.push(this.angularShortAnswersFaqPage(canonicalUrl));
+    }
+    if (this.isHtmlCssHub()) {
+      jsonLd.push(this.htmlCssShortAnswersFaqPage(canonicalUrl));
     }
 
     this.seo.updateTags({
@@ -3763,6 +4422,23 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       url: canonicalUrl,
       name: 'Top React interview questions and short answers, beginner to advanced',
       mainEntity: this.reactShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private htmlCssShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#html-css-short-answers`,
+      url: canonicalUrl,
+      name: 'Top HTML and CSS interview questions and short answers, beginner to advanced',
+      mainEntity: this.htmlCssShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: {
