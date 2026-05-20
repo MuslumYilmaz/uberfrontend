@@ -269,6 +269,14 @@
 .iq-section--html-css-code,
 .iq-section--html-css-browser,
 .iq-section--html-css-responsive,
+.iq-section--css-clusters,
+.iq-section--css-short-answers,
+.iq-section--css-audience,
+.iq-section--css-cascade,
+.iq-section--css-box-model,
+.iq-section--css-layout,
+.iq-section--css-responsive,
+.iq-section--css-debugging,
 .iq-section--javascript-coverage,
 .iq-section--react-coverage,
 .iq-section--angular-coverage,
@@ -281,7 +289,8 @@
 .iq-react-toc,
 .iq-vue-toc,
 .iq-angular-toc,
-.iq-html-css-toc {
+.iq-html-css-toc,
+.iq-css-toc {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -296,7 +305,8 @@
 .iq-react-toc .iq-context-kicker,
 .iq-vue-toc .iq-context-kicker,
 .iq-angular-toc .iq-context-kicker,
-.iq-html-css-toc .iq-context-kicker {
+.iq-html-css-toc .iq-context-kicker,
+.iq-css-toc .iq-context-kicker {
   margin: 0;
 }
 
@@ -304,7 +314,8 @@
 .iq-react-toc__links,
 .iq-vue-toc__links,
 .iq-angular-toc__links,
-.iq-html-css-toc__links {
+.iq-html-css-toc__links,
+.iq-css-toc__links {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -314,7 +325,8 @@
 .iq-react-toc__links button,
 .iq-vue-toc__links button,
 .iq-angular-toc__links button,
-.iq-html-css-toc__links button {
+.iq-html-css-toc__links button,
+.iq-css-toc__links button {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
@@ -334,7 +346,8 @@
 .iq-react-toc__links button:hover,
 .iq-vue-toc__links button:hover,
 .iq-angular-toc__links button:hover,
-.iq-html-css-toc__links button:hover {
+.iq-html-css-toc__links button:hover,
+.iq-css-toc__links button:hover {
   border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
   color: var(--uf-text-primary);
 }
@@ -343,7 +356,8 @@
 .iq-react-toc__links button:focus-visible,
 .iq-vue-toc__links button:focus-visible,
 .iq-angular-toc__links button:focus-visible,
-.iq-html-css-toc__links button:focus-visible {
+.iq-html-css-toc__links button:focus-visible,
+.iq-css-toc__links button:focus-visible {
   outline: none;
   box-shadow: var(--uf-focus-ring);
 }
@@ -874,7 +888,8 @@
   .iq-react-toc,
   .iq-vue-toc,
   .iq-angular-toc,
-  .iq-html-css-toc {
+  .iq-html-css-toc,
+  .iq-css-toc {
     align-items: stretch;
   }
 
@@ -882,7 +897,8 @@
   .iq-react-toc__links,
   .iq-vue-toc__links,
   .iq-angular-toc__links,
-  .iq-html-css-toc__links {
+  .iq-html-css-toc__links,
+  .iq-css-toc__links {
     gap: 6px;
   }
 

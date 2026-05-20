@@ -255,6 +255,36 @@ type HtmlCssEditorialSignal = {
   coverage: string;
   dateModified: string;
 };
+type CssShortAnswerCategory = 'fundamentals' | 'cascade-selectors' | 'layout' | 'responsive' | 'debugging-performance';
+type CssShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: CssShortAnswerCategory;
+  level: QuestionLevel;
+};
+type CssAnchorItem = { label: string; targetId: string };
+type CssKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type CssAudienceTrack = { title: string; detail: string };
+type CssFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type CssScenarioQuestionItem = CssFocusedQuestionItem;
+type CssEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type HubIntentProfile = {
   heading: string;
   lead: string;
@@ -645,16 +675,28 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   css: [
     {
-      q: 'How should I practice each CSS interview question?',
-      a: 'State the layout constraint, choose the CSS tool, explain why alternatives are weaker, then test overflow, responsiveness, and accessibility impact.',
+      q: 'Are these CSS interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with CSS fundamentals, then moves into experienced-developer topics such as cascade architecture, specificity control, responsive constraints, stacking contexts, performance, and visual debugging.',
     },
     {
-      q: 'Which CSS interview questions are highest leverage?',
-      a: 'Flexbox, grid, cascade, specificity, custom properties, stacking, responsive sizing, and overflow debugging usually pay off first.',
+      q: 'Does this page cover CSS specificity and cascade interview questions?',
+      a: 'Yes. It covers cascade order, layers, specificity, inheritance, pseudo selectors, !important, selector strategy, and how to debug conflicting declarations.',
     },
     {
-      q: 'When should I switch from concepts to coding?',
-      a: 'Switch when you understand the rule but cannot yet produce a stable layout under width, content, and interaction constraints.',
+      q: 'Does this page include Flexbox and CSS Grid interview questions?',
+      a: 'Yes. It covers when to use Flexbox, when to use CSS Grid, Flexbox vs Grid trade-offs, alignment, wrapping navigation, responsive grids, positioning, sticky behavior, and z-index.',
+    },
+    {
+      q: 'Does this page include responsive CSS and media query questions?',
+      a: 'Yes. It covers responsive CSS, media queries, container queries, clamp(), fluid sizing, responsive navigation, card layouts, long text, reduced motion, and theme variables.',
+    },
+    {
+      q: 'Does this page cover CSS debugging and performance questions?',
+      a: 'Yes. It covers missing styles, specificity conflicts, horizontal scroll, stacking bugs, layout thrashing, hardware acceleration, custom properties, and maintainable CSS.',
+    },
+    {
+      q: 'Where should I practice CSS coding interview questions?',
+      a: 'Start with the CSS coding preview on this page, then move into Flexbox navbar, Grid card gallery, fluid clamp sizing, theme variables, and responsive layout drills.',
     },
   ],
 };
@@ -3714,6 +3756,549 @@ const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
   },
 ];
 
+const CSS_EDITORIAL_SIGNAL: CssEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible CSS questions across cascade, specificity, box model, layout, responsive design, debugging, performance, and maintainable CSS',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const CSS_ANCHOR_ITEMS: CssAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-css-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-css-short-answers-title' },
+  { label: 'Audience', targetId: 'iq-css-audience-title' },
+  { label: 'Cascade + specificity', targetId: 'iq-css-cascade-title' },
+  { label: 'Box model + overflow', targetId: 'iq-css-box-model-title' },
+  { label: 'Layout systems', targetId: 'iq-css-layout-title' },
+  { label: 'Responsive CSS', targetId: 'iq-css-responsive-title' },
+  { label: 'Debugging + performance', targetId: 'iq-css-debugging-title' },
+  { label: 'Coding drills', targetId: 'iq-css-coding-preview-title' },
+  { label: 'Concepts', targetId: 'iq-css-concept-preview-title' },
+];
+
+const CSS_KEYWORD_CLUSTERS: CssKeywordClusterItem[] = [
+  {
+    label: 'CSS interview questions for beginners',
+    targetId: 'iq-css-short-answers-title',
+    detail: 'CSS basics, box model, display, units, selectors, and first responsive rules.',
+  },
+  {
+    label: 'CSS interview questions for experienced developers',
+    targetId: 'iq-css-audience-title',
+    detail: 'Production layout trade-offs, debugging, maintainability, and performance choices.',
+  },
+  {
+    label: 'CSS specificity and cascade questions',
+    targetId: 'iq-css-cascade-title',
+    detail: 'Cascade order, layers, selector weight, inheritance, and conflict resolution.',
+  },
+  {
+    label: 'CSS box model and overflow questions',
+    targetId: 'iq-css-box-model-title',
+    detail: 'Sizing, margins, padding, border-box, min-width, scrollbars, and clipped content.',
+  },
+  {
+    label: 'Flexbox and CSS Grid interview questions',
+    targetId: 'iq-css-layout-title',
+    detail: 'One-dimensional layout, two-dimensional layout, containing blocks, sticky, and stacking.',
+  },
+  {
+    label: 'Responsive CSS and media query questions',
+    targetId: 'iq-css-responsive-title',
+    detail: 'Media queries, container queries, clamp(), responsive cards, and adaptive navigation.',
+  },
+  {
+    label: 'CSS debugging and performance questions',
+    targetId: 'iq-css-debugging-title',
+    detail: 'Missing styles, z-index, overflow, layout work, compositing, and maintainable CSS.',
+  },
+];
+
+const CSS_SHORT_ANSWERS: CssShortAnswerItem[] = [
+  {
+    q: 'What is CSS?',
+    a: 'CSS is the styling language browsers use to control presentation, layout, and visual states for HTML documents. It maps selectors to declarations, then the browser resolves those declarations through the cascade and computes final styles. CSS can fail in surprising ways because multiple rules, inherited values, browser defaults, and responsive constraints all interact.',
+    route: ['/css', 'trivia', 'css-definition'],
+    cta: 'Review CSS basics',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'How does the CSS cascade work?',
+    a: 'The cascade decides which declaration wins when more than one rule applies to the same property. It evaluates origin, importance, cascade layers, specificity, scoping proximity, and source order. Source order only wins after the higher-priority cascade factors are tied.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade order',
+    category: 'cascade-selectors',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is CSS specificity?',
+    a: 'Specificity is the selector weight used when competing declarations are in the same origin and layer. Inline styles, IDs, classes or attributes, and element selectors carry different weight. Specificity fixes can become a maintenance problem when every override needs a stronger selector.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    category: 'cascade-selectors',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is inheritance in CSS?',
+    a: 'Inheritance lets some computed values pass from parent elements to children. Text-related properties such as color and font-family commonly inherit, while layout properties such as margin and border usually do not. Bugs happen when a component unexpectedly receives typography, color, or custom property values from a parent context.',
+    category: 'cascade-selectors',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the CSS box model?',
+    a: 'The box model describes how content, padding, border, and margin create an element box and spacing around it. With content-box, width applies only to content; with border-box, width includes padding and border. Many layout bugs come from mixing those sizing assumptions in the same component.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Review the box model',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between margin and padding?',
+    a: 'Padding creates space inside an element between its content and border. Margin creates space outside the element between it and neighboring boxes. Margin can collapse vertically in normal flow, while padding affects the element box and background area.',
+    route: ['/css', 'trivia', 'css-margin-vs-padding'],
+    cta: 'Compare margin and padding',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'How does display affect layout?',
+    a: 'The display property controls how an element generates boxes and how its children participate in layout. Block, inline, flex, grid, and none all create very different layout behavior. Changing display can also change whether width, height, alignment, and child placement rules apply.',
+    route: ['/css', 'trivia', 'css-display-flex'],
+    cta: 'Review display and Flexbox',
+    category: 'layout',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use Flexbox?',
+    a: 'Flexbox is best for one-dimensional layouts where items need alignment, distribution, wrapping, or ordering along a row or column. It is well suited for nav bars, toolbars, centered content, and small component internals. For layout where rows and columns both matter, Grid is usually clearer.',
+    route: ['/css', 'trivia', 'css-display-flex'],
+    cta: 'Review Flexbox',
+    category: 'layout',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use CSS Grid?',
+    a: 'CSS Grid is best for two-dimensional layouts where rows and columns need to be controlled together. It handles page regions, card galleries, dashboards, and layouts with explicit tracks or areas. It can be more structure than needed for a single row of aligned controls.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Compare Grid and Flexbox',
+    category: 'layout',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does CSS positioning work?',
+    a: 'Positioning controls whether an element stays in normal flow and what box its offsets use. Relative keeps its original space, absolute positions against a containing block, fixed uses the viewport, and sticky switches as the user scrolls. Positioning bugs often come from the wrong containing block or scroll container.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Review positioning',
+    category: 'layout',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is a stacking context?',
+    a: 'A stacking context is a layer group where child z-index values are compared internally. Transforms, opacity, filters, positioned elements, isolation, and other properties can create new stacking contexts. An element with a large z-index can still appear behind another element if its parent context is lower.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Debug stacking contexts',
+    category: 'layout',
+    level: 'advanced',
+  },
+  {
+    q: 'How does z-index work?',
+    a: 'z-index controls stacking order only for positioned or stacking-context-aware elements. It does not create a global ranking across the whole page. If two elements are in different stacking contexts, changing the child z-index may not change which one appears on top.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Review z-index',
+    category: 'layout',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do rem, em, px, and percent differ?',
+    a: 'px is an absolute CSS pixel unit, rem is relative to the root font size, em is relative to the current element font size, and percent depends on the property and containing context. rem is predictable for global spacing and type scales, while em is useful for component-relative sizing. Percent values can surprise you because width, height, transforms, and padding can use different reference boxes.',
+    route: ['/css', 'trivia', 'css-units-em-rem-percent-px'],
+    cta: 'Review CSS units',
+    category: 'responsive',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are media queries used for?',
+    a: 'Media queries apply CSS when viewport, device, environment, or user preference conditions match. They are used for responsive layouts, reduced motion, color scheme, print styles, and input capabilities. Good media queries respond to layout constraints instead of copying a fixed list of device sizes.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media queries',
+    category: 'responsive',
+    level: 'beginner',
+  },
+  {
+    q: 'What are container queries?',
+    a: 'Container queries let a component adapt to the size or style context of its container instead of only the viewport. They are useful when the same component appears in a sidebar, grid, and full-width region. The component needs a defined query container, otherwise the query has no useful container to evaluate.',
+    category: 'responsive',
+    level: 'advanced',
+  },
+  {
+    q: 'What does responsive design mean in CSS?',
+    a: 'Responsive design means the UI adapts to different widths, input modes, zoom levels, content lengths, and user preferences. CSS tools include fluid units, media queries, container queries, flexible tracks, wrapping, and stable aspect ratios. A responsive layout should be tested with long content and narrow widths, not only common device presets.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive CSS',
+    category: 'responsive',
+    level: 'beginner',
+  },
+  {
+    q: 'What are CSS custom properties?',
+    a: 'CSS custom properties are variables declared with names like --space and read with var(). They cascade and inherit, so themes and component overrides can be controlled at runtime. The risk is accidental inheritance or missing fallbacks that make a component pick up the wrong value.',
+    route: ['/css', 'trivia', 'css-custom-properties'],
+    cta: 'Review custom properties',
+    category: 'cascade-selectors',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are pseudo-classes and pseudo-elements?',
+    a: 'Pseudo-classes select elements in a state, such as :hover, :focus-visible, :checked, or :nth-child(). Pseudo-elements style generated parts of an element, such as ::before, ::after, or ::marker. Focus styles are a practical edge case because removing outlines globally breaks keyboard navigation.',
+    route: ['/css', 'trivia', 'css-pseudo-classes-elements'],
+    cta: 'Review pseudo selectors',
+    category: 'cascade-selectors',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is BEM in CSS?',
+    a: 'BEM is a naming convention that separates blocks, elements, and modifiers to make selector intent explicit. It avoids deep descendant selectors and helps teams reason about component state. It is a convention, not a browser feature, so it works only when the team applies it consistently.',
+    category: 'debugging-performance',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug CSS overflow?',
+    a: 'Find the element that is wider or taller than its container, then inspect fixed widths, min-width defaults, grid tracks, absolute positioning, and long unwrapped text. Flex and grid children often need min-width: 0 or min-height: 0 to shrink correctly. Hiding overflow can mask the problem while making content or focus unreachable.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Fix responsive overflow',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+  {
+    q: 'How do min-width and max-width affect responsive layout?',
+    a: 'min-width prevents an element from shrinking below a threshold, while max-width prevents it from growing beyond a threshold. They are useful for readable cards, text columns, and media, but they can also create overflow if the minimum is too large. In flex and grid layouts, automatic minimum sizes are a common reason content refuses to shrink.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive sizing',
+    category: 'responsive',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do transforms and transitions differ?',
+    a: 'Transforms change how an element is visually moved, scaled, rotated, or skewed without changing normal document flow. Transitions animate a property change between two states. Transform and opacity animations are usually cheaper than animating layout properties like width, height, or top.',
+    category: 'debugging-performance',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should CSS animations be used safely?',
+    a: 'CSS animations should support the UI state without delaying essential information or causing motion discomfort. Use prefers-reduced-motion to simplify or remove nonessential motion for users who request it. Animating layout-heavy properties can create performance problems on slower devices.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media features',
+    category: 'debugging-performance',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you improve CSS performance?',
+    a: 'Start by measuring whether the problem is style recalculation, layout, paint, compositing, or JavaScript. Prefer stable layout dimensions, avoid repeated layout reads after writes, and animate transform or opacity when possible. Hardware acceleration can help specific compositing cases, but it is not a universal fix.',
+    route: ['/css', 'trivia', 'css-hardware-acceleration'],
+    cta: 'Review CSS performance',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you debug a CSS layout bug?',
+    a: 'Inspect the element in DevTools, check the computed styles, and identify the actual constraint that fails. Then isolate cascade conflicts, box sizing, display mode, positioning, overflow, and responsive breakpoints. Guessing from the stylesheet alone is slower because the live DOM state may differ from the source you are reading.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice layout debugging',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+];
+
+const CSS_AUDIENCE_TRACKS: CssAudienceTrack[] = [
+  {
+    title: 'CSS interview questions for beginners',
+    detail: 'Start with selectors, the cascade, inheritance, the box model, display, Flexbox, Grid, positioning, units, and media queries. The goal is to explain what the browser does before adding complicated patterns.',
+  },
+  {
+    title: 'CSS interview questions for experienced frontend developers',
+    detail: 'Move into cascade architecture, specificity control, responsive component constraints, stacking contexts, performance measurement, design tokens, and visual debugging. Experienced answers should connect CSS choices to maintainability and production UI failures.',
+  },
+];
+
+const CSS_CASCADE_QUESTIONS: CssFocusedQuestionItem[] = [
+  {
+    q: 'What order does the cascade use to choose a declaration?',
+    a: 'The cascade evaluates origin and importance first, then cascade layers, specificity, scoping proximity, and source order. This means a later rule does not always win. Debugging should start with the computed style panel because it shows which cascade factor won.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade order',
+    level: 'intermediate',
+  },
+  {
+    q: 'How is CSS specificity calculated?',
+    a: 'Specificity compares selector weight from IDs, classes or attributes, pseudo-classes, elements, and pseudo-elements. It is compared only after higher cascade factors such as origin and layers are resolved. Inline styles and !important can change the conflict path and should be treated carefully.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do cascade layers help large stylesheets?',
+    a: 'Cascade layers let you define priority groups such as reset, base, components, utilities, and overrides. A declaration in a later layer can beat a more specific declaration in an earlier layer. This reduces specificity escalation because priority can be modeled by layer order.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade layers',
+    level: 'advanced',
+  },
+  {
+    q: 'How are inheritance and initial values different?',
+    a: 'Inheritance reuses a computed value from the parent when a property is inheritable. An initial value is the property default defined by CSS when no cascade or inherited value applies. The distinction matters when reset styles or component wrappers unexpectedly change text, color, or spacing behavior.',
+    level: 'beginner',
+  },
+  {
+    q: 'How do :is(), :where(), and :has() affect selectors?',
+    a: ':is() and :has() can make selectors more expressive, while :where() always contributes zero specificity. :has() can select a parent based on children or state, which avoids some JavaScript but can make selectors more complex. These selectors should be used with specificity and performance awareness.',
+    route: ['/css', 'trivia', 'css-pseudo-classes-elements'],
+    cta: 'Review pseudo selectors',
+    level: 'advanced',
+  },
+  {
+    q: 'When should !important be used?',
+    a: '!important raises a declaration above normal declarations in the same cascade path. It can be justified for utility overrides, accessibility helpers, or third-party constraints, but it should not be the default way to fix conflicts. Overusing it makes later changes harder because every override needs another escalation.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review importance rules',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why are IDs risky in CSS selectors?',
+    a: 'ID selectors have high specificity and are harder to override than class selectors. They can be useful for anchors or unique DOM targets, but they often make component styles rigid. Class-based selectors are usually easier to compose and maintain.',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you avoid brittle selector strategy?',
+    a: 'Keep selectors shallow, prefer stable class names, avoid styling through fragile DOM depth, and use layers or utilities for planned overrides. Deep descendant selectors break when markup changes. A good selector should describe the styling contract, not the entire DOM path.',
+    level: 'advanced',
+  },
+];
+
+const CSS_BOX_MODEL_QUESTIONS: CssFocusedQuestionItem[] = [
+  {
+    q: 'What is the difference between content-box and border-box?',
+    a: 'content-box applies width and height to the content area only. border-box includes padding and border inside the declared width and height. border-box is often easier for responsive components because padding does not unexpectedly increase the outer size.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Review box sizing',
+    level: 'beginner',
+  },
+  {
+    q: 'Why does padding change an element size?',
+    a: 'Padding is part of the element box, so with content-box it adds to the declared width or height. With border-box it is included inside the declared size. The active box-sizing mode determines whether padding causes overflow.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Review the box model',
+    level: 'beginner',
+  },
+  {
+    q: 'When do vertical margins collapse?',
+    a: 'Vertical margins can collapse between block elements in normal flow, including parent and child edges under certain conditions. Padding, borders, flex, grid, and overflow contexts can stop collapse. Unexpected margin collapse often looks like spacing is being applied to the wrong element.',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why can width: 100% still overflow?',
+    a: 'With content-box, padding and border are added on top of the 100% content width. Fixed children, long words, minimum sizes, and scrollbar space can also push the box wider than its container. The fix depends on the exact source, not only changing overflow.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Debug box sizing',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why do flex and grid children refuse to shrink?',
+    a: 'Flex and grid items can have automatic minimum sizes based on their content. Long text, tables, images, and nowrap content can keep an item wider than its container. Setting min-width: 0 or min-height: 0 on the right child often lets the layout shrink correctly.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Fix shrink issues',
+    level: 'advanced',
+  },
+  {
+    q: 'When should overflow be hidden, auto, or visible?',
+    a: 'visible lets content escape the box, hidden clips it, and auto adds scrolling only when needed. hidden can be useful for masks, but it can hide focus outlines or important content. auto is safer when content must remain reachable.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should component sizing be constrained?',
+    a: 'Use min-width, max-width, width, aspect-ratio, and content-aware layout rules to define what a component can tolerate. A component should have a stable minimum usable size and a clear maximum reading width when needed. Without constraints, it may look fine in one viewport and break with real content.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice sizing constraints',
+    level: 'advanced',
+  },
+  {
+    q: 'How do scrollbars affect layout?',
+    a: 'Scrollbars can consume space, create nested scrolling, and change available width depending on platform and styling. Components with fixed widths can shift or overflow when scrollbars appear. Testing with real overflow content exposes issues that empty mock states hide.',
+    route: ['/css', 'trivia', 'css-units-em-rem-percent-px'],
+    cta: 'Review sizing units',
+    level: 'advanced',
+  },
+];
+
+const CSS_LAYOUT_QUESTIONS: CssFocusedQuestionItem[] = [
+  {
+    q: 'How does Flexbox alignment work?',
+    a: 'Flexbox uses a main axis and a cross axis. justify-content distributes along the main axis, while align-items and align-content control the cross axis. Direction and wrapping change which axis each property affects.',
+    route: ['/css', 'trivia', 'css-display-flex'],
+    cta: 'Review Flexbox',
+    level: 'beginner',
+  },
+  {
+    q: 'How do CSS Grid tracks work?',
+    a: 'Grid tracks are rows and columns defined with fixed, flexible, minmax, auto, or named sizes. The browser places items into grid cells and can create implicit tracks when items exceed the explicit grid. Track sizing bugs usually come from confusing available space with content minimums.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Review Grid',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you build a wrapping nav with CSS?',
+    a: 'Use Flexbox when the nav is a row of items that can align, distribute, and wrap. Preserve readable labels and visible focus states as items move to another line or into a disclosure pattern. Hiding links without an alternate path creates a navigation failure.',
+    route: ['/css', 'coding', 'css-flexbox-navbar'],
+    cta: 'Build a Flexbox nav',
+    level: 'intermediate',
+  },
+  {
+    q: 'What determines an absolutely positioned element containing block?',
+    a: 'An absolutely positioned element uses the nearest positioned ancestor or another containing-block-creating ancestor for offsets. If none exists, it may position relative to the initial containing block. Unexpected absolute positioning usually means the intended parent was not actually the containing block.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Review positioning',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why does position: sticky fail?',
+    a: 'Sticky positioning depends on a scroll container, an inset value, and enough room inside the parent to move. Overflow on an ancestor can create a different scroll container than expected. Debug sticky by checking ancestor overflow and the element offset before changing z-index.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Debug sticky positioning',
+    level: 'advanced',
+  },
+  {
+    q: 'How should overlays handle stacking contexts?',
+    a: 'Overlays should be placed in a predictable layer with clear stacking context ownership. A transformed or opaque parent can trap an overlay below other page regions. Moving the overlay to a root layer is often cleaner than increasing z-index values indefinitely.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Review stacking behavior',
+    level: 'advanced',
+  },
+  {
+    q: 'How does auto-fit with minmax() help responsive grids?',
+    a: 'auto-fit with minmax() lets the grid create as many columns as fit while preserving a usable minimum column width. It reduces breakpoint code for card galleries and dashboards. The minimum value should be chosen from content needs, not an arbitrary device width.',
+    route: ['/css', 'coding', 'css-grid-card-gallery'],
+    cta: 'Build a responsive grid',
+    level: 'intermediate',
+  },
+  {
+    q: 'When is float still relevant?',
+    a: 'Float is mostly legacy for page layout but still useful for text wrapping around media. Modern layout should use Flexbox or Grid for component and page structure. Legacy float bugs often involve clearing behavior and parents that collapse around floated children.',
+    level: 'intermediate',
+  },
+];
+
+const CSS_RESPONSIVE_QUESTIONS: CssFocusedQuestionItem[] = [
+  {
+    q: 'What does mobile-first CSS mean?',
+    a: 'Mobile-first CSS starts with the narrowest useful layout and adds rules as more space becomes available. It usually reduces overrides because the base styles already handle constrained screens. The component still needs to be tested with long text and zoom, not only a phone-width viewport.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media queries',
+    level: 'beginner',
+  },
+  {
+    q: 'How do container queries differ from media queries?',
+    a: 'Media queries react to viewport or environment conditions, while container queries react to a component container. Container queries make reusable components adapt based on placement. They work best when component boundaries and container names are intentional.',
+    level: 'advanced',
+  },
+  {
+    q: 'How does clamp() help fluid CSS?',
+    a: 'clamp() sets a minimum, preferred, and maximum value in one expression. It is useful for fluid typography, spacing, and widths that should scale but stay bounded. Without reasonable min and max values, fluid sizing can become too small or too large.',
+    route: ['/css', 'coding', 'css-fluid-clamp'],
+    cta: 'Practice fluid sizing',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should responsive cards be designed?',
+    a: 'Cards should keep stable media ratios, readable text, predictable action placement, and enough space for long titles. Grid with minmax() can adapt columns without many breakpoints. Test missing images and long content because they expose fragile card layouts.',
+    route: ['/css', 'coding', 'css-grid-card-gallery'],
+    cta: 'Build card grids',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should navigation adapt at small widths?',
+    a: 'Navigation should preserve reachable links, visible focus, and clear current-state cues. Wrapping, scrolling, disclosure menus, or priority links can work depending on item count. Simply hiding links for small screens removes navigation rather than making it responsive.',
+    route: ['/css', 'coding', 'css-flexbox-navbar'],
+    cta: 'Build a responsive nav',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you handle long words, URLs, and untrusted text?',
+    a: 'Long content can break cards, tables, buttons, and grids. Use overflow-wrap, min-width: 0, max-width constraints, and intentional truncation rules. Truncated important content should have another way to be read.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Fix responsive overflow',
+    level: 'advanced',
+  },
+  {
+    q: 'How should reduced motion be handled in CSS?',
+    a: 'Use prefers-reduced-motion to simplify or remove nonessential motion for users who request it. State changes should still be understandable without animation. Reduced motion is not only an accessibility detail; it also prevents motion-heavy UI from delaying important feedback.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media features',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do CSS variables support themes?',
+    a: 'CSS variables let themes change tokens such as color, spacing, radius, and shadows through the cascade. They can be scoped globally, per component, or by state such as dark mode. The fallback and inheritance path should be clear so components do not receive accidental theme values.',
+    route: ['/css', 'coding', 'css-theme-variables-dark-mode'],
+    cta: 'Build theme variables',
+    level: 'intermediate',
+  },
+];
+
+const CSS_DEBUGGING_PERFORMANCE_QUESTIONS: CssScenarioQuestionItem[] = [
+  {
+    q: 'How do you debug missing CSS styles?',
+    a: 'Check whether the stylesheet loaded, whether the selector matches the live DOM, whether the declaration is valid, and whether another rule wins. DevTools computed styles show both winning and overridden declarations. Reading the stylesheet alone is slower because the element state may differ at runtime.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade debugging',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you debug a specificity conflict?',
+    a: 'Inspect the losing declaration and compare layer, importance, specificity, and source order against the winner. Lowering the winning selector or using a planned layer is often better than adding a stronger selector. Specificity escalation makes the next change harder.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug a z-index problem?',
+    a: 'Find the stacking contexts first, then compare z-index values inside the relevant context. Transforms, opacity, filters, isolation, and positioned ancestors can change the layer model. A huge z-index cannot escape a lower parent stacking context.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Debug z-index',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you debug horizontal scroll?',
+    a: 'Identify the element wider than the viewport, then inspect fixed widths, min-width defaults, grid tracks, absolute positioning, and long unwrapped content. Temporarily outlining elements can reveal the offender quickly. The durable fix should remove the bad constraint instead of hiding the page overflow.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice overflow fixes',
+    level: 'advanced',
+  },
+  {
+    q: 'What causes layout thrashing?',
+    a: 'Layout thrashing happens when code repeatedly writes styles and then reads layout values that force the browser to recalculate geometry. CSS-heavy UI can suffer when animations or scripts keep changing layout properties. Batch reads and writes, and avoid animating properties that trigger layout when possible.',
+    level: 'advanced',
+  },
+  {
+    q: 'When does hardware acceleration help CSS?',
+    a: 'Hardware acceleration can help when animations are moved to composited layers, often with transform or opacity. It does not fix expensive layout, paint, or JavaScript work by itself. Too many promoted layers can increase memory use and make performance worse.',
+    route: ['/css', 'trivia', 'css-hardware-acceleration'],
+    cta: 'Review acceleration',
+    level: 'advanced',
+  },
+  {
+    q: 'What makes CSS maintainable?',
+    a: 'Maintainable CSS has predictable selectors, controlled cascade layers, reusable tokens, explicit states, and limited global leakage. Components should expose styling hooks intentionally instead of depending on deep DOM selectors. CSS becomes fragile when every change requires a more specific override.',
+    route: ['/css', 'trivia', 'css-custom-properties'],
+    cta: 'Review CSS tokens',
+    level: 'advanced',
+  },
+  {
+    q: 'What are common CSS debugging mistakes?',
+    a: 'Common mistakes include guessing before inspecting computed styles, hiding overflow without finding the source, increasing z-index blindly, and fixing specificity by nesting more selectors. Another failure is testing only one viewport with short placeholder text. CSS debugging should isolate the constraint, verify the winning rule, and test realistic content.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive debugging',
+    level: 'intermediate',
+  },
+];
+
 const HTML_TOPIC_CARDS: HtmlTopicCard[] = [
   {
     title: 'HTML role in web development',
@@ -4025,6 +4610,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   scrollToHtmlCssSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  scrollToCssSection(targetId: string): void {
     this.scrollToSection(targetId);
   }
 
@@ -4355,6 +4944,61 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
   }
 
+  cssEditorialSignal(): CssEditorialSignal {
+    return CSS_EDITORIAL_SIGNAL;
+  }
+
+  cssAnchorItems(): CssAnchorItem[] {
+    return CSS_ANCHOR_ITEMS;
+  }
+
+  cssKeywordClusters(): CssKeywordClusterItem[] {
+    return CSS_KEYWORD_CLUSTERS;
+  }
+
+  cssShortAnswers(): CssShortAnswerItem[] {
+    return CSS_SHORT_ANSWERS;
+  }
+
+  cssAudienceTracks(): CssAudienceTrack[] {
+    return CSS_AUDIENCE_TRACKS;
+  }
+
+  cssCascadeQuestions(): CssFocusedQuestionItem[] {
+    return CSS_CASCADE_QUESTIONS;
+  }
+
+  cssBoxModelQuestions(): CssFocusedQuestionItem[] {
+    return CSS_BOX_MODEL_QUESTIONS;
+  }
+
+  cssLayoutQuestions(): CssFocusedQuestionItem[] {
+    return CSS_LAYOUT_QUESTIONS;
+  }
+
+  cssResponsiveQuestions(): CssFocusedQuestionItem[] {
+    return CSS_RESPONSIVE_QUESTIONS;
+  }
+
+  cssDebuggingPerformanceQuestions(): CssScenarioQuestionItem[] {
+    return CSS_DEBUGGING_PERFORMANCE_QUESTIONS;
+  }
+
+  cssShortAnswerCategoryLabel(category: CssShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'cascade-selectors':
+        return 'Cascade + selectors';
+      case 'layout':
+        return 'Layout';
+      case 'responsive':
+        return 'Responsive';
+      default:
+        return 'Debugging + performance';
+    }
+  }
+
   prepRoadmapTitle(): string {
     return this.isMasterHub()
       ? 'Recommended frontend interview preparation'
@@ -4587,6 +5231,12 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return !this.isMasterHub()
       && this.config.techs.length === 1
       && this.config.techs[0] === 'vue';
+  }
+
+  isCssHub(): boolean {
+    return !this.isMasterHub()
+      && this.config.techs.length === 1
+      && this.config.techs[0] === 'css';
   }
 
   techLabel(tech: Tech): string {
@@ -5077,6 +5727,45 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
     }
 
+    if (this.isCssHub()) {
+      collectionPage['dateModified'] = CSS_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: CSS_EDITORIAL_SIGNAL.reviewer,
+      };
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'CSS interview questions and answers' },
+        { '@type': 'Thing', name: 'CSS interview questions for beginners' },
+        { '@type': 'Thing', name: 'CSS interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'CSS selectors interview questions' },
+        { '@type': 'Thing', name: 'CSS specificity interview questions' },
+        { '@type': 'Thing', name: 'CSS cascade interview questions' },
+        { '@type': 'Thing', name: 'CSS box model interview questions' },
+        { '@type': 'Thing', name: 'CSS Flexbox interview questions' },
+        { '@type': 'Thing', name: 'CSS Grid interview questions' },
+        { '@type': 'Thing', name: 'CSS Flexbox vs Grid interview questions' },
+        { '@type': 'Thing', name: 'CSS positioning interview questions' },
+        { '@type': 'Thing', name: 'CSS z-index interview questions' },
+        { '@type': 'Thing', name: 'CSS media queries interview questions' },
+        { '@type': 'Thing', name: 'responsive CSS interview questions' },
+        { '@type': 'Thing', name: 'CSS layout interview questions' },
+        { '@type': 'Thing', name: 'CSS debugging interview questions' },
+        { '@type': 'Thing', name: 'CSS performance interview questions' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'CSS cascade and specificity' },
+        { '@type': 'Thing', name: 'CSS selectors and inheritance' },
+        { '@type': 'Thing', name: 'CSS box sizing and overflow' },
+        { '@type': 'Thing', name: 'CSS Flexbox and Grid layout' },
+        { '@type': 'Thing', name: 'CSS stacking contexts and z-index' },
+        { '@type': 'Thing', name: 'CSS custom properties and design tokens' },
+        { '@type': 'Thing', name: 'CSS responsive layout debugging' },
+        { '@type': 'Thing', name: 'CSS performance and hardware acceleration' },
+      ];
+    }
+
     if (this.isHtmlHub()) {
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -5122,6 +5811,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
     if (this.isHtmlCssHub()) {
       jsonLd.push(this.htmlCssShortAnswersFaqPage(canonicalUrl));
+    }
+    if (this.isCssHub()) {
+      jsonLd.push(this.cssShortAnswersFaqPage(canonicalUrl));
     }
 
     this.seo.updateTags({
@@ -5206,6 +5898,23 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       url: canonicalUrl,
       name: 'Top HTML and CSS interview questions and short answers, beginner to advanced',
       mainEntity: this.htmlCssShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private cssShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#css-short-answers`,
+      url: canonicalUrl,
+      name: 'Top CSS interview questions and short answers, beginner to advanced',
+      mainEntity: this.cssShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: {

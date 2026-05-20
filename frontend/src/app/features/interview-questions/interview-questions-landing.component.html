@@ -48,6 +48,15 @@
       <span>{{ htmlCssEditorialSignal().reviewer }}</span>
       <span>{{ htmlCssEditorialSignal().coverage }}</span>
     </div>
+    <div
+      *ngIf="isCssHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ cssEditorialSignal().reviewedLabel }}</span>
+      <span>{{ cssEditorialSignal().reviewer }}</span>
+      <span>{{ cssEditorialSignal().coverage }}</span>
+    </div>
   </header>
 
   <section
@@ -1155,12 +1164,259 @@
     </div>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : null">
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-css-toc"
+    aria-label="CSS interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-css-toc__links">
+      <button
+        *ngFor="let item of cssAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToCssSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-clusters"
+    aria-labelledby="iq-css-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-clusters-title">
+        Popular CSS interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Jump to the CSS areas that decide frontend UI rounds: cascade, specificity, box model, layout systems, responsive behavior, debugging, and performance.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of cssKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToCssSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-short-answers"
+    aria-labelledby="iq-css-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Short answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-short-answers-title">
+        Top CSS interview questions and short answers, beginner to advanced
+      </h2>
+      <p class="fa-meta-text">
+        Review CSS as its own interview surface: cascade rules, selector strategy, layout mechanics, responsive constraints, visual debugging, performance, and maintainable styling.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of cssShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ cssShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ questionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-audience"
+    aria-labelledby="iq-css-audience-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Beginner to experienced</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-audience-title">
+        CSS interview questions for beginners and experienced frontend developers
+      </h2>
+      <p class="fa-meta-text">
+        Use the level chips to separate baseline CSS mechanics from production layout debugging, cascade strategy, and maintainability trade-offs.
+      </p>
+    </div>
+
+    <div class="iq-audience-grid">
+      <article class="iq-audience-card" *ngFor="let item of cssAudienceTracks()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-cascade"
+    aria-labelledby="iq-css-cascade-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Cascade + specificity</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-cascade-title">
+        CSS cascade and specificity interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover how CSS resolves conflicts: cascade order, layers, specificity, inheritance, pseudo selectors, !important, and selector strategy.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssCascadeQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-box-model"
+    aria-labelledby="iq-css-box-model-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Box model + overflow</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-box-model-title">
+        CSS box model, sizing, and overflow interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review the sizing mechanics behind most CSS layout bugs: box-sizing, padding, margins, shrinking, overflow, constraints, and scrollbars.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssBoxModelQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-layout"
+    aria-labelledby="iq-css-layout-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Layout systems</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-layout-title">
+        CSS Flexbox, Grid, and positioning interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice layout decisions around one-dimensional flow, two-dimensional tracks, wrapping, containing blocks, sticky behavior, overlays, and legacy float behavior.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssLayoutQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-responsive"
+    aria-labelledby="iq-css-responsive-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Responsive CSS</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-responsive-title">
+        Responsive CSS and media queries interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover mobile-first CSS, container queries, clamp(), responsive cards, adaptive navigation, long content, reduced motion, and theme variables.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssResponsiveQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-debugging"
+    aria-labelledby="iq-css-debugging-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Debugging + performance</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-debugging-title">
+        CSS debugging, performance, and maintainability interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review how to debug missing styles, specificity conflicts, z-index, overflow, layout thrashing, compositing, tokens, and common CSS mistakes.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssDebuggingPerformanceQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : isCssHub() ? 'iq-css-coding-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : isCssHub() ? 'iq-css-coding-preview-title' : null"
         >
           {{ codingSectionTitle() }}
         </h2>
@@ -1207,12 +1463,12 @@
     </ng-container>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : null">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : isCssHub() ? 'iq-css-concept-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : isCssHub() ? 'iq-css-concept-preview-title' : null"
         >
           {{ triviaSectionTitle() }}
         </h2>

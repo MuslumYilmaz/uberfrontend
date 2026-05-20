@@ -1286,7 +1286,7 @@ export const routes: Routes = [
       seo: {
         title: 'CSS Interview Questions and Answers',
         description:
-          'Practice CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, flexbox, grid, cascade, and layout. Use each CSS interview question to rehearse practical trade-offs.',
+          'CSS interview questions and answers, beginner to advanced and for experienced developers, with specificity, cascade, box model, Flexbox, CSS Grid, Flexbox vs Grid, positioning, z-index, media queries, responsive CSS, debugging, and performance.',
       },
     },
   },
