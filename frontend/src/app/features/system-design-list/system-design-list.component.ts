@@ -2,33 +2,49 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, startWith, takeUntil } from 'rxjs/operators';
-import { QuestionService } from '../../core/services/question.service';
-import { isQuestionLockedForTier } from '../../core/models/question.model';
+import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
+import { distinctUntilChanged, map, shareReplay, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
+import { isQuestionLockedForTier } from '../../core/models/question.model';
 import { SeoMeta, SeoService } from '../../core/services/seo.service';
+import { QuestionService } from '../../core/services/question.service';
+import {
+  SystemDesignListItem,
+  SystemDesignListResolved,
+} from '../../core/resolvers/question-list.resolver';
 
-type SysDesign = {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  type: 'system-design';
-  access?: 'free' | 'premium';
+type FormatCategory = 'application' | 'component' | 'realtime' | 'ai-product';
+
+type SystemDesignViewItem = SystemDesignListItem & {
+  access: 'free' | 'premium';
+  difficulty: string;
+  formatCategory: FormatCategory;
+  formatLabel: string;
+  formatDetail: string;
+  answerFocus: string[];
+  summary: string;
+  guideRoute: string[];
+  guideLabel: string;
+};
+
+type SystemDesignStats = {
+  total: number;
+  free: number;
+  premium: number;
+  formatCount: number;
 };
 
 @Component({
   standalone: true,
   selector: 'app-system-design-list',
   imports: [
-    CommonModule, RouterModule, FormsModule,
-    InputTextModule, MultiSelectModule, ProgressSpinnerModule, ChipModule, ButtonModule,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    InputTextModule,
+    MultiSelectModule,
   ],
   templateUrl: './system-design-list.component.html',
   styleUrls: ['./system-design-list.component.css']
@@ -37,31 +53,94 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   searchTerm = '';
   search$ = new BehaviorSubject<string>('');
   tags$ = new BehaviorSubject<string[]>([]);
+
+  readonly testedAreas = [
+    {
+      title: 'Requirements',
+      detail: 'Clarify users, success metrics, latency, device constraints, and edge cases before drawing UI boxes.',
+    },
+    {
+      title: 'Architecture',
+      detail: 'Split client state, server data, rendering paths, routing, and ownership boundaries into defendable pieces.',
+    },
+    {
+      title: 'Data model',
+      detail: 'Define the entities, cache keys, pagination windows, optimistic updates, and stale-data behavior.',
+    },
+    {
+      title: 'Interface',
+      detail: 'Explain component contracts, accessibility states, loading/error UX, and interaction affordances.',
+    },
+    {
+      title: 'Optimizations',
+      detail: 'Choose tradeoffs for performance, virtualization, streaming, resilience, monitoring, and graceful degradation.',
+    },
+  ];
+
+  readonly formatGroups = [
+    {
+      category: 'application' as FormatCategory,
+      title: 'Application architecture',
+      detail: 'Dashboards, feeds, preferences, multi-step flows, and feature slices where ownership and data flow matter.',
+    },
+    {
+      category: 'component' as FormatCategory,
+      title: 'UI component systems',
+      detail: 'Design systems, forms, uploaders, toasts, drag/drop, accessibility states, and reusable contracts.',
+    },
+    {
+      category: 'realtime' as FormatCategory,
+      title: 'Realtime and data-heavy UI',
+      detail: 'Notifications, live comments, charts, streams, infinite scroll, caching, and high-frequency updates.',
+    },
+    {
+      category: 'ai-product' as FormatCategory,
+      title: 'AI product workflows',
+      detail: 'Streaming chat, image generation, model-progress dashboards, resilience, cancellation, and user control.',
+    },
+  ];
+
+  readonly radioSteps = [
+    {
+      label: 'R',
+      title: 'Requirements',
+      route: ['/', 'guides', 'system-design-blueprint', 'radio-requirements'],
+    },
+    {
+      label: 'A',
+      title: 'Architecture',
+      route: ['/', 'guides', 'system-design-blueprint', 'architecture'],
+    },
+    {
+      label: 'D',
+      title: 'Data model',
+      route: ['/', 'guides', 'system-design-blueprint', 'state-data'],
+    },
+    {
+      label: 'I',
+      title: 'Interface',
+      route: ['/', 'guides', 'system-design-blueprint', 'ux'],
+    },
+    {
+      label: 'O',
+      title: 'Optimizations',
+      route: ['/', 'guides', 'system-design-blueprint', 'performance'],
+    },
+  ];
+
+  readonly premiumSignals = [
+    'Full RADIO breakdowns for premium prompts',
+    'Tradeoff framing for state, APIs, caching, rendering, and performance',
+    'Preview pages stay indexable while full solutions stay protected',
+  ];
+
+  readonly rawQuestions$: Observable<SystemDesignViewItem[] | null>;
+  readonly filtered$: Observable<SystemDesignViewItem[]>;
+  readonly tagOptions$: Observable<Array<{ label: string; value: string }>>;
+  readonly stats$: Observable<SystemDesignStats>;
+
   private readonly destroy$ = new Subject<void>();
   private readonly maxItemListItems = 50;
-
-  rawQuestions$ = this.qs.loadSystemDesign({ transferState: false }).pipe(
-    startWith<SysDesign[] | null>(null),
-    shareReplay(1),
-  );
-
-  tagOptions$ = this.rawQuestions$.pipe(
-    map(qs => Array.from(new Set((qs ?? []).flatMap(q => q.tags))).sort()),
-    map(tags => tags.map(t => ({ label: t, value: t })))
-  );
-
-  filtered$ = combineLatest([this.rawQuestions$, this.search$, this.tags$]).pipe(
-    map(([questions, term, pickedTags]) => {
-      const q = term.trim().toLowerCase();
-      const hasTags = (arr: string[]) => pickedTags.length === 0 || pickedTags.every(t => arr.includes(t));
-      return (questions ?? [])
-        .filter(x =>
-          (x.title.toLowerCase().includes(q) || x.tags.some(t => t.toLowerCase().includes(q))) &&
-          hasTags(x.tags)
-        )
-        .sort((a, b) => a.title.localeCompare(b.title));
-    })
-  );
 
   constructor(
     public qs: QuestionService,
@@ -69,7 +148,30 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     private seo: SeoService,
     private route: ActivatedRoute,
     private router: Router,
-  ) { }
+  ) {
+    this.rawQuestions$ = this.route.data.pipe(
+      map((data) => (data['systemDesignList'] as SystemDesignListResolved | undefined)?.items ?? []),
+      switchMap((resolvedItems) =>
+        resolvedItems.length ? of(resolvedItems) : this.qs.loadSystemDesign(),
+      ),
+      map((items) => this.toViewItems(items)),
+      startWith(null),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+
+    this.tagOptions$ = this.rawQuestions$.pipe(
+      map((questions) => Array.from(new Set((questions ?? []).flatMap((q) => q.tags))).sort()),
+      map((tags) => tags.map((tag) => ({ label: tag, value: tag }))),
+    );
+
+    this.filtered$ = combineLatest([this.rawQuestions$, this.search$, this.tags$]).pipe(
+      map(([questions, term, pickedTags]) => this.filterQuestions(questions ?? [], term, pickedTags)),
+    );
+
+    this.stats$ = this.rawQuestions$.pipe(
+      map((questions) => this.buildStats(questions ?? [])),
+    );
+  }
 
   ngOnInit(): void {
     this.initListSeo();
@@ -80,17 +182,152 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  trackById = (_: number, q: SysDesign) => q.id;
+  trackById = (_: number, q: SystemDesignViewItem) => q.id;
 
-  isLocked(q: SysDesign): boolean {
+  isLocked(q: SystemDesignViewItem): boolean {
     const user = this.auth.user();
-    const access = q.access ?? 'free';
-    return isQuestionLockedForTier({ access } as any, user);
+    return isQuestionLockedForTier({ access: q.access } as any, user);
   }
 
-  handleRowClick(ev: Event, q: SysDesign) {
-    if (!this.isLocked(q)) return;
-    // Allow navigation to detail so SSR can render the premium preview.
+  private toViewItems(items: unknown): SystemDesignViewItem[] {
+    return (Array.isArray(items) ? items : [])
+      .map((item) => this.toViewItem(item as Partial<SystemDesignListItem>))
+      .filter((item): item is SystemDesignViewItem => Boolean(item));
+  }
+
+  private toViewItem(item: Partial<SystemDesignListItem>): SystemDesignViewItem | null {
+    const id = String(item?.id || '').trim();
+    const title = String(item?.title || id).trim();
+    if (!id || !title) return null;
+
+    const tags = Array.isArray(item.tags) ? item.tags.map((tag) => String(tag)) : [];
+    const formatCategory = this.deriveFormatCategory(id, title, tags);
+    const format = this.formatGroups.find((group) => group.category === formatCategory) ?? this.formatGroups[0];
+    const answerFocus = this.deriveAnswerFocus(tags);
+
+    return {
+      id,
+      title,
+      description: String(item.description || '').trim(),
+      tags,
+      type: 'system-design',
+      access: item.access === 'premium' ? 'premium' : 'free',
+      difficulty: String(item.difficulty || 'intermediate'),
+      companies: Array.isArray(item.companies) ? item.companies : [],
+      updatedAt: item.updatedAt,
+      formatCategory,
+      formatLabel: format.title,
+      formatDetail: format.detail,
+      answerFocus,
+      summary: this.toSummary(item.description),
+      ...this.guideFor(formatCategory, tags),
+    };
+  }
+
+  private filterQuestions(
+    questions: SystemDesignViewItem[],
+    term: string,
+    pickedTags: string[],
+  ): SystemDesignViewItem[] {
+    const query = term.trim().toLowerCase();
+    const selectedTags = pickedTags ?? [];
+
+    return questions.filter((item) => {
+      const matchesText = !query
+        || item.title.toLowerCase().includes(query)
+        || item.summary.toLowerCase().includes(query)
+        || item.formatLabel.toLowerCase().includes(query)
+        || item.answerFocus.some((focus) => focus.toLowerCase().includes(query))
+        || item.tags.some((tag) => tag.toLowerCase().includes(query));
+      const matchesTags = selectedTags.length === 0
+        || selectedTags.every((tag) => item.tags.includes(tag));
+      return matchesText && matchesTags;
+    });
+  }
+
+  private buildStats(questions: SystemDesignViewItem[]): SystemDesignStats {
+    return {
+      total: questions.length,
+      free: questions.filter((item) => item.access !== 'premium').length,
+      premium: questions.filter((item) => item.access === 'premium').length,
+      formatCount: new Set(questions.map((item) => item.formatCategory)).size,
+    };
+  }
+
+  private deriveFormatCategory(id: string, title: string, tags: string[]): FormatCategory {
+    const haystack = [id, title, ...tags].join(' ').toLowerCase();
+    if (/\b(ai|model|image-generation|image generation|chatgpt|chat)\b/.test(haystack)) {
+      return 'ai-product';
+    }
+    if (this.hasAny(haystack, ['real-time', 'realtime', 'streams', 'streaming', 'charts', 'notifications', 'feed', 'live'])) {
+      return 'realtime';
+    }
+    if (this.hasAny(haystack, ['component', 'design-system', 'theming', 'forms', 'upload', 'toast', 'validation', 'drag-drop', 'dashboard'])) {
+      return 'component';
+    }
+    return 'application';
+  }
+
+  private deriveAnswerFocus(tags: string[]): string[] {
+    const normalized = tags.map((tag) => tag.toLowerCase());
+    const focusMap: Array<{ label: string; tags: string[] }> = [
+      { label: 'State', tags: ['state-management', 'global-state', 'local-storage', 'storage'] },
+      { label: 'APIs', tags: ['api-calls', 'services'] },
+      { label: 'Performance', tags: ['performance', 'virtualization', 'lazy-loading', 'optimization'] },
+      { label: 'Accessibility', tags: ['accessibility', 'aria'] },
+      { label: 'Caching', tags: ['caching', 'cdn'] },
+      { label: 'Realtime', tags: ['real-time', 'streams', 'streaming', 'events'] },
+      { label: 'UX', tags: ['ux', 'loading-states', 'responsive-ui', 'error-handling'] },
+      { label: 'Validation', tags: ['validation', 'forms'] },
+    ];
+
+    const labels = focusMap
+      .filter((entry) => entry.tags.some((tag) => normalized.includes(tag)))
+      .map((entry) => entry.label);
+
+    return labels.length ? labels.slice(0, 4) : ['Architecture'];
+  }
+
+  private guideFor(
+    category: FormatCategory,
+    tags: string[],
+  ): Pick<SystemDesignViewItem, 'guideRoute' | 'guideLabel'> {
+    const normalized = tags.map((tag) => tag.toLowerCase());
+    if (category === 'realtime' || normalized.includes('performance') || normalized.includes('caching')) {
+      return {
+        guideRoute: ['/', 'guides', 'system-design-blueprint', 'performance'],
+        guideLabel: 'Review optimization tradeoffs',
+      };
+    }
+    if (category === 'component' || normalized.includes('ux') || normalized.includes('accessibility')) {
+      return {
+        guideRoute: ['/', 'guides', 'system-design-blueprint', 'ux'],
+        guideLabel: 'Review interface design',
+      };
+    }
+    if (category === 'ai-product' || normalized.includes('state-management') || normalized.includes('storage')) {
+      return {
+        guideRoute: ['/', 'guides', 'system-design-blueprint', 'state-data'],
+        guideLabel: 'Review data model design',
+      };
+    }
+    return {
+      guideRoute: ['/', 'guides', 'system-design-blueprint', 'architecture'],
+      guideLabel: 'Review architecture slices',
+    };
+  }
+
+  private toSummary(description: unknown): string {
+    const normalized = String(description || '').replace(/\s+/g, ' ').trim();
+    if (!normalized) return 'Practice the requirements, architecture, data model, interface, and optimization tradeoffs for this frontend system design prompt.';
+    const maxLength = 180;
+    return normalized.length > maxLength
+      ? `${normalized.slice(0, maxLength - 1).trimEnd()}…`
+      : normalized;
+  }
+
+  private hasAny(value: string, terms: string[]): boolean {
+    return terms.some((term) => value.includes(term));
   }
 
   private initListSeo(): void {
@@ -107,7 +344,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
       .subscribe(({ list }) => this.updateListSeo(list));
   }
 
-  private updateListSeo(list: SysDesign[]): void {
+  private updateListSeo(list: SystemDesignViewItem[]): void {
     const baseSeo = this.getRouteSeo();
     if (!baseSeo || this.isNoIndex(baseSeo) || list.length === 0) return;
 
@@ -118,7 +355,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     this.seo.updateTags({ ...baseSeo, canonical, jsonLd: itemList });
   }
 
-  private buildItemListSchema(list: SysDesign[]): Record<string, any> | null {
+  private buildItemListSchema(list: SystemDesignViewItem[]): Record<string, any> | null {
     const items = list
       .filter((q) => q?.id && q?.title)
       .slice(0, this.maxItemListItems)

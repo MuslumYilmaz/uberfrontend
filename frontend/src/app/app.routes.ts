@@ -23,7 +23,10 @@ import { incidentExistsGuard } from './core/guards/incident-exists.guard';
 import { tradeoffBattleExistsGuard } from './core/guards/tradeoff-battle-exists.guard';
 import { essentialQuestionsResolver } from './core/resolvers/essential-questions.resolver';
 import { interviewQuestionsHubResolver } from './core/resolvers/interview-questions.resolver';
-import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
+import {
+  globalCodingListResolver,
+  systemDesignListResolver,
+} from './core/resolvers/question-list.resolver';
 import { incidentDetailResolver, incidentListResolver, incidentSeoResolver } from './core/resolvers/incident.resolver';
 import {
   tradeoffBattleDetailResolver,
@@ -563,6 +566,9 @@ export const routes: Routes = [
           import('./features/system-design-list/system-design-list.component').then(
             (m) => m.SystemDesignListComponent,
           ),
+        resolve: {
+          systemDesignList: systemDesignListResolver,
+        },
         data: {
           seo: {
             title: 'Frontend System Design Interview Questions',

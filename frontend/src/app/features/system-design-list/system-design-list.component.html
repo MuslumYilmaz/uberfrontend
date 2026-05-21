@@ -1,87 +1,185 @@
-<div class="fa-page-shell sd-list-page">
-    <header class="fa-page-header">
-        <p class="fa-page-kicker">Architecture interview prep</p>
-        <h1 class="fa-page-title">Frontend System Design Interview Questions</h1>
-        <p class="fa-page-subtitle">Practice UI architecture, state, API contracts, performance, accessibility, and tradeoff scenarios with curated solution patterns.</p>
-    </header>
+<div class="fa-page-shell sd-list-page" data-testid="system-design-list-page">
+  <header class="fa-page-header sd-hero">
+    <p class="fa-page-kicker">Architecture interview prep</p>
+    <h1 class="fa-page-title">Frontend System Design Interview Questions</h1>
+    <p class="fa-page-subtitle">
+      Practice UI architecture, state, API contracts, performance, accessibility, and tradeoff scenarios with a bank that maps every prompt back to the RADIO answer framework.
+    </p>
 
-    <section class="sd-radio-cta fa-section-shell" aria-label="RADIO framework guide">
-        <div>
-            <div class="sd-radio-cta__eyebrow">Blueprint first</div>
-            <a
-                class="sd-radio-cta__link"
-                [routerLink]="['/guides/system-design-blueprint/radio-framework']">
-                Start with the RADIO framework for frontend system design interviews
-            </a>
-        </div>
-        <p class="sd-radio-cta__copy">
-            Use requirements, architecture, data model, interface, and optimizations before opening a problem prompt.
-        </p>
-    </section>
+    <div class="sd-hero__stats" *ngIf="stats$ | async as stats" aria-label="System design bank coverage">
+      <div class="sd-stat">
+        <strong>{{ stats.total }}</strong>
+        <span>frontend prompts</span>
+      </div>
+      <div class="sd-stat">
+        <strong>{{ stats.formatCount }}</strong>
+        <span>question formats</span>
+      </div>
+      <div class="sd-stat">
+        <strong>{{ stats.free }}</strong>
+        <span>free previews</span>
+      </div>
+      <div class="sd-stat">
+        <strong>{{ stats.premium }}</strong>
+        <span>premium breakdowns</span>
+      </div>
+    </div>
+  </header>
 
-    <div class="sd-filter-bar fa-section-shell">
-        <div class="sd-search-wrap">
-            <i class="pi pi-search sd-search-icon"></i>
-            <input pInputText type="text" placeholder="Search by title or tag…"
-                class="sd-search-input"
-                [(ngModel)]="searchTerm"
-                (ngModelChange)="search$.next($event)" [ngModelOptions]="{ standalone: true }" />
-        </div>
+  <section class="sd-radio-cta fa-section-shell" aria-label="RADIO framework guide">
+    <div>
+      <div class="sd-radio-cta__eyebrow">Blueprint first</div>
+      <a
+        class="sd-radio-cta__link"
+        [routerLink]="['/guides/system-design-blueprint/radio-framework']">
+        Start with the RADIO framework for frontend system design interviews
+      </a>
+    </div>
+    <p class="sd-radio-cta__copy">
+      RADIO gives each answer a sequence: requirements, architecture, data model, interface, and optimizations before you open a problem prompt.
+    </p>
+  </section>
 
-        <div class="sd-tag-filter-wrap">
-            <p-multiSelect class="tag-filter w-full" [options]="(tagOptions$ | async) ?? []" placeholder="Tags"
-                display="chip" panelStyleClass="dark-multiselect-panel rounded-lg" (onChange)="tags$.next($event.value)"
-                optionLabel="label" optionValue="value">
-            </p-multiSelect>
-        </div>
+  <section class="sd-section fa-section-shell" aria-labelledby="sd-tested-title" data-testid="system-design-tested-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">What gets tested</p>
+      <h2 id="sd-tested-title">Frontend system design is not backend diagramming</h2>
+      <p>
+        Strong answers explain how UI behavior, network data, component contracts, and performance constraints fit together under product pressure.
+      </p>
+    </div>
+    <div class="sd-info-grid sd-info-grid--five">
+      <article class="sd-info-card" *ngFor="let area of testedAreas">
+        <h3>{{ area.title }}</h3>
+        <p>{{ area.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="sd-section fa-section-shell" aria-labelledby="sd-formats-title" data-testid="system-design-formats-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">Question formats</p>
+      <h2 id="sd-formats-title">Practice the formats interviewers actually ask</h2>
+      <p>
+        The bank separates product-scale app architecture, component systems, realtime UI, and AI product workflows so practice does not become random prompt browsing.
+      </p>
+    </div>
+    <div class="sd-info-grid">
+      <article class="sd-info-card sd-format-card" *ngFor="let format of formatGroups" [attr.data-format]="format.category">
+        <span class="sd-format-card__badge">{{ format.title }}</span>
+        <p>{{ format.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="sd-section sd-radio-flow fa-section-shell" aria-labelledby="sd-radio-flow-title">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">How to answer</p>
+      <h2 id="sd-radio-flow-title">Use RADIO to turn each prompt into a structured answer</h2>
+      <p>
+        Read the framework once, then use the prompt cards below to drill one part of the answer at a time.
+      </p>
+    </div>
+    <div class="sd-radio-flow__steps">
+      <a *ngFor="let step of radioSteps" class="sd-radio-step" [routerLink]="step.route">
+        <span>{{ step.label }}</span>
+        <strong>{{ step.title }}</strong>
+      </a>
+    </div>
+  </section>
+
+  <section class="sd-section sd-premium-preview fa-section-shell" aria-labelledby="sd-premium-title">
+    <div>
+      <p class="sd-section__eyebrow">Premium preview</p>
+      <h2 id="sd-premium-title">Locked prompts still show the interview shape before upgrade</h2>
+      <p>
+        Free users can inspect the prompt, tags, format, and guide path. Premium unlocks the full RADIO breakdown and tradeoff framing for senior-level answers.
+      </p>
+    </div>
+    <ul class="sd-premium-preview__list">
+      <li *ngFor="let signal of premiumSignals">{{ signal }}</li>
+    </ul>
+  </section>
+
+  <section class="sd-filter-bar fa-section-shell" aria-label="System design prompt filters">
+    <div class="sd-search-wrap">
+      <i class="pi pi-search sd-search-icon"></i>
+      <input pInputText type="text" placeholder="Search by title, format, focus, or tag"
+        class="sd-search-input"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="search$.next($event)" [ngModelOptions]="{ standalone: true }" />
     </div>
 
-    <div class="sd-list-table fa-section-shell">
-        <div class="sd-table-head hidden md:grid grid-cols-12 gap-4">
-            <div class="col-span-8">Title</div>
-            <div class="col-span-3">Tags</div>
-            <div class="col-span-1 text-right">Action</div>
+    <div class="sd-tag-filter-wrap">
+      <p-multiSelect class="tag-filter w-full" [options]="(tagOptions$ | async) ?? []" placeholder="Tags"
+        display="chip" panelStyleClass="dark-multiselect-panel rounded-lg" (onChange)="tags$.next($event.value || [])"
+        optionLabel="label" optionValue="value">
+      </p-multiSelect>
+    </div>
+  </section>
+
+  <section class="sd-bank fa-section-shell" aria-labelledby="sd-bank-title" data-testid="system-design-bank">
+    <div class="sd-bank__head">
+      <div>
+        <p class="sd-section__eyebrow">Question bank</p>
+        <h2 id="sd-bank-title">Frontend system design prompt bank</h2>
+      </div>
+      <a class="sd-bank__guide-link" [routerLink]="['/guides/system-design-blueprint']">
+        Open the full blueprint
+      </a>
+    </div>
+
+    <ng-container *ngIf="(rawQuestions$ | async) === null; else loaded">
+      <div class="sd-loading" role="status" aria-live="polite" data-testid="system-design-list-loading">
+        Loading system design questions…
+      </div>
+    </ng-container>
+
+    <ng-template #loaded>
+      <ng-container *ngIf="filtered$ | async as questions">
+        <div *ngIf="questions.length === 0" class="fa-empty-state">
+          No prompts match your filters.
         </div>
 
-        <ng-container *ngIf="(rawQuestions$ | async) === null; else loaded">
-            <div class="sd-loading" role="status" aria-live="polite" data-testid="system-design-list-loading">
-                <p-progressSpinner></p-progressSpinner>
-                <div class="sd-loading-text">Loading system design questions…</div>
+        <div class="sd-prompt-grid">
+          <article
+            *ngFor="let q of questions; trackBy: trackById"
+            class="sd-prompt-card"
+            [class.is-locked]="isLocked(q)"
+            [attr.data-format]="q.formatCategory"
+            [attr.data-testid]="'system-design-prompt-card-' + q.id">
+            <div class="sd-prompt-card__topline">
+              <span class="sd-chip sd-chip--format" data-testid="system-design-format-chip">{{ q.formatLabel }}</span>
+              <span class="sd-chip sd-chip--difficulty" data-testid="system-design-difficulty-chip">{{ q.difficulty }}</span>
+              <span class="sd-chip" [class.sd-chip--premium]="q.access === 'premium'">{{ q.access === 'premium' ? 'Premium' : 'Free' }}</span>
             </div>
-        </ng-container>
 
-        <ng-template #loaded>
-            <ng-container *ngIf="filtered$ | async as questions">
-                <div *ngIf="questions.length === 0" class="fa-empty-state">
-                    No questions match your filters.
-                </div>
+            <h3>
+              <a [routerLink]="[q.id]" [attr.data-testid]="'system-design-card-link-' + q.id">
+                {{ q.title }}
+              </a>
+            </h3>
+            <p class="sd-prompt-card__summary">{{ q.summary }}</p>
 
-                <div *ngFor="let q of questions; trackBy: trackById"
-                    class="sd-row grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-start md:items-center relative"
-                    [class.is-locked]="isLocked(q)">
-                    <a [routerLink]="[q.id]" class="absolute inset-0 z-10"
-                        [attr.aria-disabled]="isLocked(q) ? true : null"
-                        (click)="handleRowClick($event, q)"></a>
+            <div class="sd-focus-row" aria-label="Answer focus">
+              <span *ngFor="let focus of q.answerFocus">{{ focus }}</span>
+            </div>
 
-                    <div class="md:col-span-8">
-                        <div class="sd-row-title">
-                            {{ q.title }}
-                            <span class="premium-pill" *ngIf="isLocked(q)">Premium</span>
-                        </div>
-                        <div class="sd-row-desc">{{ q.description | slice:0:120 }}...</div>
-                    </div>
+            <div class="sd-tag-row" aria-label="Prompt tags">
+              <span *ngFor="let tag of q.tags | slice:0:5">#{{ tag }}</span>
+            </div>
 
-                    <div class="md:col-span-3 flex flex-wrap gap-2">
-                        <p-chip *ngFor="let tag of q.tags" [label]="tag" styleClass="custom-chip"></p-chip>
-                    </div>
-
-                    <div class="hidden md:block md:col-span-1 text-right">
-                        <div class="sd-row-action">
-                            <span>→</span><span>Open</span>
-                        </div>
-                    </div>
-                </div>
-            </ng-container>
-        </ng-template>
-    </div>
+            <div class="sd-prompt-card__actions">
+              <a class="sd-prompt-card__primary" [routerLink]="[q.id]">
+                {{ isLocked(q) ? 'View prompt preview' : 'Open prompt' }}
+              </a>
+              <a class="sd-prompt-card__guide" [routerLink]="q.guideRoute">
+                {{ q.guideLabel }}
+              </a>
+            </div>
+          </article>
+        </div>
+      </ng-container>
+    </ng-template>
+  </section>
 </div>
