@@ -489,6 +489,17 @@ const CSS_DEBUGGING_PERFORMANCE_QUESTIONS = [
   'What are common CSS debugging mistakes?',
 ];
 
+function expectNoHtmlOnlyKeywordClusterCopy(text: string, root: HTMLElement): void {
+  expect(text).not.toContain('Popular HTML interview question clusters');
+  expect(text).not.toContain('Semantic HTML interview questions');
+  expect(text).not.toContain('HTML forms and validation interview questions');
+  expect(text).not.toContain('HTML accessibility and ARIA interview questions');
+  expect(text).not.toContain('HTML metadata, DOM, and browser parsing questions');
+  expect(text).not.toContain('Modern HTML5 and markup scenario questions');
+  expect(root.querySelector('.iq-html-toc')).toBeNull();
+  expect(root.querySelector('.iq-section--html-short-answers')).toBeNull();
+}
+
 describe('InterviewQuestionsLandingComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
   let analytics: jasmine.SpyObj<AnalyticsService>;
@@ -630,6 +641,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent || '';
+    expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
 
     expect(text).toContain('React Interview Questions and Answers');
     expect(text).toContain('Reviewed May 20, 2026');
@@ -1009,6 +1021,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent || '';
+    expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
 
     expect(text).toContain('JavaScript Interview Questions and Answers');
     expect(text).toContain('Reviewed May 19, 2026');
@@ -1509,6 +1522,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent || '';
+    expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
     const codingViewAll = fixture.nativeElement.querySelector('.iq-inline-link') as HTMLAnchorElement;
     const thirdItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]') as HTMLAnchorElement;
 
@@ -1696,6 +1710,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent || '';
+    expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
 
     expect(text).toContain('Vue.js Interview Questions and Answers');
     expect(text).toContain('Vue.js interview questions and Vue JS answers for Vue 3 rounds');
@@ -1938,7 +1953,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     };
     routeStub.snapshot.data.seo = {
       title: 'HTML Interview Questions and Answers',
-      description: 'HTML interview questions and answers, beginner to advanced, with semantic HTML, forms, accessibility, ARIA, metadata, HTML5, DOM, tables, images, srcset, iframes, Shadow DOM, and markup scenarios.',
+      description: 'HTML interview questions and answers, beginner to advanced, from beginners and freshers to experienced developers, covering semantic HTML, HTML5, forms, validation, accessibility, ARIA, DOM, metadata, srcset, iframes, Shadow DOM, and markup scenarios.',
     };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['html'],
@@ -1969,11 +1984,11 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('HTML interview questions for beginners and experienced frontend developers');
     expect(text).toContain('HTML interview questions for beginners');
     expect(text).toContain('HTML interview questions for experienced developers');
-    expect(text).toContain('Semantic HTML questions');
-    expect(text).toContain('HTML forms and validation questions');
-    expect(text).toContain('HTML accessibility and ARIA questions');
-    expect(text).toContain('HTML metadata and browser behavior');
-    expect(text).toContain('Modern HTML and markup scenarios');
+    expect(text).toContain('Semantic HTML interview questions');
+    expect(text).toContain('HTML forms and validation interview questions');
+    expect(text).toContain('HTML accessibility and ARIA interview questions');
+    expect(text).toContain('HTML metadata, DOM, and browser parsing questions');
+    expect(text).toContain('Modern HTML5 and markup scenario questions');
     expect(text).toContain('HTML semantics and document structure interview questions');
     expect(text).toContain('HTML forms, validation, and input accessibility interview questions');
     expect(text).toContain('HTML accessibility and ARIA interview questions');
@@ -1982,10 +1997,11 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('HTML interview topic map');
     expect(text).toContain('Common HTML coding mistakes');
     expect(text).toContain('Best resources for learning HTML');
-    expect(text).toContain('Are these HTML interview questions for beginners and experienced developers?');
-    expect(text).toContain('Does this page cover semantic HTML, forms, and accessibility?');
-    expect(text).toContain('Does this page include HTML metadata, DOM, and browser parsing questions?');
-    expect(text).toContain('Does this page cover modern HTML topics like dialog, srcset, iframes, and Shadow DOM?');
+    expect(text).toContain('Are these HTML interview questions for beginners, freshers, and experienced developers?');
+    expect(text).toContain('Does this page cover semantic HTML interview questions?');
+    expect(text).toContain('Does this page include HTML forms and validation interview questions?');
+    expect(text).toContain('Does this page cover HTML accessibility and ARIA interview questions?');
+    expect(text).toContain('Does this page include HTML5, DOM, metadata, iframe, srcset, and Shadow DOM questions?');
     expect(text).toContain('Where should I practice HTML coding interview questions?');
     expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
@@ -2148,13 +2164,22 @@ describe('InterviewQuestionsLandingComponent', () => {
       String(entry?.name || '').includes('HTML interview questions for beginners')
     )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML interview questions for freshers')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML interview questions for experienced developers')
     )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('semantic HTML interview questions')
     )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML semantic elements interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML forms interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML form validation interview questions')
     )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML accessibility interview questions')
@@ -2228,6 +2253,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent || '';
+    expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
 
     expect(text).toContain('CSS Interview Questions and Answers');
     expect(text).toContain('Reviewed May 20, 2026');
@@ -2485,6 +2511,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent || '';
+    expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
 
     expect(text).toContain('Angular Interview Questions and Answers');
     expect(text).toContain('Reviewed May 20, 2026');

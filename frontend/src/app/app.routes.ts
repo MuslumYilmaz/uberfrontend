@@ -1252,7 +1252,7 @@ export const routes: Routes = [
       seo: {
         title: 'HTML Interview Questions and Answers',
         description:
-          'HTML interview questions and answers, beginner to advanced, with semantic HTML, forms, accessibility, ARIA, metadata, HTML5, DOM, tables, images, srcset, iframes, Shadow DOM, and markup scenarios.',
+          'HTML interview questions and answers, beginner to advanced, from beginners and freshers to experienced developers, covering semantic HTML, HTML5, forms, validation, accessibility, ARIA, DOM, metadata, srcset, iframes, Shadow DOM, and markup scenarios.',
       },
     },
   },

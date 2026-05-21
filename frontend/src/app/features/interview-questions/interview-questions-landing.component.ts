@@ -675,20 +675,24 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   html: [
     {
-      q: 'Are these HTML interview questions for beginners and experienced developers?',
-      a: 'Yes. The page starts with beginner HTML fundamentals, then moves into experienced-developer topics such as accessibility trade-offs, browser parsing, Shadow DOM, native dialogs, iframes, responsive images, and markup scenarios.',
+      q: 'Are these HTML interview questions for beginners, freshers, and experienced developers?',
+      a: 'Yes. The page starts with beginner and fresher-friendly HTML fundamentals, then moves into experienced-developer topics such as accessibility trade-offs, browser parsing, Shadow DOM, native dialogs, iframes, responsive images, and markup scenarios.',
     },
     {
-      q: 'Does this page cover semantic HTML, forms, and accessibility?',
-      a: 'Yes. It covers document structure, landmarks, headings, forms, labels, validation, tables, alt text, keyboard checks, accessible names, ARIA roles, dialogs, and iframes.',
+      q: 'Does this page cover semantic HTML interview questions?',
+      a: 'Yes. It covers document structure, semantic elements, landmarks, headings, sections, articles, lists, navigation, language, and when generic div or span markup is not enough.',
     },
     {
-      q: 'Does this page include HTML metadata, DOM, and browser parsing questions?',
-      a: 'Yes. It covers the DOM, head metadata, title and meta tags, viewport behavior, responsive image markup, script loading, iframe constraints, and how invalid markup can change the live DOM.',
+      q: 'Does this page include HTML forms and validation interview questions?',
+      a: 'Yes. It covers labels, placeholders, input types, native validation attributes, form errors, grouped controls, form methods, real buttons, and server-side validation boundaries.',
     },
     {
-      q: 'Does this page cover modern HTML topics like dialog, srcset, iframes, and Shadow DOM?',
-      a: 'Yes. The modern scenarios section covers native dialog behavior, details, summary, popover, template, slot, Shadow DOM, srcset, iframes, invalid nesting, and native controls.',
+      q: 'Does this page cover HTML accessibility and ARIA interview questions?',
+      a: 'Yes. It covers accessible names, alt text, data tables, ARIA roles, native semantics, keyboard checks, iframe titles, dialog behavior, and quick accessibility testing.',
+    },
+    {
+      q: 'Does this page include HTML5, DOM, metadata, iframe, srcset, and Shadow DOM questions?',
+      a: 'Yes. It covers HTML5-era native behavior, the DOM, head metadata, title and meta tags, viewport behavior, responsive images with srcset, iframe constraints, Shadow DOM, and browser parsing.',
     },
     {
       q: 'Where should I practice HTML coding interview questions?',
@@ -4354,27 +4358,27 @@ const HTML_KEYWORD_CLUSTERS: HtmlKeywordClusterItem[] = [
     detail: 'Accessibility trade-offs, parsing behavior, Shadow DOM, native UI, and markup scenarios.',
   },
   {
-    label: 'Semantic HTML questions',
+    label: 'Semantic HTML interview questions',
     targetId: 'iq-html-semantics-title',
     detail: 'Landmarks, headings, sections, articles, lists, language, and document structure.',
   },
   {
-    label: 'HTML forms and validation questions',
+    label: 'HTML forms and validation interview questions',
     targetId: 'iq-html-forms-title',
     detail: 'Labels, placeholders, input types, validation attributes, errors, and grouped controls.',
   },
   {
-    label: 'HTML accessibility and ARIA questions',
+    label: 'HTML accessibility and ARIA interview questions',
     targetId: 'iq-html-accessibility-title',
     detail: 'Accessible names, alt text, tables, dialogs, keyboard behavior, iframes, and ARIA.',
   },
   {
-    label: 'HTML metadata and browser behavior',
+    label: 'HTML metadata, DOM, and browser parsing questions',
     targetId: 'iq-html-metadata-title',
     detail: 'Head metadata, title, meta tags, parsing, script loading, responsive images, and iframes.',
   },
   {
-    label: 'Modern HTML and markup scenarios',
+    label: 'Modern HTML5 and markup scenario questions',
     targetId: 'iq-html-modern-scenarios-title',
     detail: 'Dialog, details, popover, templates, Shadow DOM, invalid nesting, labels, and table markup.',
   },
@@ -6423,9 +6427,12 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'HTML interview questions and answers' },
         { '@type': 'Thing', name: 'HTML interview questions for beginners' },
+        { '@type': 'Thing', name: 'HTML interview questions for freshers' },
         { '@type': 'Thing', name: 'HTML interview questions for experienced developers' },
         { '@type': 'Thing', name: 'semantic HTML interview questions' },
+        { '@type': 'Thing', name: 'HTML semantic elements interview questions' },
         { '@type': 'Thing', name: 'HTML forms interview questions' },
+        { '@type': 'Thing', name: 'HTML form validation interview questions' },
         { '@type': 'Thing', name: 'HTML accessibility interview questions' },
         { '@type': 'Thing', name: 'ARIA interview questions' },
         { '@type': 'Thing', name: 'HTML metadata interview questions' },
