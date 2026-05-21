@@ -1069,7 +1069,7 @@ export const routes: Routes = [
       seo: {
         title: 'FrontendAtlas Essential 60 Interview Questions',
         description:
-          'A curated shortlist of the most important frontend interview questions across JavaScript functions, UI coding, system design, and core concepts.',
+          'A ranked shortlist of must-know frontend interview questions in FrontendAtlas Essential 60, covering JavaScript utilities, UI coding, system design, frontend concepts, and a compact practice path.',
       },
     },
   },
@@ -1092,7 +1092,7 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend Interview Questions and Answers',
         description:
-          'Practice frontend interview questions and answers with coding prompts, concept questions, explanations, follow-ups, common mistakes, and framework hubs.',
+          'Frontend interview questions and answers for front end developers, beginner to advanced, with Essential 60, UI coding, machine coding, JavaScript, HTML, CSS, React, Angular, Vue, debugging, testing, accessibility, performance, and frontend system design.',
       },
     },
   },

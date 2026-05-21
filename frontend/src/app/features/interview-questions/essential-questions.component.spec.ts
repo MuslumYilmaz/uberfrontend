@@ -145,7 +145,8 @@ describe('EssentialQuestionsComponent', () => {
                 },
                 seo: {
                   title: 'FrontendAtlas Essential 60 Interview Questions',
-                  description: 'Curated shortlist.',
+                  description:
+                    'A ranked shortlist of must-know frontend interview questions in FrontendAtlas Essential 60, covering JavaScript utilities, UI coding, system design, frontend concepts, and a compact practice path.',
                 },
               },
             },
@@ -183,6 +184,26 @@ describe('EssentialQuestionsComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     expect(host.querySelectorAll('[data-testid^="essential-row-"]').length).toBe(3);
     expect(host.textContent || '').toContain('FrontendAtlas Essential 60');
+    expect(host.textContent || '').toContain('Reviewed May 21, 2026');
+    expect(host.textContent || '').toContain('60 ranked frontend interview prompts');
+    expect(host.textContent || '').toContain('compact ranked practice list');
+    expect(host.textContent || '').toContain('Why these 60?');
+    expect(host.textContent || '').toContain('How to use Essential 60');
+    expect(host.textContent || '').toContain('Coverage benchmark');
+    expect(host.textContent || '').toContain('7-day refresh');
+    expect(host.textContent || '').toContain('14-day practice loop');
+    expect(host.textContent || '').toContain('30-day baseline');
+    expect(host.textContent || '').toContain('reference surfaces checked');
+    expect(host.textContent || '').toContain('Essential 60 FAQ');
+    expect((host.textContent || '').indexOf('Why these 60?')).toBeLessThan(
+      (host.textContent || '').indexOf('Sections'),
+    );
+    expect((host.textContent || '').indexOf('How to use Essential 60')).toBeLessThan(
+      (host.textContent || '').indexOf('Sections'),
+    );
+    expect((host.textContent || '').indexOf('Coverage benchmark')).toBeLessThan(
+      (host.textContent || '').indexOf('Sections'),
+    );
     const freeRow = host.querySelector('[data-testid="essential-row-js-debounce"]') as HTMLElement;
     expect(freeRow?.textContent || '').toContain('Debounce Function');
     expect(host.querySelector('[title="Solved"]')).not.toBeNull();
@@ -207,6 +228,65 @@ describe('EssentialQuestionsComponent', () => {
     expect(companySignal?.querySelector('[data-testid="company-signal-overflow"]')?.textContent?.trim()).toBe('+1');
     expect(host.textContent || '').not.toContain('Benchmark topics');
     expect(host.textContent || '').not.toContain('GFE 75');
+  });
+
+  it('emits Essential 60 CollectionPage, ItemList, and FAQPage schema', async () => {
+    const fixture = TestBed.createComponent(EssentialQuestionsComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const seo = TestBed.inject(SeoService) as jasmine.SpyObj<SeoService>;
+    const payload = seo.updateTags.calls.mostRecent().args[0] as {
+      description: string;
+      jsonLd: Array<Record<string, unknown>>;
+    };
+    const collectionPage = payload.jsonLd.find((entry) => entry['@type'] === 'CollectionPage') as {
+      dateModified: string;
+      reviewedBy: { name: string };
+      about: Array<{ name: string }>;
+      mentions: Array<{ name: string }>;
+      mainEntity: { '@type': string };
+    };
+    const itemList = payload.jsonLd.find((entry) => entry['@type'] === 'ItemList') as {
+      itemListElement: unknown[];
+    };
+    const faqPage = payload.jsonLd.find((entry) => entry['@type'] === 'FAQPage') as {
+      mainEntity: Array<{ name: string; acceptedAnswer: { text: string } }>;
+    };
+
+    expect(payload.description).toContain('ranked shortlist');
+    expect(payload.description).toContain('must-know frontend interview questions');
+    expect(collectionPage.dateModified).toBe('2026-04-23T00:00:00.000Z');
+    expect(collectionPage.reviewedBy.name).toBe('FrontendAtlas Editor');
+    expect(collectionPage.mainEntity['@type']).toBe('ItemList');
+    expect(itemList.itemListElement.length).toBe(3);
+    expect(collectionPage.about.map((entity) => entity.name)).toEqual(jasmine.arrayContaining([
+      'FrontendAtlas Essential 60',
+      'must-know frontend interview questions',
+      'ranked frontend interview questions',
+      'frontend interview practice shortlist',
+      'JavaScript utility interview questions',
+      'UI coding interview questions',
+      'frontend machine coding questions',
+      'frontend system design interview questions',
+      'frontend concept questions',
+      'frontend interview questions with progress tracking',
+    ]));
+    expect(collectionPage.mentions.map((entity) => entity.name)).toEqual(jasmine.arrayContaining([
+      'practice routes',
+      'importance score',
+      'framework variants',
+    ]));
+    expect(faqPage.mainEntity.length).toBe(5);
+    expect(faqPage.mainEntity.map((entry) => entry.name)).toEqual(jasmine.arrayContaining([
+      'What is FrontendAtlas Essential 60?',
+      'How were the Essential 60 questions selected?',
+      'How should I use Essential 60 in 7, 14, or 30 days?',
+      'Is Essential 60 different from the full frontend interview questions hub?',
+      'Does Essential 60 include UI coding, JavaScript utilities, concepts, and system design?',
+    ]));
+    expect(faqPage.mainEntity[0].acceptedAnswer.text).toContain('ranked shortlist');
   });
 
   it('filters by section and tier', async () => {

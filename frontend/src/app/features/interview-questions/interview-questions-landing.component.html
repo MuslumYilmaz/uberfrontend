@@ -4,6 +4,15 @@
     <h1 class="fa-page-title">{{ config.title }}</h1>
     <p class="fa-page-subtitle">{{ introLead() }}</p>
     <div
+      *ngIf="isMasterHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ masterEditorialSignal().reviewedLabel }}</span>
+      <span>{{ masterEditorialSignal().reviewer }}</span>
+      <span>{{ masterEditorialSignal().coverage }}</span>
+    </div>
+    <div
       *ngIf="isJavaScriptHub()"
       class="iq-editorial-signal"
       aria-label="Editorial review details"
@@ -67,6 +76,145 @@
       <span>{{ htmlEditorialSignal().coverage }}</span>
     </div>
   </header>
+
+  <section
+    *ngIf="isMasterHub()"
+    class="iq-section iq-master-toc"
+    aria-label="Frontend interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-master-toc__links">
+      <button
+        *ngFor="let item of masterAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToMasterSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
+
+  <section
+    *ngIf="isMasterHub()"
+    class="iq-section iq-section--surface iq-section--master-clusters"
+    aria-labelledby="iq-master-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-master-clusters-title">
+        Frontend interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Use these broad clusters to choose the right first answer, then move into Essential 60, coding prompts, framework hubs, debugging, or system design.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of masterKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToMasterSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isMasterHub()"
+    class="iq-section iq-section--surface iq-section--master-short-answers"
+    aria-labelledby="iq-master-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Essential answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-master-short-answers-title">
+        Essential frontend interview questions and answers
+      </h2>
+      <p class="fa-meta-text">
+        Review cross-topic frontend interview answers first, then use the linked paths when JavaScript, HTML, CSS, frameworks, browser behavior, debugging, or system design needs deeper practice.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of masterShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ masterShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ questionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <div class="iq-format-card__links" *ngIf="(item.route && item.cta) || item.extraLinks?.length">
+          <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+            {{ item.cta }} &rarr;
+          </a>
+          <a *ngFor="let link of item.extraLinks || []" class="iq-topic-card__link" [routerLink]="link.route">
+            {{ link.label }} &rarr;
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isMasterHub()"
+    class="iq-section iq-section--surface iq-section--master-essential"
+    aria-labelledby="iq-master-essential-title"
+  >
+    <div class="iq-section__head iq-section__head--split">
+      <div>
+        <p class="iq-context-kicker">Core shortlist</p>
+        <h2 class="fa-section-title iq-section__title" id="iq-master-essential-title">
+          FrontendAtlas Essential 60
+        </h2>
+        <p class="fa-meta-text">
+          Use Essential 60 as the compact practice block after the first answers: JavaScript utilities, UI coding, core concepts, and frontend system-design trade-offs.
+        </p>
+      </div>
+      <a class="iq-inline-link" [routerLink]="['/interview-questions/essential']">Open Essential 60</a>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of masterEssentialPreviewItems()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+        <a class="iq-topic-card__link" [routerLink]="item.route">{{ item.cta }} &rarr;</a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isMasterHub()"
+    class="iq-section iq-section--surface iq-section--master-formats"
+    aria-labelledby="iq-master-formats-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Practice paths</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-master-formats-title">
+        Frontend interview formats and practice paths
+      </h2>
+      <p class="fa-meta-text">
+        Match the round format before opening a route so broad frontend prep turns into focused practice instead of random browsing.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card iq-format-card" *ngFor="let item of masterFormatPathItems()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+        <div class="iq-format-card__links">
+          <a *ngFor="let link of item.links" class="iq-topic-card__link" [routerLink]="link.route">
+            {{ link.label }} &rarr;
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
 
   <section
     *ngIf="isJavaScriptHub()"
@@ -1667,12 +1815,12 @@
     </div>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : isCssHub() ? 'iq-css-coding-preview-title' : isHtmlHub() ? 'iq-html-coding-preview-title' : null">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isMasterHub() ? 'iq-master-coding-preview-title' : isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : isCssHub() ? 'iq-css-coding-preview-title' : isHtmlHub() ? 'iq-html-coding-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : isCssHub() ? 'iq-css-coding-preview-title' : isHtmlHub() ? 'iq-html-coding-preview-title' : null"
+          [id]="isMasterHub() ? 'iq-master-coding-preview-title' : isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : isCssHub() ? 'iq-css-coding-preview-title' : isHtmlHub() ? 'iq-html-coding-preview-title' : null"
         >
           {{ codingSectionTitle() }}
         </h2>
@@ -1719,12 +1867,12 @@
     </ng-container>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : isCssHub() ? 'iq-css-concept-preview-title' : isHtmlHub() ? 'iq-html-concept-preview-title' : null">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isMasterHub() ? 'iq-master-concept-preview-title' : isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : isCssHub() ? 'iq-css-concept-preview-title' : isHtmlHub() ? 'iq-html-concept-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : isCssHub() ? 'iq-css-concept-preview-title' : isHtmlHub() ? 'iq-html-concept-preview-title' : null"
+          [id]="isMasterHub() ? 'iq-master-concept-preview-title' : isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : isCssHub() ? 'iq-css-concept-preview-title' : isHtmlHub() ? 'iq-html-concept-preview-title' : null"
         >
           {{ triviaSectionTitle() }}
         </h2>
@@ -2117,6 +2265,7 @@
   </section>
 
   <app-prep-roadmap
+    id="iq-roadmap-title"
     class="iq-roadmap"
     [title]="prepRoadmapTitle()"
     [subtitle]="prepRoadmapSubtitle()"

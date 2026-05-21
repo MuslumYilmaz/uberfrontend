@@ -489,6 +489,49 @@ const CSS_DEBUGGING_PERFORMANCE_QUESTIONS = [
   'What are common CSS debugging mistakes?',
 ];
 
+const MASTER_SHORT_ANSWER_QUESTIONS = [
+  'What do frontend interviews usually test?',
+  'How should I approach a frontend interview question?',
+  'What JavaScript fundamentals matter most for frontend interviews?',
+  'What is the JavaScript event loop?',
+  'How do closures affect frontend bugs?',
+  'When should debounce or throttle be used?',
+  'What makes a good UI coding answer?',
+  'How should reusable frontend components be designed?',
+  'How should frontend state be managed?',
+  'Why are controlled inputs useful?',
+  'Why are keys important in frontend lists?',
+  'What is semantic HTML?',
+  'Why do labels matter in forms?',
+  'How should accessibility be handled in frontend interviews?',
+  'How does CSS specificity affect frontend bugs?',
+  'When should Flexbox vs Grid be used?',
+  'How do you debug layout issues?',
+  'What makes responsive UI robust?',
+  'How do you prevent XSS in frontend code?',
+  'What should frontend developers know about browser storage?',
+  'How should frontend tests be scoped?',
+  'How do you debug async UI bugs?',
+  'How do frontend memory leaks happen?',
+  'What performance topics are common in frontend interviews?',
+  'What causes SSR and hydration issues?',
+  'What is frontend system design?',
+  'How would you design autocomplete or typeahead?',
+  'How do pagination and infinite scroll differ?',
+  'How do React, Angular, and Vue interviews differ?',
+  'What are common frontend interview mistakes?',
+];
+
+function expectNoMasterHubCopy(text: string, root: HTMLElement): void {
+  expect(text).not.toContain('Frontend interview question clusters');
+  expect(text).not.toContain('Essential frontend interview questions and answers');
+  expect(text).not.toContain('Frontend interview formats and practice paths');
+  expect(root.querySelector('.iq-master-toc')).toBeNull();
+  expect(root.querySelector('.iq-section--master-short-answers')).toBeNull();
+  expect(root.querySelector('.iq-section--master-essential')).toBeNull();
+  expect(root.querySelector('.iq-section--master-formats')).toBeNull();
+}
+
 function expectNoHtmlOnlyKeywordClusterCopy(text: string, root: HTMLElement): void {
   expect(text).not.toContain('Popular HTML interview question clusters');
   expect(text).not.toContain('Semantic HTML interview questions');
@@ -632,6 +675,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-code')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-css-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--css-short-answers')).toBeNull();
+    expectNoMasterHubCopy(fixture.nativeElement.textContent || '', fixture.nativeElement);
   });
 
   it('renders React-only answer-first coverage, scenarios, modern topics, and schema mentions', async () => {
@@ -642,6 +686,7 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     const text = fixture.nativeElement.textContent || '';
     expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
+    expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('React Interview Questions and Answers');
     expect(text).toContain('Reviewed May 20, 2026');
@@ -1022,6 +1067,7 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     const text = fixture.nativeElement.textContent || '';
     expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
+    expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('JavaScript Interview Questions and Answers');
     expect(text).toContain('Reviewed May 19, 2026');
@@ -1415,6 +1461,11 @@ describe('InterviewQuestionsLandingComponent', () => {
       techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
       isMasterHub: true,
     };
+    routeStub.snapshot.data.seo = {
+      title: 'Frontend Interview Questions and Answers',
+      description:
+        'Frontend interview questions and answers for front end developers, beginner to advanced, with Essential 60, UI coding, machine coding, JavaScript, HTML, CSS, React, Angular, Vue, debugging, testing, accessibility, performance, and frontend system design.',
+    };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
       coding: [
@@ -1443,12 +1494,111 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(jsTrivia).toBeTruthy();
     expect(reactCoding).toBeNull();
     expect(reactTrivia).toBeNull();
+    const text = fixture.nativeElement.textContent || '';
+    expect(text).toContain('Reviewed May 21, 2026');
+    expect(text).toContain('30 essential frontend answers plus Essential 60, coding, concepts, frameworks, debugging, and system design paths');
+    expect(text).toContain('Frontend interview question clusters');
+    expect(text).toContain('Essential frontend interview questions and answers');
+    expect(text).toContain('FrontendAtlas Essential 60');
+    expect(text).toContain('Frontend interview formats and practice paths');
+    expect(fixture.nativeElement.querySelector('.iq-master-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--master-clusters')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--master-short-answers')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--master-essential')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--master-formats')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--master-short-answers .iq-short-answer').length).toBe(30);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--master-essential .iq-focused-card').length).toBe(4);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--master-formats .iq-focused-card').length).toBe(6);
+    for (const question of MASTER_SHORT_ANSWER_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    expect(text).toContain('Frontend interview questions for beginners');
+    expect(text).toContain('Frontend interview questions for experienced developers');
+    expect(text).toContain('Frontend UI coding and machine coding questions');
+    expect(text).toContain('JavaScript and browser API interview questions');
+    expect(text).toContain('HTML, CSS, and accessibility interview questions');
+    expect(text).toContain('Frontend debugging and testing questions');
+    expect(text).toContain('Frontend performance interview questions');
+    expect(text).toContain('Frontend system design interview questions');
+    expect(text).toContain('Are these frontend interview questions for beginners and experienced developers?');
+    expect(text).toContain('Does this page include frontend UI coding and machine coding questions?');
+    expect(text).toContain('Does this page cover JavaScript, browser APIs, HTML, CSS, React, Angular, and Vue?');
+    expect(text).toContain('Does this page include frontend debugging, testing, and performance questions?');
+    expect(text).toContain('Does this page include frontend system design interview questions?');
+    expect(text).toContain('How should I practice frontend interview questions?');
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-master-coding-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-master-concept-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('#iq-master-coding-preview-title')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('#iq-master-concept-preview-title')).toBeTruthy();
+    const shortAnswersTitle = fixture.nativeElement.querySelector('#iq-master-short-answers-title') as HTMLElement;
+    const codingPreviewTitle = fixture.nativeElement.querySelector('#iq-master-coding-preview-title') as HTMLElement;
+    expect(Boolean(shortAnswersTitle.compareDocumentPosition(codingPreviewTitle) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTrue();
+    expect(fixture.nativeElement.querySelector('a[href="/interview-questions/essential"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-event-loop"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-closures"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-debounce"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-throttle"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-xss-dom-sinks"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-cookie-sessionstorage-localstorage"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-keys-in-lists"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-controlled-vs-uncontrolled"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html-css/interview-questions"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-specificity-hierarchy"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-grid-vs-flexbox"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/system-design"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/incidents"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/guides/interview-blueprint/ui-interviews"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/guides/interview-blueprint/quiz"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
     expect(fixture.nativeElement.textContent || '').toContain('Frontend interview preparation guide');
-    expect(fixture.nativeElement.textContent || '').toContain('FrontendAtlas Essential 60');
     expect(fixture.nativeElement.textContent || '').toContain('Question Library');
     expect(fixture.nativeElement.textContent || '').toContain('Framework interview hubs');
     expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]')?.getAttribute('href') || '').toContain('/coding?reset=1');
     expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-4"]')?.getAttribute('href') || '').toContain('/react/interview-questions');
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
+    expect(collection?.dateModified).toBe('2026-05-21T00:00:00.000Z');
+    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    const schemaNames = [
+      ...(collection?.about || []),
+      ...(collection?.mentions || []),
+    ].map((entry: any) => String(entry?.name || ''));
+    expect(schemaNames).toContain('frontend interview questions and answers');
+    expect(schemaNames).toContain('front end developer interview questions');
+    expect(schemaNames).toContain('frontend interview questions for beginners');
+    expect(schemaNames).toContain('front end developer interview questions for freshers');
+    expect(schemaNames).toContain('frontend interview questions for experienced developers');
+    expect(schemaNames).toContain('senior frontend interview questions');
+    expect(schemaNames).toContain('frontend coding interview questions');
+    expect(schemaNames).toContain('frontend machine coding questions');
+    expect(schemaNames).toContain('UI coding interview questions');
+    expect(schemaNames).toContain('frontend UI interview questions');
+    expect(schemaNames).toContain('JavaScript frontend interview questions');
+    expect(schemaNames).toContain('frontend JavaScript interview questions');
+    expect(schemaNames).toContain('browser API interview questions frontend');
+    expect(schemaNames).toContain('DOM interview questions frontend');
+    expect(schemaNames).toContain('HTML CSS interview questions');
+    expect(schemaNames).toContain('HTML CSS frontend interview questions');
+    expect(schemaNames).toContain('semantic HTML interview questions frontend');
+    expect(schemaNames).toContain('React Angular Vue interview questions');
+    expect(schemaNames).toContain('frontend accessibility interview questions');
+    expect(schemaNames).toContain('frontend performance interview questions');
+    expect(schemaNames).toContain('frontend rendering interview questions');
+    expect(schemaNames).toContain('frontend testing interview questions');
+    expect(schemaNames).toContain('frontend debugging interview questions');
+    expect(schemaNames).toContain('frontend system design interview questions');
+    expect(schemaNames).toContain('frontend system design questions');
+    expect(schemaNames).toContain('frontend architecture interview questions');
+    expect(schemaNames).toContain('CSS layout interview questions frontend');
+    expect(collection?.mainEntity?.['@type']).toBe('ItemList');
+    expect(Array.isArray(collection?.mainEntity?.itemListElement)).toBeTrue();
+    expect(faqPage).toBeTruthy();
+    expect(faqPage?.mainEntity?.length).toBe(30);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry.name)).toEqual(MASTER_SHORT_ANSWER_QUESTIONS);
   });
 
   it('uses framework-specific roadmap copy and prep path on Angular hubs', async () => {
@@ -1523,6 +1673,7 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     const text = fixture.nativeElement.textContent || '';
     expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
+    expectNoMasterHubCopy(text, fixture.nativeElement);
     const codingViewAll = fixture.nativeElement.querySelector('.iq-inline-link') as HTMLAnchorElement;
     const thirdItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]') as HTMLAnchorElement;
 
@@ -1711,6 +1862,7 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     const text = fixture.nativeElement.textContent || '';
     expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
+    expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('Vue.js Interview Questions and Answers');
     expect(text).toContain('Vue.js interview questions and Vue JS answers for Vue 3 rounds');
@@ -1975,6 +2127,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent || '';
+    expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('HTML Interview Questions and Answers');
     expect(text).toContain('Reviewed May 21, 2026');
@@ -2254,6 +2407,7 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     const text = fixture.nativeElement.textContent || '';
     expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
+    expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('CSS Interview Questions and Answers');
     expect(text).toContain('Reviewed May 20, 2026');
@@ -2512,6 +2666,7 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     const text = fixture.nativeElement.textContent || '';
     expectNoHtmlOnlyKeywordClusterCopy(text, fixture.nativeElement);
+    expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('Angular Interview Questions and Answers');
     expect(text).toContain('Reviewed May 20, 2026');
