@@ -2,7 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { GuideEntry, SYSTEM, SYSTEM_GROUPS } from '../../../shared/guides/guide.registry';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { SeoService } from '../../../core/services/seo.service';
@@ -56,6 +56,7 @@ export class SystemDesignHostComponent implements OnDestroy {
         this.sub = this.route.data
             .pipe(
                 startWith(this.route.snapshot.data),
+                filter((data) => Object.prototype.hasOwnProperty.call(data, 'guideDetail')),
                 map((data) => (data['guideDetail'] as GuideDetailResolved | null) ?? null),
                 distinctUntilChanged((a, b) => a?.slug === b?.slug),
             )
@@ -73,6 +74,7 @@ export class SystemDesignHostComponent implements OnDestroy {
     private load(resolved: GuideDetailResolved | null) {
         const snapshotSlug = this.route.snapshot.paramMap.get('slug') || '';
         const slug = resolved?.slug || snapshotSlug;
+        if (!slug) return;
         this.showShellHeading.set(true);
         this.shellHeading.set(this.toTitle(slug));
 
@@ -98,8 +100,9 @@ export class SystemDesignHostComponent implements OnDestroy {
             }))
         };
 
-        if (!resolved || !current) { this.go404(); return; }
+        if (!current) { this.go404(); return; }
         this.shellHeading.set(current.title || this.toTitle(slug));
+        if (!resolved) return;
 
         const prev = idx > 0 ? ['/', 'guides', 'system-design-blueprint', SYSTEM[idx - 1].slug] : null;
         const next = idx < SYSTEM.length - 1 ? ['/', 'guides', 'system-design-blueprint', SYSTEM[idx + 1].slug] : null;
@@ -118,7 +121,6 @@ export class SystemDesignHostComponent implements OnDestroy {
             ref.instance.leftNav = leftNav;
             this.showShellHeading.set(false);
         } catch {
-            this.go404();
             return;
         }
 

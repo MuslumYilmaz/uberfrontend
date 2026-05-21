@@ -218,6 +218,36 @@ type HtmlTopicCard = { title: string; answer: string; link: HtmlCoverageLink };
 type HtmlMistakeItem = { title: string; detail: string };
 type HtmlBehavioralItem = { title: string; detail: string };
 type HtmlResourceLink = { label: string; href: string; summary: string };
+type HtmlShortAnswerCategory = 'fundamentals' | 'semantics' | 'forms-accessibility' | 'metadata-browser' | 'modern-scenarios';
+type HtmlShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: HtmlShortAnswerCategory;
+  level: QuestionLevel;
+};
+type HtmlAnchorItem = { label: string; targetId: string };
+type HtmlKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type HtmlAudienceTrack = { title: string; detail: string };
+type HtmlFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type HtmlScenarioQuestionItem = HtmlFocusedQuestionItem;
+type HtmlEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type HtmlCssShortAnswerCategory = 'html' | 'css' | 'accessibility' | 'responsive-debugging';
 type HtmlCssShortAnswerItem = {
   q: string;
@@ -645,32 +675,24 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   html: [
     {
-      q: 'What do HTML interview questions usually test?',
-      a: 'They test semantic structure, forms, labels, landmarks, metadata, browser defaults, accessibility, and progressive enhancement decisions.',
+      q: 'Are these HTML interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with beginner HTML fundamentals, then moves into experienced-developer topics such as accessibility trade-offs, browser parsing, Shadow DOM, native dialogs, iframes, responsive images, and markup scenarios.',
     },
     {
-      q: 'How should I answer an HTML concept question?',
-      a: 'Explain the user or browser behavior first, then name the element, attribute, accessibility effect, and validation or SEO trade-off.',
+      q: 'Does this page cover semantic HTML, forms, and accessibility?',
+      a: 'Yes. It covers document structure, landmarks, headings, forms, labels, validation, tables, alt text, keyboard checks, accessible names, ARIA roles, dialogs, and iframes.',
     },
     {
-      q: 'When should HTML prep move into UI coding?',
-      a: 'Move into UI coding once the semantic answer is clear and you need to prove the structure works in a real component.',
+      q: 'Does this page include HTML metadata, DOM, and browser parsing questions?',
+      a: 'Yes. It covers the DOM, head metadata, title and meta tags, viewport behavior, responsive image markup, script loading, iframe constraints, and how invalid markup can change the live DOM.',
     },
     {
-      q: 'What is the difference between HTML and HTML5?',
-      a: 'HTML5 is the common shorthand for modern HTML: the simple doctype, semantic elements, native media, validation, and living-standard browser behavior used in current web development.',
+      q: 'Does this page cover modern HTML topics like dialog, srcset, iframes, and Shadow DOM?',
+      a: 'Yes. The modern scenarios section covers native dialog behavior, details, summary, popover, template, slot, Shadow DOM, srcset, iframes, invalid nesting, and native controls.',
     },
     {
-      q: 'How do I test my HTML code for accessibility?',
-      a: 'Start manually with keyboard navigation, labels, focus order, headings, table headers, and mobile reflow. Then run Lighthouse, axe, an accessibility-tree inspection, and an HTML checker.',
-    },
-    {
-      q: 'What are the best resources for learning HTML?',
-      a: 'Use MDN for practical reference, the WHATWG HTML Living Standard for source-of-truth behavior, WAI tutorials for accessibility, Chrome DevTools for inspection, and W3C tools for validation.',
-    },
-    {
-      q: 'How do behavioral questions show up in HTML interviews?',
-      a: 'They usually ask for judgment stories: improving accessibility, fixing metadata or SEO, choosing native semantics over custom code, and collaborating on form or content clarity.',
+      q: 'Where should I practice HTML coding interview questions?',
+      a: 'Start with the HTML coding preview on this page, then practice basic document structure, labeled contact forms, validation, semantic layout, accessible tables, links, images, lists, and native dialog behavior.',
     },
   ],
   css: [
@@ -4299,6 +4321,572 @@ const CSS_DEBUGGING_PERFORMANCE_QUESTIONS: CssScenarioQuestionItem[] = [
   },
 ];
 
+const HTML_EDITORIAL_SIGNAL: HtmlEditorialSignal = {
+  reviewedLabel: 'Reviewed May 21, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible HTML questions across semantics, forms, accessibility, metadata, DOM, native browser behavior, modern HTML, and markup scenarios',
+  dateModified: '2026-05-21T00:00:00.000Z',
+};
+
+const HTML_ANCHOR_ITEMS: HtmlAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-html-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-html-short-answers-title' },
+  { label: 'Audience', targetId: 'iq-html-audience-title' },
+  { label: 'Semantics', targetId: 'iq-html-semantics-title' },
+  { label: 'Forms', targetId: 'iq-html-forms-title' },
+  { label: 'Accessibility + ARIA', targetId: 'iq-html-accessibility-title' },
+  { label: 'Metadata + parsing', targetId: 'iq-html-metadata-title' },
+  { label: 'Modern scenarios', targetId: 'iq-html-modern-scenarios-title' },
+  { label: 'Coding drills', targetId: 'iq-html-coding-preview-title' },
+  { label: 'Concepts', targetId: 'iq-html-concept-preview-title' },
+  { label: 'Support', targetId: 'iq-html-coverage-title' },
+];
+
+const HTML_KEYWORD_CLUSTERS: HtmlKeywordClusterItem[] = [
+  {
+    label: 'HTML interview questions for beginners',
+    targetId: 'iq-html-short-answers-title',
+    detail: 'Document structure, elements, DOM, links, images, forms, and metadata basics.',
+  },
+  {
+    label: 'HTML interview questions for experienced developers',
+    targetId: 'iq-html-audience-title',
+    detail: 'Accessibility trade-offs, parsing behavior, Shadow DOM, native UI, and markup scenarios.',
+  },
+  {
+    label: 'Semantic HTML questions',
+    targetId: 'iq-html-semantics-title',
+    detail: 'Landmarks, headings, sections, articles, lists, language, and document structure.',
+  },
+  {
+    label: 'HTML forms and validation questions',
+    targetId: 'iq-html-forms-title',
+    detail: 'Labels, placeholders, input types, validation attributes, errors, and grouped controls.',
+  },
+  {
+    label: 'HTML accessibility and ARIA questions',
+    targetId: 'iq-html-accessibility-title',
+    detail: 'Accessible names, alt text, tables, dialogs, keyboard behavior, iframes, and ARIA.',
+  },
+  {
+    label: 'HTML metadata and browser behavior',
+    targetId: 'iq-html-metadata-title',
+    detail: 'Head metadata, title, meta tags, parsing, script loading, responsive images, and iframes.',
+  },
+  {
+    label: 'Modern HTML and markup scenarios',
+    targetId: 'iq-html-modern-scenarios-title',
+    detail: 'Dialog, details, popover, templates, Shadow DOM, invalid nesting, labels, and table markup.',
+  },
+];
+
+const HTML_SHORT_ANSWERS: HtmlShortAnswerItem[] = [
+  {
+    q: 'What is HTML?',
+    a: 'HTML is the markup language browsers parse to create the structure and meaning of a web document. It describes content with elements such as headings, links, images, forms, tables, and landmarks. HTML quality affects accessibility, SEO, browser defaults, and how safely CSS and JavaScript can build on the page.',
+    route: ['/html', 'coding', 'html-basic-structure'],
+    cta: 'Build a basic document',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the DOM?',
+    a: 'The DOM is the browser-created object tree that represents the parsed document. JavaScript reads and changes the DOM, and CSS selectors match elements in it for styling. The live DOM can differ from the original HTML source after parsing fixes or script updates.',
+    route: ['/html', 'trivia', 'html-dom'],
+    cta: 'Review the DOM',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between tags and elements?',
+    a: 'A tag is the written markup token, such as an opening or closing marker. An element is the full parsed node, including the tag, attributes, content, and browser-defined meaning. Void elements such as img do not have closing tags, which is a common edge case.',
+    route: ['/html', 'trivia', 'html-tags'],
+    cta: 'Review HTML tags',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What does a valid HTML document structure include?',
+    a: 'A valid document starts with a doctype, an html element with a language, a head for metadata, and a body for visible content. The head should include charset, viewport, title, and other metadata needed by browsers and crawlers. Missing structure can still render, but it creates ambiguity for accessibility, mobile layout, and SEO behavior.',
+    route: ['/html', 'coding', 'html-basic-structure'],
+    cta: 'Practice document structure',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What belongs in the head and body?',
+    a: 'The head contains document metadata, resource hints, styles, scripts, titles, descriptions, and viewport settings. The body contains the content and controls users interact with. Putting visible content or structural landmarks in the head is invalid and can produce unexpected parsing behavior.',
+    route: ['/html', 'trivia', 'html-head-tag'],
+    cta: 'Review the head element',
+    category: 'metadata-browser',
+    level: 'beginner',
+  },
+  {
+    q: 'What are semantic HTML elements?',
+    a: 'Semantic elements describe the meaning or role of content, such as header, nav, main, article, section, footer, button, and form. They give browsers and assistive technology useful information before any custom scripting. Replacing semantic controls with generic div elements often creates extra keyboard and accessibility work.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Review semantic elements',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between div and span?',
+    a: 'div is a generic block-level container, while span is a generic inline container. Neither carries semantic meaning by itself. They are useful for grouping only when a more meaningful element is not available.',
+    route: ['/html', 'trivia', 'html-div-vs-span'],
+    cta: 'Compare div and span',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between block and inline elements?',
+    a: 'Block elements normally start on a new line and occupy available width, while inline elements flow inside text. The distinction affects layout, spacing, and how elements accept dimensions. CSS can change display behavior, but the semantic choice should still match the content meaning.',
+    route: ['/html', 'trivia', 'html-block-inline-elements'],
+    cta: 'Review block and inline',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'How should anchors work in HTML?',
+    a: 'An anchor creates navigation when it has a useful href. It should describe the destination with link text that makes sense out of context. Use a button instead when the action changes state on the current page rather than navigating.',
+    route: ['/html', 'trivia', 'html-a-tag'],
+    cta: 'Review anchors',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'What does the href attribute do?',
+    a: 'href defines the target URL or fragment for an anchor or linked resource. A missing or fake href can break expected link behavior, keyboard navigation, and browser features such as opening in a new tab. For external links, security and referrer behavior may also matter.',
+    route: ['/html', 'trivia', 'html-href-attribute'],
+    cta: 'Review href behavior',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'How should image alt text work?',
+    a: 'Alt text should describe the purpose of an informative image. Decorative images usually need empty alt text so assistive technology can skip them. If an image is inside a link, the alt text may need to describe the link action rather than the visual pixels.',
+    route: ['/html', 'trivia', 'html-img-alt-attribute'],
+    cta: 'Review image alt text',
+    category: 'forms-accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'How do HTML forms work?',
+    a: 'A form groups controls and can submit name/value pairs to a server or be handled by JavaScript. Native controls provide keyboard behavior, labels, validation hooks, and browser defaults. The form still needs server-side validation because client-side constraints can be bypassed.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Build labeled forms',
+    category: 'forms-accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'Why are labels better than placeholders?',
+    a: 'A label gives a form control a durable accessible name and a larger clickable target. Placeholder text disappears as users type and is not a reliable replacement for a label. Placeholders are best used as examples or hints, not as the only field name.',
+    route: ['/html', 'trivia', 'html-input-placeholder'],
+    cta: 'Review placeholders',
+    category: 'forms-accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'How does native form validation work?',
+    a: 'Native validation uses attributes such as required, type, min, max, pattern, and minlength. The browser can block common invalid submissions and expose useful constraint states. It improves user experience, but server validation remains the real trust boundary.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice validation',
+    category: 'forms-accessibility',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should lists and navigation be marked up?',
+    a: 'Lists should represent grouped items where order or grouping matters, and navigation should use nav when it identifies a major navigation region. Link lists are often appropriate for menus because they expose both grouping and navigation semantics. Overusing lists for purely visual layout can make the markup noisy.',
+    route: ['/html', 'coding', 'html-lists-and-navigation'],
+    cta: 'Practice navigation markup',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'How do accessible tables work?',
+    a: 'Data tables need table markup, header cells, and clear relationships between headers and data cells. Captions and scope attributes help users understand row and column meaning. Tables used only for layout create misleading relationships and should be avoided.',
+    route: ['/html', 'coding', 'html-tables-accessibility'],
+    cta: 'Build accessible tables',
+    category: 'forms-accessibility',
+    level: 'intermediate',
+  },
+  {
+    q: 'What metadata should an HTML page include?',
+    a: 'A production page usually needs charset, viewport, title, description, canonical when needed, and relevant social metadata. Metadata helps browsers render correctly and helps crawlers understand the page. Missing viewport metadata is a common mobile rendering failure.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Review head metadata',
+    category: 'metadata-browser',
+    level: 'beginner',
+  },
+  {
+    q: 'What are data attributes used for?',
+    a: 'data-* attributes store custom, non-sensitive metadata on elements. They are useful for testing hooks, progressive enhancement, and connecting markup to scripts without inventing invalid attributes. They should not become a replacement for semantic attributes or server-trusted data.',
+    route: ['/html', 'trivia', 'html-data-attribute'],
+    cta: 'Review data attributes',
+    category: 'metadata-browser',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use an iframe?',
+    a: 'An iframe embeds another browsing context inside the page. It is useful for third-party content, isolated documents, maps, videos, and sandboxed experiences. It needs a meaningful title and careful sandbox, permissions, loading, and security choices.',
+    route: ['/html', 'trivia', 'html-iframe-tag'],
+    cta: 'Review iframes',
+    category: 'metadata-browser',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do srcset and sizes work for images?',
+    a: 'srcset provides candidate image resources, and sizes tells the browser how much layout width the image will occupy. The browser uses that information with device characteristics to choose an efficient image. Wrong sizes values can make the browser download images that are too large or too blurry.',
+    route: ['/html', 'trivia', 'html-img-srcset'],
+    cta: 'Review responsive images',
+    category: 'metadata-browser',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does browser HTML parsing affect the DOM?',
+    a: 'Browsers parse HTML into tokens and build the DOM while applying error-recovery rules. Invalid nesting can be corrected into a different DOM than the source appears to describe. Debugging markup issues often means inspecting the live DOM, not only the source file.',
+    route: ['/html', 'trivia', 'html-parsing-rendering'],
+    cta: 'Review parsing behavior',
+    category: 'metadata-browser',
+    level: 'advanced',
+  },
+  {
+    q: 'When should ARIA roles be used?',
+    a: 'ARIA roles should be used when native HTML cannot express the needed role, state, or relationship. Native elements are usually better because they include built-in keyboard and accessibility behavior. Misused ARIA can create a worse accessibility tree than plain semantic HTML.',
+    route: ['/html', 'trivia', 'html-aria-roles'],
+    cta: 'Review ARIA roles',
+    category: 'forms-accessibility',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is Shadow DOM?',
+    a: 'Shadow DOM provides an encapsulated DOM tree for a component. It can isolate markup and styles from the main document while still exposing slots and public component behavior. Accessibility, focus, and styling hooks still need deliberate design.',
+    route: ['/html', 'trivia', 'html-shadow-dom'],
+    cta: 'Review Shadow DOM',
+    category: 'modern-scenarios',
+    level: 'advanced',
+  },
+  {
+    q: 'How should native dialog behavior work?',
+    a: 'The dialog element can provide native modal semantics and focus handling support. A usable dialog still needs a clear name, predictable opening focus, escape behavior, and focus restoration. A visually correct overlay is incomplete if keyboard users can reach background content.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice dialog accessibility',
+    category: 'modern-scenarios',
+    level: 'advanced',
+  },
+  {
+    q: 'What is the difference between HTML, HTML5, and XHTML?',
+    a: 'HTML is the markup language used for web documents, and HTML5 is the common name for modern HTML features and parsing behavior. XHTML is an XML-based syntax with stricter parsing rules. Modern web work usually follows the HTML Living Standard rather than treating HTML5 as a frozen version.',
+    route: ['/html', 'trivia', 'html-vs-xhtml'],
+    cta: 'Compare HTML and XHTML',
+    category: 'modern-scenarios',
+    level: 'intermediate',
+  },
+];
+
+const HTML_AUDIENCE_TRACKS: HtmlAudienceTrack[] = [
+  {
+    title: 'HTML interview questions for beginners',
+    detail: 'Start with document structure, common elements, links, images, forms, labels, lists, metadata, and the DOM. The goal is to understand what native markup gives the browser before adding CSS or JavaScript.',
+  },
+  {
+    title: 'HTML interview questions for experienced frontend developers',
+    detail: 'Move into accessibility trade-offs, browser parsing, table relationships, Shadow DOM, native dialogs, iframes, responsive image markup, and production metadata. Experienced answers should connect markup choices to real browser and user behavior.',
+  },
+];
+
+const HTML_SEMANTICS_QUESTIONS: HtmlFocusedQuestionItem[] = [
+  {
+    q: 'How do landmarks improve document structure?',
+    a: 'Landmarks such as header, nav, main, aside, and footer divide the page into recognizable regions. They help assistive technology users jump through the page efficiently. Most pages should have one main landmark and meaningful navigation regions.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Review landmarks',
+    level: 'beginner',
+  },
+  {
+    q: 'How should heading structure work?',
+    a: 'Headings create a content hierarchy for scanning, navigation, and accessibility. Heading levels should represent structure, not visual size. Skipping levels for styling can make the page harder to understand through assistive technology.',
+    route: ['/html', 'coding', 'html-semantic-layout'],
+    cta: 'Build semantic layout',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use section and article?',
+    a: 'section groups a themed part of a document, usually with a heading. article represents independent content that could stand on its own, such as a post, card, or comment. A generic wrapper should stay a div when there is no meaningful document section.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Review semantic sections',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why are generic div and span elements not enough?',
+    a: 'div and span provide grouping without semantic meaning. They are useful for layout hooks, but they do not communicate navigation, button behavior, headings, form relationships, or document regions. Native semantic elements reduce custom accessibility work.',
+    route: ['/html', 'trivia', 'html-div-vs-span'],
+    cta: 'Compare generic elements',
+    level: 'beginner',
+  },
+  {
+    q: 'Why does the html lang attribute matter?',
+    a: 'The lang attribute tells browsers and assistive technology the language of the document. It affects pronunciation, translation, spell checking, and some typographic behavior. Pages with mixed languages should mark language changes on the relevant elements.',
+    route: ['/html', 'coding', 'html-basic-structure'],
+    cta: 'Practice document basics',
+    level: 'beginner',
+  },
+  {
+    q: 'How should list markup be used?',
+    a: 'Use ul for unordered groups, ol for ordered steps or rankings, and dl for name/value descriptions. Lists communicate grouping that screen readers and browsers can expose. Do not use lists only to force visual indentation when the content is not a list.',
+    route: ['/html', 'trivia', 'html-ol-ul-dl-difference'],
+    cta: 'Review list types',
+    level: 'beginner',
+  },
+  {
+    q: 'How do data attributes fit into semantic markup?',
+    a: 'data-* attributes are useful for custom metadata that scripts or tests need to read. They should not replace existing semantic attributes such as href, alt, for, name, or aria-* when those have real meaning. Data attributes are markup hooks, not validation or security boundaries.',
+    route: ['/html', 'trivia', 'html-data-attribute'],
+    cta: 'Review data attributes',
+    level: 'intermediate',
+  },
+  {
+    q: 'What makes an HTML document easy to scan?',
+    a: 'A scannable document has a clear title, meaningful headings, landmarks, descriptive links, and grouped content. The DOM order should match the reading and keyboard order where possible. Visual layout can change, but the markup should still make sense without CSS.',
+    route: ['/html', 'coding', 'html-semantic-layout'],
+    cta: 'Practice semantic layout',
+    level: 'intermediate',
+  },
+];
+
+const HTML_FORMS_QUESTIONS: HtmlFocusedQuestionItem[] = [
+  {
+    q: 'How should a label connect to a form control?',
+    a: 'A label can connect to a control with for and id, or by wrapping the control. This gives the control an accessible name and increases the clickable target. The association should remain stable even when the layout changes.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Build labeled forms',
+    level: 'beginner',
+  },
+  {
+    q: 'Why is placeholder text not a label?',
+    a: 'Placeholder text disappears during input and may not be announced as a stable field name. A real label remains available before, during, and after typing. Placeholder text is better used for examples, formatting hints, or optional guidance.',
+    route: ['/html', 'trivia', 'html-input-placeholder'],
+    cta: 'Review placeholders',
+    level: 'beginner',
+  },
+  {
+    q: 'How do input types improve forms?',
+    a: 'Input types such as email, url, number, date, and tel give browsers validation hints and mobile keyboard choices. They improve usability when they match the real data being collected. The wrong type can block valid input or create a poor mobile experience.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice input validation',
+    level: 'beginner',
+  },
+  {
+    q: 'How do validation attributes work?',
+    a: 'Attributes such as required, minlength, maxlength, min, max, pattern, and type define browser-side constraints. They expose validity state and can block invalid submissions. Server validation is still required because browser constraints are user-experience helpers, not trusted enforcement.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Build validation states',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should form errors be exposed?',
+    a: 'Form errors should be visible, specific, and connected to the affected control. Use nearby text and aria-describedby when the relationship is not already clear. Color alone is not enough because users may miss the state or use assistive technology.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice form errors',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should radio buttons and checkboxes be grouped?',
+    a: 'Related radio buttons and checkboxes should be grouped with fieldset and legend when they share a prompt. The legend gives the group a clear accessible name. Without grouping, users may hear each option without the question it answers.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Practice grouped controls',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is the default method for an HTML form?',
+    a: 'The default method is GET when no method is specified. GET appends form data to the URL, which is useful for search-like actions but wrong for sensitive or state-changing submissions. POST is usually the better fit when the form changes server state.',
+    route: ['/html', 'trivia', 'html-form-default-method'],
+    cta: 'Review form methods',
+    level: 'beginner',
+  },
+  {
+    q: 'Why should form actions use real buttons?',
+    a: 'A real button has native role, focus, activation, disabled, and form submission behavior. A div with click handling does not provide those behaviors by default. Rebuilding button behavior manually is easy to get wrong for keyboard and assistive technology users.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Practice form controls',
+    level: 'beginner',
+  },
+];
+
+const HTML_ACCESSIBILITY_QUESTIONS: HtmlFocusedQuestionItem[] = [
+  {
+    q: 'When should you add ARIA?',
+    a: 'Add ARIA when native HTML cannot express the role, state, or relationship you need. Native elements should come first because they already include expected keyboard and accessibility behavior. Incorrect ARIA can make an accessible tree less accurate than plain HTML.',
+    route: ['/html', 'trivia', 'html-aria-roles'],
+    cta: 'Review ARIA roles',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is an accessible name?',
+    a: 'An accessible name is the name assistive technology exposes for a control or landmark. It can come from text content, labels, alt text, aria-label, aria-labelledby, or other naming rules. Missing or misleading names make controls hard to operate even when they are visible.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Practice accessible names',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should alt text work for linked images?',
+    a: 'When an image is inside a link, the alt text often becomes the link name. It should describe the destination or action, not just the image appearance. Alt text like "arrow" or "icon" usually fails because it does not explain what happens.',
+    route: ['/html', 'coding', 'html-links-and-images'],
+    cta: 'Practice links and images',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you make data tables accessible?',
+    a: 'Use real table markup, header cells, a useful caption when context is needed, and scope or header associations for complex tables. The structure should let users understand row and column relationships. Layout tables should be avoided because they communicate false data relationships.',
+    route: ['/html', 'coding', 'html-tables-accessibility'],
+    cta: 'Build accessible tables',
+    level: 'intermediate',
+  },
+  {
+    q: 'What makes an HTML dialog accessible?',
+    a: 'An accessible dialog has a clear name, appropriate modal behavior, predictable initial focus, escape behavior, and focus restoration. Background content should not stay reachable when the dialog is modal. The native dialog element helps, but the interaction still needs careful markup.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice dialog accessibility',
+    level: 'advanced',
+  },
+  {
+    q: 'How should keyboard navigation be checked?',
+    a: 'Tab through the page and confirm that focus order follows the DOM and user task. Every interactive element should be reachable, visible, and operable by keyboard. Positive tabindex values usually create fragile focus order and should be avoided.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Review accessibility checks',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should iframes be exposed accessibly?',
+    a: 'An iframe needs a title that explains the embedded content. The title helps users decide whether to enter or skip the embedded context. Security attributes such as sandbox and permissions should also match what the embedded content actually needs.',
+    route: ['/html', 'trivia', 'html-iframe-tag'],
+    cta: 'Review iframes',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you test HTML accessibility quickly?',
+    a: 'Start with keyboard navigation, labels, headings, landmarks, alt text, table headers, and form errors. Then inspect the accessibility tree and run automated checks such as Lighthouse or axe. Automated tools are useful, but they cannot prove that the user flow makes sense.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Practice accessibility review',
+    level: 'advanced',
+  },
+];
+
+const HTML_METADATA_QUESTIONS: HtmlFocusedQuestionItem[] = [
+  {
+    q: 'What belongs in the head for SEO and browser behavior?',
+    a: 'The head should include charset, viewport, title, description, canonical when needed, and resource metadata. These values guide rendering, crawling, previews, and navigation labels. Missing or duplicated head metadata can create confusing snippets and mobile behavior.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Review head SEO basics',
+    level: 'beginner',
+  },
+  {
+    q: 'How should the title tag be used?',
+    a: 'The title tag names the document for browser tabs, history, bookmarks, and search results. It should be specific to the page and not just repeat the site name. Multiple or vague titles make navigation and search snippets weaker.',
+    route: ['/html', 'trivia', 'html-title-tag'],
+    cta: 'Review title tags',
+    level: 'beginner',
+  },
+  {
+    q: 'What do meta tags do?',
+    a: 'Meta tags provide metadata such as charset, viewport, description, robots hints, and social preview information. They do not replace visible content, but they influence browser and crawler behavior. Some meta tags are critical for mobile rendering and snippet quality.',
+    route: ['/html', 'trivia', 'html-meta-tag'],
+    cta: 'Review meta tags',
+    level: 'beginner',
+  },
+  {
+    q: 'Why does the viewport meta tag matter?',
+    a: 'The viewport meta tag tells mobile browsers how to map CSS pixels to the device viewport. Without it, a page may render using a desktop-style layout width on phones. That makes otherwise valid markup feel broken on small screens.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Practice viewport metadata',
+    level: 'beginner',
+  },
+  {
+    q: 'How does HTML parsing affect invalid markup?',
+    a: 'Browsers recover from invalid markup using parsing rules, and the resulting DOM may not match the source you expected. Invalid nesting around paragraphs, tables, forms, and interactive elements can produce surprising structure. Inspect the live DOM when markup behavior looks wrong.',
+    route: ['/html', 'trivia', 'html-parsing-rendering'],
+    cta: 'Review parsing behavior',
+    level: 'advanced',
+  },
+  {
+    q: 'How do script loading attributes affect parsing?',
+    a: 'Classic scripts can block parsing unless they are deferred or loaded asynchronously. defer keeps execution ordered after parsing, while async runs when the script is ready. The wrong loading choice can delay content or create race conditions with DOM availability.',
+    route: ['/html', 'trivia', 'html-parsing-rendering'],
+    cta: 'Review parser behavior',
+    level: 'advanced',
+  },
+  {
+    q: 'How should responsive image markup be chosen?',
+    a: 'Use srcset and sizes when the same image needs different resolutions, and picture when the art direction or format changes. Include width and height or an aspect ratio so space can be reserved before the image loads. Bad sizes values can cause unnecessary large downloads.',
+    route: ['/html', 'trivia', 'html-img-srcset'],
+    cta: 'Review srcset',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should iframes be loaded and constrained?',
+    a: 'Iframes should use only the permissions they need and should be titled clearly. loading="lazy" can defer offscreen iframe work, and sandbox can limit capabilities when appropriate. Embedded content affects performance, security, and accessibility, so it should not be treated as a neutral tag.',
+    route: ['/html', 'trivia', 'html-iframe-tag'],
+    cta: 'Review iframe behavior',
+    level: 'advanced',
+  },
+];
+
+const HTML_MODERN_SCENARIO_QUESTIONS: HtmlScenarioQuestionItem[] = [
+  {
+    q: 'How does native dialog compare with a custom modal?',
+    a: 'Native dialog can provide built-in modal behavior and browser semantics. A custom modal must recreate focus trapping, naming, escape behavior, background isolation, and focus restoration. Native support reduces work, but the surrounding interaction still needs testing.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice dialog behavior',
+    level: 'advanced',
+  },
+  {
+    q: 'What are details, summary, and popover useful for?',
+    a: 'details and summary provide native disclosure behavior without custom JavaScript. The popover attribute can expose lightweight overlay behavior for supported cases. Native primitives are useful when they match the interaction, but they still need labels, focus behavior, and fallback awareness.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do template and slot support component markup?',
+    a: 'template holds inert markup that can be cloned later, and slot defines insertion points for web component content. They support reusable markup without immediately rendering everything into the main DOM. The trade-off is that composition and accessibility still need explicit contracts.',
+    route: ['/html', 'trivia', 'html-shadow-dom'],
+    cta: 'Review web components',
+    level: 'advanced',
+  },
+  {
+    q: 'Why can invalid nesting change the page structure?',
+    a: 'The HTML parser can automatically close or move elements to produce a valid DOM. Source that looks nested one way may become a different live tree. This is especially important around paragraphs, forms, tables, lists, and interactive elements.',
+    route: ['/html', 'trivia', 'html-parsing-rendering'],
+    cta: 'Review parsing rules',
+    level: 'advanced',
+  },
+  {
+    q: 'Why is this input hard to use: <input placeholder="Email">?',
+    a: 'The input has no durable accessible label. Placeholder text disappears during input and is not a stable field name. Add a label connected with for and id, then keep the placeholder only as optional hint text.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Fix labeled inputs',
+    level: 'beginner',
+  },
+  {
+    q: 'Why is this image link weak: <a><img alt="arrow"></a>?',
+    a: 'The linked image gives the link an accessible name of "arrow", which describes the icon rather than the action. The link name should explain the destination or action, such as "View pricing". Image alt text inside links often needs to describe behavior, not pixels.',
+    route: ['/html', 'coding', 'html-links-and-images'],
+    cta: 'Practice image links',
+    level: 'beginner',
+  },
+  {
+    q: 'Why is a table without headers hard to understand?',
+    a: 'Data cells need header relationships so users can understand what each value means. Without th, caption, scope, or header associations, assistive technology cannot reliably expose row and column context. The visual grid alone is not enough for non-visual navigation.',
+    route: ['/html', 'coding', 'html-tables-accessibility'],
+    cta: 'Fix table markup',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why is a clickable div a fragile button?',
+    a: 'A clickable div lacks native button role, keyboard activation, disabled behavior, and form interaction. Adding JavaScript handlers does not automatically recreate all expected behavior. Use a real button for actions and style it as needed.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice native controls',
+    level: 'beginner',
+  },
+];
+
 const HTML_TOPIC_CARDS: HtmlTopicCard[] = [
   {
     title: 'HTML role in web development',
@@ -4617,6 +5205,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     this.scrollToSection(targetId);
   }
 
+  scrollToHtmlSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
   private scrollToSection(targetId: string): void {
     const target = this.document.getElementById(targetId);
     if (!target) return;
@@ -4865,6 +5457,61 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   isHtmlHub(): boolean {
     return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'html';
+  }
+
+  htmlEditorialSignal(): HtmlEditorialSignal {
+    return HTML_EDITORIAL_SIGNAL;
+  }
+
+  htmlAnchorItems(): HtmlAnchorItem[] {
+    return HTML_ANCHOR_ITEMS;
+  }
+
+  htmlKeywordClusters(): HtmlKeywordClusterItem[] {
+    return HTML_KEYWORD_CLUSTERS;
+  }
+
+  htmlShortAnswers(): HtmlShortAnswerItem[] {
+    return HTML_SHORT_ANSWERS;
+  }
+
+  htmlAudienceTracks(): HtmlAudienceTrack[] {
+    return HTML_AUDIENCE_TRACKS;
+  }
+
+  htmlSemanticsQuestions(): HtmlFocusedQuestionItem[] {
+    return HTML_SEMANTICS_QUESTIONS;
+  }
+
+  htmlFormsQuestions(): HtmlFocusedQuestionItem[] {
+    return HTML_FORMS_QUESTIONS;
+  }
+
+  htmlAccessibilityQuestions(): HtmlFocusedQuestionItem[] {
+    return HTML_ACCESSIBILITY_QUESTIONS;
+  }
+
+  htmlMetadataQuestions(): HtmlFocusedQuestionItem[] {
+    return HTML_METADATA_QUESTIONS;
+  }
+
+  htmlModernScenarioQuestions(): HtmlScenarioQuestionItem[] {
+    return HTML_MODERN_SCENARIO_QUESTIONS;
+  }
+
+  htmlShortAnswerCategoryLabel(category: HtmlShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'semantics':
+        return 'Semantics';
+      case 'forms-accessibility':
+        return 'Forms + accessibility';
+      case 'metadata-browser':
+        return 'Metadata + browser';
+      default:
+        return 'Modern + scenarios';
+    }
   }
 
   htmlTopicCards(): HtmlTopicCard[] {
@@ -5767,20 +6414,39 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isHtmlHub()) {
+      collectionPage['dateModified'] = HTML_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: HTML_EDITORIAL_SIGNAL.reviewer,
+      };
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
-        { '@type': 'Thing', name: 'HTML5 basics' },
-        { '@type': 'Thing', name: 'HTML accessibility testing' },
-        { '@type': 'Thing', name: 'HTML best practices' },
-        { '@type': 'Thing', name: 'Semantic HTML forms and tables' },
+        { '@type': 'Thing', name: 'HTML interview questions and answers' },
+        { '@type': 'Thing', name: 'HTML interview questions for beginners' },
+        { '@type': 'Thing', name: 'HTML interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'semantic HTML interview questions' },
+        { '@type': 'Thing', name: 'HTML forms interview questions' },
+        { '@type': 'Thing', name: 'HTML accessibility interview questions' },
+        { '@type': 'Thing', name: 'ARIA interview questions' },
+        { '@type': 'Thing', name: 'HTML metadata interview questions' },
+        { '@type': 'Thing', name: 'HTML5 interview questions' },
+        { '@type': 'Thing', name: 'DOM interview questions' },
+        { '@type': 'Thing', name: 'HTML table accessibility questions' },
+        { '@type': 'Thing', name: 'HTML image alt and srcset questions' },
+        { '@type': 'Thing', name: 'HTML iframe interview questions' },
+        { '@type': 'Thing', name: 'Shadow DOM interview questions' },
+        { '@type': 'Thing', name: 'HTML markup scenario questions' },
       ];
       collectionPage['mentions'] = [
         ...(collectionPage['mentions'] || []),
-        { '@type': 'Thing', name: 'Common HTML mistakes' },
-        { '@type': 'Thing', name: 'Modern HTML interview topics' },
-        { '@type': 'Thing', name: 'HTML learning resources' },
-        { '@type': 'Thing', name: 'HTML role in web development' },
-        { '@type': 'Thing', name: 'HTML behavioral interview preparation' },
+        { '@type': 'Thing', name: 'HTML DOM and document structure' },
+        { '@type': 'Thing', name: 'Semantic HTML landmarks and headings' },
+        { '@type': 'Thing', name: 'HTML form labels and validation' },
+        { '@type': 'Thing', name: 'HTML ARIA roles and accessible names' },
+        { '@type': 'Thing', name: 'HTML metadata, title, and meta tags' },
+        { '@type': 'Thing', name: 'HTML browser parsing and rendering' },
+        { '@type': 'Thing', name: 'HTML native dialog behavior' },
+        { '@type': 'Thing', name: 'HTML Shadow DOM and web components' },
       ];
     }
 
@@ -5814,6 +6480,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
     if (this.isCssHub()) {
       jsonLd.push(this.cssShortAnswersFaqPage(canonicalUrl));
+    }
+    if (this.isHtmlHub()) {
+      jsonLd.push(this.htmlShortAnswersFaqPage(canonicalUrl));
     }
 
     this.seo.updateTags({
@@ -5915,6 +6584,23 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       url: canonicalUrl,
       name: 'Top CSS interview questions and short answers, beginner to advanced',
       mainEntity: this.cssShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private htmlShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#html-short-answers`,
+      url: canonicalUrl,
+      name: 'Top HTML interview questions and short answers, beginner to advanced',
+      mainEntity: this.htmlShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: {

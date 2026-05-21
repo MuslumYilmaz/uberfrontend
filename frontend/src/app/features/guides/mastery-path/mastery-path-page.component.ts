@@ -2,7 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnDestroy, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { firstValueFrom, Subscription } from 'rxjs';
-import { distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { QuestionKind } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { MasteryPathResolved } from '../../../core/resolvers/mastery-path.resolver';
@@ -10,6 +10,7 @@ import { MasteryProgressService } from '../../../core/services/mastery-progress.
 import { QuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
+import { getMasteryPathBySlug } from '../../../shared/mastery/mastery.registry';
 import {
   MasteryActionTarget,
   MasteryItem,
@@ -513,13 +514,18 @@ export class MasteryPathPageComponent implements OnDestroy {
     this.sub = this.route.data
       .pipe(
         startWith(this.route.snapshot.data),
+        filter((data) => Object.prototype.hasOwnProperty.call(data, 'masteryPath')),
         map((data) => (data['masteryPath'] as MasteryPathResolved | null) ?? null),
         distinctUntilChanged((a, b) => a?.slug === b?.slug),
       )
       .subscribe((resolved) => {
         if (!resolved) {
-          void this.refreshTargetQuestionMap(null);
-          this.go404();
+          const slug = String(this.route.snapshot.paramMap.get('slug') || '').trim();
+          if (!slug) return;
+          if (!getMasteryPathBySlug(slug)) {
+            void this.refreshTargetQuestionMap(null);
+            this.go404();
+          }
           return;
         }
 

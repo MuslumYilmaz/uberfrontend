@@ -277,6 +277,14 @@
 .iq-section--css-layout,
 .iq-section--css-responsive,
 .iq-section--css-debugging,
+.iq-section--html-clusters,
+.iq-section--html-short-answers,
+.iq-section--html-audience,
+.iq-section--html-semantics,
+.iq-section--html-forms,
+.iq-section--html-accessibility,
+.iq-section--html-metadata,
+.iq-section--html-modern-scenarios,
 .iq-section--javascript-coverage,
 .iq-section--react-coverage,
 .iq-section--angular-coverage,
@@ -290,7 +298,8 @@
 .iq-vue-toc,
 .iq-angular-toc,
 .iq-html-css-toc,
-.iq-css-toc {
+.iq-css-toc,
+.iq-html-toc {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -306,7 +315,8 @@
 .iq-vue-toc .iq-context-kicker,
 .iq-angular-toc .iq-context-kicker,
 .iq-html-css-toc .iq-context-kicker,
-.iq-css-toc .iq-context-kicker {
+.iq-css-toc .iq-context-kicker,
+.iq-html-toc .iq-context-kicker {
   margin: 0;
 }
 
@@ -315,7 +325,8 @@
 .iq-vue-toc__links,
 .iq-angular-toc__links,
 .iq-html-css-toc__links,
-.iq-css-toc__links {
+.iq-css-toc__links,
+.iq-html-toc__links {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -326,7 +337,8 @@
 .iq-vue-toc__links button,
 .iq-angular-toc__links button,
 .iq-html-css-toc__links button,
-.iq-css-toc__links button {
+.iq-css-toc__links button,
+.iq-html-toc__links button {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
@@ -347,7 +359,8 @@
 .iq-vue-toc__links button:hover,
 .iq-angular-toc__links button:hover,
 .iq-html-css-toc__links button:hover,
-.iq-css-toc__links button:hover {
+.iq-css-toc__links button:hover,
+.iq-html-toc__links button:hover {
   border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
   color: var(--uf-text-primary);
 }
@@ -357,7 +370,8 @@
 .iq-vue-toc__links button:focus-visible,
 .iq-angular-toc__links button:focus-visible,
 .iq-html-css-toc__links button:focus-visible,
-.iq-css-toc__links button:focus-visible {
+.iq-css-toc__links button:focus-visible,
+.iq-html-toc__links button:focus-visible {
   outline: none;
   box-shadow: var(--uf-focus-ring);
 }
@@ -889,7 +903,8 @@
   .iq-vue-toc,
   .iq-angular-toc,
   .iq-html-css-toc,
-  .iq-css-toc {
+  .iq-css-toc,
+  .iq-html-toc {
     align-items: stretch;
   }
 
@@ -898,7 +913,8 @@
   .iq-vue-toc__links,
   .iq-angular-toc__links,
   .iq-html-css-toc__links,
-  .iq-css-toc__links {
+  .iq-css-toc__links,
+  .iq-html-toc__links {
     gap: 6px;
   }
 
