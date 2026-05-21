@@ -122,6 +122,50 @@ type ReactEditorialSignal = {
   coverage: string;
   dateModified: string;
 };
+type VueShortAnswerCategory = 'fundamentals' | 'reactivity-rendering' | 'components' | 'routing-state' | 'modern';
+type VueShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: VueShortAnswerCategory;
+  level: QuestionLevel;
+};
+type VueAnchorItem = { label: string; targetId: string };
+type VueKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type VueAudienceTrack = { title: string; detail: string };
+type VueFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type VueScenarioQuestionItem = {
+  q: string;
+  code: string;
+  explanation: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type VueModernQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type VueEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type AngularCoverageLink = { label: string; route: any[] };
 type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
 type AngularMistakeItem = { title: string; detail: string };
@@ -174,6 +218,36 @@ type HtmlTopicCard = { title: string; answer: string; link: HtmlCoverageLink };
 type HtmlMistakeItem = { title: string; detail: string };
 type HtmlBehavioralItem = { title: string; detail: string };
 type HtmlResourceLink = { label: string; href: string; summary: string };
+type HtmlShortAnswerCategory = 'fundamentals' | 'semantics' | 'forms-accessibility' | 'metadata-browser' | 'modern-scenarios';
+type HtmlShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: HtmlShortAnswerCategory;
+  level: QuestionLevel;
+};
+type HtmlAnchorItem = { label: string; targetId: string };
+type HtmlKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type HtmlAudienceTrack = { title: string; detail: string };
+type HtmlFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type HtmlScenarioQuestionItem = HtmlFocusedQuestionItem;
+type HtmlEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
 type HtmlCssShortAnswerCategory = 'html' | 'css' | 'accessibility' | 'responsive-debugging';
 type HtmlCssShortAnswerItem = {
   q: string;
@@ -206,6 +280,36 @@ type HtmlCssCodeQuestionItem = {
   cta?: string;
 };
 type HtmlCssEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
+type CssShortAnswerCategory = 'fundamentals' | 'cascade-selectors' | 'layout' | 'responsive' | 'debugging-performance';
+type CssShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  category: CssShortAnswerCategory;
+  level: QuestionLevel;
+};
+type CssAnchorItem = { label: string; targetId: string };
+type CssKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type CssAudienceTrack = { title: string; detail: string };
+type CssFocusedQuestionItem = {
+  q: string;
+  a: string;
+  level: QuestionLevel;
+  route?: any[];
+  cta?: string;
+};
+type CssScenarioQuestionItem = CssFocusedQuestionItem;
+type CssEditorialSignal = {
   reviewedLabel: string;
   reviewer: string;
   coverage: string;
@@ -527,16 +631,28 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   vue: [
     {
-      q: 'Are Vue.js and Vue JS interview questions the same target?',
-      a: 'Yes. Candidates search both variants, so this hub uses Vue.js for the framework name while still making the Vue JS query intent clear.',
+      q: 'Are these Vue.js interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with Vue fundamentals, then moves into experienced-developer topics such as reactivity traps, Composition API design, Router, Pinia/Vuex, scenarios, testing, security, and performance.',
     },
     {
-      q: 'What should I practice first for Vue.js interviews?',
-      a: 'Start with reactivity, computed values, watchers, nextTick timing, props/emits, and key stability before moving into larger component prompts.',
+      q: 'Does this page cover Vue 3 and Composition API interview questions?',
+      a: 'Yes. It covers Vue 3 reactivity, ref, reactive, computed values, watch, watchEffect, script setup, composables, Composition API trade-offs, Router, Pinia/Vuex, Teleport, Suspense, SSR, and Nuxt-style concerns.',
     },
     {
-      q: 'How do I know a Vue answer is strong enough?',
-      a: 'A strong answer predicts the update path, names the state boundary, and explains the bug you would expect if the component contract is wrong.',
+      q: 'Does this page include Vue reactivity interview questions like ref vs reactive and computed vs watch?',
+      a: 'Yes. The reactivity sections cover ref, reactive, computed values, methods, watch, watchEffect, nextTick, dependency tracking, destructuring traps, virtual DOM diffing, and update batching.',
+    },
+    {
+      q: 'Does this page include Vue scenario and code interview questions?',
+      a: 'Yes. The scenario section covers destructuring that breaks reactivity, watcher loops, unstable v-for keys, prop mutation, nextTick timing, v-if lifecycle resets, computed side effects, and stale async search results.',
+    },
+    {
+      q: 'Does this page include Vue testing, security, and performance interview questions?',
+      a: 'Yes. It covers Vue Test Utils, Vitest, async DOM assertions, emitted events, v-html XSS risk, safe rich text, profiling, update dependencies, and cleanup for timers, listeners, and external subscriptions.',
+    },
+    {
+      q: 'Where should I practice Vue.js coding interview questions?',
+      a: 'Start with the Vue coding preview on this page, then move into debounced search, autocomplete, tabs, shopping cart, and the Vue prep path when you need a structured practice sequence.',
     },
   ],
   htmlCss: [
@@ -559,46 +675,50 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   html: [
     {
-      q: 'What do HTML interview questions usually test?',
-      a: 'They test semantic structure, forms, labels, landmarks, metadata, browser defaults, accessibility, and progressive enhancement decisions.',
+      q: 'Are these HTML interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with beginner HTML fundamentals, then moves into experienced-developer topics such as accessibility trade-offs, browser parsing, Shadow DOM, native dialogs, iframes, responsive images, and markup scenarios.',
     },
     {
-      q: 'How should I answer an HTML concept question?',
-      a: 'Explain the user or browser behavior first, then name the element, attribute, accessibility effect, and validation or SEO trade-off.',
+      q: 'Does this page cover semantic HTML, forms, and accessibility?',
+      a: 'Yes. It covers document structure, landmarks, headings, forms, labels, validation, tables, alt text, keyboard checks, accessible names, ARIA roles, dialogs, and iframes.',
     },
     {
-      q: 'When should HTML prep move into UI coding?',
-      a: 'Move into UI coding once the semantic answer is clear and you need to prove the structure works in a real component.',
+      q: 'Does this page include HTML metadata, DOM, and browser parsing questions?',
+      a: 'Yes. It covers the DOM, head metadata, title and meta tags, viewport behavior, responsive image markup, script loading, iframe constraints, and how invalid markup can change the live DOM.',
     },
     {
-      q: 'What is the difference between HTML and HTML5?',
-      a: 'HTML5 is the common shorthand for modern HTML: the simple doctype, semantic elements, native media, validation, and living-standard browser behavior used in current web development.',
+      q: 'Does this page cover modern HTML topics like dialog, srcset, iframes, and Shadow DOM?',
+      a: 'Yes. The modern scenarios section covers native dialog behavior, details, summary, popover, template, slot, Shadow DOM, srcset, iframes, invalid nesting, and native controls.',
     },
     {
-      q: 'How do I test my HTML code for accessibility?',
-      a: 'Start manually with keyboard navigation, labels, focus order, headings, table headers, and mobile reflow. Then run Lighthouse, axe, an accessibility-tree inspection, and an HTML checker.',
-    },
-    {
-      q: 'What are the best resources for learning HTML?',
-      a: 'Use MDN for practical reference, the WHATWG HTML Living Standard for source-of-truth behavior, WAI tutorials for accessibility, Chrome DevTools for inspection, and W3C tools for validation.',
-    },
-    {
-      q: 'How do behavioral questions show up in HTML interviews?',
-      a: 'They usually ask for judgment stories: improving accessibility, fixing metadata or SEO, choosing native semantics over custom code, and collaborating on form or content clarity.',
+      q: 'Where should I practice HTML coding interview questions?',
+      a: 'Start with the HTML coding preview on this page, then practice basic document structure, labeled contact forms, validation, semantic layout, accessible tables, links, images, lists, and native dialog behavior.',
     },
   ],
   css: [
     {
-      q: 'How should I practice each CSS interview question?',
-      a: 'State the layout constraint, choose the CSS tool, explain why alternatives are weaker, then test overflow, responsiveness, and accessibility impact.',
+      q: 'Are these CSS interview questions for beginners and experienced developers?',
+      a: 'Yes. The page starts with CSS fundamentals, then moves into experienced-developer topics such as cascade architecture, specificity control, responsive constraints, stacking contexts, performance, and visual debugging.',
     },
     {
-      q: 'Which CSS interview questions are highest leverage?',
-      a: 'Flexbox, grid, cascade, specificity, custom properties, stacking, responsive sizing, and overflow debugging usually pay off first.',
+      q: 'Does this page cover CSS specificity and cascade interview questions?',
+      a: 'Yes. It covers cascade order, layers, specificity, inheritance, pseudo selectors, !important, selector strategy, and how to debug conflicting declarations.',
     },
     {
-      q: 'When should I switch from concepts to coding?',
-      a: 'Switch when you understand the rule but cannot yet produce a stable layout under width, content, and interaction constraints.',
+      q: 'Does this page include Flexbox and CSS Grid interview questions?',
+      a: 'Yes. It covers when to use Flexbox, when to use CSS Grid, Flexbox vs Grid trade-offs, alignment, wrapping navigation, responsive grids, positioning, sticky behavior, and z-index.',
+    },
+    {
+      q: 'Does this page include responsive CSS and media query questions?',
+      a: 'Yes. It covers responsive CSS, media queries, container queries, clamp(), fluid sizing, responsive navigation, card layouts, long text, reduced motion, and theme variables.',
+    },
+    {
+      q: 'Does this page cover CSS debugging and performance questions?',
+      a: 'Yes. It covers missing styles, specificity conflicts, horizontal scroll, stacking bugs, layout thrashing, hardware acceleration, custom properties, and maintainable CSS.',
+    },
+    {
+      q: 'Where should I practice CSS coding interview questions?',
+      a: 'Start with the CSS coding preview on this page, then move into Flexbox navbar, Grid card gallery, fluid clamp sizing, theme variables, and responsive layout drills.',
     },
   ],
 };
@@ -2325,6 +2445,595 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
   },
 ];
 
+const VUE_EDITORIAL_SIGNAL: VueEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible Vue.js questions across reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, modern Vue, testing, security, and performance',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const VUE_ANCHOR_ITEMS: VueAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-vue-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-vue-short-answers-title' },
+  { label: 'Audience', targetId: 'iq-vue-audience-title' },
+  { label: 'Reactivity', targetId: 'iq-vue-reactivity-title' },
+  { label: 'Components', targetId: 'iq-vue-components-title' },
+  { label: 'Scenarios + code', targetId: 'iq-vue-scenarios-title' },
+  { label: 'Modern Vue 3', targetId: 'iq-vue-modern-title' },
+  { label: 'Testing + security', targetId: 'iq-vue-testing-security-title' },
+  { label: 'Coding drills', targetId: 'iq-vue-coding-preview-title' },
+  { label: 'Concepts', targetId: 'iq-vue-concept-preview-title' },
+];
+
+const VUE_KEYWORD_CLUSTERS: VueKeywordClusterItem[] = [
+  {
+    label: 'Beginner Vue.js questions',
+    targetId: 'iq-vue-short-answers-title',
+    detail: 'Vue basics, templates, directives, components, props, emits, lifecycle hooks, and common Vue.js interview answers.',
+  },
+  {
+    label: 'Experienced Vue.js questions',
+    targetId: 'iq-vue-audience-title',
+    detail: 'Reactivity traps, component contracts, Router, Pinia/Vuex, SSR, testing, security, performance, and production debugging.',
+  },
+  {
+    label: 'Vue 3 and Composition API',
+    targetId: 'iq-vue-modern-title',
+    detail: 'Composition API, script setup, composables, Pinia, Router 4, Teleport, Suspense, and SSR.',
+  },
+  {
+    label: 'Reactivity: ref, reactive, computed, watch',
+    targetId: 'iq-vue-reactivity-title',
+    detail: 'ref vs reactive, computed vs watch, watchEffect, nextTick, dependency tracking, destructuring traps, and update timing.',
+  },
+  {
+    label: 'Router, Pinia, and Vuex',
+    targetId: 'iq-vue-components-title',
+    detail: 'Vue Router navigation, route lifecycle, Pinia/Vuex boundaries, and shared state ownership.',
+  },
+  {
+    label: 'Testing, security, and performance',
+    targetId: 'iq-vue-testing-security-title',
+    detail: 'Vue Test Utils, Vitest, async DOM updates, v-html safety, cleanup, and render performance.',
+  },
+];
+
+const VUE_SHORT_ANSWERS: VueShortAnswerItem[] = [
+  {
+    q: 'What is Vue.js?',
+    a: 'Vue.js is a progressive JavaScript framework for building reactive user interfaces with components. Vue tracks reactive state, renders templates, and patches the DOM when dependencies change. Its practical strength is that simple components stay approachable while larger apps can add Router, Pinia, composables, testing, and build tooling as needed.',
+    route: ['/vue', 'trivia', 'vue-reactivity-vs-react-concepts'],
+    cta: 'Review Vue concepts',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between Vue 2 and Vue 3?',
+    a: 'Vue 3 introduced a Proxy-based reactivity system, the Composition API, better TypeScript support, fragments, Teleport, Suspense, and a faster runtime. Vue 2 used Object.defineProperty-based reactivity and the Options API as the dominant authoring model. The compatibility concern is that migrations can expose plugin, lifecycle, state-management, and template-assumption differences.',
+    route: ['/vue', 'trivia', 'vue-composition-api'],
+    cta: 'Review Vue 3 patterns',
+    category: 'modern',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does Vue reactivity work?',
+    a: 'Vue tracks reactive reads during rendering or effects and triggers the dependent work when those values are written. In Vue 3, proxies let Vue observe object property access and updates more flexibly than Vue 2. The important edge case is that extracting values out of a reactive proxy can disconnect them from tracking unless you preserve refs.',
+    route: ['/vue', 'trivia', 'vue-reactivity-system'],
+    cta: 'Review reactivity',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is the difference between ref and reactive?',
+    a: 'ref wraps a value in an object with a .value property, while reactive returns a proxy for object-shaped state. ref is usually clearer for primitives and replaceable values; reactive can be convenient when mutating properties on a stable object. Destructuring reactive state can break reactivity, so toRef or toRefs may be needed when extracting fields.',
+    route: ['/vue', 'trivia', 'vue-ref-vs-reactive-difference-traps'],
+    cta: 'Compare ref and reactive',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are computed properties in Vue?',
+    a: 'Computed properties are cached derived values based on reactive dependencies. They rerun only when a dependency changes, which makes them better than methods for values used repeatedly in templates. Computed getters should stay pure and synchronous; side effects belong in watch or watchEffect.',
+    route: ['/vue', 'trivia', 'vue-computed-properties'],
+    cta: 'Review computed values',
+    category: 'reactivity-rendering',
+    level: 'beginner',
+  },
+  {
+    q: 'What happens when methods are called in Vue templates?',
+    a: 'A method called from a template can run again whenever the component renders. That is fine for cheap event handlers or formatting, but it is risky for expensive derived values. If the value is derived from reactive state and should be cached, computed is usually the better fit.',
+    route: ['/vue', 'trivia', 'vue-methods-in-templates'],
+    cta: 'Review template methods',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use watch in Vue?',
+    a: 'Use watch when a reactive value changing should trigger an imperative side effect such as fetching, logging, writing to storage, or syncing external state. A watcher can observe a specific source and gives access to new and old values. It is the wrong tool for pure derived display state, where computed is simpler and safer.',
+    route: ['/vue', 'trivia', 'vue-computed-vs-watchers'],
+    cta: 'Compare computed and watch',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is watchEffect in Vue?',
+    a: 'watchEffect automatically tracks reactive values read during its callback and reruns when any of them change. It is useful when dependencies are natural to read inside the effect, but it can be less explicit than watch. A common failure is creating loops by writing to the same reactive state the effect reads.',
+    route: ['/vue', 'trivia', 'vue-watch-vs-watcheffect-differences-infinite-loops'],
+    cta: 'Review watchEffect traps',
+    category: 'reactivity-rendering',
+    level: 'advanced',
+  },
+  {
+    q: 'What does nextTick do in Vue?',
+    a: 'nextTick waits until Vue has flushed pending DOM updates from reactive state changes. It is useful when you need to focus, measure, or scroll after the DOM reflects new state. It should not be used as a general fix for unclear data flow; first explain why DOM timing is the actual dependency.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    cta: 'Review nextTick timing',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are Vue lifecycle hooks?',
+    a: 'Lifecycle hooks run at specific points in a component lifecycle, such as creation, mount, update, and unmount. They help place setup, DOM-dependent work, subscriptions, and cleanup at the correct time. Bugs often come from reading DOM too early or forgetting to clean up timers, listeners, and external subscriptions.',
+    route: ['/vue', 'trivia', 'vue-lifecycle-hooks'],
+    cta: 'Review lifecycle hooks',
+    category: 'components',
+    level: 'beginner',
+  },
+  {
+    q: 'What are components in Vue?',
+    a: 'Vue components are reusable UI units that combine template, state, behavior, styles, and a public contract. Single-file components make that contract easier to maintain by keeping the component implementation in one file. The component should expose clear props and emits instead of letting children mutate parent-owned state directly.',
+    route: ['/vue', 'trivia', 'vue-sfc-vs-global-components'],
+    cta: 'Review component scope',
+    category: 'components',
+    level: 'beginner',
+  },
+  {
+    q: 'How should props work in Vue?',
+    a: 'Props are inputs owned by the parent and passed down to a child. A child should treat props as read-only and emit an event when it wants the parent to change state. Mutating props directly creates ownership confusion and can be overwritten on the next parent update.',
+    route: ['/vue', 'trivia', 'vue-child-mutates-prop-directly'],
+    cta: 'Review prop ownership',
+    category: 'components',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why should emits be declared in Vue?',
+    a: 'Declaring emits documents the events a component can send and helps catch mistakes in event names or payload expectations. It also separates component events from native DOM events. In larger codebases, explicit emits make component contracts safer to refactor.',
+    route: ['/vue', 'trivia', 'vue-why-declare-emits-type-safety-maintenance'],
+    cta: 'Review emits contracts',
+    category: 'components',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are slots in Vue?',
+    a: 'Slots let a parent provide content to a child component while the child controls placement. Named slots support multiple content regions, and scoped slots let the child expose data back to the parent render scope. The trade-off is that too many slot contracts can make component behavior harder to trace.',
+    route: ['/vue', 'trivia', 'vue-slots-default-named-scoped-slot-props'],
+    cta: 'Review Vue slots',
+    category: 'components',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use provide and inject?',
+    a: 'provide and inject pass dependencies through a component tree without threading props through every level. They fit design-system services, form context, deeply nested wiring, or plugin-style dependencies. They can hide coupling, so app-wide business state is often clearer in a store such as Pinia.',
+    route: ['/vue', 'trivia', 'vue-provide-inject-vs-prop-drilling-tradeoffs'],
+    cta: 'Review provide/inject',
+    category: 'components',
+    level: 'advanced',
+  },
+  {
+    q: 'What does v-model expand to?',
+    a: 'v-model is syntax sugar for binding a value and listening for an update event. On custom components, it usually maps to a modelValue prop and update:modelValue event, with support for named models and modifiers. Understanding the expansion helps debug controlled form components and event payload bugs.',
+    route: ['/vue', 'trivia', 'vue-v-model-syntax-sugar-expansion'],
+    cta: 'Review v-model internals',
+    category: 'components',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is the difference between v-if and v-show?',
+    a: 'v-if conditionally creates and destroys DOM and component instances, while v-show keeps the element mounted and toggles display. v-if is better when the block is rarely shown, and v-show is better for frequent visibility toggles. State reset and lifecycle cleanup are the key behavioral differences.',
+    route: ['/vue', 'trivia', 'vue-v-show-vs-v-if-dom-lifecycle'],
+    cta: 'Compare visibility strategies',
+    category: 'reactivity-rendering',
+    level: 'beginner',
+  },
+  {
+    q: 'Why are keys important in v-for lists?',
+    a: 'Keys give Vue stable identity for list items across insertions, removals, and reordering. Without stable keys, Vue may reuse DOM or component state for the wrong item. Index keys are fragile for dynamic lists because identity changes when order changes.',
+    route: ['/vue', 'trivia', 'vue-v-for-keys-why-not-index'],
+    cta: 'Review list keys',
+    category: 'reactivity-rendering',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are Vue directives?',
+    a: 'Directives are template instructions such as v-bind, v-on, v-if, v-for, v-model, and v-show. They compile into reactive behavior that connects state, events, attributes, rendering, and visibility. Custom directives are useful for direct DOM behavior, but they should not replace component state flow.',
+    route: ['/vue', 'trivia', 'vue-directives'],
+    cta: 'Review directives',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the Composition API?',
+    a: 'The Composition API lets Vue components organize logic around features using setup, refs, reactive state, computed values, watchers, and composables. It is especially useful when one feature spans state, lifecycle, and side effects. The main benefit is maintainability and reuse, not simply replacing Options API syntax.',
+    route: ['/vue', 'trivia', 'vue-composition-api'],
+    cta: 'Review Composition API',
+    category: 'modern',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are composables in Vue?',
+    a: 'Composables are functions that encapsulate reusable Composition API logic. They can own refs, computed values, watchers, lifecycle hooks, and cleanup behavior. A good composable has a clear ownership boundary and does not hide surprising global state unless that is its explicit purpose.',
+    route: ['/vue', 'trivia', 'vue-composition-api-vs-mixins'],
+    cta: 'Review reuse patterns',
+    category: 'modern',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is Vue Router used for?',
+    a: 'Vue Router manages client-side navigation, route matching, nested views, params, query state, and navigation guards. It lets a Vue app behave like multiple pages while avoiding full document reloads. Route guards should have clear allowed, denied, and redirect outcomes to avoid navigation loops.',
+    route: ['/vue', 'trivia', 'vue-router-navigation'],
+    cta: 'Review Vue Router',
+    category: 'routing-state',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use Pinia or Vuex?',
+    a: 'Use local component state until state must be shared across distant components, persisted, debugged centrally, or coordinated through a predictable update path. Pinia is the modern Vue 3 default, while Vuex still appears in older applications. The key decision is state ownership, not moving every value into a global store.',
+    route: ['/vue', 'trivia', 'vuex-state-management'],
+    cta: 'Review store boundaries',
+    category: 'routing-state',
+    level: 'advanced',
+  },
+  {
+    q: 'How does Vue virtual DOM diffing work?',
+    a: 'Vue renders a virtual node tree and compares the next tree with the previous one to decide what DOM patches are needed. Stable keys help Vue preserve the correct item and component identity during list changes. Diffing is efficient, but it cannot fix unclear identity or excessive reactive dependencies.',
+    route: ['/vue', 'trivia', 'vue-virtual-dom-diffing'],
+    cta: 'Review Vue diffing',
+    category: 'reactivity-rendering',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you improve Vue performance?',
+    a: 'Start by reducing unnecessary reactive work, using computed values for cached derived state, keeping keys stable, splitting heavy components, and avoiding expensive template methods. For large lists, use pagination, windowing, or server-side constraints instead of rendering everything. Measure before optimizing because many Vue bottlenecks are data-shape or component-boundary problems.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+    category: 'modern',
+    level: 'advanced',
+  },
+];
+
+const VUE_AUDIENCE_TRACKS: VueAudienceTrack[] = [
+  {
+    title: 'Vue.js interview questions for beginners',
+    detail: 'Start with Vue templates, directives, components, props, emits, v-model, computed values, watchers, lifecycle hooks, and the difference between v-if, v-show, and v-for keys.',
+  },
+  {
+    title: 'Vue.js interview questions for experienced developers',
+    detail: 'Move into reactivity traps, Composition API design, composables, Router guards, Pinia/Vuex boundaries, SSR/Nuxt hydration, testing, security, performance, and production debugging scenarios.',
+  },
+];
+
+const VUE_REACTIVITY_RENDERING_QUESTIONS: VueFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How does Vue know which component to update?',
+    a: 'Vue tracks which reactive values are read while rendering or while running an effect. When one of those values changes, Vue schedules the dependent component or effect instead of rerendering everything immediately. The practical debugging step is to find which reactive read created the dependency.',
+    route: ['/vue', 'trivia', 'vue-reactivity-system'],
+    cta: 'Review dependency tracking',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can destructuring break Vue reactivity?',
+    a: 'Destructuring a property out of a reactive object can copy the current value out of the proxy. Later reads may no longer go through Vue tracking, so updates can appear stale. Use toRef or toRefs when extracted properties must remain reactive.',
+    route: ['/vue', 'trivia', 'vue-destructuring-breaks-reactivity-torefs-toref'],
+    cta: 'Debug destructuring',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why should computed values avoid side effects?',
+    a: 'Computed getters are meant to return cached derived state from reactive inputs. If a computed getter writes state, fetches data, or mutates external resources, rendering can become unpredictable. Use watch or watchEffect for side effects and keep computed values pure.',
+    route: ['/vue', 'trivia', 'vue-computed-vs-watchers'],
+    cta: 'Compare computed and watch',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does nextTick matter for DOM reads?',
+    a: 'Vue batches reactive updates and patches the DOM asynchronously. Reading or focusing DOM immediately after changing state can see the old DOM. nextTick waits for the pending patch, which makes it useful for focus, measurement, and scroll logic.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    cta: 'Review DOM timing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How does v-if affect component lifecycle?',
+    a: 'v-if creates and destroys the element or component as the condition changes. That means child state resets, mounted and unmounted hooks can run, and cleanup must be correct. Use v-show when preserving state and avoiding repeated lifecycle work matters more than removing DOM.',
+    route: ['/vue', 'trivia', 'vue-v-if-component-creation-destruction'],
+    cta: 'Review v-if behavior',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do keys affect state preservation?',
+    a: 'Keys tell Vue which item or component instance is the same across renders. Stable keys preserve the right local state during reorder, insertion, and deletion. Unstable or index keys can attach input state, animation state, or component state to the wrong data item.',
+    route: ['/vue', 'trivia', 'vue-v-for-keys-why-not-index'],
+    cta: 'Review keyed lists',
+  },
+  {
+    level: 'advanced',
+    q: 'What does Vue virtual DOM diffing optimize?',
+    a: 'Vue compares virtual nodes to patch only the DOM regions that changed. Static analysis and keyed identity help Vue skip or narrow work. Diffing still depends on clear state and stable identity; it cannot guess business meaning when keys are wrong.',
+    route: ['/vue', 'trivia', 'vue-virtual-dom-diffing'],
+    cta: 'Review diffing',
+  },
+  {
+    level: 'advanced',
+    q: 'How are Vue DOM updates batched?',
+    a: 'Vue queues reactive updates and flushes DOM patches together to avoid unnecessary repeated work. Multiple state writes in the same tick can produce one DOM update. This improves performance but means DOM-dependent code must wait for the flush when timing matters.',
+    route: ['/vue', 'trivia', 'vue-internal-rendering-pipeline'],
+    cta: 'Review rendering pipeline',
+  },
+];
+
+const VUE_COMPONENT_CONTRACT_QUESTIONS: VueFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'Why should child components avoid mutating props?',
+    a: 'Props are parent-owned inputs, so mutating them inside a child creates two unclear owners for the same state. Vue may warn, and the next parent render can overwrite the child mutation. Emit an event that describes intent and let the parent update its state.',
+    route: ['/vue', 'trivia', 'vue-child-mutates-prop-directly'],
+    cta: 'Review prop ownership',
+  },
+  {
+    level: 'intermediate',
+    q: 'What is the difference between native and component events?',
+    a: 'Native events come from DOM elements, while component events are emitted by Vue components as part of their public API. Component events do not automatically bubble like DOM events. Declaring emits makes that boundary explicit and easier to type or refactor.',
+    route: ['/vue', 'trivia', 'vue-native-vs-component-events'],
+    cta: 'Compare event boundaries',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do scoped slots change component design?',
+    a: 'Scoped slots let a child expose data while the parent controls how that data is rendered. This is useful for reusable list, table, and layout components. The trade-off is that the parent becomes responsible for rendering details, so the slot contract must stay clear.',
+    route: ['/vue', 'trivia', 'vue-slots-default-named-scoped-slot-props'],
+    cta: 'Review scoped slots',
+  },
+  {
+    level: 'advanced',
+    q: 'What is the hidden cost of provide/inject?',
+    a: 'provide/inject reduces prop drilling but creates an implicit dependency between ancestor and descendant. That can make data flow harder to discover and test. Use it for stable context-like dependencies, not as a replacement for every shared state problem.',
+    route: ['/vue', 'trivia', 'vue-provide-inject-vs-prop-drilling-tradeoffs'],
+    cta: 'Review provide/inject',
+  },
+  {
+    level: 'intermediate',
+    q: 'How should v-model be designed on custom components?',
+    a: 'A custom component should treat its model prop as an input and emit update events when the user changes it. It should not mutate the model prop directly. Named models and modifiers can support richer contracts, but the one-way ownership pattern still matters.',
+    route: ['/vue', 'trivia', 'vue-v-model-syntax-sugar-expansion'],
+    cta: 'Review v-model expansion',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why do single-file components help maintainability?',
+    a: 'Single-file components keep template, script, and style for a component in one explicit module. They make ownership, imports, and local styles easier to reason about than broad global registration. Global components still fit truly shared primitives, but feature components should usually remain local.',
+    route: ['/vue', 'trivia', 'vue-sfc-vs-global-components'],
+    cta: 'Review SFC trade-offs',
+  },
+  {
+    level: 'beginner',
+    q: 'What should a Vue component public API include?',
+    a: 'A component public API is mostly its props, emits, slots, and exposed behavior. The API should describe what the parent can control and what events the child can request. Internal refs, watchers, and DOM details should not leak unless the component is intentionally exposing them.',
+    route: ['/vue', 'trivia', 'vue-why-declare-emits-type-safety-maintenance'],
+    cta: 'Review emits contracts',
+  },
+  {
+    level: 'advanced',
+    q: 'How do component boundaries affect scalability?',
+    a: 'Vue apps scale better when state ownership, feature boundaries, and component contracts are explicit. A flat global store or broad provide/inject tree can hide too much coupling. Clear component boundaries make tests, refactors, and route-level loading safer.',
+    route: ['/vue', 'trivia', 'vue-architecture-decisions-scalability'],
+    cta: 'Review architecture choices',
+  },
+];
+
+const VUE_SCENARIO_QUESTIONS: VueScenarioQuestionItem[] = [
+  {
+    level: 'advanced',
+    q: 'Why does this destructured value stop updating?',
+    code: `const state = reactive({ count: 0 });
+const { count } = state;
+
+function increment() {
+  state.count++;
+}`,
+    explanation: 'count is copied out of the reactive proxy, so reads of count no longer go through Vue tracking. Use toRef(state, "count") or toRefs(state) when the extracted value must remain reactive.',
+    route: ['/vue', 'trivia', 'vue-destructuring-breaks-reactivity-torefs-toref'],
+    cta: 'Fix destructuring',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can this watcher loop forever?',
+    code: `watchEffect(() => {
+  total.value = items.value.length + total.value;
+});`,
+    explanation: 'The effect reads total and writes total, so the write can retrigger the same effect. Derived values should be computed, while effects should avoid writing to the same reactive values they depend on.',
+    route: ['/vue', 'trivia', 'vue-watch-vs-watcheffect-differences-infinite-loops'],
+    cta: 'Review watchEffect loops',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why can this list keep the wrong input value?',
+    code: `<li v-for="(item, index) in items" :key="index">
+  <input v-model="item.name">
+</li>`,
+    explanation: 'The index key changes meaning when items are inserted, removed, or reordered. Vue can reuse DOM and component state for the wrong item. Use a stable item id as the key.',
+    route: ['/vue', 'trivia', 'vue-v-for-keys-why-not-index'],
+    cta: 'Debug index keys',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why is this prop mutation fragile?',
+    code: `const props = defineProps<{ user: { name: string } }>();
+
+function rename() {
+  props.user.name = 'Ada';
+}`,
+    explanation: 'The child is mutating parent-owned data through an object prop. That hides the update from the component contract and can be overwritten by the parent. Emit an intent event or ask the parent to pass a dedicated update callback.',
+    route: ['/vue', 'trivia', 'vue-child-mutates-prop-directly'],
+    cta: 'Review prop mutation',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does this focus call miss the input?',
+    code: `editing.value = true;
+inputRef.value?.focus();`,
+    explanation: 'Changing editing schedules a DOM update, but the input may not exist until Vue flushes that update. Await nextTick before focusing the element. This is a timing issue, not a reason to delay every state change.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    cta: 'Review nextTick',
+  },
+  {
+    level: 'intermediate',
+    q: 'Why does this form reset when toggled?',
+    code: `<ProfileForm v-if="showProfile" />`,
+    explanation: 'v-if destroys and recreates the component, so local form state resets. If the form should preserve state while hidden, v-show or lifting the state may be a better choice. The correct answer depends on whether reset is desired.',
+    route: ['/vue', 'trivia', 'vue-v-show-vs-v-if-dom-lifecycle'],
+    cta: 'Compare v-if and v-show',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is this computed property unsafe?',
+    code: `const fullName = computed(() => {
+  analytics.track('full-name-read');
+  return first.value + ' ' + last.value;
+});`,
+    explanation: 'Computed getters can run during rendering and should remain pure. Tracking analytics inside the getter creates a side effect tied to rendering and cache invalidation. Use watch when a state change should trigger external work.',
+    route: ['/vue', 'trivia', 'vue-computed-vs-watchers'],
+    cta: 'Review computed purity',
+  },
+  {
+    level: 'advanced',
+    q: 'Why can this search show stale results?',
+    code: `watch(query, async (value) => {
+  results.value = await searchUsers(value);
+});`,
+    explanation: 'A slower previous request can resolve after a newer request and overwrite the latest results. Track request identity, cancel stale work when possible, or ignore responses that no longer match the current query.',
+    route: ['/vue', 'coding', 'vue-debounced-search'],
+    cta: 'Practice debounced search',
+  },
+];
+
+const VUE_MODERN_QUESTIONS: VueModernQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How does Composition API differ from Options API?',
+    a: 'Options API organizes code by option type, such as data, computed, methods, and hooks. Composition API organizes related feature logic together inside setup and composables. Options API can still be fine, but Composition API is usually easier to scale when logic is reused or split by feature.',
+    route: ['/vue', 'trivia', 'vue-composition-api'],
+    cta: 'Review Composition API',
+  },
+  {
+    level: 'intermediate',
+    q: 'What does script setup improve?',
+    a: 'script setup is a compile-time syntax for writing Composition API components with less boilerplate. Top-level bindings are directly available to the template, and defineProps and defineEmits make component contracts concise. The trade-off is that developers must understand the compile-time macros instead of treating them like normal runtime functions.',
+    route: ['/vue', 'trivia', 'vue-composition-api'],
+    cta: 'Review setup patterns',
+  },
+  {
+    level: 'advanced',
+    q: 'What makes a good Vue composable?',
+    a: 'A good composable has a clear input and output contract, owns cleanup for side effects it creates, and does not hide surprising shared state. It should be reusable without forcing a component structure. If every consumer needs different lifecycle or ownership rules, the abstraction may be too broad.',
+    route: ['/vue', 'trivia', 'vue-composition-api-vs-mixins'],
+    cta: 'Review reuse trade-offs',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is Pinia the modern default over Vuex?',
+    a: 'Pinia has a simpler API, strong TypeScript ergonomics, and fits Vue 3 Composition API patterns well. Vuex still appears in existing apps and teaches useful centralized-state concepts. Migration should focus on store boundaries and update flow, not only syntax replacement.',
+    route: ['/vue', 'trivia', 'vuex-state-management'],
+    cta: 'Review store boundaries',
+  },
+  {
+    level: 'intermediate',
+    q: 'What changed with Vue Router 4 style guards?',
+    a: 'Vue Router 4 encourages returning values from guards instead of relying on next callbacks everywhere. This makes allowed, redirected, and canceled navigation outcomes clearer. Guard code still needs careful async handling to avoid loops or unresolved navigation.',
+    route: ['/vue', 'trivia', 'vue-router-navigation'],
+    cta: 'Review router flow',
+  },
+  {
+    level: 'advanced',
+    q: 'What is Teleport used for in Vue?',
+    a: 'Teleport renders part of a component subtree somewhere else in the DOM, such as moving a modal to a root overlay container. It keeps logical component ownership while changing DOM placement. Focus management, stacking, and cleanup still need to be handled correctly.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'What is Suspense used for in Vue?',
+    a: 'Suspense can coordinate fallback UI while async dependencies inside a component tree resolve. It is useful around async setup and route-level loading patterns. The boundary placement matters because too broad a boundary hides too much UI and too narrow a boundary can create noisy loading states.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do SSR and Nuxt affect Vue interviews?',
+    a: 'SSR renders HTML on the server, then the client hydrates it into an interactive Vue app. Nuxt adds routing, data loading, SSR conventions, and deployment structure around Vue. Hydration bugs often come from different server and client output, browser-only data during initial render, or unstable IDs.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+];
+
+const VUE_TESTING_SECURITY_PERFORMANCE_QUESTIONS: VueFocusedQuestionItem[] = [
+  {
+    level: 'intermediate',
+    q: 'How should Vue component behavior be tested?',
+    a: 'Test user-visible behavior through rendered output, interactions, emitted events, validation states, loading, and errors. Vue Test Utils helps mount components and interact with them, while tests should avoid depending on private implementation details. The goal is to prove the component contract, not the exact internal ref names.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do Vitest and Vue Test Utils fit together?',
+    a: 'Vitest runs assertions, mocks, timers, and test files, while Vue Test Utils renders Vue components and exposes wrapper utilities. Together they cover component behavior and smaller unit logic. A good test still waits for Vue async DOM updates before asserting rendered changes.',
+    route: ['/guides', 'framework-prep', 'vue-prep-path'],
+    cta: 'Open Vue prep path',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you test async Vue updates?',
+    a: 'After changing reactive state or triggering DOM events, wait for Vue to flush updates with nextTick or helper utilities. For promises and network-like flows, flush pending promises before asserting final UI. Otherwise tests may pass or fail based on timing instead of behavior.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    cta: 'Review update timing',
+  },
+  {
+    level: 'intermediate',
+    q: 'How do you test Vue emitted events?',
+    a: 'Mount the component, trigger the user action, and assert the emitted event name and payload. This verifies the child contract without requiring a parent component. For v-model components, assert the update event rather than mutating the prop in the child.',
+    route: ['/vue', 'trivia', 'vue-why-declare-emits-type-safety-maintenance'],
+    cta: 'Review emits',
+  },
+  {
+    level: 'advanced',
+    q: 'Why is v-html a security risk?',
+    a: 'v-html inserts raw HTML into the DOM, so untrusted content can create XSS if it is not sanitized before rendering. Interpolation escapes text by default, but v-html intentionally bypasses that escaping. Use it only for trusted or sanitized HTML and keep user-controlled input out of DOM sinks.',
+    route: ['/vue', 'trivia', 'vue-reactive-interpolation-into-dom'],
+    cta: 'Review interpolation safety',
+  },
+  {
+    level: 'advanced',
+    q: 'How should rich text be rendered safely in Vue?',
+    a: 'Sanitize rich text before it reaches v-html, restrict allowed tags and attributes, and avoid user-controlled URLs or scripts. Backend validation and a Content Security Policy reduce the impact of mistakes. Client-side rendering choices do not replace server-side trust boundaries.',
+    route: ['/vue', 'trivia', 'vue-reactive-interpolation-into-dom'],
+    cta: 'Review DOM safety',
+  },
+  {
+    level: 'advanced',
+    q: 'How do you profile Vue performance?',
+    a: 'Start with browser performance tools and Vue Devtools to identify expensive components, renders, and data changes. Then reduce unnecessary reactive dependencies, expensive template methods, unstable keys, and oversized lists. Optimization should follow measurement instead of guessing.',
+    route: ['/vue', 'trivia', 'vue-virtual-dom-diffing'],
+    cta: 'Review rendering costs',
+  },
+  {
+    level: 'advanced',
+    q: 'How do Vue components leak memory?',
+    a: 'Leaks usually come from timers, event listeners, subscriptions, observers, or async callbacks that outlive the component. Cleanup belongs in the lifecycle owner that created the resource. Watchers and effects should also have clear invalidation or teardown behavior when they create external work.',
+    route: ['/vue', 'trivia', 'vue-lifecycle-hooks'],
+    cta: 'Review cleanup hooks',
+  },
+];
+
 const REACT_TOPIC_CARDS: ReactTopicCard[] = [
   {
     title: 'Props, state, and one-way data flow',
@@ -3069,6 +3778,1115 @@ const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
   },
 ];
 
+const CSS_EDITORIAL_SIGNAL: CssEditorialSignal = {
+  reviewedLabel: 'Reviewed May 20, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible CSS questions across cascade, specificity, box model, layout, responsive design, debugging, performance, and maintainable CSS',
+  dateModified: '2026-05-20T00:00:00.000Z',
+};
+
+const CSS_ANCHOR_ITEMS: CssAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-css-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-css-short-answers-title' },
+  { label: 'Audience', targetId: 'iq-css-audience-title' },
+  { label: 'Cascade + specificity', targetId: 'iq-css-cascade-title' },
+  { label: 'Box model + overflow', targetId: 'iq-css-box-model-title' },
+  { label: 'Layout systems', targetId: 'iq-css-layout-title' },
+  { label: 'Responsive CSS', targetId: 'iq-css-responsive-title' },
+  { label: 'Debugging + performance', targetId: 'iq-css-debugging-title' },
+  { label: 'Coding drills', targetId: 'iq-css-coding-preview-title' },
+  { label: 'Concepts', targetId: 'iq-css-concept-preview-title' },
+];
+
+const CSS_KEYWORD_CLUSTERS: CssKeywordClusterItem[] = [
+  {
+    label: 'CSS interview questions for beginners',
+    targetId: 'iq-css-short-answers-title',
+    detail: 'CSS basics, box model, display, units, selectors, and first responsive rules.',
+  },
+  {
+    label: 'CSS interview questions for experienced developers',
+    targetId: 'iq-css-audience-title',
+    detail: 'Production layout trade-offs, debugging, maintainability, and performance choices.',
+  },
+  {
+    label: 'CSS specificity and cascade questions',
+    targetId: 'iq-css-cascade-title',
+    detail: 'Cascade order, layers, selector weight, inheritance, and conflict resolution.',
+  },
+  {
+    label: 'CSS box model and overflow questions',
+    targetId: 'iq-css-box-model-title',
+    detail: 'Sizing, margins, padding, border-box, min-width, scrollbars, and clipped content.',
+  },
+  {
+    label: 'Flexbox and CSS Grid interview questions',
+    targetId: 'iq-css-layout-title',
+    detail: 'One-dimensional layout, two-dimensional layout, containing blocks, sticky, and stacking.',
+  },
+  {
+    label: 'Responsive CSS and media query questions',
+    targetId: 'iq-css-responsive-title',
+    detail: 'Media queries, container queries, clamp(), responsive cards, and adaptive navigation.',
+  },
+  {
+    label: 'CSS debugging and performance questions',
+    targetId: 'iq-css-debugging-title',
+    detail: 'Missing styles, z-index, overflow, layout work, compositing, and maintainable CSS.',
+  },
+];
+
+const CSS_SHORT_ANSWERS: CssShortAnswerItem[] = [
+  {
+    q: 'What is CSS?',
+    a: 'CSS is the styling language browsers use to control presentation, layout, and visual states for HTML documents. It maps selectors to declarations, then the browser resolves those declarations through the cascade and computes final styles. CSS can fail in surprising ways because multiple rules, inherited values, browser defaults, and responsive constraints all interact.',
+    route: ['/css', 'trivia', 'css-definition'],
+    cta: 'Review CSS basics',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'How does the CSS cascade work?',
+    a: 'The cascade decides which declaration wins when more than one rule applies to the same property. It evaluates origin, importance, cascade layers, specificity, scoping proximity, and source order. Source order only wins after the higher-priority cascade factors are tied.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade order',
+    category: 'cascade-selectors',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is CSS specificity?',
+    a: 'Specificity is the selector weight used when competing declarations are in the same origin and layer. Inline styles, IDs, classes or attributes, and element selectors carry different weight. Specificity fixes can become a maintenance problem when every override needs a stronger selector.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    category: 'cascade-selectors',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is inheritance in CSS?',
+    a: 'Inheritance lets some computed values pass from parent elements to children. Text-related properties such as color and font-family commonly inherit, while layout properties such as margin and border usually do not. Bugs happen when a component unexpectedly receives typography, color, or custom property values from a parent context.',
+    category: 'cascade-selectors',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the CSS box model?',
+    a: 'The box model describes how content, padding, border, and margin create an element box and spacing around it. With content-box, width applies only to content; with border-box, width includes padding and border. Many layout bugs come from mixing those sizing assumptions in the same component.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Review the box model',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between margin and padding?',
+    a: 'Padding creates space inside an element between its content and border. Margin creates space outside the element between it and neighboring boxes. Margin can collapse vertically in normal flow, while padding affects the element box and background area.',
+    route: ['/css', 'trivia', 'css-margin-vs-padding'],
+    cta: 'Compare margin and padding',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'How does display affect layout?',
+    a: 'The display property controls how an element generates boxes and how its children participate in layout. Block, inline, flex, grid, and none all create very different layout behavior. Changing display can also change whether width, height, alignment, and child placement rules apply.',
+    route: ['/css', 'trivia', 'css-display-flex'],
+    cta: 'Review display and Flexbox',
+    category: 'layout',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use Flexbox?',
+    a: 'Flexbox is best for one-dimensional layouts where items need alignment, distribution, wrapping, or ordering along a row or column. It is well suited for nav bars, toolbars, centered content, and small component internals. For layout where rows and columns both matter, Grid is usually clearer.',
+    route: ['/css', 'trivia', 'css-display-flex'],
+    cta: 'Review Flexbox',
+    category: 'layout',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use CSS Grid?',
+    a: 'CSS Grid is best for two-dimensional layouts where rows and columns need to be controlled together. It handles page regions, card galleries, dashboards, and layouts with explicit tracks or areas. It can be more structure than needed for a single row of aligned controls.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Compare Grid and Flexbox',
+    category: 'layout',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does CSS positioning work?',
+    a: 'Positioning controls whether an element stays in normal flow and what box its offsets use. Relative keeps its original space, absolute positions against a containing block, fixed uses the viewport, and sticky switches as the user scrolls. Positioning bugs often come from the wrong containing block or scroll container.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Review positioning',
+    category: 'layout',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is a stacking context?',
+    a: 'A stacking context is a layer group where child z-index values are compared internally. Transforms, opacity, filters, positioned elements, isolation, and other properties can create new stacking contexts. An element with a large z-index can still appear behind another element if its parent context is lower.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Debug stacking contexts',
+    category: 'layout',
+    level: 'advanced',
+  },
+  {
+    q: 'How does z-index work?',
+    a: 'z-index controls stacking order only for positioned or stacking-context-aware elements. It does not create a global ranking across the whole page. If two elements are in different stacking contexts, changing the child z-index may not change which one appears on top.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Review z-index',
+    category: 'layout',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do rem, em, px, and percent differ?',
+    a: 'px is an absolute CSS pixel unit, rem is relative to the root font size, em is relative to the current element font size, and percent depends on the property and containing context. rem is predictable for global spacing and type scales, while em is useful for component-relative sizing. Percent values can surprise you because width, height, transforms, and padding can use different reference boxes.',
+    route: ['/css', 'trivia', 'css-units-em-rem-percent-px'],
+    cta: 'Review CSS units',
+    category: 'responsive',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are media queries used for?',
+    a: 'Media queries apply CSS when viewport, device, environment, or user preference conditions match. They are used for responsive layouts, reduced motion, color scheme, print styles, and input capabilities. Good media queries respond to layout constraints instead of copying a fixed list of device sizes.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media queries',
+    category: 'responsive',
+    level: 'beginner',
+  },
+  {
+    q: 'What are container queries?',
+    a: 'Container queries let a component adapt to the size or style context of its container instead of only the viewport. They are useful when the same component appears in a sidebar, grid, and full-width region. The component needs a defined query container, otherwise the query has no useful container to evaluate.',
+    category: 'responsive',
+    level: 'advanced',
+  },
+  {
+    q: 'What does responsive design mean in CSS?',
+    a: 'Responsive design means the UI adapts to different widths, input modes, zoom levels, content lengths, and user preferences. CSS tools include fluid units, media queries, container queries, flexible tracks, wrapping, and stable aspect ratios. A responsive layout should be tested with long content and narrow widths, not only common device presets.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive CSS',
+    category: 'responsive',
+    level: 'beginner',
+  },
+  {
+    q: 'What are CSS custom properties?',
+    a: 'CSS custom properties are variables declared with names like --space and read with var(). They cascade and inherit, so themes and component overrides can be controlled at runtime. The risk is accidental inheritance or missing fallbacks that make a component pick up the wrong value.',
+    route: ['/css', 'trivia', 'css-custom-properties'],
+    cta: 'Review custom properties',
+    category: 'cascade-selectors',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are pseudo-classes and pseudo-elements?',
+    a: 'Pseudo-classes select elements in a state, such as :hover, :focus-visible, :checked, or :nth-child(). Pseudo-elements style generated parts of an element, such as ::before, ::after, or ::marker. Focus styles are a practical edge case because removing outlines globally breaks keyboard navigation.',
+    route: ['/css', 'trivia', 'css-pseudo-classes-elements'],
+    cta: 'Review pseudo selectors',
+    category: 'cascade-selectors',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is BEM in CSS?',
+    a: 'BEM is a naming convention that separates blocks, elements, and modifiers to make selector intent explicit. It avoids deep descendant selectors and helps teams reason about component state. It is a convention, not a browser feature, so it works only when the team applies it consistently.',
+    category: 'debugging-performance',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug CSS overflow?',
+    a: 'Find the element that is wider or taller than its container, then inspect fixed widths, min-width defaults, grid tracks, absolute positioning, and long unwrapped text. Flex and grid children often need min-width: 0 or min-height: 0 to shrink correctly. Hiding overflow can mask the problem while making content or focus unreachable.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Fix responsive overflow',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+  {
+    q: 'How do min-width and max-width affect responsive layout?',
+    a: 'min-width prevents an element from shrinking below a threshold, while max-width prevents it from growing beyond a threshold. They are useful for readable cards, text columns, and media, but they can also create overflow if the minimum is too large. In flex and grid layouts, automatic minimum sizes are a common reason content refuses to shrink.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive sizing',
+    category: 'responsive',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do transforms and transitions differ?',
+    a: 'Transforms change how an element is visually moved, scaled, rotated, or skewed without changing normal document flow. Transitions animate a property change between two states. Transform and opacity animations are usually cheaper than animating layout properties like width, height, or top.',
+    category: 'debugging-performance',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should CSS animations be used safely?',
+    a: 'CSS animations should support the UI state without delaying essential information or causing motion discomfort. Use prefers-reduced-motion to simplify or remove nonessential motion for users who request it. Animating layout-heavy properties can create performance problems on slower devices.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media features',
+    category: 'debugging-performance',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you improve CSS performance?',
+    a: 'Start by measuring whether the problem is style recalculation, layout, paint, compositing, or JavaScript. Prefer stable layout dimensions, avoid repeated layout reads after writes, and animate transform or opacity when possible. Hardware acceleration can help specific compositing cases, but it is not a universal fix.',
+    route: ['/css', 'trivia', 'css-hardware-acceleration'],
+    cta: 'Review CSS performance',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you debug a CSS layout bug?',
+    a: 'Inspect the element in DevTools, check the computed styles, and identify the actual constraint that fails. Then isolate cascade conflicts, box sizing, display mode, positioning, overflow, and responsive breakpoints. Guessing from the stylesheet alone is slower because the live DOM state may differ from the source you are reading.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice layout debugging',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+];
+
+const CSS_AUDIENCE_TRACKS: CssAudienceTrack[] = [
+  {
+    title: 'CSS interview questions for beginners',
+    detail: 'Start with selectors, the cascade, inheritance, the box model, display, Flexbox, Grid, positioning, units, and media queries. The goal is to explain what the browser does before adding complicated patterns.',
+  },
+  {
+    title: 'CSS interview questions for experienced frontend developers',
+    detail: 'Move into cascade architecture, specificity control, responsive component constraints, stacking contexts, performance measurement, design tokens, and visual debugging. Experienced answers should connect CSS choices to maintainability and production UI failures.',
+  },
+];
+
+const CSS_CASCADE_QUESTIONS: CssFocusedQuestionItem[] = [
+  {
+    q: 'What order does the cascade use to choose a declaration?',
+    a: 'The cascade evaluates origin and importance first, then cascade layers, specificity, scoping proximity, and source order. This means a later rule does not always win. Debugging should start with the computed style panel because it shows which cascade factor won.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade order',
+    level: 'intermediate',
+  },
+  {
+    q: 'How is CSS specificity calculated?',
+    a: 'Specificity compares selector weight from IDs, classes or attributes, pseudo-classes, elements, and pseudo-elements. It is compared only after higher cascade factors such as origin and layers are resolved. Inline styles and !important can change the conflict path and should be treated carefully.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do cascade layers help large stylesheets?',
+    a: 'Cascade layers let you define priority groups such as reset, base, components, utilities, and overrides. A declaration in a later layer can beat a more specific declaration in an earlier layer. This reduces specificity escalation because priority can be modeled by layer order.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade layers',
+    level: 'advanced',
+  },
+  {
+    q: 'How are inheritance and initial values different?',
+    a: 'Inheritance reuses a computed value from the parent when a property is inheritable. An initial value is the property default defined by CSS when no cascade or inherited value applies. The distinction matters when reset styles or component wrappers unexpectedly change text, color, or spacing behavior.',
+    level: 'beginner',
+  },
+  {
+    q: 'How do :is(), :where(), and :has() affect selectors?',
+    a: ':is() and :has() can make selectors more expressive, while :where() always contributes zero specificity. :has() can select a parent based on children or state, which avoids some JavaScript but can make selectors more complex. These selectors should be used with specificity and performance awareness.',
+    route: ['/css', 'trivia', 'css-pseudo-classes-elements'],
+    cta: 'Review pseudo selectors',
+    level: 'advanced',
+  },
+  {
+    q: 'When should !important be used?',
+    a: '!important raises a declaration above normal declarations in the same cascade path. It can be justified for utility overrides, accessibility helpers, or third-party constraints, but it should not be the default way to fix conflicts. Overusing it makes later changes harder because every override needs another escalation.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review importance rules',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why are IDs risky in CSS selectors?',
+    a: 'ID selectors have high specificity and are harder to override than class selectors. They can be useful for anchors or unique DOM targets, but they often make component styles rigid. Class-based selectors are usually easier to compose and maintain.',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you avoid brittle selector strategy?',
+    a: 'Keep selectors shallow, prefer stable class names, avoid styling through fragile DOM depth, and use layers or utilities for planned overrides. Deep descendant selectors break when markup changes. A good selector should describe the styling contract, not the entire DOM path.',
+    level: 'advanced',
+  },
+];
+
+const CSS_BOX_MODEL_QUESTIONS: CssFocusedQuestionItem[] = [
+  {
+    q: 'What is the difference between content-box and border-box?',
+    a: 'content-box applies width and height to the content area only. border-box includes padding and border inside the declared width and height. border-box is often easier for responsive components because padding does not unexpectedly increase the outer size.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Review box sizing',
+    level: 'beginner',
+  },
+  {
+    q: 'Why does padding change an element size?',
+    a: 'Padding is part of the element box, so with content-box it adds to the declared width or height. With border-box it is included inside the declared size. The active box-sizing mode determines whether padding causes overflow.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Review the box model',
+    level: 'beginner',
+  },
+  {
+    q: 'When do vertical margins collapse?',
+    a: 'Vertical margins can collapse between block elements in normal flow, including parent and child edges under certain conditions. Padding, borders, flex, grid, and overflow contexts can stop collapse. Unexpected margin collapse often looks like spacing is being applied to the wrong element.',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why can width: 100% still overflow?',
+    a: 'With content-box, padding and border are added on top of the 100% content width. Fixed children, long words, minimum sizes, and scrollbar space can also push the box wider than its container. The fix depends on the exact source, not only changing overflow.',
+    route: ['/css', 'trivia', 'css-box-model'],
+    cta: 'Debug box sizing',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why do flex and grid children refuse to shrink?',
+    a: 'Flex and grid items can have automatic minimum sizes based on their content. Long text, tables, images, and nowrap content can keep an item wider than its container. Setting min-width: 0 or min-height: 0 on the right child often lets the layout shrink correctly.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Fix shrink issues',
+    level: 'advanced',
+  },
+  {
+    q: 'When should overflow be hidden, auto, or visible?',
+    a: 'visible lets content escape the box, hidden clips it, and auto adds scrolling only when needed. hidden can be useful for masks, but it can hide focus outlines or important content. auto is safer when content must remain reachable.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should component sizing be constrained?',
+    a: 'Use min-width, max-width, width, aspect-ratio, and content-aware layout rules to define what a component can tolerate. A component should have a stable minimum usable size and a clear maximum reading width when needed. Without constraints, it may look fine in one viewport and break with real content.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice sizing constraints',
+    level: 'advanced',
+  },
+  {
+    q: 'How do scrollbars affect layout?',
+    a: 'Scrollbars can consume space, create nested scrolling, and change available width depending on platform and styling. Components with fixed widths can shift or overflow when scrollbars appear. Testing with real overflow content exposes issues that empty mock states hide.',
+    route: ['/css', 'trivia', 'css-units-em-rem-percent-px'],
+    cta: 'Review sizing units',
+    level: 'advanced',
+  },
+];
+
+const CSS_LAYOUT_QUESTIONS: CssFocusedQuestionItem[] = [
+  {
+    q: 'How does Flexbox alignment work?',
+    a: 'Flexbox uses a main axis and a cross axis. justify-content distributes along the main axis, while align-items and align-content control the cross axis. Direction and wrapping change which axis each property affects.',
+    route: ['/css', 'trivia', 'css-display-flex'],
+    cta: 'Review Flexbox',
+    level: 'beginner',
+  },
+  {
+    q: 'How do CSS Grid tracks work?',
+    a: 'Grid tracks are rows and columns defined with fixed, flexible, minmax, auto, or named sizes. The browser places items into grid cells and can create implicit tracks when items exceed the explicit grid. Track sizing bugs usually come from confusing available space with content minimums.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Review Grid',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you build a wrapping nav with CSS?',
+    a: 'Use Flexbox when the nav is a row of items that can align, distribute, and wrap. Preserve readable labels and visible focus states as items move to another line or into a disclosure pattern. Hiding links without an alternate path creates a navigation failure.',
+    route: ['/css', 'coding', 'css-flexbox-navbar'],
+    cta: 'Build a Flexbox nav',
+    level: 'intermediate',
+  },
+  {
+    q: 'What determines an absolutely positioned element containing block?',
+    a: 'An absolutely positioned element uses the nearest positioned ancestor or another containing-block-creating ancestor for offsets. If none exists, it may position relative to the initial containing block. Unexpected absolute positioning usually means the intended parent was not actually the containing block.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Review positioning',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why does position: sticky fail?',
+    a: 'Sticky positioning depends on a scroll container, an inset value, and enough room inside the parent to move. Overflow on an ancestor can create a different scroll container than expected. Debug sticky by checking ancestor overflow and the element offset before changing z-index.',
+    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    cta: 'Debug sticky positioning',
+    level: 'advanced',
+  },
+  {
+    q: 'How should overlays handle stacking contexts?',
+    a: 'Overlays should be placed in a predictable layer with clear stacking context ownership. A transformed or opaque parent can trap an overlay below other page regions. Moving the overlay to a root layer is often cleaner than increasing z-index values indefinitely.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Review stacking behavior',
+    level: 'advanced',
+  },
+  {
+    q: 'How does auto-fit with minmax() help responsive grids?',
+    a: 'auto-fit with minmax() lets the grid create as many columns as fit while preserving a usable minimum column width. It reduces breakpoint code for card galleries and dashboards. The minimum value should be chosen from content needs, not an arbitrary device width.',
+    route: ['/css', 'coding', 'css-grid-card-gallery'],
+    cta: 'Build a responsive grid',
+    level: 'intermediate',
+  },
+  {
+    q: 'When is float still relevant?',
+    a: 'Float is mostly legacy for page layout but still useful for text wrapping around media. Modern layout should use Flexbox or Grid for component and page structure. Legacy float bugs often involve clearing behavior and parents that collapse around floated children.',
+    level: 'intermediate',
+  },
+];
+
+const CSS_RESPONSIVE_QUESTIONS: CssFocusedQuestionItem[] = [
+  {
+    q: 'What does mobile-first CSS mean?',
+    a: 'Mobile-first CSS starts with the narrowest useful layout and adds rules as more space becomes available. It usually reduces overrides because the base styles already handle constrained screens. The component still needs to be tested with long text and zoom, not only a phone-width viewport.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media queries',
+    level: 'beginner',
+  },
+  {
+    q: 'How do container queries differ from media queries?',
+    a: 'Media queries react to viewport or environment conditions, while container queries react to a component container. Container queries make reusable components adapt based on placement. They work best when component boundaries and container names are intentional.',
+    level: 'advanced',
+  },
+  {
+    q: 'How does clamp() help fluid CSS?',
+    a: 'clamp() sets a minimum, preferred, and maximum value in one expression. It is useful for fluid typography, spacing, and widths that should scale but stay bounded. Without reasonable min and max values, fluid sizing can become too small or too large.',
+    route: ['/css', 'coding', 'css-fluid-clamp'],
+    cta: 'Practice fluid sizing',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should responsive cards be designed?',
+    a: 'Cards should keep stable media ratios, readable text, predictable action placement, and enough space for long titles. Grid with minmax() can adapt columns without many breakpoints. Test missing images and long content because they expose fragile card layouts.',
+    route: ['/css', 'coding', 'css-grid-card-gallery'],
+    cta: 'Build card grids',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should navigation adapt at small widths?',
+    a: 'Navigation should preserve reachable links, visible focus, and clear current-state cues. Wrapping, scrolling, disclosure menus, or priority links can work depending on item count. Simply hiding links for small screens removes navigation rather than making it responsive.',
+    route: ['/css', 'coding', 'css-flexbox-navbar'],
+    cta: 'Build a responsive nav',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you handle long words, URLs, and untrusted text?',
+    a: 'Long content can break cards, tables, buttons, and grids. Use overflow-wrap, min-width: 0, max-width constraints, and intentional truncation rules. Truncated important content should have another way to be read.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Fix responsive overflow',
+    level: 'advanced',
+  },
+  {
+    q: 'How should reduced motion be handled in CSS?',
+    a: 'Use prefers-reduced-motion to simplify or remove nonessential motion for users who request it. State changes should still be understandable without animation. Reduced motion is not only an accessibility detail; it also prevents motion-heavy UI from delaying important feedback.',
+    route: ['/css', 'trivia', 'css-media-queries'],
+    cta: 'Review media features',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do CSS variables support themes?',
+    a: 'CSS variables let themes change tokens such as color, spacing, radius, and shadows through the cascade. They can be scoped globally, per component, or by state such as dark mode. The fallback and inheritance path should be clear so components do not receive accidental theme values.',
+    route: ['/css', 'coding', 'css-theme-variables-dark-mode'],
+    cta: 'Build theme variables',
+    level: 'intermediate',
+  },
+];
+
+const CSS_DEBUGGING_PERFORMANCE_QUESTIONS: CssScenarioQuestionItem[] = [
+  {
+    q: 'How do you debug missing CSS styles?',
+    a: 'Check whether the stylesheet loaded, whether the selector matches the live DOM, whether the declaration is valid, and whether another rule wins. DevTools computed styles show both winning and overridden declarations. Reading the stylesheet alone is slower because the element state may differ at runtime.',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review cascade debugging',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you debug a specificity conflict?',
+    a: 'Inspect the losing declaration and compare layer, importance, specificity, and source order against the winner. Lowering the winning selector or using a planned layer is often better than adding a stronger selector. Specificity escalation makes the next change harder.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug a z-index problem?',
+    a: 'Find the stacking contexts first, then compare z-index values inside the relevant context. Transforms, opacity, filters, isolation, and positioned ancestors can change the layer model. A huge z-index cannot escape a lower parent stacking context.',
+    route: ['/css', 'trivia', 'css-z-index'],
+    cta: 'Debug z-index',
+    level: 'advanced',
+  },
+  {
+    q: 'How do you debug horizontal scroll?',
+    a: 'Identify the element wider than the viewport, then inspect fixed widths, min-width defaults, grid tracks, absolute positioning, and long unwrapped content. Temporarily outlining elements can reveal the offender quickly. The durable fix should remove the bad constraint instead of hiding the page overflow.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice overflow fixes',
+    level: 'advanced',
+  },
+  {
+    q: 'What causes layout thrashing?',
+    a: 'Layout thrashing happens when code repeatedly writes styles and then reads layout values that force the browser to recalculate geometry. CSS-heavy UI can suffer when animations or scripts keep changing layout properties. Batch reads and writes, and avoid animating properties that trigger layout when possible.',
+    level: 'advanced',
+  },
+  {
+    q: 'When does hardware acceleration help CSS?',
+    a: 'Hardware acceleration can help when animations are moved to composited layers, often with transform or opacity. It does not fix expensive layout, paint, or JavaScript work by itself. Too many promoted layers can increase memory use and make performance worse.',
+    route: ['/css', 'trivia', 'css-hardware-acceleration'],
+    cta: 'Review acceleration',
+    level: 'advanced',
+  },
+  {
+    q: 'What makes CSS maintainable?',
+    a: 'Maintainable CSS has predictable selectors, controlled cascade layers, reusable tokens, explicit states, and limited global leakage. Components should expose styling hooks intentionally instead of depending on deep DOM selectors. CSS becomes fragile when every change requires a more specific override.',
+    route: ['/css', 'trivia', 'css-custom-properties'],
+    cta: 'Review CSS tokens',
+    level: 'advanced',
+  },
+  {
+    q: 'What are common CSS debugging mistakes?',
+    a: 'Common mistakes include guessing before inspecting computed styles, hiding overflow without finding the source, increasing z-index blindly, and fixing specificity by nesting more selectors. Another failure is testing only one viewport with short placeholder text. CSS debugging should isolate the constraint, verify the winning rule, and test realistic content.',
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
+    cta: 'Practice responsive debugging',
+    level: 'intermediate',
+  },
+];
+
+const HTML_EDITORIAL_SIGNAL: HtmlEditorialSignal = {
+  reviewedLabel: 'Reviewed May 21, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '65 visible HTML questions across semantics, forms, accessibility, metadata, DOM, native browser behavior, modern HTML, and markup scenarios',
+  dateModified: '2026-05-21T00:00:00.000Z',
+};
+
+const HTML_ANCHOR_ITEMS: HtmlAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-html-clusters-title' },
+  { label: 'Short answers', targetId: 'iq-html-short-answers-title' },
+  { label: 'Audience', targetId: 'iq-html-audience-title' },
+  { label: 'Semantics', targetId: 'iq-html-semantics-title' },
+  { label: 'Forms', targetId: 'iq-html-forms-title' },
+  { label: 'Accessibility + ARIA', targetId: 'iq-html-accessibility-title' },
+  { label: 'Metadata + parsing', targetId: 'iq-html-metadata-title' },
+  { label: 'Modern scenarios', targetId: 'iq-html-modern-scenarios-title' },
+  { label: 'Coding drills', targetId: 'iq-html-coding-preview-title' },
+  { label: 'Concepts', targetId: 'iq-html-concept-preview-title' },
+  { label: 'Support', targetId: 'iq-html-coverage-title' },
+];
+
+const HTML_KEYWORD_CLUSTERS: HtmlKeywordClusterItem[] = [
+  {
+    label: 'HTML interview questions for beginners',
+    targetId: 'iq-html-short-answers-title',
+    detail: 'Document structure, elements, DOM, links, images, forms, and metadata basics.',
+  },
+  {
+    label: 'HTML interview questions for experienced developers',
+    targetId: 'iq-html-audience-title',
+    detail: 'Accessibility trade-offs, parsing behavior, Shadow DOM, native UI, and markup scenarios.',
+  },
+  {
+    label: 'Semantic HTML questions',
+    targetId: 'iq-html-semantics-title',
+    detail: 'Landmarks, headings, sections, articles, lists, language, and document structure.',
+  },
+  {
+    label: 'HTML forms and validation questions',
+    targetId: 'iq-html-forms-title',
+    detail: 'Labels, placeholders, input types, validation attributes, errors, and grouped controls.',
+  },
+  {
+    label: 'HTML accessibility and ARIA questions',
+    targetId: 'iq-html-accessibility-title',
+    detail: 'Accessible names, alt text, tables, dialogs, keyboard behavior, iframes, and ARIA.',
+  },
+  {
+    label: 'HTML metadata and browser behavior',
+    targetId: 'iq-html-metadata-title',
+    detail: 'Head metadata, title, meta tags, parsing, script loading, responsive images, and iframes.',
+  },
+  {
+    label: 'Modern HTML and markup scenarios',
+    targetId: 'iq-html-modern-scenarios-title',
+    detail: 'Dialog, details, popover, templates, Shadow DOM, invalid nesting, labels, and table markup.',
+  },
+];
+
+const HTML_SHORT_ANSWERS: HtmlShortAnswerItem[] = [
+  {
+    q: 'What is HTML?',
+    a: 'HTML is the markup language browsers parse to create the structure and meaning of a web document. It describes content with elements such as headings, links, images, forms, tables, and landmarks. HTML quality affects accessibility, SEO, browser defaults, and how safely CSS and JavaScript can build on the page.',
+    route: ['/html', 'coding', 'html-basic-structure'],
+    cta: 'Build a basic document',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the DOM?',
+    a: 'The DOM is the browser-created object tree that represents the parsed document. JavaScript reads and changes the DOM, and CSS selectors match elements in it for styling. The live DOM can differ from the original HTML source after parsing fixes or script updates.',
+    route: ['/html', 'trivia', 'html-dom'],
+    cta: 'Review the DOM',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between tags and elements?',
+    a: 'A tag is the written markup token, such as an opening or closing marker. An element is the full parsed node, including the tag, attributes, content, and browser-defined meaning. Void elements such as img do not have closing tags, which is a common edge case.',
+    route: ['/html', 'trivia', 'html-tags'],
+    cta: 'Review HTML tags',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What does a valid HTML document structure include?',
+    a: 'A valid document starts with a doctype, an html element with a language, a head for metadata, and a body for visible content. The head should include charset, viewport, title, and other metadata needed by browsers and crawlers. Missing structure can still render, but it creates ambiguity for accessibility, mobile layout, and SEO behavior.',
+    route: ['/html', 'coding', 'html-basic-structure'],
+    cta: 'Practice document structure',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'What belongs in the head and body?',
+    a: 'The head contains document metadata, resource hints, styles, scripts, titles, descriptions, and viewport settings. The body contains the content and controls users interact with. Putting visible content or structural landmarks in the head is invalid and can produce unexpected parsing behavior.',
+    route: ['/html', 'trivia', 'html-head-tag'],
+    cta: 'Review the head element',
+    category: 'metadata-browser',
+    level: 'beginner',
+  },
+  {
+    q: 'What are semantic HTML elements?',
+    a: 'Semantic elements describe the meaning or role of content, such as header, nav, main, article, section, footer, button, and form. They give browsers and assistive technology useful information before any custom scripting. Replacing semantic controls with generic div elements often creates extra keyboard and accessibility work.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Review semantic elements',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between div and span?',
+    a: 'div is a generic block-level container, while span is a generic inline container. Neither carries semantic meaning by itself. They are useful for grouping only when a more meaningful element is not available.',
+    route: ['/html', 'trivia', 'html-div-vs-span'],
+    cta: 'Compare div and span',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the difference between block and inline elements?',
+    a: 'Block elements normally start on a new line and occupy available width, while inline elements flow inside text. The distinction affects layout, spacing, and how elements accept dimensions. CSS can change display behavior, but the semantic choice should still match the content meaning.',
+    route: ['/html', 'trivia', 'html-block-inline-elements'],
+    cta: 'Review block and inline',
+    category: 'fundamentals',
+    level: 'beginner',
+  },
+  {
+    q: 'How should anchors work in HTML?',
+    a: 'An anchor creates navigation when it has a useful href. It should describe the destination with link text that makes sense out of context. Use a button instead when the action changes state on the current page rather than navigating.',
+    route: ['/html', 'trivia', 'html-a-tag'],
+    cta: 'Review anchors',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'What does the href attribute do?',
+    a: 'href defines the target URL or fragment for an anchor or linked resource. A missing or fake href can break expected link behavior, keyboard navigation, and browser features such as opening in a new tab. For external links, security and referrer behavior may also matter.',
+    route: ['/html', 'trivia', 'html-href-attribute'],
+    cta: 'Review href behavior',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'How should image alt text work?',
+    a: 'Alt text should describe the purpose of an informative image. Decorative images usually need empty alt text so assistive technology can skip them. If an image is inside a link, the alt text may need to describe the link action rather than the visual pixels.',
+    route: ['/html', 'trivia', 'html-img-alt-attribute'],
+    cta: 'Review image alt text',
+    category: 'forms-accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'How do HTML forms work?',
+    a: 'A form groups controls and can submit name/value pairs to a server or be handled by JavaScript. Native controls provide keyboard behavior, labels, validation hooks, and browser defaults. The form still needs server-side validation because client-side constraints can be bypassed.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Build labeled forms',
+    category: 'forms-accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'Why are labels better than placeholders?',
+    a: 'A label gives a form control a durable accessible name and a larger clickable target. Placeholder text disappears as users type and is not a reliable replacement for a label. Placeholders are best used as examples or hints, not as the only field name.',
+    route: ['/html', 'trivia', 'html-input-placeholder'],
+    cta: 'Review placeholders',
+    category: 'forms-accessibility',
+    level: 'beginner',
+  },
+  {
+    q: 'How does native form validation work?',
+    a: 'Native validation uses attributes such as required, type, min, max, pattern, and minlength. The browser can block common invalid submissions and expose useful constraint states. It improves user experience, but server validation remains the real trust boundary.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice validation',
+    category: 'forms-accessibility',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should lists and navigation be marked up?',
+    a: 'Lists should represent grouped items where order or grouping matters, and navigation should use nav when it identifies a major navigation region. Link lists are often appropriate for menus because they expose both grouping and navigation semantics. Overusing lists for purely visual layout can make the markup noisy.',
+    route: ['/html', 'coding', 'html-lists-and-navigation'],
+    cta: 'Practice navigation markup',
+    category: 'semantics',
+    level: 'beginner',
+  },
+  {
+    q: 'How do accessible tables work?',
+    a: 'Data tables need table markup, header cells, and clear relationships between headers and data cells. Captions and scope attributes help users understand row and column meaning. Tables used only for layout create misleading relationships and should be avoided.',
+    route: ['/html', 'coding', 'html-tables-accessibility'],
+    cta: 'Build accessible tables',
+    category: 'forms-accessibility',
+    level: 'intermediate',
+  },
+  {
+    q: 'What metadata should an HTML page include?',
+    a: 'A production page usually needs charset, viewport, title, description, canonical when needed, and relevant social metadata. Metadata helps browsers render correctly and helps crawlers understand the page. Missing viewport metadata is a common mobile rendering failure.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Review head metadata',
+    category: 'metadata-browser',
+    level: 'beginner',
+  },
+  {
+    q: 'What are data attributes used for?',
+    a: 'data-* attributes store custom, non-sensitive metadata on elements. They are useful for testing hooks, progressive enhancement, and connecting markup to scripts without inventing invalid attributes. They should not become a replacement for semantic attributes or server-trusted data.',
+    route: ['/html', 'trivia', 'html-data-attribute'],
+    cta: 'Review data attributes',
+    category: 'metadata-browser',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should you use an iframe?',
+    a: 'An iframe embeds another browsing context inside the page. It is useful for third-party content, isolated documents, maps, videos, and sandboxed experiences. It needs a meaningful title and careful sandbox, permissions, loading, and security choices.',
+    route: ['/html', 'trivia', 'html-iframe-tag'],
+    cta: 'Review iframes',
+    category: 'metadata-browser',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do srcset and sizes work for images?',
+    a: 'srcset provides candidate image resources, and sizes tells the browser how much layout width the image will occupy. The browser uses that information with device characteristics to choose an efficient image. Wrong sizes values can make the browser download images that are too large or too blurry.',
+    route: ['/html', 'trivia', 'html-img-srcset'],
+    cta: 'Review responsive images',
+    category: 'metadata-browser',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does browser HTML parsing affect the DOM?',
+    a: 'Browsers parse HTML into tokens and build the DOM while applying error-recovery rules. Invalid nesting can be corrected into a different DOM than the source appears to describe. Debugging markup issues often means inspecting the live DOM, not only the source file.',
+    route: ['/html', 'trivia', 'html-parsing-rendering'],
+    cta: 'Review parsing behavior',
+    category: 'metadata-browser',
+    level: 'advanced',
+  },
+  {
+    q: 'When should ARIA roles be used?',
+    a: 'ARIA roles should be used when native HTML cannot express the needed role, state, or relationship. Native elements are usually better because they include built-in keyboard and accessibility behavior. Misused ARIA can create a worse accessibility tree than plain semantic HTML.',
+    route: ['/html', 'trivia', 'html-aria-roles'],
+    cta: 'Review ARIA roles',
+    category: 'forms-accessibility',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is Shadow DOM?',
+    a: 'Shadow DOM provides an encapsulated DOM tree for a component. It can isolate markup and styles from the main document while still exposing slots and public component behavior. Accessibility, focus, and styling hooks still need deliberate design.',
+    route: ['/html', 'trivia', 'html-shadow-dom'],
+    cta: 'Review Shadow DOM',
+    category: 'modern-scenarios',
+    level: 'advanced',
+  },
+  {
+    q: 'How should native dialog behavior work?',
+    a: 'The dialog element can provide native modal semantics and focus handling support. A usable dialog still needs a clear name, predictable opening focus, escape behavior, and focus restoration. A visually correct overlay is incomplete if keyboard users can reach background content.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice dialog accessibility',
+    category: 'modern-scenarios',
+    level: 'advanced',
+  },
+  {
+    q: 'What is the difference between HTML, HTML5, and XHTML?',
+    a: 'HTML is the markup language used for web documents, and HTML5 is the common name for modern HTML features and parsing behavior. XHTML is an XML-based syntax with stricter parsing rules. Modern web work usually follows the HTML Living Standard rather than treating HTML5 as a frozen version.',
+    route: ['/html', 'trivia', 'html-vs-xhtml'],
+    cta: 'Compare HTML and XHTML',
+    category: 'modern-scenarios',
+    level: 'intermediate',
+  },
+];
+
+const HTML_AUDIENCE_TRACKS: HtmlAudienceTrack[] = [
+  {
+    title: 'HTML interview questions for beginners',
+    detail: 'Start with document structure, common elements, links, images, forms, labels, lists, metadata, and the DOM. The goal is to understand what native markup gives the browser before adding CSS or JavaScript.',
+  },
+  {
+    title: 'HTML interview questions for experienced frontend developers',
+    detail: 'Move into accessibility trade-offs, browser parsing, table relationships, Shadow DOM, native dialogs, iframes, responsive image markup, and production metadata. Experienced answers should connect markup choices to real browser and user behavior.',
+  },
+];
+
+const HTML_SEMANTICS_QUESTIONS: HtmlFocusedQuestionItem[] = [
+  {
+    q: 'How do landmarks improve document structure?',
+    a: 'Landmarks such as header, nav, main, aside, and footer divide the page into recognizable regions. They help assistive technology users jump through the page efficiently. Most pages should have one main landmark and meaningful navigation regions.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Review landmarks',
+    level: 'beginner',
+  },
+  {
+    q: 'How should heading structure work?',
+    a: 'Headings create a content hierarchy for scanning, navigation, and accessibility. Heading levels should represent structure, not visual size. Skipping levels for styling can make the page harder to understand through assistive technology.',
+    route: ['/html', 'coding', 'html-semantic-layout'],
+    cta: 'Build semantic layout',
+    level: 'beginner',
+  },
+  {
+    q: 'When should you use section and article?',
+    a: 'section groups a themed part of a document, usually with a heading. article represents independent content that could stand on its own, such as a post, card, or comment. A generic wrapper should stay a div when there is no meaningful document section.',
+    route: ['/html', 'trivia', 'html-semantic-elements'],
+    cta: 'Review semantic sections',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why are generic div and span elements not enough?',
+    a: 'div and span provide grouping without semantic meaning. They are useful for layout hooks, but they do not communicate navigation, button behavior, headings, form relationships, or document regions. Native semantic elements reduce custom accessibility work.',
+    route: ['/html', 'trivia', 'html-div-vs-span'],
+    cta: 'Compare generic elements',
+    level: 'beginner',
+  },
+  {
+    q: 'Why does the html lang attribute matter?',
+    a: 'The lang attribute tells browsers and assistive technology the language of the document. It affects pronunciation, translation, spell checking, and some typographic behavior. Pages with mixed languages should mark language changes on the relevant elements.',
+    route: ['/html', 'coding', 'html-basic-structure'],
+    cta: 'Practice document basics',
+    level: 'beginner',
+  },
+  {
+    q: 'How should list markup be used?',
+    a: 'Use ul for unordered groups, ol for ordered steps or rankings, and dl for name/value descriptions. Lists communicate grouping that screen readers and browsers can expose. Do not use lists only to force visual indentation when the content is not a list.',
+    route: ['/html', 'trivia', 'html-ol-ul-dl-difference'],
+    cta: 'Review list types',
+    level: 'beginner',
+  },
+  {
+    q: 'How do data attributes fit into semantic markup?',
+    a: 'data-* attributes are useful for custom metadata that scripts or tests need to read. They should not replace existing semantic attributes such as href, alt, for, name, or aria-* when those have real meaning. Data attributes are markup hooks, not validation or security boundaries.',
+    route: ['/html', 'trivia', 'html-data-attribute'],
+    cta: 'Review data attributes',
+    level: 'intermediate',
+  },
+  {
+    q: 'What makes an HTML document easy to scan?',
+    a: 'A scannable document has a clear title, meaningful headings, landmarks, descriptive links, and grouped content. The DOM order should match the reading and keyboard order where possible. Visual layout can change, but the markup should still make sense without CSS.',
+    route: ['/html', 'coding', 'html-semantic-layout'],
+    cta: 'Practice semantic layout',
+    level: 'intermediate',
+  },
+];
+
+const HTML_FORMS_QUESTIONS: HtmlFocusedQuestionItem[] = [
+  {
+    q: 'How should a label connect to a form control?',
+    a: 'A label can connect to a control with for and id, or by wrapping the control. This gives the control an accessible name and increases the clickable target. The association should remain stable even when the layout changes.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Build labeled forms',
+    level: 'beginner',
+  },
+  {
+    q: 'Why is placeholder text not a label?',
+    a: 'Placeholder text disappears during input and may not be announced as a stable field name. A real label remains available before, during, and after typing. Placeholder text is better used for examples, formatting hints, or optional guidance.',
+    route: ['/html', 'trivia', 'html-input-placeholder'],
+    cta: 'Review placeholders',
+    level: 'beginner',
+  },
+  {
+    q: 'How do input types improve forms?',
+    a: 'Input types such as email, url, number, date, and tel give browsers validation hints and mobile keyboard choices. They improve usability when they match the real data being collected. The wrong type can block valid input or create a poor mobile experience.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice input validation',
+    level: 'beginner',
+  },
+  {
+    q: 'How do validation attributes work?',
+    a: 'Attributes such as required, minlength, maxlength, min, max, pattern, and type define browser-side constraints. They expose validity state and can block invalid submissions. Server validation is still required because browser constraints are user-experience helpers, not trusted enforcement.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Build validation states',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should form errors be exposed?',
+    a: 'Form errors should be visible, specific, and connected to the affected control. Use nearby text and aria-describedby when the relationship is not already clear. Color alone is not enough because users may miss the state or use assistive technology.',
+    route: ['/html', 'coding', 'html-forms-validation-required'],
+    cta: 'Practice form errors',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should radio buttons and checkboxes be grouped?',
+    a: 'Related radio buttons and checkboxes should be grouped with fieldset and legend when they share a prompt. The legend gives the group a clear accessible name. Without grouping, users may hear each option without the question it answers.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Practice grouped controls',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is the default method for an HTML form?',
+    a: 'The default method is GET when no method is specified. GET appends form data to the URL, which is useful for search-like actions but wrong for sensitive or state-changing submissions. POST is usually the better fit when the form changes server state.',
+    route: ['/html', 'trivia', 'html-form-default-method'],
+    cta: 'Review form methods',
+    level: 'beginner',
+  },
+  {
+    q: 'Why should form actions use real buttons?',
+    a: 'A real button has native role, focus, activation, disabled, and form submission behavior. A div with click handling does not provide those behaviors by default. Rebuilding button behavior manually is easy to get wrong for keyboard and assistive technology users.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Practice form controls',
+    level: 'beginner',
+  },
+];
+
+const HTML_ACCESSIBILITY_QUESTIONS: HtmlFocusedQuestionItem[] = [
+  {
+    q: 'When should you add ARIA?',
+    a: 'Add ARIA when native HTML cannot express the role, state, or relationship you need. Native elements should come first because they already include expected keyboard and accessibility behavior. Incorrect ARIA can make an accessible tree less accurate than plain HTML.',
+    route: ['/html', 'trivia', 'html-aria-roles'],
+    cta: 'Review ARIA roles',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is an accessible name?',
+    a: 'An accessible name is the name assistive technology exposes for a control or landmark. It can come from text content, labels, alt text, aria-label, aria-labelledby, or other naming rules. Missing or misleading names make controls hard to operate even when they are visible.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Practice accessible names',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should alt text work for linked images?',
+    a: 'When an image is inside a link, the alt text often becomes the link name. It should describe the destination or action, not just the image appearance. Alt text like "arrow" or "icon" usually fails because it does not explain what happens.',
+    route: ['/html', 'coding', 'html-links-and-images'],
+    cta: 'Practice links and images',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you make data tables accessible?',
+    a: 'Use real table markup, header cells, a useful caption when context is needed, and scope or header associations for complex tables. The structure should let users understand row and column relationships. Layout tables should be avoided because they communicate false data relationships.',
+    route: ['/html', 'coding', 'html-tables-accessibility'],
+    cta: 'Build accessible tables',
+    level: 'intermediate',
+  },
+  {
+    q: 'What makes an HTML dialog accessible?',
+    a: 'An accessible dialog has a clear name, appropriate modal behavior, predictable initial focus, escape behavior, and focus restoration. Background content should not stay reachable when the dialog is modal. The native dialog element helps, but the interaction still needs careful markup.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice dialog accessibility',
+    level: 'advanced',
+  },
+  {
+    q: 'How should keyboard navigation be checked?',
+    a: 'Tab through the page and confirm that focus order follows the DOM and user task. Every interactive element should be reachable, visible, and operable by keyboard. Positive tabindex values usually create fragile focus order and should be avoided.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Review accessibility checks',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should iframes be exposed accessibly?',
+    a: 'An iframe needs a title that explains the embedded content. The title helps users decide whether to enter or skip the embedded context. Security attributes such as sandbox and permissions should also match what the embedded content actually needs.',
+    route: ['/html', 'trivia', 'html-iframe-tag'],
+    cta: 'Review iframes',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you test HTML accessibility quickly?',
+    a: 'Start with keyboard navigation, labels, headings, landmarks, alt text, table headers, and form errors. Then inspect the accessibility tree and run automated checks such as Lighthouse or axe. Automated tools are useful, but they cannot prove that the user flow makes sense.',
+    route: ['/html', 'trivia', 'web-accessibility-make-page-accessible'],
+    cta: 'Practice accessibility review',
+    level: 'advanced',
+  },
+];
+
+const HTML_METADATA_QUESTIONS: HtmlFocusedQuestionItem[] = [
+  {
+    q: 'What belongs in the head for SEO and browser behavior?',
+    a: 'The head should include charset, viewport, title, description, canonical when needed, and resource metadata. These values guide rendering, crawling, previews, and navigation labels. Missing or duplicated head metadata can create confusing snippets and mobile behavior.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Review head SEO basics',
+    level: 'beginner',
+  },
+  {
+    q: 'How should the title tag be used?',
+    a: 'The title tag names the document for browser tabs, history, bookmarks, and search results. It should be specific to the page and not just repeat the site name. Multiple or vague titles make navigation and search snippets weaker.',
+    route: ['/html', 'trivia', 'html-title-tag'],
+    cta: 'Review title tags',
+    level: 'beginner',
+  },
+  {
+    q: 'What do meta tags do?',
+    a: 'Meta tags provide metadata such as charset, viewport, description, robots hints, and social preview information. They do not replace visible content, but they influence browser and crawler behavior. Some meta tags are critical for mobile rendering and snippet quality.',
+    route: ['/html', 'trivia', 'html-meta-tag'],
+    cta: 'Review meta tags',
+    level: 'beginner',
+  },
+  {
+    q: 'Why does the viewport meta tag matter?',
+    a: 'The viewport meta tag tells mobile browsers how to map CSS pixels to the device viewport. Without it, a page may render using a desktop-style layout width on phones. That makes otherwise valid markup feel broken on small screens.',
+    route: ['/html', 'coding', 'html-head-seo-basics'],
+    cta: 'Practice viewport metadata',
+    level: 'beginner',
+  },
+  {
+    q: 'How does HTML parsing affect invalid markup?',
+    a: 'Browsers recover from invalid markup using parsing rules, and the resulting DOM may not match the source you expected. Invalid nesting around paragraphs, tables, forms, and interactive elements can produce surprising structure. Inspect the live DOM when markup behavior looks wrong.',
+    route: ['/html', 'trivia', 'html-parsing-rendering'],
+    cta: 'Review parsing behavior',
+    level: 'advanced',
+  },
+  {
+    q: 'How do script loading attributes affect parsing?',
+    a: 'Classic scripts can block parsing unless they are deferred or loaded asynchronously. defer keeps execution ordered after parsing, while async runs when the script is ready. The wrong loading choice can delay content or create race conditions with DOM availability.',
+    route: ['/html', 'trivia', 'html-parsing-rendering'],
+    cta: 'Review parser behavior',
+    level: 'advanced',
+  },
+  {
+    q: 'How should responsive image markup be chosen?',
+    a: 'Use srcset and sizes when the same image needs different resolutions, and picture when the art direction or format changes. Include width and height or an aspect ratio so space can be reserved before the image loads. Bad sizes values can cause unnecessary large downloads.',
+    route: ['/html', 'trivia', 'html-img-srcset'],
+    cta: 'Review srcset',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should iframes be loaded and constrained?',
+    a: 'Iframes should use only the permissions they need and should be titled clearly. loading="lazy" can defer offscreen iframe work, and sandbox can limit capabilities when appropriate. Embedded content affects performance, security, and accessibility, so it should not be treated as a neutral tag.',
+    route: ['/html', 'trivia', 'html-iframe-tag'],
+    cta: 'Review iframe behavior',
+    level: 'advanced',
+  },
+];
+
+const HTML_MODERN_SCENARIO_QUESTIONS: HtmlScenarioQuestionItem[] = [
+  {
+    q: 'How does native dialog compare with a custom modal?',
+    a: 'Native dialog can provide built-in modal behavior and browser semantics. A custom modal must recreate focus trapping, naming, escape behavior, background isolation, and focus restoration. Native support reduces work, but the surrounding interaction still needs testing.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice dialog behavior',
+    level: 'advanced',
+  },
+  {
+    q: 'What are details, summary, and popover useful for?',
+    a: 'details and summary provide native disclosure behavior without custom JavaScript. The popover attribute can expose lightweight overlay behavior for supported cases. Native primitives are useful when they match the interaction, but they still need labels, focus behavior, and fallback awareness.',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do template and slot support component markup?',
+    a: 'template holds inert markup that can be cloned later, and slot defines insertion points for web component content. They support reusable markup without immediately rendering everything into the main DOM. The trade-off is that composition and accessibility still need explicit contracts.',
+    route: ['/html', 'trivia', 'html-shadow-dom'],
+    cta: 'Review web components',
+    level: 'advanced',
+  },
+  {
+    q: 'Why can invalid nesting change the page structure?',
+    a: 'The HTML parser can automatically close or move elements to produce a valid DOM. Source that looks nested one way may become a different live tree. This is especially important around paragraphs, forms, tables, lists, and interactive elements.',
+    route: ['/html', 'trivia', 'html-parsing-rendering'],
+    cta: 'Review parsing rules',
+    level: 'advanced',
+  },
+  {
+    q: 'Why is this input hard to use: <input placeholder="Email">?',
+    a: 'The input has no durable accessible label. Placeholder text disappears during input and is not a stable field name. Add a label connected with for and id, then keep the placeholder only as optional hint text.',
+    route: ['/html', 'coding', 'html-contact-form-labeled'],
+    cta: 'Fix labeled inputs',
+    level: 'beginner',
+  },
+  {
+    q: 'Why is this image link weak: <a><img alt="arrow"></a>?',
+    a: 'The linked image gives the link an accessible name of "arrow", which describes the icon rather than the action. The link name should explain the destination or action, such as "View pricing". Image alt text inside links often needs to describe behavior, not pixels.',
+    route: ['/html', 'coding', 'html-links-and-images'],
+    cta: 'Practice image links',
+    level: 'beginner',
+  },
+  {
+    q: 'Why is a table without headers hard to understand?',
+    a: 'Data cells need header relationships so users can understand what each value means. Without th, caption, scope, or header associations, assistive technology cannot reliably expose row and column context. The visual grid alone is not enough for non-visual navigation.',
+    route: ['/html', 'coding', 'html-tables-accessibility'],
+    cta: 'Fix table markup',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why is a clickable div a fragile button?',
+    a: 'A clickable div lacks native button role, keyboard activation, disabled behavior, and form interaction. Adding JavaScript handlers does not automatically recreate all expected behavior. Use a real button for actions and style it as needed.',
+    route: ['/html', 'coding', 'html-dialog-confirm-a11y'],
+    cta: 'Practice native controls',
+    level: 'beginner',
+  },
+];
+
 const HTML_TOPIC_CARDS: HtmlTopicCard[] = [
   {
     title: 'HTML role in web development',
@@ -3276,7 +5094,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isVueHub()) {
-      return 'Vue.js interview questions and Vue JS answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice reactivity and component reasoning first, then expand into prep paths and company-style drills.';
+      return 'Vue.js interview questions and Vue JS answers for Vue 3 rounds, with short answers, reactivity scenarios, Composition API, Router, Pinia/Vuex, testing, security, performance, and coding prompts.';
     }
 
     return `${this.keywordSentenceCase()} and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice concise answers first, then expand into Study Plans, guides, and Company Prep.`;
@@ -3375,7 +5193,19 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     this.scrollToSection(targetId);
   }
 
+  scrollToVueSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
   scrollToHtmlCssSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  scrollToCssSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  scrollToHtmlSection(targetId: string): void {
     this.scrollToSection(targetId);
   }
 
@@ -3499,6 +5329,61 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return REACT_LIBRARY_ITEMS;
   }
 
+  vueEditorialSignal(): VueEditorialSignal {
+    return VUE_EDITORIAL_SIGNAL;
+  }
+
+  vueAnchorItems(): VueAnchorItem[] {
+    return VUE_ANCHOR_ITEMS;
+  }
+
+  vueKeywordClusters(): VueKeywordClusterItem[] {
+    return VUE_KEYWORD_CLUSTERS;
+  }
+
+  vueShortAnswers(): VueShortAnswerItem[] {
+    return VUE_SHORT_ANSWERS;
+  }
+
+  vueAudienceTracks(): VueAudienceTrack[] {
+    return VUE_AUDIENCE_TRACKS;
+  }
+
+  vueReactivityRenderingQuestions(): VueFocusedQuestionItem[] {
+    return VUE_REACTIVITY_RENDERING_QUESTIONS;
+  }
+
+  vueComponentContractQuestions(): VueFocusedQuestionItem[] {
+    return VUE_COMPONENT_CONTRACT_QUESTIONS;
+  }
+
+  vueScenarioQuestions(): VueScenarioQuestionItem[] {
+    return VUE_SCENARIO_QUESTIONS;
+  }
+
+  vueModernQuestions(): VueModernQuestionItem[] {
+    return VUE_MODERN_QUESTIONS;
+  }
+
+  vueTestingSecurityPerformanceQuestions(): VueFocusedQuestionItem[] {
+    return VUE_TESTING_SECURITY_PERFORMANCE_QUESTIONS;
+  }
+
+  vueShortAnswerCategoryLabel(category: VueShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'reactivity-rendering':
+        return 'Reactivity + rendering';
+      case 'components':
+        return 'Components';
+      case 'routing-state':
+        return 'Router + state';
+      default:
+        return 'Modern Vue';
+    }
+  }
+
   isAngularHub(): boolean {
     return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'angular';
   }
@@ -3572,6 +5457,61 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   isHtmlHub(): boolean {
     return !this.isMasterHub() && this.config.techs.length === 1 && this.config.techs[0] === 'html';
+  }
+
+  htmlEditorialSignal(): HtmlEditorialSignal {
+    return HTML_EDITORIAL_SIGNAL;
+  }
+
+  htmlAnchorItems(): HtmlAnchorItem[] {
+    return HTML_ANCHOR_ITEMS;
+  }
+
+  htmlKeywordClusters(): HtmlKeywordClusterItem[] {
+    return HTML_KEYWORD_CLUSTERS;
+  }
+
+  htmlShortAnswers(): HtmlShortAnswerItem[] {
+    return HTML_SHORT_ANSWERS;
+  }
+
+  htmlAudienceTracks(): HtmlAudienceTrack[] {
+    return HTML_AUDIENCE_TRACKS;
+  }
+
+  htmlSemanticsQuestions(): HtmlFocusedQuestionItem[] {
+    return HTML_SEMANTICS_QUESTIONS;
+  }
+
+  htmlFormsQuestions(): HtmlFocusedQuestionItem[] {
+    return HTML_FORMS_QUESTIONS;
+  }
+
+  htmlAccessibilityQuestions(): HtmlFocusedQuestionItem[] {
+    return HTML_ACCESSIBILITY_QUESTIONS;
+  }
+
+  htmlMetadataQuestions(): HtmlFocusedQuestionItem[] {
+    return HTML_METADATA_QUESTIONS;
+  }
+
+  htmlModernScenarioQuestions(): HtmlScenarioQuestionItem[] {
+    return HTML_MODERN_SCENARIO_QUESTIONS;
+  }
+
+  htmlShortAnswerCategoryLabel(category: HtmlShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'semantics':
+        return 'Semantics';
+      case 'forms-accessibility':
+        return 'Forms + accessibility';
+      case 'metadata-browser':
+        return 'Metadata + browser';
+      default:
+        return 'Modern + scenarios';
+    }
   }
 
   htmlTopicCards(): HtmlTopicCard[] {
@@ -3648,6 +5588,61 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         return 'Accessibility';
       default:
         return 'Responsive + debugging';
+    }
+  }
+
+  cssEditorialSignal(): CssEditorialSignal {
+    return CSS_EDITORIAL_SIGNAL;
+  }
+
+  cssAnchorItems(): CssAnchorItem[] {
+    return CSS_ANCHOR_ITEMS;
+  }
+
+  cssKeywordClusters(): CssKeywordClusterItem[] {
+    return CSS_KEYWORD_CLUSTERS;
+  }
+
+  cssShortAnswers(): CssShortAnswerItem[] {
+    return CSS_SHORT_ANSWERS;
+  }
+
+  cssAudienceTracks(): CssAudienceTrack[] {
+    return CSS_AUDIENCE_TRACKS;
+  }
+
+  cssCascadeQuestions(): CssFocusedQuestionItem[] {
+    return CSS_CASCADE_QUESTIONS;
+  }
+
+  cssBoxModelQuestions(): CssFocusedQuestionItem[] {
+    return CSS_BOX_MODEL_QUESTIONS;
+  }
+
+  cssLayoutQuestions(): CssFocusedQuestionItem[] {
+    return CSS_LAYOUT_QUESTIONS;
+  }
+
+  cssResponsiveQuestions(): CssFocusedQuestionItem[] {
+    return CSS_RESPONSIVE_QUESTIONS;
+  }
+
+  cssDebuggingPerformanceQuestions(): CssScenarioQuestionItem[] {
+    return CSS_DEBUGGING_PERFORMANCE_QUESTIONS;
+  }
+
+  cssShortAnswerCategoryLabel(category: CssShortAnswerCategory): string {
+    switch (category) {
+      case 'fundamentals':
+        return 'Fundamentals';
+      case 'cascade-selectors':
+        return 'Cascade + selectors';
+      case 'layout':
+        return 'Layout';
+      case 'responsive':
+        return 'Responsive';
+      default:
+        return 'Debugging + performance';
     }
   }
 
@@ -3883,6 +5878,12 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return !this.isMasterHub()
       && this.config.techs.length === 1
       && this.config.techs[0] === 'vue';
+  }
+
+  isCssHub(): boolean {
+    return !this.isMasterHub()
+      && this.config.techs.length === 1
+      && this.config.techs[0] === 'css';
   }
 
   techLabel(tech: Tech): string {
@@ -4206,6 +6207,49 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
     }
 
+    if (this.isVueHub()) {
+      collectionPage['dateModified'] = VUE_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: VUE_EDITORIAL_SIGNAL.reviewer,
+      };
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'Vue.js interview questions' },
+        { '@type': 'Thing', name: 'Vue.js interview questions and answers' },
+        { '@type': 'Thing', name: 'Vue JS interview questions for beginners' },
+        { '@type': 'Thing', name: 'Vue interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'Vue 3 interview questions' },
+        { '@type': 'Thing', name: 'Vue Composition API interview questions' },
+        { '@type': 'Thing', name: 'Vue reactivity interview questions' },
+        { '@type': 'Thing', name: 'Vue ref vs reactive interview questions' },
+        { '@type': 'Thing', name: 'Vue computed vs watch interview questions' },
+        { '@type': 'Thing', name: 'Vue Router interview questions' },
+        { '@type': 'Thing', name: 'Pinia interview questions' },
+        { '@type': 'Thing', name: 'Vuex interview questions' },
+        { '@type': 'Thing', name: 'Vue testing interview questions' },
+        { '@type': 'Thing', name: 'Vue security interview questions' },
+        { '@type': 'Thing', name: 'Vue performance interview questions' },
+        { '@type': 'Thing', name: 'Vue scenario interview questions' },
+        { '@type': 'Thing', name: 'Vue coding interview questions' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'Vue JS interview questions' },
+        { '@type': 'Thing', name: 'Beginner to advanced Vue.js interview questions' },
+        { '@type': 'Thing', name: 'Vue reactivity and rendering questions' },
+        { '@type': 'Thing', name: 'Vue component contract questions' },
+        { '@type': 'Thing', name: 'Vue scenario and code questions' },
+        { '@type': 'Thing', name: 'Modern Vue 3 interview questions' },
+        { '@type': 'Thing', name: 'Vue Router and navigation guards' },
+        { '@type': 'Thing', name: 'Vue Pinia and Vuex state management' },
+        { '@type': 'Thing', name: 'Vue Test Utils and Vitest testing' },
+        { '@type': 'Thing', name: 'Vue XSS and v-html security' },
+        { '@type': 'Thing', name: 'Vue SSR, Nuxt, and hydration' },
+        { '@type': 'Thing', name: 'Vue coding interview prompts' },
+      ];
+    }
+
     if (this.isJavaScriptHub()) {
       collectionPage['dateModified'] = JAVASCRIPT_EDITORIAL_SIGNAL.dateModified;
       collectionPage['reviewedBy'] = {
@@ -4330,21 +6374,79 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
     }
 
-    if (this.isHtmlHub()) {
+    if (this.isCssHub()) {
+      collectionPage['dateModified'] = CSS_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: CSS_EDITORIAL_SIGNAL.reviewer,
+      };
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
-        { '@type': 'Thing', name: 'HTML5 basics' },
-        { '@type': 'Thing', name: 'HTML accessibility testing' },
-        { '@type': 'Thing', name: 'HTML best practices' },
-        { '@type': 'Thing', name: 'Semantic HTML forms and tables' },
+        { '@type': 'Thing', name: 'CSS interview questions and answers' },
+        { '@type': 'Thing', name: 'CSS interview questions for beginners' },
+        { '@type': 'Thing', name: 'CSS interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'CSS selectors interview questions' },
+        { '@type': 'Thing', name: 'CSS specificity interview questions' },
+        { '@type': 'Thing', name: 'CSS cascade interview questions' },
+        { '@type': 'Thing', name: 'CSS box model interview questions' },
+        { '@type': 'Thing', name: 'CSS Flexbox interview questions' },
+        { '@type': 'Thing', name: 'CSS Grid interview questions' },
+        { '@type': 'Thing', name: 'CSS Flexbox vs Grid interview questions' },
+        { '@type': 'Thing', name: 'CSS positioning interview questions' },
+        { '@type': 'Thing', name: 'CSS z-index interview questions' },
+        { '@type': 'Thing', name: 'CSS media queries interview questions' },
+        { '@type': 'Thing', name: 'responsive CSS interview questions' },
+        { '@type': 'Thing', name: 'CSS layout interview questions' },
+        { '@type': 'Thing', name: 'CSS debugging interview questions' },
+        { '@type': 'Thing', name: 'CSS performance interview questions' },
       ];
       collectionPage['mentions'] = [
         ...(collectionPage['mentions'] || []),
-        { '@type': 'Thing', name: 'Common HTML mistakes' },
-        { '@type': 'Thing', name: 'Modern HTML interview topics' },
-        { '@type': 'Thing', name: 'HTML learning resources' },
-        { '@type': 'Thing', name: 'HTML role in web development' },
-        { '@type': 'Thing', name: 'HTML behavioral interview preparation' },
+        { '@type': 'Thing', name: 'CSS cascade and specificity' },
+        { '@type': 'Thing', name: 'CSS selectors and inheritance' },
+        { '@type': 'Thing', name: 'CSS box sizing and overflow' },
+        { '@type': 'Thing', name: 'CSS Flexbox and Grid layout' },
+        { '@type': 'Thing', name: 'CSS stacking contexts and z-index' },
+        { '@type': 'Thing', name: 'CSS custom properties and design tokens' },
+        { '@type': 'Thing', name: 'CSS responsive layout debugging' },
+        { '@type': 'Thing', name: 'CSS performance and hardware acceleration' },
+      ];
+    }
+
+    if (this.isHtmlHub()) {
+      collectionPage['dateModified'] = HTML_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: HTML_EDITORIAL_SIGNAL.reviewer,
+      };
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'HTML interview questions and answers' },
+        { '@type': 'Thing', name: 'HTML interview questions for beginners' },
+        { '@type': 'Thing', name: 'HTML interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'semantic HTML interview questions' },
+        { '@type': 'Thing', name: 'HTML forms interview questions' },
+        { '@type': 'Thing', name: 'HTML accessibility interview questions' },
+        { '@type': 'Thing', name: 'ARIA interview questions' },
+        { '@type': 'Thing', name: 'HTML metadata interview questions' },
+        { '@type': 'Thing', name: 'HTML5 interview questions' },
+        { '@type': 'Thing', name: 'DOM interview questions' },
+        { '@type': 'Thing', name: 'HTML table accessibility questions' },
+        { '@type': 'Thing', name: 'HTML image alt and srcset questions' },
+        { '@type': 'Thing', name: 'HTML iframe interview questions' },
+        { '@type': 'Thing', name: 'Shadow DOM interview questions' },
+        { '@type': 'Thing', name: 'HTML markup scenario questions' },
+      ];
+      collectionPage['mentions'] = [
+        ...(collectionPage['mentions'] || []),
+        { '@type': 'Thing', name: 'HTML DOM and document structure' },
+        { '@type': 'Thing', name: 'Semantic HTML landmarks and headings' },
+        { '@type': 'Thing', name: 'HTML form labels and validation' },
+        { '@type': 'Thing', name: 'HTML ARIA roles and accessible names' },
+        { '@type': 'Thing', name: 'HTML metadata, title, and meta tags' },
+        { '@type': 'Thing', name: 'HTML browser parsing and rendering' },
+        { '@type': 'Thing', name: 'HTML native dialog behavior' },
+        { '@type': 'Thing', name: 'HTML Shadow DOM and web components' },
       ];
     }
 
@@ -4367,11 +6469,20 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     if (this.isReactHub()) {
       jsonLd.push(this.reactShortAnswersFaqPage(canonicalUrl));
     }
+    if (this.isVueHub()) {
+      jsonLd.push(this.vueShortAnswersFaqPage(canonicalUrl));
+    }
     if (this.isAngularHub()) {
       jsonLd.push(this.angularShortAnswersFaqPage(canonicalUrl));
     }
     if (this.isHtmlCssHub()) {
       jsonLd.push(this.htmlCssShortAnswersFaqPage(canonicalUrl));
+    }
+    if (this.isCssHub()) {
+      jsonLd.push(this.cssShortAnswersFaqPage(canonicalUrl));
+    }
+    if (this.isHtmlHub()) {
+      jsonLd.push(this.htmlShortAnswersFaqPage(canonicalUrl));
     }
 
     this.seo.updateTags({
@@ -4432,6 +6543,23 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     };
   }
 
+  private vueShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#vue-short-answers`,
+      url: canonicalUrl,
+      name: 'Top Vue.js interview questions and short answers, beginner to advanced',
+      mainEntity: this.vueShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
   private htmlCssShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
     return {
       '@type': 'FAQPage',
@@ -4439,6 +6567,40 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       url: canonicalUrl,
       name: 'Top HTML and CSS interview questions and short answers, beginner to advanced',
       mainEntity: this.htmlCssShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private cssShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#css-short-answers`,
+      url: canonicalUrl,
+      name: 'Top CSS interview questions and short answers, beginner to advanced',
+      mainEntity: this.cssShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
+  }
+
+  private htmlShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#html-short-answers`,
+      url: canonicalUrl,
+      name: 'Top HTML interview questions and short answers, beginner to advanced',
+      mainEntity: this.htmlShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: {

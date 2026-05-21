@@ -1209,7 +1209,7 @@ export const routes: Routes = [
       seo: {
         title: 'Vue.js Interview Questions and Answers',
         description:
-          'Practice Vue.js interview questions and Vue JS answers with coding prompts, concept questions, follow-ups, reactivity, rendering, and state.',
+          'Vue.js interview questions and answers, beginner to advanced, for experienced developers with Vue 3, Composition API, ref vs reactive, computed vs watch, Vue Router, Pinia, Vuex, testing, security, performance, and scenario questions.',
       },
     },
   },
@@ -1252,7 +1252,7 @@ export const routes: Routes = [
       seo: {
         title: 'HTML Interview Questions and Answers',
         description:
-          'Practice HTML interview questions and answers with concept questions, follow-ups, common mistakes, HTML5 basics, accessibility testing, forms, semantics, and metadata.',
+          'HTML interview questions and answers, beginner to advanced, with semantic HTML, forms, accessibility, ARIA, metadata, HTML5, DOM, tables, images, srcset, iframes, Shadow DOM, and markup scenarios.',
       },
     },
   },
@@ -1286,7 +1286,7 @@ export const routes: Routes = [
       seo: {
         title: 'CSS Interview Questions and Answers',
         description:
-          'Practice CSS interview questions and answers with coding prompts, concept questions, follow-ups, common mistakes, flexbox, grid, cascade, and layout. Use each CSS interview question to rehearse practical trade-offs.',
+          'CSS interview questions and answers, beginner to advanced and for experienced developers, with specificity, cascade, box model, Flexbox, CSS Grid, Flexbox vs Grid, positioning, z-index, media queries, responsive CSS, debugging, and performance.',
       },
     },
   },

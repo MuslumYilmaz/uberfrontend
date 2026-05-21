@@ -40,6 +40,13 @@ const CASES = [
     detail: true,
     expectNoMonaco: true,
   },
+  {
+    path: '/guides/system-design-blueprint/radio-framework',
+    titleIncludes: 'radio method',
+    h1: 'RADIO Framework for Frontend System Design',
+    detail: true,
+    indexable: true,
+  },
 ];
 
 const HOME_TITLE = 'Frontend Interview Prep Platform | FrontendAtlas';
@@ -96,6 +103,7 @@ async function assertSsrBasics(
     expectNoMonaco?: boolean;
     premiumPreviewText?: string;
     listTestIdPrefix?: string;
+    indexable?: boolean;
   },
 ) {
   const title = await page.title();
@@ -103,6 +111,11 @@ async function assertSsrBasics(
 
   const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
   expect(canonical).toBe(expectedCanonical(entry.path));
+
+  if (entry.indexable) {
+    const robots = ((await page.locator('meta[name="robots"]').getAttribute('content')) || '').toLowerCase();
+    expect(robots).not.toContain('noindex');
+  }
 
   const h1Locator = page.locator('h1');
   const h1Count = await h1Locator.count();
@@ -148,6 +161,7 @@ async function assertHydratedBasics(
     detail?: boolean;
     premiumPreviewText?: string;
     listTestIdPrefix?: string;
+    indexable?: boolean;
   },
 ) {
   await expect(page).toHaveTitle(new RegExp(entry.titleIncludes, 'i'));
@@ -155,6 +169,12 @@ async function assertHydratedBasics(
   await expect
     .poll(() => page.locator('link[rel="canonical"]').getAttribute('href'))
     .toBe(expectedCanonical(entry.path));
+
+  if (entry.indexable) {
+    await expect
+      .poll(async () => ((await page.locator('meta[name="robots"]').getAttribute('content')) || '').toLowerCase())
+      .not.toContain('noindex');
+  }
 
   const h1 = (await page.locator('h1').first().textContent())?.trim() || '';
   expect(h1).toContain(entry.h1);
@@ -197,6 +217,10 @@ test.describe('seo-ssr', () => {
   });
 
   test('Hydrated HTML renders correct shell + meta (JS enabled)', async ({ page }) => {
+    await page.addInitScript(() => {
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+    });
+
     for (const entry of CASES) {
       await page.goto(entry.path, { waitUntil: 'domcontentloaded' });
       await expect

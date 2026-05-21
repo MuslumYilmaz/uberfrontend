@@ -2,7 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { BEHAVIORAL, BEHAVIORAL_GROUPS, GuideEntry } from '../../../shared/guides/guide.registry';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { SeoService } from '../../../core/services/seo.service';
@@ -56,6 +56,7 @@ export class BehavioralHostComponent implements OnDestroy {
         this.sub = this.route.data
             .pipe(
                 startWith(this.route.snapshot.data),
+                filter((data) => Object.prototype.hasOwnProperty.call(data, 'guideDetail')),
                 map((data) => (data['guideDetail'] as GuideDetailResolved | null) ?? null),
                 distinctUntilChanged((a, b) => a?.slug === b?.slug),
             )
@@ -72,6 +73,7 @@ export class BehavioralHostComponent implements OnDestroy {
     private load(resolved: GuideDetailResolved | null) {
         const snapshotSlug = this.route.snapshot.paramMap.get('slug') || '';
         const slug = resolved?.slug || snapshotSlug;
+        if (!slug) return;
         this.showShellHeading.set(true);
         this.shellHeading.set(this.toTitle(slug));
 
@@ -97,8 +99,9 @@ export class BehavioralHostComponent implements OnDestroy {
             }))
         };
 
-        if (!resolved || !current) { this.go404(); return; }
+        if (!current) { this.go404(); return; }
         this.shellHeading.set(current.title || this.toTitle(slug));
+        if (!resolved) return;
 
         const prev = idx > 0 ? ['/', 'guides', 'behavioral', BEHAVIORAL[idx - 1].slug] : null;
         const next = idx < BEHAVIORAL.length - 1 ? ['/', 'guides', 'behavioral', BEHAVIORAL[idx + 1].slug] : null;
@@ -117,8 +120,6 @@ export class BehavioralHostComponent implements OnDestroy {
             ref.instance.leftNav = leftNav;
             this.showShellHeading.set(false);
         } catch {
-            // module failed to load -> treat as 404
-            this.go404();
             return;
         }
 

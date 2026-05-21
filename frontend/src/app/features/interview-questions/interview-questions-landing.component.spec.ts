@@ -157,6 +157,89 @@ const REACT_TESTING_QUESTIONS = [
   'What makes React tests brittle?',
 ];
 
+const VUE_SHORT_ANSWER_QUESTIONS = [
+  'What is Vue.js?',
+  'What is the difference between Vue 2 and Vue 3?',
+  'How does Vue reactivity work?',
+  'What is the difference between ref and reactive?',
+  'What are computed properties in Vue?',
+  'What happens when methods are called in Vue templates?',
+  'When should you use watch in Vue?',
+  'What is watchEffect in Vue?',
+  'What does nextTick do in Vue?',
+  'What are Vue lifecycle hooks?',
+  'What are components in Vue?',
+  'How should props work in Vue?',
+  'Why should emits be declared in Vue?',
+  'What are slots in Vue?',
+  'When should you use provide and inject?',
+  'What does v-model expand to?',
+  'What is the difference between v-if and v-show?',
+  'Why are keys important in v-for lists?',
+  'What are Vue directives?',
+  'What is the Composition API?',
+  'What are composables in Vue?',
+  'What is Vue Router used for?',
+  'When should you use Pinia or Vuex?',
+  'How does Vue virtual DOM diffing work?',
+  'How do you improve Vue performance?',
+];
+
+const VUE_REACTIVITY_RENDERING_QUESTIONS = [
+  'How does Vue know which component to update?',
+  'Why can destructuring break Vue reactivity?',
+  'Why should computed values avoid side effects?',
+  'Why does nextTick matter for DOM reads?',
+  'How does v-if affect component lifecycle?',
+  'How do keys affect state preservation?',
+  'What does Vue virtual DOM diffing optimize?',
+  'How are Vue DOM updates batched?',
+];
+
+const VUE_COMPONENT_CONTRACT_QUESTIONS = [
+  'Why should child components avoid mutating props?',
+  'What is the difference between native and component events?',
+  'How do scoped slots change component design?',
+  'What is the hidden cost of provide/inject?',
+  'How should v-model be designed on custom components?',
+  'Why do single-file components help maintainability?',
+  'What should a Vue component public API include?',
+  'How do component boundaries affect scalability?',
+];
+
+const VUE_SCENARIO_QUESTIONS = [
+  'Why does this destructured value stop updating?',
+  'Why can this watcher loop forever?',
+  'Why can this list keep the wrong input value?',
+  'Why is this prop mutation fragile?',
+  'Why does this focus call miss the input?',
+  'Why does this form reset when toggled?',
+  'Why is this computed property unsafe?',
+  'Why can this search show stale results?',
+];
+
+const VUE_MODERN_QUESTIONS = [
+  'How does Composition API differ from Options API?',
+  'What does script setup improve?',
+  'What makes a good Vue composable?',
+  'Why is Pinia the modern default over Vuex?',
+  'What changed with Vue Router 4 style guards?',
+  'What is Teleport used for in Vue?',
+  'What is Suspense used for in Vue?',
+  'How do SSR and Nuxt affect Vue interviews?',
+];
+
+const VUE_TESTING_SECURITY_PERFORMANCE_QUESTIONS = [
+  'How should Vue component behavior be tested?',
+  'How do Vitest and Vue Test Utils fit together?',
+  'How do you test async Vue updates?',
+  'How do you test Vue emitted events?',
+  'Why is v-html a security risk?',
+  'How should rich text be rendered safely in Vue?',
+  'How do you profile Vue performance?',
+  'How do Vue components leak memory?',
+];
+
 const HTML_CSS_SHORT_ANSWER_QUESTIONS = [
   'What is semantic HTML?',
   'What is the DOM?',
@@ -238,6 +321,172 @@ const HTML_CSS_RESPONSIVE_QUESTIONS = [
   'How do you keep touch targets usable?',
   'How do reduced motion preferences affect CSS?',
   'How do you test responsive HTML and CSS before shipping?',
+];
+
+const HTML_SHORT_ANSWER_QUESTIONS = [
+  'What is HTML?',
+  'What is the DOM?',
+  'What is the difference between tags and elements?',
+  'What does a valid HTML document structure include?',
+  'What belongs in the head and body?',
+  'What are semantic HTML elements?',
+  'What is the difference between div and span?',
+  'What is the difference between block and inline elements?',
+  'How should anchors work in HTML?',
+  'What does the href attribute do?',
+  'How should image alt text work?',
+  'How do HTML forms work?',
+  'Why are labels better than placeholders?',
+  'How does native form validation work?',
+  'How should lists and navigation be marked up?',
+  'How do accessible tables work?',
+  'What metadata should an HTML page include?',
+  'What are data attributes used for?',
+  'When should you use an iframe?',
+  'How do srcset and sizes work for images?',
+  'How does browser HTML parsing affect the DOM?',
+  'When should ARIA roles be used?',
+  'What is Shadow DOM?',
+  'How should native dialog behavior work?',
+  'What is the difference between HTML, HTML5, and XHTML?',
+];
+
+const HTML_SEMANTICS_QUESTIONS = [
+  'How do landmarks improve document structure?',
+  'How should heading structure work?',
+  'When should you use section and article?',
+  'Why are generic div and span elements not enough?',
+  'Why does the html lang attribute matter?',
+  'How should list markup be used?',
+  'How do data attributes fit into semantic markup?',
+  'What makes an HTML document easy to scan?',
+];
+
+const HTML_FORMS_QUESTIONS = [
+  'How should a label connect to a form control?',
+  'Why is placeholder text not a label?',
+  'How do input types improve forms?',
+  'How do validation attributes work?',
+  'How should form errors be exposed?',
+  'How should radio buttons and checkboxes be grouped?',
+  'What is the default method for an HTML form?',
+  'Why should form actions use real buttons?',
+];
+
+const HTML_ACCESSIBILITY_QUESTIONS = [
+  'When should you add ARIA?',
+  'What is an accessible name?',
+  'How should alt text work for linked images?',
+  'How do you make data tables accessible?',
+  'What makes an HTML dialog accessible?',
+  'How should keyboard navigation be checked?',
+  'How should iframes be exposed accessibly?',
+  'How do you test HTML accessibility quickly?',
+];
+
+const HTML_METADATA_QUESTIONS = [
+  'What belongs in the head for SEO and browser behavior?',
+  'How should the title tag be used?',
+  'What do meta tags do?',
+  'Why does the viewport meta tag matter?',
+  'How does HTML parsing affect invalid markup?',
+  'How do script loading attributes affect parsing?',
+  'How should responsive image markup be chosen?',
+  'How should iframes be loaded and constrained?',
+];
+
+const HTML_MODERN_SCENARIO_QUESTIONS = [
+  'How does native dialog compare with a custom modal?',
+  'What are details, summary, and popover useful for?',
+  'How do template and slot support component markup?',
+  'Why can invalid nesting change the page structure?',
+  'Why is this input hard to use: <input placeholder="Email">?',
+  'Why is this image link weak: <a><img alt="arrow"></a>?',
+  'Why is a table without headers hard to understand?',
+  'Why is a clickable div a fragile button?',
+];
+
+const CSS_SHORT_ANSWER_QUESTIONS = [
+  'What is CSS?',
+  'How does the CSS cascade work?',
+  'What is CSS specificity?',
+  'What is inheritance in CSS?',
+  'What is the CSS box model?',
+  'What is the difference between margin and padding?',
+  'How does display affect layout?',
+  'When should you use Flexbox?',
+  'When should you use CSS Grid?',
+  'How does CSS positioning work?',
+  'What is a stacking context?',
+  'How does z-index work?',
+  'How do rem, em, px, and percent differ?',
+  'What are media queries used for?',
+  'What are container queries?',
+  'What does responsive design mean in CSS?',
+  'What are CSS custom properties?',
+  'What are pseudo-classes and pseudo-elements?',
+  'What is BEM in CSS?',
+  'How do you debug CSS overflow?',
+  'How do min-width and max-width affect responsive layout?',
+  'How do transforms and transitions differ?',
+  'How should CSS animations be used safely?',
+  'How do you improve CSS performance?',
+  'How do you debug a CSS layout bug?',
+];
+
+const CSS_CASCADE_QUESTIONS = [
+  'What order does the cascade use to choose a declaration?',
+  'How is CSS specificity calculated?',
+  'How do cascade layers help large stylesheets?',
+  'How are inheritance and initial values different?',
+  'How do :is(), :where(), and :has() affect selectors?',
+  'When should !important be used?',
+  'Why are IDs risky in CSS selectors?',
+  'How do you avoid brittle selector strategy?',
+];
+
+const CSS_BOX_MODEL_QUESTIONS = [
+  'What is the difference between content-box and border-box?',
+  'Why does padding change an element size?',
+  'When do vertical margins collapse?',
+  'Why can width: 100% still overflow?',
+  'Why do flex and grid children refuse to shrink?',
+  'When should overflow be hidden, auto, or visible?',
+  'How should component sizing be constrained?',
+  'How do scrollbars affect layout?',
+];
+
+const CSS_LAYOUT_QUESTIONS = [
+  'How does Flexbox alignment work?',
+  'How do CSS Grid tracks work?',
+  'How do you build a wrapping nav with CSS?',
+  'What determines an absolutely positioned element containing block?',
+  'Why does position: sticky fail?',
+  'How should overlays handle stacking contexts?',
+  'How does auto-fit with minmax() help responsive grids?',
+  'When is float still relevant?',
+];
+
+const CSS_RESPONSIVE_QUESTIONS = [
+  'What does mobile-first CSS mean?',
+  'How do container queries differ from media queries?',
+  'How does clamp() help fluid CSS?',
+  'How should responsive cards be designed?',
+  'How should navigation adapt at small widths?',
+  'How do you handle long words, URLs, and untrusted text?',
+  'How should reduced motion be handled in CSS?',
+  'How do CSS variables support themes?',
+];
+
+const CSS_DEBUGGING_PERFORMANCE_QUESTIONS = [
+  'How do you debug missing CSS styles?',
+  'How do you debug a specificity conflict?',
+  'How do you debug a z-index problem?',
+  'How do you debug horizontal scroll?',
+  'What causes layout thrashing?',
+  'When does hardware acceleration help CSS?',
+  'What makes CSS maintainable?',
+  'What are common CSS debugging mistakes?',
 ];
 
 describe('InterviewQuestionsLandingComponent', () => {
@@ -342,6 +591,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-vue-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-editorial-signal')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
@@ -353,6 +603,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -366,6 +619,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-html-css-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-code')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-short-answers')).toBeNull();
   });
 
   it('renders React-only answer-first coverage, scenarios, modern topics, and schema mentions', async () => {
@@ -467,10 +722,16 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('JavaScript interview topic map');
     expect(text).not.toContain('Angular interview topic map');
     expect(text).not.toContain('HTML interview topic map');
+    expect(text).not.toContain('Beginner Vue.js questions');
+    expect(text).not.toContain('Vue 3 and Composition API');
+    expect(text).not.toContain('Router, Pinia, and Vuex');
+    expect(text).not.toContain('CSS specificity and cascade questions');
+    expect(text).not.toContain('Flexbox and CSS Grid interview questions');
 
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-vue-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-react-clusters-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-react-short-answers-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-react-audience-title"]')).toBeTruthy();
@@ -507,6 +768,11 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('.iq-scenario-card').length).toBe(8);
     expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeTruthy();
     expect(fixture.nativeElement.querySelectorAll('.iq-modern-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-clusters')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-audience')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-modern')).toBeNull();
     expect(
       fixture.nativeElement.querySelectorAll(
         '.iq-short-answer, .iq-scenario-card, .iq-modern-card, .iq-focused-card'
@@ -799,11 +1065,18 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('Popular HTML and CSS interview question clusters');
     expect(text).not.toContain('Top HTML and CSS interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('HTML and CSS code scenario interview questions');
+    expect(text).not.toContain('Beginner Vue.js questions');
+    expect(text).not.toContain('Vue 3 and Composition API');
+    expect(text).not.toContain('Router, Pinia, and Vuex');
+    expect(text).not.toContain('CSS specificity and cascade questions');
+    expect(text).not.toContain('Flexbox and CSS Grid interview questions');
 
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-vue-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-html-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-css-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-editorial-signal')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-short-answers-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-javascript-output-title"]')).toBeTruthy();
@@ -827,6 +1100,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -1016,6 +1292,43 @@ describe('InterviewQuestionsLandingComponent', () => {
       null,
       '',
       `${window.location.pathname}${window.location.search}#iq-react-scenarios-title`,
+    );
+  });
+
+  it('scrolls Vue TOC buttons to page sections without routing to the app root', async () => {
+    routeStub.snapshot.data.interviewQuestions = {
+      keyword: 'vue js interview questions',
+      title: 'Vue.js Interview Questions and Answers',
+      techs: ['vue'],
+    };
+    routeStub.snapshot.data.interviewQuestionsList = {
+      techs: ['vue'],
+      coding: [],
+      trivia: [],
+    };
+    routeStub.snapshot.url = [{ path: 'vue' }, { path: 'interview-questions' }];
+    routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'vue' }, { path: 'interview-questions' }] }];
+
+    const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const scenariosHeading = fixture.nativeElement.querySelector('#iq-vue-scenarios-title') as HTMLElement;
+    const scrollIntoView = jasmine.createSpy('scrollIntoView');
+    (scenariosHeading as any).scrollIntoView = scrollIntoView;
+    const replaceState = spyOn(window.history, 'replaceState').and.stub();
+
+    const tocButton = fixture.nativeElement.querySelector(
+      'button[data-target="iq-vue-scenarios-title"]',
+    ) as HTMLButtonElement;
+    tocButton.click();
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    expect(replaceState).toHaveBeenCalledWith(
+      null,
+      '',
+      `${window.location.pathname}${window.location.search}#iq-vue-scenarios-title`,
     );
   });
 
@@ -1249,7 +1562,14 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('Beginner Vue.js questions');
+    expect(text).not.toContain('Vue 3 and Composition API');
+    expect(text).not.toContain('Router, Pinia, and Vuex');
+    expect(text).not.toContain('CSS specificity and cascade questions');
+    expect(text).not.toContain('Flexbox and CSS Grid interview questions');
     expect(fixture.nativeElement.querySelector('.iq-html-css-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-vue-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-html-css-short-answers-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-html-css-coding-preview-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-clusters')).toBeTruthy();
@@ -1260,6 +1580,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-code')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-browser')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-responsive')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-modern')).toBeNull();
     expect(fixture.nativeElement.querySelectorAll('.iq-cluster-card').length).toBe(6);
     expect(fixture.nativeElement.querySelectorAll('.iq-short-answer').length).toBe(25);
     expect(fixture.nativeElement.querySelectorAll('.iq-audience-card').length).toBe(2);
@@ -1342,19 +1666,25 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(semanticEntry?.acceptedAnswer?.text).toContain('Semantic HTML uses elements that describe the meaning and structure of content');
   });
 
-  it('uses Vue.js wording on the Vue hub while preserving Vue JS query intent', async () => {
+  it('renders Vue-only answer-first coverage, scenarios, modern topics, and schema mentions', async () => {
     routeStub.snapshot.data.interviewQuestions = {
       keyword: 'vue js interview questions',
       title: 'Vue.js Interview Questions and Answers',
       techs: ['vue'],
     };
+    routeStub.snapshot.data.seo = {
+      title: 'Vue.js Interview Questions and Answers',
+      description: 'Vue.js interview questions and answers, beginner to advanced, for experienced developers with Vue 3, Composition API, ref vs reactive, computed vs watch, Vue Router, Pinia, Vuex, testing, security, performance, and scenario questions.',
+    };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['vue'],
       coding: [
         { id: 'vue-tabs', title: 'Vue Tabs', type: 'coding', technology: 'vue', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Build tabs.', tech: 'vue' },
+        { id: 'vue-debounced-search', title: 'Vue Debounced Search', type: 'coding', technology: 'vue', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Build debounced search.', tech: 'vue' },
       ],
       trivia: [
         { id: 'vue-reactivity-system', title: 'Vue reactivity system', type: 'trivia', technology: 'vue', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain reactivity.', tech: 'vue' },
+        { id: 'vue-composition-api', title: 'Vue Composition API', type: 'trivia', technology: 'vue', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain Composition API.', tech: 'vue' },
       ],
     };
     routeStub.snapshot.url = [{ path: 'vue' }, { path: 'interview-questions' }];
@@ -1368,9 +1698,63 @@ describe('InterviewQuestionsLandingComponent', () => {
     const text = fixture.nativeElement.textContent || '';
 
     expect(text).toContain('Vue.js Interview Questions and Answers');
-    expect(text).toContain('Vue.js interview questions and Vue JS answers hub');
+    expect(text).toContain('Vue.js interview questions and Vue JS answers for Vue 3 rounds');
+    expect(text).toContain('Reviewed May 20, 2026');
+    expect(text).toContain('FrontendAtlas Editor');
+    expect(text).toContain('65 visible Vue.js questions across reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, modern Vue, testing, security, and performance');
+    expect(text).toContain('On this page');
+    expect(text).toContain('Popular Vue.js interview question clusters');
+    expect(text).toContain('Beginner Vue.js questions');
+    expect(text).toContain('Experienced Vue.js questions');
+    expect(text).toContain('Vue 3 and Composition API');
+    expect(text).toContain('Reactivity: ref, reactive, computed, watch');
+    expect(text).toContain('Router, Pinia, and Vuex');
+    expect(text).toContain('Testing, security, and performance');
+    expect(text).toContain('Top Vue.js interview questions and short answers, beginner to advanced');
+    expect(text).toContain('Vue.js interview questions for beginners and experienced developers');
+    expect(text).toContain('Vue.js interview questions for beginners');
+    expect(text).toContain('Vue.js interview questions for experienced developers');
+    expect(text).toContain('Vue reactivity and rendering interview questions');
+    expect(text).toContain('Vue component contract interview questions');
+    expect(text).toContain('Vue scenario and code interview questions');
+    expect(text).toContain('Modern Vue 3 interview questions');
+    expect(text).toContain('Vue testing, security, and performance interview questions');
+    for (const question of VUE_SHORT_ANSWER_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of VUE_REACTIVITY_RENDERING_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of VUE_COMPONENT_CONTRACT_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of VUE_SCENARIO_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of VUE_MODERN_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of VUE_TESTING_SECURITY_PERFORMANCE_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    expect(text.indexOf('Top Vue.js interview questions and short answers, beginner to advanced')).toBeLessThan(
+      text.indexOf('Vue reactivity and rendering interview questions')
+    );
+    expect(text.indexOf('Vue testing, security, and performance interview questions')).toBeLessThan(
+      text.indexOf('Most crucial Vue coding interview questions')
+    );
+    expect(text.indexOf('Modern Vue 3 interview questions')).toBeLessThan(
+      text.indexOf('Most crucial Vue coding interview questions')
+    );
     expect(text).toContain('What Vue.js interview rounds test');
-    expect(text).toContain('Are Vue.js and Vue JS interview questions the same target?');
+    expect(text).toContain('Most crucial Vue coding interview questions');
+    expect(text).toContain('Most crucial Vue concept questions for interviews');
+    expect(text).toContain('Are these Vue.js interview questions for beginners and experienced developers?');
+    expect(text).toContain('Does this page cover Vue 3 and Composition API interview questions?');
+    expect(text).toContain('Does this page include Vue reactivity interview questions like ref vs reactive and computed vs watch?');
+    expect(text).toContain('Does this page include Vue scenario and code interview questions?');
+    expect(text).toContain('Does this page include Vue testing, security, and performance interview questions?');
+    expect(text).toContain('Where should I practice Vue.js coding interview questions?');
     expect(text).not.toContain('Popular React interview question clusters');
     expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('React interview questions for beginners and experienced developers');
@@ -1379,11 +1763,59 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('React testing interview questions with Testing Library, act, and mocked APIs');
     expect(text).not.toContain('React scenario and code interview questions');
     expect(text).not.toContain('Modern React interview questions');
+    expect(text).not.toContain('Popular Angular interview question clusters');
+    expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('Angular scenario and code interview questions');
+    expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(text).not.toContain('Output-based JavaScript interview questions');
     expect(text).not.toContain('Popular HTML and CSS interview question clusters');
     expect(text).not.toContain('Top HTML and CSS interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('HTML and CSS code scenario interview questions');
+    expect(text).not.toContain('CSS specificity and cascade questions');
+    expect(text).not.toContain('Flexbox and CSS Grid interview questions');
+    expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-vue-toc')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-html-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-clusters-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-audience-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-reactivity-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-components-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-scenarios-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-modern-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-testing-security-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-coding-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-vue-concept-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-clusters')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-cluster-card').length).toBe(6);
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-vue-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-vue-audience-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-vue-reactivity-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-vue-modern-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-vue-components-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-vue-testing-security-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-short-answers')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--vue-short-answers .iq-short-answer').length).toBe(25);
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-audience')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--vue-audience .iq-audience-card').length).toBe(2);
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-reactivity')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--vue-reactivity .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-components')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--vue-components .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-scenarios')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--vue-scenarios .iq-scenario-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-modern')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--vue-modern .iq-modern-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-testing-security')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--vue-testing-security .iq-focused-card').length).toBe(8);
+    expect(
+      fixture.nativeElement.querySelectorAll(
+        '.iq-section--vue-short-answers .iq-short-answer, .iq-section--vue-reactivity .iq-focused-card, .iq-section--vue-components .iq-focused-card, .iq-section--vue-scenarios .iq-scenario-card, .iq-section--vue-modern .iq-modern-card, .iq-section--vue-testing-security .iq-focused-card'
+      ).length
+    ).toBe(65);
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-code')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeNull();
@@ -1394,9 +1826,111 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-testing')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-security')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-classic')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--angular-modern')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-reactivity-system"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-ref-vs-reactive-difference-traps"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-computed-vs-watchers"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-watch-vs-watcheffect-differences-infinite-loops"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-nexttick-dom-update-queue"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-lifecycle-hooks"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-composition-api"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-composition-api-vs-mixins"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-child-mutates-prop-directly"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-v-for-keys-why-not-index"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-v-show-vs-v-if-dom-lifecycle"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-router-navigation"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vuex-state-management"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-slots-default-named-scoped-slot-props"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-provide-inject-vs-prop-drilling-tradeoffs"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/vue/coding/vue-debounced-search"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/vue-prep-path"]')).toBeTruthy();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
+
+    expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue.js interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue.js interview questions and answers')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue JS interview questions for beginners')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue 3 interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue Composition API interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue reactivity interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue ref vs reactive interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue computed vs watch interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue Router interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Pinia interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vuex interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue testing interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue security interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue performance interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue interview questions for experienced developers')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue scenario interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue coding interview questions')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue scenario and code questions')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue XSS and v-html security')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue SSR, Nuxt, and hydration')
+    )).toBeTrue();
+    expect(faqPage).toBeTruthy();
+    expect(faqPage?.name).toBe('Top Vue.js interview questions and short answers, beginner to advanced');
+    expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
+    expect(faqPage?.mainEntity.length).toBe(25);
+    expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(VUE_SHORT_ANSWER_QUESTIONS);
+    const vueEntry = faqPage?.mainEntity.find((entry: any) =>
+      entry?.name === 'What is Vue.js?'
+    );
+    expect(String(vueEntry?.acceptedAnswer?.text || '')).toContain('progressive JavaScript framework');
   });
 
-  it('renders HTML-only coverage for accessibility testing, HTML5, resources, mistakes, and schema mentions', async () => {
+  it('renders HTML-only answer-first coverage and schema mentions', async () => {
     routeStub.snapshot.data.interviewQuestions = {
       keyword: 'html interview questions',
       title: 'HTML Interview Questions and Answers',
@@ -1404,7 +1938,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     };
     routeStub.snapshot.data.seo = {
       title: 'HTML Interview Questions and Answers',
-      description: 'Practice HTML interview questions and answers with concept questions, follow-ups, common mistakes, HTML5 basics, accessibility testing, forms, semantics, and metadata.',
+      description: 'HTML interview questions and answers, beginner to advanced, with semantic HTML, forms, accessibility, ARIA, metadata, HTML5, DOM, tables, images, srcset, iframes, Shadow DOM, and markup scenarios.',
     };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['html'],
@@ -1428,19 +1962,31 @@ describe('InterviewQuestionsLandingComponent', () => {
     const text = fixture.nativeElement.textContent || '';
 
     expect(text).toContain('HTML Interview Questions and Answers');
+    expect(text).toContain('Reviewed May 21, 2026');
+    expect(text).toContain('65 visible HTML questions across semantics, forms, accessibility, metadata, DOM, native browser behavior, modern HTML, and markup scenarios');
+    expect(text).toContain('Popular HTML interview question clusters');
+    expect(text).toContain('Top HTML interview questions and short answers, beginner to advanced');
+    expect(text).toContain('HTML interview questions for beginners and experienced frontend developers');
+    expect(text).toContain('HTML interview questions for beginners');
+    expect(text).toContain('HTML interview questions for experienced developers');
+    expect(text).toContain('Semantic HTML questions');
+    expect(text).toContain('HTML forms and validation questions');
+    expect(text).toContain('HTML accessibility and ARIA questions');
+    expect(text).toContain('HTML metadata and browser behavior');
+    expect(text).toContain('Modern HTML and markup scenarios');
+    expect(text).toContain('HTML semantics and document structure interview questions');
+    expect(text).toContain('HTML forms, validation, and input accessibility interview questions');
+    expect(text).toContain('HTML accessibility and ARIA interview questions');
+    expect(text).toContain('HTML metadata, SEO, and browser parsing interview questions');
+    expect(text).toContain('Modern HTML and markup scenario interview questions');
     expect(text).toContain('HTML interview topic map');
-    expect(text).toContain('HTML role in web development');
-    expect(text).toContain('HTML vs HTML5 in interviews');
-    expect(text).toContain('Accessibility testing workflow');
     expect(text).toContain('Common HTML coding mistakes');
-    expect(text).toContain('HTML best practices for interviews');
-    expect(text).toContain('Modern HTML topics interviewers may ask about');
     expect(text).toContain('Best resources for learning HTML');
-    expect(text).toContain('Behavioral prep for HTML interviews');
-    expect(text).toContain('What is the difference between HTML and HTML5?');
-    expect(text).toContain('How do I test my HTML code for accessibility?');
-    expect(text).toContain('What are the best resources for learning HTML?');
-    expect(text).toContain('How do behavioral questions show up in HTML interviews?');
+    expect(text).toContain('Are these HTML interview questions for beginners and experienced developers?');
+    expect(text).toContain('Does this page cover semantic HTML, forms, and accessibility?');
+    expect(text).toContain('Does this page include HTML metadata, DOM, and browser parsing questions?');
+    expect(text).toContain('Does this page cover modern HTML topics like dialog, srcset, iframes, and Shadow DOM?');
+    expect(text).toContain('Where should I practice HTML coding interview questions?');
     expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Angular scenario and code interview questions');
@@ -1460,11 +2006,27 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('Popular HTML and CSS interview question clusters');
     expect(text).not.toContain('Top HTML and CSS interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('HTML and CSS code scenario interview questions');
+    expect(text).not.toContain('Beginner Vue.js questions');
+    expect(text).not.toContain('Vue 3 and Composition API');
+    expect(text).not.toContain('Router, Pinia, and Vuex');
+    expect(text).not.toContain('CSS specificity and cascade questions');
+    expect(text).not.toContain('Flexbox and CSS Grid interview questions');
 
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-vue-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-html-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-html-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-html-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-html-semantics-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-html-forms-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-html-accessibility-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-html-metadata-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-html-modern-scenarios-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-html-coding-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-html-concept-preview-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
@@ -1478,6 +2040,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -1486,8 +2051,82 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--angular-classic')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-scenarios')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-modern')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-clusters')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-clusters')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-short-answers')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-audience')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-semantics')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-forms')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-accessibility')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-metadata')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--html-modern-scenarios')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-cluster-card').length).toBe(7);
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-html-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-html-audience-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-html-semantics-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-html-forms-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-html-accessibility-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-html-metadata-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-html-modern-scenarios-title"]')).toBeTruthy();
+
+    for (const question of HTML_SHORT_ANSWER_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of HTML_SEMANTICS_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of HTML_FORMS_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of HTML_ACCESSIBILITY_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of HTML_METADATA_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of HTML_MODERN_SCENARIO_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--html-short-answers .iq-short-answer').length).toBe(25);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--html-audience .iq-audience-card').length).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--html-semantics .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--html-forms .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--html-accessibility .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--html-metadata .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--html-modern-scenarios .iq-focused-card').length).toBe(8);
+    expect(
+      fixture.nativeElement.querySelectorAll(
+        '.iq-section--html-short-answers .iq-short-answer, .iq-section--html-semantics .iq-focused-card, .iq-section--html-forms .iq-focused-card, .iq-section--html-accessibility .iq-focused-card, .iq-section--html-metadata .iq-focused-card, .iq-section--html-modern-scenarios .iq-focused-card'
+      ).length
+    ).toBe(65);
+
+    const shortAnswersSection = fixture.nativeElement.querySelector('.iq-section--html-short-answers') as HTMLElement;
+    const codingPreviewTitle = fixture.nativeElement.querySelector('#iq-html-coding-preview-title') as HTMLElement;
+    expect(shortAnswersSection.compareDocumentPosition(codingPreviewTitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
     expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-basic-structure"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-contact-form-labeled"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-forms-validation-required"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-semantic-layout"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-tables-accessibility"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-dialog-confirm-a11y"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-dom"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-semantic-elements"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-div-vs-span"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-block-inline-elements"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-a-tag"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-href-attribute"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-img-alt-attribute"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-input-placeholder"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-meta-tag"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-title-tag"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-iframe-tag"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-img-srcset"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-parsing-rendering"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-aria-roles"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/html/trivia/html-shadow-dom"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/html/trivia/web-accessibility-make-page-accessible"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="https://html.spec.whatwg.org/multipage/introduction.html"]')).toBeTruthy();
@@ -1498,23 +2137,74 @@ describe('InterviewQuestionsLandingComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
+    expect(collection?.dateModified).toBe('2026-05-21T00:00:00.000Z');
+    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
     expect((collection?.about || []).some((entry: any) =>
-      String(entry?.name || '').includes('HTML accessibility testing')
+      String(entry?.name || '').includes('HTML interview questions and answers')
     )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
-      String(entry?.name || '').includes('HTML5 basics')
+      String(entry?.name || '').includes('HTML interview questions for beginners')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML interview questions for experienced developers')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('semantic HTML interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML forms interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML accessibility interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('ARIA interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML metadata interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML5 interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('DOM interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML table accessibility questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML image alt and srcset questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML iframe interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('Shadow DOM interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('HTML markup scenario questions')
     )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
-      String(entry?.name || '').includes('Common HTML mistakes')
+      String(entry?.name || '').includes('HTML DOM and document structure')
     )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
-      String(entry?.name || '').includes('HTML learning resources')
+      String(entry?.name || '').includes('HTML native dialog behavior')
     )).toBeTrue();
+    expect(faqPage).toBeTruthy();
+    expect(faqPage?.name).toBe('Top HTML interview questions and short answers, beginner to advanced');
+    expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
+    expect(faqPage?.mainEntity.length).toBe(25);
+    expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(HTML_SHORT_ANSWER_QUESTIONS);
+    const htmlEntry = faqPage?.mainEntity.find((entry: any) =>
+      entry?.name === 'What is HTML?'
+    );
+    expect(String(htmlEntry?.acceptedAnswer?.text || '')).toContain('markup language browsers parse');
     expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeNull();
   });
 
-  it('does not render HTML-only coverage on CSS hubs', async () => {
+  it('renders CSS-only answer-first coverage and schema mentions', async () => {
     routeStub.snapshot.data.interviewQuestions = {
       keyword: 'css interview questions',
       title: 'CSS Interview Questions and Answers',
@@ -1540,6 +2230,29 @@ describe('InterviewQuestionsLandingComponent', () => {
     const text = fixture.nativeElement.textContent || '';
 
     expect(text).toContain('CSS Interview Questions and Answers');
+    expect(text).toContain('Reviewed May 20, 2026');
+    expect(text).toContain('65 visible CSS questions across cascade, specificity, box model, layout, responsive design, debugging, performance, and maintainable CSS');
+    expect(text).toContain('Popular CSS interview question clusters');
+    expect(text).toContain('Top CSS interview questions and short answers, beginner to advanced');
+    expect(text).toContain('CSS interview questions for beginners and experienced frontend developers');
+    expect(text).toContain('CSS interview questions for beginners');
+    expect(text).toContain('CSS interview questions for experienced developers');
+    expect(text).toContain('CSS specificity and cascade questions');
+    expect(text).toContain('CSS box model and overflow questions');
+    expect(text).toContain('Flexbox and CSS Grid interview questions');
+    expect(text).toContain('Responsive CSS and media query questions');
+    expect(text).toContain('CSS debugging and performance questions');
+    expect(text).toContain('CSS cascade and specificity interview questions');
+    expect(text).toContain('CSS box model, sizing, and overflow interview questions');
+    expect(text).toContain('CSS Flexbox, Grid, and positioning interview questions');
+    expect(text).toContain('Responsive CSS and media queries interview questions');
+    expect(text).toContain('CSS debugging, performance, and maintainability interview questions');
+    expect(text).toContain('Are these CSS interview questions for beginners and experienced developers?');
+    expect(text).toContain('Does this page cover CSS specificity and cascade interview questions?');
+    expect(text).toContain('Does this page include Flexbox and CSS Grid interview questions?');
+    expect(text).toContain('Does this page include responsive CSS and media query questions?');
+    expect(text).toContain('Does this page cover CSS debugging and performance questions?');
+    expect(text).toContain('Where should I practice CSS coding interview questions?');
     expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Angular scenario and code interview questions');
@@ -1560,10 +2273,23 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('Popular HTML and CSS interview question clusters');
     expect(text).not.toContain('Top HTML and CSS interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('HTML and CSS code scenario interview questions');
+    expect(text).not.toContain('Beginner Vue.js questions');
+    expect(text).not.toContain('Vue 3 and Composition API');
+    expect(text).not.toContain('Router, Pinia, and Vuex');
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-vue-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-html-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-css-toc')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-css-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-css-cascade-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-css-box-model-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-css-layout-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-css-responsive-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-css-debugging-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-css-coding-preview-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('button[data-target="iq-css-concept-preview-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-output')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeNull();
@@ -1577,6 +2303,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();
@@ -1587,6 +2316,149 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--angular-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-coverage')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-coverage')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-clusters')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.iq-cluster-card').length).toBe(7);
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-css-short-answers-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-css-audience-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-css-cascade-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-css-box-model-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-css-layout-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-css-responsive-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-cluster-card[data-target="iq-css-debugging-title"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-short-answers')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-audience')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-cascade')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-box-model')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-layout')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-responsive')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.iq-section--css-debugging')).toBeTruthy();
+
+    for (const question of CSS_SHORT_ANSWER_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of CSS_CASCADE_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of CSS_BOX_MODEL_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of CSS_LAYOUT_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of CSS_RESPONSIVE_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+    for (const question of CSS_DEBUGGING_PERFORMANCE_QUESTIONS) {
+      expect(text).toContain(question);
+    }
+
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--css-short-answers .iq-short-answer').length).toBe(25);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--css-audience .iq-audience-card').length).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--css-cascade .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--css-box-model .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--css-layout .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--css-responsive .iq-focused-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-section--css-debugging .iq-focused-card').length).toBe(8);
+    expect(
+      fixture.nativeElement.querySelectorAll(
+        '.iq-section--css-short-answers .iq-short-answer, .iq-section--css-cascade .iq-focused-card, .iq-section--css-box-model .iq-focused-card, .iq-section--css-layout .iq-focused-card, .iq-section--css-responsive .iq-focused-card, .iq-section--css-debugging .iq-focused-card'
+      ).length
+    ).toBe(65);
+
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-definition"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-cascade-order"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-specificity-hierarchy"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-box-model"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-margin-vs-padding"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-display-flex"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-grid-vs-flexbox"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-position-relative-absolute-fixed"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-z-index"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-media-queries"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-make-element-responsive"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-units-em-rem-percent-px"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-pseudo-classes-elements"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-custom-properties"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-hardware-acceleration"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-flexbox-navbar"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-grid-card-gallery"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-fluid-clamp"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-theme-variables-dark-mode"]')).toBeTruthy();
+
+    const codingTitle = fixture.nativeElement.querySelector('#iq-css-coding-preview-title');
+    const conceptTitle = fixture.nativeElement.querySelector('#iq-css-concept-preview-title');
+    const shortAnswerSection = fixture.nativeElement.querySelector('.iq-section--css-short-answers');
+    expect(codingTitle).toBeTruthy();
+    expect(conceptTitle).toBeTruthy();
+    expect(shortAnswerSection.compareDocumentPosition(codingTitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
+
+    expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS interview questions and answers')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS interview questions for beginners')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS interview questions for experienced developers')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS selectors interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS specificity interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS cascade interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS box model interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS Flexbox interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS Grid interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS Flexbox vs Grid interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS positioning interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS z-index interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS media queries interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('responsive CSS interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS layout interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS debugging interview questions')
+    )).toBeTrue();
+    expect((collection?.about || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS performance interview questions')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS responsive layout debugging')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('CSS performance and hardware acceleration')
+    )).toBeTrue();
+    expect(faqPage?.['@id']).toContain('#css-short-answers');
+    expect(faqPage?.mainEntity.length).toBe(25);
+    expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(CSS_SHORT_ANSWER_QUESTIONS);
   });
 
   it('renders Angular-only answer-first coverage, scenarios, modern topics, and schema mentions', async () => {
@@ -1692,11 +2564,18 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).not.toContain('Popular HTML and CSS interview question clusters');
     expect(text).not.toContain('Top HTML and CSS interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('HTML and CSS code scenario interview questions');
+    expect(text).not.toContain('Beginner Vue.js questions');
+    expect(text).not.toContain('Vue 3 and Composition API');
+    expect(text).not.toContain('Router, Pinia, and Vuex');
+    expect(text).not.toContain('CSS specificity and cascade questions');
+    expect(text).not.toContain('Flexbox and CSS Grid interview questions');
 
     expect(fixture.nativeElement.querySelector('.iq-js-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-angular-toc')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-vue-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-html-css-toc')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-css-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-angular-short-answers-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-angular-audience-title"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('button[data-target="iq-angular-testing-title"]')).toBeTruthy();
@@ -1718,6 +2597,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-short-answers')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-scenarios')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.iq-section--vue-modern')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-code')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeTruthy();

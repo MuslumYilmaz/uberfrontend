@@ -31,6 +31,15 @@
       <span>{{ reactEditorialSignal().coverage }}</span>
     </div>
     <div
+      *ngIf="isVueHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ vueEditorialSignal().reviewedLabel }}</span>
+      <span>{{ vueEditorialSignal().reviewer }}</span>
+      <span>{{ vueEditorialSignal().coverage }}</span>
+    </div>
+    <div
       *ngIf="isHtmlCssHub()"
       class="iq-editorial-signal"
       aria-label="Editorial review details"
@@ -38,6 +47,24 @@
       <span>{{ htmlCssEditorialSignal().reviewedLabel }}</span>
       <span>{{ htmlCssEditorialSignal().reviewer }}</span>
       <span>{{ htmlCssEditorialSignal().coverage }}</span>
+    </div>
+    <div
+      *ngIf="isCssHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ cssEditorialSignal().reviewedLabel }}</span>
+      <span>{{ cssEditorialSignal().reviewer }}</span>
+      <span>{{ cssEditorialSignal().coverage }}</span>
+    </div>
+    <div
+      *ngIf="isHtmlHub()"
+      class="iq-editorial-signal"
+      aria-label="Editorial review details"
+    >
+      <span>{{ htmlEditorialSignal().reviewedLabel }}</span>
+      <span>{{ htmlEditorialSignal().reviewer }}</span>
+      <span>{{ htmlEditorialSignal().coverage }}</span>
     </div>
   </header>
 
@@ -651,6 +678,254 @@
   </section>
 
   <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-vue-toc"
+    aria-label="Vue.js interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-vue-toc__links">
+      <button
+        *ngFor="let item of vueAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToVueSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-clusters"
+    aria-labelledby="iq-vue-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-clusters-title">
+        Popular Vue.js interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Jump to Vue-specific interview areas: reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, testing, security, and performance.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of vueKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToVueSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-short-answers"
+    aria-labelledby="iq-vue-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Short answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-short-answers-title">
+        Top Vue.js interview questions and short answers, beginner to advanced
+      </h2>
+      <p class="fa-meta-text">
+        Review Vue 3 fundamentals, reactivity, component contracts, Router, Pinia/Vuex, Composition API, and performance before opening deeper practice routes.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of vueShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ vueShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ questionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-audience"
+    aria-labelledby="iq-vue-audience-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Beginner to experienced</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-audience-title">
+        Vue.js interview questions for beginners and experienced developers
+      </h2>
+      <p class="fa-meta-text">
+        Use the level chips to move from template and component fundamentals into reactivity traps, application architecture, testing, security, and performance.
+      </p>
+    </div>
+
+    <div class="iq-audience-grid">
+      <article class="iq-audience-card" *ngFor="let item of vueAudienceTracks()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-reactivity"
+    aria-labelledby="iq-vue-reactivity-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Reactivity + rendering</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-reactivity-title">
+        Vue reactivity and rendering interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review how Vue tracks dependencies, batches DOM updates, preserves list identity, and patches the DOM when reactive state changes.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of vueReactivityRenderingQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-components"
+    aria-labelledby="iq-vue-components-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Component contracts</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-components-title">
+        Vue component contract interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover props, emits, slots, provide/inject, v-model, single-file components, public APIs, and scalable component boundaries.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of vueComponentContractQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-scenarios"
+    aria-labelledby="iq-vue-scenarios-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Scenarios + code</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-scenarios-title">
+        Vue scenario and code interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice Vue debugging scenarios around reactivity extraction, watcher loops, key identity, prop ownership, nextTick, v-if lifecycle, computed side effects, and async race conditions.
+      </p>
+    </div>
+
+    <div class="iq-scenario-grid">
+      <article class="iq-scenario-card" *ngFor="let item of vueScenarioQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <pre class="iq-code-block"><code>{{ item.code }}</code></pre>
+        <p>{{ item.explanation }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-modern"
+    aria-labelledby="iq-vue-modern-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Modern Vue 3</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-modern-title">
+        Modern Vue 3 interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review current Vue topics through production trade-offs: script setup, composables, Pinia, Router 4 guards, Teleport, Suspense, SSR, Nuxt, and hydration.
+      </p>
+    </div>
+
+    <div class="iq-modern-grid">
+      <article class="iq-modern-card" *ngFor="let item of vueModernQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isVueHub()"
+    class="iq-section iq-section--surface iq-section--vue-testing-security"
+    aria-labelledby="iq-vue-testing-security-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Testing + security + performance</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-vue-testing-security-title">
+        Vue testing, security, and performance interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover Vue Test Utils, Vitest, async DOM updates, emitted events, v-html safety, rich text, profiling, and memory cleanup.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of vueTestingSecurityPerformanceQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
     *ngIf="isHtmlCssHub()"
     class="iq-section iq-html-css-toc"
     aria-label="HTML and CSS interview question sections"
@@ -898,12 +1173,506 @@
     </div>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : null">
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-css-toc"
+    aria-label="CSS interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-css-toc__links">
+      <button
+        *ngFor="let item of cssAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToCssSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-clusters"
+    aria-labelledby="iq-css-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-clusters-title">
+        Popular CSS interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Jump to the CSS areas that decide frontend UI rounds: cascade, specificity, box model, layout systems, responsive behavior, debugging, and performance.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of cssKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToCssSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-short-answers"
+    aria-labelledby="iq-css-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Short answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-short-answers-title">
+        Top CSS interview questions and short answers, beginner to advanced
+      </h2>
+      <p class="fa-meta-text">
+        Review CSS as its own interview surface: cascade rules, selector strategy, layout mechanics, responsive constraints, visual debugging, performance, and maintainable styling.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of cssShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ cssShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ questionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-audience"
+    aria-labelledby="iq-css-audience-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Beginner to experienced</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-audience-title">
+        CSS interview questions for beginners and experienced frontend developers
+      </h2>
+      <p class="fa-meta-text">
+        Use the level chips to separate baseline CSS mechanics from production layout debugging, cascade strategy, and maintainability trade-offs.
+      </p>
+    </div>
+
+    <div class="iq-audience-grid">
+      <article class="iq-audience-card" *ngFor="let item of cssAudienceTracks()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-cascade"
+    aria-labelledby="iq-css-cascade-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Cascade + specificity</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-cascade-title">
+        CSS cascade and specificity interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover how CSS resolves conflicts: cascade order, layers, specificity, inheritance, pseudo selectors, !important, and selector strategy.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssCascadeQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-box-model"
+    aria-labelledby="iq-css-box-model-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Box model + overflow</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-box-model-title">
+        CSS box model, sizing, and overflow interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review the sizing mechanics behind most CSS layout bugs: box-sizing, padding, margins, shrinking, overflow, constraints, and scrollbars.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssBoxModelQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-layout"
+    aria-labelledby="iq-css-layout-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Layout systems</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-layout-title">
+        CSS Flexbox, Grid, and positioning interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice layout decisions around one-dimensional flow, two-dimensional tracks, wrapping, containing blocks, sticky behavior, overlays, and legacy float behavior.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssLayoutQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-responsive"
+    aria-labelledby="iq-css-responsive-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Responsive CSS</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-responsive-title">
+        Responsive CSS and media queries interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover mobile-first CSS, container queries, clamp(), responsive cards, adaptive navigation, long content, reduced motion, and theme variables.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssResponsiveQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isCssHub()"
+    class="iq-section iq-section--surface iq-section--css-debugging"
+    aria-labelledby="iq-css-debugging-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Debugging + performance</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-css-debugging-title">
+        CSS debugging, performance, and maintainability interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review how to debug missing styles, specificity conflicts, z-index, overflow, layout thrashing, compositing, tokens, and common CSS mistakes.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of cssDebuggingPerformanceQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-html-toc"
+    aria-label="HTML interview question sections"
+  >
+    <p class="iq-context-kicker">On this page</p>
+    <nav class="iq-html-toc__links">
+      <button
+        *ngFor="let item of htmlAnchorItems()"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToHtmlSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-clusters"
+    aria-labelledby="iq-html-clusters-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Popular clusters</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-clusters-title">
+        Popular HTML interview question clusters
+      </h2>
+      <p class="fa-meta-text">
+        Jump to the HTML-only areas that decide markup rounds: semantics, forms, accessibility, metadata, browser parsing, native UI, and modern markup scenarios.
+      </p>
+    </div>
+
+    <div class="iq-cluster-grid">
+      <button
+        *ngFor="let item of htmlKeywordClusters()"
+        class="iq-cluster-card"
+        type="button"
+        [attr.data-target]="item.targetId"
+        (click)="scrollToHtmlSection(item.targetId)"
+      >
+        <span>{{ item.label }}</span>
+        <small>{{ item.detail }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-short-answers"
+    aria-labelledby="iq-html-short-answers-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Short answers</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-short-answers-title">
+        Top HTML interview questions and short answers, beginner to advanced
+      </h2>
+      <p class="fa-meta-text">
+        Review HTML as its own interview surface: document structure, semantics, forms, accessibility, metadata, DOM behavior, native browser features, and markup scenarios.
+      </p>
+    </div>
+
+    <div class="iq-short-answer-grid">
+      <article class="iq-short-answer" *ngFor="let item of htmlShortAnswers()">
+        <div class="iq-short-answer__meta">
+          <span class="iq-short-answer__category">{{ htmlShortAnswerCategoryLabel(item.category) }}</span>
+          <span class="iq-short-answer__level" [attr.data-level]="item.level">
+            {{ questionLevelLabel(item.level) }}
+          </span>
+        </div>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-audience"
+    aria-labelledby="iq-html-audience-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Beginner to experienced</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-audience-title">
+        HTML interview questions for beginners and experienced frontend developers
+      </h2>
+      <p class="fa-meta-text">
+        Use the level chips to separate baseline markup fluency from production accessibility, parsing, metadata, native UI, and browser-behavior trade-offs.
+      </p>
+    </div>
+
+    <div class="iq-audience-grid">
+      <article class="iq-audience-card" *ngFor="let item of htmlAudienceTracks()">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-semantics"
+    aria-labelledby="iq-html-semantics-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Semantics + structure</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-semantics-title">
+        HTML semantics and document structure interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover landmarks, headings, sections, articles, lists, language, data attributes, and source order without drifting into CSS layout.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of htmlSemanticsQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-forms"
+    aria-labelledby="iq-html-forms-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Forms + validation</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-forms-title">
+        HTML forms, validation, and input accessibility interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice labels, input types, validation attributes, error relationships, grouped controls, form methods, and native button behavior.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of htmlFormsQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-accessibility"
+    aria-labelledby="iq-html-accessibility-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Accessibility + ARIA</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-accessibility-title">
+        HTML accessibility and ARIA interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Review native semantics first, then ARIA, accessible names, alt text, data tables, dialog behavior, keyboard navigation, iframes, and quick checks.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of htmlAccessibilityQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-metadata"
+    aria-labelledby="iq-html-metadata-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Metadata + browser parsing</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-metadata-title">
+        HTML metadata, SEO, and browser parsing interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Cover head metadata, title and meta tags, viewport behavior, parser recovery, script loading, responsive images, and iframe constraints.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of htmlMetadataQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isHtmlHub()"
+    class="iq-section iq-section--surface iq-section--html-modern-scenarios"
+    aria-labelledby="iq-html-modern-scenarios-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Modern markup scenarios</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-html-modern-scenarios-title">
+        Modern HTML and markup scenario interview questions
+      </h2>
+      <p class="fa-meta-text">
+        Practice native dialog, details, popover, template, slot, invalid nesting, label mistakes, image-link names, table headers, and fake button trade-offs.
+      </p>
+    </div>
+
+    <div class="iq-focused-grid">
+      <article class="iq-focused-card" *ngFor="let item of htmlModernScenarioQuestions()">
+        <span class="iq-short-answer__level" [attr.data-level]="item.level">
+          {{ questionLevelLabel(item.level) }}
+        </span>
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+        <a *ngIf="item.route && item.cta" class="iq-topic-card__link" [routerLink]="item.route">
+          {{ item.cta }} &rarr;
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : isCssHub() ? 'iq-css-coding-preview-title' : isHtmlHub() ? 'iq-html-coding-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-coding-preview-title' : isAngularHub() ? 'iq-angular-coding-preview-title' : isReactHub() ? 'iq-react-coding-preview-title' : isVueHub() ? 'iq-vue-coding-preview-title' : isHtmlCssHub() ? 'iq-html-css-coding-preview-title' : isCssHub() ? 'iq-css-coding-preview-title' : isHtmlHub() ? 'iq-html-coding-preview-title' : null"
         >
           {{ codingSectionTitle() }}
         </h2>
@@ -950,12 +1719,12 @@
     </ng-container>
   </section>
 
-  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : null">
+  <section class="iq-section iq-section--surface" [attr.aria-labelledby]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : isCssHub() ? 'iq-css-concept-preview-title' : isHtmlHub() ? 'iq-html-concept-preview-title' : null">
     <div class="iq-section__head iq-section__head--split">
       <div>
         <h2
           class="fa-section-title iq-section__title"
-          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : null"
+          [id]="isJavaScriptHub() ? 'iq-javascript-concept-preview-title' : isAngularHub() ? 'iq-angular-concept-preview-title' : isReactHub() ? 'iq-react-concept-preview-title' : isVueHub() ? 'iq-vue-concept-preview-title' : isHtmlCssHub() ? 'iq-html-css-concept-preview-title' : isCssHub() ? 'iq-css-concept-preview-title' : isHtmlHub() ? 'iq-html-concept-preview-title' : null"
         >
           {{ triviaSectionTitle() }}
         </h2>

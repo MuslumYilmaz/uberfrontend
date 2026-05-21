@@ -2,7 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { navFor, PLAYBOOK, PLAYBOOK_GROUPS } from '../../../shared/guides/guide.registry';
 import { SeoService } from '../../../core/services/seo.service';
@@ -58,6 +58,7 @@ export class PlaybookHostComponent implements OnDestroy {
         this.sub = this.route.data
             .pipe(
                 startWith(this.route.snapshot.data),
+                filter((data) => Object.prototype.hasOwnProperty.call(data, 'guideDetail')),
                 map((data) => (data['guideDetail'] as GuideDetailResolved | null) ?? null),
                 distinctUntilChanged((a, b) => a?.slug === b?.slug),
             )
@@ -94,6 +95,7 @@ export class PlaybookHostComponent implements OnDestroy {
     private load(resolved: GuideDetailResolved | null) {
         const snapshotSlug = this.route.snapshot.paramMap.get('slug') || '';
         const slug = resolved?.slug || snapshotSlug;
+        if (!slug) return;
         this.showShellHeading.set(true);
         this.shellHeading.set(this.toTitle(slug));
 
@@ -111,11 +113,12 @@ export class PlaybookHostComponent implements OnDestroy {
         const mappedNext = this.remapPrevNextLink(next, hostConfig.guideBase);
 
         // If the slug isn't in the registry -> go to 404 and show the missing path
-        if (!resolved || !current) {
+        if (!current) {
             this.go404();
             return;
         }
         this.shellHeading.set(current.title || this.toTitle(slug));
+        if (!resolved) return;
 
         // Build the left navigator safely (hide unknown slugs to avoid dead links)
         const registryMap = new Map(registry.map(e => [e.slug, e]));
@@ -152,8 +155,6 @@ export class PlaybookHostComponent implements OnDestroy {
             ref.instance.leftNav = leftNav;
             this.showShellHeading.set(false);
         } catch {
-            // If the module fails to load (bad path/export), treat as not found
-            this.go404();
             return;
         }
 
