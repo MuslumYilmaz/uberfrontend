@@ -6,6 +6,14 @@
       <p class="fa-page-subtitle">
         {{ data.collection.description }}
       </p>
+      <div class="essential-editorial-signal" aria-label="Editorial review details">
+        <span>{{ editorialSignal().reviewedLabel }}</span>
+        <span>{{ editorialSignal().reviewer }}</span>
+        <span>{{ editorialSignal().coverage }}</span>
+      </div>
+      <p class="essential-value-prop">
+        {{ valuePropCopy() }}
+      </p>
     </div>
     <div class="essential-header__stats" aria-label="Essential question stats">
       <div class="essential-stat">
@@ -30,6 +38,67 @@
     <a class="essential-support__link" routerLink="/coding" [queryParams]="{ reset: 1 }">
       Open Question Library
     </a>
+  </section>
+
+  <section class="essential-section" aria-labelledby="essential-why-title">
+    <div class="essential-section__head">
+      <p class="essential-section__eyebrow">Selection rationale</p>
+      <h2 id="essential-why-title">Why these 60?</h2>
+      <p>
+        The list is intentionally smaller than the full library so each prompt earns its place as a practice priority.
+      </p>
+    </div>
+    <div class="essential-card-grid essential-card-grid--four">
+      <article *ngFor="let card of whyCards()" class="essential-info-card">
+        <h3>{{ card.title }}</h3>
+        <p>{{ card.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="essential-section" aria-labelledby="essential-usage-title">
+    <div class="essential-section__head">
+      <p class="essential-section__eyebrow">Practice path</p>
+      <h2 id="essential-usage-title">How to use Essential 60</h2>
+      <p>
+        Pick a time horizon, filter the list, and repeat missed prompts until your explanations are predictable.
+      </p>
+    </div>
+    <div class="essential-card-grid essential-card-grid--three">
+      <article *ngFor="let plan of usagePlans()" class="essential-info-card essential-info-card--plan">
+        <span *ngIf="plan.meta" class="essential-info-card__meta">{{ plan.meta }}</span>
+        <h3>{{ plan.title }}</h3>
+        <p>{{ plan.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="essential-section essential-section--benchmark" aria-labelledby="essential-benchmark-title">
+    <div class="essential-section__head">
+      <p class="essential-section__eyebrow">Coverage benchmark</p>
+      <h2 id="essential-benchmark-title">Coverage benchmark</h2>
+      <p>
+        Benchmarked against common frontend interview surfaces: JavaScript utilities, UI coding, frontend system
+        design, browser concepts, and framework variants.
+      </p>
+    </div>
+    <div class="essential-benchmark-card">
+      <span class="essential-benchmark-card__value">{{ benchmarkSurfaceCount() }}</span>
+      <span class="essential-benchmark-card__label">reference surfaces checked</span>
+    </div>
+  </section>
+
+  <section class="essential-section" aria-labelledby="essential-faq-title">
+    <div class="essential-section__head">
+      <p class="essential-section__eyebrow">Shortlist FAQ</p>
+      <h2 id="essential-faq-title">Essential 60 FAQ</h2>
+    </div>
+    <div class="essential-faq-grid">
+      <article *ngFor="let item of faqItems()" class="essential-faq-card">
+        <h3>{{ item.q }}</h3>
+        <p>{{ item.a }}</p>
+      </article>
+    </div>
   </section>
 
   <section class="essential-toolbar" aria-label="Essential filters">

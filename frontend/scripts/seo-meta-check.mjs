@@ -70,7 +70,7 @@ const criticalRouteContracts = [
     route: '/interview-questions',
     title: 'Frontend Interview Questions',
     h1: 'Frontend Interview Questions',
-    descriptionTerms: ['coding', 'concept', 'explanations'],
+    descriptionTerms: ['frontend interview questions', 'coding', 'system design'],
   },
   {
     route: '/javascript/interview-questions',

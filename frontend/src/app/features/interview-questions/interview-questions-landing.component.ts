@@ -315,6 +315,48 @@ type CssEditorialSignal = {
   coverage: string;
   dateModified: string;
 };
+type MasterEditorialSignal = {
+  reviewedLabel: string;
+  reviewer: string;
+  coverage: string;
+  dateModified: string;
+};
+type MasterAnchorItem = { label: string; targetId: string };
+type MasterKeywordClusterItem = {
+  label: string;
+  targetId: string;
+  detail: string;
+};
+type MasterShortAnswerCategory =
+  | 'rounds'
+  | 'javascript'
+  | 'ui-coding'
+  | 'html-css'
+  | 'browser-security'
+  | 'debugging-performance'
+  | 'system-design'
+  | 'prep';
+type MasterShortAnswerItem = {
+  q: string;
+  a: string;
+  route?: any[];
+  cta?: string;
+  extraLinks?: MasterFormatPathLink[];
+  category: MasterShortAnswerCategory;
+  level: QuestionLevel;
+};
+type MasterEssentialPreviewItem = {
+  title: string;
+  detail: string;
+  route: any[];
+  cta: string;
+};
+type MasterFormatPathLink = { label: string; route: any[] };
+type MasterFormatPathItem = {
+  title: string;
+  detail: string;
+  links: MasterFormatPathLink[];
+};
 type HubIntentProfile = {
   heading: string;
   lead: string;
@@ -390,6 +432,368 @@ const PREP_PLAN_LINKS: PrepPlanLink[] = [
     label: 'Foundations Track (30 days)',
     route: ['/tracks', 'foundations-30d', 'preview'],
     summary: '30-day study plan for fundamentals, framework practice, and architecture coverage.',
+  },
+];
+
+const MASTER_EDITORIAL_SIGNAL: MasterEditorialSignal = {
+  reviewedLabel: 'Reviewed May 21, 2026',
+  reviewer: 'FrontendAtlas Editor',
+  coverage: '30 essential frontend answers plus Essential 60, coding, concepts, frameworks, debugging, and system design paths',
+  dateModified: '2026-05-21T00:00:00.000Z',
+};
+
+const MASTER_ANCHOR_ITEMS: MasterAnchorItem[] = [
+  { label: 'Clusters', targetId: 'iq-master-clusters-title' },
+  { label: 'Essential answers', targetId: 'iq-master-short-answers-title' },
+  { label: 'Essential 60', targetId: 'iq-master-essential-title' },
+  { label: 'Interview formats', targetId: 'iq-master-formats-title' },
+  { label: 'Coding prompts', targetId: 'iq-master-coding-preview-title' },
+  { label: 'Concept prompts', targetId: 'iq-master-concept-preview-title' },
+  { label: 'Prep roadmap', targetId: 'iq-roadmap-title' },
+];
+
+const MASTER_KEYWORD_CLUSTERS: MasterKeywordClusterItem[] = [
+  {
+    label: 'Frontend interview questions for beginners',
+    targetId: 'iq-master-short-answers-title',
+    detail: 'Core JavaScript, semantic HTML, CSS layout, browser behavior, and UI states.',
+  },
+  {
+    label: 'Frontend interview questions for experienced developers',
+    targetId: 'iq-master-formats-title',
+    detail: 'Architecture, debugging, performance, framework trade-offs, and system design.',
+  },
+  {
+    label: 'Frontend UI coding and machine coding questions',
+    targetId: 'iq-master-essential-title',
+    detail: 'Widgets, forms, autocomplete, tables, state ownership, and accessible interactions.',
+  },
+  {
+    label: 'JavaScript and browser API interview questions',
+    targetId: 'iq-master-short-answers-title',
+    detail: 'Event loop, closures, async flow, DOM, storage, security, debounce, and throttle.',
+  },
+  {
+    label: 'HTML, CSS, and accessibility interview questions',
+    targetId: 'iq-master-short-answers-title',
+    detail: 'Semantic markup, forms, labels, cascade, responsive CSS, and keyboard access.',
+  },
+  {
+    label: 'Frontend debugging and testing questions',
+    targetId: 'iq-master-formats-title',
+    detail: 'Async UI bugs, behavior tests, regressions, root-cause analysis, and incidents.',
+  },
+  {
+    label: 'Frontend performance interview questions',
+    targetId: 'iq-master-short-answers-title',
+    detail: 'Rendering cost, hydration, layout shifts, memoization, and runtime profiling.',
+  },
+  {
+    label: 'Frontend system design interview questions',
+    targetId: 'iq-master-formats-title',
+    detail: 'Frontend architecture, data flow, API contracts, pagination, caching, and trade-offs.',
+  },
+];
+
+const MASTER_SHORT_ANSWERS: MasterShortAnswerItem[] = [
+  {
+    q: 'What do frontend interviews usually test?',
+    a: 'Frontend interviews test whether you can build usable UI, explain browser and framework behavior, and debug trade-offs under time pressure. The core loop is usually implementation, concept explanation, follow-up constraints, and a short discussion of tests or edge cases. A good answer connects user behavior, data flow, rendering, accessibility, and performance instead of treating each topic as separate trivia.',
+    route: ['/interview-questions/essential'],
+    cta: 'Open Essential 60',
+    category: 'rounds',
+    level: 'beginner',
+  },
+  {
+    q: 'How should I approach a frontend interview question?',
+    a: 'Start by clarifying requirements, inputs, output states, and user interactions before writing code. Then build the smallest working version, cover edge cases, and explain how you would test failure states. This prevents overbuilding and makes trade-offs visible while there is still time to adjust.',
+    route: ['/guides', 'interview-blueprint', 'intro'],
+    cta: 'Review the interview blueprint',
+    category: 'rounds',
+    level: 'beginner',
+  },
+  {
+    q: 'What JavaScript fundamentals matter most for frontend interviews?',
+    a: 'The highest-signal JavaScript topics are execution order, closures, equality, array methods, object references, async code, and DOM interaction. These topics show up inside UI prompts because they decide when state changes, which callback runs, and whether data is copied or mutated. Weak fundamentals usually surface as stale UI, race conditions, sorting bugs, or confusing event behavior.',
+    route: ['/javascript/interview-questions'],
+    cta: 'Open JavaScript questions',
+    category: 'javascript',
+    level: 'beginner',
+  },
+  {
+    q: 'What is the JavaScript event loop?',
+    a: 'The event loop coordinates synchronous code, queued tasks, microtasks, rendering, and timers. Promise callbacks run as microtasks before timer callbacks from the task queue, which is why output-prediction questions often surprise people. In UI code, this affects loading states, chained async updates, and when the browser can paint.',
+    route: ['/javascript', 'trivia', 'js-event-loop'],
+    cta: 'Practice event loop',
+    category: 'javascript',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do closures affect frontend bugs?',
+    a: 'A closure lets a function keep access to variables from the scope where it was created. That is useful for callbacks, event handlers, and debounced functions, but it can also preserve old values when the UI has moved on. Stale closures are common in delayed callbacks, effects, subscriptions, and retry logic.',
+    route: ['/javascript', 'trivia', 'js-closures'],
+    cta: 'Practice closures',
+    category: 'javascript',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should debounce or throttle be used?',
+    a: 'Debounce waits until events stop for a delay, so it fits search boxes, validation, and resize handling where only the final value matters. Throttle limits how often a function runs, so it fits scroll, drag, and high-frequency progress updates. The edge case is cancellation: pending timers should be cleared when a component unmounts or when input becomes invalid.',
+    route: ['/javascript', 'coding', 'js-debounce'],
+    cta: 'Practice debounce',
+    extraLinks: [{ label: 'Practice throttle', route: ['/javascript', 'coding', 'js-throttle'] }],
+    category: 'javascript',
+    level: 'intermediate',
+  },
+  {
+    q: 'What makes a good UI coding answer?',
+    a: 'A good UI coding answer renders the required states first: empty, loading, success, error, disabled, and interaction feedback. It keeps state ownership clear and avoids hiding important behavior in unexplained helpers. The strongest implementation is easy to test because each user action produces a visible, predictable result.',
+    route: ['/guides', 'interview-blueprint', 'ui-interviews'],
+    cta: 'Open UI interview guide',
+    category: 'ui-coding',
+    level: 'beginner',
+  },
+  {
+    q: 'How should reusable frontend components be designed?',
+    a: 'Reusable components should have a small public API, clear ownership of state, and predictable rendering for loading, error, and empty states. Inputs should describe behavior rather than internal implementation details. If a component needs many flags that conflict with each other, splitting it into smaller components is usually safer.',
+    category: 'ui-coding',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should frontend state be managed?',
+    a: 'Keep state as close as possible to the UI that owns it, then lift it only when multiple parts of the tree need the same source of truth. Derived values should be computed from existing state instead of stored twice. Server data, form state, URL state, and client-only UI state usually deserve different handling because they fail and refresh differently.',
+    category: 'ui-coding',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why are controlled inputs useful?',
+    a: 'Controlled inputs keep the displayed value and validation logic tied to explicit state. They are useful when the UI must show errors, disable submit, format values, or synchronize several fields. The trade-off is extra state management, so simple one-off inputs can still be uncontrolled when validation is minimal.',
+    route: ['/react', 'trivia', 'react-controlled-vs-uncontrolled'],
+    cta: 'Practice controlled inputs',
+    category: 'ui-coding',
+    level: 'intermediate',
+  },
+  {
+    q: 'Why are keys important in frontend lists?',
+    a: 'Keys define item identity when a UI library compares one render with the next. Stable keys preserve the right local state when rows are inserted, removed, filtered, or reordered. Index keys can be safe for static lists, but they often break forms, animations, and editable rows when order changes.',
+    route: ['/react', 'trivia', 'react-keys-in-lists'],
+    cta: 'Practice list keys',
+    category: 'ui-coding',
+    level: 'intermediate',
+  },
+  {
+    q: 'What is semantic HTML?',
+    a: 'Semantic HTML uses elements that describe the meaning and structure of content, such as nav, main, button, form, label, and table. It improves accessibility, browser defaults, keyboard behavior, and search understanding before extra JavaScript is added. A div can render the same pixels, but it usually loses built-in meaning and behavior.',
+    route: ['/html-css/interview-questions'],
+    cta: 'Open HTML/CSS questions',
+    category: 'html-css',
+    level: 'beginner',
+  },
+  {
+    q: 'Why do labels matter in forms?',
+    a: 'Labels connect visible text to an input so users, screen readers, and click targets all understand the field. Placeholders are not a replacement because they disappear during typing and often lack persistent context. Good form answers also cover error text, required fields, focus order, and submit behavior.',
+    route: ['/html-css/interview-questions'],
+    cta: 'Practice forms',
+    category: 'html-css',
+    level: 'beginner',
+  },
+  {
+    q: 'How should accessibility be handled in frontend interviews?',
+    a: 'Start with semantic elements, keyboard support, visible focus, labels, contrast, and meaningful text alternatives. ARIA should fill gaps only when native HTML cannot express the interaction. The practical check is whether a keyboard and screen reader user can complete the same workflow as a mouse user.',
+    route: ['/html-css/interview-questions'],
+    cta: 'Review accessibility prompts',
+    category: 'html-css',
+    level: 'intermediate',
+  },
+  {
+    q: 'How does CSS specificity affect frontend bugs?',
+    a: 'Specificity decides which CSS rule wins when multiple selectors target the same property. Bugs appear when a broad selector, utility class, inline style, or later rule overrides the intended style. Debugging should inspect the winning rule first, then reduce selector complexity instead of adding more force.',
+    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    cta: 'Practice specificity',
+    category: 'html-css',
+    level: 'intermediate',
+  },
+  {
+    q: 'When should Flexbox vs Grid be used?',
+    a: 'Flexbox is strongest for one-dimensional layout where items flow in a row or column. Grid is better for two-dimensional layout where rows and columns need to align together. Many UI layouts use both: Grid for the page or card structure, Flexbox for alignment inside each region.',
+    route: ['/css', 'trivia', 'css-grid-vs-flexbox'],
+    cta: 'Practice Flexbox vs Grid',
+    category: 'html-css',
+    level: 'beginner',
+  },
+  {
+    q: 'How do you debug layout issues?',
+    a: 'Start by checking the box model, computed styles, containing block, overflow, and the rule that actually wins. Then isolate whether the problem is sizing, positioning, stacking, alignment, or content overflow. Good debugging avoids random CSS changes and uses devtools to prove which constraint is failing.',
+    route: ['/css/interview-questions'],
+    cta: 'Open CSS questions',
+    category: 'html-css',
+    level: 'intermediate',
+  },
+  {
+    q: 'What makes responsive UI robust?',
+    a: 'Responsive UI uses flexible layout, fluid sizing, sensible min and max constraints, and breakpoints based on content needs. It should handle long text, narrow screens, zoom, touch targets, and images without layout shifts. A strong answer tests the awkward states, not just the default desktop design.',
+    route: ['/html-css/interview-questions'],
+    cta: 'Practice responsive UI',
+    category: 'html-css',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you prevent XSS in frontend code?',
+    a: 'Prevent XSS by treating user-controlled HTML, URLs, and DOM sinks as unsafe unless they are sanitized or encoded for the exact context. Prefer textContent, safe template binding, trusted rendering pipelines, and server-side validation. The dangerous edge case is bypassing framework protections with raw HTML APIs or trusted-value escape hatches.',
+    route: ['/javascript', 'trivia', 'js-xss-dom-sinks'],
+    cta: 'Practice XSS prevention',
+    category: 'browser-security',
+    level: 'advanced',
+  },
+  {
+    q: 'What should frontend developers know about browser storage?',
+    a: 'Cookies are sent with requests and can support server sessions, while localStorage and sessionStorage are browser-only key-value stores. Sensitive tokens should not be casually stored in JavaScript-accessible storage because XSS can read them. Storage choices should consider expiration, cross-tab behavior, request needs, and security boundaries.',
+    route: ['/javascript', 'trivia', 'js-cookie-sessionstorage-localstorage'],
+    cta: 'Practice browser storage',
+    category: 'browser-security',
+    level: 'intermediate',
+  },
+  {
+    q: 'How should frontend tests be scoped?',
+    a: 'Frontend tests should protect user-visible behavior and critical data flow instead of private implementation details. Good tests cover rendering states, user events, async loading, validation, accessibility expectations, and regressions around previous bugs. Brittle tests usually assert component internals that can change without breaking the user experience.',
+    category: 'debugging-performance',
+    level: 'intermediate',
+  },
+  {
+    q: 'How do you debug async UI bugs?',
+    a: 'Async UI bugs often come from stale responses, missing cancellation, loading state races, or state updates after a component is gone. Reproduce the order of events first, then decide whether the latest request wins, all responses accumulate, or cancellation is required. Tests should include slow response, fast response, error, retry, and unmount cases.',
+    route: ['/incidents'],
+    cta: 'Practice debugging scenarios',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+  {
+    q: 'How do frontend memory leaks happen?',
+    a: 'Frontend memory leaks happen when listeners, timers, subscriptions, observers, detached DOM references, or unbounded caches stay alive after the UI no longer needs them. The symptom may be slower interactions, duplicate events, growing memory, or stale network work. Cleanup should be tied to component lifecycle, route changes, and cache eviction rules.',
+    route: ['/incidents'],
+    cta: 'Practice debugging',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+  {
+    q: 'What performance topics are common in frontend interviews?',
+    a: 'Common performance topics include bundle size, render cost, layout shift, image loading, network waterfalls, memoization, virtualization, caching, and Core Web Vitals. The best answer starts with measurement before optimization. Trade-offs matter because a faster first render can still create worse interactivity or maintainability if the fix is poorly chosen.',
+    route: ['/system-design'],
+    cta: 'Practice system design',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+  {
+    q: 'What causes SSR and hydration issues?',
+    a: 'Hydration issues happen when the server-rendered HTML does not match what the client renders on startup. Common causes are time-dependent values, browser-only APIs, random IDs, locale differences, and conditional rendering that changes before hydration finishes. Fixes usually move unstable logic to the client boundary or make the initial server and client output deterministic.',
+    route: ['/react/interview-questions'],
+    cta: 'Review framework rendering',
+    category: 'debugging-performance',
+    level: 'advanced',
+  },
+  {
+    q: 'What is frontend system design?',
+    a: 'Frontend system design is the design of a client-side experience: UI architecture, data flow, API contracts, state ownership, performance, accessibility, recovery, and observability. It is not only choosing a framework or drawing components. A strong answer explains constraints first, then connects architecture decisions to user-visible behavior.',
+    route: ['/system-design'],
+    cta: 'Practice system design',
+    category: 'system-design',
+    level: 'advanced',
+  },
+  {
+    q: 'How would you design autocomplete or typeahead?',
+    a: 'Autocomplete needs input state, debouncing, async search, loading and empty states, keyboard navigation, selection, and stale-response protection. The data model should distinguish query text, highlighted option, selected value, and result list. Advanced follow-ups usually add caching, cancellation, accessibility roles, and latency recovery.',
+    route: ['/system-design'],
+    cta: 'Open system design practice',
+    category: 'system-design',
+    level: 'advanced',
+  },
+  {
+    q: 'How do pagination and infinite scroll differ?',
+    a: 'Pagination gives users stable pages, clearer URLs, and easier recovery, while infinite scroll favors continuous browsing and lower-friction discovery. Infinite scroll needs careful loading, virtualization, scroll restoration, footer access, and duplicate prevention. The right choice depends on task completion, SEO needs, accessibility, analytics, and data consistency.',
+    route: ['/system-design'],
+    cta: 'Practice frontend architecture',
+    category: 'system-design',
+    level: 'advanced',
+  },
+  {
+    q: 'How do React, Angular, and Vue interviews differ?',
+    a: 'React interviews often focus on state ownership, hooks, rendering, effects, and component boundaries. Angular interviews often emphasize RxJS, dependency injection, change detection, forms, testing, and architecture. Vue interviews often focus on reactivity, Composition API, component contracts, Router, Pinia or Vuex, and update timing.',
+    route: ['/react/interview-questions'],
+    cta: 'Open framework hubs',
+    category: 'prep',
+    level: 'intermediate',
+  },
+  {
+    q: 'What are common frontend interview mistakes?',
+    a: 'Common mistakes include coding before clarifying requirements, ignoring accessibility, mutating shared state, skipping loading and error states, and explaining fixes without tests. Another common miss is optimizing too early before proving where the bottleneck is. A safer pattern is to state assumptions, build the core behavior, test edge cases, then discuss trade-offs.',
+    route: ['/interview-questions/essential'],
+    cta: 'Use Essential 60',
+    category: 'prep',
+    level: 'beginner',
+  },
+];
+
+const MASTER_ESSENTIAL_PREVIEW_ITEMS: MasterEssentialPreviewItem[] = [
+  {
+    title: 'JavaScript utilities',
+    detail: 'Debounce, throttle, array transforms, async flow, equality, references, and browser behavior that appear inside UI prompts.',
+    route: ['/interview-questions/essential'],
+    cta: 'Open Essential 60',
+  },
+  {
+    title: 'UI coding',
+    detail: 'Autocomplete, tables, forms, widgets, stateful components, keyboard behavior, and accessible interaction details.',
+    route: ['/interview-questions/essential'],
+    cta: 'Start UI essentials',
+  },
+  {
+    title: 'Concepts and browser fundamentals',
+    detail: 'Event loop, closures, DOM events, storage, XSS, semantic HTML, cascade, responsive layout, and rendering behavior.',
+    route: ['/interview-questions/essential'],
+    cta: 'Review core concepts',
+  },
+  {
+    title: 'System design and trade-offs',
+    detail: 'Frontend architecture prompts around data flow, caching, pagination, performance, accessibility, and failure recovery.',
+    route: ['/interview-questions/essential'],
+    cta: 'Practice trade-offs',
+  },
+];
+
+const MASTER_FORMAT_PATH_ITEMS: MasterFormatPathItem[] = [
+  {
+    title: 'UI coding rounds',
+    detail: 'Timed widget and product-slice prompts where visible behavior, interaction details, and accessible states matter most.',
+    links: [{ label: 'Open UI guide', route: ['/guides', 'interview-blueprint', 'ui-interviews'] }],
+  },
+  {
+    title: 'JavaScript utility rounds',
+    detail: 'Focused implementation and explanation prompts for async, closures, arrays, DOM behavior, and utility functions.',
+    links: [{ label: 'Open JavaScript hub', route: ['/javascript/interview-questions'] }],
+  },
+  {
+    title: 'Framework rounds',
+    detail: 'React, Angular, and Vue paths for state, rendering, lifecycle, reactivity, forms, testing, and architecture boundaries.',
+    links: [
+      { label: 'React', route: ['/react/interview-questions'] },
+      { label: 'Angular', route: ['/angular/interview-questions'] },
+      { label: 'Vue', route: ['/vue/interview-questions'] },
+    ],
+  },
+  {
+    title: 'Debugging rounds',
+    detail: 'Root-cause scenarios for stale state, async races, rendering bugs, regressions, and production-style failure analysis.',
+    links: [{ label: 'Open debugging scenarios', route: ['/incidents'] }],
+  },
+  {
+    title: 'System design rounds',
+    detail: 'Frontend architecture prompts for requirements, data, interfaces, optimizations, accessibility, and failure modes.',
+    links: [{ label: 'Open system design', route: ['/system-design'] }],
+  },
+  {
+    title: 'Concept quiz rounds',
+    detail: 'Short explanation checks for JavaScript, CSS, browser APIs, HTTP, accessibility, and framework fundamentals.',
+    links: [{ label: 'Open quiz guide', route: ['/guides', 'interview-blueprint', 'quiz'] }],
   },
 ];
 
@@ -559,16 +963,28 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
 const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   master: [
     {
-      q: 'Where should frontend interview preparation start?',
-      a: 'Start with one compact baseline: a process guide, Essential 60, and then one focused coding or concept rep. Broad browsing comes after you know the weak area.',
+      q: 'Are these frontend interview questions for beginners and experienced developers?',
+      a: 'Yes. The master hub starts with beginner-friendly frontend fundamentals, then points experienced developers toward architecture, debugging, performance, framework, and system-design practice.',
     },
     {
-      q: 'Are these official company interview questions?',
-      a: 'No. They are practice prompts and answer drills built around common frontend interview signals: implementation, explanation, debugging, and trade-off reasoning.',
+      q: 'Does this page include frontend UI coding and machine coding questions?',
+      a: 'Yes. The Essential 60 preview and coding sections route into UI coding and machine-coding style prompts such as forms, autocomplete, tables, widgets, stateful components, and interaction details.',
     },
     {
-      q: 'When should I move from questions to study plans?',
-      a: 'Move into a study plan when misses repeat across the same topic, such as async JavaScript, React effects, CSS layout, or system-design trade-offs.',
+      q: 'Does this page cover JavaScript, browser APIs, HTML, CSS, React, Angular, and Vue?',
+      a: 'Yes. The hub gives cross-topic answers first, then links into JavaScript, HTML, CSS, React, Angular, Vue, browser API, and HTML/CSS interview question paths for deeper practice.',
+    },
+    {
+      q: 'Does this page include frontend debugging, testing, and performance questions?',
+      a: 'Yes. The master answers and format cards cover async UI bugs, behavior tests, regressions, rendering cost, hydration, layout shifts, and performance trade-offs.',
+    },
+    {
+      q: 'Does this page include frontend system design interview questions?',
+      a: 'Yes. This page introduces frontend system design as part of the broad interview loop and links to the dedicated system-design practice area for deeper architecture prompts.',
+    },
+    {
+      q: 'How should I practice frontend interview questions?',
+      a: 'Start with the essential answers, use Essential 60 as a compact baseline, then pick one format: UI coding, JavaScript utilities, framework depth, debugging, concept quiz, or system design.',
     },
   ],
   javascript: [
@@ -675,20 +1091,24 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   html: [
     {
-      q: 'Are these HTML interview questions for beginners and experienced developers?',
-      a: 'Yes. The page starts with beginner HTML fundamentals, then moves into experienced-developer topics such as accessibility trade-offs, browser parsing, Shadow DOM, native dialogs, iframes, responsive images, and markup scenarios.',
+      q: 'Are these HTML interview questions for beginners, freshers, and experienced developers?',
+      a: 'Yes. The page starts with beginner and fresher-friendly HTML fundamentals, then moves into experienced-developer topics such as accessibility trade-offs, browser parsing, Shadow DOM, native dialogs, iframes, responsive images, and markup scenarios.',
     },
     {
-      q: 'Does this page cover semantic HTML, forms, and accessibility?',
-      a: 'Yes. It covers document structure, landmarks, headings, forms, labels, validation, tables, alt text, keyboard checks, accessible names, ARIA roles, dialogs, and iframes.',
+      q: 'Does this page cover semantic HTML interview questions?',
+      a: 'Yes. It covers document structure, semantic elements, landmarks, headings, sections, articles, lists, navigation, language, and when generic div or span markup is not enough.',
     },
     {
-      q: 'Does this page include HTML metadata, DOM, and browser parsing questions?',
-      a: 'Yes. It covers the DOM, head metadata, title and meta tags, viewport behavior, responsive image markup, script loading, iframe constraints, and how invalid markup can change the live DOM.',
+      q: 'Does this page include HTML forms and validation interview questions?',
+      a: 'Yes. It covers labels, placeholders, input types, native validation attributes, form errors, grouped controls, form methods, real buttons, and server-side validation boundaries.',
     },
     {
-      q: 'Does this page cover modern HTML topics like dialog, srcset, iframes, and Shadow DOM?',
-      a: 'Yes. The modern scenarios section covers native dialog behavior, details, summary, popover, template, slot, Shadow DOM, srcset, iframes, invalid nesting, and native controls.',
+      q: 'Does this page cover HTML accessibility and ARIA interview questions?',
+      a: 'Yes. It covers accessible names, alt text, data tables, ARIA roles, native semantics, keyboard checks, iframe titles, dialog behavior, and quick accessibility testing.',
+    },
+    {
+      q: 'Does this page include HTML5, DOM, metadata, iframe, srcset, and Shadow DOM questions?',
+      a: 'Yes. It covers HTML5-era native behavior, the DOM, head metadata, title and meta tags, viewport behavior, responsive images with srcset, iframe constraints, Shadow DOM, and browser parsing.',
     },
     {
       q: 'Where should I practice HTML coding interview questions?',
@@ -4354,27 +4774,27 @@ const HTML_KEYWORD_CLUSTERS: HtmlKeywordClusterItem[] = [
     detail: 'Accessibility trade-offs, parsing behavior, Shadow DOM, native UI, and markup scenarios.',
   },
   {
-    label: 'Semantic HTML questions',
+    label: 'Semantic HTML interview questions',
     targetId: 'iq-html-semantics-title',
     detail: 'Landmarks, headings, sections, articles, lists, language, and document structure.',
   },
   {
-    label: 'HTML forms and validation questions',
+    label: 'HTML forms and validation interview questions',
     targetId: 'iq-html-forms-title',
     detail: 'Labels, placeholders, input types, validation attributes, errors, and grouped controls.',
   },
   {
-    label: 'HTML accessibility and ARIA questions',
+    label: 'HTML accessibility and ARIA interview questions',
     targetId: 'iq-html-accessibility-title',
     detail: 'Accessible names, alt text, tables, dialogs, keyboard behavior, iframes, and ARIA.',
   },
   {
-    label: 'HTML metadata and browser behavior',
+    label: 'HTML metadata, DOM, and browser parsing questions',
     targetId: 'iq-html-metadata-title',
     detail: 'Head metadata, title, meta tags, parsing, script loading, responsive images, and iframes.',
   },
   {
-    label: 'Modern HTML and markup scenarios',
+    label: 'Modern HTML5 and markup scenario questions',
     targetId: 'iq-html-modern-scenarios-title',
     detail: 'Dialog, details, popover, templates, Shadow DOM, invalid nesting, labels, and table markup.',
   },
@@ -5086,7 +5506,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
   introLead(): string {
     if (this.isMasterHub()) {
-      return 'Frontend interview question hub with answers, coding prompts, concept questions, follow-ups, and common mistakes. Start with crucial JavaScript practice, then branch into React, Angular, Vue, HTML, CSS, and system design prep.';
+      return 'Frontend interview questions and answers, beginner to advanced, with Essential 60, JavaScript, HTML, CSS, React, Angular, Vue, UI coding, debugging, testing, accessibility, performance, and system design paths.';
     }
 
     if (this.isHtmlCssHub()) {
@@ -5145,6 +5565,51 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     return INTERVIEW_HUB_LINKS.filter((hub) => PRIMARY_TECH_HUB_PATHS.has(hub.path));
   }
 
+  masterEditorialSignal(): MasterEditorialSignal {
+    return MASTER_EDITORIAL_SIGNAL;
+  }
+
+  masterAnchorItems(): MasterAnchorItem[] {
+    return MASTER_ANCHOR_ITEMS;
+  }
+
+  masterKeywordClusters(): MasterKeywordClusterItem[] {
+    return MASTER_KEYWORD_CLUSTERS;
+  }
+
+  masterShortAnswers(): MasterShortAnswerItem[] {
+    return MASTER_SHORT_ANSWERS;
+  }
+
+  masterEssentialPreviewItems(): MasterEssentialPreviewItem[] {
+    return MASTER_ESSENTIAL_PREVIEW_ITEMS;
+  }
+
+  masterFormatPathItems(): MasterFormatPathItem[] {
+    return MASTER_FORMAT_PATH_ITEMS;
+  }
+
+  masterShortAnswerCategoryLabel(category: MasterShortAnswerCategory): string {
+    switch (category) {
+      case 'rounds':
+        return 'Rounds';
+      case 'javascript':
+        return 'JavaScript';
+      case 'ui-coding':
+        return 'UI coding';
+      case 'html-css':
+        return 'HTML + CSS';
+      case 'browser-security':
+        return 'Browser + security';
+      case 'debugging-performance':
+        return 'Debugging + performance';
+      case 'system-design':
+        return 'System design';
+      default:
+        return 'Prep';
+    }
+  }
+
   prepPlanLinks(): PrepPlanLink[] {
     return PREP_PLAN_LINKS;
   }
@@ -5182,6 +5647,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   scrollToJavaScriptSection(targetId: string): void {
+    this.scrollToSection(targetId);
+  }
+
+  scrollToMasterSection(targetId: string): void {
     this.scrollToSection(targetId);
   }
 
@@ -6122,16 +6591,58 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ];
     } else {
+      collectionPage['dateModified'] = MASTER_EDITORIAL_SIGNAL.dateModified;
+      collectionPage['reviewedBy'] = {
+        '@type': 'Organization',
+        name: MASTER_EDITORIAL_SIGNAL.reviewer,
+      };
       collectionPage['hasPart'] = this.masterTechHubLinks().map((hub) => ({
         '@type': 'WebPage',
         name: hub.label,
         url: this.seo.buildCanonicalUrl(hub.path),
       }));
+      collectionPage['about'] = [
+        ...(collectionPage['about'] || []),
+        { '@type': 'Thing', name: 'frontend interview questions and answers' },
+        { '@type': 'Thing', name: 'front end developer interview questions' },
+        { '@type': 'Thing', name: 'frontend interview questions for beginners' },
+        { '@type': 'Thing', name: 'front end developer interview questions for freshers' },
+        { '@type': 'Thing', name: 'frontend interview questions for experienced developers' },
+        { '@type': 'Thing', name: 'senior frontend interview questions' },
+        { '@type': 'Thing', name: 'frontend coding interview questions' },
+        { '@type': 'Thing', name: 'frontend machine coding questions' },
+        { '@type': 'Thing', name: 'UI coding interview questions' },
+        { '@type': 'Thing', name: 'frontend UI interview questions' },
+        { '@type': 'Thing', name: 'JavaScript frontend interview questions' },
+        { '@type': 'Thing', name: 'frontend JavaScript interview questions' },
+        { '@type': 'Thing', name: 'browser API interview questions frontend' },
+        { '@type': 'Thing', name: 'DOM interview questions frontend' },
+        { '@type': 'Thing', name: 'HTML CSS interview questions' },
+        { '@type': 'Thing', name: 'HTML CSS frontend interview questions' },
+        { '@type': 'Thing', name: 'semantic HTML interview questions frontend' },
+        { '@type': 'Thing', name: 'React Angular Vue interview questions' },
+        { '@type': 'Thing', name: 'frontend accessibility interview questions' },
+        { '@type': 'Thing', name: 'frontend performance interview questions' },
+        { '@type': 'Thing', name: 'frontend rendering interview questions' },
+        { '@type': 'Thing', name: 'frontend testing interview questions' },
+        { '@type': 'Thing', name: 'frontend debugging interview questions' },
+        { '@type': 'Thing', name: 'frontend system design interview questions' },
+        { '@type': 'Thing', name: 'frontend system design questions' },
+        { '@type': 'Thing', name: 'frontend architecture interview questions' },
+      ];
       collectionPage['mentions'] = [
         { '@type': 'Thing', name: 'Coding prompts' },
         { '@type': 'Thing', name: 'Concept questions' },
         { '@type': 'Thing', name: 'Interview follow-ups' },
         { '@type': 'Thing', name: 'Common interview mistakes' },
+        { '@type': 'Thing', name: 'FrontendAtlas Essential 60' },
+        { '@type': 'Thing', name: 'UI coding interview questions' },
+        { '@type': 'Thing', name: 'Frontend UI coding and machine coding questions' },
+        { '@type': 'Thing', name: 'CSS layout interview questions frontend' },
+        { '@type': 'Thing', name: 'Frontend system design practice' },
+        { '@type': 'Thing', name: 'Frontend debugging scenarios' },
+        { '@type': 'Thing', name: 'Browser API interview questions' },
+        { '@type': 'Thing', name: 'Frontend UI testing' },
         { '@type': 'WebPage', name: 'Frontend interview prep platform', url: tracksUrl },
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ];
@@ -6423,9 +6934,12 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'HTML interview questions and answers' },
         { '@type': 'Thing', name: 'HTML interview questions for beginners' },
+        { '@type': 'Thing', name: 'HTML interview questions for freshers' },
         { '@type': 'Thing', name: 'HTML interview questions for experienced developers' },
         { '@type': 'Thing', name: 'semantic HTML interview questions' },
+        { '@type': 'Thing', name: 'HTML semantic elements interview questions' },
         { '@type': 'Thing', name: 'HTML forms interview questions' },
+        { '@type': 'Thing', name: 'HTML form validation interview questions' },
         { '@type': 'Thing', name: 'HTML accessibility interview questions' },
         { '@type': 'Thing', name: 'ARIA interview questions' },
         { '@type': 'Thing', name: 'HTML metadata interview questions' },
@@ -6463,6 +6977,9 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     };
 
     const jsonLd = [collectionPage, breadcrumbList];
+    if (this.isMasterHub()) {
+      jsonLd.push(this.masterShortAnswersFaqPage(canonicalUrl));
+    }
     if (this.isJavaScriptHub()) {
       jsonLd.push(this.javascriptShortAnswersFaqPage(canonicalUrl));
     }
@@ -6490,6 +7007,23 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       canonical: currentPath,
       jsonLd,
     });
+  }
+
+  private masterShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#master-short-answers`,
+      url: canonicalUrl,
+      name: 'Essential frontend interview questions and answers',
+      mainEntity: this.masterShortAnswers().map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
+        },
+      })),
+    };
   }
 
   private javascriptShortAnswersFaqPage(canonicalUrl: string): Record<string, any> {
