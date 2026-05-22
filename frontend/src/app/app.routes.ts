@@ -1170,9 +1170,9 @@ export const routes: Routes = [
         techs: ['react'],
       },
       seo: {
-        title: 'React Interview Questions and Answers',
+        title: 'React Interview Questions: 65 Q&A, Hooks and React 19',
         description:
-          'React interview questions and answers, beginner to advanced, with experienced developer topics, rendering internals, Virtual DOM, reconciliation, Fiber, React 19, Actions, useActionState, useOptimistic, Server Components, Next.js, hydration, Testing Library, scenario questions, and coding prompts.',
+          '65 React interview questions for frontend developers: beginner-to-advanced Q&A, hooks, React 19, Server Components, performance, scenarios, coding prompts.',
       },
     },
   },
