@@ -123,6 +123,7 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
         <span class="pill fa-chip fa-chip--label">Trade-offs & checkpoints</span>
       </div>
       <div class="prep-links">
+        <a [routerLink]="['/system-design']">Frontend system design questions</a>
         <a [routerLink]="['/guides/interview-blueprint']">Interview blueprint hub</a>
         <a [routerLink]="['/guides/framework-prep']">Framework prep paths</a>
         <a [routerLink]="['/tracks']">Interview tracks</a>

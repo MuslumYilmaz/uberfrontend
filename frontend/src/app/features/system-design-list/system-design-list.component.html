@@ -40,6 +40,24 @@
     </p>
   </section>
 
+  <section class="sd-section sd-start-here fa-section-shell" aria-labelledby="sd-start-title" data-testid="system-design-start-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">Frontend system design interview preparation</p>
+      <h2 id="sd-start-title">Start here, then move through harder prompt types</h2>
+      <p>
+        Use this sequence to turn frontend system design interview questions into deliberate practice instead of random browsing.
+      </p>
+    </div>
+    <div class="sd-start-grid">
+      <article class="sd-start-card" *ngFor="let step of startSteps">
+        <span>{{ step.step }}</span>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.detail }}</p>
+        <a [routerLink]="step.route">{{ step.cta }}</a>
+      </article>
+    </div>
+  </section>
+
   <section class="sd-section fa-section-shell" aria-labelledby="sd-tested-title" data-testid="system-design-tested-section">
     <div class="sd-section__head">
       <p class="sd-section__eyebrow">What gets tested</p>
@@ -72,6 +90,23 @@
     </div>
   </section>
 
+  <section class="sd-section fa-section-shell" aria-labelledby="sd-most-asked-title" data-testid="system-design-most-asked-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">Most asked frontend system design questions</p>
+      <h2 id="sd-most-asked-title">Practice the long-tail prompts interviewers recognize</h2>
+      <p>
+        These internal prompt paths cover application architecture, UI component system design, realtime UI, AI product workflows, and senior/staff tradeoff rounds.
+      </p>
+    </div>
+    <div class="sd-question-cluster">
+      <a *ngFor="let item of priorityQuestions" class="sd-question-link" [routerLink]="item.route">
+        <span>{{ item.keyword }}</span>
+        <strong>{{ item.title }}</strong>
+        <small>{{ item.detail }}</small>
+      </a>
+    </div>
+  </section>
+
   <section class="sd-section sd-radio-flow fa-section-shell" aria-labelledby="sd-radio-flow-title">
     <div class="sd-section__head">
       <p class="sd-section__eyebrow">How to answer</p>
@@ -85,6 +120,38 @@
         <span>{{ step.label }}</span>
         <strong>{{ step.title }}</strong>
       </a>
+    </div>
+  </section>
+
+  <section class="sd-section fa-section-shell" aria-labelledby="sd-rubric-title" data-testid="system-design-rubric-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">Frontend system design interview rubric</p>
+      <h2 id="sd-rubric-title">What senior interviewers evaluate</h2>
+      <p>
+        Strong answers are judged on architecture quality, user-visible failure handling, and how clearly you explain tradeoffs under changing constraints.
+      </p>
+    </div>
+    <div class="sd-rubric-grid">
+      <article class="sd-rubric-card" *ngFor="let item of evaluationRubric">
+        <h3>{{ item.area }}</h3>
+        <p>{{ item.signal }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="sd-section fa-section-shell" aria-labelledby="sd-mistakes-title" data-testid="system-design-mistakes-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">Common mistakes</p>
+      <h2 id="sd-mistakes-title">Avoid the traps that make frontend system design answers sound junior</h2>
+      <p>
+        The most common failures are not missing a library name; they are unclear scope, weak state ownership, and untested tradeoffs.
+      </p>
+    </div>
+    <div class="sd-mistake-list">
+      <article class="sd-mistake-item" *ngFor="let mistake of commonMistakes">
+        <h3>{{ mistake.title }}</h3>
+        <p>{{ mistake.fix }}</p>
+      </article>
     </div>
   </section>
 
@@ -181,5 +248,18 @@
         </div>
       </ng-container>
     </ng-template>
+  </section>
+
+  <section class="sd-section sd-faq fa-section-shell" aria-labelledby="sd-faq-title" data-testid="system-design-faq-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">FAQ</p>
+      <h2 id="sd-faq-title">Frontend system design interview questions FAQ</h2>
+    </div>
+    <div class="sd-faq-list">
+      <article class="sd-faq-item" *ngFor="let item of faqItems">
+        <h3>{{ item.question }}</h3>
+        <p>{{ item.answer }}</p>
+      </article>
+    </div>
   </section>
 </div>

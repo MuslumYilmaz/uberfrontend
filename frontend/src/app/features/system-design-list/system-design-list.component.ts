@@ -134,6 +134,144 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     'Preview pages stay indexable while full solutions stay protected',
   ];
 
+  readonly startSteps = [
+    {
+      step: 'Step 1',
+      title: 'Learn RADIO',
+      detail: 'Use the frontend system design interview framework before you open a prompt.',
+      route: ['/', 'guides', 'system-design-blueprint', 'radio-framework'],
+      cta: 'Frontend system design interview framework',
+    },
+    {
+      step: 'Step 2',
+      title: 'Start with core prompts',
+      detail: 'Practice infinite scroll and notification systems first because they expose state, rendering, and UX basics.',
+      route: ['/', 'system-design', 'infinite-scroll-list'],
+      cta: 'Design infinite scroll frontend system design',
+    },
+    {
+      step: 'Step 3',
+      title: 'Move into realtime UI',
+      detail: 'Add caching, streaming, batching, reconnect behavior, and high-frequency rendering tradeoffs.',
+      route: ['/', 'system-design', 'scalable-notifications-feed'],
+      cta: 'Frontend system design realtime UI',
+    },
+    {
+      step: 'Step 4',
+      title: 'Practice senior/staff rounds',
+      detail: 'Use premium previews to understand the expected shape of senior frontend system design interview answers.',
+      route: ['/', 'system-design', 'netflix-scale-expansion'],
+      cta: 'Senior frontend system design interview',
+    },
+  ];
+
+  readonly priorityQuestions = [
+    {
+      title: 'Infinite Scroll List System Design',
+      keyword: 'design infinite scroll frontend system design',
+      detail: 'Pagination, virtualization, loading states, and scroll performance.',
+      route: ['/', 'system-design', 'infinite-scroll-list'],
+    },
+    {
+      title: 'Notification Toast System',
+      keyword: 'design notification system frontend',
+      detail: 'Global APIs, timers, stacking, portals, and accessible announcements.',
+      route: ['/', 'system-design', 'notification-toast-system'],
+    },
+    {
+      title: 'Real-time Search with Debounce & Caching',
+      keyword: 'design autocomplete frontend system design',
+      detail: 'Debounce, cancellation, stale responses, caching, and perceived speed.',
+      route: ['/', 'system-design', 'realtime-search-debounce-cache'],
+    },
+    {
+      title: 'News Feed / Timeline Front-End System Design',
+      keyword: 'design news feed frontend system design',
+      detail: 'Feed hydration, cursor pagination, media lazy loading, and realtime updates.',
+      route: ['/', 'system-design', 'news-feed-timeline'],
+    },
+    {
+      title: 'AI Chat Text Area',
+      keyword: 'design chat app frontend system design',
+      detail: 'Streaming responses, persistence, cancellation, API contracts, and UX control.',
+      route: ['/', 'system-design', 'ai-chat-textarea-design'],
+    },
+    {
+      title: 'Component-driven Design System Architecture',
+      keyword: 'frontend system design UI component questions',
+      detail: 'Tokens, component APIs, accessibility contracts, theming, and versioning.',
+      route: ['/', 'system-design', 'component-design-system-architecture'],
+    },
+    {
+      title: 'Live Comments for Global Streams',
+      keyword: 'frontend system design realtime UI',
+      detail: 'WebSocket/SSE updates, buffering, moderation UI, and burst control.',
+      route: ['/', 'system-design', 'live-comments-global-stream'],
+    },
+    {
+      title: 'Dashboard with Draggable & Resizable Widgets',
+      keyword: 'staff frontend engineer system design interview',
+      detail: 'Layout persistence, drag/resize performance, constraints, and ownership boundaries.',
+      route: ['/', 'system-design', 'dashboard-widgets-draggable-resizable'],
+    },
+  ];
+
+  readonly commonMistakes = [
+    {
+      title: 'Jumping into components too early',
+      fix: 'Clarify scope, users, scale, and success metrics before drawing the component tree.',
+    },
+    {
+      title: 'Giving vague state management answers',
+      fix: 'Separate local UI state, shared client state, server state, cache state, and hot interaction state.',
+    },
+    {
+      title: 'Ignoring rendering and caching strategy',
+      fix: 'Name SSR/CSR tradeoffs, cache keys, freshness rules, invalidation, and perceived performance.',
+    },
+    {
+      title: 'Skipping accessibility, security, and reliability',
+      fix: 'Include keyboard flows, ARIA states, safe rendering, auth boundaries, retry, and fallback behavior.',
+    },
+    {
+      title: 'Not naming tradeoffs',
+      fix: 'Explain why the chosen architecture beats at least one alternative under the given constraints.',
+    },
+  ];
+
+  readonly evaluationRubric = [
+    { area: 'Requirements', signal: 'Defines users, scope, non-goals, scale, latency, and success metrics.' },
+    { area: 'Architecture', signal: 'Shows rendering strategy, state boundaries, route ownership, and service contracts.' },
+    { area: 'Data/state', signal: 'Separates server data, client state, cache, optimistic queues, and transient UI state.' },
+    { area: 'APIs/events', signal: 'Explains payloads, pagination, mutations, realtime events, retries, and cancellation.' },
+    { area: 'Interface/accessibility', signal: 'Covers component APIs, loading/error/empty states, keyboard behavior, and announcements.' },
+    { area: 'Performance/reliability', signal: 'Sets budgets, chooses optimizations, handles failure modes, and adds observability.' },
+    { area: 'Communication', signal: 'Narrates tradeoffs clearly and adapts when requirements change.' },
+  ];
+
+  readonly faqItems = [
+    {
+      question: 'What is a frontend system design interview?',
+      answer: 'A frontend system design interview is an architecture round focused on client-side decisions: rendering strategy, state ownership, API contracts, caching, accessibility, performance, resilience, and product tradeoffs.',
+    },
+    {
+      question: 'How do I prepare for frontend system design interviews?',
+      answer: 'Start with a repeatable framework such as RADIO, practice common prompts like infinite scroll and notifications, then add realtime, data-heavy, and senior/staff scenarios where tradeoffs become harder.',
+    },
+    {
+      question: 'What frontend system design questions are commonly asked?',
+      answer: 'Common prompts include infinite scroll, autocomplete search, notification systems, news feeds, chat interfaces, dashboards, design systems, file upload components, and realtime collaboration surfaces.',
+    },
+    {
+      question: 'How is frontend system design different from backend system design?',
+      answer: 'Frontend system design still needs backend awareness, but the scoring centers on UI architecture, rendering, browser performance, accessibility, client/server state boundaries, and failure states users can see.',
+    },
+    {
+      question: 'Should I start with app architecture or UI components?',
+      answer: 'Start with app architecture when the prompt is product-scale, such as feeds or dashboards. Start with UI component architecture when the prompt is an interaction-heavy component, such as autocomplete, modal, upload, or design system primitives.',
+    },
+  ];
+
   readonly rawQuestions$: Observable<SystemDesignViewItem[] | null>;
   readonly filtered$: Observable<SystemDesignViewItem[]>;
   readonly tagOptions$: Observable<Array<{ label: string; value: string }>>;
@@ -352,7 +490,11 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     if (!itemList) return;
 
     const canonical = this.seo.buildCanonicalUrl(this.router.url);
-    this.seo.updateTags({ ...baseSeo, canonical, jsonLd: itemList });
+    this.seo.updateTags({
+      ...baseSeo,
+      canonical,
+      jsonLd: [itemList, this.buildFaqSchema()],
+    });
   }
 
   private buildItemListSchema(list: SystemDesignViewItem[]): Record<string, any> | null {
@@ -368,6 +510,20 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
 
     if (!items.length) return null;
     return { '@type': 'ItemList', itemListElement: items };
+  }
+
+  private buildFaqSchema(): Record<string, any> {
+    return {
+      '@type': 'FAQPage',
+      mainEntity: this.faqItems.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    };
   }
 
   private getRouteSeo(): SeoMeta | null {

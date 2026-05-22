@@ -88,7 +88,19 @@ const criticalRouteContracts = [
     route: '/system-design',
     title: 'Frontend System Design Interview Questions',
     h1: 'Frontend System Design Interview Questions',
-    descriptionTerms: ['ui architecture', 'state', 'api contracts', 'performance', 'tradeoffs'],
+    descriptionTerms: ['ui architecture', 'state', 'api contracts', 'performance', 'tradeoff'],
+    bodyTerms: [
+      'What gets tested',
+      'Question formats',
+      'RADIO',
+      'Most asked frontend system design questions',
+      'Common mistakes',
+      'frontend system design interview preparation',
+      'Frontend system design interview rubric',
+      'Frontend system design prompt bank',
+      'Infinite Scroll List System Design',
+      'Notification Toast System',
+    ],
   },
   {
     route: '/guides/interview-blueprint',
@@ -187,6 +199,9 @@ for (const contract of criticalRouteContracts) {
   if (description.length < 70) missing.push('description is too short');
   for (const term of contract.descriptionTerms || []) {
     if (!includesPhrase(description, term)) missing.push(`description lacks "${term}"`);
+  }
+  for (const term of contract.bodyTerms || []) {
+    if (!includesPhrase(html, term)) missing.push(`body lacks "${term}"`);
   }
 
   if (missing.length) failures.keywordContract.push(`${contract.route}: ${missing.join('; ')}`);

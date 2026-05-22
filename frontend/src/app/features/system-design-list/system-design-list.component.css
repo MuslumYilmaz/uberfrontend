@@ -110,6 +110,122 @@
   line-height: 1.55;
 }
 
+.sd-start-grid,
+.sd-question-cluster,
+.sd-rubric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sd-start-card,
+.sd-question-link,
+.sd-rubric-card,
+.sd-mistake-item,
+.sd-faq-item {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 88%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--uf-surface-alt) 70%, var(--uf-surface));
+}
+
+.sd-start-card {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-height: 174px;
+}
+
+.sd-start-card > span,
+.sd-question-link span {
+  color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.sd-start-card h3,
+.sd-rubric-card h3,
+.sd-mistake-item h3,
+.sd-faq-item h3 {
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.sd-start-card p,
+.sd-rubric-card p,
+.sd-mistake-item p,
+.sd-faq-item p {
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sd-start-card a,
+.sd-question-link {
+  color: var(--uf-accent-strong);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.sd-start-card a:hover,
+.sd-question-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sd-question-cluster {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sd-question-link {
+  display: grid;
+  gap: 7px;
+  min-height: 138px;
+  color: var(--uf-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.sd-question-link strong {
+  color: var(--uf-text-primary);
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.sd-question-link small {
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.sd-rubric-grid {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.sd-rubric-card {
+  min-height: 152px;
+}
+
+.sd-mistake-list,
+.sd-faq-list {
+  display: grid;
+  gap: 10px;
+}
+
+.sd-mistake-item,
+.sd-faq-item {
+  display: grid;
+  gap: 6px;
+}
+
 .sd-info-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -490,6 +606,8 @@
 }
 
 @media (max-width: 1100px) {
+  .sd-start-grid,
+  .sd-rubric-grid,
   .sd-info-grid,
   .sd-info-grid--five {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -523,6 +641,9 @@
 }
 
 @media (max-width: 640px) {
+  .sd-start-grid,
+  .sd-question-cluster,
+  .sd-rubric-grid,
   .sd-hero__stats,
   .sd-info-grid,
   .sd-info-grid--five,

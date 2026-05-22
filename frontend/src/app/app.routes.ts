@@ -555,8 +555,14 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'Frontend System Design Interview Practice',
-        description: 'Frontend system design interview questions for UI architecture, state, API contracts, performance, accessibility, and tradeoffs.',
-        keywords: ['frontend system design interview questions', 'ui architecture interview', 'system design practice'],
+        description: 'Frontend system design interview questions, preparation paths, RADIO framework practice, UI architecture, state, API contracts, performance, accessibility, and tradeoffs.',
+        keywords: [
+          'frontend system design interview questions',
+          'frontend system design interview preparation',
+          'frontend system design interview framework',
+          'ui architecture interview',
+          'system design practice',
+        ],
       },
     },
     children: [
@@ -572,7 +578,14 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Frontend System Design Interview Questions',
-            description: 'Practice frontend system design scenarios focused on UI architecture, state, API contracts, performance, accessibility, and tradeoffs.',
+            description: 'Practice frontend system design interview questions with RADIO framework preparation, UI architecture prompts, state and API contracts, performance, accessibility, and tradeoff rubrics.',
+            keywords: [
+              'frontend system design interview questions',
+              'front end system design interview questions',
+              'frontend system design questions',
+              'RADIO framework frontend system design',
+              'senior frontend system design interview',
+            ],
           },
         },
       },
