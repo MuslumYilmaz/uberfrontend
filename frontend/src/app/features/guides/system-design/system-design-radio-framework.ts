@@ -48,6 +48,87 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       line-height: 1.35;
     }
 
+    :host ::ng-deep .content .answer-asset {
+      border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 74%, var(--uf-accent) 26%);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 8px 0 18px;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 48%),
+        color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+      box-shadow: var(--uf-card-shadow);
+    }
+
+    :host ::ng-deep .content .answer-asset p {
+      margin-bottom: 10px;
+    }
+
+    :host ::ng-deep .content .asset-signals {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 10px 0 0;
+    }
+
+    :host ::ng-deep .content .asset-signal {
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 10px;
+      padding: 10px;
+      background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+    }
+
+    :host ::ng-deep .content .asset-signal strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--uf-text-primary);
+      font-size: 13px;
+    }
+
+    :host ::ng-deep .content .asset-signal span {
+      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    :host ::ng-deep .content .answer-template {
+      margin: 10px 0 16px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--uf-border-subtle);
+      background: color-mix(in srgb, #020617 86%, var(--uf-surface));
+      color: #e5e7eb;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    :host ::ng-deep .content .answer-template code {
+      color: inherit;
+      background: transparent;
+      padding: 0;
+      white-space: pre-wrap;
+    }
+
+    :host ::ng-deep .content .worked-example {
+      display: grid;
+      gap: 10px;
+      margin: 10px 0 16px;
+    }
+
+    :host ::ng-deep .content .worked-example-step {
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+    }
+
+    :host ::ng-deep .content .worked-example-step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--uf-text-primary);
+    }
+
     :host ::ng-deep .content .radio-step {
       border: 1px solid var(--uf-border-subtle);
       border-radius: 14px;
@@ -227,6 +308,10 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       :host ::ng-deep .content .radio-flow {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      :host ::ng-deep .content .asset-signals {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 820px) {
@@ -249,14 +334,37 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
   `],
   template: `
-    <fa-guide-shell
-      title="Frontend System Design Interview Framework: RADIO Method"
+      <fa-guide-shell
+      title="Frontend System Design Interview Framework: RADIO Answer Template"
       [minutes]="20"
-      [tags]="['system design', 'interview framework', 'radio method']"
+      [tags]="['system design', 'answer template', 'radio framework']"
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav"
       [readerPromise]="readerPromise || undefined">
+
+      <section class="answer-asset" aria-label="Frontend system design interview answer asset">
+        <h2>Use this if your interviewer asks: "How would you design X?"</h2>
+        <p>
+          This page is a frontend system design interview answer asset, not just a RADIO definition.
+          Use it when you need a repeatable way to answer open-ended prompts about autocomplete,
+          news feed, chat, dashboards, design systems, or any UI architecture question.
+        </p>
+        <div class="asset-signals">
+          <div class="asset-signal">
+            <strong>Copyable 45-minute answer structure</strong>
+            <span>Start with the template below, then adapt the timebox to the prompt and interviewer.</span>
+          </div>
+          <div class="asset-signal">
+            <strong>Works for autocomplete, news feed, chat, dashboards, and design systems</strong>
+            <span>Keep one core flow as the thread while the product surface changes.</span>
+          </div>
+          <div class="asset-signal">
+            <strong>Use RADIO without rambling through requirements, architecture, data, interface, and optimizations</strong>
+            <span>Move from scope to production trade-offs with explicit artifacts at each step.</span>
+          </div>
+        </div>
+      </section>
 
       <h2>If You Remember Only One Thing (60 seconds)</h2>
       <p>
@@ -290,6 +398,48 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           <span>Choose the highest-risk performance, reliability, and security trade-offs.</span>
         </div>
       </div>
+
+      <h2>Frontend system design interview answer template</h2>
+      <p>
+        Use this copyable 45-minute answer structure when the prompt is broad and the interviewer expects
+        a practical path from requirements to implementation trade-offs.
+      </p>
+      <pre class="answer-template"><code>Opening:
+I will answer this with RADIO: Requirements, Architecture, Data, Interface, and Optimizations.
+I will keep one core user flow as the thread and call out trade-offs as constraints change.
+
+0:00-0:06 Requirements:
+I will clarify the primary user, core flow, must-haves, non-goals, scale, latency, accessibility, and success metrics.
+
+0:06-0:15 Architecture:
+I will draw the browser/app shell, rendering strategy, state layer, API or BFF boundary, and failure paths.
+
+0:15-0:20 Data:
+I will define entities, server truth, client-only state, cache keys, invalidation, and stale-state behavior.
+
+0:20-0:27 Interface:
+I will define component ownership, APIs or events, loading/empty/error states, keyboard behavior, and announcements.
+
+0:27-0:42 Optimizations:
+I will pick the riskiest constraint and discuss performance budget, reliability, observability, security, and trade-offs.
+
+0:42-0:45 Recap:
+I would ship the simple path first, instrument the risky flow, and use metrics to choose the next iteration.</code></pre>
+
+      <h2>How to answer a frontend system design interview in 45 minutes</h2>
+      <ul class="mini-checklist">
+        <li>Start by naming the core user flow and two non-goals so the answer has boundaries.</li>
+        <li>Draw the client architecture before debating frameworks or low-level implementation details.</li>
+        <li>Separate server data, client state, derived state, cache state, and transient UI state.</li>
+        <li>Define the visible interface: component ownership, user states, keyboard flow, and error behavior.</li>
+        <li>Close with measurable optimizations, observability, security, and the trade-off you would ship first.</li>
+      </ul>
+
+      <h2>Frontend system design checklist</h2>
+      <p>
+        Before you move on, confirm that your answer has scope, architecture, data contracts, user-visible
+        interface behavior, and at least one measurable production trade-off.
+      </p>
 
       <h2>RADIO Cheat Sheet</h2>
       <div class="radio-steps">
@@ -649,6 +799,42 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           </tr>
         </tbody>
       </table>
+
+      <h2>Example: Answer autocomplete with RADIO</h2>
+      <p>
+        This frontend system design interview example shows how to answer autocomplete with RADIO in a short,
+        complete pass before the interviewer asks for deeper trade-offs.
+      </p>
+      <div class="worked-example">
+        <section class="worked-example-step">
+          <strong>R - Requirements</strong>
+          Scope the prompt to search suggestions for the latest typed query. Set a perceived latency target
+          around 150 ms after debounce, require keyboard navigation and screen-reader announcements, and make
+          stale results, empty results, API errors, and mobile input behavior explicit.
+        </section>
+        <section class="worked-example-step">
+          <strong>A - Architecture</strong>
+          Use a controlled input, debounce layer, cancellable request flow, query result cache, and a clear API
+          or BFF boundary. Render idle, loading, results, empty, error, and stale states from one state machine
+          instead of scattering flags across components.
+        </section>
+        <section class="worked-example-step">
+          <strong>D - Data</strong>
+          Model <code>Suggestion&#123; id, label, type, metadata &#125;</code>, a query-keyed cache, request id or
+          abort controller, selected suggestion state, and URL/input synchronization only if the product needs
+          shareable search state.
+        </section>
+        <section class="worked-example-step">
+          <strong>I - Interface</strong>
+          Treat the input as a combobox and the results as a listbox. Define arrow-key navigation, enter/escape
+          behavior, focus recovery after selection, loading copy, empty copy, and announced result counts.
+        </section>
+        <section class="worked-example-step">
+          <strong>O - Optimizations</strong>
+          Cancel outdated requests, guard latest-query-wins, cap result count, cache short-lived suggestions,
+          track API p95 latency and zero-result rate, and fall back to recent searches if the network fails.
+        </section>
+      </div>
 
       <h2>Run RADIO on autocomplete, news feed, and chat</h2>
       <table>

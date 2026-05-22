@@ -434,18 +434,22 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'Frontend System Design Interview Framework: RADIO Method',
+        title: 'Frontend System Design Interview Framework: RADIO Answer Template',
         minutes: 20,
-        summary: 'Use the RADIO method as a frontend system design interview framework for requirements, architecture, data model, interface behavior, and optimizations.',
+        summary: 'Use RADIO as a frontend system design interview answer template with a 45-minute structure, checklist, and examples.',
         seo: {
-            title: 'Frontend System Design Interview Framework: RADIO Method',
-            description: 'Use RADIO for frontend system design interviews: clarify requirements, sketch architecture, model data, define interfaces, and choose optimizations.',
-            primaryKeyword: 'radio framework for frontend system design interviews',
+            title: 'Frontend System Design Interview Framework: RADIO Answer Template',
+            description: 'Use RADIO to answer frontend system design interviews in 45 or 60 minutes: examples, checklist, requirements, architecture, data, interface, optimizations.',
+            primaryKeyword: 'frontend system design interview answer template',
             keywords: [
                 'frontend system design interview framework',
+                'frontend system design interview answer template',
                 'RADIO framework for frontend system design interviews',
                 'radio approach system design',
                 'how to answer frontend system design interview',
+                'frontend system design interview checklist',
+                'frontend system design interview example',
+                'frontend system design 45 minute framework',
                 'requirements architecture data interface optimizations',
             ],
             faqPage: {
@@ -474,7 +478,7 @@ export const SYSTEM: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-18',
-            updatedAt: '2026-05-20',
+            updatedAt: '2026-05-22',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')

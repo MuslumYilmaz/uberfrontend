@@ -656,9 +656,26 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Framework Prep Paths for Interviews',
+            title: 'Frontend Framework Interview Preparation Roadmap',
             description:
-              'Compare JavaScript, React, Angular, and Vue prep paths with recommended sequence, expected outcomes, and common mistakes to fix before interviews.',
+              'Compare JavaScript, React, Angular, and Vue interview preparation paths with a 7/14/30-day frontend interview preparation roadmap, role guidance, and next practice links.',
+            keywords: [
+              'frontend framework interview preparation',
+              'React interview preparation',
+              'React interview preparation roadmap',
+              'React machine coding interview preparation',
+              'Angular interview preparation',
+              'Angular interview preparation roadmap',
+              'Angular interview prep RxJS change detection DI',
+              'Vue interview preparation',
+              'Vue interview preparation roadmap',
+              'Vue interview prep reactivity component communication',
+              'JavaScript interview prep path',
+              'JavaScript interview prep path for frontend developers',
+              'frontend interview preparation roadmap',
+              '30 day frontend interview preparation roadmap',
+              'senior frontend framework interview preparation',
+            ],
           },
         },
       },
