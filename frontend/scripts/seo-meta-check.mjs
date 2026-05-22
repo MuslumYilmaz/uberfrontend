@@ -85,6 +85,22 @@ const criticalRouteContracts = [
     descriptionTerms: ['coding prompts', 'rendering internals', 'React 19', 'Server Components', 'scenario questions'],
   },
   {
+    route: '/angular/interview-questions',
+    title: 'Angular Interview Questions and Answers',
+    h1: 'Angular Interview Questions and Answers',
+    descriptionTerms: [
+      'frontend developers',
+      'beginner-to-experienced',
+      'RxJS',
+      'change detection',
+      'signals',
+      'DI',
+      'testing',
+      'performance',
+      'coding prompts',
+    ],
+  },
+  {
     route: '/system-design',
     title: 'Frontend System Design Interview Questions',
     h1: 'Frontend System Design Interview Questions',
