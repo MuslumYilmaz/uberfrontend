@@ -656,9 +656,26 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Framework Prep Paths for Interviews',
+            title: 'Frontend Framework Interview Preparation Roadmap',
             description:
-              'Compare JavaScript, React, Angular, and Vue prep paths with recommended sequence, expected outcomes, and common mistakes to fix before interviews.',
+              'Compare JavaScript, React, Angular, and Vue interview preparation paths with a 7/14/30-day frontend interview preparation roadmap, role guidance, and next practice links.',
+            keywords: [
+              'frontend framework interview preparation',
+              'React interview preparation',
+              'React interview preparation roadmap',
+              'React machine coding interview preparation',
+              'Angular interview preparation',
+              'Angular interview preparation roadmap',
+              'Angular interview prep RxJS change detection DI',
+              'Vue interview preparation',
+              'Vue interview preparation roadmap',
+              'Vue interview prep reactivity component communication',
+              'JavaScript interview prep path',
+              'JavaScript interview prep path for frontend developers',
+              'frontend interview preparation roadmap',
+              '30 day frontend interview preparation roadmap',
+              'senior frontend framework interview preparation',
+            ],
           },
         },
       },
@@ -1153,9 +1170,9 @@ export const routes: Routes = [
         techs: ['react'],
       },
       seo: {
-        title: 'React Interview Questions and Answers',
+        title: 'React Interview Questions: 65 Q&A, Hooks and React 19',
         description:
-          'React interview questions and answers, beginner to advanced, with experienced developer topics, rendering internals, Virtual DOM, reconciliation, Fiber, React 19, Actions, useActionState, useOptimistic, Server Components, Next.js, hydration, Testing Library, scenario questions, and coding prompts.',
+          '65 React interview questions for frontend developers: beginner-to-advanced Q&A, hooks, React 19, Server Components, performance, scenarios, coding prompts.',
       },
     },
   },
@@ -1192,9 +1209,9 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'Angular Interview Questions and Answers',
+        title: 'Angular Interview Questions and Answers: RxJS and Signals',
         description:
-          'Angular interview questions and answers for beginners and experienced developers, with testing, security, RxJS, change detection, standalone components, signals, guards, resolvers, AOT/JIT, and performance.',
+          'Angular interview questions for frontend developers: beginner-to-experienced Q&A, RxJS, change detection, signals, DI, testing, performance, coding prompts.',
       },
     },
   },
