@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   styles: [`
-    :host ::ng-deep .content .radio-steps {
+    .radio-steps {
       display: grid;
       gap: 14px;
       margin: 8px 0 4px;
@@ -15,7 +15,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       max-width: none;
     }
 
-    :host ::ng-deep .content .radio-flow {
+    .radio-flow {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 8px;
@@ -26,7 +26,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
     }
 
-    :host ::ng-deep .content .radio-flow-step {
+    .radio-flow-step {
       min-width: 0;
       border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 78%, var(--uf-accent) 22%);
       border-radius: 10px;
@@ -34,21 +34,21 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       background: color-mix(in srgb, var(--uf-surface-alt) 88%, var(--uf-surface));
     }
 
-    :host ::ng-deep .content .radio-flow-step strong {
+    .radio-flow-step strong {
       display: block;
       margin-bottom: 3px;
       color: var(--uf-text-primary);
       font-size: 13px;
     }
 
-    :host ::ng-deep .content .radio-flow-step span {
+    .radio-flow-step span {
       display: block;
       color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
       font-size: 12px;
       line-height: 1.35;
     }
 
-    :host ::ng-deep .content .answer-asset {
+    .answer-asset {
       border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 74%, var(--uf-accent) 26%);
       border-radius: 14px;
       padding: 14px;
@@ -59,38 +59,38 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       box-shadow: var(--uf-card-shadow);
     }
 
-    :host ::ng-deep .content .answer-asset p {
+    .answer-asset p {
       margin-bottom: 10px;
     }
 
-    :host ::ng-deep .content .asset-signals {
+    .asset-signals {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
       margin: 10px 0 0;
     }
 
-    :host ::ng-deep .content .asset-signal {
+    .asset-signal {
       border: 1px solid var(--uf-border-subtle);
       border-radius: 10px;
       padding: 10px;
       background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
     }
 
-    :host ::ng-deep .content .asset-signal strong {
+    .asset-signal strong {
       display: block;
       margin-bottom: 4px;
       color: var(--uf-text-primary);
       font-size: 13px;
     }
 
-    :host ::ng-deep .content .asset-signal span {
+    .asset-signal span {
       color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
       font-size: 12px;
       line-height: 1.4;
     }
 
-    :host ::ng-deep .content .answer-template {
+    .answer-template {
       margin: 10px 0 16px;
       padding: 12px;
       border-radius: 12px;
@@ -103,33 +103,33 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       line-height: 1.55;
     }
 
-    :host ::ng-deep .content .answer-template code {
+    .answer-template code {
       color: inherit;
       background: transparent;
       padding: 0;
       white-space: pre-wrap;
     }
 
-    :host ::ng-deep .content .worked-example {
+    .worked-example {
       display: grid;
       gap: 10px;
       margin: 10px 0 16px;
     }
 
-    :host ::ng-deep .content .worked-example-step {
+    .worked-example-step {
       border: 1px solid var(--uf-border-subtle);
       border-radius: 10px;
       padding: 10px 12px;
       background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
     }
 
-    :host ::ng-deep .content .worked-example-step strong {
+    .worked-example-step strong {
       display: block;
       margin-bottom: 4px;
       color: var(--uf-text-primary);
     }
 
-    :host ::ng-deep .content .radio-step {
+    .radio-step {
       border: 1px solid var(--uf-border-subtle);
       border-radius: 14px;
       padding: 14px;
@@ -142,7 +142,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       box-shadow: var(--uf-card-shadow);
     }
 
-    :host ::ng-deep .content .radio-step-head {
+    .radio-step-head {
       display: grid;
       grid-template-columns: auto 1fr auto;
       gap: 12px;
@@ -152,7 +152,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       border-bottom: 1px solid var(--uf-border-subtle);
     }
 
-    :host ::ng-deep .content .radio-letter {
+    .radio-letter {
       width: 34px;
       height: 34px;
       border-radius: 999px;
@@ -165,19 +165,19 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--uf-accent) 12%, transparent);
     }
 
-    :host ::ng-deep .content .radio-step-title {
+    .radio-step-title {
       margin: 0 0 4px;
       font-weight: 800;
       color: var(--uf-text-primary);
       font-size: 16px;
     }
 
-    :host ::ng-deep .content .radio-step-goal {
+    .radio-step-goal {
       margin: 0;
       color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
     }
 
-    :host ::ng-deep .content .radio-timebox {
+    .radio-timebox {
       margin: 0;
       font-size: 13px;
       color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
@@ -188,13 +188,13 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       white-space: nowrap;
     }
 
-    :host ::ng-deep .content .radio-step-grid {
+    .radio-step-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
     }
 
-    :host ::ng-deep .content .radio-col {
+    .radio-col {
       border: 1px solid var(--uf-border-subtle);
       border-radius: 10px;
       padding: 10px 12px;
@@ -202,7 +202,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
     }
 
-    :host ::ng-deep .content .radio-col-title {
+    .radio-col-title {
       margin: 0 0 6px;
       font-size: 12px;
       letter-spacing: .03em;
@@ -211,13 +211,13 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       color: color-mix(in srgb, var(--uf-text-tertiary) 86%, transparent);
     }
 
-    :host ::ng-deep .content .radio-col ul {
+    .radio-col ul {
       margin: 0;
       padding-left: 0;
       list-style: none;
     }
 
-    :host ::ng-deep .content .radio-col li {
+    .radio-col li {
       margin: 6px 0;
       padding-left: 13px;
       position: relative;
@@ -227,7 +227,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       line-height: 1.45;
     }
 
-    :host ::ng-deep .content .radio-col li::before {
+    .radio-col li::before {
       content: '•';
       position: absolute;
       left: 0;
@@ -235,14 +235,14 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       color: color-mix(in srgb, var(--uf-accent) 78%, var(--uf-text-primary));
     }
 
-    :host ::ng-deep .content .script-cues {
+    .script-cues {
       list-style: none;
       counter-reset: cue;
       padding-left: 0;
       margin: 10px 0 4px;
     }
 
-    :host ::ng-deep .content .script-cues li {
+    .script-cues li {
       counter-increment: cue;
       position: relative;
       margin: 10px 0;
@@ -255,7 +255,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       word-break: break-word;
     }
 
-    :host ::ng-deep .content .script-cues li::before {
+    .script-cues li::before {
       content: counter(cue);
       position: absolute;
       left: 12px;
@@ -272,13 +272,13 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       background: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
     }
 
-    :host ::ng-deep .content .mini-checklist {
+    .mini-checklist {
       list-style: none;
       padding-left: 0;
       margin: 8px 0 6px;
     }
 
-    :host ::ng-deep .content .mini-checklist li {
+    .mini-checklist li {
       position: relative;
       padding-left: 28px;
       margin: 10px 0;
@@ -287,7 +287,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       word-break: break-word;
     }
 
-    :host ::ng-deep .content .mini-checklist li::before {
+    .mini-checklist li::before {
       content: '';
       position: absolute;
       left: 0;
@@ -301,34 +301,34 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
 
     @media (max-width: 1100px) {
-      :host ::ng-deep .content .radio-step-grid {
+      .radio-step-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      :host ::ng-deep .content .radio-flow {
+      .radio-flow {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      :host ::ng-deep .content .asset-signals {
+      .asset-signals {
         grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 820px) {
-      :host ::ng-deep .content .radio-step-head {
+      .radio-step-head {
         grid-template-columns: auto 1fr;
       }
 
-      :host ::ng-deep .content .radio-timebox {
+      .radio-timebox {
         grid-column: 1 / -1;
         width: fit-content;
       }
 
-      :host ::ng-deep .content .radio-step-grid {
+      .radio-step-grid {
         grid-template-columns: 1fr;
       }
 
-      :host ::ng-deep .content .radio-flow {
+      .radio-flow {
         grid-template-columns: 1fr;
       }
     }
