@@ -157,6 +157,7 @@ function buildRoutes() {
     '/incidents',
     '/tradeoffs',
     '/pricing',
+    '/machine-coding',
     '/interview-questions',
     '/interview-questions/essential',
     '/guides/framework-prep',

@@ -65,4 +65,13 @@ describe('CompanyIndexComponent', () => {
     expect(googleMark?.hasAttribute('aria-label')).toBeFalse();
     expect(host.querySelector('.company-card__title')?.textContent).toContain('Amazon');
   });
+
+  it('links company prep back to clean baseline and format hubs', () => {
+    const host: HTMLElement = fixture.nativeElement;
+
+    expect(host.querySelector('a[href="/javascript/interview-questions"]')).toBeTruthy();
+    expect(host.querySelector('a[href="/react/interview-questions"]')).toBeTruthy();
+    expect(host.querySelector('a[href="/machine-coding"]')).toBeTruthy();
+    expect(host.querySelector('a[href="/system-design"]')).toBeTruthy();
+  });
 });

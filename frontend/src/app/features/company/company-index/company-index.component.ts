@@ -12,6 +12,7 @@ import { CompanyLogoMarkComponent } from '../../../shared/components/company-log
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
 type CompanyCard = { slug: string; label: string; count: number };
+type CompanyHubLink = { label: string; route: string[]; path: string };
 
 // Always show these, even if data lacks explicit "companies" tags.
 const SEED: ReadonlyArray<Pick<CompanyCard, 'slug' | 'label'>> = [
@@ -57,6 +58,17 @@ export class CompanyIndexComponent implements OnInit {
     { text: 'Focus Areas', route: ['/focus-areas'] },
     { text: 'Study Plans', route: ['/tracks'] },
     { text: 'Company Prep', route: ['/companies'] },
+  ];
+
+  baselineInterviewHubLinks: CompanyHubLink[] = [
+    { label: 'JavaScript interview questions', route: ['/javascript/interview-questions'], path: '/javascript/interview-questions' },
+    { label: 'React interview questions', route: ['/react/interview-questions'], path: '/react/interview-questions' },
+    { label: 'Angular interview questions', route: ['/angular/interview-questions'], path: '/angular/interview-questions' },
+    { label: 'Vue.js interview questions', route: ['/vue/interview-questions'], path: '/vue/interview-questions' },
+    { label: 'HTML interview questions', route: ['/html/interview-questions'], path: '/html/interview-questions' },
+    { label: 'CSS interview questions', route: ['/css/interview-questions'], path: '/css/interview-questions' },
+    { label: 'Frontend machine coding questions', route: ['/machine-coding'], path: '/machine-coding' },
+    { label: 'Frontend system design interview questions', route: ['/system-design'], path: '/system-design' },
   ];
 
   ngOnInit() {
@@ -117,6 +129,11 @@ export class CompanyIndexComponent implements OnInit {
         { '@type': 'WebPage', name: 'Question Library', url: this.seo.buildCanonicalUrl('/coding') },
         { '@type': 'WebPage', name: 'Study Plans', url: this.seo.buildCanonicalUrl('/tracks') },
         { '@type': 'WebPage', name: 'Framework Prep Guide', url: this.seo.buildCanonicalUrl('/guides/framework-prep') },
+        ...this.baselineInterviewHubLinks.map((link) => ({
+          '@type': 'WebPage',
+          name: link.label,
+          url: this.seo.buildCanonicalUrl(link.path),
+        })),
       ],
     };
 

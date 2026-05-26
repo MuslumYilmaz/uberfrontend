@@ -21,6 +21,22 @@
         </a>
     </div>
 
+    <section class="company-baseline-hubs" aria-labelledby="company-baseline-hubs-title">
+        <p class="company-intro__kicker">Baseline interview question hubs</p>
+        <h2 id="company-baseline-hubs-title">Stabilize your target stack before company-specific prep</h2>
+        <p>
+            Use these focused interview question hubs for fundamentals and framework Q&A, then narrow into company sets once the baseline is stable.
+        </p>
+        <div class="company-intro__links company-baseline-hubs__links">
+            <a
+                *ngFor="let hub of baselineInterviewHubLinks"
+                class="company-link company-link--hub"
+                [routerLink]="hub.route">
+                {{ hub.label }}
+            </a>
+        </div>
+    </section>
+
     <details class="company-more-routes">
         <summary>More routes and prep links</summary>
         <p>

@@ -1547,15 +1547,18 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-grid-vs-flexbox"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/system-design"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/incidents"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/machine-coding"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/guides/interview-blueprint/ui-interviews"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/guides/interview-blueprint/quiz"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-react-toc')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
     expect(fixture.nativeElement.textContent || '').toContain('Frontend interview preparation guide');
+    expect(fixture.nativeElement.textContent || '').toContain('Machine Coding / UI Coding');
     expect(fixture.nativeElement.textContent || '').toContain('Question Library');
     expect(fixture.nativeElement.textContent || '').toContain('Framework interview hubs');
-    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]')?.getAttribute('href') || '').toContain('/coding?reset=1');
-    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-4"]')?.getAttribute('href') || '').toContain('/react/interview-questions');
+    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]')?.getAttribute('href') || '').toContain('/machine-coding');
+    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-4"]')?.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-5"]')?.getAttribute('href') || '').toContain('/react/interview-questions');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];

@@ -125,7 +125,7 @@ function assertNoQueryOrHashInSitemapLocs(locs) {
 }
 
 function assertPracticeCanonicalCoverage(paths, locs) {
-  const required = ['/coding', '/interview-questions', '/system-design'];
+  const required = ['/coding', '/interview-questions', '/machine-coding', '/system-design'];
   const missing = required.filter((route) => !paths.has(normalizePath(route)));
   if (missing.length) {
     throw new Error(`Sitemap missing practice canonical routes: ${missing.join(', ')}`);

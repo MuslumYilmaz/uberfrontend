@@ -92,17 +92,17 @@ describe('ShowcasePageComponent', () => {
     fixture.detectChanges();
   });
 
-  it('uses Essential 60 as the hero primary CTA and keeps the prep guide secondary', () => {
+  it('uses the 30-day guided plan as the hero primary CTA and keeps the prep guide secondary', () => {
     const page: HTMLElement = fixture.nativeElement;
     const primaryCta = page.querySelector('[data-testid="showcase-hero-primary-cta"]') as HTMLAnchorElement;
     const secondaryCta = page.querySelector('[data-testid="showcase-hero-secondary-cta"]') as HTMLAnchorElement;
     const helper = page.querySelector('[data-testid="showcase-hero-helper"]') as HTMLElement;
 
-    expect(primaryCta.textContent?.trim()).toBe('Open Essential 60');
-    expect(primaryCta.getAttribute('href') || '').toContain('/interview-questions/essential');
+    expect(primaryCta.textContent?.trim()).toBe('Start 30-day plan');
+    expect(primaryCta.getAttribute('href') || '').toContain('/tracks/foundations-30d/preview');
     expect(secondaryCta.textContent?.trim()).toBe('View prep guide');
     expect(secondaryCta.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
-    expect(helper.textContent).toContain('Not sure how interviews are evaluated? Read the prep guide first.');
+    expect(helper.textContent).toContain('Want a smaller first rep? Essential 60 is the compact practice block after the plan preview.');
 
     primaryCta.click();
 
@@ -110,9 +110,9 @@ describe('ShowcasePageComponent', () => {
       'lp_primary_cta_clicked',
       jasmine.objectContaining({
         src: 'lp_hero',
-        destination: 'essential_60',
-        route: '/interview-questions/essential',
-        start_path_variant: 'essential_first',
+        destination: 'foundations_30d_preview',
+        route: '/tracks/foundations-30d/preview',
+        start_path_variant: 'guided_plan_first',
       }),
     );
 
@@ -124,7 +124,7 @@ describe('ShowcasePageComponent', () => {
         src: 'lp_hero',
         destination: 'interview_blueprint',
         route: '/guides/interview-blueprint/intro',
-        start_path_variant: 'essential_first',
+        start_path_variant: 'guided_plan_first',
       }),
     );
   });
@@ -140,12 +140,13 @@ describe('ShowcasePageComponent', () => {
 
     expect(page.querySelector('.chip-cloud')).toBeNull();
     expect(component.activeFlowIndex).toBe(0);
+    expect(startPath.textContent).toContain('30-day guided plan');
     expect(startPath.textContent).toContain('Essential 60');
+    expect(startPath.textContent).toContain('machine coding');
     expect(startPath.textContent).toContain('Question Library');
-    expect(startPath.textContent).toContain('Study Plans / Framework Prep');
     expect(startPath.textContent).toContain('final-round coverage');
     expect(startPath.textContent).toContain('New to interviews? Read the prep guide first.');
-    expect(pageText).toContain('Start with FrontendAtlas Essential 60');
+    expect(pageText).toContain('Start with a guided frontend interview study plan');
     expect(pageText.toLowerCase()).not.toContain('prep graph');
     expect(pageText.toLowerCase()).not.toContain('company-flavored');
     expect(pageText.toLowerCase()).not.toContain('your own prompts');
@@ -168,18 +169,23 @@ describe('ShowcasePageComponent', () => {
     expect(comesBefore(demoTitle, roadmap)).toBeTrue();
   });
 
-  it('renders the interviewer-informed trust section after the roadmap without profile links', () => {
+  it('renders the focus grid and interviewer-informed trust section after the roadmap without profile links', () => {
     const page: HTMLElement = fixture.nativeElement;
     const heroTitle = page.querySelector('[data-testid="showcase-hero-title"]') as HTMLElement;
     const trustSection = page.querySelector('[data-testid="showcase-trust-section"]') as HTMLElement;
     const demoTitle = page.querySelector('#demo-title') as HTMLElement;
     const roadmap = page.querySelector('[data-testid="prep-roadmap"]') as HTMLElement;
+    const focusSection = page.querySelector('[data-testid="showcase-focus-section"]') as HTMLElement;
     const proofRow = page.querySelector('.proof-row') as HTMLElement;
     const trustText = trustSection.textContent || '';
     const comesBefore = (left: HTMLElement, right: HTMLElement) =>
       Boolean(left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING);
 
     expect(trustSection).toBeTruthy();
+    expect(focusSection).toBeTruthy();
+    expect(focusSection.textContent || '').toContain('Choose your focus');
+    expect(focusSection.querySelector('a[href="/machine-coding"]')).toBeTruthy();
+    expect(focusSection.querySelector('a[href="/system-design"]')).toBeTruthy();
     expect(trustSection.querySelector('a')).toBeNull();
     expect(proofRow.textContent).toContain('Interviewer-informed');
     expect(trustText).toContain('Interview prep shaped around what interviewers can actually evaluate.');
@@ -194,7 +200,8 @@ describe('ShowcasePageComponent', () => {
     expect(trustText).toContain('Independent, interviewer-informed frontend interview prep.');
     expect(comesBefore(heroTitle, demoTitle)).toBeTrue();
     expect(comesBefore(demoTitle, roadmap)).toBeTrue();
-    expect(comesBefore(roadmap, trustSection)).toBeTrue();
+    expect(comesBefore(roadmap, focusSection)).toBeTrue();
+    expect(comesBefore(focusSection, trustSection)).toBeTrue();
   });
 
   it('renders the recommended preparation roadmap with the intended first route and links', () => {
@@ -206,16 +213,19 @@ describe('ShowcasePageComponent', () => {
     const fourthItem = page.querySelector('[data-testid="prep-roadmap-item-4"]') as HTMLAnchorElement;
 
     expect(roadmap).toBeTruthy();
-    expect(page.querySelectorAll('[data-testid^="prep-roadmap-item-"]').length).toBe(4);
+    expect(page.querySelectorAll('[data-testid^="prep-roadmap-item-"]').length).toBe(5);
     expect(roadmap.textContent || '').not.toContain('Try one real challenge');
-    expect(firstItem.textContent).toContain('FrontendAtlas Essential 60');
+    expect(firstItem.textContent).toContain('30-day guided study plan');
     expect(firstItem.textContent).toContain('Recommended start');
-    expect(firstItem.getAttribute('href') || '').toContain('/interview-questions/essential');
-    expect(secondItem.textContent).toContain('Question Library');
-    expect(secondItem.getAttribute('href') || '').toContain('/coding?reset=1');
-    expect(thirdItem.textContent).toContain('Study Plans / Framework Prep');
-    expect(thirdItem.getAttribute('href') || '').toContain('/tracks');
-    expect(fourthItem.textContent).toContain('Final-round coverage');
-    expect(fourthItem.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
+    expect(firstItem.getAttribute('href') || '').toContain('/tracks/foundations-30d/preview');
+    expect(secondItem.textContent).toContain('FrontendAtlas Essential 60');
+    expect(secondItem.getAttribute('href') || '').toContain('/interview-questions/essential');
+    expect(thirdItem.textContent).toContain('Machine Coding / UI Coding');
+    expect(thirdItem.getAttribute('href') || '').toContain('/machine-coding');
+    expect(fourthItem.textContent).toContain('Question Library');
+    expect(fourthItem.getAttribute('href') || '').toContain('/coding?reset=1');
+    const fifthItem = page.querySelector('[data-testid="prep-roadmap-item-5"]') as HTMLAnchorElement;
+    expect(fifthItem.textContent).toContain('Final-round coverage');
+    expect(fifthItem.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
   });
 });

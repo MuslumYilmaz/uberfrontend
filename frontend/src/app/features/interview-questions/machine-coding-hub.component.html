@@ -1,0 +1,85 @@
+<main class="machine-hub fa-page-shell" data-testid="machine-coding-hub">
+  <header class="fa-page-header machine-hero">
+    <p class="fa-page-kicker">Machine coding and UI coding</p>
+    <h1 class="fa-page-title">Frontend Machine Coding Interview Questions</h1>
+    <p class="fa-page-subtitle">
+      Practice timed frontend UI coding rounds with widgets, async state, framework variants,
+      accessible interactions, checks, and a guided plan when you need structure.
+    </p>
+
+    <div class="machine-hero__actions" aria-label="Machine coding primary actions">
+      <a class="machine-btn machine-btn--primary" [routerLink]="['/coding']"
+        [queryParams]="{ view: 'formats', category: 'ui', reset: 1 }" data-testid="machine-coding-primary-cta">
+        Start UI coding practice
+      </a>
+      <a class="machine-btn" [routerLink]="['/tracks', 'foundations-30d', 'preview']"
+        data-testid="machine-coding-plan-cta">
+        Start 30-day plan
+      </a>
+    </div>
+
+    <div class="machine-stats" aria-label="Frontend machine coding hub trust signals">
+      <div class="machine-stat" *ngFor="let stat of stats">
+        <strong>{{ stat.value }}</strong>
+        <span>{{ stat.label }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="machine-section" aria-labelledby="machine-formats-title">
+    <div class="machine-section__head">
+      <p class="machine-kicker">What this round tests</p>
+      <h2 id="machine-formats-title">Build real UI, then explain the decisions behind it</h2>
+      <p>
+        Frontend machine coding is not generic LeetCode. The scoring is visible behavior,
+        clean state ownership, edge-case handling, testability, and clear tradeoff narration.
+      </p>
+    </div>
+
+    <div class="machine-grid">
+      <article class="machine-card" *ngFor="let format of practiceFormats">
+        <h3>{{ format.title }}</h3>
+        <p>{{ format.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="machine-section" aria-labelledby="machine-focus-title">
+    <div class="machine-section__head">
+      <p class="machine-kicker">Choose your focus</p>
+      <h2 id="machine-focus-title">Use a clean route for the format you need next</h2>
+      <p>
+        Start broad here, then jump into the exact framework, UI format, JavaScript utility,
+        system design follow-up, or company prep route without creating thin keyword pages.
+      </p>
+    </div>
+
+    <div class="machine-focus-grid" aria-label="Frontend machine coding focus links">
+      <a *ngFor="let link of focusLinks" class="machine-focus-link" [routerLink]="link.route"
+        [queryParams]="link.queryParams || null">
+        <strong>{{ link.label }}</strong>
+        <span>{{ link.description }}</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="machine-section" aria-labelledby="machine-sequence-title">
+    <div class="machine-section__head">
+      <p class="machine-kicker">Practice sequence</p>
+      <h2 id="machine-sequence-title">Turn frontend machine coding into guided practice</h2>
+      <p>
+        Use this order when a prompt feels too open-ended or when you keep jumping between resources.
+      </p>
+    </div>
+
+    <ol class="machine-sequence">
+      <li *ngFor="let item of sequence">
+        <span>{{ item.step }}</span>
+        <div>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.detail }}</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+</main>

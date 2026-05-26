@@ -37,10 +37,10 @@
       <div class="hero-actions">
         <a
           class="sk-btn sk-btn-primary"
-          routerLink="/interview-questions/essential"
+          routerLink="/tracks/foundations-30d/preview"
           data-testid="showcase-hero-primary-cta"
           (click)="onHeroPrimaryClick()"
-          aria-label="Open the FrontendAtlas Essential 60 shortlist">
+          aria-label="Start the 30-day frontend interview preparation roadmap">
           {{ heroPrimaryCtaLabel }}
         </a>
         <a
@@ -53,7 +53,7 @@
           View prep guide
         </a>
       </div>
-      <p class="hero-helper" data-testid="showcase-hero-helper">Not sure how interviews are evaluated? Read the prep guide first.</p>
+      <p class="hero-helper" data-testid="showcase-hero-helper">Want a smaller first rep? Essential 60 is the compact practice block after the plan preview.</p>
     </div>
 
     <div class="hero-proof" aria-label="Product workflow overview">
@@ -92,7 +92,7 @@
     <div class="demo-section-copy">
       <p class="eyebrow">Interactive demo</p>
       <p class="section-pathway" data-testid="showcase-start-path">
-        Default path: Essential 60 → Question Library → Study Plans / Framework Prep → final-round coverage. New to interviews? Read the prep guide first.
+        Default path: 30-day guided plan → Essential 60 → machine coding → Question Library → final-round coverage. New to interviews? Read the prep guide first.
       </p>
       <h2 id="demo-title">Run the actual coding workspace.</h2>
       <p class="muted">Live editor, real tests, and the same UI you get in the product.</p>
@@ -201,10 +201,29 @@
   <div class="shell">
     <app-prep-roadmap
       title="Recommended preparation"
-      subtitle="Start with the curated shortlist, then branch into broader libraries only when you need more coverage."
+      subtitle="Start with a guided plan, then branch into focused practice only when the plan exposes a weak area."
       [items]="homepagePrepRoadmapItems"
       variant="hero"
     ></app-prep-roadmap>
+  </div>
+</section>
+
+<section class="section section--focus reveal" #observeSection aria-labelledby="showcase-focus-title" data-testid="showcase-focus-section">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Choose your focus</p>
+        <h2 id="showcase-focus-title">Move from guided plan into the exact weak area.</h2>
+      </div>
+      <p class="muted">Crawlable focus links keep the prep architecture visible without creating thin keyword pages.</p>
+    </div>
+
+    <div class="showcase-focus-grid" aria-label="Frontend interview focus links">
+      <a class="showcase-focus-link" *ngFor="let link of homepageFocusLinks" [routerLink]="link.route">
+        <strong>{{ link.label }}</strong>
+        <span>{{ link.detail }}</span>
+      </a>
+    </div>
   </div>
 </section>
 

@@ -234,6 +234,7 @@
   line-height: 1.5;
 }
 
+.iq-section--tech-hubs,
 .iq-section--master-clusters,
 .iq-section--master-short-answers,
 .iq-section--master-essential,
@@ -406,6 +407,32 @@
 
 .iq-cluster-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.iq-tech-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.iq-tech-hub-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 82%, transparent);
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, transparent);
+  color: var(--uf-text-primary);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.iq-tech-hub-link:hover {
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 55%, var(--uf-accent) 45%);
+  background: color-mix(in srgb, var(--uf-accent) 9%, var(--uf-surface));
 }
 
 .iq-cluster-card {
@@ -886,6 +913,7 @@
   .iq-short-answer-grid,
   .iq-output-grid,
   .iq-browser-grid,
+  .iq-tech-hub-grid,
   .iq-cluster-grid,
   .iq-audience-grid,
   .iq-focused-grid,
