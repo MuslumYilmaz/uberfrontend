@@ -172,7 +172,7 @@ function main() {
     runCommand(
       'Running frontend content checks',
       'npm',
-      ['-C', 'frontend', 'run', 'lint:questions:precommit'],
+      ['-C', 'frontend', 'run', 'lint:questions:hook'],
     );
   }
 

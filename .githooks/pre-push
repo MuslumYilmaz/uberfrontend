@@ -193,7 +193,7 @@ fi
 echo "[pre-push] OK: Frontend tag/topic/track lints passed."
 
 echo "[pre-push] Running frontend unit and content verification..."
-if ! npm -C frontend run verify:unit-and-content; then
+if ! npm -C frontend run verify:unit-and-content:prepush; then
   echo "[pre-push] ERROR: Frontend unit/content verification failed. Push aborted." >&2
   exit 1
 fi
