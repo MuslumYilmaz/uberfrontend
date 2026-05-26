@@ -6,31 +6,106 @@
       <span>{{ t.title }} preview</span>
     </nav>
 
-    <header faCard elevated class="preview-hero">
-      <p class="preview-kicker">Public study plan</p>
-      <h1>{{ t.title }}</h1>
+    <header class="preview-hero">
+      <p class="preview-kicker">{{ heroKicker() }}</p>
+      <h1>{{ displayTitle(t) }}</h1>
       <p class="preview-subtitle">{{ narrative?.purpose || t.subtitle }}</p>
       <p class="preview-summary">{{ narrative?.audience }}</p>
 
-      <div class="preview-meta">
-        <span class="preview-chip">{{ t.durationLabel }}</span>
-        <span class="preview-chip">{{ t.featured.length }} curated questions</span>
-        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+      <div class="preview-metrics" aria-label="Plan metrics">
+        <div class="preview-metric" *ngFor="let metric of heroMetrics(t)">
+          <strong>{{ metric.value }}</strong>
+          <span>{{ metric.label }}</span>
+        </div>
       </div>
 
       <ul class="outcomes">
         <li *ngFor="let focus of t.focus">{{ focus }}</li>
       </ul>
+
+      <div class="hero-actions">
+        <a
+          class="preview-btn preview-btn--primary"
+          [routerLink]="narrative?.primaryCta?.route || ['/coding']"
+          [queryParams]="linkQueryParams(narrative?.primaryCta, t.slug)">
+          {{ narrative?.primaryCta?.label || 'Open Question Library' }}
+        </a>
+        <a
+          *ngIf="narrative?.secondaryCta as secondary"
+          class="preview-btn"
+          [routerLink]="secondary.route"
+          [queryParams]="linkQueryParams(secondary, t.slug)">
+          {{ secondary.label }}
+        </a>
+      </div>
     </header>
 
+    <section class="trust-strip" aria-label="Plan trust signals">
+      <span>Catalog-backed task list</span>
+      <span>Free starter prompts surfaced first</span>
+      <span>Full route remains premium</span>
+    </section>
+
+    <section class="schedule-card" aria-labelledby="track-preview-schedule-title">
+      <div class="roadmap-head">
+        <h2 id="track-preview-schedule-title">{{ narrative?.scheduleTitle }}</h2>
+        <p>{{ narrative?.scheduleIntro }}</p>
+      </div>
+      <div class="schedule-grid" *ngIf="!hasPlanDays()">
+        <article class="schedule-item" *ngFor="let item of narrative?.scheduleItems">
+          <span class="schedule-item__label">{{ item.label }}</span>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.detail }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="distribution-grid" *ngIf="distributionMetrics().length" aria-label="Plan distribution">
+      <article class="distribution-card" *ngFor="let item of distributionMetrics()">
+        <strong>{{ item.value }}</strong>
+        <span>{{ item.label }}</span>
+      </article>
+    </section>
+
     <ng-container *ngIf="previewQuestions$ | async as questions">
+      <section class="day-plan" *ngIf="hasPlanDays()" aria-label="Study plan task preview">
+        <article class="day-card" *ngFor="let day of planDays()">
+          <div class="day-card__head">
+            <div>
+              <span class="schedule-item__label">{{ day.label }}</span>
+              <h3>{{ day.title }}</h3>
+            </div>
+            <span class="day-card__time">{{ day.time }}</span>
+          </div>
+          <p>{{ day.detail }}</p>
+          <div class="day-card__topic">{{ day.topic }}</div>
+          <ul class="task-list">
+            <li *ngFor="let item of dayTasks(day, questions)">
+              <a [routerLink]="questionRoute(item)">{{ item.title }}</a>
+              <span class="task-meta">{{ displayKind(item.kind) }}<ng-container *ngIf="item.tech"> · {{ item.tech | titlecase }}</ng-container></span>
+              <span class="access-badge" [class.access-badge--free]="item.access === 'free'">
+                {{ item.access === 'free' ? 'Free now' : 'Premium in full plan' }}
+              </span>
+            </li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="module-preview-grid" *ngIf="modulePreviews().length" aria-label="Remaining roadmap module preview">
+        <article class="module-preview-card" *ngFor="let module of modulePreviews()">
+          <span>{{ module.label }}</span>
+          <h3>{{ module.title }}</h3>
+          <p>{{ module.detail }}</p>
+        </article>
+      </section>
+
       <section class="proof-grid">
         <article class="proof-card">
           <h2>Who this plan is for</h2>
           <ul>
             <li>{{ narrative?.audience }}</li>
             <li>Use the preview to confirm this timeline fits your interview window.</li>
-            <li>Open sample questions before paying for the full plan.</li>
+            <li>Start with public Day 1 tasks before deciding whether to unlock the full route.</li>
           </ul>
         </article>
 
@@ -62,39 +137,73 @@
         </div>
       </section>
 
-      <section faCard class="sample-card" aria-label="Sample track questions">
-        <div class="sample-head">
-          <h2>Sample included questions</h2>
-          <p class="sample-summary">
-            Free in preview: <strong>{{ freeCount(questions) }}</strong> · Premium in full plan:
-            <strong>{{ premiumCount(questions) }}</strong>
-          </p>
-        </div>
+      <section class="comparison-grid" *ngIf="comparisonItems().length" aria-label="Choose the right plan">
+        <article class="comparison-card" *ngFor="let item of comparisonItems()">
+          <h2>{{ item.title }}</h2>
+          <ul>
+            <li *ngFor="let bullet of item.bullets">{{ bullet }}</li>
+          </ul>
+          <a [routerLink]="item.route">{{ item.ctaLabel }}</a>
+        </article>
+      </section>
 
-        <ul class="sample-list">
-          <li *ngFor="let item of questions">
+      <section class="sample-card" aria-label="Sample track questions">
+        <ng-container *ngIf="sampleQuestions(questions) as samples">
+          <div class="sample-head">
+            <h2>Sample included questions</h2>
+            <p class="sample-summary">
+              Free starter prompts: <strong>{{ freeCount(samples) }}</strong> · Premium full-plan samples:
+              <strong>{{ premiumCount(samples) }}</strong>
+            </p>
+          </div>
+
+          <ul class="sample-list">
+            <li *ngFor="let item of samples">
+              <div class="sample-title-row">
+                <span class="sample-title">{{ item.title }}</span>
+                <span class="access-badge" [class.access-badge--free]="item.access === 'free'">
+                  {{ item.access === 'free' ? 'Free now' : 'Premium in full plan' }}
+                </span>
+              </div>
+              <div class="sample-meta">
+                <span>{{ displayKind(item.kind) }}</span>
+                <span *ngIf="item.tech">{{ item.tech | titlecase }}</span>
+                <span>{{ item.difficulty | titlecase }}</span>
+              </div>
+              <a class="sample-link" [routerLink]="questionRoute(item)">Open sample question</a>
+            </li>
+          </ul>
+        </ng-container>
+      </section>
+
+      <section class="faq-section" *ngIf="narrative?.faq?.length" aria-labelledby="track-preview-faq-title">
+        <div class="roadmap-head">
+          <h2 id="track-preview-faq-title">{{ displayTitle(t) }} FAQ</h2>
+          <p>Quick answers before you commit the plan.</p>
+        </div>
+        <div class="faq-grid">
+          <article class="faq-item" *ngFor="let item of narrative?.faq">
             <div class="sample-title-row">
-              <span class="sample-title">{{ item.title }}</span>
-              <span class="access-badge" [class.access-badge--free]="item.access === 'free'">
-                {{ item.access === 'free' ? 'Free now' : 'Premium in full track' }}
-              </span>
+              <h3>{{ item.question }}</h3>
             </div>
-            <div class="sample-meta">
-              <span>{{ displayKind(item.kind) }}</span>
-              <span *ngIf="item.tech">{{ item.tech | titlecase }}</span>
-              <span>{{ item.difficulty | titlecase }}</span>
-            </div>
-            <a class="sample-link" [routerLink]="questionRoute(item)">Open sample question</a>
-          </li>
-        </ul>
+            <p>{{ item.answer }}</p>
+          </article>
+        </div>
       </section>
 
       <section class="cta-stack">
         <a
           class="preview-btn preview-btn--primary"
           [routerLink]="narrative?.primaryCta?.route || ['/coding']"
-          [queryParams]="primaryCtaQueryParams(t.slug)">
+          [queryParams]="linkQueryParams(narrative?.primaryCta, t.slug)">
           {{ narrative?.primaryCta?.label || 'Open Question Library' }}
+        </a>
+        <a
+          *ngIf="narrative?.secondaryCta as secondary"
+          class="preview-btn"
+          [routerLink]="secondary.route"
+          [queryParams]="linkQueryParams(secondary, t.slug)">
+          {{ secondary.label }}
         </a>
         <a
           class="preview-btn"

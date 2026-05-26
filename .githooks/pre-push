@@ -193,11 +193,18 @@ fi
 echo "[pre-push] OK: Frontend tag/topic/track lints passed."
 
 echo "[pre-push] Running frontend unit and content verification..."
-if ! npm -C frontend run verify:unit-and-content; then
+if ! npm -C frontend run verify:unit-and-content:prepush; then
   echo "[pre-push] ERROR: Frontend unit/content verification failed. Push aborted." >&2
   exit 1
 fi
 echo "[pre-push] OK: Frontend unit/content verification passed."
+
+echo "[pre-push] Running SEO prerender guard..."
+if ! npm -C frontend run verify:seo-prerender-guard; then
+  echo "[pre-push] ERROR: SEO prerender guard failed. Push aborted." >&2
+  exit 1
+fi
+echo "[pre-push] OK: SEO prerender guard passed."
 
 RUN_WEBKIT_E2E=0
 echo "[pre-push] Checking local Playwright WebKit health..."

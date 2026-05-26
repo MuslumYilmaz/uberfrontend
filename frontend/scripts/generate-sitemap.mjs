@@ -125,6 +125,7 @@ function buildUrls() {
     '/',
     '/changelog',
     '/pricing',
+    '/machine-coding',
     '/coding',
     '/incidents',
     '/tradeoffs',

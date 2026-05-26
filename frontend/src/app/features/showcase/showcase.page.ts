@@ -183,8 +183,8 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer?: IntersectionObserver;
 
   heroHeadline = 'Practice frontend interviews in a real coding workflow';
-  heroLede = 'Start with FrontendAtlas Essential 60, then practice in a real coding workspace. Build UI, run checks, inspect behavior, and explain edge cases and tradeoffs like you would in an interview.';
-  heroPrimaryCtaLabel = 'Open Essential 60';
+  heroLede = 'Start with a guided frontend interview study plan, then practice in a real coding workspace. Build UI, run checks, inspect behavior, and explain edge cases and tradeoffs like you would in an interview.';
+  heroPrimaryCtaLabel = 'Start 30-day plan';
   private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
   heroFlowSteps = [
@@ -197,15 +197,31 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly homepagePrepRoadmapItems: PrepRoadmapItem[] = [
     {
       step: 1,
+      title: '30-day guided study plan',
+      description: 'Start with a sequenced frontend interview preparation roadmap across coding, concepts, frameworks, and system design.',
+      route: ['/tracks', 'foundations-30d', 'preview'],
+      badge: 'Recommended start',
+      meta: 'Guided daily sequence',
+      tone: 'recommended',
+    },
+    {
+      step: 2,
       title: 'FrontendAtlas Essential 60',
       description: 'Start with the curated shortlist across JavaScript, UI coding, concepts, and system design.',
       route: ['/interview-questions', 'essential'],
-      badge: 'Recommended start',
       meta: 'Core practice block',
       tone: 'practice',
     },
     {
-      step: 2,
+      step: 3,
+      title: 'Machine Coding / UI Coding',
+      description: 'Move into timed widgets, async UI, framework implementation, and testable interaction states.',
+      route: ['/machine-coding'],
+      meta: 'Format-first practice',
+      tone: 'structured',
+    },
+    {
+      step: 4,
       title: 'Question Library',
       description: 'Broaden into more coding, concepts, and stack-specific coverage when you need filters.',
       route: ['/coding'],
@@ -214,21 +230,56 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
       tone: 'structured',
     },
     {
-      step: 3,
-      title: 'Study Plans / Framework Prep',
-      description: 'Use guided tracks or framework paths when you want a repeatable sequence.',
-      route: ['/tracks'],
-      meta: 'Structured sequence + stack depth',
-      tone: 'structured',
-    },
-    {
-      step: 4,
+      step: 5,
       title: 'Final-round coverage',
       description: 'Add system design, behavioral, and company-style follow-ups once core practice is stable.',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'system' },
       meta: 'System design + behavioral + company prep',
       tone: 'advanced',
+    },
+  ];
+
+  readonly homepageFocusLinks = [
+    {
+      label: 'JavaScript',
+      detail: 'Async, closures, output prediction, DOM behavior, and utility implementation.',
+      route: ['/javascript/interview-questions'],
+    },
+    {
+      label: 'React',
+      detail: 'Hooks, rendering, state ownership, performance, and component scenarios.',
+      route: ['/react/interview-questions'],
+    },
+    {
+      label: 'Angular',
+      detail: 'RxJS, change detection, dependency injection, forms, and architecture decisions.',
+      route: ['/angular/interview-questions'],
+    },
+    {
+      label: 'Vue',
+      detail: 'Reactivity, Composition API, component communication, router, and state tradeoffs.',
+      route: ['/vue/interview-questions'],
+    },
+    {
+      label: 'HTML/CSS',
+      detail: 'Semantics, accessibility, layout, cascade, responsive UI, and visual states.',
+      route: ['/html-css/interview-questions'],
+    },
+    {
+      label: 'Machine Coding',
+      detail: 'Timed UI coding rounds for widgets, async state, and framework implementation.',
+      route: ['/machine-coding'],
+    },
+    {
+      label: 'System Design',
+      detail: 'Frontend architecture, state, API contracts, caching, performance, and tradeoffs.',
+      route: ['/system-design'],
+    },
+    {
+      label: 'Company Prep',
+      detail: 'Target-specific question sets after your guided baseline is stable.',
+      route: ['/companies'],
     },
   ];
 
@@ -794,9 +845,9 @@ You can also reset any task back to the starter whenever you want to re-practice
   onHeroPrimaryClick() {
     this.analytics.track('lp_primary_cta_clicked', {
       src: 'lp_hero',
-      destination: 'essential_60',
-      route: '/interview-questions/essential',
-      start_path_variant: 'essential_first',
+      destination: 'foundations_30d_preview',
+      route: '/tracks/foundations-30d/preview',
+      start_path_variant: 'guided_plan_first',
       hero_variant: this.heroExperimentVariant,
     });
   }
@@ -806,7 +857,7 @@ You can also reset any task back to the starter whenever you want to re-practice
       src: 'lp_hero',
       destination: 'interview_blueprint',
       route: '/guides/interview-blueprint/intro',
-      start_path_variant: 'essential_first',
+      start_path_variant: 'guided_plan_first',
       hero_variant: this.heroExperimentVariant,
     });
   }
@@ -894,7 +945,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   private applyHeroExperimentCopy() {
-    this.heroPrimaryCtaLabel = 'Open Essential 60';
+    this.heroPrimaryCtaLabel = 'Start 30-day plan';
   }
 
   private buildSystemInjector() {

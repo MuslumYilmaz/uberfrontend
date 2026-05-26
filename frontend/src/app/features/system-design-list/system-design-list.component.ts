@@ -134,6 +134,29 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     'Preview pages stay indexable while full solutions stay protected',
   ];
 
+  readonly relatedFocusLinks = [
+    {
+      label: 'Machine coding hub',
+      detail: 'Practice the UI implementation round before turning a widget into a system-design answer.',
+      route: ['/machine-coding'],
+    },
+    {
+      label: '30-day guided plan',
+      detail: 'Add frontend system design after JavaScript, UI coding, and framework fundamentals are stable.',
+      route: ['/tracks', 'foundations-30d', 'preview'],
+    },
+    {
+      label: 'JavaScript interview questions',
+      detail: 'Review async, DOM, debounce, throttle, and state behavior that often drives design tradeoffs.',
+      route: ['/javascript/interview-questions'],
+    },
+    {
+      label: 'Company prep',
+      detail: 'Use company-specific loops after you can explain architecture tradeoffs consistently.',
+      route: ['/companies'],
+    },
+  ];
+
   readonly startSteps = [
     {
       step: 'Step 1',

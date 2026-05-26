@@ -71,12 +71,16 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend Interview Prep Platform',
         description:
-          'Prepare for frontend interviews with Essential 60, coding and concept prompts, system design practice, and a real editor with preview and checks.',
+          'Prepare for frontend interviews with the FrontendAtlas frontend interview preparation platform: start a guided study plan, practice frontend coding interviews, and run checks in a real UI workflow.',
         keywords: [
+          'frontend interview preparation platform',
+          'frontend interview practice',
+          'frontend coding interview practice',
           'front end interview questions',
           'javascript interview',
           'react interview',
           'system design for frontend',
+          'frontend machine coding questions',
           'ui coding challenges',
         ],
       },
@@ -133,13 +137,17 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend Interview Prep Platform',
         description:
-          'Prepare for frontend interviews with Essential 60, coding and concept prompts, system design practice, and a real editor with preview and checks.',
+          'Prepare for frontend interviews with the FrontendAtlas frontend interview preparation platform: start a guided study plan, practice frontend coding interviews, and run checks in a real UI workflow.',
         canonical: '/',
         keywords: [
+          'frontend interview preparation platform',
+          'frontend interview practice',
+          'frontend coding interview practice',
           'front end interview questions',
           'javascript interview',
           'react interview',
           'system design for frontend',
+          'frontend machine coding questions',
           'ui coding challenges',
         ],
         robots: 'noindex,nofollow',
@@ -464,9 +472,9 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend Interview Study Plans and Tracks',
+            title: 'Frontend Interview Study Plan and 30-Day Roadmap',
             description:
-              'Use frontend interview study plans to run guided coding, concept, and system design practice, then connect each plan with question hubs by technology.',
+              'Use frontend interview study plans to prepare in 7 or 30 days with coding, JavaScript, UI, system design, framework Q&A, company prep, and weekly checkpoints.',
             robots: 'index,follow',
           },
         },
@@ -1110,6 +1118,27 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'machine-coding',
+    loadComponent: () =>
+      import('./features/interview-questions/machine-coding-hub.component').then(
+        (m) => m.MachineCodingHubComponent,
+      ),
+    data: {
+      seo: {
+        title: 'Frontend Machine Coding Interview Questions',
+        description:
+          'Practice frontend machine coding and UI coding interview questions for widgets, async UI, React, Angular, Vue, HTML/CSS, tests, and guided study plans.',
+        keywords: [
+          'frontend machine coding questions',
+          'frontend UI coding interview questions',
+          'frontend coding interview practice',
+          'React machine coding interview questions',
+          'frontend interview practice',
+        ],
+      },
+    },
+  },
+  {
     path: 'interview-questions',
     loadComponent: () =>
       import('./features/interview-questions/interview-questions-landing.component').then(
@@ -1148,9 +1177,9 @@ export const routes: Routes = [
         techs: ['javascript'],
       },
       seo: {
-        title: 'JavaScript Interview Questions and Answers',
+        title: 'JavaScript Interview Questions: 41 Q&A, Output and Async',
         description:
-          'Practice JavaScript interview questions with coding prompts, concept explanations, promises, async debugging, immutability, XSS, and common mistakes.',
+          '41 JavaScript interview questions for frontend developers: beginner-to-advanced Q&A, output tracing, closures, event loop, promises, DOM, XSS, coding prompts.',
       },
     },
   },
@@ -1243,9 +1272,9 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'Vue.js Interview Questions and Answers',
+        title: 'Vue.js Interview Questions: 65 Q&A, Vue 3 and Pinia',
         description:
-          'Vue.js interview questions and answers, beginner to advanced, for experienced developers with Vue 3, Composition API, ref vs reactive, computed vs watch, Vue Router, Pinia, Vuex, testing, security, performance, and scenario questions.',
+          '65 Vue.js interview questions for frontend developers: beginner-to-advanced Q&A, Vue 3, Composition API, reactivity, Pinia, Router, performance, scenarios.',
       },
     },
   },
@@ -1265,8 +1294,8 @@ export const routes: Routes = [
         techs: ['html', 'css'],
       },
       seo: {
-        title: 'HTML and CSS Interview Questions and Answers',
-        description: 'HTML and CSS interview questions and answers, beginner to advanced, with semantic HTML, forms, accessibility, Flexbox, Grid, cascade, specificity, responsive layout, and code scenarios.',
+        title: 'HTML and CSS Interview Questions: 65 Q&A, Flexbox and Grid',
+        description: '65 HTML and CSS interview questions for frontend developers: beginner-to-advanced Q&A, semantics, accessibility, Flexbox, Grid, responsive UI, code scenarios.',
       },
     },
   },
@@ -1286,9 +1315,9 @@ export const routes: Routes = [
         techs: ['html'],
       },
       seo: {
-        title: 'HTML Interview Questions and Answers',
+        title: 'HTML Interview Questions: 65 Q&A, HTML5 and Forms',
         description:
-          'HTML interview questions and answers, beginner to advanced, from beginners and freshers to experienced developers, covering semantic HTML, HTML5, forms, validation, accessibility, ARIA, DOM, metadata, srcset, iframes, Shadow DOM, and markup scenarios.',
+          '65 HTML interview questions for frontend developers: beginner-to-advanced Q&A, semantic HTML, forms, accessibility, ARIA, DOM, metadata, and scenarios.',
       },
     },
   },
@@ -1320,9 +1349,9 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'CSS Interview Questions and Answers',
+        title: 'CSS Interview Questions: 65 Q&A, Flexbox and Grid',
         description:
-          'CSS interview questions and answers, beginner to advanced and for experienced developers, with specificity, cascade, box model, Flexbox, CSS Grid, Flexbox vs Grid, positioning, z-index, media queries, responsive CSS, debugging, and performance.',
+          '65 CSS interview questions for frontend developers: beginner-to-advanced Q&A, specificity, cascade, Flexbox, Grid, responsive CSS, debugging, performance.',
       },
     },
   },

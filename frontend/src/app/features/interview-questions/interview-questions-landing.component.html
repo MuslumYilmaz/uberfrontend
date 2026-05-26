@@ -97,6 +97,32 @@
 
   <section
     *ngIf="isMasterHub()"
+    class="iq-section iq-section--surface iq-section--tech-hubs"
+    aria-labelledby="iq-tech-hubs-title"
+  >
+    <div class="iq-section__head">
+      <p class="iq-context-kicker">Technology hubs</p>
+      <h2 class="fa-section-title iq-section__title" id="iq-tech-hubs-title">
+        Choose a focused interview question hub
+      </h2>
+      <p class="fa-meta-text">
+        Use the main hub as a router, then move into the technology page that matches the interview loop you need to strengthen.
+      </p>
+    </div>
+
+    <div class="iq-tech-hub-grid">
+      <a
+        *ngFor="let hub of masterTechHubLinks()"
+        class="iq-tech-hub-link"
+        [routerLink]="hub.route"
+      >
+        {{ hub.label }}
+      </a>
+    </div>
+  </section>
+
+  <section
+    *ngIf="isMasterHub()"
     class="iq-section iq-section--surface iq-section--master-clusters"
     aria-labelledby="iq-master-clusters-title"
   >

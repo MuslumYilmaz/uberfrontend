@@ -415,6 +415,11 @@ const INTERVIEW_HUB_LINKS: HubLink[] = [
     route: ['/html-css/interview-questions'],
     path: '/html-css/interview-questions',
   },
+  {
+    label: 'Frontend machine coding questions',
+    route: ['/machine-coding'],
+    path: '/machine-coding',
+  },
 ];
 
 const PREP_PLAN_LINKS: PrepPlanLink[] = [
@@ -764,7 +769,10 @@ const MASTER_FORMAT_PATH_ITEMS: MasterFormatPathItem[] = [
   {
     title: 'UI coding rounds',
     detail: 'Timed widget and product-slice prompts where visible behavior, interaction details, and accessible states matter most.',
-    links: [{ label: 'Open UI guide', route: ['/guides', 'interview-blueprint', 'ui-interviews'] }],
+    links: [
+      { label: 'Open machine coding hub', route: ['/machine-coding'] },
+      { label: 'Open UI guide', route: ['/guides', 'interview-blueprint', 'ui-interviews'] },
+    ],
   },
   {
     title: 'JavaScript utility rounds',
@@ -6151,6 +6159,14 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         },
         {
           step: 3,
+          title: 'Machine Coding / UI Coding',
+          description: 'Practice timed widgets, async UI, framework implementation, and interaction states from one clean hub.',
+          route: ['/machine-coding'],
+          meta: 'Format-first practice',
+          tone: 'structured',
+        },
+        {
+          step: 4,
           title: 'Question Library',
           description: 'Broaden into more coding and concept coverage by format, stack, difficulty, and weak area.',
           route: ['/coding'],
@@ -6159,7 +6175,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
           tone: 'structured',
         },
         {
-          step: 4,
+          step: 5,
           title: 'Framework interview hubs',
           description: 'Branch into React, Angular, Vue, HTML, or CSS once the shared baseline shows which stack needs depth.',
           route: ['/react/interview-questions'],
@@ -6167,7 +6183,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
           tone: 'structured',
         },
         {
-          step: 5,
+          step: 6,
           title: 'Study Plans / System Design',
           description: 'Move into longer tracks when you need weekly sequencing, architecture practice, or company-style prep.',
           route: ['/tracks'],

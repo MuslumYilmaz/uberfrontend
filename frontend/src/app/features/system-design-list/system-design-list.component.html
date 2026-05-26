@@ -40,6 +40,22 @@
     </p>
   </section>
 
+  <section class="sd-section fa-section-shell" aria-labelledby="sd-related-focus-title" data-testid="system-design-related-focus-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">Choose your focus</p>
+      <h2 id="sd-related-focus-title">Connect system design to the rest of frontend interview prep</h2>
+      <p>
+        Use these crawlable routes when the design prompt exposes a coding, JavaScript, guided-plan, or company-prep gap.
+      </p>
+    </div>
+    <div class="sd-related-grid">
+      <a *ngFor="let link of relatedFocusLinks" class="sd-related-link" [routerLink]="link.route">
+        <strong>{{ link.label }}</strong>
+        <span>{{ link.detail }}</span>
+      </a>
+    </div>
+  </section>
+
   <section class="sd-section sd-start-here fa-section-shell" aria-labelledby="sd-start-title" data-testid="system-design-start-section">
     <div class="sd-section__head">
       <p class="sd-section__eyebrow">Frontend system design interview preparation</p>

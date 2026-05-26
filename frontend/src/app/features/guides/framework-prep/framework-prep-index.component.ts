@@ -96,6 +96,31 @@ type IntentCard = {
     .cluster-card__summary { margin: 0; color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent); }
     .cluster-card__focus { color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent); font-size: 12px; }
 
+    .question-hub-grid {
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .question-hub-link {
+      display:flex;
+      align-items:center;
+      min-height: 42px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--uf-border-subtle);
+      background: color-mix(in srgb, var(--uf-surface) 93%, var(--uf-surface-alt));
+      color: var(--uf-text-primary);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 800;
+      line-height: 1.35;
+      transition: border-color 160ms ease, background-color 160ms ease;
+    }
+    .question-hub-link:hover {
+      border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
+      background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+    }
+
     .chooser-grid {
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -285,7 +310,8 @@ type IntentCard = {
       .chooser-grid,
       .intent-grid,
       .intent-grid--wide,
-      .roadmap-grid { grid-template-columns: 1fr; }
+      .roadmap-grid,
+      .question-hub-grid { grid-template-columns: 1fr; }
       .next-list li { grid-template-columns: 34px minmax(0, 1fr); }
       .next-list a { grid-column: 2; white-space: normal; }
       .matrix { border: 0; background: transparent; display:grid; gap: 10px; }
@@ -337,6 +363,23 @@ type IntentCard = {
         <div class="value-signal" *ngFor="let signal of valueSignals">
           <strong>{{ signal.title }}</strong>
           <span>{{ signal.detail }}</span>
+        </div>
+      </section>
+
+      <section class="section" data-testid="framework-question-hubs">
+        <div class="section-head">
+          <h2 class="fa-section-title">Baseline interview question hubs</h2>
+          <p>
+            Use framework prep for sequence, then open the matching interview question hub for focused Q&A practice.
+          </p>
+        </div>
+        <div class="question-hub-grid" aria-label="Technology interview question hubs">
+          <a
+            *ngFor="let hub of questionHubLinks"
+            class="question-hub-link"
+            [routerLink]="hub.route">
+            {{ hub.label }}
+          </a>
         </div>
       </section>
 
@@ -550,6 +593,15 @@ export class FrameworkPrepIndexComponent implements OnInit {
       title: 'Next practice links',
       detail: 'Move from concepts into coding, study plans, frontend system design, and company prep without route hunting.',
     },
+  ];
+
+  readonly questionHubLinks: PrepLink[] = [
+    { label: 'JavaScript interview questions', route: ['/javascript/interview-questions'] },
+    { label: 'React interview questions', route: ['/react/interview-questions'] },
+    { label: 'Angular interview questions', route: ['/angular/interview-questions'] },
+    { label: 'Vue.js interview questions', route: ['/vue/interview-questions'] },
+    { label: 'HTML interview questions', route: ['/html/interview-questions'] },
+    { label: 'CSS interview questions', route: ['/css/interview-questions'] },
   ];
 
   readonly choosePathCards = [

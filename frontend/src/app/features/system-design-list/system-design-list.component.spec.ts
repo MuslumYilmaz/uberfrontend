@@ -167,6 +167,7 @@ describe('SystemDesignListComponent', () => {
     const pageText = text(fixture);
 
     expect(pageText).toContain('Frontend system design interview preparation');
+    expect(pageText).toContain('Connect system design to the rest of frontend interview prep');
     expect(pageText).toContain('Most asked frontend system design questions');
     expect(pageText).toContain('Frontend system design interview rubric');
     expect(pageText).toContain('Common mistakes');
@@ -178,6 +179,8 @@ describe('SystemDesignListComponent', () => {
     const mostAskedSection = host.querySelector('[data-testid="system-design-most-asked-section"]');
     expect(mostAskedSection?.querySelectorAll('a').length).toBe(8);
     expect(mostAskedSection?.textContent || '').toContain('Component-driven Design System Architecture');
+    expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/machine-coding"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/tracks/foundations-30d/preview"]')).toBeTruthy();
   });
 
   it('publishes ItemList and FAQ schema for the system design hub', async () => {

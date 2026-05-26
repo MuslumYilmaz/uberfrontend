@@ -410,6 +410,7 @@
 /legal/privacy
 /legal/refund
 /legal/terms
+/machine-coding
 /onboarding/quick-start
 /pricing
 /profile
