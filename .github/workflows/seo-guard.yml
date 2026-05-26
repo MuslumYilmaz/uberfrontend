@@ -26,23 +26,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate sitemap + prerender routes (clean)
-        run: npm run gen:data
-
-      - name: Check prerender vs sitemap
-        run: npm run check:prerender-sitemap
-
-      - name: Build (production prerender)
-        run: npm run build
-
-      - name: Perf contract snapshot
-        run: npm run perf:contract
-
-      - name: SEO meta coverage check
-        run: npm run seo:meta-check
-
-      - name: SEO internal link check
-        run: npm run seo:links
-
-      - name: SEO curl smoke checks
-        run: npm run seo:smoke
+      - name: Run SEO prerender guard
+        run: npm run verify:seo-prerender-guard

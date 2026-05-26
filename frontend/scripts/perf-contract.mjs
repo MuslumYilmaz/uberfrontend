@@ -14,6 +14,7 @@ const statsCandidates = [
 ];
 const outputPath = path.join(projectRoot, 'reports', 'perf-contract.json');
 const strictMode = process.argv.includes('--strict');
+const noWrite = process.argv.includes('--no-write');
 
 const THRESHOLDS = {
   initialBytes: 1_150_000,
@@ -295,10 +296,13 @@ async function main() {
     warnings,
   };
 
-  await fs.mkdir(path.dirname(outputPath), { recursive: true });
-  await fs.writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-
-  console.log(`[perf-contract] wrote ${normalizeRel(outputPath)}`);
+  if (noWrite) {
+    console.log(`[perf-contract] report not written (--no-write): ${normalizeRel(outputPath)}`);
+  } else {
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+    console.log(`[perf-contract] wrote ${normalizeRel(outputPath)}`);
+  }
   console.log(`[perf-contract] initialBytes=${initialBytes} modulePreloadBytes=${preloadMetrics.total} modulePreloadCount=${preloadMetrics.resolved.length}`);
   console.log(`[perf-contract] codingHtmlBytes=${htmlMetrics.codingRouteBytes} totalHtmlBytes=${htmlMetrics.totalHtmlBytes}`);
   if (bundleStats) {
