@@ -214,7 +214,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     },
     {
       step: 3,
-      title: 'Machine Coding / UI Coding',
+      title: 'Frontend machine coding questions',
       description: 'Move into timed widgets, async UI, framework implementation, and testable interaction states.',
       route: ['/machine-coding'],
       meta: 'Format-first practice',
@@ -267,7 +267,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
       route: ['/html-css/interview-questions'],
     },
     {
-      label: 'Machine Coding',
+      label: 'React machine coding practice',
       detail: 'Timed UI coding rounds for widgets, async state, and framework implementation.',
       route: ['/machine-coding'],
     },

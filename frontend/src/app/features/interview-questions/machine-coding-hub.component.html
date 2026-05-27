@@ -3,8 +3,8 @@
     <p class="fa-page-kicker">Machine coding and UI coding</p>
     <h1 class="fa-page-title">Frontend Machine Coding Interview Questions</h1>
     <p class="fa-page-subtitle">
-      Practice timed frontend UI coding rounds with widgets, async state, framework variants,
-      accessible interactions, checks, and a guided plan when you need structure.
+      Practice frontend machine coding questions with React UI prompts, async widgets,
+      forms, tables, accessibility checks, and a guided strategy for timed rounds.
     </p>
 
     <div class="machine-hero__actions" aria-label="Machine coding primary actions">
@@ -26,20 +26,114 @@
     </div>
   </header>
 
-  <section class="machine-section" aria-labelledby="machine-formats-title">
+  <section
+    class="machine-section"
+    aria-labelledby="machine-featured-title"
+    data-testid="machine-featured-questions"
+  >
     <div class="machine-section__head">
-      <p class="machine-kicker">What this round tests</p>
-      <h2 id="machine-formats-title">Build real UI, then explain the decisions behind it</h2>
+      <p class="machine-kicker">Most asked prompts</p>
+      <h2 id="machine-featured-title">Most asked frontend machine coding questions</h2>
       <p>
-        Frontend machine coding is not generic LeetCode. The scoring is visible behavior,
-        clean state ownership, edge-case handling, testability, and clear tradeoff narration.
+        Start with these frontend machine coding interview questions with requirements
+        signals for async state, forms, tables, keyboard behavior, accessibility, and
+        tradeoff explanation.
       </p>
     </div>
 
-    <div class="machine-grid">
-      <article class="machine-card" *ngFor="let format of practiceFormats">
-        <h3>{{ format.title }}</h3>
-        <p>{{ format.detail }}</p>
+    <div class="machine-question-grid">
+      <a
+        *ngFor="let question of featuredQuestions"
+        class="machine-question-card"
+        [routerLink]="question.route"
+        [attr.data-testid]="'machine-question-' + question.rank"
+      >
+        <div class="machine-question-card__topline">
+          <span>#{{ question.rank }}</span>
+          <span>{{ question.tier }}</span>
+          <span>{{ question.difficulty }}</span>
+        </div>
+        <h3>{{ question.title }}</h3>
+        <p>{{ question.signal }}</p>
+        <p class="machine-question-card__requirement">{{ question.requirement }}</p>
+        <div class="machine-tag-row" aria-label="Prompt focus areas">
+          <span *ngFor="let tag of question.tags">{{ tag }}</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section
+    class="machine-section"
+    aria-labelledby="machine-rubric-title"
+    data-testid="machine-rubric-section"
+  >
+    <div class="machine-section__head">
+      <p class="machine-kicker">Evaluation rubric</p>
+      <h2 id="machine-rubric-title">How interviewers evaluate machine coding rounds</h2>
+      <p>
+        Frontend machine coding is not generic LeetCode. Strong answers prove visible behavior,
+        clean state ownership, edge-case handling, accessibility, and clear tradeoff narration.
+      </p>
+    </div>
+
+    <div class="machine-rubric-grid">
+      <article class="machine-rubric-card" *ngFor="let item of evaluationRubric">
+        <h3>{{ item.area }}</h3>
+        <p>{{ item.signal }}</p>
+        <div class="machine-check-row" aria-label="Evaluation checks">
+          <span *ngFor="let check of item.checks">{{ check }}</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section
+    class="machine-section"
+    aria-labelledby="machine-timebox-title"
+    data-testid="machine-timebox-section"
+  >
+    <div class="machine-section__head">
+      <p class="machine-kicker">60-minute strategy</p>
+      <h2 id="machine-timebox-title">60-minute machine coding strategy</h2>
+      <p>
+        Use the clock to protect correctness first, then add polish and explanation only after
+        the core interaction works.
+      </p>
+    </div>
+
+    <ol class="machine-timebox">
+      <li *ngFor="let item of timeboxPlan">
+        <span>{{ item.window }}</span>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
+      </li>
+    </ol>
+  </section>
+
+  <section
+    class="machine-section machine-worked-example"
+    aria-labelledby="machine-example-title"
+    data-testid="machine-worked-example"
+  >
+    <div class="machine-section__head">
+      <p class="machine-kicker">Worked example</p>
+      <h2 id="machine-example-title">Worked example: React autocomplete search bar interview question</h2>
+      <p>{{ workedExample.intro }}</p>
+    </div>
+
+    <div class="machine-example-link-wrap">
+      <a class="machine-btn machine-btn--primary" [routerLink]="workedExample.route">
+        Open {{ workedExample.title }}
+      </a>
+    </div>
+
+    <div class="machine-example-grid">
+      <article class="machine-example-card" *ngFor="let panel of workedExample.panels">
+        <h3>{{ panel.title }}</h3>
+        <ul>
+          <li *ngFor="let item of panel.items">{{ item }}</li>
+        </ul>
       </article>
     </div>
   </section>
@@ -81,5 +175,23 @@
         </div>
       </li>
     </ol>
+  </section>
+
+  <section class="machine-section" aria-labelledby="machine-faq-title" data-testid="machine-faq-section">
+    <div class="machine-section__head">
+      <p class="machine-kicker">FAQ</p>
+      <h2 id="machine-faq-title">Frontend machine coding FAQ</h2>
+      <p>
+        Use these answers to choose the right practice format and understand what interviewers
+        are scoring.
+      </p>
+    </div>
+
+    <div class="machine-faq-grid">
+      <article class="machine-faq-card" *ngFor="let item of faqItems">
+        <h3>{{ item.question }}</h3>
+        <p>{{ item.answer }}</p>
+      </article>
+    </div>
   </section>
 </main>

@@ -837,7 +837,17 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Frontend System Design Interview Blueprint',
-            description: 'Use this frontend system design interview blueprint for principles, patterns, and examples you can apply in real interview rounds.',
+            description:
+              'Use this frontend system design interview blueprint with the RADIO framework, checklist, examples, and real prompts for architecture interview prep.',
+            keywords: [
+              'frontend system design interview blueprint',
+              'frontend system design interview framework',
+              'front end system design playbook',
+              'how to answer frontend system design interview',
+              'frontend system design checklist',
+              'frontend system design examples',
+              'frontend architecture interview',
+            ],
           },
         },
       },
@@ -1127,13 +1137,16 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend Machine Coding Interview Questions',
         description:
-          'Practice frontend machine coding and UI coding interview questions for widgets, async UI, React, Angular, Vue, HTML/CSS, tests, and guided study plans.',
+          'Practice frontend machine coding questions with React UI prompts, async widgets, forms, tables, a 60-minute strategy, rubric, and guided checks.',
         keywords: [
           'frontend machine coding questions',
           'frontend UI coding interview questions',
           'frontend coding interview practice',
           'React machine coding interview questions',
           'frontend interview practice',
+          'machine coding round frontend',
+          'React UI coding interview questions',
+          'UI component coding interview questions',
         ],
       },
     },

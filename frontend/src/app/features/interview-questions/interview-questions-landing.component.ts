@@ -770,7 +770,7 @@ const MASTER_FORMAT_PATH_ITEMS: MasterFormatPathItem[] = [
     title: 'UI coding rounds',
     detail: 'Timed widget and product-slice prompts where visible behavior, interaction details, and accessible states matter most.',
     links: [
-      { label: 'Open machine coding hub', route: ['/machine-coding'] },
+      { label: 'Frontend machine coding questions', route: ['/machine-coding'] },
       { label: 'Open UI guide', route: ['/guides', 'interview-blueprint', 'ui-interviews'] },
     ],
   },

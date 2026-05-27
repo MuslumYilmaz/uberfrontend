@@ -316,7 +316,7 @@ export class TrackListComponent implements OnInit {
       toneClass: 'hero-link--system',
     },
     {
-      label: 'Machine Coding',
+      label: 'Frontend machine coding questions',
       description: 'Timed UI coding rounds, widgets, async state, and framework implementation.',
       route: ['/machine-coding'],
       toneClass: 'hero-link--iq-master',

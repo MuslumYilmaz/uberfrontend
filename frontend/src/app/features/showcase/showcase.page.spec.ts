@@ -220,7 +220,7 @@ describe('ShowcasePageComponent', () => {
     expect(firstItem.getAttribute('href') || '').toContain('/tracks/foundations-30d/preview');
     expect(secondItem.textContent).toContain('FrontendAtlas Essential 60');
     expect(secondItem.getAttribute('href') || '').toContain('/interview-questions/essential');
-    expect(thirdItem.textContent).toContain('Machine Coding / UI Coding');
+    expect(thirdItem.textContent).toContain('Frontend machine coding questions');
     expect(thirdItem.getAttribute('href') || '').toContain('/machine-coding');
     expect(fourthItem.textContent).toContain('Question Library');
     expect(fourthItem.getAttribute('href') || '').toContain('/coding?reset=1');

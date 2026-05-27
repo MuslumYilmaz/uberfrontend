@@ -20,6 +20,28 @@ async function loginAndOpenChangePassword(page: any, opts: Parameters<typeof ins
   await securityTab.click();
   await page.getByTestId('profile-change-password-open').click();
   await expect(page.getByTestId('profile-change-password-form')).toBeVisible();
+  await expect(page.getByTestId('profile-change-password-new')).toBeEditable();
+  await page.evaluate(() => new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  }));
+}
+
+async function fillChangePasswordForm(
+  page: any,
+  values: { currentPassword: string; currentPasswordConfirm: string; newPassword: string },
+) {
+  const current = page.getByTestId('profile-change-password-current');
+  const confirm = page.getByTestId('profile-change-password-current-confirm');
+  const next = page.getByTestId('profile-change-password-new');
+
+  await current.fill(values.currentPassword);
+  await expect(current).toHaveValue(values.currentPassword);
+
+  await confirm.fill(values.currentPasswordConfirm);
+  await expect(confirm).toHaveValue(values.currentPasswordConfirm);
+
+  await next.fill(values.newPassword);
+  await expect(next).toHaveValue(values.newPassword);
 }
 
 test('profile security: change password succeeds', async ({ page }) => {
@@ -37,9 +59,11 @@ test('profile security: change password succeeds', async ({ page }) => {
     },
   });
 
-  await page.getByTestId('profile-change-password-current').fill('oldpass123');
-  await page.getByTestId('profile-change-password-current-confirm').fill('oldpass123');
-  await page.getByTestId('profile-change-password-new').fill('newpass456');
+  await fillChangePasswordForm(page, {
+    currentPassword: 'oldpass123',
+    currentPasswordConfirm: 'oldpass123',
+    newPassword: 'newpass456',
+  });
   await page.getByTestId('profile-change-password-save').click();
 
   await expect(page.getByTestId('profile-change-password-success')).toBeVisible();
@@ -65,9 +89,11 @@ test('profile security: mismatched current password blocks request', async ({ pa
     validLogin: { emailOrUsername: user.email, password: 'oldpass123' },
   });
 
-  await page.getByTestId('profile-change-password-current').fill('oldpass123');
-  await page.getByTestId('profile-change-password-current-confirm').fill('different');
-  await page.getByTestId('profile-change-password-new').fill('newpass456');
+  await fillChangePasswordForm(page, {
+    currentPassword: 'oldpass123',
+    currentPasswordConfirm: 'different',
+    newPassword: 'newpass456',
+  });
   await page.getByTestId('profile-change-password-save').click();
 
   await expect(page.getByTestId('profile-change-password-error')).toContainText('Current passwords do not match.');
@@ -90,9 +116,11 @@ test.describe('profile security: change password server error', () => {
       forceChangePasswordError: { status: 401, error: 'Invalid current password' },
     });
 
-    await page.getByTestId('profile-change-password-current').fill('oldpass123');
-    await page.getByTestId('profile-change-password-current-confirm').fill('oldpass123');
-    await page.getByTestId('profile-change-password-new').fill('newpass456');
+    await fillChangePasswordForm(page, {
+      currentPassword: 'oldpass123',
+      currentPasswordConfirm: 'oldpass123',
+      newPassword: 'newpass456',
+    });
     await page.getByTestId('profile-change-password-save').click();
 
     await expect(page.getByTestId('profile-change-password-error')).toContainText('Invalid current password');
