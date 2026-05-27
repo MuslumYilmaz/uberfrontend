@@ -837,7 +837,17 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Frontend System Design Interview Blueprint',
-            description: 'Use this frontend system design interview blueprint for principles, patterns, and examples you can apply in real interview rounds.',
+            description:
+              'Use this frontend system design interview blueprint with the RADIO framework, checklist, examples, and real prompts for architecture interview prep.',
+            keywords: [
+              'frontend system design interview blueprint',
+              'frontend system design interview framework',
+              'front end system design playbook',
+              'how to answer frontend system design interview',
+              'frontend system design checklist',
+              'frontend system design examples',
+              'frontend architecture interview',
+            ],
           },
         },
       },

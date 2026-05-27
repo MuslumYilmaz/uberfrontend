@@ -1403,14 +1403,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.sessionStart = Date.now();
       this.recorded = false;
 
-      // Let the child own starters, storage, preview, tests
-      setTimeout(() => this.webPanel?.initFromQuestion(), 0);
+      // The child initializes from input changes and owns starters, storage, preview, and tests.
       return;
     }
 
     // ---------- Plain JS / TS ----------
     // Parent no longer touches starters/tests; the child panel + CodeStorageService own it.
-    // Decide which language tab to show, then ask the child to init itself.
+    // Decide which language tab shell should show while the child initializes from input changes.
     const svcSaved = await this.codeStore.getJsAsync(q.id);
     const hinted = (q as any)?.defaultLang;
     const resolvedLang: JsLang =
@@ -1430,9 +1429,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.sessionStart = Date.now();
     this.recorded = false;
 
-    // Let the child pull everything it needs (starters, tests, baselines) from the service/question.
-    // If the child isn't mounted yet, setTimeout defers until after view init.
-    setTimeout(() => this.jsPanel?.initFromQuestion(), 0);
+    // The child initializes from input changes and pulls starters, tests, and baselines itself.
   }
 
 
