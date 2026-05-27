@@ -136,7 +136,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
 
   readonly relatedFocusLinks = [
     {
-      label: 'Machine coding hub',
+      label: 'UI coding interview questions',
       detail: 'Practice the UI implementation round before turning a widget into a system-design answer.',
       route: ['/machine-coding'],
     },

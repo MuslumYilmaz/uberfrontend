@@ -1127,13 +1127,16 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend Machine Coding Interview Questions',
         description:
-          'Practice frontend machine coding and UI coding interview questions for widgets, async UI, React, Angular, Vue, HTML/CSS, tests, and guided study plans.',
+          'Practice frontend machine coding questions with React UI prompts, async widgets, forms, tables, a 60-minute strategy, rubric, and guided checks.',
         keywords: [
           'frontend machine coding questions',
           'frontend UI coding interview questions',
           'frontend coding interview practice',
           'React machine coding interview questions',
           'frontend interview practice',
+          'machine coding round frontend',
+          'React UI coding interview questions',
+          'UI component coding interview questions',
         ],
       },
     },
