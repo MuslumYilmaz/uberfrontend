@@ -48,10 +48,11 @@ describe('SystemDesignIndexComponent', () => {
     expect(pageText).toContain('Frontend System Design Interview Blueprint');
     expect(pageText).toContain('What frontend system design interviews actually test');
     expect(pageText).toContain('Frontend vs backend system design');
-    expect(pageText).toContain('Use RADIO in a 45-minute interview');
+    expect(pageText).toContain('Use RADIO in a 45-minute frontend system design interview');
     expect(pageText).toContain('Most asked frontend system design prompts');
     expect(pageText).toContain('Recommended study order');
     expect(pageText).toContain('Frontend system design blueprint FAQ');
+    expect(pageText).toContain('What should a frontend system design checklist include?');
     expect(pageText).toContain('Browser experience, rendering strategy, client state');
     expect(pageText).toContain('RADIO framework');
     expect(hasLink('/machine-coding')).toBeTrue();
@@ -78,6 +79,12 @@ describe('SystemDesignIndexComponent', () => {
     expect(pageText).toContain('Real-time Search with Debounce & Caching');
     expect(pageText).toContain('AI Chat Text Area');
     expect(pageText).toContain('Component-driven Design System Architecture');
+    expect(pageText).toContain('design autocomplete frontend system design');
+    expect(pageText).toContain('design news feed frontend system design');
+    expect(pageText).toContain('design notification system frontend');
+    expect(pageText).toContain('design system architecture frontend interview');
+    expect(pageText).toContain('realtime UI frontend system design');
+    expect(pageText).toContain('dashboard widgets frontend system design');
     expect(hasLink('/system-design/infinite-scroll-list')).toBeTrue();
     expect(hasLink('/system-design/notification-toast-system')).toBeTrue();
     expect(hasLink('/system-design/realtime-search-debounce-cache')).toBeTrue();
@@ -107,17 +114,31 @@ describe('SystemDesignIndexComponent', () => {
     const faq = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(payload.title).toBe('Frontend System Design Interview Blueprint');
-    expect(payload.description).toContain('RADIO framework');
+    expect(payload.description).toBe(
+      'Use a frontend system design interview blueprint with the RADIO framework, checklist, examples, and real prompts for 45-minute architecture prep.',
+    );
     expect(payload.canonical).toBe('/guides/system-design-blueprint');
     expect(payload.keywords).toContain('frontend system design interview blueprint');
+    expect(payload.keywords).toContain('frontend system design interview framework');
+    expect(payload.keywords).toContain('RADIO framework frontend system design');
+    expect(payload.keywords).toContain('45 minute frontend system design interview');
+    expect(payload.keywords).toContain('frontend vs backend system design');
     expect(payload.keywords).toContain('frontend system design checklist');
+    expect(payload.keywords[payload.keywords.length - 1]).toBe('frontend system design interview questions');
     expect(collection).toBeTruthy();
-    expect(collection?.about?.some((entry: any) => entry?.name === 'frontend system design examples')).toBeTrue();
+    expect(collection?.about?.some((entry: any) => entry?.name === 'frontend system design interview answer template')).toBeTrue();
     expect(breadcrumbs).toBeTruthy();
     expect(itemLists.length).toBe(2);
-    expect(itemLists.some((entry: any) => entry?.name === 'Frontend system design blueprint chapters')).toBeTrue();
-    expect(itemLists.some((entry: any) => entry?.name === 'Most asked frontend system design prompts')).toBeTrue();
+    expect(itemLists.some((entry: any) => entry?.name === 'Frontend system design interview blueprint chapters')).toBeTrue();
+    expect(itemLists.some((entry: any) => entry?.name === 'Frontend system design examples and prompts')).toBeTrue();
     expect(faq?.mainEntity?.length).toBe(5);
     expect(faq?.mainEntity?.[0]?.name).toBe('What is a frontend system design interview blueprint?');
+    expect(faq?.mainEntity?.map((entry: any) => entry.name)).toEqual([
+      'What is a frontend system design interview blueprint?',
+      'How is frontend system design different from backend system design?',
+      'How do I use RADIO in a 45-minute frontend system design interview?',
+      'What are the most asked frontend system design interview questions?',
+      'What should a frontend system design checklist include?',
+    ]);
   });
 });

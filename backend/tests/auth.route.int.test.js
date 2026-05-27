@@ -54,6 +54,8 @@ beforeAll(async () => {
   process.env.GOOGLE_CLIENT_SECRET = 'test_google_client_secret';
   process.env.GITHUB_CLIENT_ID = 'test_gh_client_id';
   process.env.GITHUB_CLIENT_SECRET = 'test_gh_client_secret';
+  process.env.SERVER_BASE = 'http://127.0.0.1:3001';
+  process.env.FRONTEND_BASE = 'http://127.0.0.1:4200';
 
   jest.resetModules();
   app = require('../index');
@@ -217,6 +219,25 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(me.status).toBe(200);
     expect(me.body?.email).toBe('session@example.com');
     expect(me.body?.username).toBe('session_user');
+  });
+
+  test('signup omits cookie domain for IP-based frontend hosts', async () => {
+    const signup = await request(app)
+      .post('/api/auth/signup')
+      .send({
+        email: 'ip-cookie@example.com',
+        username: 'ip_cookie_user',
+        password: 'secret123',
+      });
+
+    expect(signup.status).toBe(201);
+    const authCookies = getSetCookies(signup).filter(
+      (cookie) => cookie.startsWith('access_token=') || cookie.startsWith('refresh_token=')
+    );
+    expect(authCookies.length).toBeGreaterThanOrEqual(2);
+    for (const cookie of authCookies) {
+      expect(cookie).not.toMatch(/;\s*Domain=/i);
+    }
   });
 
   test('refresh issues a fresh access session from a valid refresh cookie', async () => {

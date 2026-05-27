@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const net = require('net');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User.js');
 const AuthSession = require('../models/AuthSession');
@@ -59,8 +60,16 @@ function getCookieDomain() {
     if (explicit) return explicit;
     try {
         const host = new URL(FRONTEND_BASE || SERVER_BASE || '').hostname || '';
-        if (!host || host === 'localhost' || host.endsWith('.localhost')) return undefined;
-        const parts = host.replace(/^www\./, '').split('.');
+        const normalizedHost = host.replace(/^\[|\]$/g, '').toLowerCase();
+        if (
+            !normalizedHost ||
+            normalizedHost === 'localhost' ||
+            normalizedHost.endsWith('.localhost') ||
+            net.isIP(normalizedHost)
+        ) {
+            return undefined;
+        }
+        const parts = normalizedHost.replace(/^www\./, '').split('.');
         if (parts.length < 2) return undefined;
         return `.${parts.slice(-2).join('.')}`;
     } catch {
