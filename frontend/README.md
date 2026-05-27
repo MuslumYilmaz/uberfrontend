@@ -77,6 +77,18 @@ Notes:
 - This creates a fresh email/password user, verifies signup, reload-triggered `/api/auth/me`, and logout.
 - The spec refuses to target `frontendatlas.com` unless `E2E_ALLOW_PROD_REAL_AUTH=1` is set.
 
+Run the CI full-stack smoke against a local test backend:
+
+1. Start the backend with `NODE_ENV=test`, `MONGO_TARGET=test`, `MONGO_URL_TEST` pointing at an isolated `frontendatlas_ci` database, and `PAYMENTS_MODE=test`.
+2. Run:
+
+`npm run test:e2e:fullstack-smoke`
+
+Notes:
+- This uses the Angular dev-server proxy to hit the local backend.
+- It verifies real auth plus backend-owned LemonSqueezy test checkout config/attempt creation.
+- It does not open hosted checkout and does not enter card details.
+
 Run the real GitHub OAuth smoke on staging:
 
 1. Use a dedicated staging GitHub account.
@@ -94,14 +106,16 @@ Run the real LemonSqueezy smoke test in test mode only:
 
 1. Start the backend locally with the LemonSqueezy test webhook secret configured.
 2. Keep `PAYMENTS_MODE=test` in `src/environments/environment.ts`.
-3. Run:
+3. Set `E2E_LS_EXPECTED_TEST_BUY_ID` to the expected test buy id.
+4. Set `E2E_LS_TEST_CARD_ALLOWED=1` only when you are intentionally running the hosted test-card flow.
+5. Run:
 
-`PLAYWRIGHT_WEB_SERVER=1 E2E_REAL_LS=1 npm run test:e2e:lemonsqueezy:real`
+`PLAYWRIGHT_WEB_SERVER=1 E2E_REAL_LS=1 E2E_LS_TEST_CARD_ALLOWED=1 E2E_LS_EXPECTED_TEST_BUY_ID=<test-buy-id> npm run test:e2e:lemonsqueezy:real`
 
 Notes:
 - This exercises the real hosted LemonSqueezy checkout flow in test mode and verifies the app unlocks premium afterwards.
-- It should be run manually, nightly, or before release, not on every CI run.
-- The spec itself refuses to run unless checkout provider is LemonSqueezy and payments mode is `test`.
+- It should be run manually, nightly, or before release, not on every PR CI run.
+- The spec refuses production targets, requires backend checkout config to report `mode: test`, and will not enter card details unless explicitly allowed.
 
 Run full suite (critical + extended + optional specs):
 

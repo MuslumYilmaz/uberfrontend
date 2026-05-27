@@ -482,13 +482,13 @@ type FaqItem = {
     <div class="wrap" data-testid="system-blueprint-hub">
       <h1 class="hero-title">Frontend System Design Interview Blueprint</h1>
       <p class="hero-sub">
-        Use this frontend system design interview blueprint to learn the RADIO framework,
-        choose the right checklist, and practice real frontend system design examples.
+        Use this frontend system design interview blueprint with the RADIO framework,
+        a 45-minute interview flow, checklist, examples, and real prompts.
       </p>
       <div class="pill-row" aria-label="Frontend system design blueprint coverage">
         <span class="pill fa-chip fa-chip--label">RADIO framework</span>
+        <span class="pill fa-chip fa-chip--label">45-minute answer flow</span>
         <span class="pill fa-chip fa-chip--label">Frontend architecture</span>
-        <span class="pill fa-chip fa-chip--label">System design prompts</span>
         <span class="pill fa-chip fa-chip--label">Interview checklist</span>
       </div>
       <div class="prep-links" aria-label="Related frontend interview hubs">
@@ -543,10 +543,11 @@ type FaqItem = {
       <section class="blueprint-section" aria-labelledby="blueprint-radio-title" data-testid="system-blueprint-radio-flow">
         <div class="section-head">
           <p class="section-kicker">Answer framework</p>
-          <h2 id="blueprint-radio-title">Use RADIO in a 45-minute interview</h2>
+          <h2 id="blueprint-radio-title">Use RADIO in a 45-minute frontend system design interview</h2>
           <p>
-            RADIO keeps your answer moving from scope to architecture, data, interface, and
-            the highest-risk optimizations without turning the interview into a checklist dump.
+            RADIO is the frontend system design interview answer template: move from scope
+            to architecture, data, interface, and the highest-risk optimizations without
+            turning the interview into a checklist dump.
           </p>
         </div>
         <section class="radio-start" aria-label="Start with RADIO framework">
@@ -580,8 +581,9 @@ type FaqItem = {
           <p class="section-kicker">Practice prompts</p>
           <h2 id="blueprint-prompts-title">Most asked frontend system design prompts</h2>
           <p>
-            Apply the blueprint to real frontend architecture prompts where rendering,
-            data flow, performance, and UX tradeoffs are visible.
+            Use these as frontend system design interview questions after learning the
+            blueprint; the full prompt bank and scenario-specific practice live under
+            the system design questions hub.
           </p>
         </div>
         <div class="prompt-grid">
@@ -799,7 +801,7 @@ export class SystemDesignIndexComponent implements OnInit {
     },
     {
       title: 'Component-driven Design System Architecture',
-      keyword: 'frontend system design UI component questions',
+      keyword: 'design system architecture frontend interview',
       detail: 'Tokens, component APIs, accessibility contracts, theming, and versioning.',
       focus: ['tokens', 'component API', 'versioning'],
       route: ['/', 'system-design', 'component-design-system-architecture'],
@@ -807,7 +809,7 @@ export class SystemDesignIndexComponent implements OnInit {
     },
     {
       title: 'Live Comments for Global Streams',
-      keyword: 'frontend system design realtime UI',
+      keyword: 'realtime UI frontend system design',
       detail: 'WebSocket/SSE updates, buffering, moderation UI, and burst control.',
       focus: ['SSE', 'buffering', 'moderation'],
       route: ['/', 'system-design', 'live-comments-global-stream'],
@@ -815,7 +817,7 @@ export class SystemDesignIndexComponent implements OnInit {
     },
     {
       title: 'Dashboard with Draggable & Resizable Widgets',
-      keyword: 'staff frontend engineer system design interview',
+      keyword: 'dashboard widgets frontend system design',
       detail: 'Layout persistence, drag/resize performance, constraints, and ownership boundaries.',
       focus: ['layout', 'persistence', 'constraints'],
       route: ['/', 'system-design', 'dashboard-widgets-draggable-resizable'],
@@ -873,24 +875,24 @@ export class SystemDesignIndexComponent implements OnInit {
         'A frontend system design interview blueprint is a reusable answer structure for clarifying requirements, choosing architecture, modeling data, defining UI interfaces, and explaining performance or reliability tradeoffs.',
     },
     {
-      question: 'What frontend system design prompts should I practice first?',
-      answer:
-        'Start with infinite scroll, notification toast systems, realtime search, news feeds, AI chat UI, design system architecture, live comments, and draggable dashboards because they expose common frontend architecture tradeoffs.',
-    },
-    {
       question: 'How is frontend system design different from backend system design?',
       answer:
         'Frontend system design centers on browser rendering, client state, component APIs, accessibility, performance, and user-visible failures. Backend system design centers more on services, storage, queues, replication, and infrastructure scale.',
     },
     {
-      question: 'How do I use RADIO in a frontend system design interview?',
+      question: 'How do I use RADIO in a 45-minute frontend system design interview?',
       answer:
-        'Use RADIO to move through Requirements, Architecture, Data, Interface, and Optimizations. Keep one user flow as the thread so every step supports the same design instead of becoming disconnected notes.',
+        'Use RADIO to move through Requirements, Architecture, Data, Interface, and Optimizations. Keep one user flow as the thread, allocate time to each step, and close with risks, metrics, and tradeoffs.',
     },
     {
-      question: 'When should I use the frontend system design checklist?',
+      question: 'What are the most asked frontend system design interview questions?',
       answer:
-        'Use the checklist after learning RADIO and after each practice prompt. It helps catch missing requirements, state ownership, failure states, accessibility, performance budgets, observability, and tradeoff narration.',
+        'Common frontend system design interview questions include infinite scroll, notification systems, autocomplete search, news feeds, AI chat UI, design system architecture, live comments, and draggable dashboards.',
+    },
+    {
+      question: 'What should a frontend system design checklist include?',
+      answer:
+        'A frontend system design checklist should include requirements, state ownership, API contracts, failure states, accessibility, performance budgets, observability, rollout risk, and tradeoff narration.',
     },
   ];
 
@@ -922,7 +924,7 @@ export class SystemDesignIndexComponent implements OnInit {
     const chapterItemList = this.buildItemList(
       `${canonicalUrl}#system-design-blueprint-chapters`,
       canonicalUrl,
-      'Frontend system design blueprint chapters',
+      'Frontend system design interview blueprint chapters',
       guideEntries.map((entry) => ({
         name: entry.title,
         path: `/guides/system-design-blueprint/${entry.slug}`,
@@ -931,7 +933,7 @@ export class SystemDesignIndexComponent implements OnInit {
     const promptItemList = this.buildItemList(
       `${canonicalUrl}#frontend-system-design-prompts`,
       canonicalUrl,
-      'Most asked frontend system design prompts',
+      'Frontend system design examples and prompts',
       this.featuredPrompts.map((prompt) => ({ name: prompt.title, path: prompt.path })),
     );
     const faqPage = {
@@ -975,17 +977,33 @@ export class SystemDesignIndexComponent implements OnInit {
     this.seo.updateTags({
       title: 'Frontend System Design Interview Blueprint',
       description:
-        'Use this frontend system design interview blueprint with the RADIO framework, checklist, examples, and real prompts for architecture interview prep.',
+        'Use a frontend system design interview blueprint with the RADIO framework, checklist, examples, and real prompts for 45-minute architecture prep.',
       canonical: canonicalPath,
       keywords: [
         'frontend system design interview blueprint',
         'frontend system design interview framework',
+        'RADIO framework frontend system design',
         'front end system design playbook',
         'how to answer frontend system design interview',
         'frontend system design checklist',
         'frontend system design examples',
-        'RADIO framework frontend system design',
+        '45 minute frontend system design interview',
         'frontend architecture interview',
+        'frontend vs backend system design',
+        'frontend system design interview answer template',
+        'frontend system design interview guide',
+        'frontend system design interview preparation',
+        'senior frontend system design interview',
+        'staff frontend engineer system design interview',
+        'client side system design interview',
+        'design autocomplete frontend system design',
+        'design news feed frontend system design',
+        'design infinite scroll frontend system design',
+        'design notification system frontend',
+        'design chat app frontend system design',
+        'design system architecture frontend interview',
+        'realtime UI frontend system design',
+        'dashboard widgets frontend system design',
         'frontend system design interview questions',
       ],
       jsonLd: [
@@ -995,13 +1013,20 @@ export class SystemDesignIndexComponent implements OnInit {
           url: canonicalUrl,
           name: 'Frontend System Design Interview Blueprint',
           description:
-            'A frontend system design interview blueprint with RADIO, deep dives, checklists, and real prompts for frontend architecture practice.',
+            'A frontend system design interview blueprint with RADIO, deep dives, checklists, examples, and real prompts for 45-minute frontend architecture prep.',
           inLanguage: 'en',
           about: [
             { '@type': 'Thing', name: 'frontend system design interview blueprint' },
             { '@type': 'Thing', name: 'frontend system design interview framework' },
+            { '@type': 'Thing', name: 'RADIO framework frontend system design' },
+            { '@type': 'Thing', name: 'front end system design playbook' },
+            { '@type': 'Thing', name: 'how to answer frontend system design interview' },
             { '@type': 'Thing', name: 'frontend system design checklist' },
             { '@type': 'Thing', name: 'frontend system design examples' },
+            { '@type': 'Thing', name: '45 minute frontend system design interview' },
+            { '@type': 'Thing', name: 'frontend architecture interview' },
+            { '@type': 'Thing', name: 'frontend vs backend system design' },
+            { '@type': 'Thing', name: 'frontend system design interview answer template' },
           ],
           mainEntity: [chapterItemList, promptItemList],
           mentions: [

@@ -1,0 +1,124 @@
+name: Full-stack Smoke
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  fullstack-smoke:
+    name: Full-stack Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PORT: 3001
+      NODE_ENV: test
+      MONGO_TARGET: test
+      MONGO_URL_TEST: mongodb://127.0.0.1:27017/frontendatlas_ci
+      EXPECTED_MONGO_DB_NAME_TEST: frontendatlas_ci
+      SERVER_BASE: http://127.0.0.1:3001
+      FRONTEND_BASE: http://127.0.0.1:4200
+      FRONTEND_ORIGINS: http://127.0.0.1:4200,http://localhost:4200
+      COOKIE_SAMESITE: lax
+      COOKIE_SECURE: "false"
+      JWT_SECRET: ci_fullstack_smoke_jwt_secret_32_chars_minimum
+      BILLING_PROVIDER: lemonsqueezy
+      PAYMENTS_MODE: test
+      LEMONSQUEEZY_MONTHLY_URL_TEST: https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly
+      LEMONSQUEEZY_QUARTERLY_URL_TEST: ""
+      LEMONSQUEEZY_ANNUAL_URL_TEST: ""
+      LEMONSQUEEZY_LIFETIME_URL_TEST: ""
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm --prefix backend ci
+
+      - name: Install frontend dependencies
+        run: npm --prefix frontend ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browser
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Start safe test backend
+        working-directory: backend
+        run: |
+          npm run assert:e2e-safe-env
+          npm start > ../backend-e2e.log 2>&1 &
+          echo $! > ../backend-e2e.pid
+
+      - name: Wait for backend health
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3001/api/health >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend did not become healthy in time."
+          cat backend-e2e.log || true
+          exit 1
+
+      - name: Run full-stack smoke tests
+        working-directory: frontend
+        run: npm run test:e2e:fullstack-smoke
+        env:
+          CI: true
+          PLAYWRIGHT_HOST: 127.0.0.1
+          PLAYWRIGHT_PORT: 4200
+
+      - name: Stop backend
+        if: always()
+        run: |
+          if [ -f backend-e2e.pid ]; then
+            kill "$(cat backend-e2e.pid)" || true
+          fi
+
+      - name: Upload backend log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fullstack-backend-log
+          path: backend-e2e.log
+          retention-days: 7
+
+      - name: Upload Playwright artifacts (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fullstack-playwright-artifacts
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 7
