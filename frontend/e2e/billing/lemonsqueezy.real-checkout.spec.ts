@@ -1,8 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { environment } from '../../src/environments/environment';
 import {
   resolveCheckoutPaymentsProvider,
-  resolveCheckoutUrl,
   resolvePaymentsMode,
   resolvePaymentsProvider,
 } from '../../src/app/core/utils/payments-provider.util';
@@ -14,20 +13,43 @@ import {
 const configuredProvider = resolvePaymentsProvider(environment);
 const provider = resolveCheckoutPaymentsProvider(environment);
 const paymentsMode = resolvePaymentsMode(environment);
+const allowTestCard = process.env.E2E_LS_TEST_CARD_ALLOWED === '1';
+const expectedBuyIdFromEnv = String(process.env.E2E_LS_EXPECTED_TEST_BUY_ID || '').trim();
 const runRealCheckout =
   process.env.E2E_REAL_LS === '1' &&
   provider === 'lemonsqueezy' &&
   paymentsMode === 'test';
 
-const expectedMonthlyUrl = resolveCheckoutUrl('lemonsqueezy', 'monthly', environment) || '';
-const expectedBuyId = (() => {
+const expectedBuyId = expectedBuyIdFromEnv;
+
+function resolveBaseUrl(baseURL: string | undefined): string {
+  if (baseURL) return baseURL.replace(/\/+$/, '');
+  const host = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
+  const port = process.env.PLAYWRIGHT_PORT || '4200';
+  return `http://${host}:${port}`;
+}
+
+function isProtectedProductionTarget(baseURL: string): boolean {
   try {
-    const parsed = new URL(expectedMonthlyUrl);
-    return parsed.pathname.split('/').pop() || '';
+    const host = new URL(baseURL).hostname.toLowerCase();
+    return host === 'frontendatlas.com' || host === 'www.frontendatlas.com';
   } catch {
-    return '';
+    return false;
   }
-})();
+}
+
+async function expectBackendTestCheckoutConfig(page: Page) {
+  const res = await page.request.get('/api/billing/checkout/config');
+  expect(res.status()).toBe(200);
+  const config = await res.json();
+  expect(config).toMatchObject({
+    provider: 'lemonsqueezy',
+    mode: 'test',
+    enabled: true,
+  });
+  expect(config.plans?.monthly).toBe(true);
+  return config;
+}
 
 test.describe('lemonsqueezy real checkout (test mode)', () => {
   test.describe.configure({ mode: 'serial' });
@@ -38,6 +60,20 @@ test.describe('lemonsqueezy real checkout (test mode)', () => {
 
   test('hosted checkout completes and premium unlocks', async ({ browser, baseURL }, testInfo) => {
     test.setTimeout(180_000);
+
+    const resolvedBaseUrl = resolveBaseUrl(baseURL);
+    if (isProtectedProductionTarget(resolvedBaseUrl)) {
+      test.skip(true, 'Refusing to run hosted LemonSqueezy checkout against production.');
+      return;
+    }
+
+    if (!expectedBuyId) {
+      throw new Error('E2E_LS_EXPECTED_TEST_BUY_ID is required for hosted LemonSqueezy checkout.');
+    }
+
+    if (!allowTestCard) {
+      throw new Error('Refusing to enter test card unless E2E_LS_TEST_CARD_ALLOWED=1 is set.');
+    }
 
     const context = await browser.newContext({
       baseURL,
@@ -58,6 +94,7 @@ test.describe('lemonsqueezy real checkout (test mode)', () => {
     await page.getByTestId('signup-submit').click();
 
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 });
+    await expectBackendTestCheckoutConfig(page);
 
     await page.goto('/pricing');
     await expect(page.getByTestId('pricing-cta-monthly')).toBeVisible();
@@ -94,14 +131,12 @@ test.describe('lemonsqueezy real checkout (test mode)', () => {
     }
 
     if (!expectedBuyId || !checkoutUrl.includes(expectedBuyId)) {
-      test.skip(true, `Unexpected buy link (expected test buy id ${expectedBuyId}).`);
-      return;
+      throw new Error(`Unexpected buy link (expected test buy id ${expectedBuyId}): ${checkoutUrl}`);
     }
 
     const hasTestIndicator = await detectTestModeIndicator(lsPage);
-    if (!hasTestIndicator && paymentsMode !== 'test') {
-      test.skip(true, 'Unable to confirm LemonSqueezy test mode. Aborting to avoid real payment.');
-      return;
+    if (!hasTestIndicator) {
+      throw new Error('Unable to confirm LemonSqueezy test mode. Aborting before entering card details.');
     }
 
     await lsPage.screenshot({ path: testInfo.outputPath('ls-before-pay.png'), fullPage: true });

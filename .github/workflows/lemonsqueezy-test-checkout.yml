@@ -1,0 +1,74 @@
+name: LemonSqueezy Test Checkout
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Staging or test frontend URL. Production is refused.
+        required: true
+        type: string
+      expected_test_buy_id:
+        description: Expected LemonSqueezy test buy id.
+        required: true
+        type: string
+
+jobs:
+  lemonsqueezy-test-checkout:
+    name: LemonSqueezy Test Checkout
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+
+    env:
+      CI: true
+      PLAYWRIGHT_BASE_URL: ${{ inputs.base_url }}
+      E2E_REAL_LS: "1"
+      E2E_LS_TEST_CARD_ALLOWED: "1"
+      E2E_LS_EXPECTED_TEST_BUY_ID: ${{ inputs.expected_test_buy_id }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Reject production target
+        run: |
+          case "$PLAYWRIGHT_BASE_URL" in
+            http://frontendatlas.com*|https://frontendatlas.com*|http://www.frontendatlas.com*|https://www.frontendatlas.com*)
+              echo "Refusing to run hosted checkout against production."
+              exit 1
+              ;;
+          esac
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run hosted LemonSqueezy checkout in test mode
+        run: npx playwright test e2e/billing/lemonsqueezy.real-checkout.spec.ts --project=chromium --workers=1
+
+      - name: Upload Playwright artifacts (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lemonsqueezy-test-checkout-artifacts
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 7

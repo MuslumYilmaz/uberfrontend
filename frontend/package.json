@@ -56,6 +56,7 @@
     "test:e2e:auth:real": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/auth.real.spec.ts --project=chromium",
     "test:e2e:oauth:real": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/oauth.github.real.spec.ts --project=chromium",
     "test:e2e:lemonsqueezy:real": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/billing/lemonsqueezy.real-checkout.spec.ts --project=chromium",
+    "test:e2e:fullstack-smoke": "PLAYWRIGHT_WEB_SERVER=1 E2E_REAL_AUTH=1 E2E_BILLING_BACKEND_SMOKE=1 playwright test e2e/auth.real.spec.ts e2e/billing/lemonsqueezy.backend-smoke.spec.ts --project=chromium --workers=1",
     "test:e2e:extended": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/header.mobile.spec.ts e2e/showcase.mobile-layout.spec.ts e2e/system-design.mobile-layout.spec.ts e2e/trivia.mobile-visual.spec.ts e2e/seo-ssr.spec.ts e2e/showcase.spec.ts e2e/trivia-tag-rendering.spec.ts",
     "test:e2e:full": "PLAYWRIGHT_WEB_SERVER=1 playwright test",
     "test:e2e": "npm run test:e2e:critical",

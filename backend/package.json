@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "assert:e2e-safe-env": "node scripts/assert-e2e-safe-env.mjs",
     "test": "jest",
     "verify:ci": "npm test",
     "test:cv-calibration": "jest cv-linter.calibration"
