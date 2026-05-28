@@ -268,6 +268,29 @@ function testValidGuideRegistryPasses() {
   assert.match(output, /1 guide\(s\) checked/);
 }
 
+function testKeywordsCanOmitPrimaryKeyword() {
+  const tempRoot = makeTempRoot();
+  const tempDrafts = path.join(tempRoot, 'content-drafts');
+  writeShell(tempRoot);
+  writeFile(tempRoot, 'src/app/features/guides/playbook/guide-one.ts', guideComponent());
+  writeFile(
+    tempRoot,
+    'src/app/shared/guides/guide.registry.ts',
+    guideRegistry(
+      guideEntry({
+        slug: 'guide-one',
+        title: 'Guide One',
+        primaryKeyword: 'guide one keyword',
+        keywords: ['guide one supporting phrase', 'frontend guide examples'],
+        importPath: '../../features/guides/playbook/guide-one',
+      }),
+    ),
+  );
+
+  const output = runLinter(tempRoot, tempDrafts);
+  assert.match(output, /1 guide\(s\) checked/);
+}
+
 function testDuplicatePrimaryKeywordFails() {
   const tempRoot = makeTempRoot();
   const tempDrafts = path.join(tempRoot, 'content-drafts');
@@ -415,6 +438,7 @@ function testReExportWrapperResolvesUnderlyingGuideTemplate() {
 }
 
 testValidGuideRegistryPasses();
+testKeywordsCanOmitPrimaryKeyword();
 testDuplicatePrimaryKeywordFails();
 testDraftParityFailsWhenShippedArticleIsTooThin();
 testDraftBackedGuideRequiresSearchIntent();

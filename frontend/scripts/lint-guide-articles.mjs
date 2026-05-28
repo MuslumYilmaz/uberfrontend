@@ -482,10 +482,6 @@ function main() {
     if (publishedAt && updatedAt && updatedAt < publishedAt) {
       addError(`${id} seo.updatedAt cannot be earlier than seo.publishedAt`);
     }
-    if (primaryKeyword && keywords.length && !keywords.some((item) => normalizeKey(item) === normalizeKey(primaryKeyword))) {
-      addError(`${id} seo.keywords must include seo.primaryKeyword`);
-    }
-
     const inspectionPath = resolveGuideImplementationPath(entry.componentPath);
 
     if (hasFullGitHistory) {
