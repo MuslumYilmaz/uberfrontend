@@ -657,11 +657,59 @@ export const SYSTEM: GuideEntry[] = [
         summary: 'Use this interview guide to structure frontend system design architecture decisions, from rendering boundaries and caching to clear trade-off framing.',
         seo: {
             title: 'Frontend System Design Architecture Guide',
-            description: 'Use this interview guide to structure frontend system design architecture decisions, from rendering boundaries and caching to clear trade-off framing.',
+            description: 'Design frontend system architecture with client-side boundaries, rendering strategy, data flow, caching, BFF trade-offs, and interview-ready diagrams.',
             primaryKeyword: 'frontend system design architecture guide',
-            keywords: ['frontend system design architecture guide', 'frontend architecture interview guide', 'rendering caching boundaries'],
+            keywords: [
+                'frontend architecture interview guide',
+                'frontend client side architecture interview',
+                'frontend rendering strategy system design',
+                'frontend architecture diagram interview',
+                'CSR vs SSR frontend system design',
+                'frontend system design BFF',
+                'route by route rendering strategy',
+                'frontend system design tradeoffs',
+                'what is frontend system design architecture',
+                'what should I draw in a frontend architecture interview',
+                'how to choose CSR SSR SSG edge rendering',
+                'when to use BFF in frontend system design',
+                'frontend system design client side boundaries',
+                'frontend system design data flow caching',
+                'frontend architecture interview rendering strategy',
+                'frontend system design architecture diagram',
+                'autocomplete frontend architecture interview',
+                'news feed frontend architecture system design',
+                'dashboard widgets frontend architecture',
+                'AI chat frontend architecture system design',
+                'design system architecture frontend interview',
+            ],
+            faqPage: {
+                name: 'Frontend system design architecture FAQ',
+                items: [
+                    {
+                        question: 'What is frontend system design architecture?',
+                        answer: 'Frontend system design architecture is the part of the interview where you choose client-side boundaries, rendering strategy, data flow, cache layers, BFF or API boundaries, and resilience guardrails that satisfy the requirements.',
+                    },
+                    {
+                        question: 'How do I choose CSR, SSR, SSG, or edge rendering?',
+                        answer: 'Choose rendering per route. Use SSR or SSG for SEO and fast public entry routes, CSR for highly interactive authenticated tools, and edge rendering when global latency or cacheable personalization changes the user experience.',
+                    },
+                    {
+                        question: 'What should I draw in a frontend architecture interview?',
+                        answer: 'Draw the browser, app shell, router and rendering boundary, server-state cache, UI state, API or BFF boundary, downstream services, failure paths, and observability hooks that prove the design can run in production.',
+                    },
+                    {
+                        question: 'When should I use a BFF in frontend system design?',
+                        answer: 'Use a BFF when it reduces client orchestration, aggregates multiple APIs, shapes auth/session-aware responses, enables partial responses, or gives a cleaner caching and latency boundary. Skip it when it is backend topology noise.',
+                    },
+                    {
+                        question: 'How is frontend architecture different from data model or interface design?',
+                        answer: 'Architecture chooses system boundaries, rendering modes, data flow, cache layers, and resilience paths. Data model details entities and ownership, while interface design details components, interactions, accessibility, and UI states.',
+                    },
+                ],
+            },
+            readerPromise: 'Use this architecture guide to choose client-side boundaries, rendering strategy, BFF trade-offs, cache layers, and an interview-ready frontend architecture diagram.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-05-28',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-architecture')

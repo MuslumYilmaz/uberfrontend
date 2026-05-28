@@ -28,6 +28,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <p>
         This page is intentionally focused on <strong>system boundaries and rendering strategy</strong>:
         browser/edge/BFF/API boundaries, per-route rendering mode, and resilience guardrails.
+        Treat it as a <strong>frontend client side architecture interview</strong> guide, not a backend topology tour.
       </p>
       <ul>
         <li>
@@ -43,6 +44,53 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">O - Optimizations deep dive</a>.
         </li>
       </ul>
+
+      <h2>Client-side architecture layers</h2>
+      <p>
+        A strong frontend architecture answer separates client-side responsibilities before it talks about services.
+        This keeps the interview grounded in UI delivery, route ownership, cache behavior, and production signals.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Owns</th>
+            <th>Interview signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>View layer</td>
+            <td>Page shell, reusable components, composition boundaries</td>
+            <td>You can keep UI responsibility clear without over-splitting components.</td>
+          </tr>
+          <tr>
+            <td>Routing and rendering</td>
+            <td>Route ownership, CSR vs SSR vs SSG choice, hydration handoff</td>
+            <td>You choose a frontend rendering strategy system design by route, not by preference.</td>
+          </tr>
+          <tr>
+            <td>Data access / BFF boundary</td>
+            <td>API client, auth/session shaping, aggregation, response normalization</td>
+            <td>You avoid leaking orchestration and trust decisions into components.</td>
+          </tr>
+          <tr>
+            <td>Server-state cache</td>
+            <td>Query keys, freshness, dedupe, refetch, invalidation triggers</td>
+            <td>You control consistency, stale behavior, and race risk.</td>
+          </tr>
+          <tr>
+            <td>UI state</td>
+            <td>Modals, selected rows, focused item, drafts, optimistic flags</td>
+            <td>You keep local interaction state separate from server truth.</td>
+          </tr>
+          <tr>
+            <td>Telemetry</td>
+            <td>Web vitals, client errors, API timeout, task completion</td>
+            <td>You can prove architecture risk is measurable after launch.</td>
+          </tr>
+        </tbody>
+      </table>
 
       <h2>What Architecture Must Produce</h2>
       <p>
@@ -81,6 +129,48 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <td>Risk and fallback notes</td>
             <td>Known bottlenecks + mitigation path</td>
             <td>Tests senior-level production judgment</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What to draw in the architecture diagram</h2>
+      <p>
+        The goal is an <strong>interview-ready frontend architecture diagram</strong>: enough boxes to explain
+        boundaries, not enough to disappear into backend internals.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Diagram element</th>
+            <th>Include</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Browser and app shell</td>
+            <td>Shell, route container, feature modules, hydration boundary</td>
+            <td>Shows where interactive frontend work begins.</td>
+          </tr>
+          <tr>
+            <td>Route / rendering boundary</td>
+            <td>CSR, SSR, SSG, or edge rendering per key route</td>
+            <td>Makes route by route rendering strategy explicit.</td>
+          </tr>
+          <tr>
+            <td>State and cache layers</td>
+            <td>Server-state cache, URL state, UI state, persistence if needed</td>
+            <td>Prevents server truth and local interaction state from blending together.</td>
+          </tr>
+          <tr>
+            <td>API / BFF boundary</td>
+            <td>API client, BFF, downstream APIs, auth/session checks</td>
+            <td>Shows where aggregation, trust, and response shaping live.</td>
+          </tr>
+          <tr>
+            <td>Failure and observability hooks</td>
+            <td>Timeouts, partial response path, error reporting, web-vitals capture</td>
+            <td>Proves the architecture has fallback and measurement paths.</td>
           </tr>
         </tbody>
       </table>
@@ -167,6 +257,43 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <td>Global latency sensitivity + multi-API aggregation needs</td>
             <td>Operational complexity and observability depth needed</td>
             <td>Hard-to-debug edge/runtime mismatches</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>When BFF and edge belong in the answer</h2>
+      <p>
+        A <strong>frontend system design BFF</strong> is useful only when it changes the frontend architecture,
+        latency path, or trust boundary. Name it deliberately and explain what moves out of the client.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Use BFF / edge when</th>
+            <th>Skip it when</th>
+            <th>Trade-off to say out loud</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Multiple APIs must be aggregated for one screen</td>
+            <td>The page calls one stable endpoint directly</td>
+            <td>"This reduces client orchestration but adds an operational hop."</td>
+          </tr>
+          <tr>
+            <td>Auth/session shaping or permissions affect response shape</td>
+            <td>The client can safely receive the same public payload</td>
+            <td>"I am centralizing trust decisions outside reusable UI code."</td>
+          </tr>
+          <tr>
+            <td>Global latency or cacheable personalization matters</td>
+            <td>The route is auth-heavy and not cacheable</td>
+            <td>"Edge helps the read path, but observability and runtime limits get harder."</td>
+          </tr>
+          <tr>
+            <td>Partial response semantics improve the user experience</td>
+            <td>All dependencies must succeed or the flow cannot continue</td>
+            <td>"I will return usable partial data with explicit degraded UI state."</td>
           </tr>
         </tbody>
       </table>
@@ -347,6 +474,47 @@ Client side:
         </tbody>
       </table>
 
+      <h2>Prompt-specific architecture decisions</h2>
+      <p>
+        Use prompt families to show that your frontend system design tradeoffs are contextual, not memorized.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Prompt</th>
+            <th>Architecture decisions to surface</th>
+            <th>Risk to call out</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Autocomplete / realtime search</a></td>
+            <td>SSR shell + CSR updates, debounced request path, query-keyed cache, BFF for ranking/personalization if needed</td>
+            <td>Stale response races and p95 suggestion latency</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'news-feed-timeline']">News feed</a></td>
+            <td>Cursor pagination, virtualized timeline, media prefetch, freshness policy, route-level cache strategy</td>
+            <td>Duplicate items, stale feed, and heavy media on low-end devices</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard widgets</a></td>
+            <td>CSR dashboard, widget isolation, layout persistence, refresh schedule, permission-aware data fetch</td>
+            <td>One slow widget blocking the whole screen</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">AI chat</a></td>
+            <td>Streaming path, draft persistence, message ordering, reconnect behavior, optimistic/error states</td>
+            <td>Interrupted streams and duplicated messages after retry</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'component-design-system-architecture']">Design system architecture</a></td>
+            <td>Package boundaries, token pipeline, component API contracts, documentation/versioning, adoption telemetry</td>
+            <td>Breaking changes across teams and inconsistent token usage</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>What to Say Out Loud (Architecture Script Cues)</h2>
       <ol>
         <li>"I will map architecture decisions directly to the requirements we already locked."</li>
@@ -447,6 +615,37 @@ Client side:
         <li>Cache layers and invalidation triggers are concrete.</li>
         <li>Failure, observability, security, and cost trade-offs are acknowledged.</li>
       </ul>
+
+      <h2>Architecture FAQ</h2>
+      <h3>What is frontend system design architecture?</h3>
+      <p>
+        Frontend system design architecture is the interview step where you choose client-side boundaries,
+        rendering strategy, data flow, cache layers, BFF or API boundaries, and resilience guardrails that satisfy the requirements.
+      </p>
+
+      <h3>How do I choose CSR, SSR, SSG, or edge rendering?</h3>
+      <p>
+        Choose rendering per route. Use SSR or SSG for SEO and fast public entry routes, CSR for highly interactive
+        authenticated tools, and edge rendering when global latency or cacheable personalization changes the user experience.
+      </p>
+
+      <h3>What should I draw in a frontend architecture interview?</h3>
+      <p>
+        Draw the browser, app shell, router and rendering boundary, server-state cache, UI state, API or BFF boundary,
+        downstream services, failure paths, and observability hooks.
+      </p>
+
+      <h3>When should I use a BFF in frontend system design?</h3>
+      <p>
+        Use a BFF when it reduces client orchestration, aggregates multiple APIs, shapes auth/session-aware responses,
+        enables partial responses, or gives a cleaner caching and latency boundary. Skip it when it is backend topology noise.
+      </p>
+
+      <h3>How is frontend architecture different from data model or interface design?</h3>
+      <p>
+        Architecture chooses system boundaries, rendering modes, data flow, cache layers, and resilience paths. Data model
+        details entities and ownership, while interface design details components, interactions, accessibility, and UI states.
+      </p>
 
       <h2>Next</h2>
       <ul>
