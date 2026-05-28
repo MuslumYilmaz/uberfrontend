@@ -147,6 +147,49 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets 5-step answer method intent on the framework quick-start page', () => {
+    const framework = SYSTEM.find((entry) => entry.slug === 'framework');
+    expect(framework).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      framework!
+    );
+
+    expect(meta.title).toBe('Frontend System Design 5-Step Answer Method');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/framework');
+    expect(meta.description).toBe(
+      'Use a 5-step frontend system design interview flow to clarify requirements, map components, define data contracts, choose architecture, and close trade-offs.',
+    );
+    expect(meta.keywords).toContain('frontend system design 5 step method');
+    expect(meta.keywords).toContain('frontend system design answer flow');
+    expect(meta.keywords).toContain('frontend system design interview structure');
+    expect(meta.keywords).toContain('how to structure frontend system design interview');
+    expect(meta.keywords).toContain('frontend system design interview framework');
+    expect(meta.keywords).toContain('frontend system design answer method');
+    expect(meta.keywords).toContain('45 minute frontend system design interview');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design 5 step method');
+    expect(faqPage?.name).toBe('Frontend system design 5-step answer method FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is a frontend system design answer method?',
+      'How should I structure a frontend system design interview answer?',
+      'How much time should each step take?',
+      'What is the difference between this 5-step method and RADIO?',
+      'What should I say at the end of a frontend system design answer?',
+    ]);
+  });
+
   it('targets overview intent and FAQ schema on the frontend system design intro page', () => {
     const intro = SYSTEM.find((entry) => entry.slug === 'intro');
     expect(intro).toBeDefined();
