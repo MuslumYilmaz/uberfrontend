@@ -213,6 +213,71 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend architecture intent on the system design architecture page', () => {
+    const architecture = SYSTEM.find((entry) => entry.slug === 'architecture');
+    expect(architecture).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      architecture!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Architecture Guide');
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/architecture');
+    expect(meta.description).toBe(
+      'Design frontend system architecture with client-side boundaries, rendering strategy, data flow, caching, BFF trade-offs, and interview-ready diagrams.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords).toContain('frontend system design architecture guide');
+    expect(meta.keywords).toContain('frontend architecture interview guide');
+    expect(meta.keywords).toContain('frontend rendering strategy system design');
+    expect(meta.keywords).toContain('frontend client side architecture interview');
+    expect(meta.keywords).toContain('CSR vs SSR frontend system design');
+    expect(meta.keywords).toContain('frontend architecture diagram interview');
+    expect(meta.keywords).toContain('frontend system design BFF');
+    expect(meta.keywords).toContain('route by route rendering strategy');
+    expect(meta.keywords).toContain('frontend system design tradeoffs');
+    expect(meta.keywords).toContain('what is frontend system design architecture');
+    expect(meta.keywords).toContain('what should I draw in a frontend architecture interview');
+    expect(meta.keywords).toContain('how to choose CSR SSR SSG edge rendering');
+    expect(meta.keywords).toContain('when to use BFF in frontend system design');
+    expect(meta.keywords).toContain('frontend system design client side boundaries');
+    expect(meta.keywords).toContain('frontend system design data flow caching');
+    expect(meta.keywords).toContain('frontend architecture interview rendering strategy');
+    expect(meta.keywords).toContain('frontend system design architecture diagram');
+    expect(meta.keywords).toContain('autocomplete frontend architecture interview');
+    expect(meta.keywords).toContain('news feed frontend architecture system design');
+    expect(meta.keywords).toContain('dashboard widgets frontend architecture');
+    expect(meta.keywords).toContain('AI chat frontend architecture system design');
+    expect(meta.keywords).toContain('design system architecture frontend interview');
+    expect(meta.keywords).not.toContain('frontend system design interview questions');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design architecture guide');
+    expect(article?.keywords).toContain('frontend architecture diagram interview');
+    expect(article?.keywords).toContain('frontend system design BFF');
+    expect(article?.keywords).toContain('autocomplete frontend architecture interview');
+    expect(article?.keywords).toContain('design system architecture frontend interview');
+    expect(faqPage?.name).toBe('Frontend system design architecture FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is frontend system design architecture?',
+      'How do I choose CSR, SSR, SSG, or edge rendering?',
+      'What should I draw in a frontend architecture interview?',
+      'When should I use a BFF in frontend system design?',
+      'How is frontend architecture different from data model or interface design?',
+    ]);
+  });
+
   it('targets 5-step answer method intent on the framework quick-start page', () => {
     const framework = SYSTEM.find((entry) => entry.slug === 'framework');
     expect(framework).toBeDefined();
