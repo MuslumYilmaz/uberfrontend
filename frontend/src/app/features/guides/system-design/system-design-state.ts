@@ -135,6 +135,48 @@ SearchResponse &#123;
         <li>Include metadata needed for UI state decisions (for example, <code>stale</code>, <code>partial</code>).</li>
       </ul>
 
+      <h2>API data contracts for frontend system design</h2>
+      <p>
+        A strong <strong>frontend API contracts interview</strong> answer explains not only the endpoint shape,
+        but also how the contract drives UI states, cache keys, pagination, realtime updates, and failure recovery.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Contract style</th>
+            <th>Use when</th>
+            <th>Frontend data-model decision</th>
+            <th>Risk to call out</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>REST resource endpoints</td>
+            <td>Entities and list/detail screens are stable</td>
+            <td>Stable IDs, cursor shape, field visibility, HTTP cache headers</td>
+            <td>Over-fetching or inconsistent error shape across endpoints</td>
+          </tr>
+          <tr>
+            <td>GraphQL query shape</td>
+            <td>Views need flexible fields across related entities</td>
+            <td>Normalized cache keys, fragments, nullability, permission-safe fields</td>
+            <td>Hidden N+1 cost and fragile client assumptions about optional fields</td>
+          </tr>
+          <tr>
+            <td>WebSocket / SSE stream</td>
+            <td>Freshness changes the experience</td>
+            <td>Event schema, ordering token, dedupe key, reconnect and replay rules</td>
+            <td>Out-of-order events and memory growth from unbounded streams</td>
+          </tr>
+          <tr>
+            <td>BFF-shaped response</td>
+            <td>One screen aggregates multiple services</td>
+            <td>Partial response metadata, per-section freshness, shaped payloads</td>
+            <td>BFF becoming a hidden source of business logic drift</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>State Ownership Model</h2>
       <table>
         <thead>
@@ -163,6 +205,48 @@ SearchResponse &#123;
             <td>Router/query params</td>
             <td>Query, filters, sort, page cursor</td>
             <td>State not shareable/bookmarkable</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Server state vs client state vs URL state</h2>
+      <p>
+        Most frontend system design state management mistakes come from putting the same truth in too many places.
+        Treat this table as the core <strong>server state vs client state frontend</strong> split.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>State type</th>
+            <th>Source of truth</th>
+            <th>Persistence</th>
+            <th>Common mistake</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Server state</td>
+            <td>API response + server-state cache</td>
+            <td>Cache TTL, background refresh, invalidation events</td>
+            <td>Mirroring entities into a global UI store and losing freshness rules</td>
+          </tr>
+          <tr>
+            <td>Client UI state</td>
+            <td>Component or scoped UI store</td>
+            <td>Usually ephemeral; persist only drafts or user preferences</td>
+            <td>Putting modal, hover, focus, and optimistic flags into URL or server contracts</td>
+          </tr>
+          <tr>
+            <td>URL state</td>
+            <td>Router query params</td>
+            <td>Shareable across reload, back/forward, and links</td>
+            <td>Keeping filters, sort, and cursor only in memory so the page cannot be shared</td>
+          </tr>
+          <tr>
+            <td>Derived state</td>
+            <td>Computed from server, URL, or UI state</td>
+            <td>Recompute; do not store unless expensive and memoized</td>
+            <td>Persisting derived totals and creating stale duplicates</td>
           </tr>
         </tbody>
       </table>
@@ -410,6 +494,48 @@ SearchResponse &#123;
         </tbody>
       </table>
 
+      <h2>Prompt-specific state and data decisions</h2>
+      <p>
+        Practice prompts are where <strong>frontend system design data flow</strong> becomes concrete.
+        Name the entity model, cache key, invalidation trigger, and UI state for the prompt in front of you.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Prompt</th>
+            <th>State and data decisions</th>
+            <th>Interview risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Real-time Search</a></td>
+            <td>Query-keyed suggestion cache, latest-query-wins guard, URL query, stale and empty states</td>
+            <td>Showing results from an older request after the user typed a newer query</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'news-feed-timeline']">News Feed</a></td>
+            <td>Post/author/cursor entities, normalized cache, pagination keys, reaction optimistic updates</td>
+            <td>Duplicate feed items, cursor drift, or stale reactions after rollback</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard Widgets</a></td>
+            <td>Widget entity, layout persistence, per-widget server state, user preference state</td>
+            <td>One widget refresh invalidating the whole dashboard or losing layout on reload</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">AI Chat</a></td>
+            <td>Draft state, message entities, streaming event schema, optimistic send, retry/reconnect state</td>
+            <td>Duplicated messages or lost drafts after network interruption</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'component-design-system-architecture']">Design System Architecture</a></td>
+            <td>Token contracts, component API versions, package metadata, adoption telemetry</td>
+            <td>Breaking consumers because versioned contracts and migration state are unclear</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>What to Say Out Loud (Data Model Script Cues)</h2>
       <ol>
         <li>"I will define entities and ownership boundaries before discussing libraries."</li>
@@ -540,6 +666,37 @@ SearchResponse &#123;
         <li>Mutation rollback and conflict handling are defined.</li>
         <li>Security, privacy, and observability considerations are included.</li>
       </ul>
+
+      <h2>Data Model FAQ</h2>
+      <h3>What is a frontend state and data model in system design?</h3>
+      <p>
+        It is the part of a frontend system design answer where you define entities, API contracts, server state,
+        client state, URL state, cache keys, invalidation, UI states, and mutation behavior.
+      </p>
+
+      <h3>How do I separate server state, client state, and URL state?</h3>
+      <p>
+        Keep server state in API-backed cache, transient interaction state in components or UI stores, and shareable
+        navigation state such as search, filters, sort, and cursor in the URL.
+      </p>
+
+      <h3>What should frontend API contracts include?</h3>
+      <p>
+        Frontend API contracts should include stable IDs, timestamps or versions, pagination shape, error shape,
+        stale or partial metadata, permission-sensitive fields, and the UI state each response can produce.
+      </p>
+
+      <h3>How should I explain cache invalidation in a frontend interview?</h3>
+      <p>
+        Define query keys first, then name TTLs, mutation-triggered invalidation, permission-change invalidation,
+        background refresh behavior, and what the user sees when data is stale.
+      </p>
+
+      <h3>When should I use optimistic updates?</h3>
+      <p>
+        Use optimistic updates when the action is low risk, the rollback path is explicit, conflicts are modeled,
+        and the UI can reconcile the server response without hiding divergence.
+      </p>
 
       <h2>Next</h2>
       <ul>
