@@ -375,6 +375,63 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         and Optimizations closes with performance, reliability, observability, security, and trade-offs.
       </p>
 
+      <h2>RADIO framework snapshot</h2>
+      <p>
+        Use this RADIO framework frontend system design snapshot when you need the short version:
+        each step has a purpose, a visible output, and a signal the interviewer can score.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>RADIO step</th>
+            <th>Purpose</th>
+            <th>Typical output</th>
+            <th>Interviewer signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Requirements</strong></td>
+            <td>Lock user, flow, constraints, non-goals, and success metrics.</td>
+            <td>Scope box, NFR list, assumptions, and priority order.</td>
+            <td>You prevent the answer from solving the wrong problem.</td>
+          </tr>
+          <tr>
+            <td><strong>Architecture</strong></td>
+            <td>Show the frontend system shape and delivery path.</td>
+            <td>Client architecture, rendering choice, data flow, and failure path.</td>
+            <td>You connect product needs to technical boundaries.</td>
+          </tr>
+          <tr>
+            <td><strong>Data</strong></td>
+            <td>Define truth, ownership, cache behavior, and consistency rules.</td>
+            <td>Entities, state split, cache keys, invalidation, and stale-state rules.</td>
+            <td>You understand where frontend complexity and race conditions live.</td>
+          </tr>
+          <tr>
+            <td><strong>Interface</strong></td>
+            <td>Turn the design into component, API, event, and accessibility contracts.</td>
+            <td>Component tree, API/interface contract, state map, keyboard and error behavior.</td>
+            <td>You can make architecture implementable for real users.</td>
+          </tr>
+          <tr>
+            <td><strong>Optimizations</strong></td>
+            <td>Prioritize the riskiest production constraints and measurable trade-offs.</td>
+            <td>Performance budget, observability plan, security baseline, and trade-off backlog.</td>
+            <td>You can defend production readiness instead of listing random improvements.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What each RADIO step proves to the interviewer</h2>
+      <ul class="mini-checklist">
+        <li><strong>Requirements:</strong> you can scope ambiguity and protect the core user flow.</li>
+        <li><strong>Architecture:</strong> you can draw frontend boundaries before debating implementation details.</li>
+        <li><strong>Data:</strong> you can separate server truth, client state, cache state, and stale UI risk.</li>
+        <li><strong>Interface:</strong> you can define component responsibility, API behavior, accessibility, and user states.</li>
+        <li><strong>Optimizations:</strong> you can prioritize performance, reliability, observability, security, and trade-offs.</li>
+      </ul>
+
       <h2>45-minute interview flow</h2>
       <div class="radio-flow" aria-label="45-minute RADIO interview flow">
         <div class="radio-flow-step">
@@ -440,6 +497,49 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         Before you move on, confirm that your answer has scope, architecture, data contracts, user-visible
         interface behavior, and at least one measurable production trade-off.
       </p>
+
+      <h2>Interface taxonomy</h2>
+      <p>
+        Interface is where many frontend system design answers stay too vague. Make the contract explicit:
+        what crosses the network, what crosses component boundaries, what crosses realtime channels, and how
+        errors become user-visible states.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Interface type</th>
+            <th>What to define</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Server-client API contracts</strong></td>
+            <td>Request shape, response shape, pagination, auth, errors, retries, and rate limits.</td>
+            <td>Prevents hand-wavy backend dependency and makes loading, stale, and failure states concrete.</td>
+          </tr>
+          <tr>
+            <td><strong>Client-client events/callbacks</strong></td>
+            <td>Cross-component events, callbacks, store actions, analytics events, and cancellation behavior.</td>
+            <td>Keeps ownership clear when multiple surfaces react to one user intent.</td>
+          </tr>
+          <tr>
+            <td><strong>Component props/events</strong></td>
+            <td>Controlled vs uncontrolled props, emitted events, state ownership, validation, and disabled states.</td>
+            <td>Turns architecture into reusable UI contracts that a team can implement.</td>
+          </tr>
+          <tr>
+            <td><strong>Realtime event schema</strong></td>
+            <td>Event name, payload, ordering, dedupe key, reconnect behavior, and optimistic rollback rules.</td>
+            <td>Prevents realtime UI from drifting out of sync under retries, reconnects, or duplicate events.</td>
+          </tr>
+          <tr>
+            <td><strong>Error taxonomy and UI state mapping</strong></td>
+            <td>Validation, auth, rate limit, timeout, partial failure, stale data, empty result, and retry states.</td>
+            <td>Shows that the interface works outside the happy path and remains understandable to users.</td>
+          </tr>
+        </tbody>
+      </table>
 
       <h2>RADIO Cheat Sheet</h2>
       <div class="radio-steps">
@@ -955,11 +1055,11 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
       </table>
 
       <h2>RADIO Framework FAQ</h2>
-      <h3>What is the RADIO framework for frontend system design interviews?</h3>
+      <h3>What is the RADIO framework in frontend system design?</h3>
       <p>
-        RADIO is a practical answer method for frontend system design interviews. It moves through Requirements,
-        Architecture, Data, Interface, and Optimizations so the answer has scope, system shape, contracts, user
-        behavior, and trade-offs instead of disconnected ideas.
+        RADIO is a frontend system design answer template that moves through Requirements,
+        Architecture, Data, Interface, and Optimizations so the answer has scope, system shape,
+        contracts, user behavior, and production trade-offs.
       </p>
 
       <h3>How do I use RADIO to answer a frontend system design interview question?</h3>
@@ -969,25 +1069,24 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         flow as the thread so every RADIO step supports the same answer.
       </p>
 
-      <h3>What should I cover in Requirements, Architecture, Data, Interface, and Optimizations?</h3>
+      <h3>What should I draw during a RADIO answer?</h3>
       <p>
-        Requirements covers scope, users, constraints, and success metrics. Architecture covers rendering,
-        client/server boundaries, routing, data flow, and dependencies. Data covers contracts, state ownership, cache
-        keys, and invalidation; Interface covers components, states, accessibility, and events; Optimizations covers
-        performance, reliability, observability, security, and trade-offs.
+        Draw a scope box, client architecture, request flow, data contract, component/interface ownership,
+        UI state map, and optimization backlog. Each artifact should connect to the same core user flow.
       </p>
 
-      <h3>How does RADIO work in a 45-minute system design interview?</h3>
+      <h3>How do I use RADIO for autocomplete, news feed, or chat?</h3>
       <p>
-        In a 45-minute interview, spend a few minutes on requirements, then move quickly through architecture, data
-        model, interface behavior, and optimizations. The goal is not equal time on every step; it is a defensible path
-        from problem scope to production trade-offs.
+        Keep the RADIO steps stable while the prompt changes. For autocomplete, go deep on stale requests and
+        combobox behavior; for news feed, pagination and cache consistency; for chat, realtime events, drafts,
+        and recovery.
       </p>
 
-      <h3>Is RADIO only for frontend system design?</h3>
+      <h3>Is RADIO the best framework for frontend system design interviews?</h3>
       <p>
-        No. RADIO can structure broader system design answers, but this page adapts it for frontend-heavy interviews
-        where rendering, state, accessibility, browser performance, API contracts, and UI failure states matter most.
+        RADIO is a strong default because it keeps frontend answers ordered from scope to architecture, data
+        contracts, interface behavior, and optimization trade-offs. Adapt it when the interviewer asks to go deeper
+        in one area.
       </p>
 
       <h2>Next</h2>
