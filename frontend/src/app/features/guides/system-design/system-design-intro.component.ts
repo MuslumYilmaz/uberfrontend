@@ -37,6 +37,18 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Those chapters turn the scoring signals here into a practical workflow.
       </p>
 
+      <h2>What this intro covers</h2>
+      <p>
+        Use this page to calibrate what the round is really testing before you memorize
+        diagrams or jump into prompt practice. By the end, you should know:
+      </p>
+      <ul>
+        <li><strong>Interview purpose:</strong> why senior frontend loops include open-ended architecture rounds.</li>
+        <li><strong>Frontend-vs-backend scope:</strong> where browser, state, API, and UX decisions matter more than distributed-systems depth.</li>
+        <li><strong>Scoring signals:</strong> how interviewers evaluate requirements, architecture, data, interface, performance, and communication.</li>
+        <li><strong>Next practice path:</strong> how to move from this overview into RADIO, deep dives, prompts, and the final checklist.</li>
+      </ul>
+
       <h2>Why companies ask these questions</h2>
       <p>
         Front-end system design interviews exist because companies want to see 
@@ -65,99 +77,149 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </li>
       </ul>
 
-      <h2>What makes front-end system design unique</h2>
+      <h2>Frontend vs backend system design</h2>
       <p>
-        Most system design guides focus on backend topics—databases, queues, load balancers. 
-        But front-end design challenges are different: they’re about <em>scaling complexity 
-        for users and developers</em>. In interviews, expect to dive into areas like:
+        Most system design guides focus on backend topics: databases, queues, load balancers,
+        consistency, and infrastructure scale. Frontend system design still needs backend
+        awareness, but the score is usually centered on how the product behaves in the browser.
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Frontend focus</th>
+              <th>Backend focus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Architecture boundary</td>
+              <td>Routes, rendering strategy, component ownership, data-fetching layer, and client modules.</td>
+              <td>Services, databases, queues, caches, gateways, and infrastructure ownership.</td>
+            </tr>
+            <tr>
+              <td>Data model</td>
+              <td>Client state, server cache, derived view models, optimistic updates, and invalidation.</td>
+              <td>Database schema, consistency model, storage partitioning, replication, and retention.</td>
+            </tr>
+            <tr>
+              <td>API focus</td>
+              <td>REST/GraphQL/WebSocket contracts, pagination, error shape, auth edge cases, and retry behavior.</td>
+              <td>Service-to-service APIs, protocols, ownership boundaries, rate limits, and compatibility.</td>
+            </tr>
+            <tr>
+              <td>Performance</td>
+              <td>Core Web Vitals, bundle size, hydration, virtualization, slow devices, and interaction latency.</td>
+              <td>Throughput, queue pressure, database hot spots, replication lag, and regional availability.</td>
+            </tr>
+            <tr>
+              <td>Failure modes</td>
+              <td>Loading, empty, error, stale, offline, partial data, and broken interaction states.</td>
+              <td>Outages, retries, data loss, overload, failover, and dependency failures.</td>
+            </tr>
+            <tr>
+              <td>Evaluation</td>
+              <td>User experience, accessibility, state clarity, frontend reliability, and tradeoff narration.</td>
+              <td>Scale, durability, availability, consistency, cost, and operational complexity.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Scoring rubric: what interviewers score</h2>
+      <p>
+        In a system design interview, the “right answer” matters less than the signals
+        you send about how you think. A strong answer usually scores across these axes:
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Scoring axis</th>
+              <th>What good looks like</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Requirements clarity</td>
+              <td>You confirm users, core flow, non-functional requirements, constraints, and out-of-scope work before designing.</td>
+            </tr>
+            <tr>
+              <td>Frontend architecture</td>
+              <td>You choose rendering, routing, module boundaries, and ownership based on product constraints instead of habit.</td>
+            </tr>
+            <tr>
+              <td>State, data, and API contracts</td>
+              <td>You separate local UI state, server cache, URL state, mutations, pagination, and realtime update paths.</td>
+            </tr>
+            <tr>
+              <td>UX and accessibility</td>
+              <td>You include keyboard paths, screen-reader feedback, responsive behavior, and loading/error/empty states.</td>
+            </tr>
+            <tr>
+              <td>Performance and reliability</td>
+              <td>You name the likely bottlenecks, set budgets, degrade gracefully, and describe observability or rollout checks.</td>
+            </tr>
+            <tr>
+              <td>Communication and tradeoffs</td>
+              <td>You prioritize v1, state what you defer, explain why, and keep the interviewer aligned as constraints change.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Common prompt families to recognize</h2>
+      <p>
+        You do not need to memorize every company-branded prompt. Learn the recurring
+        families and map each one back to requirements, architecture, data, interface,
+        and optimization decisions:
       </p>
       <ul>
         <li>
-          <strong>Rendering strategies:</strong> Should this be a 
-          Single-Page App for snappy navigation, Server-Side Rendered for SEO, or 
-          a hybrid (static pages with islands) for the best of both worlds?
+          <a [routerLink]="['/system-design/infinite-scroll-list']">Infinite Scroll</a>:
+          pagination, virtualization, loading policy, and scroll performance.
         </li>
         <li>
-          <strong>State management:</strong> When does local state in a component 
-          suffice, and when do you need global state or even server-side caching? 
-          Think of designing a chat app vs a static product page.
+          <a [routerLink]="['/system-design/realtime-search-debounce-cache']">Real-time Search</a>:
+          request lifecycle, debouncing, stale responses, caching, and perceived speed.
         </li>
         <li>
-          <strong>Performance levers:</strong> How do you keep load times fast? 
-          Code splitting, lazy loading routes, compressing images, or prefetching 
-          critical data can all be on the table.
+          <a [routerLink]="['/system-design/news-feed-timeline']">News Feed</a>:
+          feed hydration, media loading, cursor strategy, realtime updates, and ranking boundaries.
         </li>
         <li>
-          <strong>Cross-cutting concerns:</strong> Accessibility, internationalization, 
-          and offline-first support often make the difference between a good design 
-          and a great one—especially at scale.
+          <a [routerLink]="['/system-design/notification-toast-system']">Notification Toast</a>:
+          global APIs, queues, timers, portals, and accessible announcements.
+        </li>
+        <li>
+          <a [routerLink]="['/system-design/ai-chat-textarea-design']">AI Chat Text Area</a>:
+          streaming, cancellation, persistence, API boundaries, and recovery states.
+        </li>
+        <li>
+          <a [routerLink]="['/system-design/component-design-system-architecture']">Design System Architecture</a>:
+          tokens, component APIs, theming, accessibility contracts, and versioning.
         </li>
       </ul>
 
-      <h2>Signals interviewers look for</h2>
+      <h2>How to use this blueprint after the intro</h2>
       <p>
-        In a system design interview, the “right answer” matters less than the signals 
-        you send about how you think. Here are the qualities interviewers watch for:
+        Treat this intro as calibration. Once the scoring model is clear, move into
+        the pieces that make your answer repeatable under time pressure.
       </p>
       <ol>
+        <li>Start with <a [routerLink]="['/guides/system-design-blueprint/foundations']">scope, constraints, and trade-offs</a>.</li>
+        <li>Learn the <a [routerLink]="['/guides/system-design-blueprint/radio-framework']">RADIO framework answer template</a>.</li>
         <li>
-          <strong>Clarity of thought:</strong> Do you pause to confirm what problem 
-          you’re solving before drawing boxes? For example, asking 
-          “Do we need offline support?” shows you care about real-world context.
+          Deep dive the weakest RADIO step:
+          <a [routerLink]="['/guides/system-design-blueprint/radio-requirements']">Requirements</a>,
+          <a [routerLink]="['/guides/system-design-blueprint/architecture']">Architecture</a>,
+          <a [routerLink]="['/guides/system-design-blueprint/state-data']">Data</a>,
+          <a [routerLink]="['/guides/system-design-blueprint/ux']">Interface</a>, or
+          <a [routerLink]="['/guides/system-design-blueprint/performance']">Optimizations</a>.
         </li>
-        <li>
-          <strong>Structure:</strong> Is your answer organized, or just a brain dump? 
-          Walking through requirements → architecture → trade-offs tells them 
-          you can guide a team through messy discussions.
-        </li>
-        <li>
-          <strong>Depth in trade-offs:</strong> Can you explain <em>why</em> you’d pick 
-          one option? Saying “SSR improves SEO but adds server complexity” is much 
-          stronger than simply naming “SSR.”
-        </li>
-        <li>
-          <strong>User awareness:</strong> Do you remember the people using the app? 
-          Mentioning accessibility for screen readers, or performance on 3G networks, 
-          signals that you’re user-first, not just code-first.
-        </li>
-        <li>
-          <strong>Prioritization:</strong> Can you separate “must-haves” from “nice-to-haves”? 
-          For example: “For v1 we’ll keep images static; at scale, we’d add a CDN.” 
-          That shows you balance speed of delivery with long-term vision.
-        </li>
-      </ol>
-
-
-      <h2>A lightweight structure to follow</h2>
-      <p>
-        When you’re under time pressure, it helps to have a simple roadmap in your head. 
-        Here’s a five-step flow you can apply to almost any front-end system design question:
-      </p>
-      <ol>
-        <li>
-          <strong>Clarify:</strong> Start by making sure you know the problem. 
-          Ask questions like “Who are the users? Do we need SEO? Should it work offline?” 
-          This shows you care about context, not just code.
-        </li>
-        <li>
-          <strong>Break down:</strong> Split the feature into logical parts. 
-          For a news feed, that might be the composer, feed list, and notifications. 
-          This makes a big problem feel manageable.
-        </li>
-        <li>
-          <strong>Choose an architecture:</strong> Decide how it should render. 
-          CSR for simplicity, SSR for SEO and first paint, or a hybrid model for scale. 
-          Don’t just name one—explain why it fits the scenario.
-        </li>
-        <li>
-          <strong>Address cross-cutting concerns:</strong> Call out performance, accessibility, 
-          internationalization, and testing. These are the details senior engineers never forget.
-        </li>
-        <li>
-          <strong>Summarize trade-offs:</strong> Wrap up with what you’d ship for v1 
-          and what you’d improve later. Example: “We’ll start with CSR to move fast, 
-          then add SSR if SEO becomes a priority.”
-        </li>
+        <li>Apply the framework to real <a [routerLink]="['/system-design']">frontend system design prompts</a>.</li>
+        <li>Finish each practice round with the <a [routerLink]="['/guides/system-design-blueprint/checklist']">one-page checklist</a>.</li>
       </ol>
 
       <h2>The mindset shift</h2>
@@ -168,16 +230,44 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         team constraints, and technical trade-offs.
       </p>
       <p>
-        Think of it less as a test and more as a conversation. 
-        Your goal is to <em>walk the interviewer through your thinking</em>: 
-        what you’d clarify, how you’d structure the problem, and why you’d 
-        make certain choices. Even if your design isn’t perfect, 
-        this teaching mindset makes you stand out.
+        Think of it less as a test and more as a conversation. Your goal is to
+        walk the interviewer through what you clarify, how you structure the
+        problem, why you make certain choices, and what you would revisit as
+        constraints change.
       </p>
+
+      <h2>FAQ</h2>
+      <h3>What do frontend system design interviews test?</h3>
       <p>
-        The shift is simple: you’re not there to prove you know everything. 
-        You’re there to prove you can guide a team through messy, real-world 
-        decisions with clarity and empathy. That’s what companies are hiring for.
+        They test requirements clarity, frontend architecture, state and API contracts,
+        UX and accessibility, performance and reliability, and tradeoff communication.
+      </p>
+
+      <h3>How is frontend system design different from backend system design?</h3>
+      <p>
+        Frontend design focuses on browser rendering, component boundaries, client
+        state, API consumption, accessibility, and user-visible failure states. Backend
+        design focuses more on services, storage, queues, replication, and infrastructure scale.
+      </p>
+
+      <h3>What do interviewers look for in frontend system design?</h3>
+      <p>
+        Interviewers look for structured scoping, product-aware architecture, clear
+        data ownership, practical edge-case handling, and the ability to explain
+        tradeoffs without overbuilding.
+      </p>
+
+      <h3>Do frontend engineers need backend depth for system design interviews?</h3>
+      <p>
+        You need enough backend context to discuss contracts, auth, pagination,
+        caching, and failure behavior. You usually do not need deep capacity planning
+        unless the interviewer explicitly asks for it.
+      </p>
+
+      <h3>Where should I practice after this frontend system design intro?</h3>
+      <p>
+        Move into the <a [routerLink]="['/guides/system-design-blueprint/radio-framework']">RADIO framework</a>,
+        then practice real prompts under <a [routerLink]="['/system-design']">frontend system design questions</a>.
       </p>
     </fa-guide-shell>
   `,
