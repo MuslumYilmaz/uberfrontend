@@ -147,6 +147,92 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets overview intent and FAQ schema on the frontend system design intro page', () => {
+    const intro = SYSTEM.find((entry) => entry.slug === 'intro');
+    expect(intro).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      intro!
+    );
+
+    expect(meta.title).toBe('Front-End System Design Interview: What It Really Tests');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/intro');
+    expect(meta.description).toBe(
+      'Learn what frontend system design interviews test, how frontend scope differs from backend design, what interviewers score, and where to practice next.',
+    );
+    expect(meta.keywords).toContain('what frontend system design interviews test');
+    expect(meta.keywords).toContain('frontend system design interview overview');
+    expect(meta.keywords).toContain('frontend vs backend system design');
+    expect(meta.keywords).toContain('frontend system design interview signals');
+    expect(meta.keywords).toContain('what interviewers look for frontend system design');
+    expect(meta.keywords).toContain('frontend system design for senior frontend engineers');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.keywords).toContain('what frontend system design interviews test');
+    expect(faqPage?.name).toBe('Frontend system design interview overview FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What do frontend system design interviews test?',
+      'How is frontend system design different from backend system design?',
+      'What do interviewers look for in frontend system design?',
+      'Do frontend engineers need backend depth for system design interviews?',
+      'Where should I practice after this frontend system design intro?',
+    ]);
+  });
+
+  it('targets requirements, constraints, and tradeoff intent on the foundations page', () => {
+    const foundations = SYSTEM.find((entry) => entry.slug === 'foundations');
+    expect(foundations).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      foundations!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Interview Foundations: Scope and Trade-offs');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/foundations');
+    expect(meta.description).toBe(
+      'Clarify frontend system design interview requirements, constraints, scope questions, and trade-offs in the first 5-8 minutes before architecture.',
+    );
+    expect(meta.keywords).toContain('frontend system design requirements and tradeoffs');
+    expect(meta.keywords).toContain('frontend system design constraints');
+    expect(meta.keywords).toContain('frontend system design scope questions');
+    expect(meta.keywords).toContain('system design clarification questions frontend');
+    expect(meta.keywords).toContain('frontend system design tradeoffs');
+    expect(meta.keywords).toContain('requirements clarification frontend system design');
+    expect(meta.keywords).toContain('frontend system design interview foundations');
+    expect(meta.keywords).toContain('frontend system design requirements checklist');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design requirements and tradeoffs');
+    expect(faqPage?.name).toBe('Frontend system design requirements and tradeoffs FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What requirements should I clarify in a frontend system design interview?',
+      'How long should requirements clarification take?',
+      'What frontend constraints matter most before architecture?',
+      'How do I explain trade-offs in a frontend system design interview?',
+      'What mistakes should I avoid before drawing architecture?',
+    ]);
+  });
+
   it('targets React preparation long-tail queries on the React prep path', () => {
     const reactPrep = PLAYBOOK.find((entry) => entry.slug === 'react-prep-path');
     expect(reactPrep).toBeDefined();

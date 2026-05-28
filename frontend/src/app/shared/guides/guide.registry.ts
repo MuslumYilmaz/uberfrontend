@@ -388,11 +388,43 @@ export const SYSTEM: GuideEntry[] = [
         summary: 'Learn what a front-end system design interview really scores, the senior trade-offs backend-heavy guides miss, and how to structure answers under pressure.',
         seo: {
             title: 'Front-End System Design Interview: What It Really Tests',
-            description: 'Learn what a front-end system design interview really scores, the senior trade-offs backend-heavy guides miss, and how to structure answers under pressure.',
-            primaryKeyword: 'front-end system design',
-            keywords: ['front-end system design', 'frontend system design overview', 'what frontend system design tests'],
+            description: 'Learn what frontend system design interviews test, how frontend scope differs from backend design, what interviewers score, and where to practice next.',
+            primaryKeyword: 'what frontend system design interviews test',
+            keywords: [
+                'frontend system design interview overview',
+                'frontend vs backend system design',
+                'frontend system design interview signals',
+                'what interviewers look for frontend system design',
+                'frontend system design for senior frontend engineers',
+            ],
+            faqPage: {
+                name: 'Frontend system design interview overview FAQ',
+                items: [
+                    {
+                        question: 'What do frontend system design interviews test?',
+                        answer: 'Frontend system design interviews test how you clarify requirements, choose client architecture, model state and API contracts, handle UX and accessibility, and explain performance or reliability tradeoffs.',
+                    },
+                    {
+                        question: 'How is frontend system design different from backend system design?',
+                        answer: 'Frontend system design focuses on browser rendering, component boundaries, client state, API consumption, accessibility, and user-visible failures. Backend design focuses more on services, storage, queues, replication, and infrastructure scaling.',
+                    },
+                    {
+                        question: 'What do interviewers look for in frontend system design?',
+                        answer: 'Interviewers look for clear scoping, structured architecture, practical state and data decisions, user-aware edge cases, performance reasoning, and tradeoff communication.',
+                    },
+                    {
+                        question: 'Do frontend engineers need backend depth for system design interviews?',
+                        answer: 'Frontend engineers need enough backend awareness to define contracts, pagination, auth boundaries, caching, and failure behavior, but scoring usually prioritizes client architecture and user experience decisions.',
+                    },
+                    {
+                        question: 'Where should I practice after this frontend system design intro?',
+                        answer: 'After the intro, learn the RADIO framework, review the weakest deep dive, then practice real prompts such as infinite scroll, realtime search, news feeds, notifications, AI chat UI, and design system architecture.',
+                    },
+                ],
+            },
+            readerPromise: 'Use this intro to understand what frontend system design interviews test, how frontend scope differs from backend design, which signals interviewers score, and when to move into RADIO and practice prompts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-05-28',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-intro.component')
@@ -405,11 +437,45 @@ export const SYSTEM: GuideEntry[] = [
         summary: 'Clarifying requirements, identifying constraints, and making principled trade-offs before you draw boxes.',
         seo: {
             title: 'Frontend System Design Interview Foundations: Scope and Trade-offs',
-            description: 'Clarify requirements fast, define constraints, and prioritize trade-offs before architecture so your frontend system design interview answers stay structured.',
-            primaryKeyword: 'frontend system design interview foundations',
-            keywords: ['frontend system design interview foundations', 'system design scope constraints tradeoffs', 'frontend requirements and tradeoffs'],
+            description: 'Clarify frontend system design interview requirements, constraints, scope questions, and trade-offs in the first 5-8 minutes before architecture.',
+            primaryKeyword: 'frontend system design requirements and tradeoffs',
+            keywords: [
+                'frontend system design constraints',
+                'frontend system design scope questions',
+                'system design clarification questions frontend',
+                'frontend system design tradeoffs',
+                'requirements clarification frontend system design',
+                'frontend system design interview foundations',
+                'frontend system design requirements checklist',
+            ],
+            faqPage: {
+                name: 'Frontend system design requirements and tradeoffs FAQ',
+                items: [
+                    {
+                        question: 'What requirements should I clarify in a frontend system design interview?',
+                        answer: 'Clarify users, core flow, included and excluded features, device and network assumptions, data freshness, accessibility, security, performance budgets, and success metrics.',
+                    },
+                    {
+                        question: 'How long should requirements clarification take?',
+                        answer: 'In a 45-minute frontend system design interview, spend roughly the first 5-8 minutes on scope, constraints, and trade-offs before moving into architecture.',
+                    },
+                    {
+                        question: 'What frontend constraints matter most before architecture?',
+                        answer: 'SEO, realtime freshness, mobile performance, low-connectivity behavior, accessibility, auth boundaries, data volume, and observability requirements usually change frontend architecture.',
+                    },
+                    {
+                        question: 'How do I explain trade-offs in a frontend system design interview?',
+                        answer: 'Name the decision, connect it to the requirement, state what you gain, state what you give up, and explain when you would revisit the choice.',
+                    },
+                    {
+                        question: 'What mistakes should I avoid before drawing architecture?',
+                        answer: 'Avoid drawing before scope is clear, skipping non-functional requirements, making every feature v1, naming tools without trade-offs, and ignoring interviewer priorities.',
+                    },
+                ],
+            },
+            readerPromise: 'Use this foundations guide to clarify frontend system design requirements, constraints, and trade-offs in the first 5-8 minutes before moving into RADIO requirements and architecture.',
             publishedAt: '2025-08-31',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-05-28',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-foundations')
