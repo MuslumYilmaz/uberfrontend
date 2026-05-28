@@ -278,6 +278,71 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend state and data model intent on the system design data page', () => {
+    const stateData = SYSTEM.find((entry) => entry.slug === 'state-data');
+    expect(stateData).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      stateData!
+    );
+
+    expect(meta.title).toBe('Frontend State and Data Model System Design Guide');
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/state-data');
+    expect(meta.description).toBe(
+      'Design frontend state and data models for interviews with server/client state, API contracts, cache keys, invalidation, optimistic updates, and UI states.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords).toContain('frontend state and data model system design');
+    expect(meta.keywords).toContain('frontend system design state management');
+    expect(meta.keywords).toContain('frontend data model interview');
+    expect(meta.keywords).toContain('frontend API contracts interview');
+    expect(meta.keywords).toContain('frontend cache invalidation interview');
+    expect(meta.keywords).toContain('server state vs client state frontend');
+    expect(meta.keywords).toContain('frontend optimistic updates interview');
+    expect(meta.keywords).toContain('frontend URL state query params');
+    expect(meta.keywords).toContain('frontend normalized cache interview');
+    expect(meta.keywords).toContain('frontend system design data flow');
+    expect(meta.keywords).toContain('frontend system design cache keys');
+    expect(meta.keywords).toContain('what is a frontend state and data model in system design');
+    expect(meta.keywords).toContain('how to separate server state client state and URL state');
+    expect(meta.keywords).toContain('what should frontend API contracts include');
+    expect(meta.keywords).toContain('how to explain cache invalidation in frontend interview');
+    expect(meta.keywords).toContain('when should I use optimistic updates');
+    expect(meta.keywords).toContain('frontend UI states idle loading error stale partial');
+    expect(meta.keywords).toContain('frontend query keys TTL invalidation interview');
+    expect(meta.keywords).toContain('real time search frontend data model');
+    expect(meta.keywords).toContain('news feed normalized cache frontend system design');
+    expect(meta.keywords).toContain('dashboard widgets state ownership frontend');
+    expect(meta.keywords).toContain('AI chat streaming state frontend system design');
+    expect(meta.keywords).not.toContain('frontend system design interview questions');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend state and data model system design');
+    expect(article?.keywords).toContain('frontend API contracts interview');
+    expect(article?.keywords).toContain('frontend system design cache keys');
+    expect(article?.keywords).toContain('real time search frontend data model');
+    expect(article?.keywords).toContain('AI chat streaming state frontend system design');
+    expect(faqPage?.name).toBe('Frontend state and data model system design FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is a frontend state and data model in system design?',
+      'How do I separate server state, client state, and URL state?',
+      'What should frontend API contracts include?',
+      'How should I explain cache invalidation in a frontend interview?',
+      'When should I use optimistic updates?',
+    ]);
+  });
+
   it('targets 5-step answer method intent on the framework quick-start page', () => {
     const framework = SYSTEM.find((entry) => entry.slug === 'framework');
     expect(framework).toBeDefined();
