@@ -483,16 +483,49 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'framework',
-        title: 'A Reusable 5-Step Approach',
-        minutes: 10,
-        summary: 'A simple, repeatable structure for tackling any FE system design interview question.',
+        title: 'Frontend System Design 5-Step Answer Method',
+        minutes: 14,
+        summary: 'A quick-start answer flow for structuring frontend system design interviews before going deeper with RADIO.',
         seo: {
-            title: 'Frontend System Design Interview Framework: A Reusable 5-Step Method',
-            description: 'Use a repeatable 5-step interview framework to answer frontend system design prompts clearly, cover trade-offs, and avoid rambling under time pressure.',
-            primaryKeyword: 'frontend system design interview framework',
-            keywords: ['frontend system design interview framework', 'frontend system design 5 step method', 'system design answer framework'],
+            title: 'Frontend System Design 5-Step Answer Method',
+            description: 'Use a 5-step frontend system design interview flow to clarify requirements, map components, define data contracts, choose architecture, and close trade-offs.',
+            primaryKeyword: 'frontend system design 5 step method',
+            keywords: [
+                'frontend system design answer flow',
+                'frontend system design interview structure',
+                'how to structure frontend system design interview',
+                'frontend system design interview framework',
+                'frontend system design answer method',
+                '45 minute frontend system design interview',
+            ],
+            faqPage: {
+                name: 'Frontend system design 5-step answer method FAQ',
+                items: [
+                    {
+                        question: 'What is a frontend system design answer method?',
+                        answer: 'A frontend system design answer method is a repeatable interview structure for clarifying requirements, mapping UI surfaces, defining state and API contracts, choosing architecture, and closing with trade-offs.',
+                    },
+                    {
+                        question: 'How should I structure a frontend system design interview answer?',
+                        answer: 'Start with requirements, map the main surfaces and components, define state/data/API contracts, choose the architecture and rendering model, then stress-test the design and summarize trade-offs.',
+                    },
+                    {
+                        question: 'How much time should each step take?',
+                        answer: 'In a 45-minute frontend system design interview, spend about 0-5 minutes clarifying, 5-12 on surfaces, 12-22 on state/data/API, 22-35 on architecture, and 35-45 on risks and recap.',
+                    },
+                    {
+                        question: 'What is the difference between this 5-step method and RADIO?',
+                        answer: 'This 5-step method is a quick answer flow for staying organized. RADIO is the deeper frontend system design framework that expands Requirements, Architecture, Data, Interface, and Optimizations.',
+                    },
+                    {
+                        question: 'What should I say at the end of a frontend system design answer?',
+                        answer: 'Close by naming the v1 design, the biggest trade-offs, the risks you would monitor, and which improvements you would make if scale, reliability, or product needs changed.',
+                    },
+                ],
+            },
+            readerPromise: 'Use this 5-step frontend system design answer method to structure a 45-minute interview before going deeper with the RADIO framework.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-05-28',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-framework')
