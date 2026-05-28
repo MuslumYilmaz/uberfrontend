@@ -18,9 +18,10 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>If You Remember One Thing</h2>
       <p>
-        In a <strong>system design interview</strong>, requirements are where seniority is most visible. If you can define scope,
-        constraints, and measurable outcomes before architecture, your <strong>frontend system design</strong> answer becomes easier
-        to defend. This is the strongest first move in your <strong>system design interview preparation</strong> workflow.
+        In a <strong>system design interview</strong>, requirements are where seniority is most visible.
+        Treat <strong>RADIO Requirements</strong> as the first 5-8 minute checkpoint: clarify the user flow,
+        ask design-changing clarifying questions, define scope, constraints, and measurable outcomes,
+        then move into architecture with a defensible frontend system design answer.
       </p>
 
       <h2>Why Requirements Decide the Interview</h2>
@@ -34,6 +35,77 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><strong>Risk management:</strong> You surface unknowns and assumptions early.</li>
         <li><strong>Trade-off quality:</strong> Later architecture decisions become explicit and explainable.</li>
       </ul>
+
+      <h2>What the Requirements step must produce</h2>
+      <p>
+        The R step is done when you have visible outputs the interviewer can agree with.
+        Do not leave Requirements with only a list of questions; leave with artifacts that
+        make the architecture step easier to judge. Treat this as your frontend system design
+        requirements checklist before drawing boxes.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Output</th>
+            <th>What it captures</th>
+            <th>Architecture handoff</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Primary user flow</td>
+            <td>User, top task, start state, and success state.</td>
+            <td>"I will design around this end-to-end flow first."</td>
+          </tr>
+          <tr>
+            <td>Scope box</td>
+            <td>Must-have, nice-to-have, and out-of-scope work.</td>
+            <td>"I will keep v1 deep and park non-goals."</td>
+          </tr>
+          <tr>
+            <td>Top constraints</td>
+            <td>Performance, accessibility, offline, realtime, security, i18n, and platform limits.</td>
+            <td>"These constraints drive rendering, data, and interface choices."</td>
+          </tr>
+          <tr>
+            <td>Success metrics</td>
+            <td>Two or three measurable targets for speed, reliability, or task completion.</td>
+            <td>"I will optimize against these metrics, not vague adjectives."</td>
+          </tr>
+          <tr>
+            <td>Assumptions and risk log</td>
+            <td>Unknowns, risk if wrong, and the fastest validation question.</td>
+            <td>"If an assumption changes, I will revisit the affected boundary."</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Functional vs non-functional requirements in frontend system design</h2>
+      <p>
+        Strong requirements exploration separates what the product must do from the constraints that
+        decide how the frontend should be built.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Requirement type</th>
+            <th>Frontend examples</th>
+            <th>Design impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Functional requirements</td>
+            <td>Search suggestions, filter results, drag widgets, submit forms, show notifications.</td>
+            <td>Defines components, user states, flows, and API operations.</td>
+          </tr>
+          <tr>
+            <td>Non-functional requirements</td>
+            <td>Latency target, accessibility baseline, offline support, security, localization, observability.</td>
+            <td>Changes rendering, caching, data freshness, error handling, and rollout strategy.</td>
+          </tr>
+        </tbody>
+      </table>
 
       <h2>The 90-Second Opening Script</h2>
       <p>Use this script verbatim when the prompt starts:</p>
@@ -96,6 +168,43 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <td>Existing stack, API limits, launch deadline, team size?</td>
             <td>Keeps design grounded in delivery reality.</td>
             <td>Constraint ledger</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Good vs weak clarifying questions</h2>
+      <p>
+        The best frontend system design clarifying questions change the design. Avoid questions that
+        sound busy but do not affect scope, constraints, state, data, interface, or trade-offs.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Weak question</th>
+            <th>Stronger question</th>
+            <th>Why it is better</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Should it be fast?</td>
+            <td>What p95 latency should the core interaction hit on a mid-tier mobile device?</td>
+            <td>Turns a vague quality into a performance target.</td>
+          </tr>
+          <tr>
+            <td>Do we need accessibility?</td>
+            <td>Which keyboard and screen-reader flows must work in v1?</td>
+            <td>Creates an acceptance checklist for the Interface step.</td>
+          </tr>
+          <tr>
+            <td>How many users?</td>
+            <td>What are DAU, peak concurrent usage, and burst patterns for the core flow?</td>
+            <td>Shapes cache, realtime, and failure strategy.</td>
+          </tr>
+          <tr>
+            <td>Should it work offline?</td>
+            <td>Which actions need offline read, offline write, retry, or conflict resolution?</td>
+            <td>Separates simple cache fallback from sync-heavy architecture.</td>
           </tr>
         </tbody>
       </table>
@@ -243,6 +352,48 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </tbody>
       </table>
 
+      <h2>Prompt-specific requirements questions</h2>
+      <p>
+        Use these examples when the interviewer gives a common frontend system design prompt.
+        Each row names the requirements questions that should change architecture.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Prompt</th>
+            <th>Requirements questions that matter</th>
+            <th>Likely design impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Autocomplete / realtime search</a></td>
+            <td>Freshness target, stale response behavior, debounce budget, keyboard UX, empty/error states.</td>
+            <td>Request cancellation, cache keys, combobox contract, and stale-result protection.</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'news-feed-timeline']">News feed</a></td>
+            <td>Ranking ownership, pagination style, media volume, realtime updates, offline read behavior.</td>
+            <td>Cursor model, cache invalidation, virtualization, prefetching, and freshness policy.</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard widgets</a></td>
+            <td>Widget count, layout persistence, permissions, refresh rate, drag/resize constraints.</td>
+            <td>State ownership, persistence boundary, layout engine choice, and widget isolation.</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Notification system</a></td>
+            <td>Priority, queue limits, stacking, timers, user actions, aria-live announcement rules.</td>
+            <td>Global ownership, event API, dedupe policy, and accessibility behavior.</td>
+          </tr>
+          <tr>
+            <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">Chat / AI chat input</a></td>
+            <td>Streaming, reconnect behavior, message ordering, draft persistence, moderation states.</td>
+            <td>Realtime protocol, optimistic UI, retry model, and input-state recovery.</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>Worked Example: Typeahead Search (5-Min Requirements Pass)</h2>
       <h3>Minute 0:00-1:00</h3>
       <p>
@@ -296,6 +447,41 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li>Failure states are named and prioritized.</li>
         <li>You have a short assumptions + risk log to reference later.</li>
       </ul>
+
+      <h2>Requirements FAQ</h2>
+      <h3>What is Requirements exploration in frontend system design?</h3>
+      <p>
+        Requirements exploration is the RADIO step where you clarify the user flow, scope,
+        constraints, functional requirements, non-functional requirements, success metrics,
+        and risks before drawing architecture.
+      </p>
+
+      <h3>What clarifying questions should I ask first?</h3>
+      <p>
+        Start with the primary user, core task, v1 scope, out-of-scope work, scale assumptions,
+        freshness needs, accessibility baseline, latency target, and failure states that would
+        change the design.
+      </p>
+
+      <h3>What is the difference between functional and non-functional requirements?</h3>
+      <p>
+        Functional requirements describe what the UI must do, such as search, filter, drag,
+        submit, or notify. Non-functional requirements describe quality constraints such as
+        latency, accessibility, reliability, security, offline behavior, and observability.
+      </p>
+
+      <h3>How long should Requirements take in a frontend system design interview?</h3>
+      <p>
+        In a 45-minute frontend system design interview, spend roughly the first 5-8 minutes
+        on Requirements. Use more time only when the prompt is ambiguous or the interviewer
+        signals that constraints are the main challenge.
+      </p>
+
+      <h3>What should I produce before moving to architecture?</h3>
+      <p>
+        Produce a one-line user flow, a Must/Nice/Out scope box, top constraints, two or three
+        success metrics, an assumptions and risk log, and a clear handoff statement into architecture.
+      </p>
 
       <h2>Next</h2>
       <ul>

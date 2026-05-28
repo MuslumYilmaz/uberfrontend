@@ -155,6 +155,64 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets Requirements exploration intent on the RADIO requirements page', () => {
+    const requirements = SYSTEM.find((entry) => entry.slug === 'radio-requirements');
+    expect(requirements).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      requirements!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Requirements Exploration');
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-requirements');
+    expect(meta.description).toBe(
+      'Use RADIO Requirements to clarify frontend system design interview scope, constraints, functional requirements, NFRs, and success metrics before architecture.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords).toContain('frontend system design requirements exploration');
+    expect(meta.keywords).toContain('frontend system design clarifying questions');
+    expect(meta.keywords).toContain('frontend system design requirements checklist');
+    expect(meta.keywords).toContain('RADIO requirements frontend system design');
+    expect(meta.keywords).toContain('first 5 minutes frontend system design interview');
+    expect(meta.keywords).toContain('functional and non-functional requirements frontend system design');
+    expect(meta.keywords).toContain('requirements questions frontend system design interview');
+    expect(meta.keywords).toContain('requirements deep dive for frontend system design interviews');
+    expect(meta.keywords).toContain('what clarifying questions should I ask in frontend system design');
+    expect(meta.keywords).toContain('frontend system design requirements before architecture');
+    expect(meta.keywords).toContain('frontend system design scope box');
+    expect(meta.keywords).toContain('frontend system design success metrics');
+    expect(meta.keywords).toContain('frontend system design assumptions and risk log');
+    expect(meta.keywords).toContain('frontend system design architecture handoff');
+    expect(meta.keywords).toContain('requirements exploration autocomplete frontend system design');
+    expect(meta.keywords).toContain('requirements questions news feed frontend system design');
+    expect(meta.keywords).toContain('requirements checklist dashboard frontend system design');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design requirements exploration');
+    expect(article?.keywords).toContain('functional and non-functional requirements frontend system design');
+    expect(article?.keywords).toContain('frontend system design architecture handoff');
+    expect(article?.keywords).toContain('requirements checklist dashboard frontend system design');
+    expect(faqPage?.name).toBe('Frontend system design requirements exploration FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is Requirements exploration in frontend system design?',
+      'What clarifying questions should I ask first?',
+      'What is the difference between functional and non-functional requirements?',
+      'How long should Requirements take in a frontend system design interview?',
+      'What should I produce before moving to architecture?',
+    ]);
+  });
+
   it('targets 5-step answer method intent on the framework quick-start page', () => {
     const framework = SYSTEM.find((entry) => entry.slug === 'framework');
     expect(framework).toBeDefined();
